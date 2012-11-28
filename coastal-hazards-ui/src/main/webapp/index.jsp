@@ -32,8 +32,6 @@
             <jsp:param name="expires" value="never" />
         </jsp:include>
 
-        <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
-
         <jsp:include page="js/log4javascript/log4javascript.jsp">
             <jsp:param name="relPath" value="" />
         </jsp:include>
@@ -50,7 +48,8 @@
 			
             CONFIG.development = <%= development%>;
         </script>
-
+		<script type="text/javascript" src="pages/index/shorelines.js"></script>
+		<link type="text/css" rel="stylesheet" href="pages/index/index.css" />
         <script type="text/javascript" src="pages/index/onReady.js"></script>
     </head>
     <body>
@@ -64,7 +63,16 @@
         </jsp:include>
 
         <div class="application-body">
-            <div id="map"></div>
+			<div class="container-fluid">
+				<div class="row-fluid">
+					<div class="span9">
+					<div id="map"></div></div>
+					<div class="span3">
+						<button id="upload-shorelines-btn">Upload Yer Shorelines</button>
+						<button id="upload-baseline-btn">Upload Yer Baseline</button>
+					</div>
+				</div>
+			</div>
         </div>
 
         <jsp:include page="template/USGSFooter.jsp">
