@@ -45,6 +45,7 @@
 							<artifactId>geoserver</artifactId>
 						</overlay>
 					</overlays>
+					<warSourceExcludes>WEB-INF/web.xml</warSourceExcludes>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
