@@ -2,3 +2,10 @@
 	height: 640px;
 }
 
+/* Because of a conflict between twitter bootstrap and openlayers */
+img { max-width: none; }
+
+#map {
+	height: 500px;
+	width: 100%;
+}
