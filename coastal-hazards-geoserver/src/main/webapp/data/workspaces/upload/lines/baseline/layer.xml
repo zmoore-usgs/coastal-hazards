@@ -1,0 +1,16 @@
+<layer>
+  <name>baseline</name>
+  <id>LayerInfoImpl--23a4f0e1:13b48640bc5:-7fd1</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe3</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--23a4f0e1:13b48640bc5:-7fd2</id>
+  </resource>
+  <enabled>true</enabled>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>
