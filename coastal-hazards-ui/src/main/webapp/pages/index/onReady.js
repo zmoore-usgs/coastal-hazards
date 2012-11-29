@@ -15,7 +15,10 @@ $(document).ready(function() {
 	
 	map.addControl(new OpenLayers.Control.MousePosition());
 	
-	
+	OpenLayers.Request.GET({
+        url: "pages/index/sld-shorelines.xml",
+        success: complete
+    });
 	
 	$("#upload-shorelines-btn").on("click", addShorelines);
 	$("#upload-baseline-btn").on("click", addBaseline);
