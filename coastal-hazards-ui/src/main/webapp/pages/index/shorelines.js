@@ -4,12 +4,39 @@ function complete(req) {
 	sld = format.read(req.responseXML || req.responseText);
 }
 
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 var addShorelines = function() {
+	var coloredShorelines = Object.extended({});
+	
+	var colorFeatures = function(divId) {
+		return function(event) {
+			event.features.each(function(el, i, arr) {
+				var index;
+				if (coloredShorelines.hasOwnProperty(el.attributes.Date_)) {
+					index = coloredShorelines[el.attributes.Date_];
+				} else {
+					index = i % SHORELINE_COLORS.length;
+					coloredShorelines[el.attributes.Date_] = index;
+				}
+				el.style = {
+						strokeWidth: 2,
+						strokeColor: SHORELINE_COLORS[index]
+					};
+			});
+			event.object.redraw();
+			this.map.zoomToExtent(this.getDataExtent());
+			
+			var html = [];
+			html.push("<table class='table'><thead><tr><td>Date</td><td>color</td></tr></thead><tbody>");
+			coloredShorelines.each(function(key, val) {
+				html.push("<tr><td>" + key + "</td><td style='background-color:" + SHORELINE_COLORS[val] + ";'>" + SHORELINE_COLORS[val] + "</td></tr>");
+			})
+			
+			html.push("</tbody></table>");
+			
+			$("#" + divId).html(html.join(''));
+		};
+	};
+	
 	var layer = [];
 	layer[1] = new OpenLayers.Layer.Vector("WFS1", {
                 strategies: [new OpenLayers.Strategy.BBOX()],
@@ -20,16 +47,7 @@ var addShorelines = function() {
 					geometryName: "the_geom"
                 })
             });
-	layer[1].events.register("featuresadded", null, function(event) {
-		event.features.each(function(el, i, arr) {
-			el.style = {
-                    strokeWidth: 2,
-                    strokeColor: SHORELINE_COLORS[el.attributes.Year % SHORELINE_COLORS.length]
-                };
-		});
-		event.object.redraw();
-		this.map.zoomToExtent(this.getDataExtent());
-	});
+	layer[1].events.register("featuresadded", null, colorFeatures("WFS1"));
 //	layer[1] = new OpenLayers.Layer.WMS( "OpenLayers WMS",
 //        "http://localhost:8080/coastal-hazards-geoserver/upload/wms",
 //        {
@@ -49,16 +67,7 @@ var addShorelines = function() {
 					geometryName: "the_geom"
                 })
             });
-	layer[2].events.register("featuresadded", null, function(event) {
-		event.features.each(function(el, i, arr) {
-			el.style = {
-                    strokeWidth: 2,
-                    strokeColor: SHORELINE_COLORS[el.attributes.Year % SHORELINE_COLORS.length]
-                };
-		});
-		event.object.redraw();
-		this.map.zoomToExtent(this.getDataExtent());
-	});
+	layer[2].events.register("featuresadded", null, colorFeatures("WFS2"));
 	
 //	layer[2] = new OpenLayers.Layer.WMS( "OpenLayers WMS",
 //        "http://localhost:8080/coastal-hazards-geoserver/upload/wms",
