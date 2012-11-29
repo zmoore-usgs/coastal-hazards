@@ -1,5 +1,6 @@
 .application-body {
-	height: 640px;
+	min-height: 640px;
+	min-width: 1280px;
 }
 
 /* Because of a conflict between twitter bootstrap and openlayers */

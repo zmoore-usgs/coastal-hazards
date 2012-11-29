@@ -80,6 +80,14 @@
 						<button id="create-intersections-btn">Make me some dotz</button>
 					</div>
 				</div>
+				<div class="row-fluid">
+					<div class="span6" id="color-legend">
+						
+					</div>
+					<div class="span6">
+						
+					</div>
+				</div>
 			</div>
         </div>
 
