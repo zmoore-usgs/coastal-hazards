@@ -1,0 +1,59 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-61f63f35:13b4dc96b2b:-7fed</id>
+  <name>DE_to_VA_SCE_clip</name>
+  <nativeName>DE_to_VA_SCE_clip</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--468a8f29:12b595b6180:-7ffe</id>
+  </namespace>
+  <title>DE_to_VA_SCE_clip</title>
+  <description>Contents of file</description>
+  <keywords>
+    <string>features</string>
+    <string>DE_to_VA_SCE_clip</string>
+  </keywords>
+  <nativeCRS class="projected">PROJCS[&quot;NAD_1983_UTM_Zone_18N&quot;, 
+  GEOGCS[&quot;GCS_North_American_1983&quot;, 
+    DATUM[&quot;D_North_American_1983&quot;, 
+      SPHEROID[&quot;GRS_1980&quot;, 6378137.0, 298.257222101]], 
+    PRIMEM[&quot;Greenwich&quot;, 0.0], 
+    UNIT[&quot;degree&quot;, 0.017453292519943295], 
+    AXIS[&quot;Longitude&quot;, EAST], 
+    AXIS[&quot;Latitude&quot;, NORTH]], 
+  PROJECTION[&quot;Transverse_Mercator&quot;], 
+  PARAMETER[&quot;central_meridian&quot;, -75.0], 
+  PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
+  PARAMETER[&quot;scale_factor&quot;, 0.9996], 
+  PARAMETER[&quot;false_easting&quot;, 500000.0], 
+  PARAMETER[&quot;false_northing&quot;, 0.0], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;x&quot;, EAST], 
+  AXIS[&quot;y&quot;, NORTH]]</nativeCRS>
+  <srs>EPSG:4269</srs>
+  <nativeBoundingBox>
+    <minx>-76.00180131918508</minx>
+    <maxx>-75.04715706365057</maxx>
+    <miny>37.080583586812025</miny>
+    <maxy>38.804058515283295</maxy>
+    <crs>EPSG:4269</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-76.00180131918508</minx>
+    <maxx>-75.04715706365057</maxx>
+    <miny>37.08058358590419</miny>
+    <maxy>38.80405851436171</maxy>
+    <crs>GEOGCS[&quot;WGS84(DD)&quot;, 
+  DATUM[&quot;WGS84&quot;, 
+    SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH]]</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--23a4f0e1:13b48640bc5:-7fd7</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

@@ -1,0 +1,16 @@
+<layer>
+  <name>DE_to_VA_rates</name>
+  <id>LayerInfoImpl-61f63f35:13b4dc96b2b:-7fea</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe3</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-61f63f35:13b4dc96b2b:-7feb</id>
+  </resource>
+  <enabled>true</enabled>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>
