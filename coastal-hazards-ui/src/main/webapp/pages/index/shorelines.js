@@ -9,6 +9,7 @@ var addShorelines = function() {
 	
 	var colorFeatures = function(divId) {
 		return function(event) {
+			var wasEmpty = Object.isEmpty(coloredShorelines);
 			event.features.each(function(el, i, arr) {
 				var index;
 				if (coloredShorelines.hasOwnProperty(el.attributes.Date_)) {
@@ -26,14 +27,16 @@ var addShorelines = function() {
 			this.map.zoomToExtent(this.getDataExtent());
 			
 			var html = [];
-			html.push("<table class='table'><thead><tr><td>Date</td><td>color</td></tr></thead><tbody>");
+			html.push("<h4>Color Legend (REMOVE_ME!)</h4><table class='table'><thead><tr><td>Date</td><td>color</td></tr></thead><tbody>");
 			coloredShorelines.each(function(key, val) {
 				html.push("<tr><td>" + key + "</td><td style='background-color:" + SHORELINE_COLORS[val] + ";'>" + SHORELINE_COLORS[val] + "</td></tr>");
 			})
 			
 			html.push("</tbody></table>");
 			
-			$("#" + divId).html(html.join(''));
+			if (!wasEmpty) {
+				$("#color-legend").html(html.join(''));
+			}
 		};
 	};
 	

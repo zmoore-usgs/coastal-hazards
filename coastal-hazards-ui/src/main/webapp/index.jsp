@@ -81,10 +81,10 @@
 					</div>
 				</div>
 				<div class="row-fluid">
-					<div class="span6" id="WFS1">
+					<div class="span6" id="color-legend">
 						
 					</div>
-					<div class="span6" id="WFS2">
+					<div class="span6">
 						
 					</div>
 				</div>
