@@ -50,9 +50,7 @@
 			<jsp:param name="relPath" value="" />
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
-		<script type="text/javascript">
-			Object.extend();
-		</script>
+
         <script type="text/javascript">
             var CONFIG = {};
 			
@@ -78,6 +76,8 @@
 					<div class="span3">
 						<button id="upload-shorelines-btn">Upload Yer Shorelines</button>
 						<button id="upload-baseline-btn">Upload Yer Baseline</button>
+						<button id="calculate-transects-btn">Calculate Transects</button>
+						<button id="create-intersections-btn">Make me some dotz</button>
 					</div>
 				</div>
 			</div>

@@ -22,4 +22,6 @@ $(document).ready(function() {
 	
 	$("#upload-shorelines-btn").on("click", addShorelines);
 	$("#upload-baseline-btn").on("click", addBaseline);
+	$("#calculate-transects-btn").on("click", calcTransects);
+	$("#create-intersections-btn").on("click", makeDots);
 })
