@@ -43,12 +43,21 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+		<jsp:include page="js/openlayers/openlayers.jsp">
+            <jsp:param name="debug-qualifier" value="<%= development%>" />
+        </jsp:include>
+		<jsp:include page="js/sugar/sugar.jsp">
+			<jsp:param name="relPath" value="" />
+			<jsp:param name="debug-qualifier" value="<%= development%>" />
+		</jsp:include>
+
         <script type="text/javascript">
             var CONFIG = {};
 			
             CONFIG.development = <%= development%>;
         </script>
 		<script type="text/javascript" src="pages/index/shorelines.js"></script>
+		<script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
 		<link type="text/css" rel="stylesheet" href="pages/index/index.css" />
         <script type="text/javascript" src="pages/index/onReady.js"></script>
     </head>
@@ -57,9 +66,6 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="header-class" value="" />
             <jsp:param name="site-title" value="USGS Coastal Change Hazards" />
-        </jsp:include>
-        <jsp:include page="js/openlayers/openlayers.jsp">
-            <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
 
         <div class="application-body">
@@ -70,6 +76,8 @@
 					<div class="span3">
 						<button id="upload-shorelines-btn">Upload Yer Shorelines</button>
 						<button id="upload-baseline-btn">Upload Yer Baseline</button>
+						<button id="calculate-transects-btn">Calculate Transects</button>
+						<button id="create-intersections-btn">Make me some dotz</button>
 					</div>
 				</div>
 			</div>

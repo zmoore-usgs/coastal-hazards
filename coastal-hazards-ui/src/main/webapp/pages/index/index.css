@@ -9,3 +9,11 @@ img { max-width: none; }
 	height: 500px;
 	width: 100%;
 }
+
+#site-title {
+	line-height: 20px;
+}
+
+#ccsa-area {
+	font : 1em/0.5em Verdana,Arial,Helvetica,sans-serif;
+}
