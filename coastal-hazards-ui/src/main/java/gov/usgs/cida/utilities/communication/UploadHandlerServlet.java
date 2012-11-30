@@ -83,6 +83,7 @@ public class UploadHandlerServlet extends HttpServlet {
 
         // Check that the incoming file is not larger than our limit
         if (maxFileSize > 0 && fileSize > maxFileSize) {
+            LOG.info("Upload exceeds max file size of " + maxFileSize + " bytes");
             responseMap.put("error", "Upload exceeds max file size of " + maxFileSize + " bytes");
             sendErrorResponse(response, responseMap);
             return;
@@ -95,6 +96,7 @@ public class UploadHandlerServlet extends HttpServlet {
             responseMap.put("error", "Could not save file.");
             responseMap.put("exception", ioe.getMessage());
             sendErrorResponse(response, responseMap);
+            return;
         }
 
         // Save the file to the upload directory
@@ -104,10 +106,12 @@ public class UploadHandlerServlet extends HttpServlet {
             responseMap.put("error", "Could not save file.");
             responseMap.put("exception", ex.getMessage());
             sendErrorResponse(response, responseMap);
+            return;
         } catch (IOException ex) {
             responseMap.put("error", "Could not save file.");
             responseMap.put("exception", ex.getMessage());
             sendErrorResponse(response, responseMap);
+            return;
         }
 
         responseMap.put("file-token", destinationDirectoryChild);
