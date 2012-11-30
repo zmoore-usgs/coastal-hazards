@@ -27,12 +27,12 @@ var addShorelines = function() {
 			this.map.zoomToExtent(this.getDataExtent());
 			
 			var html = [];
-			html.push("<h4>Color Legend (REMOVE_ME!)</h4><table class='table'><thead><tr><td>Date</td><td>color</td></tr></thead><tbody>");
+			html.push("<div class='well'><h4>Features</h4><table class='table'><thead><tr><td>Selected</td><td>Date</td><td>color</td></tr></thead><tbody>");
 			coloredShorelines.each(function(key, val) {
-				html.push("<tr><td>" + key + "</td><td style='background-color:" + SHORELINE_COLORS[val] + ";'>" + SHORELINE_COLORS[val] + "</td></tr>");
+				html.push("<tr><td><input type='checkbox'></td><td>" + key + "</td><td style='background-color:" + SHORELINE_COLORS[val] + ";'>" + SHORELINE_COLORS[val] + "</td></tr>");
 			})
 			
-			html.push("</tbody></table>");
+			html.push("</tbody></table></div>");
 			
 			if (!wasEmpty) {
 				$("#color-legend").html(html.join(''));
