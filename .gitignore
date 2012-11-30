@@ -1,3 +1,5 @@
 target/
 /coastal-hazards-geoserver/src/main/webapp/META-INF/
 /coastal-hazards-ui/nb-configuration.xml
+/nb-configuration.xml
+/coastal-hazards-geoserver/nb-configuration.xml

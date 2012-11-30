@@ -1,12 +1,12 @@
 <layer>
-  <name>ASIS_2009_2012</name>
-  <id>LayerInfoImpl--23a4f0e1:13b48640bc5:-7fd5</id>
+  <name>NASC_shorelines</name>
+  <id>LayerInfoImpl-2dbaa801:13b52754b9e:-7fda</id>
   <type>VECTOR</type>
   <defaultStyle>
     <id>StyleInfoImpl--570ae188:124761b8d78:-7fe3</id>
   </defaultStyle>
   <resource class="featureType">
-    <id>FeatureTypeInfoImpl--23a4f0e1:13b48640bc5:-7fd6</id>
+    <id>FeatureTypeInfoImpl-2dbaa801:13b52754b9e:-7fdb</id>
   </resource>
   <enabled>true</enabled>
   <attribution>

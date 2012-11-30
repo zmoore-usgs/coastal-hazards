@@ -1,15 +1,15 @@
 <featureType>
-  <id>FeatureTypeInfoImpl--23a4f0e1:13b48640bc5:-7fd4</id>
-  <name>NASC_shorelines</name>
-  <nativeName>NASC_shorelines</nativeName>
+  <id>FeatureTypeInfoImpl-2dbaa801:13b52754b9e:-7fd6</id>
+  <name>DE_to_VA_SCE_clip</name>
+  <nativeName>DE_to_VA_SCE_clip</nativeName>
   <namespace>
-    <id>NamespaceInfoImpl--468a8f29:12b595b6180:-7ffe</id>
+    <id>NamespaceInfoImpl-378103b2:12a1edeecf1:-7fe8</id>
   </namespace>
-  <title>NASC_shorelines</title>
+  <title>DE_to_VA_SCE_clip</title>
   <description>Contents of file</description>
   <keywords>
     <string>features</string>
-    <string>NASC_shorelines</string>
+    <string>DE_to_VA_SCE_clip</string>
   </keywords>
   <nativeCRS class="projected">PROJCS[&quot;NAD_1983_UTM_Zone_18N&quot;, 
   GEOGCS[&quot;GCS_North_American_1983&quot;, 
@@ -28,19 +28,19 @@
   UNIT[&quot;m&quot;, 1.0], 
   AXIS[&quot;x&quot;, EAST], 
   AXIS[&quot;y&quot;, NORTH]]</nativeCRS>
-  <srs>EPSG:4269</srs>
+  <srs>EPSG:900913</srs>
   <nativeBoundingBox>
-    <minx>-76.00473820344983</minx>
-    <maxx>-75.04714647649418</maxx>
-    <miny>37.08055034452661</miny>
-    <maxy>38.80428584481047</maxy>
-    <crs>EPSG:4269</crs>
+    <minx>-8460481.82222323</minx>
+    <maxx>-8354211.309808406</maxx>
+    <miny>4450345.060026684</miny>
+    <maxy>4693643.373038162</maxy>
+    <crs class="projected">EPSG:900913</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>
-    <minx>-76.00473820344983</minx>
-    <maxx>-75.04714647649418</maxx>
-    <miny>37.080550343618775</miny>
-    <maxy>38.80428584388889</maxy>
+    <minx>-76.00180131918508</minx>
+    <maxx>-75.04715706365057</maxx>
+    <miny>37.08058358590419</miny>
+    <maxy>38.80405851436171</maxy>
     <crs>GEOGCS[&quot;WGS84(DD)&quot;, 
   DATUM[&quot;WGS84&quot;, 
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], 
@@ -52,7 +52,7 @@
   <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
   <enabled>true</enabled>
   <store class="dataStore">
-    <id>DataStoreInfoImpl--23a4f0e1:13b48640bc5:-7fd7</id>
+    <id>DataStoreInfoImpl-2dbaa801:13b52754b9e:-7fd7</id>
   </store>
   <maxFeatures>0</maxFeatures>
   <numDecimals>0</numDecimals>

@@ -44,9 +44,9 @@ var addShorelines = function() {
 	layer[1] = new OpenLayers.Layer.Vector("WFS1", {
                 strategies: [new OpenLayers.Strategy.BBOX()],
                 protocol: new OpenLayers.Protocol.WFS({
-                    url:  "http://localhost:8080/coastal-hazards-geoserver/upload/wfs",
+                    url:  "http://localhost:8080/coastal-hazards-geoserver/sample/wfs",
                     featureType: "ASIS_2009_2012",
-                    featureNS: "gov.usgs.cida.gdp.upload",
+                    featureNS: "gov.usgs.cida.gdp.sample",
 					geometryName: "the_geom"
                 })
             });
@@ -64,9 +64,9 @@ var addShorelines = function() {
 	layer[2] = new OpenLayers.Layer.Vector("WFS2", {
                 strategies: [new OpenLayers.Strategy.BBOX()],
                 protocol: new OpenLayers.Protocol.WFS({
-                    url:  "http://localhost:8080/coastal-hazards-geoserver/upload/wfs",
+                    url:  "http://localhost:8080/coastal-hazards-geoserver/sample/wfs",
                     featureType: "NASC_shorelines",
-                    featureNS: "gov.usgs.cida.gdp.upload",
+                    featureNS: "gov.usgs.cida.gdp.sample",
 					geometryName: "the_geom"
                 })
             });
@@ -89,9 +89,9 @@ var addBaseline = function() {
 	layer[3] = new OpenLayers.Layer.Vector("WFS3", {
                 strategies: [new OpenLayers.Strategy.BBOX()],
                 protocol: new OpenLayers.Protocol.WFS({
-                    url:  "http://localhost:8080/coastal-hazards-geoserver/upload/wfs",
+                    url:  "http://localhost:8080/coastal-hazards-geoserver/sample/wfs",
                     featureType: "baseline",
-                    featureNS: "gov.usgs.cida.gdp.upload",
+                    featureNS: "gov.usgs.cida.gdp.sample",
 					geometryName: "the_geom"
                 }),
                 styleMap: new OpenLayers.StyleMap(sld.namedLayers["Simple Line"]["userStyles"][0])
@@ -130,9 +130,9 @@ var calcTransects = function() {
 //	});
 	
 	var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
-        "http://localhost:8080/coastal-hazards-geoserver/upload/wms",
+        "http://localhost:8080/coastal-hazards-geoserver/sample/wms",
         {
-            layers: 'upload:DE_to_VA_SCE_clip',
+            layers: 'sample:DE_to_VA_SCE_clip',
 			transparent : true
         }, {
 			isBaseLayer : false
@@ -157,9 +157,9 @@ var makeDots = function() {
 //	});
 	
 	var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
-        "http://localhost:8080/coastal-hazards-geoserver/upload/wms",
+        "http://localhost:8080/coastal-hazards-geoserver/sample/wms",
         {
-            layers: 'upload:DE_to_VA_intersects',
+            layers: 'sample:DE_to_VA_intersects',
 			transparent : true
         }, {
 			isBaseLayer : false

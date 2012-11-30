@@ -3,6 +3,10 @@
     min-width: 1280px;
 }
 
+.olLayerGoogleCopyright, .olLayerGooglePoweredBy, .gmnoprint {
+	display : none
+}
+
 /* Because of a conflict between twitter bootstrap and openlayers */
 img { max-width: none; }
 

@@ -1,15 +1,15 @@
 <featureType>
-  <id>FeatureTypeInfoImpl-61f63f35:13b4dc96b2b:-7feb</id>
-  <name>DE_to_VA_rates</name>
-  <nativeName>DE_to_VA_rates</nativeName>
+  <id>FeatureTypeInfoImpl-2dbaa801:13b52754b9e:-7fd9</id>
+  <name>baseline</name>
+  <nativeName>baseline</nativeName>
   <namespace>
-    <id>NamespaceInfoImpl--468a8f29:12b595b6180:-7ffe</id>
+    <id>NamespaceInfoImpl-378103b2:12a1edeecf1:-7fe8</id>
   </namespace>
-  <title>DE_to_VA_rates</title>
+  <title>baseline</title>
   <description>Contents of file</description>
   <keywords>
     <string>features</string>
-    <string>DE_to_VA_rates</string>
+    <string>baseline</string>
   </keywords>
   <nativeCRS class="projected">PROJCS[&quot;NAD_1983_UTM_Zone_18N&quot;, 
   GEOGCS[&quot;GCS_North_American_1983&quot;, 
@@ -28,19 +28,19 @@
   UNIT[&quot;m&quot;, 1.0], 
   AXIS[&quot;x&quot;, EAST], 
   AXIS[&quot;y&quot;, NORTH]]</nativeCRS>
-  <srs>EPSG:4269</srs>
+  <srs>EPSG:900913</srs>
   <nativeBoundingBox>
-    <minx>-76.00515026522524</minx>
-    <maxx>-75.04608221266318</maxx>
-    <miny>37.07696687652292</miny>
-    <maxy>38.805730028009094</maxy>
-    <crs>EPSG:4269</crs>
+    <minx>-8460855.145899901</minx>
+    <maxx>-8354090.196168936</maxx>
+    <miny>4449838.0449580625</miny>
+    <maxy>4693929.712939625</maxy>
+    <crs class="projected">EPSG:900913</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>
-    <minx>-76.00515026522524</minx>
-    <maxx>-75.04608221266318</maxx>
-    <miny>37.07696687561511</miny>
-    <maxy>38.8057300270875</maxy>
+    <minx>-76.00515494283185</minx>
+    <maxx>-75.04606908131606</maxx>
+    <miny>37.076949897146896</miny>
+    <maxy>38.806063012458345</maxy>
     <crs>GEOGCS[&quot;WGS84(DD)&quot;, 
   DATUM[&quot;WGS84&quot;, 
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], 
@@ -52,7 +52,7 @@
   <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
   <enabled>true</enabled>
   <store class="dataStore">
-    <id>DataStoreInfoImpl--23a4f0e1:13b48640bc5:-7fd7</id>
+    <id>DataStoreInfoImpl-2dbaa801:13b52754b9e:-7fde</id>
   </store>
   <maxFeatures>0</maxFeatures>
   <numDecimals>0</numDecimals>

@@ -43,6 +43,7 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+		<script src='http://maps.google.com/maps/api/js?v=3&sensor=false' type="text/javascript"></script>
         <jsp:include page="js/openlayers/openlayers.jsp">
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
@@ -73,9 +74,9 @@
         <div class="application-body">
             <div class="container-fluid">
                 <div class="row-fluid">
-                    <div class="span9">
+                    <div class="span7">
                         <div id="map"></div></div>
-                    <div class="span3">
+                    <div class="span4">
                         <!-- Button to trigger modal -->
                         <a href="#myModal" role="button" class="btn" data-toggle="modal">Upload A File</a>
 
@@ -83,6 +84,14 @@
                         <button id="upload-baseline-btn">Upload Yer Baseline</button>
                         <button id="calculate-transects-btn">Calculate Transects</button>
                         <button id="create-intersections-btn">Make me some dotz</button>
+                    </div>
+					<div class="span1">
+						<ul class="nav nav-pills nav-stacked">
+							<li class="active"><a href="#"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
+							<li><a href="#"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
+							<li><a href="#"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
+							<li><a href="#"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
+						</ul>
                     </div>
                 </div>
                 <div class="row-fluid">

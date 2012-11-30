@@ -1,21 +1,21 @@
 <dataStore>
-  <id>DataStoreInfoImpl--23a4f0e1:13b48640bc5:-7fd7</id>
-  <name>lines</name>
+  <id>DataStoreInfoImpl-2dbaa801:13b52754b9e:-7fd7</id>
+  <name>Coastal Hazards Output</name>
   <type>Directory of spatial files (shapefiles)</type>
   <enabled>true</enabled>
   <workspace>
-    <id>WorkspaceInfoImpl--468a8f29:12b595b6180:-7fff</id>
+    <id>WorkspaceInfoImpl-378103b2:12a1edeecf1:-7fe9</id>
   </workspace>
   <connectionParameters>
-    <entry key="memory mapped buffer">true</entry>
+    <entry key="memory mapped buffer">false</entry>
     <entry key="timezone">America/Chicago</entry>
     <entry key="fstype">shape</entry>
     <entry key="create spatial index">true</entry>
     <entry key="charset">ISO-8859-1</entry>
     <entry key="filetype">shapefile</entry>
     <entry key="cache and reuse memory maps">true</entry>
-    <entry key="url">file:workspaces/upload/lines</entry>
-    <entry key="namespace">gov.usgs.cida.gdp.upload</entry>
+    <entry key="url">file:workspaces/sample/Output_Data</entry>
+    <entry key="namespace">gov.usgs.cida.gdp.sample</entry>
   </connectionParameters>
   <__default>false</__default>
 </dataStore>
