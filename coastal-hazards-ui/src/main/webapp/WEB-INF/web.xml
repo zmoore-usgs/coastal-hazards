@@ -14,6 +14,6 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>UploadHandlerServlet</servlet-name>
-        <url-pattern>/upload</url-pattern>
+        <url-pattern>/server/upload</url-pattern>
     </servlet-mapping>
 </web-app>

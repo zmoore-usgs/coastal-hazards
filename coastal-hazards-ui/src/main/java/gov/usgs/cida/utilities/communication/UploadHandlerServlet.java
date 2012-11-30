@@ -83,24 +83,37 @@ public class UploadHandlerServlet extends HttpServlet {
 
         // Check that the incoming file is not larger than our limit
         if (maxFileSize > 0 && fileSize > maxFileSize) {
+            LOG.info("Upload exceeds max file size of " + maxFileSize + " bytes");
             responseMap.put("error", "Upload exceeds max file size of " + maxFileSize + " bytes");
             sendErrorResponse(response, responseMap);
             return;
         }
-        
-        // Save the file to the work directory
+
+        // Create destination directory
+        try {
+            FileUtils.forceMkdir(uploadDestinationDirectory);
+        } catch (IOException ioe) {
+            responseMap.put("error", "Could not save file.");
+            responseMap.put("exception", ioe.getMessage());
+            sendErrorResponse(response, responseMap);
+            return;
+        }
+
+        // Save the file to the upload directory
         try {
             saveFileFromRequest(request, fileParamKey, uploadDestinationFile);
         } catch (FileUploadException ex) {
             responseMap.put("error", "Could not save file.");
             responseMap.put("exception", ex.getMessage());
             sendErrorResponse(response, responseMap);
+            return;
         } catch (IOException ex) {
             responseMap.put("error", "Could not save file.");
             responseMap.put("exception", ex.getMessage());
             sendErrorResponse(response, responseMap);
+            return;
         }
-        
+
         responseMap.put("file-token", destinationDirectoryChild);
         responseMap.put("file-checksum", Long.toString(FileUtils.checksumCRC32(uploadDestinationFile)));
         responseMap.put("file-size", Long.toString(FileUtils.sizeOf(uploadDestinationFile)));
@@ -111,7 +124,7 @@ public class UploadHandlerServlet extends HttpServlet {
         if (StringUtils.isBlank(filenameParameter)) {
             throw new IllegalArgumentException();
         }
-        
+
         if (ServletFileUpload.isMultipartContent(request)) {
             FileItemFactory factory = new DiskFileItemFactory();
             ServletFileUpload upload = new ServletFileUpload(factory);
@@ -130,7 +143,7 @@ public class UploadHandlerServlet extends HttpServlet {
         } else {
             saveFileFromInputStream(request.getInputStream(), destinationFile);
         }
-        
+
         return destinationFile;
     }
 //    @Override
@@ -267,6 +280,7 @@ public class UploadHandlerServlet extends HttpServlet {
         responseMap.put("success", "true");
         sendJSONResponse(response, responseMap);
     }
+
     static void sendErrorResponse(HttpServletResponse response, Map<String, String> responseMap) {
         responseMap.put("success", "false");
         sendJSONResponse(response, responseMap);
