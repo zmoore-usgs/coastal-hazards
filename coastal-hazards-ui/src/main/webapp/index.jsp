@@ -77,20 +77,29 @@
                     <div class="span7">
                         <div id="map"></div></div>
                     <div class="span4">
-                        <!-- Button to trigger modal -->
-                        <a href="#myModal" role="button" class="btn" data-toggle="modal">Upload A File</a>
-
-                        <button id="upload-shorelines-btn">Upload Yer Shorelines</button>
-                        <button id="upload-baseline-btn">Upload Yer Baseline</button>
-                        <button id="calculate-transects-btn">Calculate Transects</button>
-                        <button id="create-intersections-btn">Make me some dotz</button>
+						<div class="well tab-content">
+							<div class="tab-pane active" id="shoreline">
+								<!-- Button to trigger modal -->
+								<a href="#myModal" role="button" class="btn" data-toggle="modal">Upload A File</a>
+								<button id="upload-shorelines-btn">Display Shorelines</button>
+							</div>
+							<div class="tab-pane" id="baseline">
+								<button id="upload-baseline-btn">Display Baseline</button>
+							</div>
+							<div class="tab-pane" id="transects">
+								<button id="calculate-transects-btn">Calculate Transects</button>
+							</div>
+							<div class="tab-pane" id="intersections">
+								<button id="create-intersections-btn">Show Intersections</button>
+							</div>
+						</div>
                     </div>
 					<div class="span1">
 						<ul class="nav nav-pills nav-stacked">
-							<li class="active"><a href="#"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
-							<li><a href="#"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
-							<li><a href="#"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
-							<li><a href="#"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
+							<li class="active"><a href="#shoreline" data-toggle="tab"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
+							<li><a href="#baseline" data-toggle="tab"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
+							<li><a href="#transects" data-toggle="tab"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
+							<li><a href="#intersections" data-toggle="tab"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
 						</ul>
                     </div>
                 </div>
