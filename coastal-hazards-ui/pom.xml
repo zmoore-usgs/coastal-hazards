@@ -14,6 +14,11 @@
     <name>Coastal Hazards UI</name>
 
     <dependencies>
+		<dependency>
+			<artifactId>proxy-utils</artifactId>
+			<groupId>gov.usgs.cida</groupId>
+			<type>jar</type>
+		</dependency>
         <!-- Normal Servlet dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
