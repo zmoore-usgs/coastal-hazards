@@ -1,15 +1,15 @@
 <featureType>
-  <id>FeatureTypeInfoImpl--23a4f0e1:13b48640bc5:-7fd6</id>
-  <name>ASIS_2009_2012</name>
-  <nativeName>ASIS_2009_2012</nativeName>
+  <id>FeatureTypeInfoImpl-2dbaa801:13b52754b9e:-7fdb</id>
+  <name>NASC_shorelines</name>
+  <nativeName>NASC_shorelines</nativeName>
   <namespace>
-    <id>NamespaceInfoImpl--468a8f29:12b595b6180:-7ffe</id>
+    <id>NamespaceInfoImpl-378103b2:12a1edeecf1:-7fe8</id>
   </namespace>
-  <title>ASIS_2009_2012</title>
+  <title>NASC_shorelines</title>
   <description>Contents of file</description>
   <keywords>
-    <string>ASIS_2009_2012</string>
     <string>features</string>
+    <string>NASC_shorelines</string>
   </keywords>
   <nativeCRS class="projected">PROJCS[&quot;NAD_1983_UTM_Zone_18N&quot;, 
   GEOGCS[&quot;GCS_North_American_1983&quot;, 
@@ -28,19 +28,19 @@
   UNIT[&quot;m&quot;, 1.0], 
   AXIS[&quot;x&quot;, EAST], 
   AXIS[&quot;y&quot;, NORTH]]</nativeCRS>
-  <srs>EPSG:4269</srs>
+  <srs>EPSG:900913</srs>
   <nativeBoundingBox>
-    <minx>-75.40199990652481</minx>
-    <maxx>-75.09199622361302</maxx>
-    <miny>37.85011514064518</miny>
-    <maxy>38.32526586901493</maxy>
-    <crs>EPSG:4269</crs>
+    <minx>-8460808.754684102</minx>
+    <maxx>-8354210.131251547</maxx>
+    <miny>4450340.421561213</miny>
+    <maxy>4693675.846355403</maxy>
+    <crs class="projected">EPSG:900913</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>
-    <minx>-75.40199990652481</minx>
-    <maxx>-75.09199622361302</maxx>
-    <miny>37.850115139730796</miny>
-    <maxy>38.32526586809683</maxy>
+    <minx>-76.00473820344983</minx>
+    <maxx>-75.04714647649418</maxx>
+    <miny>37.08055034361877</miny>
+    <maxy>38.804285843888884</maxy>
     <crs>GEOGCS[&quot;WGS84(DD)&quot;, 
   DATUM[&quot;WGS84&quot;, 
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], 
@@ -52,7 +52,7 @@
   <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
   <enabled>true</enabled>
   <store class="dataStore">
-    <id>DataStoreInfoImpl--23a4f0e1:13b48640bc5:-7fd7</id>
+    <id>DataStoreInfoImpl-2dbaa801:13b52754b9e:-7fde</id>
   </store>
   <maxFeatures>0</maxFeatures>
   <numDecimals>0</numDecimals>

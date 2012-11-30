@@ -1,12 +1,12 @@
 <layer>
-  <name>NASC_shorelines</name>
-  <id>LayerInfoImpl--23a4f0e1:13b48640bc5:-7fd3</id>
+  <name>DE_to_VA_intersects</name>
+  <id>LayerInfoImpl-2dbaa801:13b52754b9e:-7fcf</id>
   <type>VECTOR</type>
   <defaultStyle>
-    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe3</id>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fdf</id>
   </defaultStyle>
   <resource class="featureType">
-    <id>FeatureTypeInfoImpl--23a4f0e1:13b48640bc5:-7fd4</id>
+    <id>FeatureTypeInfoImpl-2dbaa801:13b52754b9e:-7fd0</id>
   </resource>
   <enabled>true</enabled>
   <attribution>

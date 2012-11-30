@@ -4,6 +4,12 @@ $(document).ready(function() {
     });
     map = new OpenLayers.Map( 'map' );
     var layer = [];
+//	new OpenLayers.Layer.Google(
+//			"Google Physical",
+//			{
+//				type: google.maps.MapTypeId.TERRAIN, 
+//				isBaseLayer: true
+//			})
     layer[0] = new OpenLayers.Layer.WMS( "OpenLayers WMS",
         "http://vmap0.tiles.osgeo.org/wms/vmap0",
         {

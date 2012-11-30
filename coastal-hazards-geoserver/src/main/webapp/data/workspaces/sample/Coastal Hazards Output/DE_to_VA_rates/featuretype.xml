@@ -1,15 +1,15 @@
 <featureType>
-  <id>FeatureTypeInfoImpl-61f63f35:13b4dc96b2b:-7fef</id>
-  <name>DE_to_VA_intersects</name>
-  <nativeName>DE_to_VA_intersects</nativeName>
+  <id>FeatureTypeInfoImpl-2dbaa801:13b52754b9e:-7fce</id>
+  <name>DE_to_VA_rates</name>
+  <nativeName>DE_to_VA_rates</nativeName>
   <namespace>
-    <id>NamespaceInfoImpl--468a8f29:12b595b6180:-7ffe</id>
+    <id>NamespaceInfoImpl-378103b2:12a1edeecf1:-7fe8</id>
   </namespace>
-  <title>DE_to_VA_intersects</title>
+  <title>DE_to_VA_rates</title>
   <description>Contents of file</description>
   <keywords>
-    <string>DE_to_VA_intersects</string>
     <string>features</string>
+    <string>DE_to_VA_rates</string>
   </keywords>
   <nativeCRS class="projected">PROJCS[&quot;NAD_1983_UTM_Zone_18N&quot;, 
   GEOGCS[&quot;GCS_North_American_1983&quot;, 
@@ -28,19 +28,19 @@
   UNIT[&quot;m&quot;, 1.0], 
   AXIS[&quot;x&quot;, EAST], 
   AXIS[&quot;y&quot;, NORTH]]</nativeCRS>
-  <srs>EPSG:4269</srs>
+  <srs>EPSG:900913</srs>
   <nativeBoundingBox>
-    <minx>-76.00180131918508</minx>
-    <maxx>-75.04715706365057</maxx>
-    <miny>37.080583586812025</miny>
-    <maxy>38.804058515283295</maxy>
-    <crs>EPSG:4269</crs>
+    <minx>-8460854.625191115</minx>
+    <maxx>-8354091.657943811</maxx>
+    <miny>4449840.413937487</miny>
+    <maxy>4693882.145861921</maxy>
+    <crs class="projected">EPSG:900913</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>
-    <minx>-76.00180131918508</minx>
-    <maxx>-75.04715706365057</maxx>
-    <miny>37.08058358590419</miny>
-    <maxy>38.80405851436171</maxy>
+    <minx>-76.00515026522524</minx>
+    <maxx>-75.04608221266318</maxx>
+    <miny>37.07696687561509</miny>
+    <maxy>38.8057300270875</maxy>
     <crs>GEOGCS[&quot;WGS84(DD)&quot;, 
   DATUM[&quot;WGS84&quot;, 
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], 
@@ -52,7 +52,7 @@
   <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
   <enabled>true</enabled>
   <store class="dataStore">
-    <id>DataStoreInfoImpl--23a4f0e1:13b48640bc5:-7fd7</id>
+    <id>DataStoreInfoImpl-2dbaa801:13b52754b9e:-7fd7</id>
   </store>
   <maxFeatures>0</maxFeatures>
   <numDecimals>0</numDecimals>

@@ -1,12 +1,12 @@
 <layer>
-  <name>DE_to_VA_SCE_clip</name>
-  <id>LayerInfoImpl-61f63f35:13b4dc96b2b:-7fec</id>
+  <name>ASIS_2009_2012</name>
+  <id>LayerInfoImpl-2dbaa801:13b52754b9e:-7fdc</id>
   <type>VECTOR</type>
   <defaultStyle>
     <id>StyleInfoImpl--570ae188:124761b8d78:-7fe3</id>
   </defaultStyle>
   <resource class="featureType">
-    <id>FeatureTypeInfoImpl-61f63f35:13b4dc96b2b:-7fed</id>
+    <id>FeatureTypeInfoImpl-2dbaa801:13b52754b9e:-7fdd</id>
   </resource>
   <enabled>true</enabled>
   <attribution>
