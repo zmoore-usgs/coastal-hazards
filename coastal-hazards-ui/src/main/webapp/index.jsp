@@ -43,23 +43,25 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-		<jsp:include page="js/openlayers/openlayers.jsp">
+        <jsp:include page="js/openlayers/openlayers.jsp">
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-		<jsp:include page="js/sugar/sugar.jsp">
-			<jsp:param name="relPath" value="" />
-			<jsp:param name="debug-qualifier" value="<%= development%>" />
-		</jsp:include>
+        <jsp:include page="js/sugar/sugar.jsp">
+            <jsp:param name="relPath" value="" />
+            <jsp:param name="debug-qualifier" value="<%= development%>" />
+        </jsp:include>
 
         <script type="text/javascript">
             var CONFIG = {};
 			
             CONFIG.development = <%= development%>;
         </script>
-		<script type="text/javascript" src="pages/index/shorelines.js"></script>
-		<script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
-		<link type="text/css" rel="stylesheet" href="pages/index/index.css" />
+        <script type="text/javascript" src="pages/index/shorelines.js"></script>
+        <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
+        <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
         <script type="text/javascript" src="pages/index/onReady.js"></script>
+        <script type="text/javascript" src="js/jquery-fineuploader/jquery.fineuploader-3.0.js"></script>
+        <link type="text/css" rel="stylesheet" href="js/jquery-fineuploader/fineuploader.css" />
     </head>
     <body>
         <jsp:include page="template/USGSHeader.jsp">
@@ -69,26 +71,43 @@
         </jsp:include>
 
         <div class="application-body">
-			<div class="container-fluid">
-				<div class="row-fluid">
-					<div class="span9">
-					<div id="map"></div></div>
-					<div class="span3">
-						<button id="upload-shorelines-btn">Upload Yer Shorelines</button>
-						<button id="upload-baseline-btn">Upload Yer Baseline</button>
-						<button id="calculate-transects-btn">Calculate Transects</button>
-						<button id="create-intersections-btn">Make me some dotz</button>
-					</div>
-				</div>
-				<div class="row-fluid">
-					<div class="span6" id="color-legend">
-						
-					</div>
-					<div class="span6">
-						
-					</div>
-				</div>
-			</div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span9">
+                        <div id="map"></div></div>
+                    <div class="span3">
+                        <!-- Button to trigger modal -->
+                        <a href="#myModal" role="button" class="btn" data-toggle="modal">Upload A File</a>
+
+                        <button id="upload-shorelines-btn">Upload Yer Shorelines</button>
+                        <button id="upload-baseline-btn">Upload Yer Baseline</button>
+                        <button id="calculate-transects-btn">Calculate Transects</button>
+                        <button id="create-intersections-btn">Make me some dotz</button>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6" id="color-legend">
+
+                    </div>
+                    <div class="span6">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">Upload Shapefile</h3>
+            </div>
+            <div class="modal-body">
+                <p>Ipsem Lorum</p>
+                 <div id="bootstrapped-fine-uploader"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="myModal-save-btn"class="btn btn-primary">Save changes</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
         </div>
 
         <jsp:include page="template/USGSFooter.jsp">

@@ -1,1 +1,6 @@
+<!-- Sets logging and script types that are loaded --> 
 <Environment name="coastal-hazards.development" type="java.lang.String" value="true" />
+<!-- The maximum file size that is allowed to the server - Set to 0 to disable size checking -->
+<Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="15728640" />
+<!-- The parameter that the application uses to get the name of the incoming file - qqfile is used by default -->
+<Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="qqfile" />
