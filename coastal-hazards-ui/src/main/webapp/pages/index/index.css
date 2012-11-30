@@ -1,20 +1,47 @@
 .application-body {
-	min-height: 640px;
-	min-width: 1280px;
+    min-height: 640px;
+    min-width: 1280px;
 }
 
 /* Because of a conflict between twitter bootstrap and openlayers */
 img { max-width: none; }
 
 #map {
-	height: 500px;
-	width: 100%;
+    height: 500px;
+    width: 100%;
 }
 
 #site-title {
-	line-height: 20px;
+    line-height: 20px;
 }
 
 #ccsa-area {
-	font : 1em/0.5em Verdana,Arial,Helvetica,sans-serif;
+    font : 1em/0.5em Verdana,Arial,Helvetica,sans-serif;
+}
+
+.hide {
+    height: auto !important;
+}
+
+/* Fine Uploader
+-------------------------------------------------- */
+.qq-upload-list {
+    text-align: left;
+}
+
+/* Uploader */
+li.alert-success {
+    background-color: #DFF0D8;
+}
+
+li.alert-error {
+    background-color: #F2DEDE;
+}
+
+.alert-error .qq-upload-failed-text {
+    display: inline;
+}
+
+.qq-uploader {
+    width: 50%;
 }
