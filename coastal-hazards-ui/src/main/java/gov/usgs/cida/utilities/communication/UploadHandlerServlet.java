@@ -73,7 +73,7 @@ public class UploadHandlerServlet extends HttpServlet {
         String destinationDirectoryChild = UUID.randomUUID().toString();
         File uploadDestinationDirectory = new File(new File(uploadDirectory), destinationDirectoryChild);
         File uploadDestinationFile = new File(uploadDestinationDirectory, fileName);
-        Map<String, String> responseMap = new HashMap<>();
+        Map<String, String> responseMap = new HashMap<String, String>();
 
         try {
             maxFileSize = Integer.parseInt(props.get(FILE_UPLOAD_MAX_SIZE_CONFIG_KEY));
@@ -91,7 +91,11 @@ public class UploadHandlerServlet extends HttpServlet {
         // Save the file to the work directory
         try {
             saveFileFromRequest(request, fileParamKey, uploadDestinationFile);
-        } catch (FileUploadException|IOException ex) {
+        } catch (FileUploadException ex) {
+            responseMap.put("error", "Could not save file.");
+            responseMap.put("exception", ex.getMessage());
+            sendErrorResponse(response, responseMap);
+        } catch (IOException ex) {
             responseMap.put("error", "Could not save file.");
             responseMap.put("exception", ex.getMessage());
             sendErrorResponse(response, responseMap);
