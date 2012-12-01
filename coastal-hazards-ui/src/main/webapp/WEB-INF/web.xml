@@ -8,15 +8,41 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
-    <listener>
+
+
+	<listener>
         <description>ServletContextListener</description>
         <listener-class>gov.usgs.cida.coastalhazards.InitListener</listener-class>
     </listener>
-    <!-- Used to accept file uploads from the front end -->
-    <servlet>
-        <servlet-name>UploadService</servlet-name>
-        <servlet-class>gov.usgs.cida.coastalhazards.service.UploadService</servlet-class>
-    </servlet>
+
+
+	<filter>
+		<filter-name>TomcatFilter</filter-name>
+		<filter-class>gov.usgs.cida.tomcatfilters.RequestFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>TomcatFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+
+	<servlet>
+		<servlet-name>GeoServerServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.PathPreservingProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url</param-name>
+			<param-value>http://igsarm-cida-javadev1.er.usgs.gov:8081/geoserver/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GeoServerServlet</servlet-name>
+		<url-pattern>/geoserver/*</url-pattern>
+	</servlet-mapping>
+
     <servlet>
         <servlet-name>ImportService</servlet-name>
         <servlet-class>gov.usgs.cida.coastalhazards.service.ImportService</servlet-class>
@@ -25,5 +51,6 @@
         <servlet-name>UploadService</servlet-name>
         <url-pattern>/server/upload</url-pattern>
     </servlet-mapping>
-    <!-- Used to import shapefiles on disk into GeoServer -->
+
+
 </web-app>

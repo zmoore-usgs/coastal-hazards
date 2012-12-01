@@ -2,14 +2,35 @@ $(document).ready(function() {
     initializeLogging({
         LOG4JS_LOG_THRESHOLD : 'info'
     });
-    map = new OpenLayers.Map( 'map' );
-    var layer = [];
-    layer[0] = new OpenLayers.Layer.WMS( "OpenLayers WMS",
-        "http://vmap0.tiles.osgeo.org/wms/vmap0",
+    map = new OpenLayers.Map( 'map', {
+		projection : "EPSG:900913"
+	} );
+    var layer = {};
+    layer["phys"] = new OpenLayers.Layer.Google(
+			"Google Physical",
+			{
+				type: google.maps.MapTypeId.TERRAIN, 
+				isBaseLayer: true
+			});
+	layer["sat"] = new OpenLayers.Layer.Google(
+        "Google Satellite",
         {
-            layers: 'basic'
-        } );
-    map.addLayer(layer[0]);
+			type: google.maps.MapTypeId.SATELLITE, 
+			numZoomLevels: 20
+		});
+	layer["ghyb"] = new OpenLayers.Layer.Google(
+        "Google Hybrid",
+        {
+			type: google.maps.MapTypeId.HYBRID, 
+			numZoomLevels: 20
+		});
+	layer["gstreets"] = new OpenLayers.Layer.Google(
+        "Google Streets", // the default
+        {
+			numZoomLevels: 20
+		});
+	
+    map.addLayer(layer["sat"]);
 	
     map.zoomToMaxExtent();
 	

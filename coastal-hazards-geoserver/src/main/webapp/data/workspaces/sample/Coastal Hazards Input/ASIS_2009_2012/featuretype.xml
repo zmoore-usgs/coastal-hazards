@@ -1,15 +1,15 @@
 <featureType>
-  <id>FeatureTypeInfoImpl--23a4f0e1:13b48640bc5:-7fd2</id>
-  <name>baseline</name>
-  <nativeName>baseline</nativeName>
+  <id>FeatureTypeInfoImpl-2dbaa801:13b52754b9e:-7fdd</id>
+  <name>ASIS_2009_2012</name>
+  <nativeName>ASIS_2009_2012</nativeName>
   <namespace>
-    <id>NamespaceInfoImpl--468a8f29:12b595b6180:-7ffe</id>
+    <id>NamespaceInfoImpl-378103b2:12a1edeecf1:-7fe8</id>
   </namespace>
-  <title>baseline</title>
+  <title>ASIS_2009_2012</title>
   <description>Contents of file</description>
   <keywords>
+    <string>ASIS_2009_2012</string>
     <string>features</string>
-    <string>baseline</string>
   </keywords>
   <nativeCRS class="projected">PROJCS[&quot;NAD_1983_UTM_Zone_18N&quot;, 
   GEOGCS[&quot;GCS_North_American_1983&quot;, 
@@ -28,19 +28,19 @@
   UNIT[&quot;m&quot;, 1.0], 
   AXIS[&quot;x&quot;, EAST], 
   AXIS[&quot;y&quot;, NORTH]]</nativeCRS>
-  <srs>EPSG:4269</srs>
+  <srs>EPSG:900913</srs>
   <nativeBoundingBox>
-    <minx>-76.00515494283185</minx>
-    <maxx>-75.04606908131606</maxx>
-    <miny>37.07694989805471</miny>
-    <maxy>38.80606301337995</maxy>
-    <crs>EPSG:4269</crs>
+    <minx>-8393712.234388802</minx>
+    <maxx>-8359202.782263024</maxx>
+    <miny>4558273.693235704</miny>
+    <maxy>4625477.421385146</maxy>
+    <crs class="projected">EPSG:900913</crs>
   </nativeBoundingBox>
   <latLonBoundingBox>
-    <minx>-76.00515494283185</minx>
-    <maxx>-75.04606908131606</maxx>
-    <miny>37.07694989714691</miny>
-    <maxy>38.80606301245835</maxy>
+    <minx>-75.40199990652481</minx>
+    <maxx>-75.09199622361302</maxx>
+    <miny>37.85011513973077</miny>
+    <maxy>38.32526586809681</maxy>
     <crs>GEOGCS[&quot;WGS84(DD)&quot;, 
   DATUM[&quot;WGS84&quot;, 
     SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], 
@@ -52,7 +52,7 @@
   <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>
   <enabled>true</enabled>
   <store class="dataStore">
-    <id>DataStoreInfoImpl--23a4f0e1:13b48640bc5:-7fd7</id>
+    <id>DataStoreInfoImpl-2dbaa801:13b52754b9e:-7fde</id>
   </store>
   <maxFeatures>0</maxFeatures>
   <numDecimals>0</numDecimals>

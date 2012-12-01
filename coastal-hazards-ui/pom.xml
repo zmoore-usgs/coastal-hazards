@@ -14,6 +14,11 @@
     <name>Coastal Hazards UI</name>
 
     <dependencies>
+		<dependency>
+			<artifactId>proxy-utils</artifactId>
+			<groupId>gov.usgs.cida</groupId>
+			<type>jar</type>
+		</dependency>
         <!-- Normal Servlet dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -92,7 +97,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>2.5.1</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>

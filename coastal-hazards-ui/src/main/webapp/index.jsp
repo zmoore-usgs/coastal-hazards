@@ -43,6 +43,7 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+		<script src='http://maps.google.com/maps/api/js?v=3&sensor=false' type="text/javascript"></script>
         <jsp:include page="js/openlayers/openlayers.jsp">
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
@@ -73,16 +74,33 @@
         <div class="application-body">
             <div class="container-fluid">
                 <div class="row-fluid">
-                    <div class="span9">
+                    <div class="span7">
                         <div id="map"></div></div>
-                    <div class="span3">
-                        <!-- Button to trigger modal -->
-                        <a href="#myModal" role="button" class="btn" data-toggle="modal">Upload A File</a>
-
-                        <button id="upload-shorelines-btn">Upload Yer Shorelines</button>
-                        <button id="upload-baseline-btn">Upload Yer Baseline</button>
-                        <button id="calculate-transects-btn">Calculate Transects</button>
-                        <button id="create-intersections-btn">Make me some dotz</button>
+                    <div class="span4">
+						<div class="well tab-content">
+							<div class="tab-pane active" id="shoreline">
+								<!-- Button to trigger modal -->
+								<a href="#myModal" role="button" class="btn" data-toggle="modal">Upload A File</a>
+								<button id="upload-shorelines-btn">Display Shorelines</button>
+							</div>
+							<div class="tab-pane" id="baseline">
+								<button id="upload-baseline-btn">Display Baseline</button>
+							</div>
+							<div class="tab-pane" id="transects">
+								<button id="calculate-transects-btn">Calculate Transects</button>
+							</div>
+							<div class="tab-pane" id="intersections">
+								<button id="create-intersections-btn">Show Intersections</button>
+							</div>
+						</div>
+                    </div>
+					<div class="span1">
+						<ul class="nav nav-pills nav-stacked">
+							<li class="active"><a href="#shoreline" data-toggle="tab"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
+							<li><a href="#baseline" data-toggle="tab"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
+							<li><a href="#transects" data-toggle="tab"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
+							<li><a href="#intersections" data-toggle="tab"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
+						</ul>
                     </div>
                 </div>
                 <div class="row-fluid">
