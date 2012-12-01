@@ -66,12 +66,10 @@ public class GeoserverHandler {
         sendRequest("rest/reload/", PARAM_POST, null, "");
     }
     
-
-    
-    public String importFeatures(File file, String workspace, String name) throws IOException {
+    public HttpResponse importFeatures(File file, String workspace, String name) throws IOException {
         File wpsRequestFile = createImportProcessXMLFile(file, workspace, name);
-        HttpResponse requestResponse = sendRequest("wps", PARAM_POST, PARAM_TEXT_XML, wpsRequestFile);
-        return requestResponse.getEntity().getContent().toString();
+        HttpResponse requestResponse = sendRequest("wps", PARAM_POST, PARAM_TEXT_XML, wpsRequestFile); 
+        return requestResponse;
     }
     
     File createImportProcessXMLFile(File shapeFileZip, String workspace, String name) throws IOException {
