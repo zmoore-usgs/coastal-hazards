@@ -1,16 +1,13 @@
 package gov.usgs.cida.coastalhazards;
 
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
-import gov.usgs.cida.utilities.communication.UploadHandlerServlet;
+import gov.usgs.cida.coastalhazards.service.UploadService;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -20,7 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public class InitListener implements ServletContextListener {
 
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(UploadHandlerServlet.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(UploadService.class);
     private static DynamicReadOnlyProperties props = null;
 
     @Override

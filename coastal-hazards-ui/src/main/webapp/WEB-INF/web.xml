@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <display-name>coastal-hazards-ui</display-name>
+    <servlet-mapping>
+        <servlet-name>ImportService</servlet-name>
+        <url-pattern>/service/import</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
@@ -8,12 +12,18 @@
         <description>ServletContextListener</description>
         <listener-class>gov.usgs.cida.coastalhazards.InitListener</listener-class>
     </listener>
+    <!-- Used to accept file uploads from the front end -->
     <servlet>
-        <servlet-name>UploadHandlerServlet</servlet-name>
-        <servlet-class>gov.usgs.cida.utilities.communication.UploadHandlerServlet</servlet-class>
+        <servlet-name>UploadService</servlet-name>
+        <servlet-class>gov.usgs.cida.coastalhazards.service.UploadService</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ImportService</servlet-name>
+        <servlet-class>gov.usgs.cida.coastalhazards.service.ImportService</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>UploadHandlerServlet</servlet-name>
+        <servlet-name>UploadService</servlet-name>
         <url-pattern>/server/upload</url-pattern>
     </servlet-mapping>
+    <!-- Used to import shapefiles on disk into GeoServer -->
 </web-app>

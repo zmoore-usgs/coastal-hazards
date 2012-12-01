@@ -546,4 +546,14 @@ public class FileHelper {
 
         return result;
     }
+
+    public static void saveFileFromInputStream(InputStream is, File destinationFile) throws IOException {
+        FileOutputStream os = null;
+        try {
+            os = new FileOutputStream(destinationFile);
+            IOUtils.copy(is, os);
+        } finally {
+            IOUtils.closeQuietly(os);
+        }
+    }
 }
