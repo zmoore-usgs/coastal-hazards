@@ -3,6 +3,9 @@ package gov.usgs.cida.utilities.communication;
 import gov.usgs.cida.utilities.xml.XMLUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidParameterException;
@@ -12,7 +15,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.xpath.XPathExpressionException;
+import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -22,6 +28,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.LoggerFactory;
@@ -55,7 +63,90 @@ public class GeoserverHandler {
     }
 
     public void reloadConfiguration() throws IOException {
-        sendRequest("rest/reload/", PARAM_POST, null, null);
+        sendRequest("rest/reload/", PARAM_POST, null, "");
+    }
+    
+
+    
+    public String importFeatures(File file, String workspace, String name) throws IOException {
+        File wpsRequestFile = createImportProcessXMLFile(file, workspace, name);
+        HttpResponse requestResponse = sendRequest("wps", PARAM_POST, PARAM_TEXT_XML, wpsRequestFile);
+        return requestResponse.getEntity().getContent().toString();
+    }
+    
+    File createImportProcessXMLFile(File shapeFileZip, String workspace, String name) throws IOException {
+        File wpsRequestFile = null;
+        FileOutputStream wpsRequestOutputStream = null;
+        FileInputStream shapeZipInputStream = null;
+
+        try {
+            wpsRequestFile = File.createTempFile("wps.import.", ".xml");
+            wpsRequestOutputStream = new FileOutputStream(wpsRequestFile);
+            shapeZipInputStream = new FileInputStream(shapeFileZip);
+
+            wpsRequestOutputStream.write(new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+                    .append("<wps:Execute version=\"1.0.0\" service=\"WPS\" "
+                    + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                    + "xmlns=\"http://www.opengis.net/wps/1.0.0\" "
+                    + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                    + "xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" "
+                    + "xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
+                    + "xmlns:gml=\"http://www.opengis.net/gml\" "
+                    + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                    + "xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" "
+                    + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
+                    + "xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 "
+                    + "http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">")
+                    .append("<ows:Identifier>gs:Import</ows:Identifier>")
+                    .append("<wps:DataInputs>")
+                    .append("<wps:Input>")
+                    .append("<ows:Identifier>features</ows:Identifier>")
+                    .append("<wps:Data>")
+                    .append("<wps:ComplexData mimeType=\"application/zip\"><![CDATA[").toString().getBytes());
+
+            IOUtils.copy(shapeZipInputStream, new Base64OutputStream(wpsRequestOutputStream, true, 0, null));
+
+            wpsRequestOutputStream.write(new StringBuilder("]]></wps:ComplexData>")
+                    .append("</wps:Data>")
+                    .append("</wps:Input>")
+                    .append("<wps:Input>")
+                    .append("<ows:Identifier>workspace</ows:Identifier>")
+                    .append("<wps:Data>")
+                    .append("<wps:LiteralData>").append(workspace).append("</wps:LiteralData>")
+                    .append("</wps:Data>")
+                    .append("</wps:Input>")
+                    .append("<wps:Input>")
+                    .append("<ows:Identifier>name</ows:Identifier>")
+                    .append("<wps:Data>")
+                    .append("<wps:LiteralData>").append(name).append("</wps:LiteralData>")
+                    .append("</wps:Data>")
+                    .append("</wps:Input>")
+                    .append("<wps:Input>")
+                    .append("<ows:Identifier>srs</ows:Identifier>")
+                    .append("<wps:Data>")
+                    .append("<wps:LiteralData>EPSG:900913</wps:LiteralData>")
+                    .append("</wps:Data>")
+                    .append("</wps:Input>")
+                    .append("<wps:Input>")
+                    .append("<ows:Identifier>srsHandling</ows:Identifier>")
+                    .append("<wps:Data>")
+                    .append("<wps:LiteralData>REPROJECT_TO_DECLARED</wps:LiteralData>")
+                    .append("</wps:Data>")
+                    .append("</wps:Input>")
+                    .append("</wps:DataInputs>")
+                    .append("<wps:ResponseForm>")
+                    .append("<wps:RawDataOutput>")
+                    .append("<ows:Identifier>layerName</ows:Identifier>")
+                    .append("</wps:RawDataOutput>")
+                    .append("</wps:ResponseForm>")
+                    .append("</wps:Execute>")
+                    .toString().getBytes());
+
+        } finally {
+            IOUtils.closeQuietly(wpsRequestOutputStream);
+            IOUtils.closeQuietly(shapeZipInputStream);
+        }
+        return wpsRequestFile;
     }
 
     public void createDataStore(String shapefilePath, String layer,
@@ -357,13 +448,13 @@ public class GeoserverHandler {
     }
     
     int getResponseCode(String path, String requestMethod) throws IOException {
-        HttpResponse response = sendRequest(path, requestMethod, null, null);
+        HttpResponse response = sendRequest(path, requestMethod, null, "");
         return response.getStatusLine().getStatusCode();
     }
     
     String getResponse(String path) throws IOException {
         
-        HttpResponse response = sendRequest(path, PARAM_GET, null, null);
+        HttpResponse response = sendRequest(path, PARAM_GET, null, "");
         
         ByteArrayOutputStream baos = null;
         try {
@@ -376,6 +467,29 @@ public class GeoserverHandler {
         }
         
         return baos.toString();
+    }
+    
+    HttpResponse sendRequest(String path, String requestMethod, String contentType, File content) throws FileNotFoundException, IOException {
+        HttpPost post = null;
+        HttpClient httpClient = new DefaultHttpClient();
+        
+        post = new HttpPost(url + path);
+
+        FileInputStream wpsRequestInputStream = null;
+        try {
+            wpsRequestInputStream = new FileInputStream(content);
+
+            AbstractHttpEntity entity = new InputStreamEntity(wpsRequestInputStream, content.length());
+        
+            post.setEntity(entity);
+
+            HttpResponse response = httpClient.execute(post);
+
+            return response;
+
+        } finally {
+            IOUtils.closeQuietly(wpsRequestInputStream);
+        }
     }
     
     HttpResponse sendRequest(String path, String requestMethod, String contentType, String content)
@@ -411,7 +525,7 @@ public class GeoserverHandler {
             request.addHeader("Content-Type", contentType);
         }
 
-        if (content != null && request instanceof HttpEntityEnclosingRequestBase) {
+        if (StringUtils.isBlank(content) && request instanceof HttpEntityEnclosingRequestBase) {
             StringEntity contentEntity = new StringEntity(content);
             ((HttpEntityEnclosingRequestBase) request).setEntity(contentEntity);
         }

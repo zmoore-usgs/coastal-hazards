@@ -11,3 +11,9 @@
 <Environment name="coastal-hazards.files.directory.work" type="java.lang.String" value="/work" />
 <!-- Directory in which uploads are held -->
 <Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="/upload" />
+
+<!-- GeoServer Config -->
+<Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8080/geoserver" />
+<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="admin" />
+<Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="supply_your_own" />
+

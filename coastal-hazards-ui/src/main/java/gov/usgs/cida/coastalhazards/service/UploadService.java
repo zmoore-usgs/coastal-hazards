@@ -1,42 +1,18 @@
 package gov.usgs.cida.coastalhazards.service;
 
-import com.google.gson.Gson;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.communication.UploadHandler;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
-//import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-//import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
-//import org.apache.commons.codec.binary.Base64OutputStream;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-//import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-//import org.apache.http.HttpResponse;
-//import org.apache.http.client.HttpClient;
-//import org.apache.http.client.methods.HttpPost;
-//import org.apache.http.entity.AbstractHttpEntity;
-//import org.apache.http.entity.InputStreamEntity;
-//import org.apache.http.impl.client.DefaultHttpClient;
-//import org.apache.http.util.EntityUtils;
 import org.slf4j.LoggerFactory;
 
 public class UploadService extends HttpServlet {

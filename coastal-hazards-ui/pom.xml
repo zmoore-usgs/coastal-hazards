@@ -14,11 +14,11 @@
     <name>Coastal Hazards UI</name>
 
     <dependencies>
-		<dependency>
-			<artifactId>proxy-utils</artifactId>
-			<groupId>gov.usgs.cida</groupId>
-			<type>jar</type>
-		</dependency>
+        <dependency>
+            <artifactId>proxy-utils</artifactId>
+            <groupId>gov.usgs.cida</groupId>
+            <type>jar</type>
+        </dependency>
         <!-- Normal Servlet dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -66,6 +66,8 @@
             <artifactId>openlayers</artifactId>
             <type>war</type>
         </dependency>
+        
+        <!-- Commons -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -82,6 +84,7 @@
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
         </dependency>
+        
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -89,6 +92,10 @@
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.tuckey</groupId>
+            <artifactId>urlrewritefilter</artifactId>
         </dependency>
     </dependencies>
 
