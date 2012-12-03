@@ -95,7 +95,7 @@ var calcTransects = function() {
 	var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
         "geoserver/sample/wms",
         {
-            layers: 'sample:DE_to_VA_SCE_clip',
+            layers: 'sample:DE_to_VA_rates',
 			transparent : true
         }, {
 			isBaseLayer : false
