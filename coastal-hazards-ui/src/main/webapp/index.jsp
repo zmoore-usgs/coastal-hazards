@@ -39,6 +39,10 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+		<jsp:include page="js/jquery-tablesorter/package.jsp">
+            <jsp:param name="relPath" value="" />
+            <jsp:param name="debug-qualifier" value="<%= development%>" />
+        </jsp:include>
         <jsp:include page="js/bootstrap/package.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
@@ -104,10 +108,10 @@
                     </div>
                 </div>
                 <div class="row-fluid">
-                    <div class="span6" id="color-legend">
+                    <div class="span7" id="color-legend">
 
                     </div>
-                    <div class="span6">
+                    <div class="span5">
 
                     </div>
                 </div>
