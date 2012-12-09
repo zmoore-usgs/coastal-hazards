@@ -3,32 +3,32 @@ $(document).ready(function() {
         LOG4JS_LOG_THRESHOLD : 'info'
     });
     map = new OpenLayers.Map( 'map', {
-		projection : "EPSG:900913"
-	} );
+        projection : "EPSG:900913"
+    } );
     var layer = {};
     layer["phys"] = new OpenLayers.Layer.Google(
-			"Google Physical",
-			{
-				type: google.maps.MapTypeId.TERRAIN, 
-				isBaseLayer: true
-			});
-	layer["sat"] = new OpenLayers.Layer.Google(
+        "Google Physical",
+        {
+            type: google.maps.MapTypeId.TERRAIN, 
+            isBaseLayer: true
+        });
+    layer["sat"] = new OpenLayers.Layer.Google(
         "Google Satellite",
         {
-			type: google.maps.MapTypeId.SATELLITE, 
-			numZoomLevels: 20
-		});
-	layer["ghyb"] = new OpenLayers.Layer.Google(
+            type: google.maps.MapTypeId.SATELLITE, 
+            numZoomLevels: 20
+        });
+    layer["ghyb"] = new OpenLayers.Layer.Google(
         "Google Hybrid",
         {
-			type: google.maps.MapTypeId.HYBRID, 
-			numZoomLevels: 20
-		});
-	layer["gstreets"] = new OpenLayers.Layer.Google(
+            type: google.maps.MapTypeId.HYBRID, 
+            numZoomLevels: 20
+        });
+    layer["gstreets"] = new OpenLayers.Layer.Google(
         "Google Streets", // the default
         {
-			numZoomLevels: 20
-		});
+            numZoomLevels: 20
+        });
 	
     map.addLayer(layer["sat"]);
 	
@@ -50,11 +50,7 @@ $(document).ready(function() {
     var uploader = new qq.FineUploader({
         element: document.getElementById('bootstrapped-fine-uploader'),
         request: {
-            endpoint: 'server/upload',
-            params: {
-                'key1' : 'val1',
-                'key2' : 'val2'
-            }
+            endpoint: 'server/upload'
         },
         validation: {
             allowedExtensions: ['zip']
@@ -74,7 +70,16 @@ $(document).ready(function() {
             fail: 'alert alert-error'
         },
         debug: true
-    });
+    }).on('error', function(event, id, filename, reason) {
+        //TODO- do something
+        })
+    .on('complete', function(event, id, filename, responseJSON){
+        if (responseJSON.sucess != 'true') {
+            console.log('FAIL!!!')
+        } else {
+            console.log('well... ok');
+        }
+        });
     
     $('#myModal-save-btn').click(function() {
         uploader.uploadStoredFiles();
