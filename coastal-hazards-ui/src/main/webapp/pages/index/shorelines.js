@@ -1,7 +1,24 @@
 var sld;
+
+var work_stages = ['shorelines', 'baseline', 'transects', 'intersections', 'results'];
+
 function complete(req) {
 	var format = new OpenLayers.Format.SLD();
 	sld = format.read(req.responseXML || req.responseText);
+}
+
+function switchImage(stage) {
+    for (var stageIndex = 0;stageIndex < work_stages.length;stageIndex++) {
+        var workStage = work_stages[stageIndex];
+        var imgId = '#' + workStage + '_img';
+        if (stageIndex < stage) {
+            $(imgId).attr('src', 'images/workflow_figures/' + workStage + '_past.png');
+        } else if (stageIndex == stage) {
+            $(imgId).attr('src', 'images/workflow_figures/' + workStage + '.png');
+        } else {
+            $(imgId).attr('src', 'images/workflow_figures/' + workStage + '_future.png');
+        }
+    }
 }
 
 var addShorelines = function() {
@@ -105,7 +122,6 @@ var addBaseline = function() {
 
 
 var calcTransects = function() {
-	
 	var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
         "geoserver/sample/wms",
         {
@@ -120,7 +136,6 @@ var calcTransects = function() {
 	
 };
 var makeDots = function() {
-	
 	var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
         "geoserver/sample/wms",
         {
@@ -134,3 +149,7 @@ var makeDots = function() {
     map.addLayer(layer);
 	
 };
+
+var displayResults = function() {
+    // Not yet implemented
+}

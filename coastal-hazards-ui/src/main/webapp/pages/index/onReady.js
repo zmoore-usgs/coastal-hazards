@@ -45,6 +45,13 @@ $(document).ready(function() {
     $("#upload-baseline-btn").on("click", addBaseline);
     $("#calculate-transects-btn").on("click", calcTransects);
     $("#create-intersections-btn").on("click", makeDots);
+    $("#display-results-btn").on("click", displayResults);
+    
+    $('.nav-stacked>li>a').each(function(indexInArray, valueOfElement) { 
+        $(valueOfElement).on('click', function() {
+            switchImage(indexInArray);
+        })
+    })
     
     //Initialize the uploader
     var uploader = new qq.FineUploader({
