@@ -49,3 +49,11 @@ li.alert-error {
 .qq-uploader {
     width: 50%;
 }
+
+.nav-stacked li a img {
+    width : 95%;
+}
+
+.nav-stacked li.active a img {
+    width : 105%;
+}
