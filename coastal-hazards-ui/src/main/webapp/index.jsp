@@ -83,27 +83,30 @@
                     <div class="span4">
 						<div class="well tab-content">
 							<div class="tab-pane active" id="shoreline">
-								<!-- Button to trigger modal -->
 								<a href="#myModal" role="button" class="btn" data-toggle="modal">Upload A File</a>
-								<button id="upload-shorelines-btn">Display Shorelines</button>
+                                                                <button id="upload-shorelines-btn" title="Display Shorelines">Display Shorelines</button>
 							</div>
 							<div class="tab-pane" id="baseline">
-								<button id="upload-baseline-btn">Display Baseline</button>
+								<button id="upload-baseline-btn"  title="Display Baseline">Display Baseline</button>
 							</div>
 							<div class="tab-pane" id="transects">
-								<button id="calculate-transects-btn">Calculate Transects</button>
+								<button id="calculate-transects-btn"  title="Calculate Transects">Calculate Transects</button>
 							</div>
 							<div class="tab-pane" id="intersections">
-								<button id="create-intersections-btn">Show Intersections</button>
+								<button id="create-intersections-btn"  title="Show Intersections">Show Intersections</button>
+							</div>
+                                                    <div class="tab-pane" id="results">
+								<button id="results-btn"  title="Display Results">Display Results</button>
 							</div>
 						</div>
                     </div>
 					<div class="span1">
 						<ul class="nav nav-pills nav-stacked">
-							<li class="active"><a href="#shoreline" data-toggle="tab"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
-							<li><a href="#baseline" data-toggle="tab"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
-							<li><a href="#transects" data-toggle="tab"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
-							<li><a href="#intersections" data-toggle="tab"><img src="template/images/footer_graphic_takePride.jpg"/></a></li>
+							<li class="active"><a href="#shoreline" data-toggle="tab"><img src="images/workflow_figures/01_shorelines.png" title="Display Shorelines"/></a></li>
+							<li><a href="#baseline" data-toggle="tab"><img src="images/workflow_figures/02_baseline_future.png" title="Display Baseline"/></a></li>
+							<li><a href="#transects" data-toggle="tab"><img src="images/workflow_figures/03_transects_future.png" title="Calculate Transects"/></a></li>
+							<li><a href="#intersections" data-toggle="tab"><img src="images/workflow_figures/04_calculate_future.png" title="Show Intersections"/></a></li>
+							<li><a href="#results" data-toggle="tab"><img src="images/workflow_figures/05_results_future.png" title="Display Results"/></a></li>
 						</ul>
                     </div>
                 </div>

@@ -69,17 +69,18 @@ $(document).ready(function() {
             success: 'alert alert-success',
             fail: 'alert alert-error'
         },
-        debug: true
-    }).on('error', function(event, id, filename, reason) {
-        //TODO- do something
-        })
-    .on('complete', function(event, id, filename, responseJSON){
-        if (responseJSON.sucess != 'true') {
-            console.log('FAIL!!!')
-        } else {
-            console.log('well... ok');
+        debug: true,
+        onError : function(id, fileName, errorReason) {
+            //TODO- do something
+        },
+        onComplete : function(id, filename, responseJSON) {
+            if (responseJSON.sucess != 'true') {
+                console.warn('FAIL!!!')
+            } else {
+                console.log("file-token :" + responseJSON['file-token']);
+            }
         }
-        });
+    })
     
     $('#myModal-save-btn').click(function() {
         uploader.uploadStoredFiles();
