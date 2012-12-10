@@ -1,10 +1,30 @@
+var tempSession, permSession;
 $(document).ready(function() {
+    
+    // Set up sessions
+    tempSession = new Session('coastal-hazards', false);
+    permSession = new Session('coastal-hazards', true);
+    permSession.session.sessions = permSession.session.sessions ? permSession.session.sessions : [];
+    
+    if (permSession.session.sessions.length == 0) {
+        var newSession = {};
+        var randID = randomUUID();
+        newSession[randID] = {}; 
+        permSession.session.sessions.push(newSession);
+        permSession['current-session'] = randID;
+        permSession.save();
+    } 
+    tempSession.session = permSession[permSession['current-session']];
+    tempSession.save();
+    
     initializeLogging({
         LOG4JS_LOG_THRESHOLD : 'info'
     });
+    
     map = new OpenLayers.Map( 'map', {
         projection : "EPSG:900913"
-    } );
+    });
+    
     var layer = {};
     layer["phys"] = new OpenLayers.Layer.Google(
         "Google Physical",
@@ -63,7 +83,7 @@ $(document).ready(function() {
             allowedExtensions: ['zip']
         },
         multiple : false,
-        autoUpload: false,
+        autoUpload: true,
         text: {
             uploadButton: '<i class="icon-upload icon-white"></i>Upload A File'
         },
@@ -77,14 +97,15 @@ $(document).ready(function() {
             fail: 'alert alert-error'
         },
         debug: true,
-        onError : function(id, fileName, errorReason) {
-            //TODO- do something
-        },
-        onComplete : function(id, filename, responseJSON) {
-            if (responseJSON.sucess != 'true') {
-                console.warn('FAIL!!!')
-            } else {
-                console.log("file-token :" + responseJSON['file-token']);
+        callbacks: {
+            onComplete: function(id, fileName, responseJSON) {
+                if (responseJSON.success) {
+                    if (responseJSON.success != 'true') {
+                        console.warn('FAIL!!!')
+                    } else {
+                        console.log("file-token :" + responseJSON['file-token']);
+                    }
+                }
             }
         }
     })
