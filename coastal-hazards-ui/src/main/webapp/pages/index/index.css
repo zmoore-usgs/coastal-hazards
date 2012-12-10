@@ -51,9 +51,13 @@ li.alert-error {
 }
 
 .nav-stacked li a img {
-    width : 95%;
+    width : 70%;
 }
 
 .nav-stacked li.active a img {
     width : 105%;
+}
+
+.nav-pills.nav-stacked > li > a {
+    text-align: center;
 }

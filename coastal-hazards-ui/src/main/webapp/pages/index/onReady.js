@@ -1,34 +1,42 @@
+var tempSession, permSession;
 $(document).ready(function() {
+    
+    // Set up sessions
+    permSession = new Session('coastal-hazards', true);
+    permSession.session.sessions = permSession.session.sessions ? permSession.session.sessions : new Object();
+    
     initializeLogging({
         LOG4JS_LOG_THRESHOLD : 'info'
     });
+    
     map = new OpenLayers.Map( 'map', {
         projection : "EPSG:900913"
-    } );
+    });
+    
     var layer = {};
     layer["phys"] = new OpenLayers.Layer.Google(
-        "Google Physical",
-        {
-            type: google.maps.MapTypeId.TERRAIN, 
-            isBaseLayer: true
-        });
+    "Google Physical",
+    {
+        type: google.maps.MapTypeId.TERRAIN, 
+        isBaseLayer: true
+    });
     layer["sat"] = new OpenLayers.Layer.Google(
-        "Google Satellite",
-        {
-            type: google.maps.MapTypeId.SATELLITE, 
-            numZoomLevels: 20
-        });
+    "Google Satellite",
+    {
+        type: google.maps.MapTypeId.SATELLITE, 
+        numZoomLevels: 20
+    });
     layer["ghyb"] = new OpenLayers.Layer.Google(
-        "Google Hybrid",
-        {
-            type: google.maps.MapTypeId.HYBRID, 
-            numZoomLevels: 20
-        });
+    "Google Hybrid",
+    {
+        type: google.maps.MapTypeId.HYBRID, 
+        numZoomLevels: 20
+    });
     layer["gstreets"] = new OpenLayers.Layer.Google(
-        "Google Streets", // the default
-        {
-            numZoomLevels: 20
-        });
+    "Google Streets", // the default
+    {
+        numZoomLevels: 20
+    });
 	
     map.addLayer(layer["sat"]);
 	
@@ -63,28 +71,31 @@ $(document).ready(function() {
             allowedExtensions: ['zip']
         },
         multiple : false,
-        autoUpload: false,
+        autoUpload: true,
         text: {
             uploadButton: '<i class="icon-upload icon-white"></i>Upload A File'
         },
         template: '<div class="qq-uploader span12">' +
-        '<pre class="qq-upload-drop-area span12"><span>{dragZoneText}</span></pre>' +
-        '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
-        '<ul class="qq-upload-list" style="margin-top: 10px; text-align: center;"></ul>' +
-        '</div>',
+            '<pre class="qq-upload-drop-area span12"><span>{dragZoneText}</span></pre>' +
+            '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
+            '<ul class="qq-upload-list" style="margin-top: 10px; text-align: center;"></ul>' +
+            '</div>',
         classes: {
             success: 'alert alert-success',
             fail: 'alert alert-error'
         },
         debug: true,
-        onError : function(id, fileName, errorReason) {
-            //TODO- do something
-        },
-        onComplete : function(id, filename, responseJSON) {
-            if (responseJSON.sucess != 'true') {
-                console.warn('FAIL!!!')
-            } else {
-                console.log("file-token :" + responseJSON['file-token']);
+        callbacks: {
+            onComplete: function(id, fileName, responseJSON) {
+                if (responseJSON.success) {
+                    if (responseJSON.success != 'true') {
+                        console.warn('FAIL!!!')
+                    } else {
+                        console.log("file-token :" + responseJSON['file-token']);
+                        permSession.addFileToSession(responseJSON['file-token']);
+                        permSession.save();
+                    }
+                }
             }
         }
     })

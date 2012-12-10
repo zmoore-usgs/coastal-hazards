@@ -39,7 +39,7 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-		<jsp:include page="js/jquery-tablesorter/package.jsp">
+        <jsp:include page="js/jquery-tablesorter/package.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
@@ -47,7 +47,7 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-		<script src='http://maps.google.com/maps/api/js?v=3&sensor=false' type="text/javascript"></script>
+        <script src='http://maps.google.com/maps/api/js?v=3&sensor=false' type="text/javascript"></script>
         <jsp:include page="js/openlayers/openlayers.jsp">
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
@@ -60,7 +60,30 @@
             var CONFIG = {};
 			
             CONFIG.development = <%= development%>;
+            
+            JSON.stringify = JSON.stringify || function (obj) {
+                var t = typeof (obj);
+                if (t != "object" || obj === null) {
+                    // simple data type
+                    if (t == "string") obj = '"'+obj+'"';
+                    return String(obj);
+                }
+                else {
+                    // recurse array or object
+                    var n, v, json = [], arr = (obj && obj.constructor == Array);
+                    for (n in obj) {
+                        v = obj[n]; t = typeof(v);
+                        if (t == "string") v = '"'+v+'"';
+                        else if (t == "object" && v !== null) v = JSON.stringify(v);
+                        json.push((arr ? "" : '"' + n + '":') + String(v));
+                    }
+                    return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+                }
+            };
+
+            
         </script>
+        <script type="text/javascript" src="js/session/session.js"></script>
         <script type="text/javascript" src="pages/index/shorelines.js"></script>
         <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
@@ -81,33 +104,37 @@
                     <div class="span7">
                         <div id="map"></div></div>
                     <div class="span4">
-						<div class="well tab-content">
-							<div class="tab-pane active" id="shorelines">
-								<a href="#myModal" role="button" class="btn" data-toggle="modal">Upload A File</a>
-                                                                <button id="upload-shorelines-btn" title="Display Shorelines">Display Shorelines</button>
-							</div>
-							<div class="tab-pane" id="baseline">
-								<button id="upload-baseline-btn"  title="Display Baseline">Display Baseline</button>
-							</div>
-							<div class="tab-pane" id="transects">
-								<button id="calculate-transects-btn"  title="Calculate Transects">Calculate Transects</button>
-							</div>
-							<div class="tab-pane" id="intersections">
-								<button id="create-intersections-btn"  title="Show Intersections">Show Intersections</button>
-							</div>
-                                                    <div class="tab-pane" id="results">
-								<button id="display-results-btn"  title="Display Results">Display Results</button>
-							</div>
-						</div>
+                        <div class="well well-large tab-content">
+                            <div class="tab-pane active" id="shorelines">
+                                <div class="well">
+                                    <div id="bootstrapped-fine-uploader"></div>
+                                </div>
+                                <div class="well">
+                                    <button id="upload-shorelines-btn" title="Display Shorelines">Display Shorelines</button>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="baseline">
+                                <button id="upload-baseline-btn"  title="Display Baseline">Display Baseline</button>
+                            </div>
+                            <div class="tab-pane" id="transects">
+                                <button id="calculate-transects-btn"  title="Calculate Transects">Calculate Transects</button>
+                            </div>
+                            <div class="tab-pane" id="intersections">
+                                <button id="create-intersections-btn"  title="Show Intersections">Show Intersections</button>
+                            </div>
+                            <div class="tab-pane" id="results">
+                                <button id="display-results-btn"  title="Display Results">Display Results</button>
+                            </div>
+                        </div>
                     </div>
-					<div class="span1">
-						<ul class="nav nav-pills nav-stacked">
-							<li class="active"><a href="#shorelines" data-toggle="tab"><img id="shorelines_img" src="images/workflow_figures/shorelines.png" title="Display Shorelines"/></a></li>
-							<li><a href="#baseline" data-toggle="tab"><img id="baseline_img" src="images/workflow_figures/baseline_future.png" title="Display Baseline"/></a></li>
-							<li><a href="#transects" data-toggle="tab"><img id="transects_img" src="images/workflow_figures/transects_future.png" title="Calculate Transects"/></a></li>
-							<li><a href="#intersections" data-toggle="tab"><img id="intersections_img" src="images/workflow_figures/intersections_future.png" title="Show Intersections"/></a></li>
-							<li><a href="#results" data-toggle="tab"><img id="results_img" src="images/workflow_figures/results_future.png" title="Display Results"/></a></li>
-						</ul>
+                    <div class="span1">
+                        <ul class="nav nav-pills nav-stacked">
+                            <li class="active"><a href="#shorelines" data-toggle="tab"><img id="shorelines_img" src="images/workflow_figures/shorelines.png" title="Display Shorelines"/></a></li>
+                            <li><a href="#baseline" data-toggle="tab"><img id="baseline_img" src="images/workflow_figures/baseline_future.png" title="Display Baseline"/></a></li>
+                            <li><a href="#transects" data-toggle="tab"><img id="transects_img" src="images/workflow_figures/transects_future.png" title="Calculate Transects"/></a></li>
+                            <li><a href="#intersections" data-toggle="tab"><img id="intersections_img" src="images/workflow_figures/intersections_future.png" title="Show Intersections"/></a></li>
+                            <li><a href="#results" data-toggle="tab"><img id="results_img" src="images/workflow_figures/results_future.png" title="Display Results"/></a></li>
+                        </ul>
                     </div>
                 </div>
                 <div class="row-fluid">
@@ -118,20 +145,6 @@
 
                     </div>
                 </div>
-            </div>
-        </div>
-        <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel">Upload Shapefile</h3>
-            </div>
-            <div class="modal-body">
-                <p>Ipsem Lorum</p>
-                 <div id="bootstrapped-fine-uploader"></div>
-            </div>
-            <div class="modal-footer">
-                <button id="myModal-save-btn"class="btn btn-primary">Save changes</button>
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
             </div>
         </div>
 
