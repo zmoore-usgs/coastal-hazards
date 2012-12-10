@@ -5,8 +5,19 @@ var Session = function(name, isPerm) {
     me.sessionObject = isPerm ? localStorage : sessionStorage;
     me.session =  $.parseJSON(me.sessionObject.getItem(me.name));
     
-    if (!me.session) {
-        me.session = {};
+    // Initialize the session object
+    if (!me.session && isPerm) {
+        var newSession = {};
+        var randID = randomUUID();
+
+        newSession[randID] = new Object(); 
+        
+        me.session = { sessions : {} }
+        me.session['sessions'][randID] = newSession;
+        me.session['sessions'][randID].files = [];
+        me.session['current-session'] = new Object();
+        me.session['current-session']['key'] = randID;
+        me.session['current-session']['session'] = me.session['sessions'][randID];
         me.sessionObject.setItem(me.name, JSON.stringify(me.session));
     }
 
@@ -16,6 +27,18 @@ var Session = function(name, isPerm) {
         },
         load : function(name) {
             $.parseJSON(me.sessionObject.getItem(me.name));
+        },
+        addFileToSession : function(token) {
+            me.session.sessions[me.getCurrentSessionKey()].files.push(token);
+            me.setCurrentSession(me.getCurrentSessionKey());
+        },
+        getCurrentSessionKey : function() {
+            return me.session['current-session'].key;
+        },
+        setCurrentSession : function(key) {
+            me.session['current-session']['key'] = key;
+            me.session['current-session']['session'] = me.session['sessions'][key];
+            return me.session['current-session'];
         }
     });
 }

@@ -5,17 +5,6 @@ $(document).ready(function() {
     permSession = new Session('coastal-hazards', true);
     permSession.session.sessions = permSession.session.sessions ? permSession.session.sessions : new Object();
     
-    if (jQuery.isEmptyObject(permSession.session.sessions)) {
-        var newSession = {};
-        var randID = randomUUID();
-        newSession[randID] = new Object(); 
-        permSession.session['sessions'][randID] = newSession;
-        permSession.session['current-session'] = new Object();
-        permSession.session['current-session']['key'] = randID;
-        permSession.session['current-session']['session'] = newSession[randID];
-        permSession.save();
-    } 
-    
     initializeLogging({
         LOG4JS_LOG_THRESHOLD : 'info'
     });
@@ -103,6 +92,8 @@ $(document).ready(function() {
                         console.warn('FAIL!!!')
                     } else {
                         console.log("file-token :" + responseJSON['file-token']);
+                        permSession.addFileToSession(responseJSON['file-token']);
+                        permSession.save();
                     }
                 }
             }
