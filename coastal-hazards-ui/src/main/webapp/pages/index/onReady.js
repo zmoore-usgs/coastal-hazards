@@ -2,20 +2,19 @@ var tempSession, permSession;
 $(document).ready(function() {
     
     // Set up sessions
-    tempSession = new Session('coastal-hazards', false);
     permSession = new Session('coastal-hazards', true);
-    permSession.session.sessions = permSession.session.sessions ? permSession.session.sessions : [];
+    permSession.session.sessions = permSession.session.sessions ? permSession.session.sessions : new Object();
     
-    if (permSession.session.sessions.length == 0) {
+    if (jQuery.isEmptyObject(permSession.session.sessions)) {
         var newSession = {};
         var randID = randomUUID();
-        newSession[randID] = {}; 
-        permSession.session.sessions.push(newSession);
-        permSession['current-session'] = randID;
+        newSession[randID] = new Object(); 
+        permSession.session['sessions'][randID] = newSession;
+        permSession.session['current-session'] = new Object();
+        permSession.session['current-session']['key'] = randID;
+        permSession.session['current-session']['session'] = newSession[randID];
         permSession.save();
     } 
-    tempSession.session = permSession[permSession['current-session']];
-    tempSession.save();
     
     initializeLogging({
         LOG4JS_LOG_THRESHOLD : 'info'
@@ -27,28 +26,28 @@ $(document).ready(function() {
     
     var layer = {};
     layer["phys"] = new OpenLayers.Layer.Google(
-        "Google Physical",
-        {
-            type: google.maps.MapTypeId.TERRAIN, 
-            isBaseLayer: true
-        });
+    "Google Physical",
+    {
+        type: google.maps.MapTypeId.TERRAIN, 
+        isBaseLayer: true
+    });
     layer["sat"] = new OpenLayers.Layer.Google(
-        "Google Satellite",
-        {
-            type: google.maps.MapTypeId.SATELLITE, 
-            numZoomLevels: 20
-        });
+    "Google Satellite",
+    {
+        type: google.maps.MapTypeId.SATELLITE, 
+        numZoomLevels: 20
+    });
     layer["ghyb"] = new OpenLayers.Layer.Google(
-        "Google Hybrid",
-        {
-            type: google.maps.MapTypeId.HYBRID, 
-            numZoomLevels: 20
-        });
+    "Google Hybrid",
+    {
+        type: google.maps.MapTypeId.HYBRID, 
+        numZoomLevels: 20
+    });
     layer["gstreets"] = new OpenLayers.Layer.Google(
-        "Google Streets", // the default
-        {
-            numZoomLevels: 20
-        });
+    "Google Streets", // the default
+    {
+        numZoomLevels: 20
+    });
 	
     map.addLayer(layer["sat"]);
 	
@@ -88,10 +87,10 @@ $(document).ready(function() {
             uploadButton: '<i class="icon-upload icon-white"></i>Upload A File'
         },
         template: '<div class="qq-uploader span12">' +
-        '<pre class="qq-upload-drop-area span12"><span>{dragZoneText}</span></pre>' +
-        '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
-        '<ul class="qq-upload-list" style="margin-top: 10px; text-align: center;"></ul>' +
-        '</div>',
+            '<pre class="qq-upload-drop-area span12"><span>{dragZoneText}</span></pre>' +
+            '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
+            '<ul class="qq-upload-list" style="margin-top: 10px; text-align: center;"></ul>' +
+            '</div>',
         classes: {
             success: 'alert alert-success',
             fail: 'alert alert-error'

@@ -7,7 +7,7 @@ var Session = function(name, isPerm) {
     
     if (!me.session) {
         me.session = {};
-        me.sessionObject.setItem(me.name, me.session);
+        me.sessionObject.setItem(me.name, JSON.stringify(me.session));
     }
 
     return $.extend(me, {
@@ -15,11 +15,12 @@ var Session = function(name, isPerm) {
             me.sessionObject.setItem(me.name, JSON.stringify(me.session))
         },
         load : function(name) {
-            me.sessionObject.getItem(me.name);
+            $.parseJSON(me.sessionObject.getItem(me.name));
         }
     });
- 
 }
+
+
 
 function randomGUID() {
     var S4 = function() {
