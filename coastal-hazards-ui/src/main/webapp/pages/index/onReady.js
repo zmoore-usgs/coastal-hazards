@@ -63,7 +63,7 @@ $(document).ready(function() {
     
     //Initialize the uploader
     var uploader = new qq.FineUploader({
-        element: document.getElementById('bootstrapped-fine-uploader'),
+        element: document.getElementById('shoreline-uploader'),
         request: {
             endpoint: 'server/upload'
         },
@@ -75,8 +75,8 @@ $(document).ready(function() {
         text: {
             uploadButton: '<i class="icon-upload icon-white"></i>Upload A File'
         },
-        template: '<div class="qq-uploader span12">' +
-            '<pre class="qq-upload-drop-area span12"><span>{dragZoneText}</span></pre>' +
+        template: '<div class="qq-uploader span4">' +
+            '<pre class="qq-upload-drop-area span4"><span>{dragZoneText}</span></pre>' +
             '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
             '<ul class="qq-upload-list" style="margin-top: 10px; text-align: center;"></ul>' +
             '</div>',
@@ -92,8 +92,9 @@ $(document).ready(function() {
                         console.warn('FAIL!!!')
                     } else {
                         console.log("file-token :" + responseJSON['file-token']);
-                        permSession.addFileToSession(responseJSON['file-token']);
+                        permSession.addFileToSession({ token : responseJSON['file-token'], name : responseJSON['file-name'] });
                         permSession.save();
+                        var geoserver = new Geoserver();
                     }
                 }
             }

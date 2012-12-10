@@ -107,7 +107,7 @@
                         <div class="well well-large tab-content">
                             <div class="tab-pane active" id="shorelines">
                                 <div class="well">
-                                    <div id="bootstrapped-fine-uploader"></div>
+                                    <div id="shoreline-uploader"></div>
                                 </div>
                                 <div class="well">
                                     <button id="upload-shorelines-btn" title="Display Shorelines">Display Shorelines</button>

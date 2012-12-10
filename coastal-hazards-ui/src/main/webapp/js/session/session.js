@@ -28,8 +28,11 @@ var Session = function(name, isPerm) {
         load : function(name) {
             $.parseJSON(me.sessionObject.getItem(me.name));
         },
-        addFileToSession : function(token) {
-            me.session.sessions[me.getCurrentSessionKey()].files.push(token);
+        addFileToSession : function(params) {
+            me.session.sessions[me.getCurrentSessionKey()].files.push({ 
+                token : params.token, 
+                name : params.name
+            });
             me.setCurrentSession(me.getCurrentSessionKey());
         },
         getCurrentSessionKey : function() {
