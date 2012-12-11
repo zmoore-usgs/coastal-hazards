@@ -98,6 +98,8 @@ public class UploadService extends HttpServlet {
         responseMap.put("file-token", destinationDirectoryChild);
         responseMap.put("file-checksum", Long.toString(FileUtils.checksumCRC32(uploadDestinationFile)));
         responseMap.put("file-size", Long.toString(FileUtils.sizeOf(uploadDestinationFile)));
+        responseMap.put("file-name", fileName);
+        
         RequestResponseHelper.sendSuccessResponse(response, responseMap);
     }
 }

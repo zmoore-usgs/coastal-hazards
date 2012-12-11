@@ -84,6 +84,7 @@
             
         </script>
         <script type="text/javascript" src="js/session/session.js"></script>
+        <script type="text/javascript" src="js/geoserver/geoserver.js"></script>
         <script type="text/javascript" src="pages/index/shorelines.js"></script>
         <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
@@ -107,7 +108,7 @@
                         <div class="well well-large tab-content">
                             <div class="tab-pane active" id="shorelines">
                                 <div class="well">
-                                    <div id="bootstrapped-fine-uploader"></div>
+                                    <div id="shoreline-uploader"></div>
                                 </div>
                                 <div class="well">
                                     <button id="upload-shorelines-btn" title="Display Shorelines">Display Shorelines</button>

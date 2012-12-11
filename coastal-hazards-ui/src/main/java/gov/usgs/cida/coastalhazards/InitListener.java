@@ -50,7 +50,7 @@ public class InitListener implements ServletContextListener {
             createDir(uploadDirFile);
         }
         
-        // TODO- Create file cleanup service for work directory
+        // TODO- Create file cleanup service for work and upload directories
 
         LOG.info("Coastal Hazards UI Application Initialized.");
     }
