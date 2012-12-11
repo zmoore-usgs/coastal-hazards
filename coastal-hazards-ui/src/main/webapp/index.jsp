@@ -15,6 +15,7 @@
         }
     }
     boolean development = Boolean.parseBoolean(props.getProperty("${project.artifactId}.development"));
+    String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
 %>
 
 <html>
@@ -60,6 +61,7 @@
             var CONFIG = {};
 			
             CONFIG.development = <%= development%>;
+            CONFIG.geoServerEndpoint = '<%= geoserverEndpoint %>';
             
             JSON.stringify = JSON.stringify || function (obj) {
                 var t = typeof (obj);
