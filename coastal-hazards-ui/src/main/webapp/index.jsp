@@ -84,6 +84,7 @@
             
         </script>
         <script type="text/javascript" src="js/session/session.js"></script>
+        <script type="text/javascript" src="js/geoserver/geoserver.js"></script>
         <script type="text/javascript" src="pages/index/shorelines.js"></script>
         <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />

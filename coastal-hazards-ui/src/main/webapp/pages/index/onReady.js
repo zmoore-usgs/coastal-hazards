@@ -95,6 +95,10 @@ $(document).ready(function() {
                         permSession.addFileToSession({ token : responseJSON['file-token'], name : responseJSON['file-name'] });
                         permSession.save();
                         var geoserver = new Geoserver();
+                        var importName = permSession.getCurrentSessionKey() + '_shorelines_' + responseJSON['file-name'].split('.')[0];
+                        geoserver.importFile(responseJSON['file-token'], importName, 'ch-input', function(data) {
+                            var a = 1;
+                        });
                     }
                 }
             }
