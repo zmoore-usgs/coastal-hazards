@@ -2,8 +2,8 @@ var Geoserver = function(endpoint) {
     var me = (this === window) ? {} : this;
     
     me.importEndpoint = 'service/import'
-    me.geoserverEndpoint = CONFIG.geoServerEndpoint;
-    me.wfsGetCapsCall = /*CONFIG.geoServerEndpoint*/ 'geoserver' + '/wfs?service=wfs&version=1.1.0&request=GetCapabilities'
+    me.geoserverEndpoint = endpoint ? endpoint : CONFIG.geoServerEndpoint;
+    me.wfsGetCapsCall = /*CONFIG.geoServerEndpoint*/ 'geoserver/wfs?service=wfs&version=1.1.0&request=GetCapabilities'
     
     me.capabilities = null;
     

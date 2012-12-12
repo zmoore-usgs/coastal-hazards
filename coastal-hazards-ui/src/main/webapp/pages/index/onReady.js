@@ -1,65 +1,29 @@
-var tempSession, permSession;
+// TODO - Add current user session to temp session and use temp session as the work session and persist temp session to permSession at intervals
+var tempSession, permSession, geoserver, map, ui, sld;
+
 $(document).ready(function() {
     
-    // Set up sessions
-    permSession = new Session('coastal-hazards', true);
-    permSession.session.sessions = permSession.session.sessions ? permSession.session.sessions : new Object();
-    
     initializeLogging({
-        LOG4JS_LOG_THRESHOLD : 'info'
+        LOG4JS_LOG_THRESHOLD : CONFIG.development ? 'debug' : 'info'
     });
     
-    map = new OpenLayers.Map( 'map', {
-        projection : "EPSG:900913"
-    });
+        
+    ui = new UI();
+    map = new Map();
+    geoserver = new Geoserver();
     
-    var layer = {};
-    layer["phys"] = new OpenLayers.Layer.Google(
-        "Google Physical",
-        {
-            type: google.maps.MapTypeId.TERRAIN, 
-            isBaseLayer: true
-        });
-    layer["sat"] = new OpenLayers.Layer.Google(
-        "Google Satellite",
-        {
-            type: google.maps.MapTypeId.SATELLITE, 
-            numZoomLevels: 20
-        });
-    layer["ghyb"] = new OpenLayers.Layer.Google(
-        "Google Hybrid",
-        {
-            type: google.maps.MapTypeId.HYBRID, 
-            numZoomLevels: 20
-        });
-    layer["gstreets"] = new OpenLayers.Layer.Google(
-        "Google Streets", // the default
-        {
-            numZoomLevels: 20
-        });
+    // Set up sessions
+    tempSession = new Session('coastal-hazards', false);
+    permSession = new Session('coastal-hazards', true);
+    LOG.info('Sessions created. User session list has ' + Object.keys(permSession.session.sessions).length + ' sessions.')
+    LOG.info('Current session key: ' + permSession.getCurrentSessionKey());
 	
-    map.addLayer(layer["sat"]);
-	
-    map.zoomToMaxExtent();
-	
-    map.addControl(new OpenLayers.Control.MousePosition());
-	
-    OpenLayers.Request.GET({
-        url: "pages/index/sld-shorelines.xml",
-        success: complete
-    });
-	
-    $("#upload-shorelines-btn").on("click", addShorelines);
-    $("#upload-baseline-btn").on("click", addBaseline);
-    $("#calculate-transects-btn").on("click", calcTransects);
-    $("#create-intersections-btn").on("click", makeDots);
-    $("#display-results-btn").on("click", displayResults);
+    $("#upload-shorelines-btn").on("click", Shorelines.addShorelines);
+    $("#upload-baseline-btn").on("click", Baseline.addBaseline);
+    $("#calculate-transects-btn").on("click", Transects.calcTransects);
+    $("#create-intersections-btn").on("click", Intersections.calcIntersections);
+    $("#display-results-btn").on("click", function() { /* not yet implemented */});
     
-    $('.nav-stacked>li>a').each(function(indexInArray, valueOfElement) { 
-        $(valueOfElement).on('click', function() {
-            switchImage(indexInArray);
-        })
-    })
     
     //Initialize the uploader
     var uploader = new qq.FineUploader({
@@ -89,9 +53,9 @@ $(document).ready(function() {
             onComplete: function(id, fileName, responseJSON) {
                 if (responseJSON.success) {
                     if (responseJSON.success != 'true') {
-                        console.warn('FAIL!!!')
+                        LOG.info('FAIL!!!')
                     } else {
-                        console.log("file-token :" + responseJSON['file-token']);
+                        LOG.info("file-token :" + responseJSON['file-token']);
                         
                         permSession.addFileToSession({
                             token : responseJSON['file-token'], 
@@ -112,8 +76,8 @@ $(document).ready(function() {
                                         $(caps.featureTypeList.featureTypes).each(function(index, item, arr) { 
                                             var title = item.title;
                                             var shortenedTitle = title.has(permSession.getCurrentSessionKey()) ? 
-                                                title.remove(permSession.getCurrentSessionKey() + '_') : 
-                                                title;
+                                            title.remove(permSession.getCurrentSessionKey() + '_') : 
+                                            title;
                                             if (title.has(permSession.getCurrentSessionKey()));
                                             if (title.substr(title.lastIndexOf('_') + 1) == 'shorelines') {
                                                 $('#shorelines-list')
