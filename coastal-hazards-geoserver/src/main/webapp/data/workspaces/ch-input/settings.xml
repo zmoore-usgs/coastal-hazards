@@ -1,0 +1,21 @@
+<settings>
+  <workspace>
+    <id>WorkspaceInfoImpl--ab67a5e:13b5423ea59:-7fe5</id>
+    <name>ch-input</name>
+  </workspace>
+  <contact>
+    <id>contact</id>
+    <addressCity>Madison</addressCity>
+    <addressCountry>WI</addressCountry>
+    <addressType>Work</addressType>
+    <contactEmail>isuftin@usgs.gov</contactEmail>
+    <contactOrganization>CIDA</contactOrganization>
+    <contactPerson>Ivan Suftin</contactPerson>
+    <contactPosition>Softare Engineer</contactPosition>
+  </contact>
+  <charset>UTF-8</charset>
+  <numDecimals>8</numDecimals>
+  <onlineResource>http://geoserver.org</onlineResource>
+  <verbose>false</verbose>
+  <verboseExceptions>true</verboseExceptions>
+</settings>
