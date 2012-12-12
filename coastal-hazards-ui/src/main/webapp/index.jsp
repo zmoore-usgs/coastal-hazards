@@ -61,7 +61,7 @@
             var CONFIG = {};
 			
             CONFIG.development = <%= development%>;
-            CONFIG.geoServerEndpoint = '<%= geoserverEndpoint %>';
+            CONFIG.geoServerEndpoint = '<%= geoserverEndpoint%>';
             
             JSON.stringify = JSON.stringify || function (obj) {
                 var t = typeof (obj);
@@ -110,11 +110,9 @@
                         <div class="well well-large tab-content">
                             <div class="tab-pane active" id="shorelines">
                                 <div class="well">
-                                    <div id="shoreline-uploader"></div>
+                                    <select id="shorelines-list" multiple="multiple" style="width: 100%;"></select>
                                 </div>
-                                <div class="well">
-                                    <button id="upload-shorelines-btn" title="Display Shorelines">Display Shorelines</button>
-                                </div>
+                                <div id="shoreline-uploader"></div>
                             </div>
                             <div class="tab-pane" id="baseline">
                                 <button id="upload-baseline-btn"  title="Display Baseline">Display Baseline</button>
