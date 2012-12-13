@@ -4,7 +4,6 @@ var Shorelines = {
     addShorelines : function(args) {
         var layers = args.layers;
         var layersArray = [];
-        var extents = [];
         $(layers).each(function(i,e) {
             var featureName = e.featureName;
             var ns = e.featureNamespace;
