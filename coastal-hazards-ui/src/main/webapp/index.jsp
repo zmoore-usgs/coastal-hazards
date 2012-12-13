@@ -15,6 +15,7 @@
         }
     }
     boolean development = Boolean.parseBoolean(props.getProperty("${project.artifactId}.development"));
+    String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
 %>
 
 <html>
@@ -55,11 +56,19 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+        <!-- TODO - Modularize this -->
+        <script type="text/javascript" src="js/jquery-fineuploader/jquery.fineuploader-3.0.js"></script>
+        <link type="text/css" rel="stylesheet" href="js/jquery-fineuploader/fineuploader.css" />
 
         <script type="text/javascript">
             var CONFIG = {};
 			
             CONFIG.development = <%= development%>;
+            CONFIG.geoServerEndpoint = '<%= geoserverEndpoint%>';
+            CONFIG.namespace = new Object();
+            CONFIG.namespace.sample = 'gov.usgs.cida.ch.sample';
+            CONFIG.namespace.input = 'gov.usgs.cida.ch.input';
+            CONFIG.namespace.output = 'gov.usgs.cida.ch.output';
             
             JSON.stringify = JSON.stringify || function (obj) {
                 var t = typeof (obj);
@@ -83,14 +92,21 @@
 
             
         </script>
+        <script type="text/javascript" src="js/ui/ui.js"></script>
+        <script type="text/javascript" src="js/util/util.js"></script>
+        <script type="text/javascript" src="js/map/map.js"></script>
         <script type="text/javascript" src="js/session/session.js"></script>
         <script type="text/javascript" src="js/geoserver/geoserver.js"></script>
-        <script type="text/javascript" src="pages/index/shorelines.js"></script>
+        <script type="text/javascript" src="js/stages/shorelines.js"></script>
+        <script type="text/javascript" src="js/stages/baseline.js"></script>
+        <script type="text/javascript" src="js/stages/transects.js"></script>
+        <script type="text/javascript" src="js/stages/intersections.js"></script>
+        <!--<script type="text/javascript" src="pages/index/shorelines.js"></script>-->
         <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
+
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
+
         <script type="text/javascript" src="pages/index/onReady.js"></script>
-        <script type="text/javascript" src="js/jquery-fineuploader/jquery.fineuploader-3.0.js"></script>
-        <link type="text/css" rel="stylesheet" href="js/jquery-fineuploader/fineuploader.css" />
     </head>
     <body>
         <jsp:include page="template/USGSHeader.jsp">
@@ -103,19 +119,21 @@
             <div class="container-fluid">
                 <div class="row-fluid">
                     <div class="span7">
-                        <div id="map"></div></div>
+                        <div id="map"></div>
+                    </div>
                     <div class="span4">
-                        <div class="well well-large tab-content">
+                        <div id="toolbox-content" class="well well-large tab-content">
                             <div class="tab-pane active" id="shorelines">
-                                <div class="well">
-                                    <div id="shoreline-uploader"></div>
+                                <div class="well" id="shorelines-well">
+                                    <select id="shorelines-list" multiple="multiple" style="width: 100%;"></select>
                                 </div>
-                                <div class="well">
-                                    <button id="upload-shorelines-btn" title="Display Shorelines">Display Shorelines</button>
-                                </div>
+                                <div id="shoreline-uploader"></div>
                             </div>
                             <div class="tab-pane" id="baseline">
-                                <button id="upload-baseline-btn"  title="Display Baseline">Display Baseline</button>
+                                <div class="well">
+                                    <select id="baseline-list" style="width: 100%;"></select>
+                                </div>
+                                <div id="baseline-uploader"></div>
                             </div>
                             <div class="tab-pane" id="transects">
                                 <button id="calculate-transects-btn"  title="Calculate Transects">Calculate Transects</button>

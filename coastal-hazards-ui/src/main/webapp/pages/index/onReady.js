@@ -1,112 +1,37 @@
-var tempSession, permSession;
+// TODO - Add current user session to temp session and use temp session as the work session and persist temp session to permSession at intervals
+var tempSession, permSession, geoserver, map, ui, sld;
+
 $(document).ready(function() {
     
-    // Set up sessions
-    permSession = new Session('coastal-hazards', true);
-    permSession.session.sessions = permSession.session.sessions ? permSession.session.sessions : new Object();
-    
     initializeLogging({
-        LOG4JS_LOG_THRESHOLD : 'info'
+        LOG4JS_LOG_THRESHOLD : CONFIG.development ? 'debug' : 'info'
     });
     
-    map = new OpenLayers.Map( 'map', {
-        projection : "EPSG:900913"
-    });
+    Shorelines.initializeUploader();
+        
+    ui = new UI();
+    map = new Map();
+    geoserver = new Geoserver();
     
-    var layer = {};
-    layer["phys"] = new OpenLayers.Layer.Google(
-    "Google Physical",
-    {
-        type: google.maps.MapTypeId.TERRAIN, 
-        isBaseLayer: true
-    });
-    layer["sat"] = new OpenLayers.Layer.Google(
-    "Google Satellite",
-    {
-        type: google.maps.MapTypeId.SATELLITE, 
-        numZoomLevels: 20
-    });
-    layer["ghyb"] = new OpenLayers.Layer.Google(
-    "Google Hybrid",
-    {
-        type: google.maps.MapTypeId.HYBRID, 
-        numZoomLevels: 20
-    });
-    layer["gstreets"] = new OpenLayers.Layer.Google(
-    "Google Streets", // the default
-    {
-        numZoomLevels: 20
-    });
-	
-    map.addLayer(layer["sat"]);
-	
-    map.zoomToMaxExtent();
-	
-    map.addControl(new OpenLayers.Control.MousePosition());
-	
-    OpenLayers.Request.GET({
-        url: "pages/index/sld-shorelines.xml",
-        success: complete
-    });
-	
-    $("#upload-shorelines-btn").on("click", addShorelines);
-    $("#upload-baseline-btn").on("click", addBaseline);
-    $("#calculate-transects-btn").on("click", calcTransects);
-    $("#create-intersections-btn").on("click", makeDots);
-    $("#display-results-btn").on("click", displayResults);
+    // Set up sessions
+    tempSession = new Session('coastal-hazards', false);
+    permSession = new Session('coastal-hazards', true);
     
-    $('.nav-stacked>li>a').each(function(indexInArray, valueOfElement) { 
-        $(valueOfElement).on('click', function() {
-            switchImage(indexInArray);
-        })
-    })
+    LOG.info('Sessions created. User session list has ' + Object.keys(permSession.session.sessions).length + ' sessions.')
+    LOG.info('Current session key: ' + permSession.getCurrentSessionKey());
+	
+    $("#upload-shorelines-btn").on("click", Shorelines.addShorelines);
+    $("#upload-baseline-btn").on("click", Baseline.addBaseline);
+    $("#calculate-transects-btn").on("click", Transects.calcTransects);
+    $("#create-intersections-btn").on("click", Intersections.calcIntersections);
+    $("#display-results-btn").on("click", function() { /* not yet implemented */});
     
-    //Initialize the uploader
-    var uploader = new qq.FineUploader({
-        element: document.getElementById('shoreline-uploader'),
-        request: {
-            endpoint: 'server/upload'
-        },
-        validation: {
-            allowedExtensions: ['zip']
-        },
-        multiple : false,
-        autoUpload: true,
-        text: {
-            uploadButton: '<i class="icon-upload icon-white"></i>Upload A File'
-        },
-        template: '<div class="qq-uploader span4">' +
-            '<pre class="qq-upload-drop-area span4"><span>{dragZoneText}</span></pre>' +
-            '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
-            '<ul class="qq-upload-list" style="margin-top: 10px; text-align: center;"></ul>' +
-            '</div>',
-        classes: {
-            success: 'alert alert-success',
-            fail: 'alert alert-error'
-        },
-        debug: true,
-        callbacks: {
-            onComplete: function(id, fileName, responseJSON) {
-                if (responseJSON.success) {
-                    if (responseJSON.success != 'true') {
-                        console.warn('FAIL!!!')
-                    } else {
-                        console.log("file-token :" + responseJSON['file-token']);
-                        permSession.addFileToSession({ token : responseJSON['file-token'], name : responseJSON['file-name'] });
-                        permSession.save();
-                        var geoserver = new Geoserver();
-                        var importName = permSession.getCurrentSessionKey() + '_shorelines_' + responseJSON['file-name'].split('.')[0];
-                        geoserver.importFile(responseJSON['file-token'], importName, 'ch-input', function(data) {
-                            var a = 1;
-                        });
-                    }
-                }
-            }
+    geoserver.getCapabilities({
+        callbacks : [
+        function(caps) {
+            Shorelines.populateFeaturesList(caps);
+            Baseline.populateFeaturesList(caps);
         }
+        ]
     })
-    
-    $('#myModal-save-btn').click(function() {
-        uploader.uploadStoredFiles();
-    });
-    
 })
