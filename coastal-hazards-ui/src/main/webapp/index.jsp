@@ -103,9 +103,9 @@
         <script type="text/javascript" src="js/stages/intersections.js"></script>
         <!--<script type="text/javascript" src="pages/index/shorelines.js"></script>-->
         <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
-        
+
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
-        
+
         <script type="text/javascript" src="pages/index/onReady.js"></script>
     </head>
     <body>
@@ -119,11 +119,12 @@
             <div class="container-fluid">
                 <div class="row-fluid">
                     <div class="span7">
-                        <div id="map"></div></div>
+                        <div id="map"></div>
+                    </div>
                     <div class="span4">
-                        <div class="well well-large tab-content">
+                        <div id="toolbox-content" class="well well-large tab-content">
                             <div class="tab-pane active" id="shorelines">
-                                <div class="well">
+                                <div class="well" id="shorelines-well">
                                     <select id="shorelines-list" multiple="multiple" style="width: 100%;"></select>
                                 </div>
                                 <div id="shoreline-uploader"></div>

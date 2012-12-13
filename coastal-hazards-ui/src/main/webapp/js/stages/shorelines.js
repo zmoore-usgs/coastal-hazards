@@ -51,7 +51,7 @@ var Shorelines = {
             };
         };
 	
-        var layer = new OpenLayers.Layer.Vector("WFS2", {
+        var layer = new OpenLayers.Layer.Vector(featureName, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
                 url:  "geoserver/sample/wfs",
@@ -91,6 +91,14 @@ var Shorelines = {
         }
         
         $('#shorelines-list').change(function(index, option) {
+            
+            $("#shorelines-list option:not(:selected)").each(function (index, option) {
+                var featureType = geoserver.capabilities.featureTypeList.featureTypes.find(function(featureType) {
+                    return featureType.name === option.value
+                })
+                map.removeLayerByName(featureType.name);
+            });
+            
             $("#shorelines-list option:selected").each(function (index, option) {
                 var featureType = geoserver.capabilities.featureTypeList.featureTypes.find(function(featureType) {
                     return featureType.name === option.value

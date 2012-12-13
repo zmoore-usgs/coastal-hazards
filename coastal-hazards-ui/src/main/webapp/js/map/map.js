@@ -47,6 +47,17 @@ var Map = function() {
     return $.extend(me, {
         getMap : function() {
             return me.map;
+        },
+        removeLayerByName : function(featureName) {
+            var layer = me.map.getLayersByName(featureName) || [];
+            if (layer.length) {
+                me.map.removeLayer(layer[0]);
+            }
+        },
+        removeLayersByName : function(featureNames) {
+            $(featureNames).each(function(index, fn) {
+                me.removeLayerByName(fn);
+            })
         }
     });
 }
