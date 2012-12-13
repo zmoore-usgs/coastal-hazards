@@ -23,25 +23,30 @@ var Shorelines = {
         
         // After the last layer is loaded, get the combined bounds for all the layers added
         var lastLayer =  layersArray.last();
-        
-        lastLayer.events.register("loadend", {
-            layers : layersArray
-        }, function(args) {
-            args.object.events.un({'loadend' : args.object.events.listeners.loadend[0].func, scope : args.object}); // Remove the loadend hook from this layer. Was only needed once
-            var map = args.object.map;
-            var boundsList = [];
-            $(this.layers).each(function(index, item) {
-                if (item.map) { // Double check that the layer is part of the map
-                    boundsList.push(map.getLayersByName(item.name)[0].getDataExtent())
-                }
-            })
-            var bounds = new OpenLayers.Bounds();
-            $(boundsList).each(function(i,bound){
-                bounds.extend(bound);
-            })
-            map.zoomToExtent(bounds, true);
+        // Remove the loadend hook from this layer. Was only needed once
+        var loadend = function(args) {
+            args.object.events.un({
+                'loadend' : this.loadend, 
+                scope : args.object
+            }); 
+        }
+        var map = args.object.map;
+        var boundsList = [];
+        $(this.layers).each(function(index, item) {
+            if (item.map) { // Double check that the layer is part of the map
+                boundsList.push(map.getLayersByName(item.name)[0].getDataExtent())
+            }
+        })
+        var bounds = new OpenLayers.Bounds();
+        $(boundsList).each(function(i,bound){
+            bounds.extend(bound);
+        })
+        map.zoomToExtent(bounds, true);
 
-        });
+        lastLayer.events.register("loadend", {
+            layers : layersArray,
+            loadend : loadend
+        }, loadend);
         
         map.getMap().addLayers(layersArray);
         
@@ -144,9 +149,11 @@ var Shorelines = {
                     featureNamespace : featureType.featureNS
                 })
             });
-            Shorelines.addShorelines({
-                layers : layerInfos
-            });
+            if (layerInfos.length) {
+                Shorelines.addShorelines({
+                    layers : layerInfos
+                });
+            }
         }) 
     },
     initializeUploader : function() {
