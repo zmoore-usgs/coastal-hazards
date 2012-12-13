@@ -1,7 +1,7 @@
 // TODO - Back end and front-end verification for uploaded shapefiles
 
 var Shorelines = {
-    addShorelines : function() {
+    addShorelines : function(featureName, featureNamespace) {
         var coloredShorelines = Object.extended({});
 	
         var colorFeatures = function(divId) {
@@ -51,35 +51,55 @@ var Shorelines = {
             };
         };
 	
-        var layer = [];
-        //We lost features from ASIS
-        //	layer[1] = new OpenLayers.Layer.Vector("WFS1", {
-        //                strategies: [new OpenLayers.Strategy.BBOX()],
-        //                protocol: new OpenLayers.Protocol.WFS({
-        //                    url:  "geoserver/sample/wfs",
-        //                    featureType: "ASIS_2009_2012",
-        //                    featureNS: "gov.usgs.cida.gdp.sample",
-        //					geometryName: "the_geom"
-        //                })
-        //            });
-        //	layer[1].events.register("featuresadded", null, colorFeatures());
-
-        layer[2] = new OpenLayers.Layer.Vector("WFS2", {
+        var layer = new OpenLayers.Layer.Vector("WFS2", {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
                 url:  "geoserver/sample/wfs",
-                featureType: "NASC_shorelines",
-                featureNS: CONFIG.namespace.sample,
+                featureType: featureName,
+                featureNS: featureNamespace,
                 geometryName: "the_geom"
             })
         });
-        layer[2].events.register("featuresadded", null, colorFeatures());
+        layer.events.register("featuresadded", null, colorFeatures());
 
-        //	map.addLayer(layer[1]);
-        map.getMap().addLayer(layer[2]);
+        map.getMap().addLayer(layer);
 	
     },
-    initializeShorelineUploader : function() {
+    populateFeaturesList : function(caps) {
+        $('#shorelines-list').children().remove();
+        
+        for (var index = 0;index <  caps.featureTypeList.featureTypes.length;index++) { 
+            var featureType = caps.featureTypeList.featureTypes[index];
+            
+            if (featureType.featureNS === CONFIG.namespace.sample || featureType.featureNS === CONFIG.namespace.input) {
+                var title = featureType.title;
+                var shortenedTitle = title.has(permSession.getCurrentSessionKey()) 
+                ?  title.remove(permSession.getCurrentSessionKey() + '_') 
+                : title;
+                
+                if (featureType.featureNS === CONFIG.namespace.input && !title.has(permSession.getCurrentSessionKey())) {
+                    continue;
+                }
+                
+                if (title.substr(title.lastIndexOf('_') + 1) == 'shorelines') {
+                    $('#shorelines-list')
+                    .append($("<option></option>")
+                        .attr("value",title)
+                        .text(shortenedTitle));
+                } 
+            }
+        }
+        
+        $('#shorelines-list').change(function(index, option) {
+            $("#shorelines-list option:selected").each(function (index, option) {
+                var featureType = geoserver.capabilities.featureTypeList.featureTypes.find(function(featureType) {
+                    return featureType.name === option.value
+                })
+                Shorelines.addShorelines(featureType.name, featureType.featureNS);
+            });
+        }) 
+    },
+    initializeUploader : function() {
         var uploader = new qq.FineUploader({
             element: document.getElementById('shoreline-uploader'),
             request: {

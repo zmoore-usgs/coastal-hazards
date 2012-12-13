@@ -3,9 +3,9 @@ var Geoserver = function(endpoint) {
     
     me.importEndpoint = 'service/import'
     me.geoserverEndpoint = endpoint ? endpoint : CONFIG.geoServerEndpoint;
-    me.wfsGetCapsCall = /*CONFIG.geoServerEndpoint*/ 'geoserver/wfs?service=wfs&version=1.1.0&request=GetCapabilities'
-    
+    me.wfsGetCapsUrl = /*CONFIG.geoServerEndpoint*/ 'geoserver/wfs?service=wfs&version=1.1.0&request=GetCapabilities'
     me.capabilities = null;
+    me.capabilitiesXML = null;
     
     return $.extend(me, {
         /**
@@ -28,7 +28,7 @@ var Geoserver = function(endpoint) {
             });
         },
         getCapabilities : function(args) {
-            $.ajax(me.wfsGetCapsCall, {
+            $.ajax(me.wfsGetCapsUrl, {
                 context: args,
                 success : function(data, textStatus, jqXHR) {
                     var getCapsResponse = new OpenLayers.Format.WFSCapabilities.v1_1_0().read(data); 

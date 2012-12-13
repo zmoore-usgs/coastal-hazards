@@ -7,7 +7,7 @@ $(document).ready(function() {
         LOG4JS_LOG_THRESHOLD : CONFIG.development ? 'debug' : 'info'
     });
     
-    Shorelines.initializeShorelineUploader();
+    Shorelines.initializeUploader();
         
     ui = new UI();
     map = new Map();
@@ -26,4 +26,12 @@ $(document).ready(function() {
     $("#create-intersections-btn").on("click", Intersections.calcIntersections);
     $("#display-results-btn").on("click", function() { /* not yet implemented */});
     
+    geoserver.getCapabilities({
+        callbacks : [
+        function(caps) {
+            Shorelines.populateFeaturesList(caps);
+            Baseline.populateFeaturesList(caps);
+        }
+        ]
+    })
 })

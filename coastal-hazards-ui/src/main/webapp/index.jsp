@@ -129,7 +129,10 @@
                                 <div id="shoreline-uploader"></div>
                             </div>
                             <div class="tab-pane" id="baseline">
-                                <button id="upload-baseline-btn"  title="Display Baseline">Display Baseline</button>
+                                <div class="well">
+                                    <select id="baseline-list" style="width: 100%;"></select>
+                                </div>
+                                <div id="baseline-uploader"></div>
                             </div>
                             <div class="tab-pane" id="transects">
                                 <button id="calculate-transects-btn"  title="Calculate Transects">Calculate Transects</button>
