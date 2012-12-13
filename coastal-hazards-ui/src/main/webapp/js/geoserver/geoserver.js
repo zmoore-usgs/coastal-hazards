@@ -39,6 +39,11 @@ var Geoserver = function(endpoint) {
                     })
                 }
             })
+        },
+        getFeatureByName : function(name) {
+            return me.capabilities.featureTypeList.featureTypes.find(function(featureType) {
+                return featureType.name === name
+            })
         }
         
     });
