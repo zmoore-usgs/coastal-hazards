@@ -14,7 +14,7 @@
             log.error("Could not find JNDI");
         }
     }
-    boolean development = Boolean.parseBoolean(props.getProperty("${project.artifactId}.development"));
+    boolean development = Boolean.parseBoolean(props.getProperty("coastal-hazards.development"));
     String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
 %>
 
