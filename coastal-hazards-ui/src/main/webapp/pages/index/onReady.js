@@ -20,7 +20,6 @@ $(document).ready(function() {
     LOG.info('Sessions created. User session list has ' + Object.keys(permSession.session.sessions).length + ' sessions.')
     LOG.info('Current session key: ' + permSession.getCurrentSessionKey());
 	
-//    $("#upload-shorelines-btn").on("click", Shorelines.addShorelines);
     $("#upload-baseline-btn").on("click", Baseline.addBaseline);
     $("#calculate-transects-btn").on("click", Transects.calcTransects);
     $("#create-intersections-btn").on("click", Intersections.calcIntersections);
