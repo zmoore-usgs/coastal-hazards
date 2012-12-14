@@ -4,10 +4,12 @@ var Shorelines = {
     addShorelines : function(args) {
         var layers = args.layers;
         var layersArray = [];
+        
         $(layers).each(function(i,e) {
             var featureName = e.featureName;
             var ns = e.featureNamespace;
             if (map.getMap().getLayersByName(featureName).length == 0) {
+                // Layer not currently in map, so we will add it
                 var layer = new OpenLayers.Layer.Vector(featureName, {
                     strategies: [new OpenLayers.Strategy.BBOX()],
                     protocol: new OpenLayers.Protocol.WFS({
@@ -15,90 +17,80 @@ var Shorelines = {
                         featureType: featureName,
                         featureNS: ns,
                         geometryName: "the_geom"
-                    })
+                    }),
+                    zoomToWhenAdded : true
                 });
+                
+                var loadend = function(args) {
+                    LOG.info('loadend()');
+                    var bounds = new OpenLayers.Bounds();
+                    var layers = map.getMap().getLayersBy('name', this.name);
+                    
+                    $(layers).each(function(i, layer) {
+                        if (layer.zoomToWhenAdded) {
+                            bounds.extend(layer.getDataExtent());
+                            layer.events.unregister('loadend', layer, this.events.listeners.loadend[0].func);
+                        }
+                    })
+                    
+                    map.getMap().zoomToExtent(bounds, true);
+                }
+                
+                var coloredShorelines = Object.extended({});
+    	
+                var colorFeatures =  function(event) {
+                    //			var wasEmpty = Object.isEmpty(coloredShorelines);
+                    event.features.each(function(el, i, arr) {
+                        var index;
+                        if (Object.has(coloredShorelines, el.attributes.Date_)) {
+                            index = coloredShorelines[el.attributes.Date_].index;
+                        } else {
+                            index = i % SHORELINE_COLORS.length;
+                            coloredShorelines[el.attributes.Date_] = {
+                                index : index,
+                                attributes : el.attributes
+                            };
+                        }
+                        el.style = {
+                            strokeWidth: 2,
+                            strokeColor: SHORELINE_COLORS[index]
+                        };
+                    });
+                    event.object.redraw();
+                    this.map.zoomToExtent(this.getDataExtent());
+    			
+                    var html = [];
+                    html.push("<div class='well'><h4>Features</h4><table class='tablesorter'><thead><tr><td>Selected</td><td>color</td>");
+    			
+                    var headerAttributes = Object.keys(coloredShorelines.values()[0].attributes, function(k, v) {
+                        html.push("<td>" + k +"</td>");
+                    })
+    			
+                    html.push("</tr></thead><tbody>");
+                    coloredShorelines.each(function(key, val) {
+                        html.push("<tr><td><input type='checkbox'></td><td style='background-color:" + SHORELINE_COLORS[val.index] + ";'>" + SHORELINE_COLORS[val.index] + "</td>");
+                        Object.each(headerAttributes, function(i, el) {
+                            html.push("<td>" + val.attributes[el] + "</td>");
+                        });
+                        html.push("</tr>");
+                    })
+    			
+                    html.push("</tbody></table></div>");
+    			
+                    //			if (!wasEmpty) {
+                    $("#color-legend").html(html.join(''));
+                    $("table.tablesorter").tablesorter();
+                //			}
+                };
+                
+                layer.events.register("loadend", layer, loadend);
+                layer.events.register("featuresadded", layer, colorFeatures);
+                
                 layersArray.push(layer);
             }
         })
-        
-        // After the last layer is loaded, get the combined bounds for all the layers added
-        var lastLayer =  layersArray.last();
-        
-        lastLayer.events.register("loadend", {
-            layers : layersArray
-        }, function(args) {
-            args.object.events.un({'loadend' : args.object.events.listeners.loadend[0].func, scope : args.object}); // Remove the loadend hook from this layer. Was only needed once
-            var map = args.object.map;
-            var boundsList = [];
-            $(this.layers).each(function(index, item) {
-                if (item.map) { // Double check that the layer is part of the map
-                    boundsList.push(map.getLayersByName(item.name)[0].getDataExtent())
-                }
-            })
-            var bounds = new OpenLayers.Bounds();
-            $(boundsList).each(function(i,bound){
-                bounds.extend(bound);
-            })
-            map.zoomToExtent(bounds, true);
-
-        });
-        
         map.getMap().addLayers(layersArray);
         
-    //        var coloredShorelines = Object.extended({});
-    //	
-    //        var colorFeatures = function(divId) {
-    //            return function(event) {
-    //                //			var wasEmpty = Object.isEmpty(coloredShorelines);
-    //                event.features.each(function(el, i, arr) {
-    //                    var index;
-    //                    if (Object.has(coloredShorelines, el.attributes.Date_)) {
-    //                        index = coloredShorelines[el.attributes.Date_].index;
-    //                    } else {
-    //                        index = i % SHORELINE_COLORS.length;
-    //                        coloredShorelines[el.attributes.Date_] = {
-    //                            index : index,
-    //                            attributes : el.attributes
-    //                        };
-    //                    }
-    //                    el.style = {
-    //                        strokeWidth: 2,
-    //                        strokeColor: SHORELINE_COLORS[index]
-    //                    };
-    //                });
-    //                event.object.redraw();
-    //                this.map.zoomToExtent(this.getDataExtent());
-    //			
-    //                var html = [];
-    //                html.push("<div class='well'><h4>Features</h4><table class='tablesorter'><thead><tr><td>Selected</td><td>color</td>");
-    //			
-    //                var headerAttributes = Object.keys(coloredShorelines.values()[0].attributes, function(k, v) {
-    //                    html.push("<td>" + k +"</td>");
-    //                })
-    //			
-    //                html.push("</tr></thead><tbody>");
-    //                coloredShorelines.each(function(key, val) {
-    //                    html.push("<tr><td><input type='checkbox'></td><td style='background-color:" + SHORELINE_COLORS[val.index] + ";'>" + SHORELINE_COLORS[val.index] + "</td>");
-    //                    Object.each(headerAttributes, function(i, el) {
-    //                        html.push("<td>" + val.attributes[el] + "</td>");
-    //                    });
-    //                    html.push("</tr>");
-    //                })
-    //			
-    //                html.push("</tbody></table></div>");
-    //			
-    //                //			if (!wasEmpty) {
-    //                $("#color-legend").html(html.join(''));
-    //                $("table.tablesorter").tablesorter();
-    //            //			}
-    //            };
-    //        };
-        
-        
-    //        layer.events.register("featuresadded", null, colorFeatures());
-
-        
-	
     },
     populateFeaturesList : function(caps) {
         $('#shorelines-list').children().remove();
@@ -128,25 +120,26 @@ var Shorelines = {
         $('#shorelines-list').change(function(index, option) {
             
             $("#shorelines-list option:not(:selected)").each(function (index, option) {
-                var featureType = geoserver.capabilities.featureTypeList.featureTypes.find(function(featureType) {
-                    return featureType.name === option.value
-                })
+                var featureType = geoserver.getFeatureByName(option.value);
                 map.removeLayerByName(featureType.name);
             });
             
             var layerInfos = []
             $("#shorelines-list option:selected").each(function (index, option) {
-                var featureType = geoserver.capabilities.featureTypeList.featureTypes.find(function(featureType) {
-                    return featureType.name === option.value
-                })
+                var featureType = geoserver.getFeatureByName(option.value);
+                
                 layerInfos.push({
                     featureName : featureType.name, 
                     featureNamespace : featureType.featureNS
                 })
             });
-            Shorelines.addShorelines({
-                layers : layerInfos
-            });
+            
+            if (layerInfos.length) {
+                Shorelines.addShorelines({
+                    layers : layerInfos
+                });
+            }
+            
         }) 
     },
     initializeUploader : function() {
