@@ -8,16 +8,16 @@ var Session = function(name, isPerm) {
     // Initialize the session object
     if (!me.session && isPerm) {
         var randID = Util.randomUUID();
-        var newSession = new Object();
+        var newSession = Obect.extended();
         
         me.session = {
             sessions : {}
         }
 
-        newSession[randID] = new Object(); 
+        newSession[randID] = Obect.extended(); 
         newSession.files = [];
         me.session['sessions'][randID] = newSession;
-        me.session['current-session'] = new Object();
+        me.session['current-session'] = Obect.extended();
         me.session['current-session']['key'] = randID;
         me.session['current-session']['session'] = me.session['sessions'][randID];
         me.sessionObject.setItem(me.name, JSON.stringify(me.session));

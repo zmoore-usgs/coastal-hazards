@@ -25,11 +25,11 @@ $(document).ready(function() {
     $("#create-intersections-btn").on("click", Intersections.calcIntersections);
 //    $("#display-results-btn").on("click", function() { /* not yet implemented */});
     
-    geoserver.getCapabilities({
+    geoserver.getWMSCapabilities({
         callbacks : [
         function(caps) {
             Shorelines.populateFeaturesList(caps);
-            Baseline.populateFeaturesList(caps);
+//            Baseline.populateFeaturesList(caps);
         }
         ]
     })

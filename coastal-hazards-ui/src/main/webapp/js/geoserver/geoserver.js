@@ -3,9 +3,12 @@ var Geoserver = function(endpoint) {
     
     me.importEndpoint = 'service/import'
     me.geoserverEndpoint = endpoint ? endpoint : CONFIG.geoServerEndpoint;
-    me.wfsGetCapsUrl = /*CONFIG.geoServerEndpoint*/ 'geoserver/wfs?service=wfs&version=1.1.0&request=GetCapabilities'
-    me.capabilities = null;
-    me.capabilitiesXML = null;
+    me.wfsGetCapsUrl = 'geoserver/ows?service=wfs&version=1.1.0&request=GetCapabilities'
+    me.wfsCapabilities = null;
+    me.wfsCapabilitiesXML = null;
+    me.wmsGetCapsUrl = 'geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
+    me.wmsCapabilities = null;
+    me.wmsCapabilitiesXML = null;
     
     return $.extend(me, {
         /**
@@ -27,13 +30,26 @@ var Geoserver = function(endpoint) {
                 }
             });
         },
-        getCapabilities : function(args) {
+        getWMSCapabilities : function(args) {
+            $.ajax(me.wmsGetCapsUrl, {
+                context: args,
+                success : function(data, textStatus, jqXHR) {
+                    var getCapsResponse = new OpenLayers.Format.WMSCapabilities.v1_3_0().read(data); 
+                    me.wmsCapabilities = getCapsResponse;
+                    me.wmsCapabilitiesXML = data;
+                    $(args.callbacks).each(function(index, callback, allCallbacks) {
+                        callback(getCapsResponse, this);
+                    })
+                }
+            })
+        },
+        getWFSCapabilities : function(args) {
             $.ajax(me.wfsGetCapsUrl, {
                 context: args,
                 success : function(data, textStatus, jqXHR) {
                     var getCapsResponse = new OpenLayers.Format.WFSCapabilities.v1_1_0().read(data); 
-                    me.capabilities = getCapsResponse;
-                    me.capabilitiesXML = data;
+                    me.wfsCapabilities = getCapsResponse;
+                    me.wfsCapabilitiesXML = data;
                     $(args.callbacks).each(function(index, callback, allCallbacks) {
                         callback(getCapsResponse, this);
                     })
@@ -41,8 +57,13 @@ var Geoserver = function(endpoint) {
             })
         },
         getFeatureByName : function(name) {
-            return me.capabilities.featureTypeList.featureTypes.find(function(featureType) {
-                return featureType.name === name
+            return me.wfsCapabilities.featureTypeList.featureTypes.find(function(featureType) {
+                return featureType.name === name;
+            })
+        },
+        getLayerByName : function(name) {
+            return me.wmsCapabilities.capability.layers.find(function(layer) {
+                return layer.title === name;
             })
         }
         

@@ -65,7 +65,7 @@
 			
             CONFIG.development = <%= development%>;
             CONFIG.geoServerEndpoint = '<%= geoserverEndpoint%>';
-            CONFIG.namespace = new Object();
+            CONFIG.namespace = Object.extended();
             CONFIG.namespace.sample = 'gov.usgs.cida.ch.sample';
             CONFIG.namespace.input = 'gov.usgs.cida.ch.input';
             CONFIG.namespace.output = 'gov.usgs.cida.ch.output';
@@ -101,7 +101,6 @@
         <script type="text/javascript" src="js/stages/baseline.js"></script>
         <script type="text/javascript" src="js/stages/transects.js"></script>
         <script type="text/javascript" src="js/stages/intersections.js"></script>
-        <!--<script type="text/javascript" src="pages/index/shorelines.js"></script>-->
         <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
 
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
