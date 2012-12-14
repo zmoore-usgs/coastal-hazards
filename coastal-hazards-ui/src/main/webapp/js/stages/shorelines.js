@@ -38,55 +38,53 @@ var Shorelines = {
                 
                 var coloredShorelines = Object.extended({});
     	
-                var colorFeatures = function(divId) {
-                    return function(event) {
-                        //			var wasEmpty = Object.isEmpty(coloredShorelines);
-                        event.features.each(function(el, i, arr) {
-                            var index;
-                            if (Object.has(coloredShorelines, el.attributes.Date_)) {
-                                index = coloredShorelines[el.attributes.Date_].index;
-                            } else {
-                                index = i % SHORELINE_COLORS.length;
-                                coloredShorelines[el.attributes.Date_] = {
-                                    index : index,
-                                    attributes : el.attributes
-                                };
-                            }
-                            el.style = {
-                                strokeWidth: 2,
-                                strokeColor: SHORELINE_COLORS[index]
+                var colorFeatures =  function(event) {
+                    //			var wasEmpty = Object.isEmpty(coloredShorelines);
+                    event.features.each(function(el, i, arr) {
+                        var index;
+                        if (Object.has(coloredShorelines, el.attributes.Date_)) {
+                            index = coloredShorelines[el.attributes.Date_].index;
+                        } else {
+                            index = i % SHORELINE_COLORS.length;
+                            coloredShorelines[el.attributes.Date_] = {
+                                index : index,
+                                attributes : el.attributes
                             };
+                        }
+                        el.style = {
+                            strokeWidth: 2,
+                            strokeColor: SHORELINE_COLORS[index]
+                        };
+                    });
+                    event.object.redraw();
+                    this.map.zoomToExtent(this.getDataExtent());
+    			
+                    var html = [];
+                    html.push("<div class='well'><h4>Features</h4><table class='tablesorter'><thead><tr><td>Selected</td><td>color</td>");
+    			
+                    var headerAttributes = Object.keys(coloredShorelines.values()[0].attributes, function(k, v) {
+                        html.push("<td>" + k +"</td>");
+                    })
+    			
+                    html.push("</tr></thead><tbody>");
+                    coloredShorelines.each(function(key, val) {
+                        html.push("<tr><td><input type='checkbox'></td><td style='background-color:" + SHORELINE_COLORS[val.index] + ";'>" + SHORELINE_COLORS[val.index] + "</td>");
+                        Object.each(headerAttributes, function(i, el) {
+                            html.push("<td>" + val.attributes[el] + "</td>");
                         });
-                        event.object.redraw();
-                        this.map.zoomToExtent(this.getDataExtent());
+                        html.push("</tr>");
+                    })
     			
-                        var html = [];
-                        html.push("<div class='well'><h4>Features</h4><table class='tablesorter'><thead><tr><td>Selected</td><td>color</td>");
+                    html.push("</tbody></table></div>");
     			
-                        var headerAttributes = Object.keys(coloredShorelines.values()[0].attributes, function(k, v) {
-                            html.push("<td>" + k +"</td>");
-                        })
-    			
-                        html.push("</tr></thead><tbody>");
-                        coloredShorelines.each(function(key, val) {
-                            html.push("<tr><td><input type='checkbox'></td><td style='background-color:" + SHORELINE_COLORS[val.index] + ";'>" + SHORELINE_COLORS[val.index] + "</td>");
-                            Object.each(headerAttributes, function(i, el) {
-                                html.push("<td>" + val.attributes[el] + "</td>");
-                            });
-                            html.push("</tr>");
-                        })
-    			
-                        html.push("</tbody></table></div>");
-    			
-                        //			if (!wasEmpty) {
-                        $("#color-legend").html(html.join(''));
-                        $("table.tablesorter").tablesorter();
-                    //			}
-                    };
+                    //			if (!wasEmpty) {
+                    $("#color-legend").html(html.join(''));
+                    $("table.tablesorter").tablesorter();
+                //			}
                 };
                 
                 layer.events.register("loadend", layer, loadend);
-                layer.events.register("featuresadded", layer, colorFeatures());
+                layer.events.register("featuresadded", layer, colorFeatures);
                 
                 layersArray.push(layer);
             }
