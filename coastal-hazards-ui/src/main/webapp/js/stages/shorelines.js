@@ -8,19 +8,22 @@ var Shorelines = {
             var layerName = layer.title;
             if (map.getMap().getLayersByName(layerName).length == 0) {
                 LOG.info('Loading layer: ' + layerName);
+                var sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?> <StyledLayerDescriptor version="1.0.0"  xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"  xmlns="http://www.opengis.net/sld"  xmlns:ogc="http://www.opengis.net/ogc"  xmlns:xlink="http://www.w3.org/1999/xlink"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <NamedLayer> <Name>#[layer]</Name> <UserStyle> <Title>SLD Cook Book: Simple Line</Title> <FeatureTypeStyle> <Rule> <LineSymbolizer> <Stroke> <CssParameter name="stroke">#00ff00</CssParameter> <CssParameter name="stroke-opacity">1</CssParameter> <CssParameter name="stroke-width">1</CssParameter> <CssParameter name="stroke-linejoin">mitre</CssParameter> <CssParameter name="stroke-linecap">square</CssParameter>    </Stroke> </LineSymbolizer> </Rule> </FeatureTypeStyle> </UserStyle> </NamedLayer> </StyledLayerDescriptor>';
+                sldBody = sldBody.replace('#[layer]', layer.name);
                 var wmsLayer = new OpenLayers.Layer.WMS(
                     layer.title, 
                     'geoserver/ows',
                     {
                         layers : [layerName],
-                        transparent : true
+                        transparent : true,
+                        sld_body : sldBody
                     },
                     {
                         zoomToWhenAdded : true, // Include this layer when performing an aggregated zoom
-                        isBaseLayer : false
+                        isBaseLayer : false,
+                        unsupportedBrowsers: []
                     });
                 
-                //                layer.events.register("added", layer, Shorelines.layerAddedEventHandler);
                 wmsLayer.events.register("loadend", wmsLayer, Shorelines.loadEnd);
                 wmsLayer.events.register("featuresadded", wmsLayer, Shorelines.colorFeatures);
                 
@@ -29,29 +32,6 @@ var Shorelines = {
         })
         map.getMap().addLayers(layersArray);
         
-    },
-    layerAddedEventHandler : function(event) {
-        LOG.info('loadend event triggered on layer');
-        var bounds = new OpenLayers.Bounds();
-        var layers = map.getMap().getLayersBy('zoomToWhenAdded', true);
-                    
-        $(layers).each(function(i, layer) {
-            if (layer.zoomToWhenAdded) {
-                
-                if (layer.getDataExtent()) {
-                    bounds.extend(layer.getDataExtent());
-                }
-                
-                if (layer.events.listeners.added.length) {
-                    layer.events.unregister('added', layer, this.events.listeners.added[0].func);
-                }
-                
-            }
-        })
-        
-        if (bounds.left && bounds.right && bounds.top && bounds.bottom) {
-            map.getMap().zoomToExtent(bounds, false);
-        }
     },
     loadEnd : function(event) {
         LOG.info('loadend event triggered on layer');
