@@ -5,7 +5,7 @@ var Shorelines = {
         var layersArray = [];
         
         $(layers).each(function(index,layer) {
-            var layerName = layer.name;
+            var layerName = layer.title;
             if (map.getMap().getLayersByName(layerName).length == 0) {
                 LOG.info('Loading layer: ' + layerName);
                 var wmsLayer = new OpenLayers.Layer.WMS(
@@ -61,9 +61,7 @@ var Shorelines = {
         $(layers).each(function(i, layer) {
             if (layer.zoomToWhenAdded) {
                 
-                if (layer.getDataExtent()) {
-                    bounds.extend(layer.getDataExtent());
-                }
+                bounds.extend(new OpenLayers.Bounds(geoserver.getLayerByName(layer.name).bbox["EPSG:900913"].bbox));
                 
                 if (layer.events.listeners.loadend.length) {
                     layer.events.unregister('loadend', layer, this.events.listeners.loadend[0].func);
