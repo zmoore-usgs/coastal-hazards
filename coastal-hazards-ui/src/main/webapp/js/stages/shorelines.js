@@ -130,7 +130,7 @@ var Shorelines = {
                 if (title.substr(title.lastIndexOf('_') + 1) == 'shorelines') {
                     $('#shorelines-list')
                     .append($("<option></option>")
-                        .attr("value",title)
+                        .attr("value",layer.name)
                         .text(shortenedTitle));
                 } 
             }
@@ -139,13 +139,17 @@ var Shorelines = {
         $('#shorelines-list').change(function(index, option) {
             
             $("#shorelines-list option:not(:selected)").each(function (index, option) {
-                var layer = geoserver.getLayerByName(option.value);
-                map.removeLayerByName(layer.name);
+                var layers = map.getMap().getLayersBy('name', option.text);
+                if (layers.length) {
+                    $(layers).each(function(i,l) {
+                        map.getMap().removeLayer(l);
+                    })
+                }
             });
             
             var layerInfos = []
             $("#shorelines-list option:selected").each(function (index, option) {
-                var layer = geoserver.getLayerByName(option.value);
+                var layer = geoserver.getLayerByName(option.text);
                 
                 layerInfos.push(layer)
             });
