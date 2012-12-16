@@ -3,34 +3,78 @@
 var Shorelines = {
     addShorelines : function(layers) {
         var layersArray = [];
-        
+        var layerTitles = [];
         $(layers).each(function(index,layer) {
-            var layerName = layer.title;
-            if (map.getMap().getLayersByName(layerName).length == 0) {
-                LOG.info('Loading layer: ' + layerName);
-                var sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?> <StyledLayerDescriptor version="1.0.0"  xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"  xmlns="http://www.opengis.net/sld"  xmlns:ogc="http://www.opengis.net/ogc"  xmlns:xlink="http://www.w3.org/1999/xlink"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <NamedLayer> <Name>#[layer]</Name> <UserStyle> <Title>SLD Cook Book: Simple Line</Title> <FeatureTypeStyle> <Rule> <LineSymbolizer> <Stroke> <CssParameter name="stroke">#00ff00</CssParameter> <CssParameter name="stroke-opacity">1</CssParameter> <CssParameter name="stroke-width">1</CssParameter> <CssParameter name="stroke-linejoin">mitre</CssParameter> <CssParameter name="stroke-linecap">square</CssParameter>    </Stroke> </LineSymbolizer> </Rule> </FeatureTypeStyle> </UserStyle> </NamedLayer> </StyledLayerDescriptor>';
-                sldBody = sldBody.replace('#[layer]', layer.name);
-                var wmsLayer = new OpenLayers.Layer.WMS(
-                    layer.title, 
-                    'geoserver/ows',
-                    {
-                        layers : [layerName],
-                        transparent : true,
-                        sld_body : sldBody
-                    },
-                    {
-                        zoomToWhenAdded : true, // Include this layer when performing an aggregated zoom
-                        isBaseLayer : false,
-                        unsupportedBrowsers: []
-                    });
-                
-                wmsLayer.events.register("loadend", wmsLayer, Shorelines.loadEnd);
-                wmsLayer.events.register("featuresadded", wmsLayer, Shorelines.colorFeatures);
-                
-                layersArray.push(wmsLayer);
-            }
+            layerTitles.push(layer.title);
         })
-        map.getMap().addLayers(layersArray);
+        
+        // Read the selected features for specific properties
+        geoserver.getFilteredFeature({ 
+            featureNameArray : layerTitles, 
+            propertyArray : ['ACCURACY'], 
+            sortBy : 'ACCURACY', 
+            sortByAscending : false,
+            scope : this,
+            callbacks : [
+            function (features, scope) {
+                var featureMap = new Object.extended();
+                var highestAccuracy = 0;
+                $(features).each(function(i,feature) {
+                    var featureName = feature.fid.split('.')[0]
+                    var accuracy = (feature.data.ACCURACY).toNumber();
+                    if (!Object.has(featureMap, featureName)) {
+                        featureMap[featureName] =  new Object.extended();
+                    }
+                    
+                    if (accuracy > highestAccuracy) {
+                        highestAccuracy = accuracy;
+                    }
+                })
+                
+                highestAccuracy = (highestAccuracy).ceil();
+                
+                $(layers).each(function(index,layer) {
+                    var layerTitle = layer.title;
+                    if (map.getMap().getLayersByName(layerTitle).length == 0) {
+                        LOG.info('Loading layer: ' + layerTitle);
+                        // Need to first find out about the featuretype
+                        var createUpperLimitFilterSet = function(highestAccuracy) {
+                            var filterSet = '';
+                            for (var limitsIndex = 0;limitsIndex < highestAccuracy;limitsIndex++) {
+                                filterSet += '<ogc:Literal>' + Util.getRandomColor().capitalize(true) + '</ogc:Literal>'
+                                filterSet += '<ogc:Literal>' + (limitsIndex + 1) + '</ogc:Literal>'
+                            }
+                            return filterSet + '<ogc:Literal>' + Util.getRandomColor().capitalize(true) + '</ogc:Literal>';
+                        }
+                        
+                        var sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?> <StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <NamedLayer> <Name>#[layer]</Name> <UserStyle> <FeatureTypeStyle> <Rule>  <LineSymbolizer> <Stroke> <CssParameter name="stroke"> <ogc:Function name="Categorize"> <ogc:PropertyName>ACCURACY</ogc:PropertyName> '+createUpperLimitFilterSet(highestAccuracy)+'  </ogc:Function> </CssParameter> <CssParameter name="stroke-opacity">1</CssParameter> <CssParameter name="stroke-width">1</CssParameter> <CssParameter name="stroke-linejoin">mitre</CssParameter> <CssParameter name="stroke-linecap">square</CssParameter> </Stroke> </LineSymbolizer> </Rule> </FeatureTypeStyle> </UserStyle> </NamedLayer> </StyledLayerDescriptor>';
+                        sldBody = sldBody.replace('#[layer]', layer.name);
+                
+                        var wmsLayer = new OpenLayers.Layer.WMS(
+                            layer.title, 
+                            'geoserver/ows',
+                            {
+                                layers : [layerTitle],
+                                transparent : true,
+                                sld_body : sldBody
+                            },
+                            {
+                                zoomToWhenAdded : true, // Include this layer when performing an aggregated zoom
+                                isBaseLayer : false,
+                                unsupportedBrowsers: []
+                            });
+                
+                        wmsLayer.events.register("loadend", wmsLayer, Shorelines.loadEnd);
+                        wmsLayer.events.register("featuresadded", wmsLayer, Shorelines.colorFeatures);
+                
+                        layersArray.push(wmsLayer);
+                    }
+                })
+                map.getMap().addLayers(layersArray);
+            }
+            ]
+        })
+    
         
     },
     loadEnd : function(event) {

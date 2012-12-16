@@ -4,6 +4,7 @@ var Geoserver = function(endpoint) {
     me.importEndpoint = 'service/import'
     me.geoserverEndpoint = endpoint ? endpoint : CONFIG.geoServerEndpoint;
     me.wfsGetCapsUrl = 'geoserver/ows?service=wfs&version=1.1.0&request=GetCapabilities'
+    me.wfsGetFeature = 'geoserver/ows?service=wfs&version=1.1.0&request=GetFeature'
     me.wfsCapabilities = null;
     me.wfsCapabilitiesXML = null;
     me.wmsGetCapsUrl = 'geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
@@ -65,7 +66,41 @@ var Geoserver = function(endpoint) {
             return me.wmsCapabilities.capability.layers.find(function(layer) {
                 return layer.title === name;
             })
+        },
+        getFilteredFeature : function(args) {
+            var url = me.wfsGetFeature + '&typeName=';
+            $(args.featureNameArray || []).each(function(i,featureName, array) {
+                if (i == args.featureNameArray.length - 1) {
+                    url += featureName
+                } else {
+                    url += featureName + ','
+                }
+            })
+            
+            url += '&propertyName='
+            $(args.propertyArray || []).each(function(i, property, array) {
+                if (i == args.propertyArray.length - 1) {
+                    url += property
+                } else {
+                    url += property + ','
+                }
+            })
+            
+            if (args.sortBy) {
+                url += '&sortBy=' + args.sortBy// + args.sortByAscending ? '%2BA' : '%2BD';
+            }
+            
+            $.ajax(url, {
+                context : args.scope || this,
+                success : function(data, textStatus, jqXHR) {
+                    var gmlReader = new OpenLayers.Format.GML.v3();
+                    var getFeatureResponse = gmlReader.read(data); 
+                    
+                    $(args.callbacks || []).each(function(index, callback, allCallbacks) {
+                        callback(getFeatureResponse, this);
+                    })
+                }
+            })
         }
-        
     });
 }
