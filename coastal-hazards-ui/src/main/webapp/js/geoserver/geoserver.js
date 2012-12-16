@@ -5,6 +5,7 @@ var Geoserver = function(endpoint) {
     me.geoserverEndpoint = endpoint ? endpoint : CONFIG.geoServerEndpoint;
     me.wfsGetCapsUrl = 'geoserver/ows?service=wfs&version=1.1.0&request=GetCapabilities'
     me.wfsGetFeature = 'geoserver/ows?service=wfs&version=1.1.0&request=GetFeature'
+    me.wfsDescribeFeatureType = 'geoserver/ows?service=wfs&version=1.1.0&request=DescribeFeatureType'
     me.wfsCapabilities = null;
     me.wfsCapabilitiesXML = null;
     me.wmsGetCapsUrl = 'geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
@@ -65,6 +66,28 @@ var Geoserver = function(endpoint) {
         getLayerByName : function(name) {
             return me.wmsCapabilities.capability.layers.find(function(layer) {
                 return layer.title === name;
+            })
+        },
+        getDescribeFeatureType : function(args) {
+            var url = me.wfsDescribeFeatureType + '&typeName=';
+            $(args.featureNameArray || []).each(function(i,featureName, array) {
+                if (i == args.featureNameArray.length - 1) {
+                    url += featureName
+                } else {
+                    url += featureName + ','
+                }
+            })
+            
+            $.ajax(url, {
+                context : args.scope || this,
+                success : function(data, textStatus, jqXHR) {
+                    var gmlReader = new OpenLayers.Format.WFSDescribeFeatureType();
+                    var describeFeaturetypeRespone = gmlReader.read(data); 
+                    
+                    $(args.callbacks || []).each(function(index, callback, allCallbacks) {
+                        callback(describeFeaturetypeRespone, this);
+                    })
+                }
             })
         },
         getFilteredFeature : function(args) {

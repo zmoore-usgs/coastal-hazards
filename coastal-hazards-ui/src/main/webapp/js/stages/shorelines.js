@@ -1,80 +1,121 @@
 // TODO - Back end and front-end verification for uploaded shapefiles
 
 var Shorelines = {
+    
     addShorelines : function(layers) {
-        var layersArray = [];
-        var layerTitles = [];
         $(layers).each(function(index,layer) {
-            layerTitles.push(layer.title);
+            // First we need to discover information about the layers we want to process
+            geoserver.getDescribeFeatureType({
+                featureNameArray : [layer.title],
+                callbacks : [
+                function(describeFeaturetypeRespone) {
+                
+                    // Parse the describe featureTypes using this anon function
+                    var properties = function(dftr) {
+                        var result = new Object.extended();
+                        // For every layer pulled in...
+                        $(dftr.featureTypes).each(function(i, featureType) {
+                        
+                            // For each layer, initilize a property array for it in the result object
+                            result[featureType.typeName] = [];
+                        
+                            // Parse through its properties
+                            $(featureType.properties).each(function(i,property) {
+                            
+                                // Pulling down the_geom is not required and can make the document huge 
+                                if (property.type != "gml:MultiLineStringPropertyType") {
+                                    result[featureType.typeName].push(property.name);
+                                }
+                            })
+                        })
+                        return result;
+                    }(describeFeaturetypeRespone)
+                
+                    // For each layer, split into seperate call
+                
+                    // Read the selected features for specific properties
+                    geoserver.getFilteredFeature({ 
+                        featureNameArray : [layer.title], 
+                        propertyArray : properties[layer.title], 
+                        sortBy : properties[layer.title][0], 
+                        sortByAscending : false,
+                        scope : this,
+                        callbacks : [
+                        function (features, scope) {
+                            var featureMap = new Object.extended();
+                            var highestAccuracy = 0;
+                            $(features).each(function(i,feature) {
+                                var featureName = feature.fid.split('.')[0]
+                                var accuracy = (feature.data.ACCURACY).toNumber();
+                                if (!Object.has(featureMap, featureName)) {
+                                    featureMap[featureName] =  new Object.extended();
+                                }
+                    
+                                if (accuracy > highestAccuracy) {
+                                    highestAccuracy = accuracy;
+                                }
+                            })
+                
+                            highestAccuracy = (highestAccuracy).ceil();
+                
+                            var layersArray = [];
+                
+                            $(layers).each(function(index,layer) {
+                                var layerTitle = layer.title;
+                                if (map.getMap().getLayersByName(layerTitle).length == 0) {
+                                    LOG.info('Loading layer: ' + layerTitle);
+                        
+                                    var rndColorLimitPairs = function(highestAccuracy) {
+                                        var result = [];
+                                        for (var limitsIndex = 0;limitsIndex < highestAccuracy;limitsIndex++) {
+                                            result.push([Util.getRandomColor().capitalize(true), limitsIndex + 1])
+                                        }
+                                        return result;
+                                    }(highestAccuracy)
+                        
+                                    // Need to first find out about the featuretype
+                                    var createUpperLimitFilterSet = function(colorLimitPairs) {
+                                        var filterSet = '';
+                                        for (var pairsIndex = 0;pairsIndex < colorLimitPairs.length;pairsIndex++) {
+                                            filterSet += '<ogc:Literal>' + colorLimitPairs[pairsIndex][0] + '</ogc:Literal>'
+                                            filterSet += '<ogc:Literal>' + colorLimitPairs[pairsIndex][1] + '</ogc:Literal>'
+                                        }
+                                        return filterSet + '<ogc:Literal>' + Util.getRandomColor().capitalize(true) + '</ogc:Literal>';
+                                    }
+                        
+                                    var sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?> <StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <NamedLayer> <Name>#[layer]</Name> <UserStyle> <FeatureTypeStyle> <Rule>  <LineSymbolizer> <Stroke> <CssParameter name="stroke"> <ogc:Function name="Categorize"> <ogc:PropertyName>ACCURACY</ogc:PropertyName> '+createUpperLimitFilterSet(rndColorLimitPairs)+'  </ogc:Function> </CssParameter> <CssParameter name="stroke-opacity">1</CssParameter> <CssParameter name="stroke-width">1</CssParameter> </Stroke> </LineSymbolizer> </Rule> </FeatureTypeStyle> </UserStyle> </NamedLayer> </StyledLayerDescriptor>';
+                                    sldBody = sldBody.replace('#[layer]', layer.name);
+                
+                                    var wmsLayer = new OpenLayers.Layer.WMS(
+                                        layer.title, 
+                                        'geoserver/ows',
+                                        {
+                                            layers : [layerTitle],
+                                            transparent : true,
+                                            sld_body : sldBody
+                                        },
+                                        {
+                                            zoomToWhenAdded : true, // Include this layer when performing an aggregated zoom
+                                            isBaseLayer : false,
+                                            unsupportedBrowsers: [],
+                                            colorGroups : rndColorLimitPairs
+                                        });
+                
+                                    wmsLayer.events.register("loadend", wmsLayer, Shorelines.loadEnd);
+                                    //                        wmsLayer.events.register("featuresadded", wmsLayer, Shorelines.colorFeatures);
+                                    layersArray.push(wmsLayer);
+                                }
+                            })
+                            map.getMap().addLayers(layersArray);
+                        }
+                        ]
+                    })
+                }
+                ]
+            })
+            
         })
         
-        // Read the selected features for specific properties
-        geoserver.getFilteredFeature({ 
-            featureNameArray : layerTitles, 
-            propertyArray : ['ACCURACY'], 
-            sortBy : 'ACCURACY', 
-            sortByAscending : false,
-            scope : this,
-            callbacks : [
-            function (features, scope) {
-                var featureMap = new Object.extended();
-                var highestAccuracy = 0;
-                $(features).each(function(i,feature) {
-                    var featureName = feature.fid.split('.')[0]
-                    var accuracy = (feature.data.ACCURACY).toNumber();
-                    if (!Object.has(featureMap, featureName)) {
-                        featureMap[featureName] =  new Object.extended();
-                    }
-                    
-                    if (accuracy > highestAccuracy) {
-                        highestAccuracy = accuracy;
-                    }
-                })
-                
-                highestAccuracy = (highestAccuracy).ceil();
-                
-                $(layers).each(function(index,layer) {
-                    var layerTitle = layer.title;
-                    if (map.getMap().getLayersByName(layerTitle).length == 0) {
-                        LOG.info('Loading layer: ' + layerTitle);
-                        // Need to first find out about the featuretype
-                        var createUpperLimitFilterSet = function(highestAccuracy) {
-                            var filterSet = '';
-                            for (var limitsIndex = 0;limitsIndex < highestAccuracy;limitsIndex++) {
-                                filterSet += '<ogc:Literal>' + Util.getRandomColor().capitalize(true) + '</ogc:Literal>'
-                                filterSet += '<ogc:Literal>' + (limitsIndex + 1) + '</ogc:Literal>'
-                            }
-                            return filterSet + '<ogc:Literal>' + Util.getRandomColor().capitalize(true) + '</ogc:Literal>';
-                        }
-                        
-                        var sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?> <StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <NamedLayer> <Name>#[layer]</Name> <UserStyle> <FeatureTypeStyle> <Rule>  <LineSymbolizer> <Stroke> <CssParameter name="stroke"> <ogc:Function name="Categorize"> <ogc:PropertyName>ACCURACY</ogc:PropertyName> '+createUpperLimitFilterSet(highestAccuracy)+'  </ogc:Function> </CssParameter> <CssParameter name="stroke-opacity">1</CssParameter> <CssParameter name="stroke-width">1</CssParameter> <CssParameter name="stroke-linejoin">mitre</CssParameter> <CssParameter name="stroke-linecap">square</CssParameter> </Stroke> </LineSymbolizer> </Rule> </FeatureTypeStyle> </UserStyle> </NamedLayer> </StyledLayerDescriptor>';
-                        sldBody = sldBody.replace('#[layer]', layer.name);
-                
-                        var wmsLayer = new OpenLayers.Layer.WMS(
-                            layer.title, 
-                            'geoserver/ows',
-                            {
-                                layers : [layerTitle],
-                                transparent : true,
-                                sld_body : sldBody
-                            },
-                            {
-                                zoomToWhenAdded : true, // Include this layer when performing an aggregated zoom
-                                isBaseLayer : false,
-                                unsupportedBrowsers: []
-                            });
-                
-                        wmsLayer.events.register("loadend", wmsLayer, Shorelines.loadEnd);
-                        wmsLayer.events.register("featuresadded", wmsLayer, Shorelines.colorFeatures);
-                
-                        layersArray.push(wmsLayer);
-                    }
-                })
-                map.getMap().addLayers(layersArray);
-            }
-            ]
-        })
-    
         
     },
     loadEnd : function(event) {
