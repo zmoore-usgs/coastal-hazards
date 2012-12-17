@@ -87,7 +87,7 @@ var Shorelines = {
                             return filterSet + '<ogc:Literal>' + Util.getRandomColor().capitalize(true) + '</ogc:Literal>';
                         }
                         
-                        sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?> <StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <NamedLayer> <Name>#[layer]</Name> <UserStyle> <FeatureTypeStyle> <Rule>  <LineSymbolizer> <Stroke> <CssParameter name="stroke"> <ogc:Function name="Categorize"> <ogc:PropertyName>' +sortBy+ '</ogc:PropertyName> '+createUpperLimitFilterSet(colorLimitPairs)+'  </ogc:Function> </CssParameter> <CssParameter name="stroke-opacity">1</CssParameter> <CssParameter name="stroke-width">1</CssParameter> </Stroke> </LineSymbolizer> </Rule> </FeatureTypeStyle> </UserStyle> </NamedLayer> </StyledLayerDescriptor>';
+                        sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?> <StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <NamedLayer> <Name>#[layer]</Name> <UserStyle> <FeatureTypeStyle> <Rule>  <LineSymbolizer> <Stroke> <CssParameter name="stroke"> <ogc:Function name="Categorize"> <ogc:PropertyName>' +sortBy+ '</ogc:PropertyName> '+createUpperLimitFilterSet(colorLimitPairs)+'  </ogc:Function> </CssParameter> <CssParameter name="stroke-opacity">1</CssParameter> <CssParameter name="stroke-width">1</CssParameter> </Stroke> </LineSymbolizer> </Rule> </FeatureTypeStyle> </UserStyle> </NamedLayer> </StyledLayerDescriptor>';
                     } else if (!isNaN(Date.parse(colorLimitPairs[0][1]))) {
                         var createRuleSets = function(colorLimitPairs) {
                             var html = '';
@@ -108,17 +108,25 @@ var Shorelines = {
                                 }
                                 
                                 // ${DATETIME_ATTRIBUTE_NAME.value?date("MM/dd/yyyy")}
-                                html += '<Rule><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>'
+                                html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>'
                                 html += sortBy.trim();
-                                html += ' </ogc:PropertyName><ogc:LowerBoundary>'
-                                html += ' <ogc:Literal>'
-                                html += lowerBoundary
-                                html += '</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary>'
+                                html += '</ogc:PropertyName>'
                                 html += '<ogc:Literal>'
-                                html += upperBoundary
-                                html += '</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
+                                html += '*' + lowerBoundary.split('/')[2]//.replace('/01/','/02/')
+                                html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
                                 html += colorLimitPairs[lpIndex][0]
                                 html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
+//                                html += '<Rule><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>'
+//                                html += sortBy.trim();
+//                                html += ' </ogc:PropertyName><ogc:LowerBoundary>'
+//                                html += ' <ogc:Literal>'
+//                                html += lowerBoundary//.replace('/01/','/02/')
+//                                html += '</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary>'
+//                                html += '<ogc:Literal>'
+//                                html += upperBoundary
+//                                html += '</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
+//                                html += colorLimitPairs[lpIndex][0]
+//                                html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
                             }
                             return html;
                         }
