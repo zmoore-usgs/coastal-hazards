@@ -42,7 +42,7 @@ var Shorelines = {
                             
                     // Pulling down geometries is not required and can make the document huge 
                     // So grab everything except the geometry object(s)
-                    if (property.type != "gml:MultiLineStringPropertyType") {
+                    if (property.type != "gml:MultiLineStringPropertyType" && property.type != "gml:MultiCurvePropertyType" && property.name == 'the_geom') {
                         result[featureType.typeName].push(property.name);
                     }
                 })
@@ -220,10 +220,10 @@ var Shorelines = {
         var html = [];
         
         // Create header
-        html.push("<div class='well'><h4>"+this.name+"</h4><table class='tablesorter'><thead><tr><td>Selected</td><td>color</td>");
+        html.push("<div class='well'><h4>"+this.name+"</h4><table class='tablesorter'><thead><tr><td>Selected</td><td>ID<td>COLOR</td>");
     			
         var headerAttributes = Object.keys(this.describedFeatures[0].attributes, function(k) {
-            html.push("<td>" + k +"</td>");
+            html.push("<td>" + k.toUpperCase() +"</td>");
         })
     			
         html.push("</tr></thead><tbody>");
@@ -237,7 +237,7 @@ var Shorelines = {
                 return feature.attributes[event.object.groupByAttribute].split('/')[2] === n[1].split('/')[2]
             })
             
-            html.push("<tr><td><input type='checkbox'></td><td style='background-color:" + colorGroup[0] + ";'>&nbsp;&nbsp;&nbsp;&nbsp;</td>");
+            html.push("<tr><td><input type='checkbox' checked='checked'></td><td>"+ feature.fid +"</td><td style='background-color:" + colorGroup[0] + ";'>&nbsp;</td>");
             for (var haIndex = 0;haIndex < headerAttributes.length;haIndex++) {
                 html.push("<td>" + feature.attributes[headerAttributes[haIndex]] + "</td>");
             }
