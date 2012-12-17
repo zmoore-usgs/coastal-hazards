@@ -70,7 +70,7 @@ var Shorelines = {
                     if (groups[0] instanceof Date) {
                         // If it's a date array Change the groups items back from Date item back into string
                         groups = groups.map(function(n) {
-                            return n.format('{M}/{dd}/{yyyy}')
+                            return n.format('{MM}/{dd}/{yyyy}')
                         });
                     }
                 
@@ -106,16 +106,20 @@ var Shorelines = {
                                     upperBoundary = colorLimitPairs[lpIndex][1]
                                     lowerBoundary = colorLimitPairs[lpIndex - 1][1]
                                 }
+                                
                                 // ${DATETIME_ATTRIBUTE_NAME.value?date("MM/dd/yyyy")}
                                 html += '<Rule><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>'
                                 html += sortBy.trim();
+//                                html += ' </ogc:PropertyName><ogc:LowerBoundary><ogc:Function name="dateParse"><ogc:Literal>MM/dd/yyyy</ogc:Literal>'
                                 html += ' </ogc:PropertyName><ogc:LowerBoundary>'
                                 html += ' <ogc:Literal>'
                                 html += lowerBoundary
                                 html += '</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary>'
+//                                html += '</ogc:Literal></ogc:Function></ogc:LowerBoundary><ogc:UpperBoundary><ogc:Function name="dateParse"><ogc:Literal>MM/dd/yyyy</ogc:Literal>'
                                 html += '<ogc:Literal>'
                                 html += upperBoundary
                                 html += '</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
+//                                html += '</ogc:Literal></ogc:Function></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
                                 html += colorLimitPairs[lpIndex][0]
                                 html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
                             }
@@ -127,7 +131,7 @@ var Shorelines = {
                     
                     var wmsLayer = new OpenLayers.Layer.WMS(
                         layer.title, 
-                        'geoserver/wms',
+                        'geoserver/ows',
                         {
                             layers : [layer.name],
                             transparent : true,
