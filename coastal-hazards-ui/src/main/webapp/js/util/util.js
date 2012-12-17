@@ -84,6 +84,43 @@ var Util =  {
         s[8] = s[13] = s[18] = s[23] = '-';
  
         return s.join('');
+    },
+    makeGroups : function(groupItems) {
+        var firstGroupItem = groupItems[0];
+        
+        if (!isNaN(Date.parse(firstGroupItem))) {
+            LOG.info("Grouping by date/decade");
+            var dateBegin = Date.create(firstGroupItem);
+            var dateEnd = Date.create(firstGroupItem);
+            $(groupItems).each(function(i, dateItem) {
+                var date = Date.create(dateItem);
+                if (date.isBefore(dateBegin)) {
+                    dateBegin = date;
+                }
+                
+                if (date.isAfter(dateEnd)) {
+                    dateEnd = date;
+                }
+            })
+            return Date.range(dateBegin,dateEnd).every('10 years');
+        } else if (!isNaN(firstGroupItem)) {
+            LOG.info("Grouping by number");
+            var groups = groupItems.sortBy();
+            $(groups).each(function(i,v) {
+                groups[i] = Number.ceil(v);
+            })
+            return groups.unique();
+            
+        } else if (typeof firstGroupItem === 'string') {
+            LOG.info("Grouping by string");
+        }
+    },
+    createColorGroup : function(groups) {
+        var colorGroups = [];
+        $(groups).each(function(i,group) {
+            colorGroups.push([Util.getRandomColor().capitalize(true), group]);
+        })
+        return colorGroups;
     }
 }
 

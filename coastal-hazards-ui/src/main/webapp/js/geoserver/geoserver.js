@@ -11,6 +11,7 @@ var Geoserver = function(endpoint) {
     me.wmsGetCapsUrl = 'geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
     me.wmsCapabilities = null;
     me.wmsCapabilitiesXML = null;
+    me.featureTypes = Object.extended();
     
     return $.extend(me, {
         /**
@@ -69,40 +70,56 @@ var Geoserver = function(endpoint) {
             })
         },
         getDescribeFeatureType : function(args) {
-            var url = me.wfsDescribeFeatureType + '&typeName=';
-            $(args.featureNameArray || []).each(function(i,featureName, array) {
-                if (i == args.featureNameArray.length - 1) {
-                    url += featureName
-                } else {
-                    url += featureName + ','
-                }
-            })
+            // Check if we currently have this feature type from a previous call
+            if (me.featureTypes[args.featureName]) {
+                $(args.callbacks || []).each(function(index, callback) {
+                    callback(me.featureTypes[args.featureName], this);
+                })
+            }
             
+            var url = me.wfsDescribeFeatureType + '&typeName=' + args.featureName;
             $.ajax(url, {
                 context : args.scope || this,
                 success : function(data, textStatus, jqXHR) {
                     var gmlReader = new OpenLayers.Format.WFSDescribeFeatureType();
                     var describeFeaturetypeRespone = gmlReader.read(data); 
                     
-                    $(args.callbacks || []).each(function(index, callback, allCallbacks) {
+                    me.featureTypes[describeFeaturetypeRespone.featureTypes[0].typeName] = describeFeaturetypeRespone;
+                    
+                    $(args.callbacks || []).each(function(index, callback) {
                         callback(describeFeaturetypeRespone, this);
                     })
                 }
             })
         },
         getFilteredFeature : function(args) {
-            var url = me.wfsGetFeature + '&typeName=';
-            $(args.featureNameArray || []).each(function(i,featureName, array) {
-                if (i == args.featureNameArray.length - 1) {
-                    url += featureName
-                } else {
-                    url += featureName + ','
-                }
-            })
+            var properties = function(describeFeatureResponse) {
+                var result = new Object.extended();
+                // For every layer pulled in...
+                $(describeFeatureResponse.featureTypes).each(function(i, featureType) {
+                        
+                    // For each layer, initilize a property array for it in the result object
+                    result[featureType.typeName] = [];
+                        
+                    // Parse through its properties
+                    $(featureType.properties || []).each(function(i,property) {
+                            
+                        // Pulling down geometries is not required and can make the document huge 
+                        // So grab everything except the geometry object(s)
+                        if (property.type != "gml:MultiLineStringPropertyType") {
+                            result[featureType.typeName].push(property.name);
+                        }
+                    })
+                })
+                return result;
+            }(args.describeFeatureResponse)
+            
+            var layer = args.describeFeatureResponse.targetPrefix + ':' + args.featureName;
+            var url = me.wfsGetFeature + '&typeName=' + layer;
             
             url += '&propertyName='
             $(args.propertyArray || []).each(function(i, property, array) {
-                if (i == args.propertyArray.length - 1) {
+                if (i == properties[args.featureName].length - 1) {
                     url += property
                 } else {
                     url += property + ','
@@ -110,7 +127,7 @@ var Geoserver = function(endpoint) {
             })
             
             if (args.sortBy) {
-                url += '&sortBy=' + args.sortBy// + args.sortByAscending ? '%2BA' : '%2BD';
+                url += '&sortBy=' + properties[args.featureName][0]// + properties[layer.title][0] ? '%2BA' : '%2BD';
             }
             
             $.ajax(url, {
