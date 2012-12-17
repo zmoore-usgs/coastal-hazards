@@ -102,7 +102,7 @@ var Util =  {
                     dateEnd = date;
                 }
             })
-            return Date.range(dateBegin,dateEnd).every('10 years');
+            return Date.range(dateBegin,dateEnd).every('1 year');
         } else if (!isNaN(firstGroupItem)) {
             LOG.info("Grouping by number");
             var groups = groupItems.sortBy();

@@ -110,16 +110,13 @@ var Shorelines = {
                                 // ${DATETIME_ATTRIBUTE_NAME.value?date("MM/dd/yyyy")}
                                 html += '<Rule><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>'
                                 html += sortBy.trim();
-//                                html += ' </ogc:PropertyName><ogc:LowerBoundary><ogc:Function name="dateParse"><ogc:Literal>MM/dd/yyyy</ogc:Literal>'
                                 html += ' </ogc:PropertyName><ogc:LowerBoundary>'
                                 html += ' <ogc:Literal>'
                                 html += lowerBoundary
                                 html += '</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary>'
-//                                html += '</ogc:Literal></ogc:Function></ogc:LowerBoundary><ogc:UpperBoundary><ogc:Function name="dateParse"><ogc:Literal>MM/dd/yyyy</ogc:Literal>'
                                 html += '<ogc:Literal>'
                                 html += upperBoundary
                                 html += '</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
-//                                html += '</ogc:Literal></ogc:Function></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
                                 html += colorLimitPairs[lpIndex][0]
                                 html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
                             }
@@ -142,7 +139,14 @@ var Shorelines = {
                             isBaseLayer : false,
                             unsupportedBrowsers: [],
                             colorGroups : colorLimitPairs,
-                            describedFeatures : features
+                            describedFeatures : features,
+                            tileOptions: {
+                                // http://www.faqs.org/rfcs/rfc2616.html
+                                // This will cause any request larger than this many characters to be a POST
+                                maxGetUrlLength: 2048
+                            },
+                            singleTile: true, 
+                            ratio: 1
                         });
                 
                     wmsLayer.events.register("loadend", wmsLayer, Shorelines.loadEnd);
