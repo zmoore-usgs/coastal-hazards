@@ -62,7 +62,7 @@ var Shorelines = {
                 
                 if (map.getMap().getLayersByName(layer.title).length == 0) {
                     LOG.info('Layer does not yet exist on the map. Loading layer: ' + layer.title);
-                    var sortBy = 'DATE_';
+                    var groupColumn = 'DATE_';
                     var groups = Util.makeGroups(features.map(function(n) {
                         return Object.values(n.attributes)[0]
                     }));
@@ -87,50 +87,79 @@ var Shorelines = {
                             return filterSet + '<ogc:Literal>' + Util.getRandomColor().capitalize(true) + '</ogc:Literal>';
                         }
                         
-                        sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?> <StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <NamedLayer> <Name>#[layer]</Name> <UserStyle> <FeatureTypeStyle> <Rule>  <LineSymbolizer> <Stroke> <CssParameter name="stroke"> <ogc:Function name="Categorize"> <ogc:PropertyName>' +sortBy+ '</ogc:PropertyName> '+createUpperLimitFilterSet(colorLimitPairs)+'  </ogc:Function> </CssParameter> <CssParameter name="stroke-opacity">1</CssParameter> <CssParameter name="stroke-width">1</CssParameter> </Stroke> </LineSymbolizer> </Rule> </FeatureTypeStyle> </UserStyle> </NamedLayer> </StyledLayerDescriptor>';
+                        sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?> <StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <NamedLayer> <Name>#[layer]</Name> <UserStyle> <FeatureTypeStyle> <Rule>  <LineSymbolizer> <Stroke> <CssParameter name="stroke"> <ogc:Function name="Categorize"> <ogc:PropertyName>' +groupColumn+ '</ogc:PropertyName> '+createUpperLimitFilterSet(colorLimitPairs)+'  </ogc:Function> </CssParameter> <CssParameter name="stroke-opacity">1</CssParameter> <CssParameter name="stroke-width">1</CssParameter> </Stroke> </LineSymbolizer> </Rule> </FeatureTypeStyle> </UserStyle> </NamedLayer> </StyledLayerDescriptor>';
                     } else if (!isNaN(Date.parse(colorLimitPairs[0][1]))) {
-                        var createRuleSets = function(colorLimitPairs) {
-                            var html = '';
+                        LOG.debug('Grouping will be done by year')
+                        var featureDescription = geoserver.getDescribeFeatureType({
+                            featureName : layer.title
+                        });
+                        var dateType = featureDescription.featureTypes[0].properties.find(function(n){
+                            return n.name == groupColumn
+                        });
+                        var createRuleSets;
+                        if (dateType.type === 'xsd:string') {
+                            LOG.debug('Geoserver date column is actually a string');
+                            createRuleSets = function(colorLimitPairs) {
+                                var html = '';
                             
-                            for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
-                                var lowerBoundary = '';
-                                var upperBoundary = '';
-                                if (lpIndex == 0) {
-                                    lowerBoundary = colorLimitPairs[0][1];
-                                    if (colorLimitPairs.length == lpIndex) {
-                                        upperBoundary = colorLimitPairs[0][1]; // This means there's only one group'
-                                    } else {
-                                        upperBoundary = colorLimitPairs[lpIndex + 1][1]
-                                    }
-                                } else {
-                                    upperBoundary = colorLimitPairs[lpIndex][1]
-                                    lowerBoundary = colorLimitPairs[lpIndex - 1][1]
+                                for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
+                                    html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>'
+                                    html += groupColumn.trim();
+                                    html += '</ogc:PropertyName>'
+                                    html += '<ogc:Literal>'
+                                    html += '*' + colorLimitPairs[lpIndex][1].split('/')[2]//.replace('/01/','/02/')
+                                    html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
+                                    html += colorLimitPairs[lpIndex][0]
+                                    html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
                                 }
-                                
-                                // ${DATETIME_ATTRIBUTE_NAME.value?date("MM/dd/yyyy")}
-                                html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>'
-                                html += sortBy.trim();
-                                html += '</ogc:PropertyName>'
-                                html += '<ogc:Literal>'
-                                html += '*' + lowerBoundary.split('/')[2]//.replace('/01/','/02/')
-                                html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
-                                html += colorLimitPairs[lpIndex][0]
-                                html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
-//                                html += '<Rule><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>'
-//                                html += sortBy.trim();
-//                                html += ' </ogc:PropertyName><ogc:LowerBoundary>'
-//                                html += ' <ogc:Literal>'
-//                                html += lowerBoundary//.replace('/01/','/02/')
-//                                html += '</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary>'
-//                                html += '<ogc:Literal>'
-//                                html += upperBoundary
-//                                html += '</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
-//                                html += colorLimitPairs[lpIndex][0]
-//                                html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
+                                return html;
                             }
-                            return html;
+                        } else {
+                            LOG.debug('Geoserver date column is a date type');
+                            createRuleSets = function(colorLimitPairs) {
+                                var html = '';
+                            
+                                for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
+                                    var lowerBoundary = '';
+                                    var upperBoundary = '';
+                                    if (lpIndex == 0) {
+                                        lowerBoundary = colorLimitPairs[0][1];
+                                        if (colorLimitPairs.length == lpIndex) {
+                                            upperBoundary = colorLimitPairs[0][1]; // This means there's only one group'
+                                        } else {
+                                            upperBoundary = colorLimitPairs[lpIndex + 1][1]
+                                        }
+                                    } else {
+                                        upperBoundary = colorLimitPairs[lpIndex][1]
+                                        lowerBoundary = colorLimitPairs[lpIndex - 1][1]
+                                    }
+                                
+                                    html += '<Rule><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>'
+                                    html += groupColumn.trim();
+                                    html += ' </ogc:PropertyName><ogc:LowerBoundary>'
+                                    html += ' <ogc:Literal>'
+                                    html += lowerBoundary
+                                    html += '</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary>'
+                                    html += '<ogc:Literal>'
+                                    html += upperBoundary
+                                    html += '</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
+                                    html += colorLimitPairs[lpIndex][0]
+                                    html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
+                                }
+                                return html;
+                            }
                         }
-                        sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?> <StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <NamedLayer> <Name>#[layer]</Name> <UserStyle> <FeatureTypeStyle> ' + createRuleSets(colorLimitPairs) + '</FeatureTypeStyle> </UserStyle> </NamedLayer> </StyledLayerDescriptor>';
+                        
+                        sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>'+
+                        '<StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'+
+                        '<NamedLayer>'+
+                        '<Name>#[layer]</Name>' + 
+                        '<UserStyle>' + 
+                        '<FeatureTypeStyle> ' + createRuleSets(colorLimitPairs) + '</FeatureTypeStyle>' +  
+                        '</UserStyle>' + 
+                        '</NamedLayer>' +
+                        '</StyledLayerDescriptor>';
+                    
                     }
                     sldBody = sldBody.replace('#[layer]', layer.name);
                     
@@ -154,7 +183,8 @@ var Shorelines = {
                                 maxGetUrlLength: 2048
                             },
                             singleTile: true, 
-                            ratio: 1
+                            ratio: 1,
+                            groupByAttribute : groupColumn
                         });
                 
                     wmsLayer.events.register("loadend", wmsLayer, Shorelines.loadEnd);
@@ -187,8 +217,9 @@ var Shorelines = {
         }
     },
     createFeatureTable : function(event) {
-        var layer = event.object;
         var html = [];
+        
+        // Create header
         html.push("<div class='well'><h4>"+this.name+"</h4><table class='tablesorter'><thead><tr><td>Selected</td><td>color</td>");
     			
         var headerAttributes = Object.keys(this.describedFeatures[0].attributes, function(k) {
@@ -197,20 +228,21 @@ var Shorelines = {
     			
         html.push("</tr></thead><tbody>");
         
-        $(this.describedFeatures).each(function(i, feature) {
-            var color = function(colorGroups) {
-                var result = '';
-                $(colorGroups).each(function(i,v) {
-                    var a = 1;
-                })
-                return result;
-            }(this.colorGroups);
+        $(this.describedFeatures.sortBy(function(n) {
+            return n.attributes[event.object.groupByAttribute]
+        })).each(function(i, feature) {
             
-            html.push("<tr><td><input type='checkbox'></td><td style='background-color:" + SHORELINE_COLORS[val.index] + ";'>" + SHORELINE_COLORS[val.index] + "</td>");
-            Object.each(headerAttributes, function(i, el) {
-                html.push("<td>" + val.attributes[el] + "</td>");
-            });
+            // Find the proper color group based on the attributes in the feature attribute
+            var colorGroup = event.object.colorGroups.find(function(n) {
+                return feature.attributes[event.object.groupByAttribute].split('/')[2] === n[1].split('/')[2]
+            })
+            
+            html.push("<tr><td><input type='checkbox'></td><td style='background-color:" + colorGroup[0] + ";'>&nbsp;&nbsp;&nbsp;&nbsp;</td>");
+            for (var haIndex = 0;haIndex < headerAttributes.length;haIndex++) {
+                html.push("<td>" + feature.attributes[headerAttributes[haIndex]] + "</td>");
+            }
             html.push("</tr>");
+            
         })
     			
         html.push("</tbody></table></div>");

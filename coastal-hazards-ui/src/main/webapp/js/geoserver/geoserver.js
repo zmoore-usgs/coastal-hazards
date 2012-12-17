@@ -5,7 +5,7 @@ var Geoserver = function(endpoint) {
     me.geoserverEndpoint = endpoint ? endpoint : CONFIG.geoServerEndpoint;
     me.wfsGetCapsUrl = 'geoserver/ows?service=wfs&version=1.1.0&request=GetCapabilities'
     me.wfsGetFeature = 'geoserver/ows?service=wfs&version=1.1.0&request=GetFeature'
-    me.wfsDescribeFeatureType = 'geoserver/ows?service=wfs&version=1.1.0&request=DescribeFeatureType'
+    me.wfsDescribeFeatureType = 'geoserver/ows?service=wfs&version=2.0.0&request=DescribeFeatureType'
     me.wfsCapabilities = null;
     me.wfsCapabilitiesXML = null;
     me.wmsGetCapsUrl = 'geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
@@ -72,9 +72,13 @@ var Geoserver = function(endpoint) {
         getDescribeFeatureType : function(args) {
             // Check if we currently have this feature type from a previous call
             if (me.featureTypes[args.featureName]) {
-                $(args.callbacks || []).each(function(index, callback) {
-                    callback(me.featureTypes[args.featureName], this);
-                })
+                if (!args.callbacks || args.callbacks.length == 0) {
+                    return me.featureTypes[args.featureName];
+                } else {
+                    $(args.callbacks || []).each(function(index, callback) {
+                        callback(me.featureTypes[args.featureName], this);
+                    })
+                }
             }
             
             var url = me.wfsDescribeFeatureType + '&typeName=' + args.featureName;
@@ -127,7 +131,7 @@ var Geoserver = function(endpoint) {
             })
             
             if (args.sortBy) {
-                url += '&sortBy=' + properties[args.featureName][0]// + properties[layer.title][0] ? '%2BA' : '%2BD';
+//                url += '&sortBy=' + properties[args.featureName][0]// + properties[layer.title][0] ? '%2BA' : '%2BD';
             }
             
             $.ajax(url, {
