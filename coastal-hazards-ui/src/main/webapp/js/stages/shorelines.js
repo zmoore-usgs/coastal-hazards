@@ -250,9 +250,11 @@ var Shorelines = {
         colorTableHTML.push("</tbody></table></div>");
         var navTabs = 	$('#shoreline-table-navtabs');
         var tabContent = $('#shoreline-table-tabcontent');
+        var shorelineList = $('#shorelines-list');
+        var selectedVals = shorelineList.children(':selected').map(function(i,v) { return v.text }).toArray();
         
         navTabs.children().each(function(i,navTab) {
-            if (navTab.id == event.object.name) {
+            if (navTab.textContent == event.object.name || selectedVals.count(navTab.textContent)) {
                 $(navTab).remove();
             } else  if ($(navTab).hasClass('active')) {
                 $(navTab).removeClass('active')
@@ -260,7 +262,7 @@ var Shorelines = {
         })
         
         tabContent.children().each(function(i, tabContent) {
-            if (tabContent.id == event.object.name) {
+            if (tabContent.textContent == event.object.name || selectedVals.count(tabContent.textContent)) {
                 $(tabContent).remove();
             } else  if ($(tabContent).hasClass('active')) {
                 $(tabContent).removeClass('active')
