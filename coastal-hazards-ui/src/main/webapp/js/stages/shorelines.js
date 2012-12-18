@@ -1,3 +1,5 @@
+// TODO - Onclick table rows to zoom to specific feature ID
+// TODO - Refactor out utility functions and UI functions
 // TODO - Back end and front-end verification for uploaded shapefiles
 // TODO - Deal with non-standard shapefiles
 var Shorelines = {
@@ -86,7 +88,6 @@ var Shorelines = {
                             }
                             return filterSet + '<ogc:Literal>' + Util.getRandomColor().capitalize(true) + '</ogc:Literal>';
                         }
-                        
                         sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?> <StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <NamedLayer> <Name>#[layer]</Name> <UserStyle> <FeatureTypeStyle> <Rule>  <LineSymbolizer> <Stroke> <CssParameter name="stroke"> <ogc:Function name="Categorize"> <ogc:PropertyName>' +groupColumn+ '</ogc:PropertyName> '+createUpperLimitFilterSet(colorLimitPairs)+'  </ogc:Function> </CssParameter> <CssParameter name="stroke-opacity">1</CssParameter> <CssParameter name="stroke-width">1</CssParameter> </Stroke> </LineSymbolizer> </Rule> </FeatureTypeStyle> </UserStyle> </NamedLayer> </StyledLayerDescriptor>';
                     } else if (!isNaN(Date.parse(colorLimitPairs[0][1]))) {
                         LOG.debug('Grouping will be done by year')
@@ -167,7 +168,7 @@ var Shorelines = {
                         layer.title, 
                         'geoserver/ows',
                         {
-                            layers : [layer.name],
+                            layers : layer.name,
                             transparent : true,
                             sld_body : sldBody
                         },
@@ -187,8 +188,8 @@ var Shorelines = {
                             groupByAttribute : groupColumn
                         });
                 
-                    wmsLayer.events.register("loadend", wmsLayer, Shorelines.zoomToLayer);
                     wmsLayer.events.register("loadend", wmsLayer, Shorelines.createFeatureTable);
+                    wmsLayer.events.register("loadend", wmsLayer, Shorelines.zoomToLayer);
                     map.getMap().addLayer(wmsLayer);
                 }
             }
@@ -199,7 +200,7 @@ var Shorelines = {
         LOG.info('loadend event triggered on layer');
         var bounds = new OpenLayers.Bounds();
         var layers = map.getMap().getLayersBy('zoomToWhenAdded', true);
-                    
+        
         $(layers).each(function(i, layer) {
             if (layer.zoomToWhenAdded) {
                 
@@ -211,12 +212,14 @@ var Shorelines = {
                 
             }
         })
-        
+                    
         if (bounds.left && bounds.right && bounds.top && bounds.bottom) {
             map.getMap().zoomToExtent(bounds, false);
         }
+        
     },
     createFeatureTable : function(event) {
+        LOG.info('Creating color feature table');
         var colorTableHTML = [];
         
         event.object.events.unregister('loadend', event.object, Shorelines.createFeatureTable);
@@ -254,7 +257,7 @@ var Shorelines = {
         var selectedVals = shorelineList.children(':selected').map(function(i,v) { return v.text }).toArray();
         
         navTabs.children().each(function(i,navTab) {
-            if (navTab.textContent == event.object.name || selectedVals.count(navTab.textContent)) {
+            if (navTab.textContent == event.object.name || !selectedVals.count(navTab.textContent)) {
                 $(navTab).remove();
             } else  if ($(navTab).hasClass('active')) {
                 $(navTab).removeClass('active')
@@ -262,7 +265,7 @@ var Shorelines = {
         })
         
         tabContent.children().each(function(i, tabContent) {
-            if (tabContent.textContent == event.object.name || selectedVals.count(tabContent.textContent)) {
+            if (tabContent.id == event.object.name || !selectedVals.count(tabContent.id)) {
                 $(tabContent).remove();
             } else  if ($(tabContent).hasClass('active')) {
                 $(tabContent).removeClass('active')

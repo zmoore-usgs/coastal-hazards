@@ -1,8 +1,16 @@
 var Util =  {
     
     getRandomColor : function() {
-       // http://paulirish.com/2009/random-hex-color-code-snippets/
-       return '#'+Math.floor(Math.random()*16777215).toString(16);
+        // http://paulirish.com/2009/random-hex-color-code-snippets/
+        var randomColor = '';
+        var createRandomColor = function() {
+            return '#'+Math.floor(Math.random()*16777215).toString(16)
+        }
+        
+        while (randomColor.length != 7) {
+            randomColor = createRandomColor();
+        }
+        return randomColor;
     },
     randomGUID : function () {
         var S4 = function() {
@@ -65,7 +73,9 @@ var Util =  {
         $(groups).each(function(i,group) {
             var color = Util.getRandomColor().capitalize(true);
             // Make sure that we don't already have this color in the colorGroups or white or black
-            while (colorGroups.find(function(n){ return n[0] === color}) || color === '#FFFFFF' || color === '#000000') {
+            while (colorGroups.find(function(n){
+                return n[0] === color
+                }) || color === '#FFFFFF' || color === '#000000') {
                 color = Util.getRandomColor().capitalize(true);
             }
             colorGroups.push([color, group]);

@@ -9,7 +9,7 @@ var Map = function() {
         }
     });
     
-    me.map = new OpenLayers.Map( 'map', {
+    me.map = new OpenLayers.Map('map', {
         projection : "EPSG:900913"
     });
     
