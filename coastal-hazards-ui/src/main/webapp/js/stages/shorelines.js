@@ -187,7 +187,7 @@ var Shorelines = {
                             groupByAttribute : groupColumn
                         });
                 
-                    wmsLayer.events.register("loadend", wmsLayer, Shorelines.loadEnd);
+                    wmsLayer.events.register("loadend", wmsLayer, Shorelines.zoomToLayer);
                     wmsLayer.events.register("loadend", wmsLayer, Shorelines.createFeatureTable);
                     map.getMap().addLayer(wmsLayer);
                 }
@@ -195,7 +195,7 @@ var Shorelines = {
             ]
         })
     },
-    loadEnd : function(event) {
+    zoomToLayer : function(event) {
         LOG.info('loadend event triggered on layer');
         var bounds = new OpenLayers.Bounds();
         var layers = map.getMap().getLayersBy('zoomToWhenAdded', true);
@@ -206,7 +206,7 @@ var Shorelines = {
                 bounds.extend(new OpenLayers.Bounds(geoserver.getLayerByName(layer.name).bbox["EPSG:900913"].bbox));
                 
                 if (layer.events.listeners.loadend.length) {
-                    layer.events.unregister('loadend', layer, this.events.listeners.loadend[0].func);
+                    layer.events.unregister('loadend', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);
                 }
                 
             }
@@ -217,16 +217,18 @@ var Shorelines = {
         }
     },
     createFeatureTable : function(event) {
-        var html = [];
+        var colorTableHTML = [];
+        
+        event.object.events.unregister('loadend', event.object, Shorelines.createFeatureTable);
         
         // Create header
-        html.push("<div class='well'><h4>"+this.name+"</h4><table class='tablesorter'><thead><tr><td>Selected</td><td>ID<td>COLOR</td>");
+        colorTableHTML.push("<div class='well' id='shoreline-table-well'><table class='table table-bordered table-condensed tablesorter'><thead><tr><td>Selected</td><td>ID<td>COLOR</td>");
     			
         var headerAttributes = Object.keys(this.describedFeatures[0].attributes, function(k) {
-            html.push("<td>" + k.toUpperCase() +"</td>");
+            colorTableHTML.push("<td>" + k.toUpperCase() +"</td>");
         })
     			
-        html.push("</tr></thead><tbody>");
+        colorTableHTML.push("</tr></thead><tbody>");
         
         $(this.describedFeatures.sortBy(function(n) {
             return n.attributes[event.object.groupByAttribute]
@@ -237,17 +239,42 @@ var Shorelines = {
                 return feature.attributes[event.object.groupByAttribute].split('/')[2] === n[1].split('/')[2]
             })
             
-            html.push("<tr><td><input type='checkbox' checked='checked'></td><td>"+ feature.fid +"</td><td style='background-color:" + colorGroup[0] + ";'>&nbsp;</td>");
+            colorTableHTML.push("<tr><td><input type='checkbox' checked='checked'></td><td>"+ feature.fid +"</td><td style='background-color:" + colorGroup[0] + ";'>&nbsp;</td>");
             for (var haIndex = 0;haIndex < headerAttributes.length;haIndex++) {
-                html.push("<td>" + feature.attributes[headerAttributes[haIndex]] + "</td>");
+                colorTableHTML.push("<td>" + feature.attributes[headerAttributes[haIndex]] + "</td>");
             }
-            html.push("</tr>");
+            colorTableHTML.push("</tr>");
             
         })
     			
-        html.push("</tbody></table></div>");
-    			
-        $("#color-legend").html(html.join(''));
+        colorTableHTML.push("</tbody></table></div>");
+        var navTabs = 	$('#shoreline-table-navtabs');
+        var tabContent = $('#shoreline-table-tabcontent');
+        
+        navTabs.children().each(function(i,navTab) {
+            if (navTab.id == event.object.name) {
+                $(navTab).remove();
+            } else  if ($(navTab).hasClass('active')) {
+                $(navTab).removeClass('active')
+            }
+        })
+        
+        tabContent.children().each(function(i, tabContent) {
+            if (tabContent.id == event.object.name) {
+                $(tabContent).remove();
+            } else  if ($(tabContent).hasClass('active')) {
+                $(tabContent).removeClass('active')
+            }
+        })
+
+        navTabs.
+        append($('<li />').addClass('active').//.attr('id', this.name).
+            append($('<a />').attr('href', '#' + this.name).attr('data-toggle', 'tab').html(this.name))
+            );
+        
+        tabContent.
+        append($('<div />').addClass('tab-pane').addClass('active').attr('id', this.name).html(colorTableHTML.join('')))
+                        
         $("table.tablesorter").tablesorter();
     },
     populateFeaturesList : function(caps) {

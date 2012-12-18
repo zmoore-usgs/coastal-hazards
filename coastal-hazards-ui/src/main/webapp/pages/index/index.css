@@ -11,7 +11,7 @@
 img { max-width: none; }
 
 #map {
-    height: 40em;
+    height: 100%;
     width: 100%;
 }
 
@@ -23,8 +23,12 @@ img { max-width: none; }
     font : 1em/0.5em Verdana,Arial,Helvetica,sans-serif;
 }
 
-#toolbox-content {
-    height: 40em;
+#map-well {
+    height: 38em;
+}
+
+#toolbox-well {
+    height: 38em;
 }
 
 .hide {
@@ -32,11 +36,15 @@ img { max-width: none; }
 }
 
 #shorelines-well {
-    height: 80%;
+    height: 15em;
 }
 
 #shorelines-list {
-    height: 30em;
+    height: 12em;
+}
+
+#shoreline-table-well {
+    height: 12em;
 }
 
 /* Fine Uploader
