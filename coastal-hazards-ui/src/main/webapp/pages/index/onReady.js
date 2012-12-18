@@ -34,6 +34,7 @@ $(document).ready(function() {
         function(caps) {
             Shorelines.populateFeaturesList(caps);
             Baseline.populateFeaturesList(caps);
+            Transects.populateFeatureList(caps);
         }
         ]
     })
