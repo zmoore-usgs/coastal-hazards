@@ -33,7 +33,7 @@ $(document).ready(function() {
         callbacks : [
         function(caps) {
             Shorelines.populateFeaturesList(caps);
-//            Baseline.populateFeaturesList(caps);
+            Baseline.populateFeaturesList(caps);
         }
         ]
     })

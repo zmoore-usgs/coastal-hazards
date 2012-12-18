@@ -1,47 +1,24 @@
 var Baseline = {
     
-    addBaseline : function() {
-        var layer = [];
-        layer[3] = new OpenLayers.Layer.Vector("WFS3", {
+    addBaseline : function(args) {
+        var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
-                url:  "geoserver/sample/wfs",
-                featureType: "baseline",
-                featureNS: CONFIG.namespace.sample,
+                url:  "geoserver/ows", // should not be sample dependent
+                featureType: args.name.split(':')[1], // from listbox
+                featureNS: CONFIG.namespace[args.name.split(':')[0]], // redo this
                 geometryName: "the_geom"
             }),
             styleMap: new OpenLayers.StyleMap(sld.namedLayers["Simple Line"]["userStyles"][0])
         });
-        layer[3].events.register("featuresadded", null, function() {
-            this.map.zoomToExtent(this.getDataExtent());
-        });
+//        baselineLayer.events.register("featuresadded", null, function() {
+//            this.map.zoomToExtent(this.getDataExtent());
+//        });
 	
-        map.getMap().addLayer(layer[3]);
+        map.getMap().addLayer(baselineLayer);
     },
     populateFeaturesList : function(caps) {
-        $('#baseline-list').children().remove();
-        
-        for (var index = 0;index <  caps.featureTypeList.featureTypes.length;index++) { 
-            var featureType = caps.featureTypeList.featureTypes[index];
-            
-            if (featureType.featureNS === CONFIG.namespace.sample || featureType.featureNS === CONFIG.namespace.input) {
-                var title = featureType.title;
-                var shortenedTitle = title.has(permSession.getCurrentSessionKey()) 
-                ?  title.remove(permSession.getCurrentSessionKey() + '_') 
-                : title;
-                
-                if (featureType.featureNS === CONFIG.namespace.input && !title.has(permSession.getCurrentSessionKey())) {
-                    continue;
-                }
-                
-                if (title.substr(title.lastIndexOf('_') + 1) == 'baseline') {
-                    $('#baseline-list')
-                    .append($("<option></option>")
-                        .attr("value",title)
-                        .text(shortenedTitle));
-                } 
-            }
-        }
+        ui.populateFeaturesList(caps, 'baseline');
     },
     initializeUploader : function() {
         var uploader = new qq.FineUploader({
