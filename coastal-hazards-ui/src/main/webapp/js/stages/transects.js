@@ -12,5 +12,8 @@ var Transects = {
 	
         map.getMap().addLayer(layer);
 	
+    },
+    populateFeatureList : function(caps) {
+        ui.populateFeatureList(caps, 'transects');
     }
 }
