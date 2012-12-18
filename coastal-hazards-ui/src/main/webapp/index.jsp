@@ -65,7 +65,7 @@
 			
             CONFIG.development = <%= development%>;
             CONFIG.geoServerEndpoint = '<%= geoserverEndpoint%>';
-            CONFIG.namespace = new Object();
+            CONFIG.namespace = Object.extended();
             CONFIG.namespace.sample = 'gov.usgs.cida.ch.sample';
             CONFIG.namespace.input = 'gov.usgs.cida.ch.input';
             CONFIG.namespace.output = 'gov.usgs.cida.ch.output';
@@ -101,7 +101,6 @@
         <script type="text/javascript" src="js/stages/baseline.js"></script>
         <script type="text/javascript" src="js/stages/transects.js"></script>
         <script type="text/javascript" src="js/stages/intersections.js"></script>
-        <!--<script type="text/javascript" src="pages/index/shorelines.js"></script>-->
         <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
 
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
@@ -118,16 +117,31 @@
         <div class="application-body">
             <div class="container-fluid">
                 <div class="row-fluid">
-                    <div class="span7">
-                        <div id="map"></div>
+                    <!-- NAV -->
+                    <div class="span1">
+                        <ul class="nav nav-pills nav-stacked">
+                            <li class="active"><a href="#shorelines" data-toggle="tab"><img id="shorelines_img" src="images/workflow_figures/shorelines.png" title="Display Shorelines"/></a></li>
+                            <li><a href="#baseline" data-toggle="tab"><img id="baseline_img" src="images/workflow_figures/baseline_future.png" title="Display Baseline"/></a></li>
+                            <li><a href="#transects" data-toggle="tab"><img id="transects_img" src="images/workflow_figures/transects_future.png" title="Calculate Transects"/></a></li>
+                            <li><a href="#intersections" data-toggle="tab"><img id="intersections_img" src="images/workflow_figures/intersections_future.png" title="Show Intersections"/></a></li>
+                            <li><a href="#results" data-toggle="tab"><img id="results_img" src="images/workflow_figures/results_future.png" title="Display Results"/></a></li>
+                        </ul>
                     </div>
-                    <div class="span4">
-                        <div id="toolbox-content" class="well well-large tab-content">
+
+                    <!-- Toolbox -->
+                    <div class="span6">
+                        <div id="toolbox-well" class="well well-large tab-content">
                             <div class="tab-pane active" id="shorelines">
                                 <div class="well" id="shorelines-well">
                                     <select id="shorelines-list" multiple="multiple" style="width: 100%;"></select>
+                                    <div id="shoreline-uploader"></div>
                                 </div>
-                                <div id="shoreline-uploader"></div>
+                                <div class="tabbable">
+                                    <ul class="nav nav-tabs" id="shoreline-table-navtabs">
+                                    </ul>
+                                    <div class="tab-content" id="shoreline-table-tabcontent">
+                                    </div>
+                                </div>
                             </div>
                             <div class="tab-pane" id="baseline">
                                 <div class="well">
@@ -144,26 +158,21 @@
                             <div class="tab-pane" id="results">
                                 <button id="display-results-btn"  title="Display Results">Display Results</button>
                             </div>
+
+                        </div>
+
+
+                    </div>
+
+                    <!-- MAP -->
+                    <div class="span5">
+                        <div id="map-well" class="well well-large tab-content">
+                            <div id="map"></div>
                         </div>
                     </div>
-                    <div class="span1">
-                        <ul class="nav nav-pills nav-stacked">
-                            <li class="active"><a href="#shorelines" data-toggle="tab"><img id="shorelines_img" src="images/workflow_figures/shorelines.png" title="Display Shorelines"/></a></li>
-                            <li><a href="#baseline" data-toggle="tab"><img id="baseline_img" src="images/workflow_figures/baseline_future.png" title="Display Baseline"/></a></li>
-                            <li><a href="#transects" data-toggle="tab"><img id="transects_img" src="images/workflow_figures/transects_future.png" title="Calculate Transects"/></a></li>
-                            <li><a href="#intersections" data-toggle="tab"><img id="intersections_img" src="images/workflow_figures/intersections_future.png" title="Show Intersections"/></a></li>
-                            <li><a href="#results" data-toggle="tab"><img id="results_img" src="images/workflow_figures/results_future.png" title="Display Results"/></a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span7" id="color-legend">
 
-                    </div>
-                    <div class="span5">
-
-                    </div>
                 </div>
+
             </div>
         </div>
 

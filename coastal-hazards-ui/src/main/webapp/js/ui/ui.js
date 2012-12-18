@@ -23,6 +23,86 @@ var UI = function() {
                     $(imgId).attr('src', 'images/workflow_figures/' + workStage + '_future.png');
                 }
             }
+        },
+        shorelinesListboxChanged : function() {
+            
+            $("#shorelines-list option:not(:selected)").each(function (index, option) {
+                var layers = map.getMap().getLayersBy('name', option.text);
+                if (layers.length) {
+                    $(layers).each(function(i,l) {
+                        map.getMap().removeLayer(l);
+                    })
+                }
+            });
+            
+            var layerInfos = []
+            $("#shorelines-list option:selected").each(function (index, option) {
+                var layer = geoserver.getLayerByName(option.text);
+                
+                layerInfos.push(layer)
+            });
+            
+            if (layerInfos.length) {
+                Shorelines.addShorelines(layerInfos);
+            }
+            
+        },
+        baselineListboxChanged : function() {
+            $("#baseline-list option:not(:selected)").each(function (index, option) {
+                var layers = map.getMap().getLayersBy('name', option.value);
+                if (layers.length) {
+                    $(layers).each(function(i,l) {
+                        map.getMap().removeLayer(l);
+                    })
+                }
+            });
+            if ($("#baseline-list option:selected")[0].value) {
+                Baseline.addBaseline({
+                    name : $("#baseline-list option:selected")[0].value 
+                })
+            }
+        },
+        populateFeaturesList : function(caps, context) {
+            $('#'+context+'-list').children().remove();
+        
+            if (context == 'baseline') {
+                $('#'+context+'-list')
+                .append($("<option></option>")
+                    .attr("value",'')
+                    .text(''));
+            }
+        
+            $(caps.capability.layers).each(function(i, layer) { 
+                var currentSessionKey = tempSession.getCurrentSessionKey();
+                var title = layer.title;
+            
+                // Add the option to the list only if it's from the sample namespace or
+                // if it's from the input namespace and in the current session
+                if (layer.prefix === 'sample' || (layer.prefix === 'ch-input' && title.has(currentSessionKey) ) ) {
+                        
+                    var shortenedTitle = title.has(currentSessionKey) ?  
+                    title.remove(currentSessionKey + '_') : 
+                    title;
+
+                    if (title.substr(title.lastIndexOf('_') + 1) == context) {
+                        LOG.debug('Found a layer to add to the '+context+' listbox: ' + title)
+                        $('#'+context+'-list')
+                        .append($("<option></option>")
+                            .attr("value",layer.name)
+                            .text(shortenedTitle));
+                    } 
+                }
+            })
+            
+            if (context == 'shorelines') {
+                $('#'+context+'-list').change(function(index, option) {
+                    ui.shorelinesListboxChanged()
+                }) 
+            } else if (context == 'baseline') {
+                $('#'+context+'-list').change(function(index, option) {
+                    ui.baselineListboxChanged()
+                }) 
+            }
         }
     });
 }
