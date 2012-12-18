@@ -62,6 +62,22 @@ var UI = function() {
                 })
             }
         },
+        transectListboxChanged : function() {
+            LOG.debug('Transect listbox changed');
+            $("#transects-list option:not(:selected)").each(function (index, option) {
+                var layers = map.getMap().getLayersBy('name', option.value);
+                if (layers.length) {
+                    $(layers).each(function(i,l) {
+                        map.getMap().removeLayer(l);
+                    })
+                }
+            });
+            if ($("#transects-list option:selected")[0].value) {
+                Transects.addTransects({
+                    name : $("#transects-list option:selected")[0].value 
+                })
+            }
+        },
         populateFeaturesList : function(caps, context) {
             $('#'+context+'-list').children().remove();
         
@@ -78,7 +94,7 @@ var UI = function() {
             
                 // Add the option to the list only if it's from the sample namespace or
                 // if it's from the input namespace and in the current session
-                if (layer.prefix === 'sample' || (layer.prefix === 'ch-input' && title.has(currentSessionKey) ) ) {
+                if (layer.prefix === 'sample' || (layer.prefix === 'ch-input' && title.has(currentSessionKey) )) {
                         
                     var shortenedTitle = title.has(currentSessionKey) ?  
                     title.remove(currentSessionKey + '_') : 

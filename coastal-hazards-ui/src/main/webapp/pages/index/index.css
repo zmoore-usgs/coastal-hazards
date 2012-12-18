@@ -43,6 +43,10 @@ img { max-width: none; }
     height: 12em;
 }
 
+#transects-list {
+    height: 12em;
+}
+
 #shoreline-table-well {
     height: 12em;
 }

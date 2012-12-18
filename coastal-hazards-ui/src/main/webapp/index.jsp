@@ -156,6 +156,9 @@
                             
                             <!-- Transects --> 
                             <div class="tab-pane" id="transects">
+                                <div class="well">
+                                    <select id="transects-list" multiple="multiple" style="width: 100%;"></select>
+                                </div>
                                 <button id="calculate-transects-btn"  title="Calculate Transects">Calculate Transects</button>
                             </div>
                             
