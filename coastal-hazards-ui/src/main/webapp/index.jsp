@@ -150,7 +150,7 @@
                             <div class="tab-pane" id="baseline">
                                 <div class="well" id="baseline-well">
                                     <select id="baseline-list" style="width: 100%;"></select>
-                                    <div id="baseline-uploader"></div>
+                                    <div id="baseline-uploader"></div><button id="baseline-draw-btn" class="btn btn-success"><i class="icon-pencil icon-white"></i>&nbsp;Draw Baseline</button>
                                 </div>
                             </div>
 
