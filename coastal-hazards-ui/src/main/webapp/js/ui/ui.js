@@ -143,7 +143,6 @@ var UI = function() {
                     success: 'alert alert-success',
                     fail: 'alert alert-error'
                 },
-                debug: true,
                 callbacks: {
                     onComplete: function(id, fileName, responseJSON) {
                         if (responseJSON.success) {
