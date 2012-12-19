@@ -29,7 +29,7 @@ $(document).ready(function() {
     
     $("#calculate-transects-btn").on("click", Transects.calcTransects);
     $("#create-intersections-btn").on("click", Intersections.calcIntersections);
-//    $("#display-results-btn").on("click", function() { /* not yet implemented */});
+    $('#baseline-draw-btn').on("click", Baseline.drawBaseline);
     
     geoserver.getWMSCapabilities({
         callbacks : [

@@ -21,7 +21,7 @@ var Session = function(name, isPerm) {
             newSession[randID] = Object.extended(); 
             newSession.files = [];
             me.session['sessions'][randID] = newSession;
-            me.session['current-session'] = Obect.extended();
+            me.session['current-session'] = Object.extended();
             me.session['current-session']['key'] = randID;
             me.session['current-session']['session'] = me.session['sessions'][randID];
         }

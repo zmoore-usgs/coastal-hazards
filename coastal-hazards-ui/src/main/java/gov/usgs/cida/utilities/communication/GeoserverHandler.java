@@ -32,6 +32,11 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.geotools.data.shapefile.dbf.DbaseFileHeader;
+import org.geotools.data.shapefile.dbf.DbaseFileWriter;
+import org.geotools.data.shapefile.shp.ShapeType;
+import org.geotools.data.shapefile.shp.ShapefileWriter;
+import com.vividsolutions.jts.geom.Envelope;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.NodeList;
 
@@ -67,12 +72,12 @@ public class GeoserverHandler {
     }
     
     public HttpResponse importFeatures(File file, String workspace, String name) throws IOException {
-        File wpsRequestFile = createImportProcessXMLFile(file, workspace, name);
+        File wpsRequestFile = createImportFromFileProcessXMLFile(file, workspace, name);
         HttpResponse requestResponse = sendRequest("wps", PARAM_POST, PARAM_TEXT_XML, wpsRequestFile); 
         return requestResponse;
     }
     
-    File createImportProcessXMLFile(File shapeFileZip, String workspace, String name) throws IOException {
+    File createImportFromFileProcessXMLFile(File shapeFileZip, String workspace, String name) throws IOException {
         File wpsRequestFile = null;
         FileOutputStream wpsRequestOutputStream = null;
         FileInputStream shapeZipInputStream = null;
@@ -147,7 +152,7 @@ public class GeoserverHandler {
         return wpsRequestFile;
     }
 
-    public void createDataStore(String shapefilePath, String layer,
+    public void createDataStoreFromShapefile(String shapefilePath, String layer,
             String workspace, String nativeCRS, String declaredCRS) throws IOException {
         
         LOG.debug("Creating data store on WFS server located at: " + url);
@@ -468,7 +473,7 @@ public class GeoserverHandler {
     }
     
     HttpResponse sendRequest(String path, String requestMethod, String contentType, File content) throws FileNotFoundException, IOException {
-        HttpPost post = null;
+        HttpPost post;
         HttpClient httpClient = new DefaultHttpClient();
         
         post = new HttpPost(url + path);
@@ -589,5 +594,51 @@ public class GeoserverHandler {
         }
 
         return localUrl;
+    }
+    
+    public static File createEmptyShapefile(String path, String name) throws IOException {
+        File shpFile = new File(path, name + ".shp");
+        File shxFile = new File(path, name + ".shx");
+        File dbfFile = new File(path, name + ".dbf");
+
+        // Make sure all parent directories exist
+        shpFile.getParentFile().mkdirs();
+
+        if (shpFile.exists()) {
+            shpFile.delete();
+        }
+        if (shxFile.exists()) {
+            shxFile.delete();
+        }
+        if (dbfFile.exists()) {
+            dbfFile.delete();
+        }
+
+        shpFile.createNewFile();
+        shxFile.createNewFile();
+        dbfFile.createNewFile();
+
+        FileOutputStream shpFileOutputStream = new FileOutputStream(shpFile);
+        FileOutputStream shxFileOutputStream = new FileOutputStream(shxFile);
+        FileOutputStream dbfFileOutputStream = new FileOutputStream(dbfFile);
+
+
+        // Write dbf file with single column, values will be added over WFS-T
+        DbaseFileHeader header = new DbaseFileHeader();
+        header.addColumn("ID", 'N', 4, 0);
+        header.setNumRecords(0);
+
+        DbaseFileWriter dfw = new DbaseFileWriter(header, dbfFileOutputStream.getChannel());
+        dfw.close();
+
+        // Only write headers, geometry will be added over WFS-T
+        ShapefileWriter sw = new ShapefileWriter(shpFileOutputStream.getChannel(),
+                shxFileOutputStream.getChannel());
+
+        sw.writeHeaders(new Envelope(0, 0, 0, 0), ShapeType.POLYGON, 0, 0);
+        
+        sw.close();
+
+        return shpFile;
     }
 }

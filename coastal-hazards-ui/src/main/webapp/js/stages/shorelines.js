@@ -2,6 +2,7 @@
 // TODO - Refactor out utility functions and UI functions
 // TODO - Back end and front-end verification for uploaded shapefiles
 // TODO - Deal with non-standard shapefiles
+// TODO - Persist sessions after upload
 var Shorelines = {
     
     addShorelines : function(layers) {
@@ -225,7 +226,7 @@ var Shorelines = {
         event.object.events.unregister('loadend', event.object, Shorelines.createFeatureTable);
         
         // Create header
-        colorTableHTML.push("<div class='well' id='shoreline-table-well'><table class='table table-bordered table-condensed tablesorter'><thead><tr><td>Selected</td><td>ID<td>COLOR</td>");
+        colorTableHTML.push("<div class='well well-small' id='shoreline-table-well'><table class='table table-bordered table-condensed tablesorter'><thead><tr><td>Selected</td><td>ID<td>COLOR</td>");
     			
         var headerAttributes = Object.keys(this.describedFeatures[0].attributes, function(k) {
             colorTableHTML.push("<td>" + k.toUpperCase() +"</td>");

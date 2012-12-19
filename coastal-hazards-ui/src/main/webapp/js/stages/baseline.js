@@ -11,82 +11,45 @@ var Baseline = {
             }),
             styleMap: new OpenLayers.StyleMap(sld.namedLayers["Simple Line"]["userStyles"][0])
         });
-        //        baselineLayer.events.register("featuresadded", null, function() {
-        //            this.map.zoomToExtent(this.getDataExtent());
-        //        });
-	
         map.getMap().addLayer(baselineLayer);
     },
     populateFeaturesList : function(caps) {
         ui.populateFeaturesList(caps, 'baseline');
+    },
+    drawBaseline : function(event) {
+        // When a user clicks the button, this event receives notification before the active state changes.
+        // Therefore if the button is 'active' coming in, this means the user is wishing to deactivate it
+        var beginDrawing = $(event.currentTarget).attr('class').split(' ').find('active') ? false : true;
+        var drawControl = map.getMap().getControlsBy('id','baseline-draw-control')[0];
+        if (beginDrawing) {
+            LOG.debug('User wishes to begin drawing a baseline');
+            // First make sure to clear what's currently drawn, if anything
+            drawControl.activate();
+            $('#baseline-well').after(Baseline.createDrawPanel());
+        } else {
+            LOG.debug('User wishes to stop drawing a baseline');
+            drawControl.deactivate();
+            drawControl.layer.removeAllFeatures();
+            $('#draw-panel-well').remove();
+        }
+        
+    },
+    createDrawPanel : function() {
+        var well = $('<div />').attr('id', 'draw-panel-well').addClass('well');
+        var fluidContainer = $('<div />').attr('id', 'draw-panel-container').addClass('container-fluid');
+        var rows = [];
+        rows.push( 
+            $('<div />').addClass('row-fluid span12').append(
+                // Baseline Name
+                $('<input />').addClass('input-xlarge span6').attr('id', 'baseline-draw-form-name').
+                before($('<label />').addClass('control-label').attr('for', 'baseline-draw-form-name').html('Baseline Name'))
+                ) 
+            )
+        
+        $(rows).each(function(i,row) {
+            fluidContainer.append(row);
+        })
+        
+        return well.append(fluidContainer)
     }
-//    ,
-//    initializeUploader : function() {
-//        var uploader = new qq.FineUploader({
-//            element: document.getElementById('baseline-uploader'),
-//            request: {
-//                endpoint: 'server/upload'
-//            },
-//            validation: {
-//                allowedExtensions: ['zip']
-//            },
-//            multiple : false,
-//            autoUpload: true,
-//            text: {
-//                uploadButton: '<i class="icon-upload icon-white"></i>Upload Baseline'
-//            },
-//            template: '<div class="qq-uploader span4">' +
-//            '<pre class="qq-upload-drop-area span4"><span>{dragZoneText}</span></pre>' +
-//            '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
-//            '<ul class="qq-upload-list hidden" style="margin-top: 10px; text-align: center;"></ul>' +
-//            '</div>',
-//            classes: {
-//                success: 'alert alert-success',
-//                fail: 'alert alert-error'
-//            },
-//            debug: true,
-//            callbacks: {
-//                onComplete: function(id, fileName, responseJSON) {
-//                    if (responseJSON.success) {
-//                        if (responseJSON.success != 'true') {
-//                            LOG.info('File failed to complete upload')
-//                        } else {
-//                            LOG.info("file-token :" + responseJSON['file-token']);
-//                        
-//                            tempSession.addFileToSession({
-//                                token : responseJSON['file-token'], 
-//                                name : responseJSON['file-name']
-//                            });
-//                            
-//                            var importName = tempSession.getCurrentSessionKey() + '_' + responseJSON['file-name'].split('.')[0] + '_baseline';
-//                            
-//                            geoserver.importFile({
-//                                token : responseJSON['file-token'],
-//                                importName : importName, 
-//                                workspace : 'ch-input',
-//                                callbacks : [function(data) {
-//                                    if (data.success === 'true') {
-//                                        LOG.info('File imported successfully - reloading current file set from server');
-//                                        geoserver.getWMSCapabilities({
-//                                            callbacks : [
-//                                            function (data) {
-//                                                ui.populateFeaturesList(data, "baseline");
-//                                                tempSession.addFileToSession(data);
-//                                            // TODO - add the layer just imported 
-//                                            }
-//                                            ]
-//                                        })
-//                                    } else {
-//                                        // TODO - Notify the user
-//                                        LOG.warn(data.error);
-//                                    }
-//                                }]
-//                            });
-//                        }
-//                    }
-//                }
-//            }
-//        })
-//    }
-
 }
