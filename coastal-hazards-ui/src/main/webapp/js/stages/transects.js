@@ -46,7 +46,7 @@ var Transects = {
                 title;
 
                 var type = title.substr(title.lastIndexOf('_') + 1);
-                if (['lt','st','transect'].find(type.toLowerCase())) {
+                if (['lt','st','transects'].find(type.toLowerCase())) {
                     LOG.debug('Found a layer to add to the transect listbox: ' + title)
                     $('#transects-list')
                     .append($("<option></option>")

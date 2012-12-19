@@ -159,6 +159,7 @@
                                 <div class="well">
                                     <select id="transects-list" multiple="multiple" style="width: 100%;"></select>
                                 </div>
+                                <div id="transects-uploader"></div>
                                 <button id="calculate-transects-btn"  title="Calculate Transects">Calculate Transects</button>
                             </div>
                             
