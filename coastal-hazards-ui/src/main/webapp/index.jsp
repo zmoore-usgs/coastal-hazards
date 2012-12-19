@@ -130,7 +130,7 @@
 
                     <!-- Toolbox -->
                     <div class="span6">
-                        <div id="toolbox-well" class="well well-large tab-content">
+                        <div id="toolbox-well" class="well well-small tab-content">
 
                             <!-- Shorelines -->
                             <div class="tab-pane active" id="shorelines">
@@ -149,15 +149,19 @@
                             <!-- Baseline -->
                             <div class="tab-pane" id="baseline">
                                 <div class="well" id="baseline-well">
-                                    <select id="baseline-list" style="width: 100%;"></select>
-                                    <div id="baseline-uploader"></div><button id="baseline-draw-btn" class="btn btn-success"><i class="icon-pencil icon-white"></i>&nbsp;Draw Baseline</button>
+                                    <div class="fluid-row span12">
+                                        <select id="baseline-list" style="width: 100%;"></select>
+                                    </div>
+                                    <div class="fluid-row offset1">
+                                        <div id="baseline-uploader"></div><button id="baseline-draw-btn" class="btn btn-success" data-toggle="button"><i class="icon-pencil icon-white"></i>&nbsp;Draw Baseline</button>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Transects --> 
                             <div class="tab-pane" id="transects">
                                 <div class="well" id="transects-well">
-                                    <select id="transects-list" multiple="multiple" style="width: 100%;"></select>
+                                    <select id="transects-list" style="width: 100%;"></select>
                                     <div id="transects-uploader"></div>
                                 </div>
                                 <button id="calculate-transects-btn"  class="btn" title="Calculate Transects">Calculate Transects</button>
@@ -180,7 +184,7 @@
 
                     <!-- MAP -->
                     <div class="span5">
-                        <div id="map-well" class="well well-large tab-content">
+                        <div id="map-well" class="well well-small tab-content">
                             <div id="map"></div>
                         </div>
                     </div>
