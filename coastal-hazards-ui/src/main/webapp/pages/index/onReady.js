@@ -11,7 +11,6 @@ $(document).ready(function() {
         LOG4JS_LOG_THRESHOLD : CONFIG.development ? 'debug' : 'info'
     });
     
-    Shorelines.initializeUploader();
         
     ui = new UI();
     map = new Map();
@@ -24,7 +23,10 @@ $(document).ready(function() {
     LOG.info('Current session key: ' + permSession.getCurrentSessionKey());
     tempSession.setCurrentSession(permSession.getCurrentSessionKey(), permSession);
     
-    $("#upload-baseline-btn").on("click", Baseline.addBaseline);
+    ui.initializeUploader('shorelines');
+    ui.initializeUploader('baseline');
+    ui.initializeUploader('transects');
+    
     $("#calculate-transects-btn").on("click", Transects.calcTransects);
     $("#create-intersections-btn").on("click", Intersections.calcIntersections);
 //    $("#display-results-btn").on("click", function() { /* not yet implemented */});

@@ -39,6 +39,14 @@ img { max-width: none; }
     height: 15em;
 }
 
+#baseline-well {
+    height: 5em;
+}
+
+#transects-well {
+    height: 15em;
+}
+
 #shorelines-list {
     height: 12em;
 }
@@ -72,6 +80,10 @@ li.alert-error {
 
 .qq-uploader {
     width: 50%;
+}
+
+.qq-upload-button {
+    background: none repeat scroll 0 0 #5BB75B;
 }
 
 .nav-stacked li a img {

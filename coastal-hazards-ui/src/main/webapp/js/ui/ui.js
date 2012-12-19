@@ -119,6 +119,72 @@ var UI = function() {
                     ui.baselineListboxChanged()
                 }) 
             }
+        },
+        initializeUploader : function(context) {
+            var uploader = new qq.FineUploader({
+                element: document.getElementById(context + '-uploader'),
+                request: {
+                    endpoint: 'server/upload'
+                },
+                validation: {
+                    allowedExtensions: ['zip']
+                },
+                multiple : false,
+                autoUpload: true,
+                text: {
+                    uploadButton: '<i class="icon-upload icon-white"></i>Upload ' + context
+                },
+                template: '<div class="qq-uploader span4">' +
+                '<pre class="qq-upload-drop-area span4"><span>{dragZoneText}</span></pre>' +
+                '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
+                '<ul class="qq-upload-list hidden" style="margin-top: 10px; text-align: center;"></ul>' +
+                '</div>',
+                classes: {
+                    success: 'alert alert-success',
+                    fail: 'alert alert-error'
+                },
+                callbacks: {
+                    onComplete: function(id, fileName, responseJSON) {
+                        if (responseJSON.success) {
+                            if (responseJSON.success != 'true') {
+                                LOG.info('File failed to complete upload')
+                            } else {
+                                LOG.info("file-token :" + responseJSON['file-token']);
+                        
+                                tempSession.addFileToSession({
+                                    token : responseJSON['file-token'], 
+                                    name : responseJSON['file-name']
+                                });
+                            
+                                var importName = tempSession.getCurrentSessionKey() + '_' + responseJSON['file-name'].split('.')[0] + '_' + context;
+                            
+                                geoserver.importFile({
+                                    token : responseJSON['file-token'],
+                                    importName : importName, 
+                                    workspace : 'ch-input',
+                                    callbacks : [function(data) {
+                                        if (data.success === 'true') {
+                                            LOG.info('File imported successfully - reloading current file set from server');
+                                            geoserver.getWMSCapabilities({
+                                                callbacks : [
+                                                function (data) {
+                                                    ui.populateFeaturesList(data, context);
+                                                    tempSession.addFileToSession(data);
+                                                // TODO - add the layer just imported 
+                                                }
+                                                ]
+                                            })
+                                        } else {
+                                            // TODO - Notify the user
+                                            LOG.warn(data.error);
+                                        }
+                                    }]
+                                });
+                            }
+                        }
+                    }
+                }
+            })
         }
     });
 }

@@ -131,12 +131,12 @@
                     <!-- Toolbox -->
                     <div class="span6">
                         <div id="toolbox-well" class="well well-large tab-content">
-                            
+
                             <!-- Shorelines -->
                             <div class="tab-pane active" id="shorelines">
                                 <div class="well" id="shorelines-well">
                                     <select id="shorelines-list" multiple="multiple" style="width: 100%;"></select>
-                                    <div id="shoreline-uploader"></div>
+                                    <div id="shorelines-uploader"></div>
                                 </div>
                                 <div class="tabbable">
                                     <ul class="nav nav-tabs" id="shoreline-table-navtabs">
@@ -145,28 +145,29 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Baseline -->
                             <div class="tab-pane" id="baseline">
-                                <div class="well">
+                                <div class="well" id="baseline-well">
                                     <select id="baseline-list" style="width: 100%;"></select>
+                                    <div id="baseline-uploader"></div><button id="baseline-draw-btn" class="btn btn-success"><i class="icon-pencil icon-white"></i>&nbsp;Draw Baseline</button>
                                 </div>
-                                <div id="baseline-uploader"></div>
                             </div>
-                            
+
                             <!-- Transects --> 
                             <div class="tab-pane" id="transects">
-                                <div class="well">
+                                <div class="well" id="transects-well">
                                     <select id="transects-list" multiple="multiple" style="width: 100%;"></select>
+                                    <div id="transects-uploader"></div>
                                 </div>
-                                <button id="calculate-transects-btn"  title="Calculate Transects">Calculate Transects</button>
+                                <button id="calculate-transects-btn"  class="btn" title="Calculate Transects">Calculate Transects</button>
                             </div>
-                            
+
                             <!-- Intersection -->
                             <div class="tab-pane" id="intersections">
                                 <button id="create-intersections-btn"  title="Show Intersections">Show Intersections</button>
                             </div>
-                            
+
                             <!-- Results -->
                             <div class="tab-pane" id="results">
                                 <button id="display-results-btn"  title="Display Results">Display Results</button>
