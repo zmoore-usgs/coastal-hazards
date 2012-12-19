@@ -6,10 +6,7 @@
 var Shorelines = {
     
     addShorelines : function(layers) {
-        // TODO - I'm not sure that it's the best idea to split up here to process per layer
-        // but it does ease the workflow a bit
         $(layers).each(function(index,layer) {
-            
             // First we need to discover information about the layer we want to process
             geoserver.getDescribeFeatureType({
                 featureName : layer.title, 
@@ -105,14 +102,14 @@ var Shorelines = {
                                 var html = '';
                             
                                 for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
-                                    html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>'
+                                    html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>';
                                     html += groupColumn.trim();
-                                    html += '</ogc:PropertyName>'
-                                    html += '<ogc:Literal>'
-                                    html += '*' + colorLimitPairs[lpIndex][1].split('/')[2]//.replace('/01/','/02/')
-                                    html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
-                                    html += colorLimitPairs[lpIndex][0]
-                                    html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
+                                    html += '</ogc:PropertyName>';
+                                    html += '<ogc:Literal>';
+                                    html += '*' + colorLimitPairs[lpIndex][1].split('/')[2];
+                                    html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">';
+                                    html += colorLimitPairs[lpIndex][0];
+                                    html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>';
                                 }
                                 return html;
                             }
@@ -129,7 +126,7 @@ var Shorelines = {
                                         if (colorLimitPairs.length == lpIndex) {
                                             upperBoundary = colorLimitPairs[0][1]; // This means there's only one group'
                                         } else {
-                                            upperBoundary = colorLimitPairs[lpIndex + 1][1]
+                                            upperBoundary = colorLimitPairs[lpIndex + 1][1];
                                         }
                                     } else {
                                         upperBoundary = colorLimitPairs[lpIndex][1]
@@ -197,7 +194,7 @@ var Shorelines = {
             ]
         })
     },
-    zoomToLayer : function(event) {
+    zoomToLayer : function() {
         LOG.info('loadend event triggered on layer');
         var bounds = new OpenLayers.Bounds();
         var layers = map.getMap().getLayersBy('zoomToWhenAdded', true);
@@ -286,73 +283,4 @@ var Shorelines = {
     populateFeaturesList : function(caps) {
         ui.populateFeaturesList(caps, 'shorelines');
     }
-//    ,
-//    initializeUploader : function() {
-//        var uploader = new qq.FineUploader({
-//            element: document.getElementById('shoreline-uploader'),
-//            request: {
-//                endpoint: 'server/upload'
-//            },
-//            validation: {
-//                allowedExtensions: ['zip']
-//            },
-//            multiple : false,
-//            autoUpload: true,
-//            text: {
-//                uploadButton: '<i class="icon-upload icon-white"></i>Upload Shorelines'
-//            },
-//            template: '<div class="qq-uploader span4">' +
-//            '<pre class="qq-upload-drop-area span4"><span>{dragZoneText}</span></pre>' +
-//            '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
-//            '<ul class="qq-upload-list hidden" style="margin-top: 10px; text-align: center;"></ul>' +
-//            '</div>',
-//            classes: {
-//                success: 'alert alert-success',
-//                fail: 'alert alert-error'
-//            },
-//            debug: true,
-//            callbacks: {
-//                onComplete: function(id, fileName, responseJSON) {
-//                    if (responseJSON.success) {
-//                        if (responseJSON.success != 'true') {
-//                            LOG.info('File failed to complete upload')
-//                        } else {
-//                            LOG.info("file-token :" + responseJSON['file-token']);
-//                        
-//                            tempSession.addFileToSession({
-//                                token : responseJSON['file-token'], 
-//                                name : responseJSON['file-name']
-//                            });
-//                            
-//                            var importName = tempSession.getCurrentSessionKey() + '_' + responseJSON['file-name'].split('.')[0] + '_shorelines';
-//                            
-//                            geoserver.importFile({
-//                                token : responseJSON['file-token'],
-//                                importName : importName, 
-//                                workspace : 'ch-input',
-//                                callbacks : [function(data) {
-//                                    if (data.success === 'true') {
-//                                        LOG.info('File imported successfully - reloading current file set from server');
-//                                        geoserver.getWMSCapabilities({
-//                                            callbacks : [
-//                                            function (data) {
-//                                                ui.populateFeaturesList(data, "shorelines");
-//                                                tempSession.addFileToSession(data);
-//                                            // TODO - add the layer just imported 
-//                                            }
-//                                            ]
-//                                        })
-//                                    } else {
-//                                        // TODO - Notify the user
-//                                        LOG.warn(data.error);
-//                                    }
-//                                }]
-//                            });
-//                        }
-//                    }
-//                }
-//            }
-//        })
-//    }
-    
 }
