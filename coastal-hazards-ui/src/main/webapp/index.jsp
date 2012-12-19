@@ -136,7 +136,7 @@
                             <div class="tab-pane active" id="shorelines">
                                 <div class="well" id="shorelines-well">
                                     <select id="shorelines-list" multiple="multiple" style="width: 100%;"></select>
-                                    <div id="shoreline-uploader"></div>
+                                    <div id="shorelines-uploader"></div>
                                 </div>
                                 <div class="tabbable">
                                     <ul class="nav nav-tabs" id="shoreline-table-navtabs">
