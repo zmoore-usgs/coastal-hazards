@@ -3,14 +3,18 @@ package gov.usgs.cida.coastalhazards.service;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
+import gov.usgs.cida.utilities.file.FileHelper;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipFile;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +26,7 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.slf4j.LoggerFactory;
@@ -64,15 +69,22 @@ public class ImportService extends HttpServlet {
         String fileToken = request.getParameter("file-token");
         String featureName = request.getParameter("feature-name");
         String workspace = request.getParameter("workspace");
-        File fileDirectoryHandle = new File(new File(uploadDirectory), fileToken);
         File shapeFile;
         String name;
         Map<String, String> responseMap = new HashMap<String, String>();
 
+        File fileDirectoryHandle;
         if (StringUtils.isBlank(fileToken)) {
-            responseMap.put("error", "Parameter 'file-token' cannot be blank");
-            RequestResponseHelper.sendErrorResponse(response, responseMap);
-            return;
+            // If fileToken is blank, create a blank shapefile to import
+            fileToken = UUID.randomUUID().toString();
+            String fileName = UUID.randomUUID().toString();
+            File subdir = new File(uploadDirectory + File.separator + fileToken);
+            FileUtils.forceMkdir(subdir);
+            File emptyShapeFile = geoserverHandler.createEmptyShapefile(subdir.getPath(), fileName);
+            FileHelper.zipFile(emptyShapeFile.getParentFile(), null, null);
+            fileDirectoryHandle = new File(new File(uploadDirectory), fileToken);
+        } else {
+            fileDirectoryHandle = new File(new File(uploadDirectory), fileToken);
         }
 
         if (StringUtils.isBlank(workspace)) {
@@ -88,13 +100,15 @@ public class ImportService extends HttpServlet {
             return;
         }
 
+        FileFilter zipFileFilter = new WildcardFileFilter("*.zip");
+        
         // We assume there is only one file per directory
-        shapeFile = fileDirectoryHandle.listFiles()[0];
+        shapeFile = fileDirectoryHandle.listFiles(zipFileFilter)[0];
         name = StringUtils.isBlank(featureName) ? FilenameUtils.removeExtension(shapeFile.getName()) : featureName;
         HttpResponse importResponse = geoserverHandler.importFeatures(shapeFile, workspace, name);
 
         String responseText = IOUtils.toString(importResponse.getEntity().getContent());
-        
+
         if (!responseText.toLowerCase().contains("ows:exception")) {
             responseMap.put("file-token", fileToken);
             responseMap.put("feature", responseText);

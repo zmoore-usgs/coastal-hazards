@@ -29,10 +29,49 @@ var Baseline = {
         } else {
             LOG.debug('User wishes to stop drawing a baseline');
             drawControl.deactivate();
-            drawControl.layer.removeAllFeatures();
+            Baseline.clearDrawFeatures();
             $('#draw-panel-well').remove();
         }
         
+    },
+    clearDrawFeatures : function() {
+        return map.getMap().getControlsBy('id','baseline-draw-control')[0].layer.removeAllFeatures();
+    },
+    saveDrawnFeatures : function() {
+        var drawControl = map.getMap().getControlsBy('id','baseline-draw-control')[0];
+        var drawLayer = drawControl.layer;
+        var importName = tempSession.getCurrentSessionKey() + '_' + ($('#baseline-draw-form-name').val() || Util.getRandomLorem()) + '_baseline';
+        
+        if (drawLayer.features.length) {
+            LOG.info('User has drawn a feature and is saving it');
+            geoserver.importFile({
+                token : '',
+                importName : importName, 
+                workspace : 'ch-input',
+                callbacks : [function(data) {
+                    if (data.success === 'true') {
+                        LOG.info('File imported successfully - reloading current file set from server');
+                    // Do WFS-T to fill out the layer
+
+
+                    //                        geoserver.getWMSCapabilities({
+                    //                            callbacks : [
+                    //                            function (data) {
+                    //                                ui.populateFeaturesList(data, context);
+                    //                                tempSession.addFileToSession(data);
+                    //                            // TODO - add the layer just imported 
+                    //                            }
+                    //                            ]
+                    //                        })
+                    } else {
+                        // TODO - Notify the user
+                        LOG.warn(data.error);
+                    }
+                }]
+            });
+        } else {
+            LOG.info('User has not drawn any features to save');
+        }
     },
     createDrawPanel : function() {
         var well = $('<div />').attr('id', 'draw-panel-well').addClass('well');
@@ -41,9 +80,14 @@ var Baseline = {
         rows.push( 
             $('<div />').addClass('row-fluid span12').append(
                 // Baseline Name
-                $('<input />').addClass('input-xlarge span6').attr('id', 'baseline-draw-form-name').
+                $('<input />').addClass('input-xlarge span6').attr('id', 'baseline-draw-form-name').val(Util.getRandomLorem()).
                 before($('<label />').addClass('control-label').attr('for', 'baseline-draw-form-name').html('Baseline Name'))
-                ) 
+                ),
+            $('<div />').addClass('row-fluid span12').append(
+                // Baseline Name
+                $('<button />').addClass('btn').attr('id', 'baseline-draw-form-save').html('Save').on('click', Baseline.saveDrawnFeatures).
+                after($('<button />').addClass('btn').attr('id', 'baseline-draw-form-clear').html('Clear').on('click', Baseline.clearDrawFeatures))
+                )
             )
         
         $(rows).each(function(i,row) {

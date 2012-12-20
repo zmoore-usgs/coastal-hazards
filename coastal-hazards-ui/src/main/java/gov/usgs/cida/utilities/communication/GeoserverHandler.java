@@ -1,5 +1,6 @@
 package gov.usgs.cida.utilities.communication;
 
+import com.vividsolutions.jts.geom.Envelope;
 import gov.usgs.cida.utilities.xml.XMLUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,7 +37,6 @@ import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileWriter;
 import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.data.shapefile.shp.ShapefileWriter;
-import com.vividsolutions.jts.geom.Envelope;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.NodeList;
 
@@ -596,7 +596,7 @@ public class GeoserverHandler {
         return localUrl;
     }
     
-    public static File createEmptyShapefile(String path, String name) throws IOException {
+    public File createEmptyShapefile(String path, String name) throws IOException {
         File shpFile = new File(path, name + ".shp");
         File shxFile = new File(path, name + ".shx");
         File dbfFile = new File(path, name + ".dbf");

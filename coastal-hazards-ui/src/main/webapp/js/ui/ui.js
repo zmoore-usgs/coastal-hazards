@@ -124,7 +124,7 @@ var UI = function() {
             var uploader = new qq.FineUploader({
                 element: document.getElementById(context + '-uploader'),
                 request: {
-                    endpoint: 'server/upload'
+                    endpoint: 'service/upload'
                 },
                 validation: {
                     allowedExtensions: ['zip']
