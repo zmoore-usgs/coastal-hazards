@@ -44,14 +44,10 @@ img { max-width: none; }
 }
 
 #transects-well {
-    height: 15em;
+    height: 5em;
 }
 
 #shorelines-list {
-    height: 12em;
-}
-
-#transects-list {
     height: 12em;
 }
 

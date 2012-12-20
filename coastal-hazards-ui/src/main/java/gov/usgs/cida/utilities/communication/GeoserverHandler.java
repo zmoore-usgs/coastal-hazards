@@ -635,7 +635,7 @@ public class GeoserverHandler {
         ShapefileWriter sw = new ShapefileWriter(shpFileOutputStream.getChannel(),
                 shxFileOutputStream.getChannel());
 
-        sw.writeHeaders(new Envelope(0, 0, 0, 0), ShapeType.POLYGON, 0, 0);
+        sw.writeHeaders(new Envelope(0, 0, 0, 0), ShapeType.ARC, 0, 0);
         
         sw.close();
 

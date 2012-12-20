@@ -38,21 +38,45 @@ var Baseline = {
         return map.getMap().getControlsBy('id','baseline-draw-control')[0].layer.removeAllFeatures();
     },
     saveDrawnFeatures : function() {
-        var drawControl = map.getMap().getControlsBy('id','baseline-draw-control')[0];
-        var drawLayer = drawControl.layer;
+        var drawLayer = map.getMap().getControlsBy('id','baseline-draw-control')[0].layer;
         var importName = tempSession.getCurrentSessionKey() + '_' + ($('#baseline-draw-form-name').val() || Util.getRandomLorem()) + '_baseline';
         
-        if (drawLayer.features.length) {
+        if (drawLayer.features.length && importName) {
             LOG.info('User has drawn a feature and is saving it');
             geoserver.importFile({
                 token : '',
                 importName : importName, 
                 workspace : 'ch-input',
-                callbacks : [function(data) {
+                context : drawLayer,
+                callbacks : [function(data, context) {
                     if (data.success === 'true') {
                         LOG.info('File imported successfully - reloading current file set from server');
-                    // Do WFS-T to fill out the layer
+                        var layerName = data.feature;
+                        var drawControl = map.getMap().getControlsBy('id','baseline-draw-control')[0];
+                        var schema = context.protocol.schema;
+                        var newSchema = schema.substring(0, schema.lastIndexOf(':') + 1) + importName;
+            
+                        context.protocol.setFeatureType(importName);
+                        context.protocol.format.options.schema = newSchema;
+                        context.protocol.schema = newSchema;
+                        
+                        // Do WFS-T to fill out the layer
+                        var saveStrategy = context.strategies.find(function(n) {
+                            return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
+                        });
+                        
+                        saveStrategy.events.remove('success');
 
+                        saveStrategy.events.register('success', null, function() {
+                            // GDP requires having at least one attribute value, so send an update
+                            // transaction to set the 'ID' attribute to 0 for the newly created geometry.
+                            geoserver.updateFeatureTypeAttribute(layerName, 'ID', 0, function(data) {
+                                var a = 1;
+                            });
+                            
+                        });
+
+                        saveStrategy.save();
 
                     //                        geoserver.getWMSCapabilities({
                     //                            callbacks : [
@@ -70,7 +94,7 @@ var Baseline = {
                 }]
             });
         } else {
-            LOG.info('User has not drawn any features to save');
+            LOG.info('User has not drawn any features to save or did not name the new feature');
         }
     },
     createDrawPanel : function() {
