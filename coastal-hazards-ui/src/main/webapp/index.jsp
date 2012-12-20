@@ -152,7 +152,7 @@
                                     <div class="fluid-row span12">
                                         <select id="baseline-list" style="width: 100%;"></select>
                                     </div>
-                                    <div class="fluid-row offset1">
+                                    <div class="fluid-row">
                                         <div id="baseline-uploader"></div><button id="baseline-draw-btn" class="btn btn-success" data-toggle="button"><i class="icon-pencil icon-white"></i>&nbsp;Draw Baseline</button>
                                     </div>
                                 </div>
@@ -164,7 +164,7 @@
                                     <select id="transects-list" style="width: 100%;"></select>
                                     <div id="transects-uploader"></div>
                                 </div>
-                                <button id="calculate-transects-btn"  class="btn" title="Calculate Transects">Calculate Transects</button>
+                                <button id="calculate-transects-btn" class="btn" title="Calculate Transects">Calculate Transects</button>
                             </div>
 
                             <!-- Intersection -->
