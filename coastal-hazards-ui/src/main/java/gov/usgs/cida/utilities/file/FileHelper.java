@@ -1,11 +1,10 @@
 package gov.usgs.cida.utilities.file;
 
-
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -19,16 +18,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.slf4j.LoggerFactory;
+import org.tuckey.web.filters.urlrewrite.utils.StringUtils;
 
 /**
  * Utility class that helps with FileIO operations
- * 
+ *
  * @author isuftin
  *
  */
@@ -37,7 +39,7 @@ public class FileHelper {
     private static org.slf4j.Logger log = LoggerFactory.getLogger(FileHelper.class);
 
     /**
-     * @see FileHelper#base64Encode(byte[]) 
+     * @see FileHelper#base64Encode(byte[])
      * @param input
      * @return
      * @throws IOException
@@ -51,13 +53,17 @@ public class FileHelper {
     }
 
     /**
-     * Provides Base64 encoding and decoding as defined by <a href="http://tools.ietf.org/html/rfc2045">RFC 2045</a>.
-     * 
+     * Provides Base64 encoding and decoding as defined by <a
+     * href="http://tools.ietf.org/html/rfc2045">RFC 2045</a>.
+     *
      * @param input
-     * @return Byte array representing the base 64 encoding of the incoming File or byte array
+     * @return Byte array representing the base 64 encoding of the incoming File
+     * or byte array
      */
     public static byte[] base64Encode(final byte[] input) {
-        if (input == null) return (byte[]) Array.newInstance(byte.class, 0);
+        if (input == null) {
+            return (byte[]) Array.newInstance(byte.class, 0);
+        }
 
         log.trace(new StringBuilder("Attempting to base64 encode a byte array of ").append(input.length).append(" bytes.").toString());
 
@@ -78,7 +84,9 @@ public class FileHelper {
      * @throws IOException
      */
     public static byte[] getByteArrayFromFile(File file) throws IOException {
-        if (file == null) return (byte[]) Array.newInstance(byte.class, 0);
+        if (file == null) {
+            return (byte[]) Array.newInstance(byte.class, 0);
+        }
 
         log.debug(new StringBuilder("Attempting to get a byte array from file: ").append(file.getPath()).toString());
 
@@ -86,21 +94,27 @@ public class FileHelper {
         long length = file.length();
 
         // Maximum size of file cannot be larger than the Integer.MAX_VALUE
-        if (length > Integer.MAX_VALUE) throw new IOException("File is too large: File length: " + file.length() + " bytes. Maximum length: " + Integer.MAX_VALUE + " bytes.");
+        if (length > Integer.MAX_VALUE) {
+            throw new IOException("File is too large: File length: " + file.length() + " bytes. Maximum length: " + Integer.MAX_VALUE + " bytes.");
+        }
 
         // Create the byte array to hold the data
         byte[] bytes = new byte[(int) length];
 
         // Read in the bytes
         int offset = 0, numRead = 0;
-        
+
         InputStream is = null;
         try {
             is = new FileInputStream(file);
             while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
                 offset += numRead;
             }
-        } finally { if (is != null) { is.close(); }}
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
 
         // Ensure all the bytes have been read in
         if (offset < bytes.length) {
@@ -111,7 +125,8 @@ public class FileHelper {
     }
 
     /**
-     * Performs a safe renaming of a file. First copies old file to new file, then if new file exists, removes old file.
+     * Performs a safe renaming of a file. First copies old file to new file,
+     * then if new file exists, removes old file.
      *
      * @param fromFile
      * @param toFileName
@@ -123,7 +138,9 @@ public class FileHelper {
 
         FileUtils.copyFile(fromFile, toFile);
 
-        if (!toFile.exists())  return false;
+        if (!toFile.exists()) {
+            return false;
+        }
 
         return fromFile.delete();
     }
@@ -142,12 +159,13 @@ public class FileHelper {
     }
 
     /**
-     * Copies a File object (directory or file) to a given location
-     * Is able to handle
+     * Copies a File object (directory or file) to a given location Is able to
+     * handle
      *
      * @param inFile File to be copied
      * @param outPath Destination where to copy to
-     * @param deleteOriginalFile - effectively makes this function as a MOVE command instead of a COPY command
+     * @param deleteOriginalFile - effectively makes this function as a MOVE
+     * command instead of a COPY command
      * @return true if file properly copied, otherwise false
      * @throws IOException
      */
@@ -158,21 +176,26 @@ public class FileHelper {
             FileUtils.copyFile(inFile, (new File(outPath + File.separator + inFile.getName())));
         }
 
-        if (deleteOriginalFile)  FileUtils.deleteQuietly(inFile);
+        if (deleteOriginalFile) {
+            FileUtils.deleteQuietly(inFile);
+        }
 
         return true;
     }
 
     /**
      * Delete files older than a given Long instance
-     * 
+     *
      * @param directory Directory within which to search.
      * @param cutoffTime
-     * @param deleteDirectory Also delete the directory given in the directory param
+     * @param deleteDirectory Also delete the directory given in the directory
+     * param
      * @return files that were deleted
      */
     public static Collection<File> wipeOldFiles(File directory, Long cutoffTime, boolean deleteDirectory) {
-        if (directory == null || !directory.exists()) return new ArrayList<File>();
+        if (directory == null || !directory.exists()) {
+            return new ArrayList<File>();
+        }
 
         Collection<File> result = new ArrayList<File>();
         Collection<File> oldFiles = FileHelper.getFilesOlderThan(directory, cutoffTime, Boolean.TRUE);
@@ -201,7 +224,7 @@ public class FileHelper {
     /**
      * Creates a directory according to the passed in File object
      *
-     * @see FileHelper#createDir(java.lang.String) 
+     * @see FileHelper#createDir(java.lang.String)
      * @param directory
      * @return true if directory has been created, false if not
      */
@@ -210,38 +233,49 @@ public class FileHelper {
     }
 
     /**
-     * Creates a directory in the filesystem according to the passed in String object
+     * Creates a directory in the filesystem according to the passed in String
+     * object
      *
      * @param directory
      * @param removeAtSysExit
-     * @return boolean true if already exists or created, false if directory could not be created
+     * @return boolean true if already exists or created, false if directory
+     * could not be created
      */
     public static boolean createDir(String directory) {
         boolean result = false;
-        if (FileHelper.doesDirectoryOrFileExist(directory)) return true;
+        if (FileHelper.doesDirectoryOrFileExist(directory)) {
+            return true;
+        }
         result = new File(directory).mkdirs();
         return result;
     }
+
     /**
      * Recursively deletes a directory from the filesystem.
+     *
      * @param directory
      * @return
      */
     public static boolean deleteDirRecursively(File directory) throws IOException {
-        if (!directory.exists())  return false;
+        if (!directory.exists()) {
+            return false;
+        }
         FileUtils.deleteDirectory(directory);
         return true;
     }
 
     /**
      * Recursively deletes a directory from the filesystem.
+     *
      * @param directory
      * @return
      */
     public static boolean deleteDirRecursively(String directory) throws IOException {
         boolean result = false;
         File dir = new File(directory);
-        if (!dir.exists())  return false;
+        if (!dir.exists()) {
+            return false;
+        }
         result = FileHelper.deleteDirRecursively(dir);
         return result;
     }
@@ -259,7 +293,7 @@ public class FileHelper {
     /**
      * Deletes a file at the location of the passed in File object.
      *
-     * @see FileHelper#deleteFileQuietly(java.lang.String) 
+     * @see FileHelper#deleteFileQuietly(java.lang.String)
      * @param filePath
      * @return true if file has been deleted, false otherwise
      */
@@ -298,7 +332,7 @@ public class FileHelper {
     /**
      * Tests whether or not a directory or file exists given the passed String
      * representing a file/directory location
-     * 
+     *
      * @param filePath
      * @return
      */
@@ -311,10 +345,12 @@ public class FileHelper {
      *
      * @param file The file that is being searched for
      * @param rootPath The path to begin looking from
-     * @return the first file that was found 
+     * @return the first file that was found
      */
     public static File findFile(String file, String rootPath) {
-        if (rootPath == null || "".equals(rootPath)) return null;
+        if (rootPath == null || "".equals(rootPath)) {
+            return null;
+        }
         File result = null;
         Collection<File> fileCollection = FileUtils.listFiles(new File(rootPath), new String[]{file.substring(file.lastIndexOf('.') + 1)}, true);
         if (fileCollection.isEmpty()) {
@@ -333,9 +369,11 @@ public class FileHelper {
     /**
      * Get recursive directory listing
      *
-     * @see FileHelper#getFileCollection(java.lang.String, java.lang.String[], boolean) 
+     * @see FileHelper#getFileCollection(java.lang.String, java.lang.String[],
+     * boolean)
      * @param filePath the path to begin looking through
-     * @param recursive whether or not the function should look only at base level or recursively
+     * @param recursive whether or not the function should look only at base
+     * level or recursively
      * @return a list of strings that represent the path to the files found
      * @throws IllegalArgumentException
      */
@@ -349,9 +387,11 @@ public class FileHelper {
 
     /**
      * Get recursive directory listing
+     *
      * @param filePath the path to begin looking through
      * @param extensions a list of extensions to match on
-     * @param recursive  whether or not the function should look only at base level or recursively
+     * @param recursive whether or not the function should look only at base
+     * level or recursively
      * @return a list of strings that represent the path to the files found
      * @throws IllegalArgumentException
      */
@@ -374,10 +414,13 @@ public class FileHelper {
     /**
      * Returns a Collection of type File
      *
-     * @see FileHelper#getFileCollection(java.lang.String, java.lang.String[], boolean)
+     * @see FileHelper#getFileCollection(java.lang.String, java.lang.String[],
+     * boolean)
      * @param filePath the path to begin looking through
-     * @param recursive whether or not the function should look only at base level or recursively
-     * @return a collection of type File of files found at the directory point given
+     * @param recursive whether or not the function should look only at base
+     * level or recursively
+     * @return a collection of type File of files found at the directory point
+     * given
      */
     public static Collection<File> getFileCollection(String filePath, boolean recursive) throws IllegalArgumentException {
         return (Collection<File>) FileHelper.getFileCollection(filePath, null, recursive);
@@ -386,11 +429,14 @@ public class FileHelper {
     /**
      * Returns a Collection of type File
      *
-     * @see FileHelper#getFileCollection(java.lang.String, java.lang.String[], boolean)
+     * @see FileHelper#getFileCollection(java.lang.String, java.lang.String[],
+     * boolean)
      * @param filePath the path to begin looking through
      * @param extensions a list of extensions to match on
-     * @param recursive whether or not the function should look only at base level or recursively
-     * @return a collection of type File of files found at the directory point given
+     * @param recursive whether or not the function should look only at base
+     * level or recursively
+     * @return a collection of type File of files found at the directory point
+     * given
      */
     public static Collection<?> getFileCollection(String filePath, String[] extensions, boolean recursive) throws IllegalArgumentException {
         if (filePath == null) {
@@ -407,6 +453,7 @@ public class FileHelper {
 
     /**
      * Returns the temp directory specific to the operating system
+     *
      * @see System.getProperty("java.io.tmpdir")
      * @return
      */
@@ -420,7 +467,7 @@ public class FileHelper {
 
     /**
      * Takes a zip file and unzips it to a outputDirectory
-     * 
+     *
      * @param outputDirectory
      * @param zipFile
      * @return
@@ -434,7 +481,7 @@ public class FileHelper {
         try {
             zis = new ZipInputStream(new BufferedInputStream(fis));
             ZipEntry entry = null;
-            
+
 
             final int BUFFER = 2048;
             while ((entry = zis.getNextEntry()) != null) {
@@ -455,14 +502,19 @@ public class FileHelper {
                 log.trace(new StringBuilder("Unzipped: ").append(fileName).append(" to ").append(destinationPath).toString());
             }
         } finally {
-            if (zis != null) IOUtils.closeQuietly(zis);
-            if (dest != null) IOUtils.closeQuietly(dest);
+            if (zis != null) {
+                IOUtils.closeQuietly(zis);
+            }
+            if (dest != null) {
+                IOUtils.closeQuietly(dest);
+            }
         }
         return true;
     }
 
     /**
      * Creates a unique user directory
+     *
      * @param applicationUserSpaceDir User directory created
      * @return
      */
@@ -482,11 +534,13 @@ public class FileHelper {
     }
 
     /**
-     * Updates the time stamp on a file or a list of files within a given directory
+     * Updates the time stamp on a file or a list of files within a given
+     * directory
      *
      * @param path Path to file or directory
-     * @param recursive If path parameter is a directory and this param is true, will attempt to update the timestamp
-     *  on all files within the directory to current time
+     * @param recursive If path parameter is a directory and this param is true,
+     * will attempt to update the timestamp on all files within the directory to
+     * current time
      * @return true if updating succeeded, false if not
      * @throws IOException
      */
@@ -516,7 +570,7 @@ public class FileHelper {
      * Returns files and directories older that a specified date
      *
      * @param filePath System path to the directory
-     * @param age 
+     * @param age
      * @param msPerDay
      * @param recursive
      * @return
@@ -554,6 +608,41 @@ public class FileHelper {
             IOUtils.copy(is, os);
         } finally {
             IOUtils.closeQuietly(os);
+        }
+    }
+
+    public static File zipFile(File file, String newName, FileFilter filter) throws FileNotFoundException, IOException {
+        String zipFileName = StringUtils.isBlank(newName) ? file.getName() : newName;
+
+        FileOutputStream fos;
+        ZipOutputStream zos = null;
+        FileInputStream fis = null;
+
+        File[] files;
+        File zipFile;
+        if (file.isDirectory()) {
+            files = file.listFiles(filter != null ? filter : new WildcardFileFilter("*"));
+            zipFile = new File(file.getPath() + File.separator + zipFileName + ".zip");
+        } else {
+            files = new File[] {file};
+            zipFile = new File(file.getParentFile().getPath() + File.separator + zipFileName + ".zip");
+        }
+
+        try {
+            fos = new FileOutputStream(zipFile);
+            zos = new ZipOutputStream(fos);
+            
+            for (File fileItem : files) {
+                fis = new FileInputStream(fileItem);
+                ZipEntry ze = new ZipEntry(fileItem.getName());
+                zos.putNextEntry(ze);
+                IOUtils.copy(fis, zos);
+                IOUtils.closeQuietly(fis);
+            }
+            IOUtils.closeQuietly(zos);
+            return zipFile;
+        } finally {
+            IOUtils.closeQuietly(zos);
         }
     }
 }

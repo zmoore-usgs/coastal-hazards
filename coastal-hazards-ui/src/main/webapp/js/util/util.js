@@ -81,6 +81,30 @@ var Util =  {
             colorGroups.push([color, group]);
         })
         return colorGroups;
+    },
+    getRandomLorem : function() {
+        var loremArray = [ "consectetuer" ,  "adipiscing" ,  "cursus" ,  "nullam" ,  
+        "egestas" ,  "condimentum" ,  "laoreet" ,  "mattis" ,  "eleifend" ,  
+        "nonummy" ,  "praesent" ,  "mauris" ,  "elementum" ,  "bibendum" ,  
+        "posuere" ,  "tincidunt" ,  "lectus" ,  "viverra" ,  "vestibulum" ,  
+        "suspendisse" ,  "vulputate" ,  "aliquam" ,  "vehicula" ,  "maecenas" ,  
+        "placerat" ,  "consequat" ,  "rhoncus" ,  "gravida" ,  "imperdiet" ,  
+        "tellus" ,  "auctor" ,  "sollicitudin" ,  "vivamus" ,  "pellentesque" ,  
+        "habitant" ,  "tristique" ,  "senectus" ,  "malesuada" ,  "turpis" ,  
+        "tortor" ,  "faucibus" ,  "accumsan" ,  "ultricies" ,  "molestie" ,  
+        "dictum" ,  "iaculis" ,  "venenatis" ,  "euismod" ,  "integer" ,  
+        "dapibus" ,  "fringilla" ,  "aenean" ,  "porttitor" ,  "convallis" ,  
+        "volutpat" ,  "quisque" ,  "dignissim" ,  "congue" ,  "sociis" ,  
+        "natoque" ,  "penatibus" ,  "magnis" ,  "parturient" ,  "montes" ,  
+        "nascetur" ,  "ridiculus" ,  "facilisis" ,  "luctus" ,  "feugiat" ,  
+        "pulvinar" ,  "curabitur" ,  "phasellus" ,  "ultrices" ,  "fermentum" ,  
+        "hendrerit" ,  "rutrum" ,  "tempus" ,  "libero" ,  "ullamcorper" ,  
+        "ligula" ,  "mollis" ,  "suscipit" ,  "sodales" ,  "scelerisque" ,  
+        "commodo" ,  "sagittis" ,  "lobortis" ,  "pharetra" ,  "interdum" ,  
+        "ornare" ,  "aliquet" ,  "semper" ,  "blandit" ,  "tempor" ,  "aptent" ,  
+        "taciti" ,  "sociosqu" ,  "litora" ,  "torquent" ,  "conubia" ,  "nostra" ,  
+        "inceptos" ,  "hymenaeos" ];
+        return loremArray[Math.floor(Math.random() * loremArray.length)]
     }
 }
 
