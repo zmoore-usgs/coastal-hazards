@@ -43,7 +43,7 @@ var Geoserver = function(endpoint) {
                     me.wmsCapabilities = getCapsResponse;
                     me.wmsCapabilitiesXML = data;
                     $(args.callbacks).each(function(index, callback, allCallbacks) {
-                        callback(getCapsResponse, this);
+                        callback(getCapsResponse, args);
                     })
                 }
             })
