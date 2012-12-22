@@ -81,11 +81,27 @@ var Map = function() {
             if (layer.length) {
                 me.map.removeLayer(layer[0]);
             }
+            return layer;
         },
         removeLayersByName : function(featureNames) {
             $(featureNames).each(function(index, fn) {
                 me.removeLayerByName(fn);
             })
+        },
+        copyVectorLayer : function(args) {
+            var layerName = args.layerName;
+            var copyName = args.copyName || layerName + '_clone';
+            var layer = me.map.getLayersByName(layerName)[0];
+            var clonedLayer = null;
+            if (layer) {
+                clonedLayer = layer.clone({ 
+                    name : copyName,
+                    renderer : args.renderer,
+                    styleMap : args.styleMap
+                })
+            }
+            
+            return clonedLayer;
         }
     });
 }

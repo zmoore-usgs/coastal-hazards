@@ -24,44 +24,6 @@ var UI = function() {
                 }
             }
         },
-        shorelinesListboxChanged : function() {
-            
-            $("#shorelines-list option:not(:selected)").each(function (index, option) {
-                var layers = map.getMap().getLayersBy('name', option.text);
-                if (layers.length) {
-                    $(layers).each(function(i,l) {
-                        map.getMap().removeLayer(l);
-                    })
-                }
-            });
-            
-            var layerInfos = []
-            $("#shorelines-list option:selected").each(function (index, option) {
-                var layer = geoserver.getLayerByName(option.text);
-                
-                layerInfos.push(layer)
-            });
-            
-            if (layerInfos.length) {
-                Shorelines.addShorelines(layerInfos);
-            }
-            
-        },
-        baselineListboxChanged : function() {
-            $("#baseline-list option:not(:selected)").each(function (index, option) {
-                var layers = map.getMap().getLayersBy('name', option.value);
-                if (layers.length) {
-                    $(layers).each(function(i,l) {
-                        map.getMap().removeLayer(l);
-                    })
-                }
-            });
-            if ($("#baseline-list option:selected")[0].value) {
-                Baseline.addBaseline({
-                    name : $("#baseline-list option:selected")[0].value 
-                })
-            }
-        },
         transectListboxChanged : function() {
             LOG.debug('Transect listbox changed');
             $("#transects-list option:not(:selected)").each(function (index, option) {
@@ -112,13 +74,160 @@ var UI = function() {
             
             if (context == 'shorelines') {
                 $('#'+context+'-list').change(function(index, option) {
-                    ui.shorelinesListboxChanged()
+                    Shorelines.shorelineSelected()
                 }) 
             } else if (context == 'baseline') {
                 $('#'+context+'-list').change(function(index, option) {
-                    ui.baselineListboxChanged()
+                    Baseline.baselineSelected()
                 }) 
             }
+        },
+        displayBaselineEditButton : function() {
+            LOG.info('Adding baseline edit button to panel')
+            $('#baseline-edit-form-toggle').remove();
+            var baselineEditButton = $('<button />').addClass('btn btn-success').attr('id', 'baseline-edit-form-toggle').attr('data-toggle', 'button').html('Edit Baseline');
+            
+            $(baselineEditButton).on('click', function(event) {
+                
+                var displayForm = $(event.currentTarget).attr('class').split(' ').find('active') ? false : true;
+                if (displayForm) {
+                    var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
+                    renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
+                    
+                    var editLayer =  map.copyVectorLayer({ 
+                        layerName : $("#baseline-list option:selected")[0].value,
+                        copyName : 'baseline-edit-layer',
+                        renderers : renderer,
+                        styleMap : new OpenLayers.StyleMap({
+                            strokeColor : '#0000FF',
+                            strokeWidth : 2
+                        })
+                    });
+                   
+                    
+                    var report = function(event) {
+                        LOG.info(event.type, event.feature ? event.feature.id : event.components)
+                    }
+                    
+                    editLayer.events.on({
+                        "beforefeaturemodified": report,
+                        "featuremodified": report,
+                        "afterfeaturemodified": report,
+                        "vertexmodified": report,
+                        "sketchmodified": report,
+                        "sketchstarted": report,
+                        "sketchcomplete": report
+                    });
+                    
+                    map.getMap().addLayer(editLayer);
+                    
+                    var editControl = new OpenLayers.Control.ModifyFeature(editLayer, {
+                        id : 'baseline-edit-control'
+                    })
+                    map.getMap().addControl(editControl);
+                    editControl.activate();
+                    
+                    ui.initializeBaselineEditForm();
+                } else {
+                    // remove edit layer, remove edit control
+                    map.removeLayerByName('baseline-edit-layer');
+                    map.getMap().removeControl(map.getMap().getControlsBy('id', 'baseline-edit-control')[0])
+                }
+                
+                $("#baseline-edit-panel-well").toggleClass('hidden');
+            })
+            
+            $('#baseline-button-row').append(baselineEditButton);
+            
+        },
+        initializeBaselineEditForm : function() {
+            LOG.debug('Initializing Display')
+            var layerName = $("#baseline-list option:selected")[0].value;
+            var layerTitle = $("#baseline-list option:selected")[0].text;
+            
+            
+            $('.baseline-edit-toggle').each(function(i,toggle) {
+                
+                if ($(toggle).find('input').attr('checked')) {
+                    $(toggle).find('input').removeAttr('checked');
+                }
+                
+                $(toggle).toggleSlide({
+                    onClick: function (event, status) {
+                        var modifyControl = map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+//                        var modifyLayer = map.getMap().getLayersBy('name','baseline-edit-layer')[0];
+                        
+                        var selectedOptions = {};    
+                        modifyControl.deactivate();
+                        
+                        modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+                                                
+                        $('.baseline-edit-toggle>input').each(function(i,cb) {
+                            selectedOptions[cb.id] = $(cb).attr('checked') ? true : false;
+                        })
+                        
+                        $(Object.keys(selectedOptions)).each(function(i,v){
+                            if (selectedOptions[v]) {
+                                switch (v) {
+                                    case 'toggle-create-vertex-checkbox':
+                                        modifyControl.mode.createVertices = true;
+                                        break;
+                                    case 'toggle-allow-rotation-checkbox':
+                                        modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
+                                        modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                        break
+                                    case 'toggle-allow-resizing-checkbox':
+                                        modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                                        if (selectedOptions['toggle-aspect-ratio-checkbox']) {
+                                            modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                        }
+                                        break;
+                                    case 'toggle-allow-dragging-checkbox':
+                                        modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
+                                        modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                        break;
+                                }
+                            }
+                        })
+                        modifyControl.activate();
+                    },
+                    text: {
+                        enabled: false, 
+                        disabled: false
+                    },
+                    style: {
+                        enabled: 'primary',
+                        disabled : 'danger'
+                    },
+                    layerName : layerName,
+                    layerTitle : layerTitle
+                })
+            })
+            
+            
+        },
+        createBaselineDrawPanel : function() {
+            var well = $('<div />').attr('id', 'draw-panel-well').addClass('well');
+            var fluidContainer = $('<div />').attr('id', 'draw-panel-container').addClass('container-fluid');
+            var rows = [];
+            rows.push( 
+                $('<div />').addClass('row-fluid span12').append(
+                    // Baseline Name
+                    $('<input />').addClass('input-xlarge span6').attr('id', 'baseline-draw-form-name').val(Util.getRandomLorem()).
+                    before($('<label />').addClass('control-label').attr('for', 'baseline-draw-form-name').html('Baseline Name'))
+                    ),
+                $('<div />').addClass('row-fluid span12').append(
+                    // Baseline Name
+                    $('<button />').addClass('btn').attr('id', 'baseline-draw-form-save').html('Save').on('click', Baseline.saveDrawnFeatures).
+                    after($('<button />').addClass('btn').attr('id', 'baseline-draw-form-clear').html('Clear').on('click', Baseline.clearDrawFeatures))
+                    )
+                )
+        
+            $(rows).each(function(i,row) {
+                fluidContainer.append(row);
+            })
+        
+            return well.append(fluidContainer)
         },
         initializeUploader : function(context) {
             var uploader = new qq.FineUploader({
