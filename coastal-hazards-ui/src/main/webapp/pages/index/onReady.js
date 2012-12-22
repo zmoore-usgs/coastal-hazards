@@ -4,7 +4,7 @@ var permSession; // Contains the pemanent session object which holds one or more
 var geoserver; // Primarily a utility class
 var map; // Map interaction object. Holds the map and utilities 
 var ui; // Utility class for the user interface
-
+var sld;
 $(document).ready(function() {
     
     initializeLogging({

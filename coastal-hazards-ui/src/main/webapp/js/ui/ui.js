@@ -94,22 +94,24 @@ var UI = function() {
                     var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
                     renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
                     
-                    var editLayer =  map.copyVectorLayer({ 
-                        layerName : $("#baseline-list option:selected")[0].value,
-                        copyName : 'baseline-edit-layer',
-                        renderers : renderer,
-                        styleMap : new OpenLayers.StyleMap({
-                            strokeColor : '#0000FF',
-                            strokeWidth : 2
+                    var originalLayer = map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0].clone();
+                    var clonedLayer = new OpenLayers.Layer.Vector('baseline-edit-layer',{
+                        strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
+                        protocol: new OpenLayers.Protocol.WFS({
+                            url:  "geoserver/ows",
+                            featureType: originalLayer.name.split(':')[1],
+                            featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
+                            geometryName: "the_geom",
+                            schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&;typename=" + originalLayer.name
                         })
-                    });
-                   
+                    })
+                    clonedLayer.addFeatures(originalLayer.features);
                     
                     var report = function(event) {
                         LOG.info(event.type, event.feature ? event.feature.id : event.components)
                     }
                     
-                    editLayer.events.on({
+                    clonedLayer.events.on({
                         "beforefeaturemodified": report,
                         "featuremodified": report,
                         "afterfeaturemodified": report,
@@ -119,13 +121,12 @@ var UI = function() {
                         "sketchcomplete": report
                     });
                     
-                    map.getMap().addLayer(editLayer);
-                    
-                    var editControl = new OpenLayers.Control.ModifyFeature(editLayer, {
+                    var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, {
                         id : 'baseline-edit-control'
                     })
+                    
+                    map.getMap().addLayer(clonedLayer);
                     map.getMap().addControl(editControl);
-                    editControl.activate();
                     
                     ui.initializeBaselineEditForm();
                 } else {
@@ -155,7 +156,6 @@ var UI = function() {
                 $(toggle).toggleSlide({
                     onClick: function (event, status) {
                         var modifyControl = map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
-//                        var modifyLayer = map.getMap().getLayersBy('name','baseline-edit-layer')[0];
                         
                         var selectedOptions = {};    
                         modifyControl.deactivate();
@@ -189,7 +189,9 @@ var UI = function() {
                                 }
                             }
                         })
+                        LOG.debug('Activating modify control');
                         modifyControl.activate();
+                        var a = 1;
                     },
                     text: {
                         enabled: false, 

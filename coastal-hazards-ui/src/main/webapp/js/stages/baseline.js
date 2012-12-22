@@ -82,8 +82,6 @@ var Baseline = {
                 callbacks : [function(data, context) {
                     if (data.success === 'true') {
                         LOG.info('File imported successfully - reloading current file set from server');
-                        var layerName = data.feature;
-                        var drawControl = map.getMap().getControlsBy('id','baseline-draw-control')[0];
                         var schema = context.protocol.schema;
                         var newSchema = schema.substring(0, schema.lastIndexOf(':') + 1) + importName;
             
