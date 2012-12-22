@@ -203,6 +203,9 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="row-fluid span12">
+                                            <button class="span1 btn-success" id="baseline-edit-save-button" title="Save Modified Baseline">Save</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

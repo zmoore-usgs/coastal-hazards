@@ -108,7 +108,22 @@ var UI = function() {
                     clonedLayer.addFeatures(originalLayer.features);
                     
                     var report = function(event) {
-                        LOG.debug(event.type, event.feature ? event.feature.id : event.components)
+                        LOG.debug(event.type, event.feature ? event.feature.id : event.components);
+//                        if (event.type == "featuremodified") {
+//                            var saveStrategy = event.strategies.find(function(n) {
+//                                return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
+//                            });
+//                        
+//                            saveStrategy.events.remove('success');
+//
+//                            saveStrategy.events.register('success', null, function() {
+//                                Baseline.refreshFeatureList({
+//                                    selectLayer : importName
+//                                })
+//                                Baseline.drawButton.trigger('click');
+//                            });
+//                            saveStrategy.save();
+//                        }
                     }
                     
                     clonedLayer.events.on({
@@ -128,6 +143,24 @@ var UI = function() {
                     map.getMap().addLayer(clonedLayer);
                     map.getMap().addControl(editControl);
                     ui.initializeBaselineEditForm();
+                    
+                    $('#baseline-edit-save-button').on('click', function(event) {
+                        var layer = map.getMap().getLayersByName('baseline-edit-layer')[0];
+                        var saveStrategy = layer.strategies.find(function(n) {
+                                return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
+                        });
+                        
+                        saveStrategy.events.remove('success');
+
+                        saveStrategy.events.register('success', null, function() {
+                            Baseline.refreshFeatureList({
+                                selectLayer : layer
+                            })
+                            Baseline.drawButton.trigger('click');
+                        });
+                        saveStrategy.save();
+                    })
+                    
                 } else {
                     // remove edit layer, remove edit control
                     map.removeLayerByName('baseline-edit-layer');
