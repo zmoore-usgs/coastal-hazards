@@ -108,7 +108,7 @@ var UI = function() {
                     clonedLayer.addFeatures(originalLayer.features);
                     
                     var report = function(event) {
-                        LOG.info(event.type, event.feature ? event.feature.id : event.components)
+                        LOG.debug(event.type, event.feature ? event.feature.id : event.components)
                     }
                     
                     clonedLayer.events.on({
@@ -127,7 +127,6 @@ var UI = function() {
                     
                     map.getMap().addLayer(clonedLayer);
                     map.getMap().addControl(editControl);
-                    
                     ui.initializeBaselineEditForm();
                 } else {
                     // remove edit layer, remove edit control
@@ -155,43 +154,76 @@ var UI = function() {
                 
                 $(toggle).toggleSlide({
                     onClick: function (event, status) {
-                        var modifyControl = map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+                        // Sometimes the click event comes twice if clicking on the toggle graphic instead of 
+                        // the toggle text. When this happens, check for event.timeStamp being 0. When that happens,
+                        // we've already handled the onclick 
+                        if (event.timeStamp) {
+                            var modifyControl = map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+                            var editLayer = map.getMap().getLayersBy('name', 'baseline-edit-layer')[0];
                         
-                        var selectedOptions = {};    
-                        modifyControl.deactivate();
-                        
-                        modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+                            var selectedOptions = {};    
+                            modifyControl.deactivate();
+                            var anyTrue = false;
                                                 
-                        $('.baseline-edit-toggle>input').each(function(i,cb) {
-                            selectedOptions[cb.id] = $(cb).attr('checked') ? true : false;
-                        })
-                        
-                        $(Object.keys(selectedOptions)).each(function(i,v){
-                            if (selectedOptions[v]) {
-                                switch (v) {
-                                    case 'toggle-create-vertex-checkbox':
-                                        modifyControl.mode.createVertices = true;
-                                        break;
-                                    case 'toggle-allow-rotation-checkbox':
-                                        modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
-                                        modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                        break
-                                    case 'toggle-allow-resizing-checkbox':
-                                        modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
-                                        if (selectedOptions['toggle-aspect-ratio-checkbox']) {
-                                            modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                        }
-                                        break;
-                                    case 'toggle-allow-dragging-checkbox':
-                                        modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
-                                        modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                        break;
+                            $('.baseline-edit-toggle>input').each(function(i,cb) {
+                                selectedOptions[cb.id] = $(cb).attr('checked') ? true : false;
+                                
+                                // If we are reading the current target's boolean state, we need to 
+                                // flip it because this event happens before the checkbox gets a check 
+                                // in it
+                                if ($(event.currentTarget).children()[0].id === $(cb).attr('id')) {
+                                    selectedOptions[cb.id] = !selectedOptions[cb.id];
                                 }
+                            })
+                            
+                            modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+                        
+                            $(Object.keys(selectedOptions)).each(function(i,v){
+                                if (selectedOptions[v]) {
+                                    switch (v) {
+                                        case 'toggle-create-vertex-checkbox':
+                                            modifyControl.mode.createVertices = true;
+                                            anyTrue = true;
+                                            break;
+                                        case 'toggle-allow-rotation-checkbox':
+                                            modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
+                                            modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                            anyTrue = true;
+                                            break
+                                        case 'toggle-allow-resizing-checkbox':
+                                            modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                                            if (selectedOptions['toggle-aspect-ratio-checkbox']) {
+                                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                            }
+                                            anyTrue = true;
+                                            break;
+                                        case 'toggle-allow-dragging-checkbox':
+                                            modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
+                                            modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                            anyTrue = true;
+                                            break;
+                                    }
+                                } else {
+                                    switch (v) {
+                                        case 'toggle-allow-resizing-checkbox':
+                                            $('#toggle-allow-resizing-checkbox').parent().addClass('disabled')
+                                    }
+                                }
+                            })
+                            
+                            if (anyTrue) {
+                                LOG.debug('Found at least one modify option toggled true. Activating modify control.')
+                                modifyControl.activate();
+                                $(editLayer.features).each(function(i,f) {
+                                    modifyControl.selectFeature(f);
+                                })
+                            } else {
+                                LOG.debug('Did not find at least one modify option toggled true. Modify Control remains deactivated.')
+                                $(editLayer.features).each(function(i,f) {
+                                    modifyControl.unselectFeature(f);
+                                })
                             }
-                        })
-                        LOG.debug('Activating modify control');
-                        modifyControl.activate();
-                        var a = 1;
+                        }
                     },
                     text: {
                         enabled: false, 
