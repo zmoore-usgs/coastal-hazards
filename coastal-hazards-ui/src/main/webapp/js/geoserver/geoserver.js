@@ -132,10 +132,6 @@ var Geoserver = function(endpoint) {
                 }
             })
             
-            if (args.sortBy) {
-                //                url += '&sortBy=' + properties[args.featureName][0]// + properties[layer.title][0] ? '%2BA' : '%2BD';
-            }
-            
             $.ajax(url, {
                 context : args.scope || this,
                 success : function(data, textStatus, jqXHR) {

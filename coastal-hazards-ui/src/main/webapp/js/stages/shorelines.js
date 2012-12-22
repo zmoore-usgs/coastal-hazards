@@ -28,7 +28,7 @@ var Shorelines = {
         // Read the selected features for specific properties
         var layer = args.layer;
         
-        // Parse the describe featureTypes using this anon function
+        // Parse the describeFeatureType response using this function
         var properties = function(describeFeaturetypeRespone) {
             var result = new Object.extended();
             // For every layer pulled in...
@@ -74,8 +74,8 @@ var Shorelines = {
                         });
                     }
                 
-                    var colorLimitPairs = Util.createColorGroup(groups);
                     var sldBody;
+                    var colorLimitPairs = Util.createColorGroup(groups);
                     if (!isNaN(colorLimitPairs[0][1])) {  
                         // Need to first find out about the featuretype
                         var createUpperLimitFilterSet = function(colorLimitPairs) {
@@ -240,7 +240,7 @@ var Shorelines = {
                 return feature.attributes[event.object.groupByAttribute].split('/')[2] === n[1].split('/')[2]
             })
             
-            colorTableHTML.push("<tr><td><input type='checkbox' checked='checked'></td><td>"+ feature.fid +"</td><td style='background-color:" + colorGroup[0] + ";'>&nbsp;</td>");
+            colorTableHTML.push("<tr><td> <div class='toggle feature-toggle' data-enabled='ON' data-disabled='OFF' data-toggle='toggle'><input class='checkbox' type='checkbox' checked='checked' name='checkbox-"+feature.fid+"' id='checkbox-"+feature.fid+"' value="+feature.fid+"><label class='check' for='checkbox-"+feature.fid+"'></label></div></td><td>"+ feature.fid +"</td><td style='background-color:" + colorGroup[0] + ";'>&nbsp;</td>");
             for (var haIndex = 0;haIndex < headerAttributes.length;haIndex++) {
                 colorTableHTML.push("<td>" + feature.attributes[headerAttributes[haIndex]] + "</td>");
             }
@@ -252,7 +252,9 @@ var Shorelines = {
         var navTabs = 	$('#shoreline-table-navtabs');
         var tabContent = $('#shoreline-table-tabcontent');
         var shorelineList = $('#shorelines-list');
-        var selectedVals = shorelineList.children(':selected').map(function(i,v) { return v.text }).toArray();
+        var selectedVals = shorelineList.children(':selected').map(function(i,v) {
+            return v.text
+        }).toArray();
         
         navTabs.children().each(function(i,navTab) {
             if (navTab.textContent == event.object.name || !selectedVals.count(navTab.textContent)) {
@@ -279,6 +281,44 @@ var Shorelines = {
         append($('<div />').addClass('tab-pane').addClass('active').attr('id', this.name).html(colorTableHTML.join('')))
                         
         $("table.tablesorter").tablesorter();
+        
+        $('.feature-toggle').each(function(i,toggle) {
+            $(toggle).toggleSlide({
+                text: {
+                    enabled: false, 
+                    disabled: false
+                },
+                style: {
+                    enabled: 'primary',
+                    disabled : 'danger'
+                }
+            })
+        })
+
+        
+    },
+    shorelineSelected : function() {
+            
+        $("#shorelines-list option:not(:selected)").each(function (index, option) {
+            var layers = map.getMap().getLayersBy('name', option.text);
+            if (layers.length) {
+                $(layers).each(function(i,l) {
+                    map.getMap().removeLayer(l);
+                })
+            }
+        });
+            
+        var layerInfos = []
+        $("#shorelines-list option:selected").each(function (index, option) {
+            var layer = geoserver.getLayerByName(option.text);
+                
+            layerInfos.push(layer)
+        });
+            
+        if (layerInfos.length) {
+            Shorelines.addShorelines(layerInfos);
+        }
+            
     },
     populateFeaturesList : function(caps) {
         ui.populateFeaturesList(caps, 'shorelines');
