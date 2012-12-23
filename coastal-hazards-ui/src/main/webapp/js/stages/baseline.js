@@ -139,5 +139,10 @@ var Baseline = {
                 CONFIG.ui.displayBaselineEditButton();
             }
         }
+    },
+    initializeUploader : function(args) {
+        CONFIG.ui.initializeUploader($.extend({
+            context : 'baseline'
+        }, args))
     }
 }

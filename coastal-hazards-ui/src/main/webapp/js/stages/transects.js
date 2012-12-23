@@ -22,8 +22,8 @@ var Transects = {
                 featureNS: CONFIG.namespace[args.name.split(':')[0]],
                 geometryName: "the_geom"
             })
-//            ,
-//            styleMap: new OpenLayers.StyleMap(sld.namedLayers["Simple Line"]["userStyles"][0])
+        //            ,
+        //            styleMap: new OpenLayers.StyleMap(sld.namedLayers["Simple Line"]["userStyles"][0])
         });
         //        baselineLayer.events.register("featuresadded", null, function() {
         //            this.map.zoomToExtent(this.getDataExtent());
@@ -59,5 +59,10 @@ var Transects = {
         $('#transects-list').change(function(index, option) {
             CONFIG.ui.transectListboxChanged()
         }) 
+    } ,       
+    initializeUploader : function(args) {
+        CONFIG.ui.initializeUploader($.extend({
+            context : 'transects'
+        }, args))
     }
 }

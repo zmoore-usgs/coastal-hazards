@@ -28,20 +28,18 @@ $(document).ready(function() {
     LOG.info('Preparing call to OWS GetCapabilities')
     CONFIG.ows.getWMSCapabilities({
         callbacks : [
-        function(caps) {
-            
-            CONFIG.ui.initializeUploader('shorelines');
-            CONFIG.ui.initializeUploader('baseline');
-            CONFIG.ui.initializeUploader('transects');
-    
+        CONFIG.tempSession.updateSessionLayersFromWMSCaps,
+        Shorelines.initializeUploader,
+        Baseline.initializeUploader,
+        Transects.initializeUploader,
+        function() {
             $("#calculate-transects-btn").on("click", Transects.calcTransects);
             $("#create-intersections-btn").on("click", Intersections.calcIntersections);
             $('#baseline-draw-btn').on("click", Baseline.drawBaseline);
-            
-            Shorelines.populateFeaturesList(caps);
-            Baseline.populateFeaturesList(caps);
-            Transects.populateFeatureList(caps);
-        }
+        },
+        Shorelines.populateFeaturesList,
+        Baseline.populateFeaturesList,
+        Transects.populateFeatureList
         ]
     })
 })

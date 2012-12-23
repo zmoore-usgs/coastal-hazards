@@ -322,5 +322,10 @@ var Shorelines = {
     },
     populateFeaturesList : function(caps) {
         CONFIG.ui.populateFeaturesList(caps, 'shorelines');
+    },
+    initializeUploader : function(args) {
+        CONFIG.ui.initializeUploader($.extend({
+            context : 'shorelines'
+        }, args))
     }
 }

@@ -19,29 +19,95 @@ var Session = function(name, isPerm) {
             }
 
             newSession[randID] = Object.extended(); 
-            newSession.files = [];
+            newSession.layers = [];
             me.session['sessions'][randID] = newSession;
             me.session['current-session'] = Object.extended();
             me.session['current-session']['key'] = randID;
             me.session['current-session']['session'] = me.session['sessions'][randID];
         }
     } else {
-        LOG.info('Creating new temp session object');
+        LOG.info('Session.js::constructor:Creating new temp session object');
         me.session = new Object();
         
-        LOG.info('Removing previous temp session');
+        LOG.info('Session.js::constructor:Removing previous temp session');
         me.sessionObject.removeItem('coastal-hazards');
         
-        LOG.info('Saving new temp session');
+        LOG.info('Session.js::constructor:Saving new temp session');
         me.sessionObject.setItem(me.name, JSON.stringify(me.session));
         
         /**
          * Persist the temp session to the appropriate location in the current session 
          */
         me.persistCurrentSession = function() {
-            LOG.info('Persisting temp session to perm session');
-            permSession.session.sessions[this.key] = this.session;
-            permSession.save();
+            LOG.info('Session.js::persistCurrentSession:Persisting temp session to perm session');
+            CONFIG.permSession.session.sessions[this.key] = this.session;
+            CONFIG.permSession.save();
+            CONFIG.tempSession.save();
+        }
+        
+        me.updateSessionLayersFromWMSCaps = function(caps) {
+            LOG.info('Updating session layer list from WMS Capabilities');
+            
+            var wmsLayers = caps.capability.layers;
+            var sessionLayers = me.session.layers;
+            
+            // Remove missing layers from session
+            for (var sessionLayerIndex = 0;sessionLayerIndex < sessionLayers.length;sessionLayerIndex++) {
+                var sessionLayer = sessionLayers[sessionLayerIndex];
+                if (sessionLayer.name.indexOf(me.getCurrentSessionKey() > -1)) {
+                    var foundLayer = wmsLayers.find(function(wmsLayer) {
+                        return wmsLayer.name === sessionLayer.name
+                    })
+                        
+                    if (!foundLayer) {
+                        me.session.layers[sessionLayerIndex] = undefined;
+                    }
+                }
+            }
+            me.session.layers = me.session.layers.compact();
+            
+            var ioLayers = wmsLayers.findAll(function(wmsLayer) {
+                return (wmsLayer.prefix == 'ch-input' || wmsLayer.prefix == 'ch-output') &&
+                wmsLayer.name.indexOf(me.getCurrentSessionKey() != -1);
+            })
+            
+            $(ioLayers).each(function(index, layer) {
+                var incomingLayer = {
+                        name : layer.name,
+                        title : layer.title,
+                        prefix : layer.prefix,
+                        bbox : layer.bbox
+                    }
+                    
+                var foundLayerAtIndex = me.session.layers.findIndex(function(l) {
+                    return l.name === layer.name
+                    })
+                    
+                if (foundLayerAtIndex != -1) {
+                    LOG.debug('Session.js::updateSessionLayersFromWMSCaps: Layer ' + 
+                        'provided by WMS GetCapabilities response already in session layers. ' +
+                        'Updating session layers with latest info.');
+                    me.session.layers[foundLayerAtIndex] = incomingLayer;
+                } else {
+                    LOG.debug('Session.js::updateSessionLayersFromWMSCaps: Layer ' + 
+                        'provided by WMS GetCapabilities response not in session layers. ' +
+                        'Adding layer to session layers.');
+                    me.addLayerToSession(incomingLayer)
+                }
+            })
+            me.persistCurrentSession();
+        }
+        
+        me.addLayerToSession = function(params) {
+            LOG.debug('Session.js::addLayerToSession:Adding layer to session');
+            var layer = params.layer;
+            
+            me.session.layers.push({ 
+                name : params.name || layer.name,
+                title : params.title || layer.title,
+                prefix : params.prefix || layer.prefix,
+                bbox : params.bbox || layer.bbox
+            });
         }
         
         /**
@@ -61,17 +127,12 @@ var Session = function(name, isPerm) {
             LOG.info('Saving session object to storage');
             me.sessionObject.setItem(me.name, JSON.stringify(me.session));
         },
+        
         load : function(name) {
             LOG.info('Loading session object from storage');
             $.parseJSON(me.sessionObject.getItem(name ? name : me.name));
         },
-        addFileToSession : function(params) {
-            me.session.files.push({ 
-                token : params.token, 
-                name : params.name
-            });
-            me.persistCurrentSession();
-        },
+        
         getCurrentSessionKey : function() {
             if (me.isPerm) {
                 return me.session['current-session'].key;
@@ -90,6 +151,11 @@ var Session = function(name, isPerm) {
         //        },
         getCurrentSession : function() {
             return me.session['current-session'];
+        },
+        initializeUploader : function(args) {
+            CONFIG.ui.initializeUploader($.extend({
+                context : 'shorelines'
+            }, args))
         }
     });
 }

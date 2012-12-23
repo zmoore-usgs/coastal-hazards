@@ -132,7 +132,7 @@ var UI = function() {
                     $('#baseline-edit-save-button').on('click', function(event) {
                         var layer = CONFIG.map.getMap().getLayersByName('baseline-edit-layer')[0];
                         var saveStrategy = layer.strategies.find(function(n) {
-                                return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
+                            return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
                         });
                         
                         saveStrategy.events.remove('success');
@@ -281,7 +281,9 @@ var UI = function() {
         
             return well.append(fluidContainer)
         },
-        initializeUploader : function(context) {
+        initializeUploader : function(args) {
+            LOG.info('UI.js::initializeUploader: Initializing uploader for the '  + args.context + ' context');
+            var context = args.context;
             var uploader = new qq.FineUploader({
                 element: document.getElementById(context + '-uploader'),
                 request: {
@@ -306,42 +308,35 @@ var UI = function() {
                 },
                 callbacks: {
                     onComplete: function(id, fileName, responseJSON) {
-                        if (responseJSON.success) {
-                            if (responseJSON.success != 'true') {
-                                LOG.info('File failed to complete upload')
-                            } else {
-                                LOG.info("file-token :" + responseJSON['file-token']);
-                        
-                                CONFIG.tempSession.addFileToSession({
-                                    token : responseJSON['file-token'], 
-                                    name : responseJSON['file-name']
-                                });
+                        if (responseJSON.success != 'true') {
+                            // TODO - Notify the user
+                            LOG.info('File failed to complete upload')
+                        } else {
+                            LOG.info("UI.js::initializeUploader: Upload complete: File token returned: :" + responseJSON['file-token']);
                             
-                                var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + responseJSON['file-name'].split('.')[0] + '_' + context;
+                            var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + responseJSON['file-name'].split('.')[0] + '_' + context;
                             
-                                geoserver.importFile({
-                                    token : responseJSON['file-token'],
-                                    importName : importName, 
-                                    workspace : 'ch-input',
-                                    callbacks : [function(data) {
-                                        if (data.success === 'true') {
-                                            LOG.info('File imported successfully - reloading current file set from server');
-                                            geoserver.getWMSCapabilities({
-                                                callbacks : [
-                                                function (data) {
-                                                    CONFIG.ui.populateFeaturesList(data, context);
-                                                    CONFIG.tempSession.addFileToSession(data);
-                                                // TODO - add the layer just imported 
-                                                }
-                                                ]
-                                            })
-                                        } else {
-                                            // TODO - Notify the user
-                                            LOG.warn(data.error);
-                                        }
-                                    }]
-                                });
-                            }
+                            CONFIG.ows.importFile({
+                                token : responseJSON['file-token'],
+                                importName : importName, 
+                                workspace : 'ch-input',
+                                callbacks : [function(data) {
+                                    if (data.success === 'true') {
+                                        LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
+                                        CONFIG.ows.getWMSCapabilities({
+                                            callbacks : [
+                                            function (data) {
+                                                CONFIG.tempSession.updateSessionLayersFromWMSCaps(data);
+                                                CONFIG.ui.populateFeaturesList(data, context);
+                                            }
+                                            ]
+                                        })
+                                    } else {
+                                        // TODO - Notify the user
+                                        LOG.warn(data.error);
+                                    }
+                                }]
+                            });
                         }
                     }
                 }
