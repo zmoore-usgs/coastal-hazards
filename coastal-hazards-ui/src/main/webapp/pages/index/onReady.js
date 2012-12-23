@@ -35,7 +35,7 @@ $(document).ready(function() {
         function() {
             $("#calculate-transects-btn").on("click", Transects.calcTransects);
             $("#create-intersections-btn").on("click", Intersections.calcIntersections);
-            $('#baseline-draw-btn').on("click", Baseline.drawBaseline);
+            $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
         },
         Shorelines.populateFeaturesList,
         Baseline.populateFeaturesList,

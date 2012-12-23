@@ -18,32 +18,6 @@ var Baseline = {
     populateFeaturesList : function(caps) {
         CONFIG.ui.populateFeaturesList(caps, 'baseline');
     },
-    drawBaseline : function(event) {
-        // When a user clicks the button, this event receives notification before the active state changes.
-        // Therefore if the button is 'active' coming in, this means the user is wishing to deactivate it
-        var beginDrawing = $(event.currentTarget).attr('class').split(' ').find('active') ? false : true;
-        if (beginDrawing) {
-            Baseline.beginDrawing();
-        } else {
-            Baseline.stopDrawing();
-        }
-    },
-    beginDrawing : function() {
-        var drawControl = CONFIG.map.getMap().getControlsBy('id','baseline-draw-control')[0];
-
-        LOG.debug('User wishes to begin drawing a baseline');
-        // First make sure to clear what's currently drawn, if anything
-        drawControl.activate();
-        $('#baseline-well').after(CONFIG.ui.createBaselineDrawPanel());
-    },
-    stopDrawing : function() {
-        var drawControl = CONFIG.map.getMap().getControlsBy('id','baseline-draw-control')[0];
-
-        LOG.debug('User wishes to stop drawing a baseline');
-        drawControl.deactivate();
-        Baseline.clearDrawFeatures();
-        $('#draw-panel-well').remove();
-    },
     clearDrawFeatures : function() {
         LOG.info('Clearing draw layer from map');
         return CONFIG.map.getMap().getControlsBy('id','baseline-draw-control')[0].layer.removeAllFeatures();
@@ -139,6 +113,57 @@ var Baseline = {
                 CONFIG.ui.displayBaselineEditButton();
             }
         }
+    },
+    drawButtonToggled : function(event) {
+        // When a user clicks the button, this event receives notification before the active state changes.
+        // Therefore if the button is 'active' coming in, this means the user is wishing to deactivate it
+        var beginDrawing = $(event.currentTarget).attr('class').split(' ').find('active') ? false : true;
+        
+        LOG.debug('Baseline.js::drawButtonToggled: User wishes to ' + beginDrawing ? 'begin' : 'stop' + 'drawing');
+        
+        if (beginDrawing) {
+            Baseline.beginDrawing();
+        } else {
+            Baseline.stopDrawing();
+        }
+    },
+    beginDrawing : function() {
+        LOG.debug('Baseline.js::beginDrawing: Initializing baseline draw panel');
+        
+        LOG.debug('Baseline.js::beginDrawing: Activating draw control');
+        Baseline.getDrawControl().activate();
+        
+        LOG.debug('Baseline.js::beginDrawing: Removing currently drawn features, if any');
+        Baseline.clearDrawFeatures();
+        
+        LOG.debug('Baseline.js::beginDrawing: Populating layer name textbox with random lorem');
+        $('#baseline-draw-form-name').val(Util.getRandomLorem());
+        
+        LOG.debug('Baseline.js::beginDrawing: Initializing control panel buttons');
+        $('#baseline-draw-form-save').on('click', Baseline.saveDrawnFeatures);
+        $('#baseline-draw-form-clear').on('click', Baseline.clearDrawFeatures);
+        
+        LOG.debug('Baseline.js::beginDrawing: Displaying draw control panel ');
+        $('#draw-panel-well').removeClass('hidden');
+    },
+    stopDrawing : function() {
+        LOG.debug('Baseline.js::stopDrawing: Removing (uninitializing) draw panel.');
+
+        LOG.debug('Baseline.js::stopDrawing: Deactivating draw control');
+        Baseline.getDrawControl().deactivate();
+        
+        LOG.debug('Baseline.js::stopDrawing: Removing currently drawn features, if any');
+        Baseline.clearDrawFeatures();
+        
+        LOG.debug('Baseline.js::beginDrawing: Uninitializing control panel buttons');
+        $('#baseline-draw-form-save').unbind('click', Baseline.saveDrawnFeatures);
+        $('#baseline-draw-form-clear').unbind('click', Baseline.clearDrawFeatures);
+        
+        LOG.debug('Baseline.js::stopDrawing: Hiding draw control panel ');
+        $('#draw-panel-well').addClass('hidden');
+    },
+    getDrawControl : function() {
+        return CONFIG.map.getMap().getControlsBy('id','baseline-draw-control')[0];
     },
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({

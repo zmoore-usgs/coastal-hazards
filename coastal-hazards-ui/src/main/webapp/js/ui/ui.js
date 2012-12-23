@@ -258,29 +258,6 @@ var UI = function() {
             
             
         },
-        createBaselineDrawPanel : function() {
-            var well = $('<div />').attr('id', 'draw-panel-well').addClass('well');
-            var fluidContainer = $('<div />').attr('id', 'draw-panel-container').addClass('container-fluid');
-            var rows = [];
-            rows.push( 
-                $('<div />').addClass('row-fluid span12').append(
-                    // Baseline Name
-                    $('<input />').addClass('input-xlarge span6').attr('id', 'baseline-draw-form-name').val(Util.getRandomLorem()).
-                    before($('<label />').addClass('control-label').attr('for', 'baseline-draw-form-name').html('Baseline Name'))
-                    ),
-                $('<div />').addClass('row-fluid span12').append(
-                    // Baseline Name
-                    $('<button />').addClass('btn').attr('id', 'baseline-draw-form-save').html('Save').on('click', Baseline.saveDrawnFeatures).
-                    after($('<button />').addClass('btn').attr('id', 'baseline-draw-form-clear').html('Clear').on('click', Baseline.clearDrawFeatures))
-                    )
-                )
-        
-            $(rows).each(function(i,row) {
-                fluidContainer.append(row);
-            })
-        
-            return well.append(fluidContainer)
-        },
         initializeUploader : function(args) {
             LOG.info('UI.js::initializeUploader: Initializing uploader for the '  + args.context + ' context');
             var context = args.context;

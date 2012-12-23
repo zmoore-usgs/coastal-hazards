@@ -150,7 +150,7 @@
 
                             <!-- Baseline -->
                             <div class="tab-pane" id="baseline">
-                                <div class="well" id="baseline-well">
+                                <div id="baseline-well" class="well">
                                     <div class="fluid-row span12">
                                         <select id="baseline-list" style="width: 100%;"></select>
                                     </div>
@@ -159,7 +159,20 @@
                                     </div>
 
                                 </div>
-                                
+
+                                <div id="draw-panel-well" class="well hidden">
+                                    <div id="draw-panel-container" class="container-fluid">
+                                        <div class="row-fluid span12">
+                                            <label class="control-label" for="baseline-draw-form-name">Baseline Name</label>
+                                            <input class="input-xlarge span6" id="baseline-draw-form-name">
+                                        </div>
+                                        <div class="row-fluid span12">
+                                            <button class="btn" id="baseline-draw-form-save">Save</button>
+                                            <button class="btn" id="baseline-draw-form-clear">Clear</button>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div id="baseline-edit-panel-well" class="well hidden">
                                     <div id="baseline-edit-container" class="container-fluid">
                                         <div class="row-fluid span12">
