@@ -1,5 +1,4 @@
 var Baseline = {
-    drawButton : $('#baseline-draw-btn'),
     addBaseline : function(args) {
         LOG.debug('Going to attempt to load a baseline vector from OWS service')
         
@@ -78,7 +77,7 @@ var Baseline = {
     drawButtonToggled : function(event) {
         // When a user clicks the button, this event receives notification before the active state changes.
         // Therefore if the button is 'active' coming in, this means the user is wishing to deactivate it
-        var beginDrawing = $(event.currentTarget).attr('class').split(' ').find('active') ? false : true;
+        var beginDrawing = $(event.currentTarget).hasClass('active') ? false : true;
         
         LOG.debug('Baseline.js::drawButtonToggled: User wishes to ' + beginDrawing ? 'begin' : 'stop' + 'drawing');
         
@@ -167,7 +166,7 @@ var Baseline = {
                             Baseline.refreshFeatureList({
                                 selectLayer : 'ch-input:' + importName
                             })
-                            $(Baseline.drawButton).click();
+                             $('#baseline-draw-btn').click();
                         });
                         
                         saveStrategy.save();
