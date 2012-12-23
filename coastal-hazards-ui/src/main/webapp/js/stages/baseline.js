@@ -1,6 +1,6 @@
 var Baseline = {
     addBaseline : function(args) {
-        LOG.debug('Going to attempt to load a baseline vector from OWS service')
+       LOG.info('Baseline.js::addBaseline: Going to attempt to load a baseline vector from OWS service')
         
         var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
@@ -12,6 +12,8 @@ var Baseline = {
             }),
             styleMap: new OpenLayers.StyleMap(CONFIG.sld.namedLayers["Simple Line"]["userStyles"][0])
         });
+        
+        CONFIG.map.removeLayerByName(baselineLayer.name);
         CONFIG.map.getMap().addLayer(baselineLayer);
     },
     populateFeaturesList : function(caps) {
@@ -82,6 +84,7 @@ var Baseline = {
         LOG.debug('Baseline.js::drawButtonToggled: User wishes to ' + beginDrawing ? 'begin' : 'stop' + 'drawing');
         
         if (beginDrawing) {
+            
             Baseline.beginDrawing();
         } else {
             Baseline.stopDrawing();
@@ -166,9 +169,12 @@ var Baseline = {
                             Baseline.refreshFeatureList({
                                 selectLayer : 'ch-input:' + importName
                             })
+                            
+                            LOG.info('Baseline.js::saveDrawnFeatures: Triggering click on baseline draw button')
                              $('#baseline-draw-btn').click();
                         });
                         
+                        LOG.info('Baseline.js::saveDrawnFeatures: Saving draw features to OWS server');
                         saveStrategy.save();
                     } else {
                         // TODO - Notify the user

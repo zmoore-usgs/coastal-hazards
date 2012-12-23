@@ -86,17 +86,26 @@ var UI = function() {
             }
         },
         displayBaselineEditButton : function() {
-            LOG.info('Adding baseline edit button to panel')
-            $('#baseline-edit-form-toggle').remove();
-            var baselineEditButton = $('<button />').addClass('btn btn-success').attr('id', 'baseline-edit-form-toggle').attr('data-toggle', 'button').html('Edit Baseline');
+            LOG.info('UI.js::displayBaselineEditButton: Showing baseline edit button on panel')
             
+            var baselineEditButton = $('#baseline-edit-form-toggle');
+            
+            LOG.debug('UI.js::displayBaselineEditButton: Un-hiding baseline edit button');
+            $(baselineEditButton).removeClass('hidden');
+            
+            LOG.debug('UI.js::displayBaselineEditButton: Rebinding click event hookon baseline edit button');
+            $(baselineEditButton).unbind('click');
             $(baselineEditButton).on('click', function(event) {
+                LOG.debug('UI.js::?: Baseline Edit Button Clicked');
                 
-                var displayForm = $(event.currentTarget).attr('class').split(' ').find('active') ? false : true;
+                var displayForm = $(event.currentTarget).hasClass('active') ? false : true;
+                
                 if (displayForm) {
+                    LOG.debug('UI.js::?: DisplayForm to be displayed');
                     var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
                     renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
                     
+                    LOG.debug('UI.js::?: Attempting to clone current active baseline layer into an edit layer');
                     var originalLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0].clone();
                     var clonedLayer = new OpenLayers.Layer.Vector('baseline-edit-layer',{
                         strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
@@ -106,7 +115,8 @@ var UI = function() {
                             featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
                             geometryName: "the_geom",
                             schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&;typename=" + originalLayer.name
-                        })
+                        }),
+                        cloneOf : originalLayer.name
                     })
                     clonedLayer.addFeatures(originalLayer.features);
                     
@@ -128,26 +138,17 @@ var UI = function() {
                         id : 'baseline-edit-control'
                     })
                     
+                    LOG.debug('UI.js::?: Removing previous cloned layer from map, if any');
+                    CONFIG.map.removeLayerByName('baseline-edit-layer');
+                    LOG.debug('UI.js::?: Adding cloned layer to map');
                     CONFIG.map.getMap().addLayer(clonedLayer);
-                    CONFIG.map.getMap().addControl(editControl);
-                    CONFIG.ui.initializeBaselineEditForm();
                     
-                    $('#baseline-edit-save-button').on('click', function(event) {
-                        var layer = CONFIG.map.getMap().getLayersByName('baseline-edit-layer')[0];
-                        var saveStrategy = layer.strategies.find(function(n) {
-                            return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
-                        });
-                        
-                        saveStrategy.events.remove('success');
-
-                        saveStrategy.events.register('success', null, function() {
-                            Baseline.refreshFeatureList({
-                                selectLayer : layer
-                            })
-                            Baseline.drawButton.trigger('click');
-                        });
-                        saveStrategy.save();
-                    })
+                    LOG.debug('UI.js::?: Removing previous cloned layer from map, if any');
+                    CONFIG.map.removeControl({ id : 'baseline-edit-control'});
+                    LOG.debug('UI.js::?: Adding clone control to map');
+                    CONFIG.map.getMap().addControl(editControl);
+                    
+                    CONFIG.ui.initializeBaselineEditForm();
                     
                 } else {
                     // remove edit layer, remove edit control
@@ -157,15 +158,39 @@ var UI = function() {
                 
                 $("#baseline-edit-panel-well").toggleClass('hidden');
             })
-            
-            $('#baseline-button-row').append(baselineEditButton);
-            
         },
         initializeBaselineEditForm : function() {
-            LOG.debug('Initializing Display')
+            LOG.info('UI.js::initializeBaselineEditForm: Initializing Display')
             var layerName = $("#baseline-list option:selected")[0].value;
             var layerTitle = $("#baseline-list option:selected")[0].text;
             
+            LOG.debug('UI.js::initializeBaselineEditForm: Re-binding edit layer save button click event');
+            $('#baseline-edit-save-button').unbind('click');
+            $('#baseline-edit-save-button').on('click', function(event) {
+                LOG.debug('UI.js::?: Edit layer save button clicked');
+                
+                var layer = CONFIG.map.getMap().getLayersByName('baseline-edit-layer')[0];
+                var saveStrategy = layer.strategies.find(function(n) {
+                    return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
+                });
+                        
+                saveStrategy.events.remove('success');
+
+                saveStrategy.events.register('success', null, function() {
+                    LOG.debug('UI.js::?:Layer was updated on OWS server. Refreshing layer list');
+                    
+                    CONFIG.map.removeLayerByName(layer.cloneOf);
+                    
+                    Baseline.refreshFeatureList({
+                        selectLayer : layer.cloneOf
+                    })
+                    
+                    $('#baseline-edit-form-toggle').click();
+                });
+                
+                saveStrategy.save();
+                
+            })
             
             $('.baseline-edit-toggle').each(function(i,toggle) {
                 

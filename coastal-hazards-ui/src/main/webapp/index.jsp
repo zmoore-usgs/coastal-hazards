@@ -155,7 +155,15 @@
                                         <select id="baseline-list" style="width: 100%;"></select>
                                     </div>
                                     <div id="baseline-button-row" class="fluid-row">
-                                        <div id="baseline-uploader"></div><button id="baseline-draw-btn" class="btn btn-success" data-toggle="button"><i class="icon-pencil icon-white"></i>&nbsp;Draw Baseline</button>
+                                        <div id="baseline-uploader"></div>
+                                        <button id="baseline-draw-btn" class="btn btn-success" data-toggle="button">
+                                            <i class="icon-pencil icon-white"></i>
+                                            &nbsp;Draw Baseline
+                                        </button>
+                                        <button data-toggle="button" class="btn btn-success hidden" id="baseline-edit-form-toggle">
+                                            <i class="icon-pencil icon-white"></i>
+                                            &nbsp;Edit Baseline
+                                        </button>
                                     </div>
 
                                 </div>
