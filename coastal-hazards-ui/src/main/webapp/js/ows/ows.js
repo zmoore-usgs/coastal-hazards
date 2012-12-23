@@ -18,11 +18,11 @@ var OWS = function(endpoint) {
          * Imports file into GeoServer from the upload area
          */
         importFile : function(args) {
-            LOG.info('OWS.js::importFile: Importing uploadedfile from upload space into OWS resource');
+            LOG.info('OWS.js::importFile: Importing file into OWS resource');
             $.ajax(me.importEndpoint,{
                 context : args.context || this,
                 data : {
-                    'file-token': args.token,
+                    'file-token': args['file-token'],
                     'feature-name' : args.importName,
                     'workspace' : args.workspace
                 },

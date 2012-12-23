@@ -41,9 +41,10 @@ var UI = function() {
             }
         },
         populateFeaturesList : function(caps, context) {
+            LOG.info('UI.js::populateFeatureList:: Populating feature list for ' + context);
             $('#'+context+'-list').children().remove();
         
-            if (context == 'baseline') {
+            if (context == 'baseline' || context == 'transects') {
                 $('#'+context+'-list')
                 .append($("<option></option>")
                     .attr("value",'')
@@ -73,10 +74,12 @@ var UI = function() {
             })
             
             if (context == 'shorelines') {
+                $('#'+context+'-list').unbind('change');
                 $('#'+context+'-list').change(function(index, option) {
                     Shorelines.shorelineSelected()
                 }) 
             } else if (context == 'baseline') {
+                $('#'+context+'-list').unbind('change');
                 $('#'+context+'-list').change(function(index, option) {
                     Baseline.baselineSelected()
                 }) 
@@ -294,7 +297,7 @@ var UI = function() {
                             var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + responseJSON['file-name'].split('.')[0] + '_' + context;
                             
                             CONFIG.ows.importFile({
-                                token : responseJSON['file-token'],
+                                'file-token' : responseJSON['file-token'],
                                 importName : importName, 
                                 workspace : 'ch-input',
                                 callbacks : [function(data) {
