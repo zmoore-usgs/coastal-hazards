@@ -10,7 +10,7 @@ var Transects = {
             } );
 
 	
-        map.getMap().addLayer(layer);
+        CONFIG.map.getMap().addLayer(layer);
 	
     },
     addTransects : function(args) {
@@ -35,7 +35,7 @@ var Transects = {
         $('#transects-list').children().remove();
 
         $(caps.capability.layers).each(function(i, layer) { 
-            var currentSessionKey = tempSession.getCurrentSessionKey();
+            var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
             var title = layer.title;
             
             // Add the option to the list only if it's from the sample namespace or
@@ -57,7 +57,7 @@ var Transects = {
         })
             
         $('#transects-list').change(function(index, option) {
-            ui.transectListboxChanged()
+            CONFIG.ui.transectListboxChanged()
         }) 
     }
 }

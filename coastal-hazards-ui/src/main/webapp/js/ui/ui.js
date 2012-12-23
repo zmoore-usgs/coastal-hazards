@@ -27,10 +27,10 @@ var UI = function() {
         transectListboxChanged : function() {
             LOG.debug('Transect listbox changed');
             $("#transects-list option:not(:selected)").each(function (index, option) {
-                var layers = map.getMap().getLayersBy('name', option.value);
+                var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
                 if (layers.length) {
                     $(layers).each(function(i,l) {
-                        map.getMap().removeLayer(l);
+                        CONFIG.map.getMap().removeLayer(l);
                     })
                 }
             });
@@ -51,7 +51,7 @@ var UI = function() {
             }
         
             $(caps.capability.layers).each(function(i, layer) { 
-                var currentSessionKey = tempSession.getCurrentSessionKey();
+                var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
                 var title = layer.title;
             
                 // Add the option to the list only if it's from the sample namespace or
@@ -94,7 +94,7 @@ var UI = function() {
                     var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
                     renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
                     
-                    var originalLayer = map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0].clone();
+                    var originalLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0].clone();
                     var clonedLayer = new OpenLayers.Layer.Vector('baseline-edit-layer',{
                         strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
                         protocol: new OpenLayers.Protocol.WFS({
@@ -109,21 +109,6 @@ var UI = function() {
                     
                     var report = function(event) {
                         LOG.debug(event.type, event.feature ? event.feature.id : event.components);
-//                        if (event.type == "featuremodified") {
-//                            var saveStrategy = event.strategies.find(function(n) {
-//                                return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
-//                            });
-//                        
-//                            saveStrategy.events.remove('success');
-//
-//                            saveStrategy.events.register('success', null, function() {
-//                                Baseline.refreshFeatureList({
-//                                    selectLayer : importName
-//                                })
-//                                Baseline.drawButton.trigger('click');
-//                            });
-//                            saveStrategy.save();
-//                        }
                     }
                     
                     clonedLayer.events.on({
@@ -140,12 +125,12 @@ var UI = function() {
                         id : 'baseline-edit-control'
                     })
                     
-                    map.getMap().addLayer(clonedLayer);
-                    map.getMap().addControl(editControl);
-                    ui.initializeBaselineEditForm();
+                    CONFIG.map.getMap().addLayer(clonedLayer);
+                    CONFIG.map.getMap().addControl(editControl);
+                    CONFIG.ui.initializeBaselineEditForm();
                     
                     $('#baseline-edit-save-button').on('click', function(event) {
-                        var layer = map.getMap().getLayersByName('baseline-edit-layer')[0];
+                        var layer = CONFIG.map.getMap().getLayersByName('baseline-edit-layer')[0];
                         var saveStrategy = layer.strategies.find(function(n) {
                                 return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
                         });
@@ -163,8 +148,8 @@ var UI = function() {
                     
                 } else {
                     // remove edit layer, remove edit control
-                    map.removeLayerByName('baseline-edit-layer');
-                    map.getMap().removeControl(map.getMap().getControlsBy('id', 'baseline-edit-control')[0])
+                    CONFIG.map.removeLayerByName('baseline-edit-layer');
+                    CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0])
                 }
                 
                 $("#baseline-edit-panel-well").toggleClass('hidden');
@@ -191,8 +176,8 @@ var UI = function() {
                         // the toggle text. When this happens, check for event.timeStamp being 0. When that happens,
                         // we've already handled the onclick 
                         if (event.timeStamp) {
-                            var modifyControl = map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
-                            var editLayer = map.getMap().getLayersBy('name', 'baseline-edit-layer')[0];
+                            var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+                            var editLayer = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0];
                         
                             var selectedOptions = {};    
                             modifyControl.deactivate();
@@ -327,12 +312,12 @@ var UI = function() {
                             } else {
                                 LOG.info("file-token :" + responseJSON['file-token']);
                         
-                                tempSession.addFileToSession({
+                                CONFIG.tempSession.addFileToSession({
                                     token : responseJSON['file-token'], 
                                     name : responseJSON['file-name']
                                 });
                             
-                                var importName = tempSession.getCurrentSessionKey() + '_' + responseJSON['file-name'].split('.')[0] + '_' + context;
+                                var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + responseJSON['file-name'].split('.')[0] + '_' + context;
                             
                                 geoserver.importFile({
                                     token : responseJSON['file-token'],
@@ -344,8 +329,8 @@ var UI = function() {
                                             geoserver.getWMSCapabilities({
                                                 callbacks : [
                                                 function (data) {
-                                                    ui.populateFeaturesList(data, context);
-                                                    tempSession.addFileToSession(data);
+                                                    CONFIG.ui.populateFeaturesList(data, context);
+                                                    CONFIG.tempSession.addFileToSession(data);
                                                 // TODO - add the layer just imported 
                                                 }
                                                 ]

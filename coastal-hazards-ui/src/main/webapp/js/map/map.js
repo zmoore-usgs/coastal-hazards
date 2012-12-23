@@ -5,7 +5,7 @@ var Map = function() {
         url: "pages/index/sld-shorelines.xml",
         success: function(req) {
             var format = new OpenLayers.Format.SLD();
-            sld = format.read(req.responseXML || req.responseText);
+            CONFIG.sld = format.read(req.responseXML || req.responseText);
         }
     });
     

@@ -1,4 +1,4 @@
-var Geoserver = function(endpoint) {
+var OWS = function(endpoint) {
     var me = (this === window) ? {} : this;
     
     me.importEndpoint = 'service/import'

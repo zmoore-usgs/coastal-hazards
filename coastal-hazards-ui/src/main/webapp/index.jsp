@@ -98,7 +98,7 @@
         <script type="text/javascript" src="js/util/util.js"></script>
         <script type="text/javascript" src="js/map/map.js"></script>
         <script type="text/javascript" src="js/session/session.js"></script>
-        <script type="text/javascript" src="js/geoserver/geoserver.js"></script>
+        <script type="text/javascript" src="js/ows/ows.js"></script>
         <script type="text/javascript" src="js/stages/shorelines.js"></script>
         <script type="text/javascript" src="js/stages/baseline.js"></script>
         <script type="text/javascript" src="js/stages/transects.js"></script>
