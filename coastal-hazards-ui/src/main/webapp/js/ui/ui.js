@@ -85,79 +85,18 @@ var UI = function() {
                 }) 
             }
         },
-        displayBaselineEditButton : function() {
+        enableBaselineEditButton : function() {
             LOG.info('UI.js::displayBaselineEditButton: Showing baseline edit button on panel')
             
             var baselineEditButton = $('#baseline-edit-form-toggle');
             
-            LOG.debug('UI.js::displayBaselineEditButton: Un-hiding baseline edit button');
-            $(baselineEditButton).removeClass('hidden');
+            LOG.debug('UI.js::displayBaselineEditButton: Enabling baseline edit button');
+            $(baselineEditButton).removeAttr('disabled');
+            $(baselineEditButton).removeClass('active');
             
             LOG.debug('UI.js::displayBaselineEditButton: Rebinding click event hookon baseline edit button');
-            $(baselineEditButton).unbind('click');
-            $(baselineEditButton).on('click', function(event) {
-                LOG.debug('UI.js::?: Baseline Edit Button Clicked');
-                
-                var displayForm = $(event.currentTarget).hasClass('active') ? false : true;
-                
-                if (displayForm) {
-                    LOG.debug('UI.js::?: DisplayForm to be displayed');
-                    var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
-                    renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
-                    
-                    LOG.debug('UI.js::?: Attempting to clone current active baseline layer into an edit layer');
-                    var originalLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0].clone();
-                    var clonedLayer = new OpenLayers.Layer.Vector('baseline-edit-layer',{
-                        strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
-                        protocol: new OpenLayers.Protocol.WFS({
-                            url:  "geoserver/ows",
-                            featureType: originalLayer.name.split(':')[1],
-                            featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
-                            geometryName: "the_geom",
-                            schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&;typename=" + originalLayer.name
-                        }),
-                        cloneOf : originalLayer.name
-                    })
-                    clonedLayer.addFeatures(originalLayer.features);
-                    
-                    var report = function(event) {
-                        LOG.debug(event.type, event.feature ? event.feature.id : event.components);
-                    }
-                    
-                    clonedLayer.events.on({
-                        "beforefeaturemodified": report,
-                        "featuremodified": report,
-                        "afterfeaturemodified": report,
-                        "vertexmodified": report,
-                        "sketchmodified": report,
-                        "sketchstarted": report,
-                        "sketchcomplete": report
-                    });
-                    
-                    var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, {
-                        id : 'baseline-edit-control'
-                    })
-                    
-                    LOG.debug('UI.js::?: Removing previous cloned layer from map, if any');
-                    CONFIG.map.removeLayerByName('baseline-edit-layer');
-                    LOG.debug('UI.js::?: Adding cloned layer to map');
-                    CONFIG.map.getMap().addLayer(clonedLayer);
-                    
-                    LOG.debug('UI.js::?: Removing previous cloned layer from map, if any');
-                    CONFIG.map.removeControl({ id : 'baseline-edit-control'});
-                    LOG.debug('UI.js::?: Adding clone control to map');
-                    CONFIG.map.getMap().addControl(editControl);
-                    
-                    CONFIG.ui.initializeBaselineEditForm();
-                    
-                } else {
-                    // remove edit layer, remove edit control
-                    CONFIG.map.removeLayerByName('baseline-edit-layer');
-                    CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0])
-                }
-                
-                $("#baseline-edit-panel-well").toggleClass('hidden');
-            })
+            $(baselineEditButton).unbind('click', Baseline.editButtonToggled);
+            $(baselineEditButton).on('click', Baseline.editButtonToggled)
         },
         initializeBaselineEditForm : function() {
             LOG.info('UI.js::initializeBaselineEditForm: Initializing Display')

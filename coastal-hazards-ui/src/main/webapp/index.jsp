@@ -160,7 +160,7 @@
                                             <i class="icon-pencil icon-white"></i>
                                             &nbsp;Draw Baseline
                                         </button>
-                                        <button data-toggle="button" class="btn btn-success hidden" id="baseline-edit-form-toggle">
+                                        <button data-toggle="button" class="btn btn-success" disabled id="baseline-edit-form-toggle">
                                             <i class="icon-pencil icon-white"></i>
                                             &nbsp;Edit Baseline
                                         </button>

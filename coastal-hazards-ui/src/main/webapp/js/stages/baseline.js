@@ -1,6 +1,7 @@
 var Baseline = {
+    baselineDrawButton : $('#baseline-draw-btn'),
     addBaseline : function(args) {
-       LOG.info('Baseline.js::addBaseline: Going to attempt to load a baseline vector from OWS service')
+        LOG.info('Baseline.js::addBaseline: Going to attempt to load a baseline vector from OWS service')
         
         var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
@@ -72,9 +73,98 @@ var Baseline = {
             
             if (selectedBaseline.startsWith('ch-input')) {
                 LOG.debug('Selected baseline is user-created and is writable. Displaying edit panel.');
-                CONFIG.ui.displayBaselineEditButton();
+                CONFIG.ui.enableBaselineEditButton();
+            } else {
+                Baseline.disableEditButton();
             }
         }
+    },
+    editButtonToggled : function(event) {
+        LOG.debug('UI.js::?: Baseline Edit Button Clicked');
+                
+        LOG.debug('UI.js::?: Disabling draw button');
+        $(Baseline.baselineDrawButton).attr('disabled', 'disabled');
+        $(Baseline.baselineDrawButton).removeClass('active');
+                
+        var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
+                
+        if (toggledOn) {
+            LOG.debug('UI.js::?: Edit form to be displayed');
+            Baseline.disableDrawButton();
+                    
+            var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
+            renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
+                    
+            LOG.debug('UI.js::?: Attempting to clone current active baseline layer into an edit layer');
+            var originalLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0].clone();
+            var clonedLayer = new OpenLayers.Layer.Vector('baseline-edit-layer',{
+                strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
+                protocol: new OpenLayers.Protocol.WFS({
+                    url:  "geoserver/ows",
+                    featureType: originalLayer.name.split(':')[1],
+                    featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
+                    geometryName: "the_geom",
+                    schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&;typename=" + originalLayer.name
+                }),
+                cloneOf : originalLayer.name
+            })
+            clonedLayer.addFeatures(originalLayer.features);
+                    
+            var report = function(event) {
+                LOG.debug(event.type, event.feature ? event.feature.id : event.components);
+            }
+                    
+            clonedLayer.events.on({
+                "beforefeaturemodified": report,
+                "featuremodified": report,
+                "afterfeaturemodified": report,
+                "vertexmodified": report,
+                "sketchmodified": report,
+                "sketchstarted": report,
+                "sketchcomplete": report
+            });
+                    
+            var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, {
+                id : 'baseline-edit-control'
+            })
+                    
+            LOG.debug('UI.js::?: Removing previous cloned layer from map, if any');
+            CONFIG.map.removeLayerByName('baseline-edit-layer');
+            LOG.debug('UI.js::?: Adding cloned layer to map');
+            CONFIG.map.getMap().addLayer(clonedLayer);
+                    
+            LOG.debug('UI.js::?: Removing previous cloned layer from map, if any');
+            CONFIG.map.removeControl({
+                id : 'baseline-edit-control'
+            });
+            LOG.debug('UI.js::?: Adding clone control to map');
+            CONFIG.map.getMap().addControl(editControl);
+                    
+            CONFIG.ui.initializeBaselineEditForm();
+                    
+        } else {
+            // remove edit layer, remove edit control
+            CONFIG.map.removeLayerByName('baseline-edit-layer');
+            CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0])
+            $('#baseline-draw-btn').removeAttr('disabled')
+        }
+                
+        $("#baseline-edit-panel-well").toggleClass('hidden');
+            
+    },
+    disableDrawButton : function() {
+        if (!$('#draw-panel-well').hasClass('hidden')) {
+            LOG.debug('UI.js::?: Draw form was found to be active. Deactivating draw form');
+            $('#baseline-draw-btn').click();
+        }
+        $('#baseline-draw-btn').attr('disable', 'disable');
+    },
+    disableEditButton : function() {
+        if (!$('#baseline-edit-panel-well').hasClass('hidden')) {
+            LOG.debug('UI.js::?: Edit form was found to be active. Deactivating edit form');
+            $('#baseline-edit-form-toggle').click();
+        }
+        $('#baseline-edit-form-toggle').attr('disable', 'disable');
     },
     drawButtonToggled : function(event) {
         // When a user clicks the button, this event receives notification before the active state changes.
@@ -84,7 +174,7 @@ var Baseline = {
         LOG.debug('Baseline.js::drawButtonToggled: User wishes to ' + beginDrawing ? 'begin' : 'stop' + 'drawing');
         
         if (beginDrawing) {
-            
+            Baseline.disableEditButton();
             Baseline.beginDrawing();
         } else {
             Baseline.stopDrawing();
@@ -171,7 +261,7 @@ var Baseline = {
                             })
                             
                             LOG.info('Baseline.js::saveDrawnFeatures: Triggering click on baseline draw button')
-                             $('#baseline-draw-btn').click();
+                            $('#baseline-draw-btn').click();
                         });
                         
                         LOG.info('Baseline.js::saveDrawnFeatures: Saving draw features to OWS server');
