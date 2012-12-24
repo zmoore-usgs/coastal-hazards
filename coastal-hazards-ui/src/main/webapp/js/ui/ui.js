@@ -12,6 +12,7 @@ var UI = function() {
     
     return $.extend(me, {
         switchImage : function (stage) {
+            LOG.info('UI.js::switchImage: Changing application context to ' + me.work_stages[stage])
             for (var stageIndex = 0;stageIndex < me.work_stages.length;stageIndex++) {
                 var workStage = me.work_stages[stageIndex];
                 var imgId = '#' + workStage + '_img';
@@ -25,7 +26,7 @@ var UI = function() {
             }
         },
         transectListboxChanged : function() {
-            LOG.debug('Transect listbox changed');
+            LOG.info('UI.js::transectListboxChanged: Transect listbox changed');
             $("#transects-list option:not(:selected)").each(function (index, option) {
                 var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
                 if (layers.length) {
@@ -40,158 +41,115 @@ var UI = function() {
                 })
             }
         },
-        populateFeaturesList : function(caps, context) {
-            LOG.info('UI.js::populateFeatureList:: Populating feature list for ' + context);
-            $('#'+context+'-list').children().remove();
-        
-            if (context == 'baseline' || context == 'transects') {
-                $('#'+context+'-list')
-                .append($("<option></option>")
-                    .attr("value",'')
-                    .text(''));
-            }
-        
-            $(caps.capability.layers).each(function(i, layer) { 
-                var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
-                var title = layer.title;
-            
-                // Add the option to the list only if it's from the sample namespace or
-                // if it's from the input namespace and in the current session
-                if (layer.prefix === 'sample' || (layer.prefix === 'ch-input' && title.has(currentSessionKey) )) {
-                        
-                    var shortenedTitle = title.has(currentSessionKey) ?  
-                    title.remove(currentSessionKey + '_') : 
-                    title;
-
-                    if (title.substr(title.lastIndexOf('_') + 1) == context) {
-                        LOG.debug('Found a layer to add to the '+context+' listbox: ' + title)
-                        $('#'+context+'-list')
-                        .append($("<option></option>")
-                            .attr("value",layer.name)
-                            .text(shortenedTitle));
-                    } 
-                }
-            })
-            
-            if (context == 'shorelines') {
-                $('#'+context+'-list').unbind('change');
-                $('#'+context+'-list').change(function(index, option) {
-                    Shorelines.shorelineSelected()
-                }) 
-            } else if (context == 'baseline') {
-                $('#'+context+'-list').unbind('change');
-                $('#'+context+'-list').change(function(index, option) {
-                    Baseline.baselineSelected()
-                }) 
-            }
-        },
-        enableBaselineEditButton : function() {
-            LOG.info('UI.js::displayBaselineEditButton: Showing baseline edit button on panel')
-            
-            var baselineEditButton = $('#baseline-edit-form-toggle');
-            
-            LOG.debug('UI.js::displayBaselineEditButton: Enabling baseline edit button');
-            $(baselineEditButton).removeAttr('disabled');
-            $(baselineEditButton).removeClass('active');
-            
-            LOG.debug('UI.js::displayBaselineEditButton: Rebinding click event hookon baseline edit button');
-            $(baselineEditButton).unbind('click', Baseline.editButtonToggled);
-            $(baselineEditButton).on('click', Baseline.editButtonToggled)
-        },
         initializeBaselineEditForm : function() {
             LOG.info('UI.js::initializeBaselineEditForm: Initializing Display')
+            
             var layerName = $("#baseline-list option:selected")[0].value;
             var layerTitle = $("#baseline-list option:selected")[0].text;
+            LOG.debug('UI.js::initializeBaselineEditForm: Layer to be edited: ' + layerName);
             
             LOG.debug('UI.js::initializeBaselineEditForm: Re-binding edit layer save button click event');
-            $('#baseline-edit-save-button').unbind('click');
-            $('#baseline-edit-save-button').on('click', function(event) {
-                LOG.debug('UI.js::?: Edit layer save button clicked');
-                
-                var layer = CONFIG.map.getMap().getLayersByName('baseline-edit-layer')[0];
-                var saveStrategy = layer.strategies.find(function(n) {
-                    return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
-                });
-                        
-                saveStrategy.events.remove('success');
-
-                saveStrategy.events.register('success', null, function() {
-                    LOG.debug('UI.js::?:Layer was updated on OWS server. Refreshing layer list');
-                    
-                    CONFIG.map.removeLayerByName(layer.cloneOf);
-                    
-                    Baseline.refreshFeatureList({
-                        selectLayer : layer.cloneOf
-                    })
-                    
-                    $('#baseline-edit-form-toggle').click();
-                });
-                
-                saveStrategy.save();
-                
-            })
+            $('#baseline-edit-save-button').unbind('click', Baseline.saveEditedLayer);
+            $('#baseline-edit-save-button').on('click', Baseline.saveEditedLayer);
             
             $('.baseline-edit-toggle').each(function(i,toggle) {
                 
+                LOG.debug('UI.js::initializeBaselineEditForm: Turning all toggles to DISABLED');
                 if ($(toggle).find('input').attr('checked')) {
                     $(toggle).find('input').removeAttr('checked');
                 }
                 
+                LOG.debug('UI.js::initializeBaselineEditForm: Attaching toggle event to all toggles');
                 $(toggle).toggleSlide({
                     onClick: function (event, status) {
                         // Sometimes the click event comes twice if clicking on the toggle graphic instead of 
                         // the toggle text. When this happens, check for event.timeStamp being 0. When that happens,
                         // we've already handled the onclick 
+                        LOG.trace('UI.js::initializeBaselineEditForm: Event timestamp:' + event.timeStamp);
                         if (event.timeStamp) {
                             var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
                             var editLayer = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0];
                         
                             var selectedOptions = {};    
-                            modifyControl.deactivate();
                             var anyTrue = false;
+                            
+                            LOG.debug('UI.js::initializeBaselineEditForm: Edit control is being deactivated. Will get reactivated after initialization');
+                            modifyControl.deactivate();
                                                 
+                            LOG.trace('UI.js::initializeBaselineEditForm: Checking which toggles are active and which are not');
                             $('.baseline-edit-toggle>input').each(function(i,cb) {
                                 selectedOptions[cb.id] = $(cb).attr('checked') ? true : false;
                                 
                                 // If we are reading the current target's boolean state, we need to 
-                                // flip it because this event happens before the checkbox gets a check 
-                                // in it
+                                // flip it because this event happens before the checkbox gets a check in it
                                 if ($(event.currentTarget).children()[0].id === $(cb).attr('id')) {
                                     selectedOptions[cb.id] = !selectedOptions[cb.id];
                                 }
                             })
                             
                             modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
-                        
+                            
                             $(Object.keys(selectedOptions)).each(function(i,v){
                                 if (selectedOptions[v]) {
                                     switch (v) {
                                         case 'toggle-create-vertex-checkbox':
-                                            modifyControl.mode.createVertices = true;
-                                            anyTrue = true;
+                                            if ($(event.currentTarget).children()[0].id == v) {
+                                                modifyControl.mode.createVertices = true;
+                                                if (!$('#toggle-allow-rotation-checkbox').parent().hasClass('disabled')) {
+                                                    $('#toggle-allow-rotation-checkbox').parent().removeAttr('checked');
+                                                }
+                                                if (!$('#toggle-allow-resizing-checkbox').parent().hasClass('disabled')) {
+                                                    $('#toggle-allow-resizing-checkbox').parent().removeAttr('checked');
+                                                }
+                                                if (!$('#toggle-allow-dragging-checkbox').parent().hasClass('disabled')) {
+                                                    $('#toggle-allow-dragging-checkbox').parent().removeAttr('checked');
+                                                }
+                                                if (!$('#toggle-aspect-ratio-checkbox').parent().hasClass('disabled')) {
+                                                    $('#toggle-allow-dragging-checkbox').parent().removeAttr('checked');
+                                                }
+                                            
+                                                anyTrue = true;
+                                            }  
                                             break;
                                         case 'toggle-allow-rotation-checkbox':
-                                            modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
-                                            modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                            anyTrue = true;
+                                            if ($(event.currentTarget).children()[0].id == v) {
+                                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
+                                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                                anyTrue = true;
+                                                if (!$('#toggle-create-vertex-checkbox').parent().hasClass('disabled')) {
+                                                    $('#toggle-create-vertex-checkbox').parent().removeAttr('checked');
+                                                }
+                                            }
                                             break
                                         case 'toggle-allow-resizing-checkbox':
-                                            modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
-                                            if (selectedOptions['toggle-aspect-ratio-checkbox']) {
-                                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                            if ($(event.currentTarget).children()[0].id == v) {
+                                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                                                if (selectedOptions['toggle-aspect-ratio-checkbox']) {
+                                                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                                }
+                                                anyTrue = true;
+                                                if (!$('#toggle-create-vertex-checkbox').parent().hasClass('disabled')) {
+                                                    $('#toggle-create-vertex-checkbox').parent().removeAttr('checked');
+                                                }
                                             }
-                                            anyTrue = true;
                                             break;
                                         case 'toggle-allow-dragging-checkbox':
-                                            modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
-                                            modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                            anyTrue = true;
+                                            if ($(event.currentTarget).children()[0].id == v) {
+                                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
+                                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                                anyTrue = true;
+                                                if (!$('#toggle-create-vertex-checkbox').parent().hasClass('disabled')) {
+                                                    $('#toggle-create-vertex-checkbox').parent().removeAttr('checked');
+                                                }
+                                            }
                                             break;
                                     }
                                 } else {
                                     switch (v) {
                                         case 'toggle-allow-resizing-checkbox':
-                                            $('#toggle-allow-resizing-checkbox').parent().addClass('disabled')
+                                            if (!$('#toggle-aspect-ratio-checkbox').parent().hasClass('disabled')) {
+                                                $('#toggle-aspect-ratio-checkbox').parent().removeAttr('checked');
+                                            }
                                     }
                                 }
                             })
@@ -215,19 +173,17 @@ var UI = function() {
                         disabled: false
                     },
                     style: {
-                        enabled: 'primary',
+                        enabled: 'success',
                         disabled : 'danger'
                     },
                     layerName : layerName,
                     layerTitle : layerTitle
                 })
             })
-            
-            
         },
         initializeUploader : function(args) {
-            LOG.info('UI.js::initializeUploader: Initializing uploader for the '  + args.context + ' context');
             var context = args.context;
+            LOG.info('UI.js::initializeUploader: Initializing uploader for the '  + context + ' context');
             var uploader = new qq.FineUploader({
                 element: document.getElementById(context + '-uploader'),
                 request: {
@@ -242,7 +198,7 @@ var UI = function() {
                     uploadButton: '<i class="icon-upload icon-white"></i>Upload ' + context
                 },
                 template: '<div class="qq-uploader span4">' +
-                '<pre class="qq-upload-drop-area span4"><span>{dragZoneText}</span></pre>' +
+                '<pre class="qq-upload-drop-area span4 hidden"><span>{dragZoneText}</span></pre>' +
                 '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
                 '<ul class="qq-upload-list hidden" style="margin-top: 10px; text-align: center;"></ul>' +
                 '</div>',
@@ -270,7 +226,7 @@ var UI = function() {
                                         CONFIG.ows.getWMSCapabilities({
                                             callbacks : [
                                             function (data) {
-                                                CONFIG.tempSession.updateSessionLayersFromWMSCaps(data);
+                                                CONFIG.tempSession.updateLayersFromWMS(data);
                                                 CONFIG.ui.populateFeaturesList(data, context);
                                             }
                                             ]
@@ -285,6 +241,56 @@ var UI = function() {
                     }
                 }
             })
+            
+            return uploader;
+        },
+        populateFeaturesList : function(caps, context) {
+            LOG.info('UI.js::populateFeatureList:: Populating feature list for ' + context);
+            $('#'+context+'-list').children().remove();
+        
+            // Ad a blank spot at the top of the select list
+            if (context == 'baseline' || context == 'transects') {
+                $('#'+context+'-list')
+                .append($("<option></option>")
+                    .attr("value",'')
+                    .text(''));
+            }
+        
+            $(caps.capability.layers).each(function(i, layer) { 
+                var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
+                var title = layer.title;
+            
+                // Add the option to the list only if it's from the sample namespace or
+                // if it's from the input namespace and in the current session
+                if (layer.prefix === 'sample' || (layer.prefix === 'ch-input' && title.has(currentSessionKey) )) {
+                        
+                    var shortenedTitle = title.has(currentSessionKey) ?  
+                    title.remove(currentSessionKey + '_') : 
+                    title;
+
+                    if (title.substr(title.lastIndexOf('_') + 1) == context) {
+                        LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+context+' listbox: ' + title)
+                        $('#'+context+'-list')
+                        .append($("<option></option>")
+                            .attr("value",layer.name)
+                            .text(shortenedTitle));
+                    } 
+                }
+            })
+            
+            if (context == 'shorelines') {
+                LOG.debug('UI.js::populateFeaturesList: Re-binding select list for Shorelines');
+                $('#'+context+'-list').unbind('change');
+                $('#'+context+'-list').change(function(index, option) {
+                    Shorelines.shorelineSelected()
+                }) 
+            } else if (context == 'baseline') {
+                LOG.debug('UI.js::populateFeaturesList: Re-binding select list for Baseline');
+                $('#'+context+'-list').unbind('change');
+                $('#'+context+'-list').change(function(index, option) {
+                    Baseline.baselineSelected()
+                }) 
+            }
         }
     });
 }
