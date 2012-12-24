@@ -8,7 +8,7 @@ var Shorelines = {
     addShorelines : function(layers) {
         $(layers).each(function(index,layer) {
             // First we need to discover information about the layer we want to process
-            geoserver.getDescribeFeatureType({
+            CONFIG.ows.getDescribeFeatureType({
                 featureName : layer.title, 
                 callbacks : [
                 function(describeFeaturetypeRespone) {
@@ -50,7 +50,7 @@ var Shorelines = {
             return result;
         }(args.describeFeaturetypeRespone)
         
-        geoserver.getFilteredFeature({ 
+        CONFIG.ows.getFilteredFeature({ 
             describeFeatureResponse : args.describeFeaturetypeRespone,
             featureName : layer.title, 
             propertyArray : properties[layer.title], 
@@ -60,7 +60,7 @@ var Shorelines = {
             callbacks : [
             function (features, scope) {
                 
-                if (map.getMap().getLayersByName(layer.title).length == 0) {
+                if (CONFIG.map.getMap().getLayersByName(layer.title).length == 0) {
                     LOG.info('Layer does not yet exist on the map. Loading layer: ' + layer.title);
                     var groupColumn = 'DATE_';
                     var groups = Util.makeGroups(features.map(function(n) {
@@ -89,7 +89,7 @@ var Shorelines = {
                         sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?> <StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <NamedLayer> <Name>#[layer]</Name> <UserStyle> <FeatureTypeStyle> <Rule>  <LineSymbolizer> <Stroke> <CssParameter name="stroke"> <ogc:Function name="Categorize"> <ogc:PropertyName>' +groupColumn+ '</ogc:PropertyName> '+createUpperLimitFilterSet(colorLimitPairs)+'  </ogc:Function> </CssParameter> <CssParameter name="stroke-opacity">1</CssParameter> <CssParameter name="stroke-width">1</CssParameter> </Stroke> </LineSymbolizer> </Rule> </FeatureTypeStyle> </UserStyle> </NamedLayer> </StyledLayerDescriptor>';
                     } else if (!isNaN(Date.parse(colorLimitPairs[0][1]))) {
                         LOG.debug('Grouping will be done by year')
-                        var featureDescription = geoserver.getDescribeFeatureType({
+                        var featureDescription = CONFIG.ows.getDescribeFeatureType({
                             featureName : layer.title
                         });
                         var dateType = featureDescription.featureTypes[0].properties.find(function(n){
@@ -188,7 +188,7 @@ var Shorelines = {
                 
                     wmsLayer.events.register("loadend", wmsLayer, Shorelines.createFeatureTable);
                     wmsLayer.events.register("loadend", wmsLayer, Shorelines.zoomToLayer);
-                    map.getMap().addLayer(wmsLayer);
+                    CONFIG.map.getMap().addLayer(wmsLayer);
                 }
             }
             ]
@@ -197,12 +197,12 @@ var Shorelines = {
     zoomToLayer : function() {
         LOG.info('loadend event triggered on layer');
         var bounds = new OpenLayers.Bounds();
-        var layers = map.getMap().getLayersBy('zoomToWhenAdded', true);
+        var layers = CONFIG.map.getMap().getLayersBy('zoomToWhenAdded', true);
         
         $(layers).each(function(i, layer) {
             if (layer.zoomToWhenAdded) {
                 
-                bounds.extend(new OpenLayers.Bounds(geoserver.getLayerByName(layer.name).bbox["EPSG:900913"].bbox));
+                bounds.extend(new OpenLayers.Bounds(CONFIG.ows.getLayerByName(layer.name).bbox["EPSG:900913"].bbox));
                 
                 if (layer.events.listeners.loadend.length) {
                     layer.events.unregister('loadend', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);
@@ -212,7 +212,7 @@ var Shorelines = {
         })
                     
         if (bounds.left && bounds.right && bounds.top && bounds.bottom) {
-            map.getMap().zoomToExtent(bounds, false);
+            CONFIG.map.getMap().zoomToExtent(bounds, false);
         }
         
     },
@@ -300,17 +300,17 @@ var Shorelines = {
     shorelineSelected : function() {
             
         $("#shorelines-list option:not(:selected)").each(function (index, option) {
-            var layers = map.getMap().getLayersBy('name', option.text);
+            var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
             if (layers.length) {
                 $(layers).each(function(i,l) {
-                    map.getMap().removeLayer(l);
+                    CONFIG.map.getMap().removeLayer(l);
                 })
             }
         });
             
         var layerInfos = []
         $("#shorelines-list option:selected").each(function (index, option) {
-            var layer = geoserver.getLayerByName(option.text);
+            var layer = CONFIG.ows.getLayerByName(option.text);
                 
             layerInfos.push(layer)
         });
@@ -321,6 +321,11 @@ var Shorelines = {
             
     },
     populateFeaturesList : function(caps) {
-        ui.populateFeaturesList(caps, 'shorelines');
+        CONFIG.ui.populateFeaturesList(caps, 'shorelines');
+    },
+    initializeUploader : function(args) {
+        CONFIG.ui.initializeUploader($.extend({
+            context : 'shorelines'
+        }, args))
     }
 }

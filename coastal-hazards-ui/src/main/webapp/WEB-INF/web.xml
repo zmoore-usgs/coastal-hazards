@@ -67,7 +67,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>UploadService</servlet-name>
-        <url-pattern>/server/upload</url-pattern>
+        <url-pattern>/service/upload</url-pattern>
     </servlet-mapping>
 
     <servlet>

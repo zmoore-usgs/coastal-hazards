@@ -1,4 +1,4 @@
-var Geoserver = function(endpoint) {
+var OWS = function(endpoint) {
     var me = (this === window) ? {} : this;
     
     me.importEndpoint = 'service/import'
@@ -18,12 +18,11 @@ var Geoserver = function(endpoint) {
          * Imports file into GeoServer from the upload area
          */
         importFile : function(args) {
-            $.ajax(me.importEndpoint,
-            
-            {
+            LOG.info('OWS.js::importFile: Importing file into OWS resource');
+            $.ajax(me.importEndpoint,{
                 context : args.context || this,
                 data : {
-                    'file-token': args.token,
+                    'file-token': args['file-token'],
                     'feature-name' : args.importName,
                     'workspace' : args.workspace
                 },
@@ -147,20 +146,20 @@ var Geoserver = function(endpoint) {
         updateFeatureTypeAttribute : function(featureType, attribute, value, callback) {
 
             var updateTransaction =
-                '<?xml version="1.0"?>' +
-                '<wfs:Transaction xmlns:ogc="http://www.opengis.net/ogc" ' +
-                'xmlns:wfs="http://www.opengis.net/wfs" ' +
-                'xmlns:gml="http://www.opengis.net/gml" ' +
-                'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
-                'version="1.1.0" service="WFS" '+
-                'xsi:schemaLocation="http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd">' +
-                '<wfs:Update typeName="' + featureType + '">' +
-                '<wfs:Property>' +
-                '<wfs:Name>' + attribute + '</wfs:Name>' +
-                '<wfs:Value>' + value + '</wfs:Value>'+
-                '</wfs:Property>'+
-                '</wfs:Update>'+
-                '</wfs:Transaction>';
+            '<?xml version="1.0"?>' +
+            '<wfs:Transaction xmlns:ogc="http://www.opengis.net/ogc" ' +
+            'xmlns:wfs="http://www.opengis.net/wfs" ' +
+            'xmlns:gml="http://www.opengis.net/gml" ' +
+            'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
+            'version="1.1.0" service="WFS" '+
+            'xsi:schemaLocation="http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd">' +
+            '<wfs:Update typeName="' + featureType + '">' +
+            '<wfs:Property>' +
+            '<wfs:Name>' + attribute + '</wfs:Name>' +
+            '<wfs:Value>' + value + '</wfs:Value>'+
+            '</wfs:Property>'+
+            '</wfs:Update>'+
+            '</wfs:Transaction>';
 
             $.ajax({
                 url: 'geoserver/ows/',

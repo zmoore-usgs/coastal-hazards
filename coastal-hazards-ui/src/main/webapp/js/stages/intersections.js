@@ -10,7 +10,7 @@ var Intersections = {
             } );
 
 	
-        map.getMap().addLayer(layer);
+        CONFIG.map.getMap().addLayer(layer);
 	
     }
 }

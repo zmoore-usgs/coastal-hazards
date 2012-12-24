@@ -20,6 +20,10 @@
 
 <html>
     <head>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="shortName" value="${project.name}" />
@@ -98,7 +102,7 @@
         <script type="text/javascript" src="js/util/util.js"></script>
         <script type="text/javascript" src="js/map/map.js"></script>
         <script type="text/javascript" src="js/session/session.js"></script>
-        <script type="text/javascript" src="js/geoserver/geoserver.js"></script>
+        <script type="text/javascript" src="js/ows/ows.js"></script>
         <script type="text/javascript" src="js/stages/shorelines.js"></script>
         <script type="text/javascript" src="js/stages/baseline.js"></script>
         <script type="text/javascript" src="js/stages/transects.js"></script>
@@ -150,22 +154,43 @@
 
                             <!-- Baseline -->
                             <div class="tab-pane" id="baseline">
-                                <div class="well" id="baseline-well">
+                                <div id="baseline-well" class="well">
                                     <div class="fluid-row span12">
                                         <select id="baseline-list" style="width: 100%;"></select>
                                     </div>
                                     <div id="baseline-button-row" class="fluid-row">
-                                        <div id="baseline-uploader"></div><button id="baseline-draw-btn" class="btn btn-success" data-toggle="button"><i class="icon-pencil icon-white"></i>&nbsp;Draw Baseline</button>
+                                        <div id="baseline-uploader"></div>
+                                        <button id="baseline-draw-btn" class="btn btn-success" data-toggle="button">
+                                            <i class="icon-pencil icon-white"></i>
+                                            &nbsp;Draw Baseline
+                                        </button>
+                                        <button data-toggle="button" class="btn btn-success" disabled id="baseline-edit-form-toggle">
+                                            <i class="icon-pencil icon-white"></i>
+                                            &nbsp;Edit Baseline
+                                        </button>
                                     </div>
 
                                 </div>
-                                
+
+                                <div id="draw-panel-well" class="well hidden">
+                                    <div id="draw-panel-container" class="container-fluid">
+                                        <div class="row-fluid span12">
+                                            <label class="control-label" for="baseline-draw-form-name">Baseline Name</label>
+                                            <input class="input-large span5" name="baseline-draw-form-name" id="baseline-draw-form-name">
+                                        </div>
+                                        <div class="row-fluid span12">
+                                            <button class="btn btn-success span2" id="baseline-draw-form-save">Save</button>
+                                            <button class="btn btn-success span2" id="baseline-draw-form-clear">Clear</button>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div id="baseline-edit-panel-well" class="well hidden">
                                     <div id="baseline-edit-container" class="container-fluid">
                                         <div class="row-fluid span12">
                                             <div class="span2">Create Vertex</div>
                                             <div class="span4">
-                                                <div class="toggle basic baseline-edit-toggle disabled disabled-danger" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
+                                                <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
                                                     <input type="checkbox" class="checkbox" name="toggle-create-vertex-checkbox" id="toggle-create-vertex-checkbox" value="1">
                                                     <label class="check" for="toggle-create-vertex-checkbox"></label>
                                                 </div>
@@ -174,7 +199,7 @@
                                         <div class="row-fluid span12">
                                             <div class="span2">Allow Rotation</div>
                                             <div class="span4">
-                                                <div class="toggle basic baseline-edit-toggle disabled disabled-danger" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
+                                                <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
                                                     <input type="checkbox" class="checkbox" name="toggle-allow-rotation-checkbox" id="toggle-allow-rotation-checkbox" value="1">
                                                     <label class="check" for="toggle-allow-rotation-checkbox"></label>
                                                 </div>
@@ -183,13 +208,13 @@
                                         <div class="row-fluid span12">
                                             <div class="span2">Allow Resizing</div>
                                             <div class="span4">
-                                                <div class="toggle basic baseline-edit-toggle disabled disabled-danger" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
+                                                <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
                                                     <input type="checkbox" class="checkbox" name="toggle-allow-resizing-checkbox" id="toggle-allow-resizing-checkbox" value="1">
                                                     <label class="check" for="toggle-allow-resizing-checkbox"></label>
                                                 </div>
                                             </div>
                                             <div class="span2">Maintain Aspect Ratio</div>
-                                            <div class="toggle basic baseline-edit-toggle disabled disabled-danger" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
+                                            <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
                                                 <input type="checkbox" class="checkbox" name="toggle-aspect-ratio-checkbox" id="toggle-aspect-ratio-checkbox" value="1">
                                                 <label class="check" for="toggle-aspect-ratio-checkbox"></label>
                                             </div>
@@ -197,14 +222,14 @@
                                         <div class="row-fluid span12">
                                             <div class="span2">Allow Dragging</div>
                                             <div class="span4">
-                                                <div class="toggle basic baseline-edit-toggle disabled disabled-danger" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
+                                                <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
                                                     <input type="checkbox" class="checkbox" name="toggle-allow-dragging-checkbox" id="toggle-allow-dragging-checkbox" value="1">
                                                     <label class="check" for="toggle-allow-dragging-checkbox"></label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row-fluid span12">
-                                            <button class="span1 btn-success" id="baseline-edit-save-button" title="Save Modified Baseline">Save</button>
+                                            <button class="span3 btn btn-success" id="baseline-edit-save-button" title="Update Modified Baseline">Update Baseline</button>
                                         </div>
                                     </div>
                                 </div>

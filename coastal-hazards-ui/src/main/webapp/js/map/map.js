@@ -5,7 +5,7 @@ var Map = function() {
         url: "pages/index/sld-shorelines.xml",
         success: function(req) {
             var format = new OpenLayers.Format.SLD();
-            sld = format.read(req.responseXML || req.responseText);
+            CONFIG.sld = format.read(req.responseXML || req.responseText);
         }
     });
     
@@ -76,7 +76,17 @@ var Map = function() {
         getMap : function() {
             return me.map;
         },
+        removeControl : function(args) {
+            LOG.info('Map.js::removeControl: Trying to remove a control from map');
+            var control = me.map.getControl(args.id);
+            if (control) {
+                LOG.info('Map.js::removeControl: Removing control ' + control.id + ' from map');
+                me.map.removeControl(control);
+            }
+            return control;
+        },
         removeLayerByName : function(featureName) {
+            LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + featureName);
             var layer = me.map.getLayersByName(featureName) || [];
             if (layer.length) {
                 me.map.removeLayer(layer[0]);
