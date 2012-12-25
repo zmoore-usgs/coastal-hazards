@@ -54,6 +54,12 @@ var UI = function() {
             
             $('.baseline-edit-toggle').each(function(i,toggle) {
                 
+                LOG.debug('UI.js::initializeBaselineEditForm: Turning all toggles to DISABLED');
+                if ($(toggle).find('input').attr('checked')) {
+                    $(toggle).find('input').removeAttr('checked');
+                    $(toggle).toggleSlide();
+                }
+                
                 LOG.debug('UI.js::initializeBaselineEditForm: Attaching toggle event to all toggles');
                 $(toggle).toggleSlide({
                     onClick: function (event, status) {
@@ -176,13 +182,9 @@ var UI = function() {
 //                    },
                     layerName : layerName,
                     layerTitle : layerTitle
+                    
                 })
                 
-                LOG.debug('UI.js::initializeBaselineEditForm: Turning all toggles to DISABLED');
-                if ($(toggle).find('input').attr('checked')) {
-                    $(toggle).find('input').removeAttr('checked');
-                    $(toggle).toggleSlide();
-                }
             })
         },
         initializeUploader : function(args) {
