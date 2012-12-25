@@ -6,18 +6,17 @@
 var Shorelines = {
     
     addShorelines : function(layers) {
+        LOG.info('Shorelines.js::addShorelines: Adding ' + layers.length + ' shoreline layers to map'); 
         $(layers).each(function(index,layer) {
             // First we need to discover information about the layer we want to process
             CONFIG.ows.getDescribeFeatureType({
                 featureName : layer.title, 
                 callbacks : [
                 function(describeFeaturetypeRespone) {
-                        
                     Shorelines.addLayerToMap({
                         layer : layer,
                         describeFeaturetypeRespone : describeFeaturetypeRespone
                     })
-                    
                 }
                 ]
             })
@@ -25,6 +24,8 @@ var Shorelines = {
         })
     },
     addLayerToMap : function(args) {
+        LOG.info('Shorelines.js::addLayerToMap: Adding shoreline layer to map'); 
+        
         // Read the selected features for specific properties
         var layer = args.layer;
         
@@ -42,7 +43,7 @@ var Shorelines = {
                             
                     // Pulling down geometries is not required and can make the document huge 
                     // So grab everything except the geometry object(s)
-                    if (property.type != "gml:MultiLineStringPropertyType" && property.type != "gml:MultiCurvePropertyType" && property.name == 'the_geom') {
+                    if (property.type != "gml:MultiLineStringPropertyType" && property.type != "gml:MultiCurvePropertyType" && property.name != 'the_geom') {
                         result[featureType.typeName].push(property.name);
                     }
                 })
@@ -51,7 +52,7 @@ var Shorelines = {
         }(args.describeFeaturetypeRespone)
         
         CONFIG.ows.getFilteredFeature({ 
-            describeFeatureResponse : args.describeFeaturetypeRespone,
+            prefix : args.describeFeaturetypeRespone.targetPrefix,
             featureName : layer.title, 
             propertyArray : properties[layer.title], 
             sortBy : properties[layer.title][0], 
@@ -59,12 +60,21 @@ var Shorelines = {
             scope : this,
             callbacks : [
             function (features, scope) {
-                
+                LOG.info('')
                 if (CONFIG.map.getMap().getLayersByName(layer.title).length == 0) {
                     LOG.info('Layer does not yet exist on the map. Loading layer: ' + layer.title);
-                    var groupColumn = 'DATE_';
+                    
+                    var groupColumn = Object.keys(features[0].attributes).find(function(n) {
+                        return n.toLowerCase() === 'date_'
+                    });
+                    
+                    
+                    var dateIndex = Object.keys(features[0].attributes).findIndex(function(k) {
+                        return k === groupColumn
+                    })
+
                     var groups = Util.makeGroups(features.map(function(n) {
-                        return Object.values(n.attributes)[0]
+                        return Object.values(n.attributes)[dateIndex]
                     }));
                     
                     if (groups[0] instanceof Date) {
@@ -298,7 +308,9 @@ var Shorelines = {
         
     },
     shorelineSelected : function() {
-            
+        LOG.info('Shorelines.js::shorelineSelected: A shoreline was selected from the select list');
+        
+        // First remove all shorelines from the map that were not selected
         $("#shorelines-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
             if (layers.length) {
@@ -310,6 +322,7 @@ var Shorelines = {
             
         var layerInfos = []
         $("#shorelines-list option:selected").each(function (index, option) {
+            LOG.debug('Shorelines.js::shorelineSelected: A shoreline ('+option.text+') was selected from the select list');
             var layer = CONFIG.ows.getLayerByName(option.text);
                 
             layerInfos.push(layer)
@@ -317,6 +330,8 @@ var Shorelines = {
             
         if (layerInfos.length) {
             Shorelines.addShorelines(layerInfos);
+        } else {
+            LOG.debug('Shorelines.js::shorelineSelected: All shorelines in shoreline list are deselected.');
         }
             
     },

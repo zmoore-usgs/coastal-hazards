@@ -71,8 +71,10 @@ var OWS = function(endpoint) {
             })
         },
         getDescribeFeatureType : function(args) {
+            LOG.info('OWS.js::getDescribeFeatureType: WFS featureType requested for feature ' + args.featureName);
             // Check if we currently have this feature type from a previous call
             if (me.featureTypes[args.featureName]) {
+                LOG.info('OWS.js::getDescribeFeatureType: WFS featureType already cached. Using cached version without making a call.');
                 if (!args.callbacks || args.callbacks.length == 0) {
                     return me.featureTypes[args.featureName];
                 } else {
@@ -86,6 +88,7 @@ var OWS = function(endpoint) {
             $.ajax(url, {
                 context : args.scope || this,
                 success : function(data, textStatus, jqXHR) {
+                    LOG.info('OWS.js::getDescribeFeatureType: WFS featureType response received.');
                     var gmlReader = new OpenLayers.Format.WFSDescribeFeatureType();
                     var describeFeaturetypeRespone = gmlReader.read(data); 
                     
@@ -98,38 +101,11 @@ var OWS = function(endpoint) {
             })
         },
         getFilteredFeature : function(args) {
-            var properties = function(describeFeatureResponse) {
-                var result = new Object.extended();
-                // For every layer pulled in...
-                $(describeFeatureResponse.featureTypes).each(function(i, featureType) {
-                        
-                    // For each layer, initilize a property array for it in the result object
-                    result[featureType.typeName] = [];
-                        
-                    // Parse through its properties
-                    $(featureType.properties || []).each(function(i,property) {
-                            
-                        // Pulling down geometries is not required and can make the document huge 
-                        // So grab everything except the geometry object(s)
-                        if (property.type != "gml:MultiLineStringPropertyType") {
-                            result[featureType.typeName].push(property.name);
-                        }
-                    })
-                })
-                return result;
-            }(args.describeFeatureResponse)
+            LOG.info('OWS.js::getFilteredFeature: Building request for WFS GetFeature (filtered)');
             
-            var layer = args.describeFeatureResponse.targetPrefix + ':' + args.featureName;
-            var url = me.wfsGetFeature + '&typeName=' + layer;
-            
-            url += '&propertyName='
-            $(args.propertyArray || []).each(function(i, property, array) {
-                if (i == properties[args.featureName].length - 1) {
-                    url += property
-                } else {
-                    url += property + ','
-                }
-            })
+            var layerName = args.prefix + ':' + args.featureName;
+            var url = me.wfsGetFeature + '&typeName=' + layerName + '&propertyName=';
+            url += (args.propertyArray || []).join(',');
             
             $.ajax(url, {
                 context : args.scope || this,

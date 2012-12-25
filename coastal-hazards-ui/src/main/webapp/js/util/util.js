@@ -39,12 +39,13 @@ var Util =  {
         return s.join('');
     },
     makeGroups : function(groupItems) {
-        var firstGroupItem = groupItems[0];
+        LOG.info("Util.js::makeGroups:")
+        var groupItem = groupItems[0];
         
-        if (!isNaN(Date.parse(firstGroupItem))) {
+        if (!isNaN(Date.parse(groupItem))) {
             LOG.info("Grouping by date/decade");
-            var dateBegin = Date.create(firstGroupItem);
-            var dateEnd = Date.create(firstGroupItem);
+            var dateBegin = Date.create(groupItem);
+            var dateEnd = Date.create(groupItem);
             $(groupItems).each(function(i, dateItem) {
                 var date = Date.create(dateItem);
                 if (date.isBefore(dateBegin)) {
@@ -56,7 +57,7 @@ var Util =  {
                 }
             })
             return Date.range(dateBegin,dateEnd).every('1 year');
-        } else if (!isNaN(firstGroupItem)) {
+        } else if (!isNaN(groupItem)) {
             LOG.info("Grouping by number");
             var groups = groupItems.sortBy();
             $(groups).each(function(i,v) {
