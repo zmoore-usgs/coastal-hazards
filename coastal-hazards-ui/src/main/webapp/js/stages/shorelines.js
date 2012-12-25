@@ -64,13 +64,14 @@ var Shorelines = {
                 if (CONFIG.map.getMap().getLayersByName(layer.title).length == 0) {
                     LOG.info('Layer does not yet exist on the map. Loading layer: ' + layer.title);
                     
+                    var groupColumnName = 'date_';
+                    
                     var groupColumn = Object.keys(features[0].attributes).find(function(n) {
-                        return n.toLowerCase() === 'date_'
+                        return n.toLowerCase() === groupColumnName.toLowerCase()
                     });
                     
-                    
-                    var dateIndex = Object.keys(features[0].attributes).findIndex(function(k) {
-                        return k === groupColumn
+                    var dateIndex = Object.keys(features[0].attributes).findIndex(function(n) {
+                        return n === groupColumn
                     })
 
                     var groups = Util.makeGroups(features.map(function(n) {
@@ -227,20 +228,27 @@ var Shorelines = {
         
     },
     createFeatureTable : function(event) {
-        LOG.info('Creating color feature table');
-        var colorTableHTML = [];
+        LOG.info('Shorelines.js::createFeatureTable:: Creating color feature table');
+        var navTabs = 	$('#shoreline-table-navtabs');
+        var tabContent = $('#shoreline-table-tabcontent');
+        var shorelineList = $('#shorelines-list');
+        var selectedVals = shorelineList.children(':selected').map(function(i,v) {
+            return v.text
+        }).toArray();
         
         event.object.events.unregister('loadend', event.object, Shorelines.createFeatureTable);
         
-        // Create header
+        var colorTableHTML = [];
+        LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table header');
         colorTableHTML.push("<div class='well well-small' id='shoreline-table-well'><table class='table table-bordered table-condensed tablesorter'><thead><tr><td>Selected</td><td>ID<td>COLOR</td>");
-    			
+    		
         var headerAttributes = Object.keys(this.describedFeatures[0].attributes, function(k) {
             colorTableHTML.push("<td>" + k.toUpperCase() +"</td>");
         })
     			
         colorTableHTML.push("</tr></thead><tbody>");
         
+        LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table body');
         $(this.describedFeatures.sortBy(function(n) {
             return n.attributes[event.object.groupByAttribute]
         })).each(function(i, feature) {
@@ -257,15 +265,12 @@ var Shorelines = {
             colorTableHTML.push("</tr>");
             
         })
-    			
-        colorTableHTML.push("</tbody></table></div>");
-        var navTabs = 	$('#shoreline-table-navtabs');
-        var tabContent = $('#shoreline-table-tabcontent');
-        var shorelineList = $('#shorelines-list');
-        var selectedVals = shorelineList.children(':selected').map(function(i,v) {
-            return v.text
-        }).toArray();
         
+        colorTableHTML.push("</tbody></table></div>");
+        
+        LOG.debug('Shorelines.js::createFeatureTable:: Color feature table created');
+        
+        LOG.debug('Shorelines.js::createFeatureTable:: Creating new tab for new color feature table');
         navTabs.children().each(function(i,navTab) {
             if (navTab.textContent == event.object.name || !selectedVals.count(navTab.textContent)) {
                 $(navTab).remove();
@@ -287,6 +292,7 @@ var Shorelines = {
             append($('<a />').attr('href', '#' + this.name).attr('data-toggle', 'tab').html(this.name))
             );
         
+        LOG.debug('Shorelines.js::createFeatureTable:: Adding color feature table to DOM');
         tabContent.
         append($('<div />').addClass('tab-pane').addClass('active').attr('id', this.name).html(colorTableHTML.join('')))
                         
