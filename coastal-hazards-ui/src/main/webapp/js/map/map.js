@@ -49,7 +49,7 @@ var Map = function() {
             maxExtent: me.map.getExtent(),
             featureType: "wfst_test",
             geometryName: "the_geom",
-            schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&;typename=ch-input:wfst_test"
+            schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&typename=ch-input:wfst_test"
         })
     });
 
