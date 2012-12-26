@@ -203,11 +203,11 @@ var Baseline = {
     beginDrawing : function() {
         LOG.debug('Baseline.js::beginDrawing: Initializing baseline draw panel');
         
-        LOG.debug('Baseline.js::beginDrawing: Activating draw control');
-        Baseline.getDrawControl().activate();
-        
         LOG.debug('Baseline.js::beginDrawing: Removing currently drawn features, if any');
         Baseline.clearDrawFeatures();
+        
+        LOG.debug('Baseline.js::beginDrawing: Activating draw control');
+        Baseline.getDrawControl().activate();
         
         LOG.debug('Baseline.js::beginDrawing: Populating layer name textbox with random lorem');
         $('#baseline-draw-form-name').val(Util.getRandomLorem());
@@ -245,6 +245,7 @@ var Baseline = {
         LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
                 
         var layer = CONFIG.map.getMap().getLayersByName('baseline-edit-layer')[0];
+        
         var saveStrategy = layer.strategies.find(function(n) {
             return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
         });
