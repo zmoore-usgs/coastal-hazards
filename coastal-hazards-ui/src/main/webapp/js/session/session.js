@@ -8,9 +8,12 @@ var Session = function(name, isPerm) {
     
     if (isPerm) {
         if (!me.session) {
-            // A session has not yet been created for perm storage. Probably the first
+            // - A session has not yet been created for perm storage. Probably the first
             // run of the application or a new browser with no imported session
-            var randID = Util.randomUUID();
+            
+            // - Because the session is used in the namespace for WFS-T, it needs to 
+            // not have a number at the head of it
+            var randID = 'a' + Util.randomUUID();
             var newSession = Object();
         
             me.session = {
@@ -19,6 +22,7 @@ var Session = function(name, isPerm) {
 
             newSession[randID] = Object.extended(); 
             newSession.layers = [];
+            
             me.session['sessions'][randID] = newSession;
             me.session['current-session'] = Object.extended();
             me.session['current-session']['key'] = randID;
