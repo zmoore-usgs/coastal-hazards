@@ -57,6 +57,7 @@ var UI = function() {
                 LOG.debug('UI.js::initializeBaselineEditForm: Turning all toggles to DISABLED');
                 if ($(toggle).find('input').attr('checked')) {
                     $(toggle).find('input').removeAttr('checked');
+                    $(toggle).toggleSlide();
                 }
                 
                 LOG.debug('UI.js::initializeBaselineEditForm: Attaching toggle event to all toggles');
@@ -89,70 +90,73 @@ var UI = function() {
                             
                             modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
                             
-                            $(Object.keys(selectedOptions)).each(function(i,v){
-                                if (selectedOptions[v]) {
-                                    switch (v) {
-                                        case 'toggle-create-vertex-checkbox':
-                                            if ($(event.currentTarget).children()[0].id == v) {
-                                                modifyControl.mode.createVertices = true;
-                                                if (!$('#toggle-allow-rotation-checkbox').parent().hasClass('disabled')) {
-                                                    $('#toggle-allow-rotation-checkbox').parent().removeAttr('checked');
-                                                }
-                                                if (!$('#toggle-allow-resizing-checkbox').parent().hasClass('disabled')) {
-                                                    $('#toggle-allow-resizing-checkbox').parent().removeAttr('checked');
-                                                }
-                                                if (!$('#toggle-allow-dragging-checkbox').parent().hasClass('disabled')) {
-                                                    $('#toggle-allow-dragging-checkbox').parent().removeAttr('checked');
-                                                }
-                                                if (!$('#toggle-aspect-ratio-checkbox').parent().hasClass('disabled')) {
-                                                    $('#toggle-allow-dragging-checkbox').parent().removeAttr('checked');
-                                                }
+                            if ($(event.currentTarget).children()[0].id === 'toggle-create-vertex-checkbox' &&
+                                selectedOptions['toggle-create-vertex-checkbox']) {
+                                modifyControl.mode.createVertices = true;
+                                if (!$('#toggle-allow-rotation-checkbox').parent().hasClass('disabled')) {
+                                    $('#toggle-allow-rotation-checkbox').removeAttr('checked');
+                                    $('#toggle-allow-rotation-checkbox').parent().toggleSlide();
+                                }
+                                if (!$('#toggle-allow-resizing-checkbox').parent().hasClass('disabled')) {
+                                    $('#toggle-allow-resizing-checkbox').removeAttr('checked');
+                                    $('#toggle-allow-resizing-checkbox').parent().toggleSlide();
+                                }
+                                if (!$('#toggle-allow-dragging-checkbox').parent().hasClass('disabled')) {
+                                    $('#toggle-allow-dragging-checkbox').removeAttr('checked');
+                                    $('#toggle-allow-dragging-checkbox').parent().toggleSlide();
+                                }
+                                if (!$('#toggle-aspect-ratio-checkbox').parent().hasClass('disabled')) {
+                                    $('#toggle-allow-dragging-checkbox').removeAttr('checked');
+                                    $('#toggle-allow-dragging-checkbox').parent().toggleSlide();
+                                }
                                             
-                                                anyTrue = true;
-                                            }  
-                                            break;
-                                        case 'toggle-allow-rotation-checkbox':
-                                            if ($(event.currentTarget).children()[0].id == v) {
+                                anyTrue = true;
+                            } else {
+                                $(Object.keys(selectedOptions)).each(function(i,v){
+                                    var createVertexCheckbox = $('#toggle-create-vertex-checkbox')
+                                    if (selectedOptions[v]) {
+                                        switch (v) {
+                                            case 'toggle-allow-rotation-checkbox':
                                                 modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
                                                 modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                                anyTrue = true;
-                                                if (!$('#toggle-create-vertex-checkbox').parent().hasClass('disabled')) {
-                                                    $('#toggle-create-vertex-checkbox').parent().removeAttr('checked');
+                                                if (!createVertexCheckbox.parent().hasClass('disabled')) {
+                                                    createVertexCheckbox.removeAttr('checked');
+                                                    createVertexCheckbox.parent().toggleSlide();
                                                 }
-                                            }
-                                            break
-                                        case 'toggle-allow-resizing-checkbox':
-                                            if ($(event.currentTarget).children()[0].id == v) {
+                                                anyTrue = true;
+                                                break;
+                                            case 'toggle-allow-resizing-checkbox':
                                                 modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
                                                 if (selectedOptions['toggle-aspect-ratio-checkbox']) {
                                                     modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
                                                 }
-                                                anyTrue = true;
-                                                if (!$('#toggle-create-vertex-checkbox').parent().hasClass('disabled')) {
-                                                    $('#toggle-create-vertex-checkbox').parent().removeAttr('checked');
+                                                if (!createVertexCheckbox.parent().hasClass('disabled')) {
+                                                    createVertexCheckbox.removeAttr('checked');
+                                                    createVertexCheckbox.parent().toggleSlide();
                                                 }
-                                            }
-                                            break;
-                                        case 'toggle-allow-dragging-checkbox':
-                                            if ($(event.currentTarget).children()[0].id == v) {
+                                                anyTrue = true;
+                                                break;
+                                            case 'toggle-allow-dragging-checkbox':
                                                 modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
                                                 modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                                anyTrue = true;
-                                                if (!$('#toggle-create-vertex-checkbox').parent().hasClass('disabled')) {
-                                                    $('#toggle-create-vertex-checkbox').parent().removeAttr('checked');
+                                                if (!createVertexCheckbox.parent().hasClass('disabled')) {
+                                                    createVertexCheckbox.removeAttr('checked');
+                                                    createVertexCheckbox.parent().toggleSlide();
                                                 }
-                                            }
-                                            break;
+                                                anyTrue = true;
+                                                break;
+                                        }
+                                    } else {
+                                        switch (v) {
+                                            case 'toggle-allow-resizing-checkbox':
+                                                if (!$('#toggle-aspect-ratio-checkbox').parent().hasClass('disabled')) {
+                                                    $('#toggle-aspect-ratio-checkbox').removeAttr('checked');
+                                                    $('#toggle-aspect-ratio-checkbox').parent().toggleSlide();
+                                                }
+                                        }
                                     }
-                                } else {
-                                    switch (v) {
-                                        case 'toggle-allow-resizing-checkbox':
-                                            if (!$('#toggle-aspect-ratio-checkbox').parent().hasClass('disabled')) {
-                                                $('#toggle-aspect-ratio-checkbox').parent().removeAttr('checked');
-                                            }
-                                    }
-                                }
-                            })
+                                })
+                            }
                             
                             if (anyTrue) {
                                 LOG.debug('Found at least one modify option toggled true. Activating modify control.')
@@ -172,13 +176,15 @@ var UI = function() {
                         enabled: false, 
                         disabled: false
                     },
-                    style: {
-                        enabled: 'success',
-                        disabled : 'danger'
-                    },
+//                    style: {
+//                        enabled: 'success',
+//                        disabled : 'danger'
+//                    },
                     layerName : layerName,
                     layerTitle : layerTitle
+                    
                 })
+                
             })
         },
         initializeUploader : function(args) {
