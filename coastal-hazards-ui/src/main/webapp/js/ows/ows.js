@@ -41,7 +41,7 @@ var OWS = function(endpoint) {
                     var getCapsResponse = new OpenLayers.Format.WMSCapabilities.v1_3_0().read(data); 
                     me.wmsCapabilities = getCapsResponse;
                     me.wmsCapabilitiesXML = data;
-                    $(args.callbacks).each(function(index, callback, allCallbacks) {
+                    $(args.callbacks.success).each(function(index, callback, allCallbacks) {
                         callback(getCapsResponse, args);
                     })
                 }
@@ -70,9 +70,38 @@ var OWS = function(endpoint) {
                 return layer.title === name;
             })
         },
+        getLayerPropertiesFromWFSDescribeFeatureType : function(args) {
+            LOG.info('OWS.js::getLayerPropertiesFromWFSDescribeFeatureType: Parsing WFS describe feature type response for properties');
+            var describeFeatureType = args.describeFeatureType;
+            var includeGeom = args.includeGeom;
+            var result = new Object.extended();
+            // For every layer pulled in...
+            $(describeFeatureType.featureTypes).each(function(i, featureType) {
+                        
+                // For each layer, initilize a property array for it in the result object
+                result[featureType.typeName] = [];
+                        
+                // Parse through its properties
+                $(featureType.properties).each(function(i,property) {
+                
+                    if (!includeGeom) {
+                        // Pulling down geometries is not required and can make the document huge 
+                        // So grab everything except the geometry object(s)
+                        if (property.type != "gml:MultiLineStringPropertyType" && property.type != "gml:MultiCurvePropertyType" && property.name != 'the_geom') {
+                            result[featureType.typeName].push(property.name);
+                        }
+                    } else {
+                        result[featureType.typeName].push(property.name);
+                    }
+                })
+            })
+            return result;
+        },
         getDescribeFeatureType : function(args) {
+            LOG.info('OWS.js::getDescribeFeatureType: WFS featureType requested for feature ' + args.featureName);
             // Check if we currently have this feature type from a previous call
             if (me.featureTypes[args.featureName]) {
+                LOG.info('OWS.js::getDescribeFeatureType: WFS featureType already cached. Using cached version without making a call.');
                 if (!args.callbacks || args.callbacks.length == 0) {
                     return me.featureTypes[args.featureName];
                 } else {
@@ -86,6 +115,7 @@ var OWS = function(endpoint) {
             $.ajax(url, {
                 context : args.scope || this,
                 success : function(data, textStatus, jqXHR) {
+                    LOG.info('OWS.js::getDescribeFeatureType: WFS featureType response received.');
                     var gmlReader = new OpenLayers.Format.WFSDescribeFeatureType();
                     var describeFeaturetypeRespone = gmlReader.read(data); 
                     
@@ -98,38 +128,10 @@ var OWS = function(endpoint) {
             })
         },
         getFilteredFeature : function(args) {
-            var properties = function(describeFeatureResponse) {
-                var result = new Object.extended();
-                // For every layer pulled in...
-                $(describeFeatureResponse.featureTypes).each(function(i, featureType) {
-                        
-                    // For each layer, initilize a property array for it in the result object
-                    result[featureType.typeName] = [];
-                        
-                    // Parse through its properties
-                    $(featureType.properties || []).each(function(i,property) {
-                            
-                        // Pulling down geometries is not required and can make the document huge 
-                        // So grab everything except the geometry object(s)
-                        if (property.type != "gml:MultiLineStringPropertyType") {
-                            result[featureType.typeName].push(property.name);
-                        }
-                    })
-                })
-                return result;
-            }(args.describeFeatureResponse)
-            
-            var layer = args.describeFeatureResponse.targetPrefix + ':' + args.featureName;
-            var url = me.wfsGetFeature + '&typeName=' + layer;
-            
-            url += '&propertyName='
-            $(args.propertyArray || []).each(function(i, property, array) {
-                if (i == properties[args.featureName].length - 1) {
-                    url += property
-                } else {
-                    url += property + ','
-                }
-            })
+            LOG.info('OWS.js::getFilteredFeature: Building request for WFS GetFeature (filtered)');
+            var layer = args.layer;
+            var url = me.wfsGetFeature + '&typeName=' + layer.name + '&propertyName=';
+            url += (args.propertyArray || []).join(',');
             
             $.ajax(url, {
                 context : args.scope || this,
@@ -137,8 +139,13 @@ var OWS = function(endpoint) {
                     var gmlReader = new OpenLayers.Format.GML.v3();
                     var getFeatureResponse = gmlReader.read(data); 
                     
-                    $(args.callbacks || []).each(function(index, callback, allCallbacks) {
+                    $(args.callbacks.success || []).each(function(index, callback, allCallbacks) {
                         callback(getFeatureResponse, this);
+                    })
+                },
+                error : function(data, textStatus, jqXHR) {
+                     $(args.callbacks.error || []).each(function(index, callback, allCallbacks) {
+                        callback(data, this);
                     })
                 }
             })

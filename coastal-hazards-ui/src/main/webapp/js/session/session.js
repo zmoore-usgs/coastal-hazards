@@ -12,9 +12,9 @@ var Session = function(name, isPerm) {
             // run of the application or a new browser with no imported session
             
             // - Because the session is used in the namespace for WFS-T, it needs to 
-            // not have a number at the head of it
-            var randID = 'a' + Util.randomUUID();
-            var newSession = Object();
+            // not have a number at the head of it so add a random letter
+            var randID = String.fromCharCode(97 + Math.round(Math.random() * 25)) + Util.randomUUID();
+            var newSession = new Object();
         
             me.session = {
                 sessions : {}
@@ -22,11 +22,30 @@ var Session = function(name, isPerm) {
 
             newSession[randID] = Object.extended(); 
             newSession.layers = [];
+            newSession.shorelines = {
+                'default' : {
+                    colorsParamPairs : [],
+                    groupingColumn : 'date_'
+                }
+            }
             
             me.session['sessions'][randID] = newSession;
             me.session['current-session'] = Object.extended();
             me.session['current-session']['key'] = randID;
             me.session['current-session']['session'] = me.session['sessions'][randID];
+        } else {
+            // Make sure that session object has everything we need
+            if (!me.session.layers) {
+                me.session.layers = [];
+            }
+            if (!me.session.shorelines) {
+                me.session.shorelines = {
+                    'default' : {
+                        colorsParamPairs : [],
+                        groupingColumn : 'date_'
+                    }
+                }
+            }
         }
     } else {
         LOG.info('Session.js::constructor:Creating new temp session object');
@@ -45,7 +64,22 @@ var Session = function(name, isPerm) {
             LOG.info('Session.js::persistCurrentSession: Persisting temp session to perm session');
             CONFIG.permSession.session.sessions[this.key] = this.session;
             CONFIG.permSession.save();
-            CONFIG.tempSession.save();
+            me.save();
+        }
+        
+        me.getShorelineConfig = function(args) {
+            var name = args.name;
+            if (!me.session.shorelines[name]) {
+                me.session.shorelines[name] = new Object();
+            }
+            return me.session.shorelines[name];
+        }
+        
+        me.setShorelineConfig = function(args) {
+            var name = args.name;
+            var config = args.config;
+            CONFIG.permSession.session.shorelines[name] = config;
+            return me.session.shorelines[name];
         }
         
         me.updateLayersFromWMS = function(caps) {
