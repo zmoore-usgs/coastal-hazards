@@ -28,7 +28,6 @@ var Shorelines = {
         
         // Read the selected features for specific properties
         var layer = args.layer;
-        var sessionLayer = CONFIG.tempSession.getShorelineConfig(layer.name);
         
         // Parse the describeFeatureType response using this function
         var properties = CONFIG.ows.getLayerPropertiesFromWFSDescribeFeatureType({
@@ -68,9 +67,6 @@ var Shorelines = {
                                 return n.format('{MM}/{dd}/{yyyy}')
                             });
                         }
-                    
-                        var sldBody;
-                        var colorYearPairs = Util.createColorGroups(groups);
                         
                         // Home of future color selection routines
                         //                        var shorelineColorYearPairs = CONFIG.tempSession.getShorelineConfig({ name : layer.name });
@@ -85,117 +81,15 @@ var Shorelines = {
                         //                                colorYearPairs.push(defaultColorYearPairs[i])
                         //                            }
                         //                        })
-                        
-                        if (!isNaN(colorYearPairs[0][1])) {  
-                            LOG.info('Shorelines.js::?: Grouping will be done by number');
-                            // Need to first find out about the featuretype
-                            var createUpperLimitFilterSet = function(colorLimitPairs) {
-                                var filterSet = '';
-                                for (var pairsIndex = 0;pairsIndex < colorLimitPairs.length;pairsIndex++) {
-                                    filterSet += '<ogc:Literal>' + colorLimitPairs[pairsIndex][0] + '</ogc:Literal>'
-                                    filterSet += '<ogc:Literal>' + colorLimitPairs[pairsIndex][1] + '</ogc:Literal>'
-                                }
-                                return filterSet + '<ogc:Literal>' + Util.getRandomColor().capitalize(true) + '</ogc:Literal>';
-                            }
-                            sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>' + 
-                            '<StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' + 
-                            '<NamedLayer>' +
-                            '<Name>#[layer]</Name>' + 
-                            '<UserStyle>' + 
-                            '<FeatureTypeStyle>' + 
-                            '<Rule>' + 
-                            '<LineSymbolizer>' + 
-                            '<Stroke>' + 
-                            '<CssParameter name="stroke">' + 
-                            '<ogc:Function name="Categorize">' + 
-                            '<ogc:PropertyName>' +groupColumn+ '</ogc:PropertyName> '
-                            +createUpperLimitFilterSet(colorYearPairs)+
-                            '</ogc:Function>' + 
-                            '</CssParameter>' + 
-                            '<CssParameter name="stroke-opacity">1</CssParameter>' + 
-                            '<CssParameter name="stroke-width">1</CssParameter>' + 
-                            '</Stroke>' + 
-                            '</LineSymbolizer>' + 
-                            '</Rule>' + 
-                            '</FeatureTypeStyle>' + 
-                            '</UserStyle>' + 
-                            '</NamedLayer>' + 
-                            '</StyledLayerDescriptor>';
-                        } else if (!isNaN(Date.parse(colorYearPairs[0][1]))) {
-                            LOG.debug('Shorelines.js::?: Grouping will be done by year')
-                            var featureDescription = CONFIG.ows.getDescribeFeatureType({
-                                featureName : layer.title
-                            });
-                            var dateType = featureDescription.featureTypes[0].properties.find(function(n){
-                                return n.name == groupColumn
-                            });
-                            var createRuleSets;
-                            if (dateType.type === 'xsd:string') {
-                                LOG.debug('Shorelines.js::?: Geoserver date column is actually a string');
-                                createRuleSets = function(colorLimitPairs) {
-                                    var html = '';
-                            
-                                    for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
-                                        html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>';
-                                        html += groupColumn.trim();
-                                        html += '</ogc:PropertyName>';
-                                        html += '<ogc:Literal>';
-                                        html += '*' + colorLimitPairs[lpIndex][1].split('/')[2];
-                                        html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">';
-                                        html += colorLimitPairs[lpIndex][0];
-                                        html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>';
-                                    }
-                                    return html;
-                                }
-                            } else {
-                                LOG.debug('Shorelines.js::?: Geoserver date column is a date type');
-                                createRuleSets = function(colorLimitPairs) {
-                                    var html = '';
-                            
-                                    for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
-                                        var lowerBoundary = '';
-                                        var upperBoundary = '';
-                                        if (lpIndex == 0) {
-                                            lowerBoundary = colorLimitPairs[0][1];
-                                            if (colorLimitPairs.length == lpIndex) {
-                                                upperBoundary = colorLimitPairs[0][1]; // This means there's only one group'
-                                            } else {
-                                                upperBoundary = colorLimitPairs[lpIndex + 1][1];
-                                            }
-                                        } else {
-                                            upperBoundary = colorLimitPairs[lpIndex][1]
-                                            lowerBoundary = colorLimitPairs[lpIndex - 1][1]
-                                        }
-                                
-                                        html += '<Rule><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>'
-                                        html += groupColumn.trim();
-                                        html += ' </ogc:PropertyName><ogc:LowerBoundary>'
-                                        html += ' <ogc:Literal>'
-                                        html += lowerBoundary
-                                        html += '</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary>'
-                                        html += '<ogc:Literal>'
-                                        html += upperBoundary
-                                        html += '</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
-                                        html += colorLimitPairs[lpIndex][0]
-                                        html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
-                                    }
-                                    return html;
-                                }
-                            }
-                        
-                            sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>'+
-                            '<StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'+
-                            '<NamedLayer>'+
-                            '<Name>#[layer]</Name>' + 
-                            '<UserStyle>' + 
-                            '<FeatureTypeStyle> ' + createRuleSets(colorYearPairs) + '</FeatureTypeStyle>' +  
-                            '</UserStyle>' + 
-                            '</NamedLayer>' +
-                            '</StyledLayerDescriptor>';
                     
-                        }
-                        sldBody = sldBody.replace('#[layer]', layer.name);
-                    
+                        var colorYearPairs = Util.createColorGroups(groups);
+                        
+                        var sldBody = Shorelines.createSLDBody({
+                            colorYearPairs : colorYearPairs,
+                            groupColumn : groupColumn,
+                            layer : layer
+                        })
+                        
                         var wmsLayer = new OpenLayers.Layer.WMS(
                             layer.title, 
                             'geoserver/ows',
@@ -217,7 +111,8 @@ var Shorelines = {
                                 },
                                 singleTile: true, 
                                 ratio: 1,
-                                groupByAttribute : groupColumn
+                                groupByAttribute : groupColumn,
+                                groups : groups
                             });
                 
                         wmsLayer.events.register("loadend", wmsLayer, Shorelines.createFeatureTable);
@@ -229,6 +124,142 @@ var Shorelines = {
                 error : []
             }
         })
+    },
+    createSLDBody : function(args) {
+        var sldBody;
+        var colorYearPairs = args.colorYearPairs;
+        var groupColumn = args.groupColumn;
+        var layer = args.layer;
+        var layerTitle = args.layerTitle || layer.title;
+        var layerName = args.layerName || layer.name;
+        var sessionLayer = CONFIG.tempSession.getShorelineConfig({
+            name : layerName
+        });
+        
+        if (!isNaN(colorYearPairs[0][1])) {  
+            LOG.info('Shorelines.js::?: Grouping will be done by number');
+            // Need to first find out about the featuretype
+            var createUpperLimitFilterSet = function(colorLimitPairs) {
+                var filterSet = '';
+                for (var pairsIndex = 0;pairsIndex < colorLimitPairs.length;pairsIndex++) {
+                    filterSet += '<ogc:Literal>' + colorLimitPairs[pairsIndex][0] + '</ogc:Literal>'
+                    filterSet += '<ogc:Literal>' + colorLimitPairs[pairsIndex][1] + '</ogc:Literal>'
+                }
+                return filterSet + '<ogc:Literal>' + Util.getRandomColor().capitalize(true) + '</ogc:Literal>';
+            }
+            sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>' + 
+            '<StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' + 
+            '<NamedLayer>' +
+            '<Name>#[layer]</Name>' + 
+            '<UserStyle>' + 
+            '<FeatureTypeStyle>' + 
+            '<Rule>' + 
+            '<LineSymbolizer>' + 
+            '<Stroke>' + 
+            '<CssParameter name="stroke">' + 
+            '<ogc:Function name="Categorize">' + 
+            '<ogc:PropertyName>' +groupColumn+ '</ogc:PropertyName> '
+            +createUpperLimitFilterSet(colorYearPairs)+
+            '</ogc:Function>' + 
+            '</CssParameter>' + 
+            '<CssParameter name="stroke-opacity">1</CssParameter>' + 
+            '<CssParameter name="stroke-width">1</CssParameter>' + 
+            '</Stroke>' + 
+            '</LineSymbolizer>' + 
+            '</Rule>' + 
+            '</FeatureTypeStyle>' + 
+            '</UserStyle>' + 
+            '</NamedLayer>' + 
+            '</StyledLayerDescriptor>';
+        } else if (!isNaN(Date.parse(colorYearPairs[0][1]))) { 
+            LOG.debug('Shorelines.js::?: Grouping will be done by year')
+            var featureDescription = CONFIG.ows.getDescribeFeatureType({
+                featureName : layerTitle
+            });
+            var dateType = featureDescription.featureTypes[0].properties.find(function(n){
+                return n.name == groupColumn
+            });
+            var createRuleSets;
+            if (dateType.type === 'xsd:string') {
+                LOG.debug('Shorelines.js::?: Geoserver date column is actually a string');
+                createRuleSets = function(colorLimitPairs) {
+                    var html = '';
+                    for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
+                        var year = colorLimitPairs[lpIndex][1].split('/')[2];
+                                        
+                        if (sessionLayer.view["years-disabled"].indexOf(year) == -1) {
+                            html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>';
+                            html += groupColumn.trim();
+                            html += '</ogc:PropertyName>';
+                            html += '<ogc:Literal>';
+                            html += '*' + colorLimitPairs[lpIndex][1].split('/')[2];
+                            html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">';
+                            html += colorLimitPairs[lpIndex][0];
+                            html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>';
+                        }
+                    }
+                                    
+                    // default rule 
+                    html += '<Rule><ElseFilter />'
+                    html += '<LineSymbolizer>' 
+                    html += '<Stroke>'
+                    html += '<CssParameter name="stroke">#000000</CssParameter>'
+                    html += '<CssParameter name="stroke-opacity">1</CssParameter>'
+                    html += '</Stroke>'
+                    html+= '</LineSymbolizer>'
+                    html += '</Rule>'
+                                    
+                    return html;
+                }
+            } else {
+                LOG.debug('Shorelines.js::?: Geoserver date column is a date type');
+                createRuleSets = function(colorLimitPairs) {
+                    var html = '';
+                            
+                    for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
+                        var lowerBoundary = '';
+                        var upperBoundary = '';
+                        if (lpIndex == 0) {
+                            lowerBoundary = colorLimitPairs[0][1];
+                            if (colorLimitPairs.length == lpIndex) {
+                                upperBoundary = colorLimitPairs[0][1]; // This means there's only one group'
+                            } else {
+                                upperBoundary = colorLimitPairs[lpIndex + 1][1];
+                            }
+                        } else {
+                            upperBoundary = colorLimitPairs[lpIndex][1]
+                            lowerBoundary = colorLimitPairs[lpIndex - 1][1]
+                        }
+                                
+                        html += '<Rule><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>'
+                        html += groupColumn.trim();
+                        html += ' </ogc:PropertyName><ogc:LowerBoundary>'
+                        html += ' <ogc:Literal>'
+                        html += lowerBoundary
+                        html += '</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary>'
+                        html += '<ogc:Literal>'
+                        html += upperBoundary
+                        html += '</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
+                        html += colorLimitPairs[lpIndex][0]
+                        html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
+                    }
+                    return html;
+                }
+            }
+                        
+            sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>'+
+            '<StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'+
+            '<NamedLayer>'+
+            '<Name>#[layer]</Name>' + 
+            '<UserStyle>' + 
+            '<FeatureTypeStyle> ' + createRuleSets(colorYearPairs) + '</FeatureTypeStyle>' +  
+            '</UserStyle>' + 
+            '</NamedLayer>' +
+            '</StyledLayerDescriptor>';
+                    
+        }
+        sldBody = sldBody.replace('#[layer]', layerName);  
+        return sldBody;
     },
     zoomToLayer : function() {
         LOG.info('loadend event triggered on layer');
@@ -257,6 +288,7 @@ var Shorelines = {
         var navTabs = 	$('#shoreline-table-navtabs');
         var tabContent = $('#shoreline-table-tabcontent');
         var shorelineList = $('#shorelines-list');
+        var layerName = event.object.params.LAYERS;
         
         var selectedVals = shorelineList.children(':selected').map(function(i,v) {
             return v.text
@@ -266,18 +298,23 @@ var Shorelines = {
         
         var colorTableHTML = [];
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table header');
-        colorTableHTML.push("<div class='well well-small' id='shoreline-table-well'><table class='table table-bordered table-condensed tablesorter'><thead><tr><td>Active</td><td>Year<td>Color</td>");
+        colorTableHTML.push("<div class='well well-small'><table class='table table-bordered table-condensed tablesorter'><thead><tr><td>Active</td><td>Year<td>Color</td>");
     			
         colorTableHTML.push("</tr></thead><tbody>");
         
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table body');
         
+        var sessionLayer = CONFIG.tempSession.getShorelineConfig({
+            name : layerName
+        });
+        
         $(event.object.colorGroups).each(function(i,colorGroup) {
             var year = colorGroup[1].split('/')[2];
+            var checked = (sessionLayer.view["years-disabled"].indexOf(year) == -1) ? "checked='checked'" : "";
             colorTableHTML.push("<tr id='shoreline-color-table-row-" +year +"'>" +
                 "<td id='shoreline-color-table-toggle-"+year+"'>" + 
                 "<div class='toggle feature-toggle' data-enabled='ON' data-disabled='OFF' data-toggle='toggle'>" + 
-                "<input class='checkbox' type='checkbox' checked='checked' name='checkbox-"+year+"' id='checkbox-"+year+"' value="+year+">" + 
+                "<input class='checkbox' type='checkbox' "+ checked +" name='checkbox-"+year+"' id='checkbox-"+year+"' value="+year+">" + 
                 "<label class='check' for='checkbox-"+year+"'></label>" + 
                 "</div>" + 
                 "</td>" + 
@@ -307,10 +344,7 @@ var Shorelines = {
             }
         })
 
-        navTabs.
-        append($('<li />').addClass('active').//.attr('id', this.name).
-            append($('<a />').attr('href', '#' + this.name).attr('data-toggle', 'tab').html(this.name))
-            );
+        navTabs.append($('<li />').addClass('active').append($('<a />').attr('href', '#' + this.name).attr('data-toggle', 'tab').html(this.name)));
         
         LOG.debug('Shorelines.js::createFeatureTable:: Adding color feature table to DOM');
         tabContent.
@@ -326,10 +360,41 @@ var Shorelines = {
                     // we've already handled the onclick 
                     LOG.trace('Shorelines.js::?: Event timestamp:' + event.timeStamp);
                     if (event.timeStamp) {
+                        var layerName = this.attachedLayer;
                         var active = !$(event.target).parent().find('input')[0].checked;
                         var year = $(event.target).parent().find('input').val();
-                        LOG.info('Shorelines.js::?: User has selected to ' + (active ? 'activate' : 'deactivate') + ' shoreline for year ' + year);
+                        var sessionLayer = CONFIG.tempSession.getShorelineConfig({
+                            name : layerName
+                        });
+                        LOG.info('Shorelines.js::?: User has selected to ' + (active ? 'activate' : 'deactivate') + ' shoreline for year ' + year + ' on layer ' + layerName);
                         
+                        // Persist the selection to session
+                        if (!active) {
+                            if (sessionLayer.view["years-disabled"].indexOf(year) == -1) {
+                                sessionLayer.view["years-disabled"].push(year);
+                            }
+                        } else {
+                            while (sessionLayer.view["years-disabled"].indexOf(year) != -1) {
+                                sessionLayer.view["years-disabled"].remove(year);
+                            }
+                        }
+                        
+                        // Persist the session
+                        CONFIG.tempSession.setShorelineConfig({ 
+                            name : layerName,
+                            config : sessionLayer
+                        });
+                        
+                        
+                        var layer  = CONFIG.map.getMap().getLayersByName(layerName.split(':')[1])[0];
+                        var sldBody = Shorelines.createSLDBody({
+                            colorYearPairs : layer.colorGroups,
+                            groupColumn : layer.groupByAttribute,
+                            layerTitle : layerName.split(':')[1],
+                            layerName : layerName
+                        })
+                        layer.params.SLD_BODY = sldBody;
+                        layer.redraw();
                     }
                 },
                 text: {
@@ -339,7 +404,8 @@ var Shorelines = {
                 style: {
                     enabled: 'primary',
                     disabled : 'danger'
-                }
+                },
+                attachedLayer : layerName
             })
         })
 
