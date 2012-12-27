@@ -70,8 +70,13 @@ var Session = function(name, isPerm) {
         me.getShorelineConfig = function(args) {
             var name = args.name;
             if (!me.session.shorelines[name]) {
-                me.session.shorelines[name] = new Object();
+                me.session.shorelines[name] = {
+                    view : {
+                        'years-disabled' : []
+                    }
+                }
             }
+            me.persistCurrentSession();
             return me.session.shorelines[name];
         }
         
@@ -79,6 +84,7 @@ var Session = function(name, isPerm) {
             var name = args.name;
             var config = args.config;
             CONFIG.permSession.session.shorelines[name] = config;
+            me.persistCurrentSession();
             return me.session.shorelines[name];
         }
         
