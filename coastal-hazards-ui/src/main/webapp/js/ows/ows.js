@@ -70,6 +70,33 @@ var OWS = function(endpoint) {
                 return layer.title === name;
             })
         },
+        getLayerPropertiesFromWFSDescribeFeatureType : function(args) {
+            LOG.info('OWS.js::getLayerPropertiesFromWFSDescribeFeatureType: Parsing WFS describe feature type response for properties');
+            var describeFeatureType = args.describeFeatureType;
+            var includeGeom = args.includeGeom;
+            var result = new Object.extended();
+            // For every layer pulled in...
+            $(describeFeatureType.featureTypes).each(function(i, featureType) {
+                        
+                // For each layer, initilize a property array for it in the result object
+                result[featureType.typeName] = [];
+                        
+                // Parse through its properties
+                $(featureType.properties).each(function(i,property) {
+                
+                    if (!includeGeom) {
+                        // Pulling down geometries is not required and can make the document huge 
+                        // So grab everything except the geometry object(s)
+                        if (property.type != "gml:MultiLineStringPropertyType" && property.type != "gml:MultiCurvePropertyType" && property.name != 'the_geom') {
+                            result[featureType.typeName].push(property.name);
+                        }
+                    } else {
+                        result[featureType.typeName].push(property.name);
+                    }
+                })
+            })
+            return result;
+        },
         getDescribeFeatureType : function(args) {
             LOG.info('OWS.js::getDescribeFeatureType: WFS featureType requested for feature ' + args.featureName);
             // Check if we currently have this feature type from a previous call
@@ -102,9 +129,8 @@ var OWS = function(endpoint) {
         },
         getFilteredFeature : function(args) {
             LOG.info('OWS.js::getFilteredFeature: Building request for WFS GetFeature (filtered)');
-            
-            var layerName = args.prefix + ':' + args.featureName;
-            var url = me.wfsGetFeature + '&typeName=' + layerName + '&propertyName=';
+            var layer = args.layer;
+            var url = me.wfsGetFeature + '&typeName=' + layer.name + '&propertyName=';
             url += (args.propertyArray || []).join(',');
             
             $.ajax(url, {
@@ -113,8 +139,13 @@ var OWS = function(endpoint) {
                     var gmlReader = new OpenLayers.Format.GML.v3();
                     var getFeatureResponse = gmlReader.read(data); 
                     
-                    $(args.callbacks || []).each(function(index, callback, allCallbacks) {
+                    $(args.callbacks.success || []).each(function(index, callback, allCallbacks) {
                         callback(getFeatureResponse, this);
+                    })
+                },
+                error : function(data, textStatus, jqXHR) {
+                     $(args.callbacks.error || []).each(function(index, callback, allCallbacks) {
+                        callback(data, this);
                     })
                 }
             })

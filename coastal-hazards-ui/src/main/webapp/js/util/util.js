@@ -38,26 +38,42 @@ var Util =  {
  
         return s.join('');
     },
-    makeGroups : function(groupItems) {
+    makeGroups : function(groupItems, range) {
         LOG.info("Util.js::makeGroups:")
         var groupItem = groupItems[0];
         
         if (!isNaN(Date.parse(groupItem))) {
-            LOG.info("Grouping by date/decade");
-            var dateBegin = Date.create(groupItem);
-            var dateEnd = Date.create(groupItem);
-            $(groupItems).each(function(i, dateItem) {
-                var date = Date.create(dateItem);
-                if (date.isBefore(dateBegin)) {
-                    dateBegin = date;
-                }
+            if (range) {
+                LOG.info("Util.js::makeGroups: Grouping by date range");
+                var dateBegin = Date.create(groupItem);
+                var dateEnd = Date.create(groupItem);
+                $(groupItems.unique()).each(function(i, dateItem) {
+                    var date = Date.create(dateItem);
+                    if (date.isBefore(dateBegin)) {
+                        dateBegin = date;
+                    }
+                        
+                    if (date.isAfter(dateEnd)) {
+                        dateEnd = date;
+                    }
+                })
                 
-                if (date.isAfter(dateEnd)) {
-                    dateEnd = date;
-                }
-            })
-            return Date.range(dateBegin,dateEnd).every('1 year');
-        } else if (!isNaN(groupItem)) {
+                return Date.range(dateBegin,dateEnd).every('1 year');
+            } else {
+                LOG.info("Util.js::makeGroups: Grouping by available dates");
+                var yearSet = [];
+                var sortedUniqueGroupItems = groupItems.unique().sortBy(function(n){
+                    return n.split('/')[2]
+                })
+                $(sortedUniqueGroupItems).each(function(i, dateItem) {
+                    var date = Date.create('01/01/' + dateItem.split('/')[2]);
+                    yearSet.push(date);
+                })
+                return yearSet.unique();
+            }
+        }
+
+        else if (!isNaN(groupItem)) {
             LOG.info("Grouping by number");
             var groups = groupItems.sortBy();
             $(groups).each(function(i,v) {
@@ -69,7 +85,8 @@ var Util =  {
             LOG.info("Grouping by string");
         }
     },
-    createColorGroup : function(groups) {
+    createColorGroups : function(groups) {
+        LOG.info('Util.js::createColorGroups: Creating color groups')
         var colorGroups = [];
         $(groups).each(function(i,group) {
             var color = Util.getRandomColor().capitalize(true);
@@ -81,6 +98,7 @@ var Util =  {
             }
             colorGroups.push([color, group]);
         })
+        LOG.info('Util.js::createColorGroups: Created ' + colorGroups.length + ' color groups');
         return colorGroups;
     },
     getRandomLorem : function() {

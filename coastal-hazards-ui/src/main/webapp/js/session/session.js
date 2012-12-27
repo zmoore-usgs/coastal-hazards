@@ -14,7 +14,7 @@ var Session = function(name, isPerm) {
             // - Because the session is used in the namespace for WFS-T, it needs to 
             // not have a number at the head of it
             var randID = 'a' + Util.randomUUID();
-            var newSession = Object();
+            var newSession = new Object();
         
             me.session = {
                 sessions : {}
@@ -22,6 +22,12 @@ var Session = function(name, isPerm) {
 
             newSession[randID] = Object.extended(); 
             newSession.layers = [];
+            newSession.shorelines = {
+                'default' : {
+                    colorsParamPairs : [],
+                    groupingColumn : 'date_'
+                }
+            }
             
             me.session['sessions'][randID] = newSession;
             me.session['current-session'] = Object.extended();
@@ -45,7 +51,19 @@ var Session = function(name, isPerm) {
             LOG.info('Session.js::persistCurrentSession: Persisting temp session to perm session');
             CONFIG.permSession.session.sessions[this.key] = this.session;
             CONFIG.permSession.save();
-            CONFIG.tempSession.save();
+            me.save();
+        }
+        
+        me.getShorelineConfig = function(args) {
+            var name = args.name;
+            return me.session.shorelines[name];
+        }
+        
+        me.setShorelineConfig = function(args) {
+            var name = args.name;
+            var config = args.config;
+            CONFIG.permSession.session.shorelines[name] = config;
+            return me.session.shorelines[name];
         }
         
         me.updateLayersFromWMS = function(caps) {
