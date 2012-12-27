@@ -41,7 +41,7 @@ var OWS = function(endpoint) {
                     var getCapsResponse = new OpenLayers.Format.WMSCapabilities.v1_3_0().read(data); 
                     me.wmsCapabilities = getCapsResponse;
                     me.wmsCapabilitiesXML = data;
-                    $(args.callbacks).each(function(index, callback, allCallbacks) {
+                    $(args.callbacks.success).each(function(index, callback, allCallbacks) {
                         callback(getCapsResponse, args);
                     })
                 }

@@ -24,11 +24,7 @@ img { max-width: none; }
 }
 
 #map-well {
-    height: 38em;
-}
-
-#toolbox-well {
-    height: 38em;
+    height: 42em;
 }
 
 .hide {

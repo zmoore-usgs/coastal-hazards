@@ -20,26 +20,29 @@ $(document).ready(function() {
     // Contains the non-permanent single-session object
     CONFIG.tempSession = new Session('coastal-hazards', false);
     
-    LOG.info('Sessions created. User session list has ' + Object.keys(CONFIG.permSession.session.sessions).length + ' sessions.')
-    LOG.info('Current session key: ' + CONFIG.permSession.getCurrentSessionKey());
+    LOG.info('OnReady.js:: Sessions created. User session list has ' + Object.keys(CONFIG.permSession.session.sessions).length + ' sessions.')
+    LOG.info('OnReady.js:: Current session key: ' + CONFIG.permSession.getCurrentSessionKey());
     
     CONFIG.tempSession.setCurrentSession(CONFIG.permSession.getCurrentSessionKey(), CONFIG.permSession);
     
-    LOG.info('Preparing call to OWS GetCapabilities')
+    LOG.info('OnReady.js:: Preparing call to OWS GetCapabilities')
     CONFIG.ows.getWMSCapabilities({
-        callbacks : [
-        CONFIG.tempSession.updateLayersFromWMS,
-        Shorelines.initializeUploader,
-        Baseline.initializeUploader,
-        Transects.initializeUploader,
-        Shorelines.populateFeaturesList,
-        Baseline.populateFeaturesList,
-        Transects.populateFeatureList,
-        function() {
-            $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
-            $("#calculate-transects-btn").on("click", Transects.calcTransects);
-            $("#create-intersections-btn").on("click", Intersections.calcIntersections);
+        callbacks : {
+            success : [
+            CONFIG.tempSession.updateLayersFromWMS,
+            Shorelines.initializeUploader,
+            Baseline.initializeUploader,
+            Transects.initializeUploader,
+            Shorelines.populateFeaturesList,
+            Baseline.populateFeaturesList,
+            Transects.populateFeatureList,
+            function() {
+                $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
+                $("#calculate-transects-btn").on("click", Transects.calcTransects);
+                $("#create-intersections-btn").on("click", Intersections.calcIntersections);
+            }
+            ],
+            error : []
         }
-        ]
     })
 })

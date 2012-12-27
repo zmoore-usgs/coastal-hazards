@@ -48,7 +48,7 @@
         <servlet-class>gov.usgs.cida.proxy.PathPreservingProxyServlet</servlet-class>
         <init-param>
             <param-name>forward-url</param-name>
-            <param-value>http://igsarm-cida-javadev1.er.usgs.gov:8081/geoserver</param-value>
+            <param-value>http://igsarm-cida-javadev2.er.usgs.gov:8081/geoserver</param-value>
         </init-param>
         <init-param>
             <param-name>readTimeout</param-name>
