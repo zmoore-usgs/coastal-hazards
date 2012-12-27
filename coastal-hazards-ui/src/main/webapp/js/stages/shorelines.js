@@ -130,8 +130,10 @@ var Shorelines = {
         var colorYearPairs = args.colorYearPairs;
         var groupColumn = args.groupColumn;
         var layer = args.layer;
+        var layerTitle = args.layerTitle || layer.title;
+        var layerName = args.layerName || layer.name;
         var sessionLayer = CONFIG.tempSession.getShorelineConfig({
-            name : layer.name
+            name : layerName
         });
         
         if (!isNaN(colorYearPairs[0][1])) {  
@@ -172,7 +174,7 @@ var Shorelines = {
         } else if (!isNaN(Date.parse(colorYearPairs[0][1]))) { 
             LOG.debug('Shorelines.js::?: Grouping will be done by year')
             var featureDescription = CONFIG.ows.getDescribeFeatureType({
-                featureName : layer.title
+                featureName : layerTitle
             });
             var dateType = featureDescription.featureTypes[0].properties.find(function(n){
                 return n.name == groupColumn
@@ -198,12 +200,11 @@ var Shorelines = {
                     }
                                     
                     // default rule 
-                    html += '<Rule>'
+                    html += '<Rule><ElseFilter />'
                     html += '<LineSymbolizer>' 
                     html += '<Stroke>'
                     html += '<CssParameter name="stroke">#000000</CssParameter>'
-                    html += '<CssParameter name="stroke-opacity">0.75</CssParameter>'
-                    html += '<CssParameter name="stroke-dashoffset">0.5</CssParameter>'
+                    html += '<CssParameter name="stroke-opacity">1</CssParameter>'
                     html += '</Stroke>'
                     html+= '</LineSymbolizer>'
                     html += '</Rule>'
@@ -257,7 +258,7 @@ var Shorelines = {
             '</StyledLayerDescriptor>';
                     
         }
-        sldBody = sldBody.replace('#[layer]', layer.name);  
+        sldBody = sldBody.replace('#[layer]', layerName);  
         return sldBody;
     },
     zoomToLayer : function() {
@@ -385,6 +386,15 @@ var Shorelines = {
                         });
                         
                         
+                        var layer  = CONFIG.map.getMap().getLayersByName(layerName.split(':')[1])[0];
+                        var sldBody = Shorelines.createSLDBody({
+                            colorYearPairs : layer.colorGroups,
+                            groupColumn : layer.groupByAttribute,
+                            layerTitle : layerName.split(':')[1],
+                            layerName : layerName
+                        })
+                        layer.params.SLD_BODY = sldBody;
+                        layer.redraw();
                     }
                 },
                 text: {
