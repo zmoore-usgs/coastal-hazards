@@ -22,14 +22,9 @@ var Transects = {
                 featureNS: CONFIG.namespace[args.name.split(':')[0]],
                 geometryName: "the_geom"
             })
-        //            ,
-        //            styleMap: new OpenLayers.StyleMap(sld.namedLayers["Simple Line"]["userStyles"][0])
         });
-        //        baselineLayer.events.register("featuresadded", null, function() {
-        //            this.map.zoomToExtent(this.getDataExtent());
-        //        });
 	
-        map.getMap().addLayer(transects);
+        CONFIG.map.getMap().addLayer(transects);
     },
     populateFeatureList : function(caps) {
         $('#transects-list').children().remove();
