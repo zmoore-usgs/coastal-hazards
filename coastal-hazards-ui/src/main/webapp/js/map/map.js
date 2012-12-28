@@ -46,13 +46,16 @@ var Map = function() {
         );
             
     var wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
-        url: 'geoserver/wms', 
         title: 'shoreline-identify-control',
         layers: [],
-        queryVisible: true
+        queryVisible: true,
+        output : 'features'
+//        ,
+//        infoFormat : 'application/vnd.ogc.gml'
     })
-            
     
+    wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
+            
     me.map.addLayer(layer["sat"]);
     
     me.map.addLayer(layer['baseline-draw-layer']);
@@ -60,13 +63,15 @@ var Map = function() {
     me.map.zoomToMaxExtent();
 	
     me.map.addControl(wmsGetFeatureInfoControl);
+    
     me.map.addControl(new OpenLayers.Control.MousePosition());
     me.map.addControl(new OpenLayers.Control.ScaleLine({
         geodesic : true
     }));
     
-    
     me.map.addControl(baselineDrawControl);
+    wmsGetFeatureInfoControl.activate();
+    
     
     return $.extend(me, {
         getMap : function() {

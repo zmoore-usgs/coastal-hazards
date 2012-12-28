@@ -8,7 +8,7 @@ var Shorelines = {
     addShorelines : function(layers) {
         LOG.info('Shorelines.js::addShorelines: Adding ' + layers.length + ' shoreline layers to map'); 
         $(layers).each(function(index,layer) {
-            // First we need to discover information about the layer we want to process
+            
             CONFIG.ows.getDescribeFeatureType({
                 featureName : layer.title, 
                 callbacks : [
@@ -115,6 +115,7 @@ var Shorelines = {
                                 groups : groups
                             });
                             
+                        CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control')[0].layers.push(wmsLayer)
                         wmsLayer.events.register("loadend", wmsLayer, Shorelines.createFeatureTable);
                         wmsLayer.events.register("loadend", wmsLayer, Shorelines.zoomToLayer);
                         CONFIG.map.getMap().addLayer(wmsLayer);
@@ -420,6 +421,13 @@ var Shorelines = {
             if (layers.length) {
                 $(layers).each(function(i,l) {
                     CONFIG.map.getMap().removeLayer(l);
+                    
+                    var idControl = CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control')[0];
+                    var controlLayerIndex = idControl.layers.indexOf(l);
+                    if (controlLayerIndex != -1) {
+                        idControl.layers = idControl.layers.removeAt(controlLayerIndex);
+                    }
+                    
                 })
             }
         });

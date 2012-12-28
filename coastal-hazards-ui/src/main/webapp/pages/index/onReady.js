@@ -1,7 +1,6 @@
 // TODO - Add current user session to temp session and use temp session as the work session and persist temp session to permSession at intervals
 var sld;
 $(document).ready(function() {
-    
     initializeLogging({
         LOG4JS_LOG_THRESHOLD : CONFIG.development ? 'debug' : 'info'
     });
