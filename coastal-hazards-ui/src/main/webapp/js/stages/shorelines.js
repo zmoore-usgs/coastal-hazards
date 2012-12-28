@@ -114,7 +114,7 @@ var Shorelines = {
                                 groupByAttribute : groupColumn,
                                 groups : groups
                             });
-                
+                            
                         wmsLayer.events.register("loadend", wmsLayer, Shorelines.createFeatureTable);
                         wmsLayer.events.register("loadend", wmsLayer, Shorelines.zoomToLayer);
                         CONFIG.map.getMap().addLayer(wmsLayer);
@@ -269,7 +269,7 @@ var Shorelines = {
         $(layers).each(function(i, layer) {
             if (layer.zoomToWhenAdded) {
                 
-                bounds.extend(new OpenLayers.Bounds(CONFIG.ows.getLayerByName(layer.name).bbox["EPSG:900913"].bbox));
+                bounds.extend(new OpenLayers.Bounds(CONFIG.ows.getLayerByName(layer.params.LAYERS).bbox["EPSG:900913"].bbox));
                 
                 if (layer.events.listeners.loadend.length) {
                     layer.events.unregister('loadend', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);
@@ -427,7 +427,7 @@ var Shorelines = {
         var layerInfos = []
         $("#shorelines-list option:selected").each(function (index, option) {
             LOG.debug('Shorelines.js::shorelineSelected: A shoreline ('+option.text+') was selected from the select list');
-            var layer = CONFIG.ows.getLayerByName(option.text);
+            var layer = CONFIG.ows.getLayerByName(option.value);
             
             layerInfos.push(layer)
         });

@@ -67,7 +67,7 @@ var OWS = function(endpoint) {
         },
         getLayerByName : function(name) {
             return me.wmsCapabilities.capability.layers.find(function(layer) {
-                return layer.title === name;
+                return layer.name === name;
             })
         },
         getLayerPropertiesFromWFSDescribeFeatureType : function(args) {

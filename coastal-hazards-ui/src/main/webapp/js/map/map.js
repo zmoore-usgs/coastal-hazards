@@ -15,27 +15,10 @@ var Map = function() {
     
     
     var layer = {};
-    layer["phys"] = new OpenLayers.Layer.Google(
-        "Google Physical",
-        {
-            type: google.maps.MapTypeId.TERRAIN, 
-            isBaseLayer: true
-        });
     layer["sat"] = new OpenLayers.Layer.Google(
         "Google Satellite",
         {
             type: google.maps.MapTypeId.SATELLITE, 
-            numZoomLevels: 20
-        });
-    layer["ghyb"] = new OpenLayers.Layer.Google(
-        "Google Hybrid",
-        {
-            type: google.maps.MapTypeId.HYBRID, 
-            numZoomLevels: 20
-        });
-    layer["gstreets"] = new OpenLayers.Layer.Google(
-        "Google Streets", // the default
-        {
             numZoomLevels: 20
         });
 
@@ -61,6 +44,14 @@ var Map = function() {
             multi: true
         }
         );
+            
+    var wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
+        url: 'geoserver/wms', 
+        title: 'shoreline-identify-control',
+        layers: [],
+        queryVisible: true
+    })
+            
     
     me.map.addLayer(layer["sat"]);
     
@@ -68,7 +59,12 @@ var Map = function() {
     
     me.map.zoomToMaxExtent();
 	
+    me.map.addControl(wmsGetFeatureInfoControl);
     me.map.addControl(new OpenLayers.Control.MousePosition());
+    me.map.addControl(new OpenLayers.Control.ScaleLine({
+        geodesic : true
+    }));
+    
     
     me.map.addControl(baselineDrawControl);
     
