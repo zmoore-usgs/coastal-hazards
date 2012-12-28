@@ -45,6 +45,13 @@ var Map = function() {
         }
         );
             
+    var wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
+        url: 'geoserver/wms', 
+        title: 'shoreline-identify-control',
+        layers: [],
+        queryVisible: true
+    })
+            
     
     me.map.addLayer(layer["sat"]);
     
@@ -52,10 +59,12 @@ var Map = function() {
     
     me.map.zoomToMaxExtent();
 	
+    me.map.addControl(wmsGetFeatureInfoControl);
     me.map.addControl(new OpenLayers.Control.MousePosition());
     me.map.addControl(new OpenLayers.Control.ScaleLine({
         geodesic : true
     }));
+    
     
     me.map.addControl(baselineDrawControl);
     
