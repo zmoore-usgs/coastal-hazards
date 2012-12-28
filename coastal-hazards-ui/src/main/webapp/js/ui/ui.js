@@ -300,6 +300,18 @@ var UI = function() {
                     Baseline.baselineSelected()
                 }) 
             }
+        },
+        showShorelineInfo : function(event) {
+//            if (event.features.length) {
+                CONFIG.map.getMap().addPopup(new OpenLayers.Popup.FramedCloud(
+                    "FramedCloud", 
+                    CONFIG.map.getMap().getLonLatFromPixel(event.xy),
+                    null,
+                    event.text,
+                    null,
+                    true
+                    ));
+//            }
         }
     });
 }
