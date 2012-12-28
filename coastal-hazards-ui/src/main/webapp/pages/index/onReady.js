@@ -6,6 +6,8 @@ $(document).ready(function() {
         LOG4JS_LOG_THRESHOLD : CONFIG.development ? 'debug' : 'info'
     });
     
+    Math.seedrandom('Look @ http://davidbau.com/encode/seedrandom.js')
+    
     // Utility class for the user interface
     CONFIG.ui = new UI();
     
