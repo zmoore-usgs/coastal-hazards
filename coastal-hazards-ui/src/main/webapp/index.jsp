@@ -98,6 +98,7 @@
 
             
         </script>
+        <script type="text/javascript" src="js/util/seedrandom.js"></script>
         <script type="text/javascript" src="js/ui/ui.js"></script>
         <script type="text/javascript" src="js/util/util.js"></script>
         <script type="text/javascript" src="js/map/map.js"></script>
