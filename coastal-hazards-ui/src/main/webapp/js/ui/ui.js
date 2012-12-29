@@ -176,10 +176,10 @@ var UI = function() {
                         enabled: false, 
                         disabled: false
                     },
-//                    style: {
-//                        enabled: 'success',
-//                        disabled : 'danger'
-//                    },
+                    //                    style: {
+                    //                        enabled: 'success',
+                    //                        disabled : 'danger'
+                    //                    },
                     layerName : layerName,
                     layerTitle : layerTitle
                     
@@ -230,12 +230,15 @@ var UI = function() {
                                     if (data.success === 'true') {
                                         LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
                                         CONFIG.ows.getWMSCapabilities({
-                                            callbacks : [
-                                            function (data) {
-                                                CONFIG.tempSession.updateLayersFromWMS(data);
-                                                CONFIG.ui.populateFeaturesList(data, context);
+                                            callbacks : {
+                                                success : [
+                                                function (data) {
+                                                    CONFIG.tempSession.updateLayersFromWMS(data);
+                                                    CONFIG.ui.populateFeaturesList(data, context);
+                                                }
+                                                ],
+                                                error : []
                                             }
-                                            ]
                                         })
                                     } else {
                                         // TODO - Notify the user
@@ -297,6 +300,18 @@ var UI = function() {
                     Baseline.baselineSelected()
                 }) 
             }
+        },
+        showShorelineInfo : function(event) {
+//            if (event.features.length) {
+                CONFIG.map.getMap().addPopup(new OpenLayers.Popup.FramedCloud(
+                    "FramedCloud", 
+                    CONFIG.map.getMap().getLonLatFromPixel(event.xy),
+                    null,
+                    event.text,
+                    null,
+                    true
+                    ));
+//            }
         }
     });
 }

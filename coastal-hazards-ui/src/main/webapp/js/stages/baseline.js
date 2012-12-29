@@ -30,24 +30,27 @@ var Baseline = {
         
         CONFIG.ows.getWMSCapabilities({
             selectLayer : selectLayer,
-            callbacks : [
-            CONFIG.tempSession.updateLayersFromWMS,
-            function(caps, context) {
-                LOG.info('Baseline.js::refreshFeatureList: WMS GetCapabilities response parsed')
-                Baseline.populateFeaturesList(caps);
+            callbacks : {
+                success : [
+                CONFIG.tempSession.updateLayersFromWMS,
+                function(caps, context) {
+                    LOG.info('Baseline.js::refreshFeatureList: WMS GetCapabilities response parsed')
+                    Baseline.populateFeaturesList(caps);
                 
-                if (selectLayer) {
-                    LOG.info('Baseline.js::refreshFeatureList: Auto-selecting layer ' + selectLayer)
-                    $('#baseline-list').children().each(function(i,v) {
-                        if (v.value === selectLayer) {
-                            LOG.debug('Triggering "select" on featurelist option');
-                            $('#baseline-list').val(v.value);
-                            $('#baseline-list').trigger('change');
-                        }
-                    })
+                    if (selectLayer) {
+                        LOG.info('Baseline.js::refreshFeatureList: Auto-selecting layer ' + selectLayer)
+                        $('#baseline-list').children().each(function(i,v) {
+                            if (v.value === selectLayer) {
+                                LOG.debug('Triggering "select" on featurelist option');
+                                $('#baseline-list').val(v.value);
+                                $('#baseline-list').trigger('change');
+                            }
+                        })
+                    }
                 }
+                ],
+                error: []
             }
-            ]
         })
     },
     baselineSelected : function() {

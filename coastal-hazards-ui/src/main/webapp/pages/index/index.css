@@ -4,7 +4,18 @@
 }
 
 .olLayerGoogleCopyright, .olLayerGooglePoweredBy, .gmnoprint {
-	display : none
+    display : none
+}
+
+/* Add a drop shadow effect to scale and mouse position
+    so they can be seen against a dark background */
+.olControlScaleLine {
+    text-shadow: #FFFFFF 0px 0px 2px;
+    color: #000000;
+}
+.olControlMousePosition {
+    text-shadow: #FFFFFF 0px 0px 2px;
+    color: #000000;
 }
 
 /* Because of a conflict between twitter bootstrap and openlayers */
