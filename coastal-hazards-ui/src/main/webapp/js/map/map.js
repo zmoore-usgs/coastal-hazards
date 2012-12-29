@@ -49,9 +49,13 @@ var Map = function() {
         title: 'shoreline-identify-control',
         layers: [],
         queryVisible: true,
-        output : 'features'
-//        ,
-//        infoFormat : 'application/vnd.ogc.gml'
+        output : 'features',
+        drillDown : true,
+        maxFeatures : 1000,
+        infoFormat : 'application/vnd.ogc.gml',
+        vendorParams : {
+            radius : 3
+        }
     })
     
     wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);

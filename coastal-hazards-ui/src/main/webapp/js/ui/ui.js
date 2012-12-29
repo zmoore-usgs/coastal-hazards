@@ -302,16 +302,50 @@ var UI = function() {
             }
         },
         showShorelineInfo : function(event) {
-//            if (event.features.length) {
+            if (event.features.length) {
+                
+                $('.olPopupCloseBox').each(function(i,v){
+                    v.click();
+                }) 
+                
+                var layerName = event.features[0].fid.split('.')[0];
+                var shorelineIdContainer = $('<div />').attr('id', layerName + '-id-container').addClass('shoreline-id-container');
+                var shorelineIdTable = $('<table />').attr('id', layerName + '-id-table').addClass('shoreline-id-table table table-striped table-condensed');
+                var thead = $('<thead />');
+                var theadTr = $('<tr />');
+                var tbody = $('<tbody />');
+                thead.append($('<caption />').append($('<h3 />').append(layerName)))
+                
+                $(Object.keys(event.features[0].attributes)).each(function(i,v) {
+                    theadTr.append($('<th />').append(v))
+                });
+                thead.append(theadTr);
+                
+                $(event.features).each(function(i,v) {
+                    var tbodyTr = $('<tr />');
+                    
+                    $(Object.values(v.attributes)).each(function(aInd, aVal) {
+                        tbodyTr.append($('<td />').append(aVal))
+                    })
+                    
+                    tbody.append(tbodyTr);
+                });
+                
+                shorelineIdTable.append(thead);
+                shorelineIdTable.append(tbody);
+                shorelineIdContainer.append(shorelineIdTable);
+                    
                 CONFIG.map.getMap().addPopup(new OpenLayers.Popup.FramedCloud(
                     "FramedCloud", 
                     CONFIG.map.getMap().getLonLatFromPixel(event.xy),
                     null,
-                    event.text,
+                    shorelineIdContainer.html(),
                     null,
                     true
                     ));
-//            }
+            } else {
+                LOG.debug('Shoreline not found at query location')
+            }
         }
     });
 }
