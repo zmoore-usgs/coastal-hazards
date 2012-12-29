@@ -302,8 +302,11 @@ var UI = function() {
             }
         },
         showShorelineInfo : function(event) {
+            LOG.info('UI.js::showShorelineInfo: The map was clicked and a response from the OWS resource was received');
             if (event.features.length) {
+                LOG.debug('UI.js::showShorelineInfo: Features were returned from the OWS resource. Parsing and creating table to display');
                 
+                LOG.trace('UI.js::showShorelineInfo: Closing any other open identify windows');
                 $('.olPopupCloseBox').each(function(i,v){
                     v.click();
                 }) 
@@ -321,6 +324,7 @@ var UI = function() {
                 });
                 thead.append(theadTr);
                 
+                LOG.debug('UI.js::showShorelineInfo: Creating table for ' + event.features.length + ' features');
                 $(event.features).each(function(i,v) {
                     var tbodyTr = $('<tr />');
                     
@@ -335,6 +339,7 @@ var UI = function() {
                 shorelineIdTable.append(tbody);
                 shorelineIdContainer.append(shorelineIdTable);
                     
+                LOG.debug('UI.js::showShorelineInfo: Table created, displaying new identify window');
                 CONFIG.map.getMap().addPopup(new OpenLayers.Popup.FramedCloud(
                     "FramedCloud", 
                     CONFIG.map.getMap().getLonLatFromPixel(event.xy),
@@ -343,8 +348,9 @@ var UI = function() {
                     null,
                     true
                     ));
+                        
             } else {
-                LOG.debug('Shoreline not found at query location')
+                LOG.debug('UI.js::showShorelineInfo: No features were found at point of mouse click');
             }
         }
     });
