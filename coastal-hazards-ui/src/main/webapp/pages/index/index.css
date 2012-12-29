@@ -27,10 +27,6 @@ img { max-width: none; }
     height: 38em;
 }
 
-#toolbox-well {
-    height: 38em;
-}
-
 .hide {
     height: auto !important;
 }
@@ -51,7 +47,7 @@ img { max-width: none; }
     height: 12em;
 }
 
-#shoreline-table-well {
+#shoreline-table-container {
     height: 12em;
 }
 

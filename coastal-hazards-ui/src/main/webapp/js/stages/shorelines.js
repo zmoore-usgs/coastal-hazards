@@ -240,7 +240,7 @@ var Shorelines = {
         
         var colorTableHTML = [];
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table header');
-        colorTableHTML.push("<div class='well well-small' id='shoreline-table-well'><table class='table table-bordered table-condensed tablesorter' ><thead><tr><td>Selected</td><td>YEAR<td>COLOR</td>");
+        colorTableHTML.push("<div id='shoreline-table-container'><table class='table table-bordered table-condensed tablesorter shoreline-table' ><thead><tr><td>Selected</td><td>YEAR<td>COLOR</td>");
     			
         colorTableHTML.push("</tr></thead><tbody>");
         
