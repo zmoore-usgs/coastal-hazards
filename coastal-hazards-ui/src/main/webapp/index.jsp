@@ -127,7 +127,7 @@
             <div class="container-fluid">
                 <div class="row-fluid">
                     <!-- NAV -->
-                    <div class="span1">
+                    <div class="span1" id='nav-list'>
                         <ul class="nav nav-pills nav-stacked">
                             <li class="active"><a href="#shorelines" data-toggle="tab"><img id="shorelines_img" src="images/workflow_figures/shorelines.png" title="Display Shorelines"/></a></li>
                             <li><a href="#baseline" data-toggle="tab"><img id="baseline_img" src="images/workflow_figures/baseline_future.png" title="Display Baseline"/></a></li>
