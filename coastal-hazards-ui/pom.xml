@@ -98,10 +98,10 @@
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.tuckey</groupId>
             <artifactId>urlrewritefilter</artifactId>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>

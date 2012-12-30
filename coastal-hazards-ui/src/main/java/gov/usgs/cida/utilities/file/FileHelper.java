@@ -2,7 +2,6 @@ package gov.usgs.cida.utilities.file;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -19,14 +18,13 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
-import org.tuckey.web.filters.urlrewrite.utils.StringUtils;
 
 /**
  * Utility class that helps with FileIO operations
@@ -616,7 +614,7 @@ public class FileHelper {
 
         FileOutputStream fos;
         ZipOutputStream zos = null;
-        FileInputStream fis = null;
+        FileInputStream fis;
 
         File[] files;
         File zipFile;

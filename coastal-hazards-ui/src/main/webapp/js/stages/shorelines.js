@@ -1,8 +1,6 @@
 // TODO - Onclick table rows to zoom to shoreline set
-// TODO - Refactor out utility functions and UI functions
 // TODO - Back end and front-end verification for uploaded shapefiles
 // TODO - Deal with non-standard shapefiles
-// TODO - Persist sessions after upload
 var Shorelines = {
     
     addShorelines : function(layers) {
@@ -48,7 +46,9 @@ var Shorelines = {
                     
                         // Find the String match of our desired column from the layer attributes
                         var groupColumn = Object.keys(features[0].attributes).find(function(n) {
-                            return n.toLowerCase() === CONFIG.tempSession.session.shorelines['default'].groupingColumn.toLowerCase()
+                            return n.toLowerCase() === CONFIG.tempSession.getShorelineConfig({
+                                name : 'default'
+                            }).groupingColumn.toLowerCase()
                         });
                     
                         // Find the index of the desired column
@@ -204,8 +204,7 @@ var Shorelines = {
                     html += '<Rule><ElseFilter />'
                     html += '<LineSymbolizer>' 
                     html += '<Stroke>'
-                    html += '<CssParameter name="stroke">#000000</CssParameter>'
-                    html += '<CssParameter name="stroke-opacity">1</CssParameter>'
+                    html += '<CssParameter name="stroke-opacity">0</CssParameter>'
                     html += '</Stroke>'
                     html+= '</LineSymbolizer>'
                     html += '</Rule>'
@@ -299,7 +298,7 @@ var Shorelines = {
         
         var colorTableHTML = [];
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table header');
-        colorTableHTML.push("<div class='well well-small'><table class='table table-bordered table-condensed tablesorter'><thead><tr><td>Active</td><td>Year<td>Color</td>");
+        colorTableHTML.push("<div id='shoreline-table-container'><table class='table table-bordered table-condensed tablesorter shoreline-table' ><thead><tr><td>Selected</td><td>YEAR<td>COLOR</td>");
     			
         colorTableHTML.push("</tr></thead><tbody>");
         
@@ -418,6 +417,16 @@ var Shorelines = {
         // First remove all shorelines from the map that were not selected
         $("#shorelines-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
+            
+            var layerConfig = CONFIG.tempSession.getShorelineConfig({
+                name : option.value
+            });
+            layerConfig.view.isSelected = false;
+            CONFIG.tempSession.setShorelineConfig({
+                name : option.value,
+                config : layerConfig
+            });
+            
             if (layers.length) {
                 $(layers).each(function(i,l) {
                     CONFIG.map.getMap().removeLayer(l);
@@ -427,7 +436,6 @@ var Shorelines = {
                     if (controlLayerIndex != -1) {
                         idControl.layers = idControl.layers.removeAt(controlLayerIndex);
                     }
-                    
                 })
             }
         });
@@ -436,8 +444,16 @@ var Shorelines = {
         $("#shorelines-list option:selected").each(function (index, option) {
             LOG.debug('Shorelines.js::shorelineSelected: A shoreline ('+option.text+') was selected from the select list');
             var layer = CONFIG.ows.getLayerByName(option.value);
+            layerInfos.push(layer);
             
-            layerInfos.push(layer)
+            var layerConfig = CONFIG.tempSession.getShorelineConfig({
+                name : option.value
+            });
+            layerConfig.view.isSelected = true;
+            CONFIG.tempSession.setShorelineConfig({
+                name : option.value,
+                config : layerConfig
+            });
         });
             
         if (layerInfos.length) {

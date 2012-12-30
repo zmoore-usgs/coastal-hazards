@@ -217,7 +217,7 @@
             <dependency>
                 <groupId>gov.usgs.cida.jslibs</groupId>
                 <artifactId>usgs-template</artifactId>
-                <version>1.1</version>
+                <version>1.2-SNAPSHOT</version>
                 <type>war</type>
             </dependency>
             <dependency>
