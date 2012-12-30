@@ -25,7 +25,11 @@ var Session = function(name, isPerm) {
             newSession.shorelines = {
                 'default' : {
                     colorsParamPairs : [],
-                    groupingColumn : 'date_'
+                    groupingColumn : 'date_',
+                    view : {
+                        'years-disabled' : [],
+                        isSelected : false
+                    }
                 }
             }
             
