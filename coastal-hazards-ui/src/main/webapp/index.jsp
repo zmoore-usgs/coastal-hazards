@@ -35,6 +35,7 @@
             <jsp:param name="revisedDate" value="" />
             <jsp:param name="nextReview" value="" />
             <jsp:param name="expires" value="never" />
+            <jsp:param name="development" value="true" />
         </jsp:include>
         <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.8.0/build/cssreset/cssreset-min.css">
 
@@ -294,10 +295,8 @@
                                 </div>
                                 <div class="fluid-row span12">
                                     <div class="well" id="results-well">
-                                        <select id="results-list" style="width: 100%;"></select>
+                                        <select id="results-list" multiple="multiple" style="width: 100%;"></select>
                                     </div>
-
-                                    <button id="display-results-btn"  title="Display Results">Display Results</button>
                                 </div>
 
                                 <div class="fluid-row span12">

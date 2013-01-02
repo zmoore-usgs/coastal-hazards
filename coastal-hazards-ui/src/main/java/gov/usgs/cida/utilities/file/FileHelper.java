@@ -44,7 +44,7 @@ public class FileHelper {
      */
     public static byte[] base64Encode(final File input) throws IOException {
         byte[] result = null;
-
+        
         result = FileHelper.base64Encode(FileHelper.getByteArrayFromFile(input));
 
         return result;

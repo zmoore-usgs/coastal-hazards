@@ -32,24 +32,18 @@ var Session = function(name, isPerm) {
                     }
                 }
             }
+            newSession.results = {
+                'default' : {
+                    view : {
+                        isSelected : false
+                    }
+                }
+            }
             
             me.session['sessions'][randID] = newSession;
             me.session['current-session'] = Object.extended();
             me.session['current-session']['key'] = randID;
             me.session['current-session']['session'] = me.session['sessions'][randID];
-        } else {
-            // Make sure that session object has everything we need
-            if (!me.session.layers) {
-                me.session.layers = [];
-            }
-            if (!me.session.shorelines) {
-                me.session.shorelines = {
-                    'default' : {
-                        colorsParamPairs : [],
-                        groupingColumn : 'date_'
-                    }
-                }
-            }
         }
     } else {
         LOG.info('Session.js::constructor:Creating new temp session object');
@@ -71,20 +65,30 @@ var Session = function(name, isPerm) {
             me.save();
         }
         
+        me.getResultsConfig = function(args) {
+            var name = args.name;
+            if (!me.session.results[name]) {
+                me.session.results[name] = Object.clone(CONFIG.permSession.getCurrentSession().session.results['default'])
+            }
+            me.persistCurrentSession();
+            return me.session.results[name];
+        }
+        me.setResultsConfig = function(args) {
+            var name = args.name;
+            var config = args.config;
+            CONFIG.permSession.getCurrentSession().session.results[name] = config;
+            me.persistCurrentSession();
+            return me.session.results[name];
+        }
+        
         me.getShorelineConfig = function(args) {
             var name = args.name;
             if (!me.session.shorelines[name]) {
-                me.session.shorelines[name] = {
-                    view : {
-                        'years-disabled' : [],
-                        isSelected : false
-                    }
-                }
+                me.session.shorelines[name] = Object.clone(CONFIG.permSession.getCurrentSession().session.shorelines['default'])
             }
             me.persistCurrentSession();
             return me.session.shorelines[name];
         }
-        
         me.setShorelineConfig = function(args) {
             var name = args.name;
             var config = args.config;
@@ -192,15 +196,6 @@ var Session = function(name, isPerm) {
                 return me.key;
             }
         },
-        //        setCurrentSession : function(obj) {
-        //            if (Object.isString(obj)) {
-        //                me.session['current-session']['key'] = obj;
-        //                me.session['current-session']['session'] = Object.clone(me.session['sessions'][obj], true);
-        //            } else {
-        //                me.session = Object.clone(obj, true);
-        //            }
-        //            me.save();
-        //        },
         getCurrentSession : function() {
             return me.session['current-session'];
         }
