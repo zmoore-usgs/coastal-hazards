@@ -37,7 +37,7 @@
             <jsp:param name="expires" value="never" />
         </jsp:include>
         <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.8.0/build/cssreset/cssreset-min.css">
-        
+
         <jsp:include page="js/log4javascript/log4javascript.jsp">
             <jsp:param name="relPath" value="" />
         </jsp:include>
@@ -109,6 +109,7 @@
         <script type="text/javascript" src="js/stages/baseline.js"></script>
         <script type="text/javascript" src="js/stages/transects.js"></script>
         <script type="text/javascript" src="js/stages/intersections.js"></script>
+        <script type="text/javascript" src="js/stages/results.js"></script>
         <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
 
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
@@ -188,6 +189,7 @@
                                     </div>
                                 </div>
 
+                                <!-- Baseline Drawing -->
                                 <div class="fluid-row span12">
                                     <div id="draw-panel-well" class="well hidden">
                                         <div id="draw-panel-container" class="container-fluid">
@@ -203,6 +205,7 @@
                                     </div>
                                 </div>
 
+                                <!-- Baseline Editing -->
                                 <div class="fluid-row span12">
                                     <div id="baseline-edit-panel-well" class="well hidden">
                                         <div id="baseline-edit-container" class="container-fluid">
@@ -290,7 +293,20 @@
                                     <div class="span8" id="results-alert"></div>
                                 </div>
                                 <div class="fluid-row span12">
+                                    <div class="well" id="results-well">
+                                        <select id="results-list" style="width: 100%;"></select>
+                                    </div>
+
                                     <button id="display-results-btn"  title="Display Results">Display Results</button>
+                                </div>
+
+                                <div class="fluid-row span12">
+                                    <div class="tabbable">
+                                        <ul class="nav nav-tabs" id="results-table-navtabs">
+                                        </ul>
+                                        <div class="tab-content" id="results-table-tabcontent">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
