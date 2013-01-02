@@ -460,6 +460,8 @@ var Shorelines = {
             Shorelines.addShorelines(layerInfos);
         } else {
             LOG.debug('Shorelines.js::shorelineSelected: All shorelines in shoreline list are deselected.');
+            $('#shoreline-table-navtabs').children().remove();
+            $('#shoreline-table-tabcontent').children().remove();
         }
             
     },
