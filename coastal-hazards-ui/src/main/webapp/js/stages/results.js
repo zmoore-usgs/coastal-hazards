@@ -1,4 +1,5 @@
 var Results = {
+    viewableResultsColumns : ['LRR','LR2','LSE','LCI90'],
     populateFeatureList : function(caps) {
         LOG.info('Results.js::populateFeatureList');
 
@@ -71,7 +72,7 @@ var Results = {
     },
     addResults : function(args) {
         var results = args.results;
-        var resultsColumns = ['EPR','ECI','SCE','NSM','LRR','LR2','LSE','LCI90'];
+        var resultsColumns = this.viewableResultsColumns;
         
         $(results).each(function(index,layer) {
             if ($('#results-table-navtabs').children().filter(function(){
@@ -112,7 +113,6 @@ var Results = {
         }).toArray();
         
         LOG.debug('Results.js::createResultsTable:: Creating results table header');
-        
         var tableDiv = $('<div />').attr('id','results-table-container');
         var table = $('<table />').addClass('table table-bordered table-condensed tablesorter results-table');
         var thead = $('<thead />');
@@ -122,7 +122,6 @@ var Results = {
         columns.each(function(c) {
             theadRow.append($('<td />').html(c));
         })
-        
         thead.append(theadRow);
         table.append(thead);
         
