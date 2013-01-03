@@ -32,8 +32,6 @@ var Results = {
         LOG.info('Results.js::listboxChanged: A result was selected from the select list');
 
         $("#results-list option:not(:selected)").each(function (index, option) {
-            var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
-            
             var layerConfig = CONFIG.tempSession.getResultsConfig({
                 name : option.value
             });
@@ -47,6 +45,7 @@ var Results = {
         var results = [];
         $("#results-list option:selected").each(function (index, option) {
             LOG.debug('Results.js::listboxChanged: A result ('+option.text+') was selected from the select list');
+            
             var layer = CONFIG.ows.getLayerByName(option.value);
             results.push(layer);
             
@@ -74,28 +73,29 @@ var Results = {
         var results = args.results;
         var resultsColumns = ['EPR','ECI','SCE','NSM','LRR','LR2','LSE','LCI90'];
         
-        LOG.info('Shorelines.js::addShorelines: Adding ' + results.length + ' shoreline layers to map'); 
         $(results).each(function(index,layer) {
-            
-            CONFIG.ows.getFilteredFeature({ 
-                layer : layer,
-                propertyArray : resultsColumns, 
-                scope : layer,
-                callbacks : {
-                    success : [
-                    function (features, scope) {
-                        Results.createResultsTable({
-                            features : features,
-                            layer : layer,
-                            resultsColumns : resultsColumns
-                        })
+            if ($('#results-table-navtabs').children().filter(function(){
+                return this.textContent == layer.title
+            }).length == 0) {
+                CONFIG.ows.getFilteredFeature({ 
+                    layer : layer,
+                    propertyArray : resultsColumns, 
+                    scope : layer,
+                    callbacks : {
+                        success : [
+                        function (features, scope) {
+                            Results.createResultsTable({
+                                features : features,
+                                layer : layer,
+                                resultsColumns : resultsColumns
+                            })
+                        }
+                        ],
+                        error : []
                     }
-                    ],
-                    error : []
-                }
-            })
+                })
+            }
         })
-        
     },
     createResultsTable : function(args) {
         LOG.info('Results.js::createResultsTable:: Creating table for results');
