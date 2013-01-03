@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean id="generateTransects" class="gov.usgs.cida.coastalhazards.wps.GenerateTransectsProcess" />
+    <bean id="calcIntersects" class="gov.usgs.cida.coastalhazards.wps.CalculateIntersectionsProcess" />
+</beans>
