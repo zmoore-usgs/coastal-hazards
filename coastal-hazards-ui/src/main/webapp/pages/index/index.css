@@ -41,6 +41,10 @@ img { max-width: none; }
     height: 7.25em;
 }
 
+#results-list {
+    height: 7.25em;
+}
+
 #map-well {
     height: 39em;
 }
@@ -58,6 +62,10 @@ img { max-width: none; }
 }
 
 #shoreline-table-container {
+    height: 16.25em;
+}
+
+#results-table-container {
     height: 16.25em;
 }
 

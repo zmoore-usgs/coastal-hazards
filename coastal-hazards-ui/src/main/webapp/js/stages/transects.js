@@ -27,6 +27,8 @@ var Transects = {
         CONFIG.map.getMap().addLayer(transects);
     },
     populateFeatureList : function(caps) {
+        LOG.info('Transects.js::populateFeatureList');
+
         $('#transects-list').children().remove();
 
         $(caps.capability.layers).each(function(i, layer) { 
@@ -52,9 +54,25 @@ var Transects = {
         })
             
         $('#transects-list').change(function(index, option) {
-            CONFIG.ui.transectListboxChanged()
+            Transects.listboxChanged()
         }) 
     } ,       
+    listboxChanged : function() {
+        LOG.info('Transects.js::transectListboxChanged: Transect listbox changed');
+        $("#transects-list option:not(:selected)").each(function (index, option) {
+            var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
+            if (layers.length) {
+                $(layers).each(function(i,l) {
+                    CONFIG.map.getMap().removeLayer(l);
+                })
+            }
+        });
+        if ($("#transects-list option:selected")[0].value) {
+            Transects.addTransects({
+                name : $("#transects-list option:selected")[0].value 
+            })
+        }
+    },
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({
             context : 'transects'
