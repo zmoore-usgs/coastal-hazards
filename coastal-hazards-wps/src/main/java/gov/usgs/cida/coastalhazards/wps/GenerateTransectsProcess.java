@@ -6,10 +6,13 @@ import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenc
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.feature.Feature;
+import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -75,6 +78,10 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             if (!baselineCrs.equals(ACCEPTED_CRS)) {
                 throw new UnsupportedCoordinateReferenceSystemException("Baseline is not in accepted projection");
             }
+            
+            FeatureCollection pointsOnBaseline = getEvenlySpacedPointsAlongBaseline(baseline, spacing);
+            FeatureCollection resultingTransects = getTransectsAtPoints(pointsOnBaseline, baseline, shorelines);
+            addResultAsLayer(resultingTransects, workspace, store, layer);
             return 0;
         }
         
@@ -84,5 +91,30 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             CoordinateReferenceSystem coordinateReferenceSystem = ft.getCoordinateReferenceSystem();
             return coordinateReferenceSystem;
         }
+        
+        private CoordinateReferenceSystem findBestUTMZone(FeatureCollection simpleFeatureCollection) {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+        private FeatureCollection getEvenlySpacedPointsAlongBaseline(FeatureCollection baseline, float spacing) {
+            FeatureIterator features = baseline.features();
+            Feature feature = null;
+            while (features.hasNext()) {
+                feature = features.next();
+                FeatureType type = feature.getType();
+                GeometryAttribute geom = feature.getDefaultGeometryProperty();
+                geom.
+            }
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+        
+        private FeatureCollection getTransectsAtPoints(FeatureCollection pointsOnBaseline, FeatureCollection<SimpleFeatureType, SimpleFeature> baseline, FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines) {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+        
+        private void addResultAsLayer(FeatureCollection transects, String workspace, String store, String layer) {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
     }
 }
