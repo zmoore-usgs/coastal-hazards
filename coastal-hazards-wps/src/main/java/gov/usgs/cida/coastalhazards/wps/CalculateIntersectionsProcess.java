@@ -18,10 +18,10 @@ import org.geotools.process.factory.DescribeResult;
 public class CalculateIntersectionsProcess implements GeoServerProcess {
     
     @DescribeResult(name = "intersections", description = "Layer containing intersections of shorelines and transects")
-    public URL execute(
+    public int execute(
             @DescribeParameter(name = "shorelines", min = 1, max = 1) SimpleFeatureCollection shorelines,
             @DescribeParameter(name = "transects", min = 1, max = 1) SimpleFeatureCollection transects) {
-        return null;
+        return 0;
     }
     
     private class Process {

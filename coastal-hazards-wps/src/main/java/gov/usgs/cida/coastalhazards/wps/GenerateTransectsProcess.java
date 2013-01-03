@@ -1,21 +1,19 @@
 package gov.usgs.cida.coastalhazards.wps;
 
-import java.net.URL;
-import org.geoserver.wps.gs.GeoServerProcess;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.process.factory.DescribeParameter;
-import org.geotools.process.factory.DescribeProcess;
-import org.geotools.process.factory.DescribeResult;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.geoserver.wps.gs.GeoServerProcess;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.process.factory.DescribeParameter;
+import org.geotools.process.factory.DescribeProcess;
+import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  *
@@ -31,11 +29,14 @@ public class GenerateTransectsProcess implements GeoServerProcess {
 
     /* May actually want to return reference to new layer*/
     @DescribeResult(name = "transects", description = "Layer containing Transects normal to baseline")
-    public URL execute(
+    public int execute(
             @DescribeParameter(name = "shorelines", min = 1, max = 1) SimpleFeatureCollection shorelines,
             @DescribeParameter(name = "baseline", min = 1, max = 1) SimpleFeatureCollection baseline,
-            @DescribeParameter(name = "spacing", min = 1, max = 1) Float spacing) throws Exception {
-        return null;
+            @DescribeParameter(name = "spacing", min = 1, max = 1) Float spacing,
+            @DescribeParameter(name = "workspace", min = 1, max = 1) String workspace,
+            @DescribeParameter(name = "store", min = 1, max = 1) String store,
+            @DescribeParameter(name = "layer", min = 1, max = 1) String layer) throws Exception {
+        return new Process(shorelines, baseline, spacing, workspace, store, layer).execute();
     }
     
     private class Process {
@@ -43,20 +44,29 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines;
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> baseline;
         private final float spacing;
+        private final String workspace;
+        private final String store;
+        private final String layer;
         
         private final GeometryFactory geometryFactory;
         
         private Process(SimpleFeatureCollection shorelines,
                 SimpleFeatureCollection baseline,
-                float spacing) {
+                float spacing,
+                String workspace,
+                String store,
+                String layer) {
             this.shorelines = shorelines;
             this.baseline = baseline;
             this.spacing = spacing;
+            this.workspace = workspace;
+            this.store = store;
+            this.layer = layer;
             
-            geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
+            this.geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
         }
         
-        private URL execute() throws Exception {
+        private int execute() throws Exception {
             CoordinateReferenceSystem shorelinesCrs = findCRS(shorelines);
             CoordinateReferenceSystem baselineCrs = findCRS(baseline);
             if (!shorelinesCrs.equals(ACCEPTED_CRS)) {
@@ -65,7 +75,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             if (!baselineCrs.equals(ACCEPTED_CRS)) {
                 throw new UnsupportedCoordinateReferenceSystemException("Baseline is not in accepted projection");
             }
-            return null;
+            return 0;
         }
         
         private CoordinateReferenceSystem findCRS(FeatureCollection simpleFeatureCollection) {
