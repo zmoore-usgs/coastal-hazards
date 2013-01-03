@@ -217,7 +217,13 @@
             <dependency>
                 <groupId>gov.usgs.cida.jslibs</groupId>
                 <artifactId>usgs-template</artifactId>
-                <version>2.1-SNAPSHOT</version>
+                <version>2.1</version>
+                <type>war</type>
+            </dependency>
+            <dependency>
+                <groupId>gov.usgs.cida.jslibs</groupId>
+                <artifactId>dygraphs-core</artifactId>
+                <version>20120215-3</version>
                 <type>war</type>
             </dependency>
             <dependency>
@@ -249,11 +255,6 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.tuckey</groupId>
-                <artifactId>urlrewritefilter</artifactId>
-                <version>4.0.4</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
