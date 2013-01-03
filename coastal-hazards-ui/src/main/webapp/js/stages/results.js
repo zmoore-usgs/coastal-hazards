@@ -14,7 +14,7 @@ var Results = {
                 title;
 
                 var type = title.substr(title.lastIndexOf('_') + 1);
-                if (['rates','results'].find(type.toLowerCase())) {
+                if (['rates','results','clip'].find(type.toLowerCase())) {
                     LOG.debug('Found a layer to add to the results listbox: ' + title)
                     $('#results-list')
                     .append($("<option></option>")
@@ -61,9 +61,9 @@ var Results = {
         })
         
         if (results.length) {
-                Results.addResults({
-                    results : results
-                })
+            Results.addResults({
+                results : results
+            })
         } else {
             LOG.debug('Results.js::listboxChanged: All results in results list are deselected.');
             $('#results-table-navtabs').children().remove();
@@ -72,45 +72,100 @@ var Results = {
     },
     addResults : function(args) {
         var results = args.results;
+        var resultsColumns = ['EPR','ECI','SCE','NSM','LRR','LR2','LSE','LCI90'];
         
         LOG.info('Shorelines.js::addShorelines: Adding ' + results.length + ' shoreline layers to map'); 
         $(results).each(function(index,layer) {
             
-            CONFIG.ows.getDescribeFeatureType({
-                featureName : layer.title, 
-                callbacks : [
-                function(describeFeaturetypeRespone) {
-                    Results.createResultTable({
-                        layer : layer,
-                        describeFeaturetypeRespone : describeFeaturetypeRespone
-                    })
+            CONFIG.ows.getFilteredFeature({ 
+                layer : layer,
+                propertyArray : resultsColumns, 
+                scope : layer,
+                callbacks : {
+                    success : [
+                    function (features, scope) {
+                        Results.createResultsTable({
+                            features : features,
+                            layer : layer,
+                            resultsColumns : resultsColumns
+                        })
+                    }
+                    ],
+                    error : []
                 }
-                ]
             })
-            
         })
         
     },
-    createResultTable : function(args) {
-        var layer = args.layer;
-        var describeFeaturetypeRespone = args.describeFeaturetypeRespone;
-        var properties = CONFIG.ows.getLayerPropertiesFromWFSDescribeFeatureType({
-            describeFeatureType : args.describeFeaturetypeRespone,
-            includeGeom : false
-        });
+    createResultsTable : function(args) {
+        LOG.info('Results.js::createResultsTable:: Creating table for results');
+        var navTabs = 	$('#results-table-navtabs');
+        var tabContent = $('#results-table-tabcontent');
+        var resultsList = $('#results-list');
         
-        CONFIG.ows.getFilteredFeature({ 
-            layer : layer,
-            propertyArray : properties[layer.title], 
-            scope : this,
-            callbacks : {
-                success : [
-                function (features, scope) {
-                    var a = 1;
-                }
-                ],
-                error : []
+        var columns = args.resultsColumns;
+        var features = args.features;
+        var layer = args.layer;
+        
+        var selectedVals = resultsList.children(':selected').map(function(i,v) {
+            return v.text
+        }).toArray();
+        
+        LOG.debug('Results.js::createResultsTable:: Creating results table header');
+        
+        var tableDiv = $('<div />').attr('id','results-table-container');
+        var table = $('<table />').addClass('table table-bordered table-condensed tablesorter results-table');
+        var thead = $('<thead />');
+        var theadRow = $('<tr />');
+        var tbody = $('<tbody />');
+        
+        columns.each(function(c) {
+            theadRow.append($('<td />').html(c));
+        })
+        
+        thead.append(theadRow);
+        table.append(thead);
+        
+        LOG.debug('Results.js::createResultsTable:: Creating results table body');
+        features.each(function(feature) {
+            var tbodyRow = $('<tr />');
+            columns.each(function(c) {
+                var tbodyData = $('<td />').html(feature.data[c]);
+                tbodyRow.append(tbodyData);
+            })
+            tbody.append(tbodyRow);
+        })
+        table.append(tbody);
+        tableDiv.append(table);
+        LOG.debug('Results.js::createResultsTable:: Results table created');
+        
+        LOG.debug('Results.js::createResultsTable:: Creating new tab for new results table');
+        navTabs.children().each(function(i,navTab) {
+            if (!selectedVals.count(navTab.textContent)) {
+                $(navTab).remove();
+            } else  if ($(navTab).hasClass('active')) {
+                $(navTab).removeClass('active')
             }
         })
+        
+        tabContent.children().each(function(i, tc) {
+            if (!selectedVals.count(tc.id.substring(8))) {
+                $(tc).remove();
+            } else  if ($(tc).hasClass('active')) {
+                $(tc).removeClass('active')
+            }
+        })
+
+        var navTab = $('<li />').addClass('active');
+        var navTabLink = $('<a />').attr('href', '#results-' + layer.title).attr('data-toggle', 'tab').html(layer.title);
+        navTab.append(navTabLink);
+        navTabs.append(navTab);
+        
+        LOG.debug('Results.js::createResultsTable:: Adding results table to DOM');
+        var tabContentTableDiv = $('<div />').addClass('tab-pane').addClass('active').attr('id', 'results-' + layer.title);
+        tabContentTableDiv.append(tableDiv);
+        tabContent.append(tabContentTableDiv);
+                        
+        $("table.tablesorter").tablesorter();
     }
 }

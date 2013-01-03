@@ -408,8 +408,6 @@ var Shorelines = {
                 attachedLayer : layerName
             })
         })
-
-        
     },
     shorelineSelected : function() {
         LOG.info('Shorelines.js::shorelineSelected: A shoreline was selected from the select list');
