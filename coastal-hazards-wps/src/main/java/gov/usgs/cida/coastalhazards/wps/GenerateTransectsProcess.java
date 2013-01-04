@@ -16,6 +16,7 @@ import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.geometry.Geometry;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -51,10 +52,10 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         private final String store;
         private final String layer;
         
-        private final GeometryFactory geometryFactory;
+        //private final GeometryFactory geometryFactory;
         
-        private Process(SimpleFeatureCollection shorelines,
-                SimpleFeatureCollection baseline,
+        private Process(FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines,
+                FeatureCollection<SimpleFeatureType, SimpleFeature> baseline,
                 float spacing,
                 String workspace,
                 String store,
@@ -66,7 +67,8 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             this.store = store;
             this.layer = layer;
             
-            this.geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
+            // going to need this for adding Coordinates?  Transects?
+            //this.geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
         }
         
         private int execute() throws Exception {
@@ -85,35 +87,53 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             return 0;
         }
         
-        private CoordinateReferenceSystem findCRS(FeatureCollection simpleFeatureCollection) {
-            FeatureCollection shorelineFeatureCollection = (FeatureCollection)simpleFeatureCollection;
-            FeatureType ft = shorelineFeatureCollection.getSchema();
-            CoordinateReferenceSystem coordinateReferenceSystem = ft.getCoordinateReferenceSystem();
+        private CoordinateReferenceSystem findCRS(FeatureCollection<SimpleFeatureType, SimpleFeature> simpleFeatureCollection) {
+            FeatureCollection<SimpleFeatureType, SimpleFeature> shorelineFeatureCollection = simpleFeatureCollection;
+            SimpleFeatureType sft = shorelineFeatureCollection.getSchema();
+            CoordinateReferenceSystem coordinateReferenceSystem = sft.getCoordinateReferenceSystem();
             return coordinateReferenceSystem;
         }
         
-        private CoordinateReferenceSystem findBestUTMZone(FeatureCollection simpleFeatureCollection) {
+        private CoordinateReferenceSystem findBestUTMZone(FeatureCollection<SimpleFeatureType, SimpleFeature> simpleFeatureCollection) {
             throw new UnsupportedOperationException("Not yet implemented");
+            
+            // get centroid of feature collection
+            
+            // utm zone = ceil((180 + lon) / 6)
+            // utm N/S = lat > 0 ? N : S
+            
+            // return UTM CRS
         }
 
-        private FeatureCollection getEvenlySpacedPointsAlongBaseline(FeatureCollection baseline, float spacing) {
-            FeatureIterator features = baseline.features();
-            Feature feature = null;
+        private FeatureCollection getEvenlySpacedPointsAlongBaseline(FeatureCollection<SimpleFeatureType, SimpleFeature> baseline, float spacing) {
+            FeatureIterator<SimpleFeature> features = baseline.features();
+            SimpleFeature feature = null;
             while (features.hasNext()) {
                 feature = features.next();
-                FeatureType type = feature.getType();
-                GeometryAttribute geom = feature.getDefaultGeometryProperty();
+                SimpleFeatureType type = feature.getType();
+                Geometry geometry = (Geometry)feature.getDefaultGeometry();
 //                geom.
+                
+                // cast the feature to Line2D
+                // add a coordinate to set
+                // walk the line until the spacing is reached
+                // make another coordinate
+                // keep walking
             }
             throw new UnsupportedOperationException("Not yet implemented");
+            // return coordinates
         }
         
         private FeatureCollection getTransectsAtPoints(FeatureCollection pointsOnBaseline, FeatureCollection<SimpleFeatureType, SimpleFeature> baseline, FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines) {
             throw new UnsupportedOperationException("Not yet implemented");
+            // for each point find the normal to baseline
+            // clip normal to furthest shoreline
         }
         
         private void addResultAsLayer(FeatureCollection transects, String workspace, String store, String layer) {
             throw new UnsupportedOperationException("Not yet implemented");
+            // use gs:Import to add layer
+            // return workspace:layerName from gs:Import
         }
 
     }
