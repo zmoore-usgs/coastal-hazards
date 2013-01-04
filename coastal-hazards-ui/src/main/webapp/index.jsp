@@ -39,7 +39,9 @@
         </jsp:include>
         <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.8.0/build/cssreset/cssreset-min.css">
         
-        <jsp:include page="js/dygraphs/dygraphs.jsp"/>
+        <jsp:include page="js/dygraphs/dygraphs.jsp">
+            <jsp:param name="debug-qualifier" value="true" />
+        </jsp:include>
         
         <jsp:include page="js/log4javascript/log4javascript.jsp">
             <jsp:param name="relPath" value="" />

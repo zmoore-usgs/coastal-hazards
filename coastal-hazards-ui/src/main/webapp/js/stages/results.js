@@ -114,18 +114,23 @@ var Results = {
     createPlot : function(args) {
         var features = args.features;
         var layer = args.layer;
-        var plotDiv = document.getElementById('results-' + layer.title + '-plot');
-        var labels = ['StartX', 'LCI90', 'LRR', 'LR2', 'LSE'];
+        var plotDiv = $('#results-' + layer.title + '-plot').get()[0]
+        var labels = ['x', 'LRR'];
         var data = features.sortBy(function(n) {
             return n.data['StartX']
         }).map(function(n){
-            return [ n.data['StartX'], n.data['LCI90'], n.data['LRR'], n.data['LR2'], n.data['LSE']]
+            return [ 
+            parseFloat(n.data['StartX']), 
+            [parseFloat(n.data['LRR']), parseFloat(n.data['LCI90'])] 
+            ]
         });
         new Dygraph(
             plotDiv,
             data,
             {
-                labels : labels
+                labels : labels,
+                errorBars: true,
+                showRangeSelector : true
             }
             );
         return plotDiv;
@@ -187,7 +192,10 @@ var Results = {
         navTabs.append(navTabTable);
         
         LOG.debug('Results.js::createResultsTable:: Adding results table to DOM');
-        var tabContentPlotDiv = $('<div />').addClass('tab-pane').addClass('active').attr('id', 'results-' + layer.title + '-plot');
+        var tabContentPlotDiv = $('<div />').addClass('tab-pane').addClass('active').attr('id', 'results-' + layer.title + '-plot').css({
+            width:'700px',
+            height:'320px'
+        });
         var tabContentTableDiv = $('<div />').addClass('tab-pane').attr('id', 'results-' + layer.title + '-table');
         tabContentTableDiv.append(table);
         tabContent.append(tabContentPlotDiv);
