@@ -1,7 +1,7 @@
 package gov.usgs.cida.coastalhazards;
 
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.coastalhazards.service.UploadService;
+import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
 import java.io.IOException;
