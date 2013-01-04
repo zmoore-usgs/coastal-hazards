@@ -241,7 +241,7 @@ var UI = function() {
             LOG.info('UI.js::populateFeatureList:: Populating feature list for ' + context);
             $('#'+context+'-list').children().remove();
         
-            // Ad a blank spot at the top of the select list
+            // Add a blank spot at the top of the select list
             if (context == 'baseline' || context == 'transects') {
                 $('#'+context+'-list')
                 .append($("<option></option>")

@@ -38,30 +38,39 @@
             <jsp:param name="development" value="true" />
         </jsp:include>
         <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.8.0/build/cssreset/cssreset-min.css">
-
+        
+        <jsp:include page="js/dygraphs/dygraphs.jsp"/>
+        
         <jsp:include page="js/log4javascript/log4javascript.jsp">
             <jsp:param name="relPath" value="" />
         </jsp:include>
+        
         <jsp:include page="js/jquery/jquery.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+        
         <jsp:include page="js/jquery-tablesorter/package.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+        
         <jsp:include page="js/bootstrap/package.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+        
         <script src='http://maps.google.com/maps/api/js?v=3&sensor=false' type="text/javascript"></script>
+        
         <jsp:include page="js/openlayers/openlayers.jsp">
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+        
         <jsp:include page="js/sugar/sugar.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+        
         <!-- TODO - Modularize this -->
         <script type="text/javascript" src="js/jquery-fineuploader/jquery.fineuploader-3.0.js"></script>
         <link type="text/css" rel="stylesheet" href="js/jquery-fineuploader/fineuploader.css" />
@@ -112,6 +121,7 @@
         <script type="text/javascript" src="js/stages/intersections.js"></script>
         <script type="text/javascript" src="js/stages/results.js"></script>
         <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
+
 
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
 
@@ -295,7 +305,7 @@
                                 </div>
                                 <div class="fluid-row span12">
                                     <div class="well" id="results-well">
-                                        <select id="results-list" multiple="multiple" style="width: 100%;"></select>
+                                        <select id="results-list" style="width: 100%;"></select>
                                     </div>
                                 </div>
 
@@ -303,8 +313,8 @@
                                     <div class="tabbable">
                                         <ul class="nav nav-tabs" id="results-table-navtabs">
                                         </ul>
-                                        <div class="tab-content" id="results-table-tabcontent">
-                                        </div>
+                                        <div class="tab-content" id="results-table-tabcontent"></div>
+                                        <div class="tab-content" id="results-plot-tabcontent"></div>
                                     </div>
                                 </div>
                             </div>

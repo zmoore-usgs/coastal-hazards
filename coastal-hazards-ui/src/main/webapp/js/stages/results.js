@@ -1,20 +1,26 @@
 var Results = {
+    viewableResultsColumns : ['LRR','LR2','LSE','LCI90'],
     populateFeatureList : function(caps) {
         LOG.info('Results.js::populateFeatureList');
 
         $('#results-list').children().remove();
         
+        $('#results-list')
+        .append($("<option></option>")
+            .attr("value",'')
+            .text(''));
+        
         $(caps.capability.layers).each(function(i, layer) { 
             var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
             var title = layer.title;
             
-            if (layer.prefix === 'sample' || (layer.prefix === 'ch-input' && title.has(currentSessionKey) )) {
-                var shortenedTitle = title.has(currentSessionKey) ?  
+            if (layer.prefix === 'sample' || (layer.prefix === 'ch-output' && title.has(currentSessionKey) )) {
+                var shortenedTitle = title.has(currentSessionKey) ? 
                 title.remove(currentSessionKey + '_') : 
                 title;
 
                 var type = title.substr(title.lastIndexOf('_') + 1);
-                if (['rates','results','clip'].find(type.toLowerCase())) {
+                if (['rates','results','clip','lt'].find(type.toLowerCase())) {
                     LOG.debug('Found a layer to add to the results listbox: ' + title)
                     $('#results-list')
                     .append($("<option></option>")
@@ -42,77 +48,92 @@ var Results = {
             });
         });
         
-        var results = [];
-        $("#results-list option:selected").each(function (index, option) {
-            LOG.debug('Results.js::listboxChanged: A result ('+option.text+') was selected from the select list');
+        if ($("#results-list option:selected")[0].value) {
+            var selectedResult = $("#results-list option:selected")[0];
+            var selectedResultText = selectedResult.text
+            var selectedResultValue = selectedResult.value
             
-            var layer = CONFIG.ows.getLayerByName(option.value);
-            results.push(layer);
-            
+            LOG.debug('Results.js::listboxChanged: A result ('+selectedResultText+') was selected from the select list');
+            var layer = CONFIG.ows.getLayerByName(selectedResultValue)
             var layerConfig = CONFIG.tempSession.getResultsConfig({
-                name : option.value
+                name : selectedResultValue
             });
             layerConfig.view.isSelected = true;
             CONFIG.tempSession.setShorelineConfig({
-                name : option.value,
+                name : selectedResultValue,
                 config : layerConfig
             });
-        })
-        
-        if (results.length) {
-            Results.addResults({
-                results : results
+             
+            Results.displayResult({
+                result : layer
             })
         } else {
             LOG.debug('Results.js::listboxChanged: All results in results list are deselected.');
             $('#results-table-navtabs').children().remove();
             $('#results-table-tabcontent').children().remove();
         }
-    },
-    addResults : function(args) {
-        var results = args.results;
-        var resultsColumns = ['EPR','ECI','SCE','NSM','LRR','LR2','LSE','LCI90'];
         
-        $(results).each(function(index,layer) {
-            if ($('#results-table-navtabs').children().filter(function(){
-                return this.textContent == layer.title
-            }).length == 0) {
-                CONFIG.ows.getFilteredFeature({ 
-                    layer : layer,
-                    propertyArray : resultsColumns, 
-                    scope : layer,
-                    callbacks : {
-                        success : [
-                        function (features, scope) {
-                            Results.createResultsTable({
-                                features : features,
-                                layer : layer,
-                                resultsColumns : resultsColumns
-                            })
-                        }
-                        ],
-                        error : []
-                    }
-                })
+    },
+    displayResult : function(args) {
+        var result = args.result;
+        var resultsColumns = this.viewableResultsColumns.clone();
+        
+        // StartX is needed for plotting but not for the table view so let's get the column
+        // from the server i one call
+        resultsColumns.push('StartX');
+        
+        CONFIG.ows.getFilteredFeature({ 
+            layer : result,
+            propertyArray : resultsColumns,
+            scope : result,
+            callbacks : {
+                success : [
+                function (features, scope) {
+                    var resultsTable = Results.createTable({
+                        features : features,
+                        layer : result,
+                        resultsColumns : resultsColumns
+                    })
+                    
+                    Results.createResultsTabs({
+                        layer : result,
+                        table : resultsTable,
+                        plot : resultsPlot
+                    })
+                    var resultsPlot = Results.createPlot({
+                        features : features,
+                        layer : result
+                    })
+                }
+                ],
+                error : []
             }
         })
     },
-    createResultsTable : function(args) {
-        LOG.info('Results.js::createResultsTable:: Creating table for results');
-        var navTabs = 	$('#results-table-navtabs');
-        var tabContent = $('#results-table-tabcontent');
-        var resultsList = $('#results-list');
-        
-        var columns = args.resultsColumns;
+    createPlot : function(args) {
         var features = args.features;
         var layer = args.layer;
+        var labels = ['StartX', 'LCI90', 'LRR', 'LR2', 'LSE'];
+        var plotDiv = $('#results-' + layer.title + '-plot');
+        var data = features.sortBy(function(n) {
+            return n.data['StartX']
+        }).map(function(n){
+            return [ n.data['StartX'], n.data['LCI90'], n.data['LRR'], n.data['LR2'], n.data['LSE']]
+        });
+        new Dygraph(
+            plotDiv.get()[0],
+            data,
+            {
+                labels : labels
+            }
+            );
+        return plotDiv;
         
-        var selectedVals = resultsList.children(':selected').map(function(i,v) {
-            return v.text
-        }).toArray();
-        
+    },
+    createTable : function(args) {
         LOG.debug('Results.js::createResultsTable:: Creating results table header');
-        
+        var columns = this.viewableResultsColumns;
+        var features = args.features;
         var tableDiv = $('<div />').attr('id','results-table-container');
         var table = $('<table />').addClass('table table-bordered table-condensed tablesorter results-table');
         var thead = $('<thead />');
@@ -122,7 +143,6 @@ var Results = {
         columns.each(function(c) {
             theadRow.append($('<td />').html(c));
         })
-        
         thead.append(theadRow);
         table.append(thead);
         
@@ -138,32 +158,38 @@ var Results = {
         table.append(tbody);
         tableDiv.append(table);
         LOG.debug('Results.js::createResultsTable:: Results table created');
+        return tableDiv;
+    },
+    createResultsTabs : function(args) {
+        LOG.info('Results.js::createResultsTable:: Creating table for results');
+        var navTabs = 	$('#results-table-navtabs');
+        var tabContent = $('#results-table-tabcontent');
         
-        LOG.debug('Results.js::createResultsTable:: Creating new tab for new results table');
+        var layer = args.layer;
+        var table = args.table;
+        
+        LOG.debug('Results.js::createResultsTable:: Creating new tab for new results table. Removing old result tabs');
         navTabs.children().each(function(i,navTab) {
-            if (!selectedVals.count(navTab.textContent)) {
-                $(navTab).remove();
-            } else  if ($(navTab).hasClass('active')) {
-                $(navTab).removeClass('active')
-            }
+            $(navTab).remove();
         })
-        
         tabContent.children().each(function(i, tc) {
-            if (!selectedVals.count(tc.id.substring(8))) {
-                $(tc).remove();
-            } else  if ($(tc).hasClass('active')) {
-                $(tc).removeClass('active')
-            }
+            $(tc).remove();
         })
 
-        var navTab = $('<li />').addClass('active');
-        var navTabLink = $('<a />').attr('href', '#results-' + layer.title).attr('data-toggle', 'tab').html(layer.title);
-        navTab.append(navTabLink);
-        navTabs.append(navTab);
+        var navTabTable = $('<li />');
+        var navTabPlot = $('<li />').addClass('active');
+        var navTabTableLink = $('<a />').attr('href', '#results-' + layer.title + '-table').attr('data-toggle', 'tab').html(layer.title + ' Table');
+        var navTabPlotLink = $('<a />').attr('href', '#results-' + layer.title + '-plot').attr('data-toggle', 'tab').html(layer.title + ' Plot');
+        navTabTable.append(navTabTableLink);
+        navTabPlot.append(navTabPlotLink);
+        navTabs.append(navTabPlot);
+        navTabs.append(navTabTable);
         
         LOG.debug('Results.js::createResultsTable:: Adding results table to DOM');
-        var tabContentTableDiv = $('<div />').addClass('tab-pane').addClass('active').attr('id', 'results-' + layer.title);
-        tabContentTableDiv.append(tableDiv);
+        var tabContentTableDiv = $('<div />').addClass('tab-pane').addClass('active').attr('id', 'results-' + layer.title + '-table');
+        var tabContentPlotDiv = $('<div />').addClass('tab-pane').addClass('active').attr('id', 'results-' + layer.title + '-plot');
+        tabContentTableDiv.append(table);
+        tabContent.append(tabContentPlotDiv);
         tabContent.append(tabContentTableDiv);
                         
         $("table.tablesorter").tablesorter();
