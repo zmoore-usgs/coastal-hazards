@@ -103,7 +103,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
                 feature = features.next();
                 FeatureType type = feature.getType();
                 GeometryAttribute geom = feature.getDefaultGeometryProperty();
-                geom.
+//                geom.
             }
             throw new UnsupportedOperationException("Not yet implemented");
         }
