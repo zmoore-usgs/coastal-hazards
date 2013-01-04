@@ -225,7 +225,7 @@
             <dependency>
                 <groupId>gov.usgs.cida.jslibs</groupId>
                 <artifactId>dygraphs-core</artifactId>
-                <version>20120215-3</version>
+                <version>20121127-1</version>
                 <type>war</type>
             </dependency>
             <dependency>
