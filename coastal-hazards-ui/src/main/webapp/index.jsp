@@ -313,8 +313,7 @@
                                     <div class="tabbable">
                                         <ul class="nav nav-tabs" id="results-table-navtabs">
                                         </ul>
-                                        <div class="tab-content" id="results-table-tabcontent"></div>
-                                        <div class="tab-content" id="results-plot-tabcontent"></div>
+                                        <div class="tab-content" id="results-tabcontent"></div>
                                     </div>
                                 </div>
                             </div>
