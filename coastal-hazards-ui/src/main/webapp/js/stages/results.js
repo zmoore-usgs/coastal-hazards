@@ -42,7 +42,7 @@ var Results = {
                 name : option.value
             });
             layerConfig.view.isSelected = false;
-            CONFIG.tempSession.setShorelineConfig({
+            CONFIG.tempSession.setResultsConfig({
                 name : option.value,
                 config : layerConfig
             });
@@ -59,7 +59,7 @@ var Results = {
                 name : selectedResultValue
             });
             layerConfig.view.isSelected = true;
-            CONFIG.tempSession.setShorelineConfig({
+            CONFIG.tempSession.setResultsConfig({
                 name : selectedResultValue,
                 config : layerConfig
             });
@@ -67,6 +67,7 @@ var Results = {
             Results.displayResult({
                 result : layer
             })
+            
         } else {
             LOG.debug('Results.js::listboxChanged: All results in results list are deselected.');
             $('#results-table-navtabs').children().remove();
@@ -100,11 +101,10 @@ var Results = {
                         table : resultsTable
                     })
                     
-                    var resultsPlot = Results.createPlot({
+                    Results.createPlot({
                         features : features,
                         layer : result
                     })
-                    
                 }
                 ],
                 error : []
