@@ -1,23 +1,31 @@
 package gov.usgs.cida.coastalhazards.wps;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateList;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
+import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.geometry.jts.Geometries;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.feature.Feature;
-import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.geometry.Geometry;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 /**
  *
@@ -36,7 +44,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
     public int execute(
             @DescribeParameter(name = "shorelines", min = 1, max = 1) SimpleFeatureCollection shorelines,
             @DescribeParameter(name = "baseline", min = 1, max = 1) SimpleFeatureCollection baseline,
-            @DescribeParameter(name = "spacing", min = 1, max = 1) Float spacing,
+            @DescribeParameter(name = "spacing", min = 1, max = 1) Double spacing,
             @DescribeParameter(name = "workspace", min = 1, max = 1) String workspace,
             @DescribeParameter(name = "store", min = 1, max = 1) String store,
             @DescribeParameter(name = "layer", min = 1, max = 1) String layer) throws Exception {
@@ -47,7 +55,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines;
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> baseline;
-        private final float spacing;
+        private final double spacing;
         private final String workspace;
         private final String store;
         private final String layer;
@@ -56,7 +64,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         
         private Process(FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines,
                 FeatureCollection<SimpleFeatureType, SimpleFeature> baseline,
-                float spacing,
+                double spacing,
                 String workspace,
                 String store,
                 String layer) {
@@ -81,7 +89,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
                 throw new UnsupportedCoordinateReferenceSystemException("Baseline is not in accepted projection");
             }
             
-            FeatureCollection pointsOnBaseline = getEvenlySpacedPointsAlongBaseline(baseline, spacing);
+            Coordinate[] pointsOnBaseline = getEvenlySpacedPointsAlongBaseline(baseline, spacing);
             FeatureCollection resultingTransects = getTransectsAtPoints(pointsOnBaseline, baseline, shorelines);
             addResultAsLayer(resultingTransects, workspace, store, layer);
             return 0;
@@ -93,26 +101,60 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             CoordinateReferenceSystem coordinateReferenceSystem = sft.getCoordinateReferenceSystem();
             return coordinateReferenceSystem;
         }
-        
-        private CoordinateReferenceSystem findBestUTMZone(FeatureCollection<SimpleFeatureType, SimpleFeature> simpleFeatureCollection) {
-            throw new UnsupportedOperationException("Not yet implemented");
-            
-            // get centroid of feature collection
-            
-            // utm zone = ceil((180 + lon) / 6)
-            // utm N/S = lat > 0 ? N : S
-            
-            // return UTM CRS
-        }
 
-        private FeatureCollection getEvenlySpacedPointsAlongBaseline(FeatureCollection<SimpleFeatureType, SimpleFeature> baseline, float spacing) {
+        private Coordinate[] getEvenlySpacedPointsAlongBaseline(FeatureCollection<SimpleFeatureType, SimpleFeature> baseline, double spacing) {
+            CoordinateList coordList = new CoordinateList();
+            CoordinateReferenceSystem utmCrs = null;
+            try {
+                utmCrs = UTMFinder.findUTMZoneForFeatureCollection((SimpleFeatureCollection)baseline);
+            }
+            catch (FactoryException ex) {
+                return null; // do something better than this
+            }
             FeatureIterator<SimpleFeature> features = baseline.features();
             SimpleFeature feature = null;
             while (features.hasNext()) {
                 feature = features.next();
-                SimpleFeatureType type = feature.getType();
                 Geometry geometry = (Geometry)feature.getDefaultGeometry();
-//                geom.
+                
+                Geometry utmGeometry = null;
+                try {
+                    MathTransform transform = CRS.findMathTransform(ACCEPTED_CRS, utmCrs, true);
+                    utmGeometry = JTS.transform(geometry, transform);
+                }
+                catch (FactoryException ex) {
+                    // TODO handle exceptions
+                }
+                catch (TransformException ex) {
+                    // TODO handle exceptions
+                }
+                
+                Geometries geomType = Geometries.get(utmGeometry);
+                LineString lineString = null;
+                Coordinate[] coords = null;
+                switch (geomType) {
+                    case POLYGON:
+                    case MULTIPOLYGON:
+                        throw new UnsupportedFeatureTypeException("Polygons not supported in baseline");
+                    case LINESTRING:
+                        lineString = (LineString)utmGeometry;
+                        coords = handleLineString(lineString, spacing);
+                        coordList.add(coords, false);
+                        break;
+                    case MULTILINESTRING:
+                        MultiLineString multiLineString = (MultiLineString)utmGeometry;
+                        for (int i=0; i < multiLineString.getNumGeometries(); i++) {
+                            lineString = (LineString)multiLineString.getGeometryN(i);
+                            coords = handleLineString(lineString, spacing);
+                            coordList.add(coords, false);
+                        }
+                        break;
+                    case POINT:
+                    case MULTIPOINT:
+                        throw new UnsupportedFeatureTypeException("Points not supported in baseline");
+                    default:
+                        throw new UnsupportedFeatureTypeException("Only line type supported");
+                }
                 
                 // cast the feature to Line2D
                 // add a coordinate to set
@@ -120,11 +162,10 @@ public class GenerateTransectsProcess implements GeoServerProcess {
                 // make another coordinate
                 // keep walking
             }
-            throw new UnsupportedOperationException("Not yet implemented");
-            // return coordinates
+            return coordList.toCoordinateArray();
         }
         
-        private FeatureCollection getTransectsAtPoints(FeatureCollection pointsOnBaseline, FeatureCollection<SimpleFeatureType, SimpleFeature> baseline, FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines) {
+        private FeatureCollection getTransectsAtPoints(Coordinate[] pointsOnBaseline, FeatureCollection<SimpleFeatureType, SimpleFeature> baseline, FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines) {
             throw new UnsupportedOperationException("Not yet implemented");
             // for each point find the normal to baseline
             // clip normal to furthest shoreline
@@ -134,6 +175,39 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             throw new UnsupportedOperationException("Not yet implemented");
             // use gs:Import to add layer
             // return workspace:layerName from gs:Import
+        }
+
+        private Coordinate[] handleLineString(LineString lineString, double spacing) {
+            Coordinate currentCoord = null;
+            CoordinateList transectPoints = new CoordinateList();
+            double accumulatedDistance = 0l;
+            Coordinate lastCoord = null;
+            for (Coordinate coord : lineString.getCoordinates()) {
+                lastCoord = coord;
+                if (currentCoord == null) {
+                    currentCoord = coord;
+                    transectPoints.add(coord, false);
+                    continue;
+                }
+                double distance = coord.distance(currentCoord);
+                if ((accumulatedDistance + distance) > spacing) {
+
+                    double distanceToNewPoint = spacing - accumulatedDistance;
+                    double fraction = distanceToNewPoint / distance;
+                    LineSegment segment = new LineSegment(currentCoord, coord);
+                    Coordinate pointAlong = segment.pointAlong(fraction);
+                    transectPoints.add(pointAlong);
+                    currentCoord = pointAlong;
+                    accumulatedDistance = 0l;
+                }
+                else {
+                    accumulatedDistance += distance;
+                    currentCoord = coord;
+                }
+            }
+            // TODO does this make sense?
+            transectPoints.add(lastCoord);
+            return transectPoints.toCoordinateArray();
         }
 
     }

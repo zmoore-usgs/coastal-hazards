@@ -18,13 +18,15 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class UTMFinder {
 
+    /* http://reference.mapinfo.com/common/docs/mapxtend-dev-web-none-eng/miaware/doc/guide/xmlapi/coordsys/systems.htm */
     private static final int BASE_UTM_EPSG = 32600;
     private static final int SOUTHERN_HEMI = 100;
     
     /**
      * Need to be in lat/lon (WGS84) for this to work
+     * Calculation is based on http://en.wikipedia.org/wiki/UTM_coordinate_system
      * 
-     * @param featureCollection maybe should put in check for WGS84 again
+     * @param featureCollection TODO? maybe should put in check for WGS84 again
      * @return UTM CRS
      */
     public static CoordinateReferenceSystem findUTMZoneForFeatureCollection(SimpleFeatureCollection featureCollection) throws NoSuchAuthorityCodeException, FactoryException {
