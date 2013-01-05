@@ -130,11 +130,17 @@ var Results = {
             {
                 labels : labels,
                 errorBars: true,
-                showRangeSelector : true
+                showRangeSelector : true,
+                underlayCallback : function(canvas, area, dygraph) {
+                    var w = $('#results-tabcontent').width();
+                    var h = $('#results-tabcontent').height();
+                    if (w != dygraph.width || h != dygraph.height) {
+                        dygraph.resize(w, h);
+                    }
+                }
             }
             );
         return plotDiv;
-        
     },
     createTable : function(args) {
         LOG.debug('Results.js::createResultsTable:: Creating results table header');
@@ -192,10 +198,7 @@ var Results = {
         navTabs.append(navTabTable);
         
         LOG.debug('Results.js::createResultsTable:: Adding results table to DOM');
-        var tabContentPlotDiv = $('<div />').addClass('tab-pane').addClass('active').attr('id', 'results-' + layer.title + '-plot').css({
-            width:'700px',
-            height:'320px'
-        });
+        var tabContentPlotDiv = $('<div />').addClass('tab-pane').addClass('active plot-container').attr('id', 'results-' + layer.title + '-plot');
         var tabContentTableDiv = $('<div />').addClass('tab-pane').attr('id', 'results-' + layer.title + '-table');
         tabContentTableDiv.append(table);
         tabContent.append(tabContentPlotDiv);
