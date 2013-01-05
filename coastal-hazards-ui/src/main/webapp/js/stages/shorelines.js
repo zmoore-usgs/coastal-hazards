@@ -368,15 +368,21 @@ var Shorelines = {
                         });
                         LOG.info('Shorelines.js::?: User has selected to ' + (active ? 'activate' : 'deactivate') + ' shoreline for year ' + year + ' on layer ' + layerName);
                         
-                        // Persist the selection to session
+                        var idTableButtons = $('.btn-year-toggle[year="'+year+'"]');
                         if (!active) {
                             if (sessionLayer.view["years-disabled"].indexOf(year) == -1) {
                                 sessionLayer.view["years-disabled"].push(year);
                             }
+                            idTableButtons.removeClass('btn-success');
+                            idTableButtons.addClass('btn-danger');
+                            idTableButtons.html('Enable');
                         } else {
                             while (sessionLayer.view["years-disabled"].indexOf(year) != -1) {
                                 sessionLayer.view["years-disabled"].remove(year);
                             }
+                            idTableButtons.removeClass('btn-danger');
+                            idTableButtons.addClass('btn-success');
+                            idTableButtons.html('Disable');
                         }
                         
                         // Persist the session
