@@ -315,7 +315,9 @@ var UI = function() {
                     $(Object.values(v.attributes)).each(function(aInd, aVal) {
                         tbodyTr.append($('<td />').append(aVal))
                     })
-                    
+                    var year = this.attributes['DATE_'].split('/')[2];
+                    var  disableButton = $('<button />').addClass('btn btn-success btn-year-toggle').attr('type', 'button').attr('year', year).html('Disable');
+                    tbodyTr.append($('<td />').append(disableButton))
                     tbody.append(tbodyTr);
                 });
                 
@@ -332,6 +334,24 @@ var UI = function() {
                     null,
                     true
                     ));
+                        
+                $('.btn-year-toggle').click(function(event) {
+                    var year = $(event.target).attr('year');
+                    var toggle = $('#shoreline-color-table-row-'+year+' .toggle');
+                    
+                    toggle.click();
+                    
+                    var allButtonsOfSameYear = $('.btn-year-toggle[year="'+year+'"]');
+                    if (toggle.hasClass('disabled')) {
+                        allButtonsOfSameYear.removeClass('btn-success');
+                        allButtonsOfSameYear.addClass('btn-danger');
+                        allButtonsOfSameYear.html('Enable');
+                    } else {
+                        allButtonsOfSameYear.removeClass('btn-danger');
+                        allButtonsOfSameYear.addClass('btn-success');
+                        allButtonsOfSameYear.html('Disable');
+                    }
+                });
                         
             } else {
                 LOG.debug('UI.js::showShorelineInfo: No features were found at point of mouse click');
