@@ -1,6 +1,7 @@
 var Results = {
     stage : 'results',
     viewableResultsColumns : ['LRR','LR2','LSE','LCI90'],
+    reservedColor: '#0061A3',
     populateFeatureList : function(caps) {
         LOG.info('Results.js::populateFeatureList');
 
