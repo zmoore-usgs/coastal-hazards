@@ -1,4 +1,6 @@
 var Baseline = {
+    stage : 'baseline',
+    suffixes :  ['_baseline'],
     baselineDrawButton : $('#baseline-draw-btn'),
     addBaselineToMap : function(args) {
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
@@ -18,7 +20,10 @@ var Baseline = {
         CONFIG.map.getMap().addLayer(baselineLayer);
     },
     populateFeaturesList : function(caps) {
-        CONFIG.ui.populateFeaturesList(caps, 'baseline');
+        CONFIG.ui.populateFeaturesList({
+            caps : caps, 
+            caller : Baseline
+        });
     },
     clearDrawFeatures : function() {
         LOG.info('Baseline.js::clearDrawFeatures: Clearing draw layer');
@@ -53,7 +58,7 @@ var Baseline = {
             }
         })
     },
-    baselineSelected : function() {
+    listboxChanged : function() {
         LOG.debug('Baseline.js::baselineSelected: A baseline was selected from the dropdown list');
         
         LOG.debug('Going through select listbox to remove layers on the map that are not selected');
@@ -334,7 +339,7 @@ var Baseline = {
     },
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({
-            context : 'baseline'
+            caller : Baseline
         }, args))
     }
 }
