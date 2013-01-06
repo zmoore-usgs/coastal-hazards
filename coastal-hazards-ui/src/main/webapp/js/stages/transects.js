@@ -132,7 +132,7 @@ var Transects = {
         var spacing = $('#create-transects-input-spacing').val() || 0;
         var layerName = $('#create-transects-input-name').val();
         var request = Transects.createWPSGenerateTransectsRequest({
-            shorelines : visibleShorelines[0],
+            shorelines : visibleShorelines,
             baseline : visibleBaseline,
             spacing : spacing,
             workspace : 'ch-input',
@@ -163,12 +163,34 @@ var Transects = {
         '<ows:Identifier>gs:GenerateTransects</ows:Identifier>' + 
         '<wps:DataInputs>' + 
         '<wps:Input>' + 
-        '<ows:Identifier>shorelines</ows:Identifier>' + 
-        '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
+        '<wps:Reference mimeType="text/xml; subtype=gml/3.1.1" xlink:href="http://geoserver/wps" method="POST">' + 
         '<wps:Body>' + 
-        '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2">' + 
-        '<wfs:Query typeName="'+shorelines+'"/>' + 
-        '</wfs:GetFeature>' + 
+        '<wps:Execute version="1.0.0" service="WPS">' + 
+        '<ows:Identifier>gs:CollectGeometries</ows:Identifier>' + 
+        '<wps:DataInputs>'
+        shorelines.each(function(i, shoreline) {
+            var sessionLayer = CONFIG.tempSession.getStageConfig({
+                name : shoreline,
+                stage : Shorelines.stage
+            });
+            request += '<wps:Input>' + 
+            '<ows:Identifier>features</ows:Identifier>' + 
+            '<wps:Reference mimeType="text/xml" xlink:href="http://geoserver/wfs" method="POST">' + 
+            '<wps:Body>' + 
+            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+shoreline.split(':')[0]+'="'+sessionLayer.nameSpace+'">' + 
+            '<wfs:Query typeName="'+shoreline+'"/>' + 
+            '</wfs:GetFeature>' + 
+            '</wps:Body>' + 
+            '</wps:Reference>' + 
+            '</wps:Input>';
+        })
+        request += '</wps:DataInputs>' + 
+        '<wps:ResponseForm>' + 
+        '<wps:RawDataOutput mimeType="text/xml; subtype=gml/3.1.1">' + 
+        '<ows:Identifier>result</ows:Identifier>' + 
+        '</wps:RawDataOutput>' + 
+        '</wps:ResponseForm>' + 
+        '</wps:Execute>' + 
         '</wps:Body>' + 
         '</wps:Reference>' + 
         '</wps:Input>' + 
