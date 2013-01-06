@@ -11,6 +11,7 @@ var OWS = function(endpoint) {
     me.wmsGetCapsUrl = 'geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
     me.wmsCapabilities = null;
     me.wmsCapabilitiesXML = null;
+    me.wpsExecuteRequestPostUrl = 'geoserver/ows?service=wps&version=1.0.0&request=execute'
     me.featureTypes = Object.extended();
     
     return $.extend(me, {
@@ -177,6 +178,33 @@ var OWS = function(endpoint) {
                     callback(data);
                 }
             });
+        },
+        executeWPSProcess : function(args) {
+            LOG.info('OWS.js::executeWPSProcess: Calling WPS execute process');
+            var processIdentifier = args.processIdentifier;
+            var processUrl = this.wpsExecuteRequestPostUrl + '&' + processIdentifier;
+            var request = args.request;
+            var callbacks = args.callbacks || [];
+            var context = args.context || this;
+            
+            $.ajax({
+                url: processUrl,
+                type: 'POST',
+                contentType: 'application/xml',
+                data: request,
+                context : context || this,
+                success: function(data, textStatus, jqXHR) {
+                    callbacks.each(function(callback) {
+                        callback(data, textStatus, jqXHR, this);
+                    })
+                },
+                error: function(data, textStatus, jqXHR) {
+                    callbacks.each(function(callback) {
+                        callback(data, textStatus, jqXHR, this);
+                    })
+                }
+            });
+            
         }
     });
 }
