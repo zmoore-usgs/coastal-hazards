@@ -1,4 +1,7 @@
 var Transects = {
+    stage : 'transects',
+    suffixes : ['_lt','_st','_transects'],
+    reservedColor : '#FF0033',
     calcTransects : function() {
         var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
             "geoserver/sample/wms",
@@ -14,6 +17,7 @@ var Transects = {
 	
     },
     addTransects : function(args) {
+        Transects.reservedColor;
         var transects = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
@@ -21,47 +25,47 @@ var Transects = {
                 featureType: args.name.split(':')[1], 
                 featureNS: CONFIG.namespace[args.name.split(':')[0]],
                 geometryName: "the_geom"
-            })
+            }),
+            styleMap: new OpenLayers.StyleMap({
+                "default": new OpenLayers.Style({
+                    strokeColor: Transects.reservedColor,
+                    strokeWidth: 2
+                })
+            }),
+            type : 'transects'
         });
 	
         CONFIG.map.getMap().addLayer(transects);
+        
+        var stageConfig = CONFIG.tempSession.getStageConfig({
+            stage : Transects.stage,
+            name : args.name
+        })
+        stageConfig.view.isSelected = false;
+        CONFIG.tempSession.setStageConfig({
+            stage : Transects.stage,
+            config : stageConfig
+        })
+    },
+    removeTransects : function() {
+        CONFIG.map.getMap().getLayersBy('type', 'transects').each(function(layer) {
+            CONFIG.map.getMap().removeLayer(layer, false);
+            var stageConfig = CONFIG.tempSession.getStageConfig({
+                stage : Transects.stage,
+                name : layer.name
+            })
+            stageConfig.view.isSelected = false;
+            CONFIG.tempSession.setStageConfig({
+                stage : Transects.stage,
+                config : stageConfig
+            })
+        })
     },
     populateFeatureList : function(caps) {
-        LOG.info('Transects.js::populateFeatureList');
-
-        $('#transects-list').children().remove();
-
-        // Add a blank spot at the top of the select list
-        $('#transects-list')
-        .append($("<option></option>")
-            .attr("value",'')
-            .text(''));
-
-        $(caps.capability.layers).each(function(i, layer) { 
-            var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
-            var title = layer.title;
-            
-            // Add the option to the list only if it's from the sample namespace or
-            // if it's from the input namespace and in the current session
-            if (layer.prefix === 'sample' || (layer.prefix === 'ch-input' && title.has(currentSessionKey) )) {
-                var shortenedTitle = title.has(currentSessionKey) ?  
-                title.remove(currentSessionKey + '_') : 
-                title;
-
-                var type = title.substr(title.lastIndexOf('_') + 1);
-                if (['lt','st','transects'].find(type.toLowerCase())) {
-                    LOG.debug('Found a layer to add to the transect listbox: ' + title)
-                    $('#transects-list')
-                    .append($("<option></option>")
-                        .attr("value",layer.name)
-                        .text(shortenedTitle));
-                } 
-            }
-        })
-            
-        $('#transects-list').change(function(index, option) {
-            Transects.listboxChanged()
-        }) 
+        CONFIG.ui.populateFeaturesList({
+            caps : caps, 
+            caller : Transects
+        });
     } ,       
     listboxChanged : function() {
         LOG.info('Transects.js::transectListboxChanged: Transect listbox changed');
@@ -69,13 +73,32 @@ var Transects = {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
             if (layers.length) {
                 $(layers).each(function(i,l) {
-                    CONFIG.map.getMap().removeLayer(l);
+                    CONFIG.map.getMap().removeLayer(l, false);
+                    var stageConfig = CONFIG.tempSession.getStageConfig({
+                        stage : Transects.stage,
+                        name : l.name
+                    })
+                    stageConfig.view.isSelected = false;
+                    CONFIG.tempSession.setStageConfig({
+                        stage : Transects.stage,
+                        config : stageConfig
+                    })
                 })
             }
         });
         if ($("#transects-list option:selected")[0].value) {
+            var name = $("#transects-list option:selected")[0].value; 
             Transects.addTransects({
-                name : $("#transects-list option:selected")[0].value 
+                name : name
+            })
+            var stageConfig = CONFIG.tempSession.getStageConfig({
+                stage : Transects.stage,
+                name : name
+            })
+            stageConfig.view.isSelected = true;
+            CONFIG.tempSession.setStageConfig({
+                stage : Transects.stage,
+                config : stageConfig
             })
         }
     },
@@ -109,7 +132,7 @@ var Transects = {
         var visibleBaseline = $('#baseline-list :selected')[0].value;
         var spacing = $('#create-transects-input-spacing').val() || 0;
         var layerName = $('#create-transects-input-name').val();
-        var request = Transects.createWPSRequest({
+        var request = Transects.createWPSGenerateTransectsRequest({
             shorelines : visibleShorelines[0],
             baseline : visibleBaseline,
             spacing : spacing,
@@ -122,13 +145,13 @@ var Transects = {
             request : request,
             context : this,
             callbacks : [
-                function(data, textStatus, jqXHR, context) {
-                    //TODO - get result (int) and if successful, refresh transects listbox and load new transects layer
-                }
+            function(data, textStatus, jqXHR, context) {
+            //TODO - get result (int) and if successful, refresh transects listbox and load new transects layer
+            }
             ]
         })
     },
-    createWPSRequest : function(args) {
+    createWPSGenerateTransectsRequest : function(args) {
         var shorelines = args.shorelines;
         var baseline = args.baseline;
         var spacing = args.spacing;
@@ -195,7 +218,7 @@ var Transects = {
     },
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({
-            context : 'transects'
+            caller : Transects
         }, args))
     }
 }

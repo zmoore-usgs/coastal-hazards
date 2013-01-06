@@ -1,5 +1,7 @@
 var Results = {
+    stage : 'results',
     viewableResultsColumns : ['LRR','LR2','LSE','LCI90'],
+    reservedColor: '#0061A3',
     populateFeatureList : function(caps) {
         LOG.info('Results.js::populateFeatureList');
 
@@ -38,12 +40,13 @@ var Results = {
         LOG.info('Results.js::listboxChanged: A result was selected from the select list');
 
         $("#results-list option:not(:selected)").each(function (index, option) {
-            var layerConfig = CONFIG.tempSession.getResultsConfig({
+            var layerConfig = CONFIG.tempSession.getStageConfig({
+                stage : Results.stage,
                 name : option.value
             });
             layerConfig.view.isSelected = false;
-            CONFIG.tempSession.setResultsConfig({
-                name : option.value,
+            CONFIG.tempSession.setStageConfig({
+                stage : Results.stage,
                 config : layerConfig
             });
         });
@@ -55,12 +58,13 @@ var Results = {
             
             LOG.debug('Results.js::listboxChanged: A result ('+selectedResultText+') was selected from the select list');
             var layer = CONFIG.ows.getLayerByName(selectedResultValue)
-            var layerConfig = CONFIG.tempSession.getResultsConfig({
-                name : selectedResultValue
+            var layerConfig = CONFIG.tempSession.getStageConfig({
+                stage : Results.stage,
+                name : option.value
             });
             layerConfig.view.isSelected = true;
-            CONFIG.tempSession.setResultsConfig({
-                name : selectedResultValue,
+            CONFIG.tempSession.setStageConfig({
+                stage : Results.stage,
                 config : layerConfig
             });
              
