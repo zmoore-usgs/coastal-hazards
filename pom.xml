@@ -110,11 +110,6 @@
         <!-- CIDA JAVA LIBS -->
         <dependency>
             <groupId>gov.usgs.cida</groupId>
-            <artifactId>dynamicProperties</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>gov.usgs.cida</groupId>
             <artifactId>tomcat-filters</artifactId>
             <version>1.0</version>
         </dependency>
@@ -142,10 +137,15 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>gov.usgs.cida</groupId>
+                <artifactId>dynamicProperties</artifactId>
+                <version>0.0.1</version>
+            </dependency>
+            <dependency>
                 <artifactId>proxy-utils</artifactId>
                 <groupId>gov.usgs.cida</groupId>
+                <version>1.0.2-SNAPSHOT</version>
                 <type>jar</type>
-                <version>1.0.1</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>commons-logging</artifactId>
