@@ -34,6 +34,16 @@ var Shorelines = {
             includeGeom : false
         });
         
+        var sessionLayer = CONFIG.tempSession.getStageConfig({
+            name : layer.name,
+            stage : Shorelines.stage
+        });
+        sessionLayer.nameSpace = args.describeFeaturetypeRespone.targetNamespace;
+        CONFIG.tempSession.setStageConfig({ 
+            stage :Shorelines.stage,
+            config : sessionLayer
+        });
+        
         CONFIG.ows.getFilteredFeature({ 
             layer : layer,
             propertyArray : properties[layer.title], 
