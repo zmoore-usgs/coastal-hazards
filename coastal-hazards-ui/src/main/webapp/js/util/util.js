@@ -10,7 +10,7 @@ var Util =  {
         while (randomColor.length != 7 && 
             randomColor.toLowerCase() != Baseline.reservedColor && 
             randomColor.toLowerCase() != Transects.reservedColor && 
-            randomColor.toLowerCase() != Itersections.reservedColor &&
+            randomColor.toLowerCase() != Intersections.reservedColor &&
             randomColor.toLowerCase() != Results.reservedColor) {
             randomColor = createRandomColor();
         }

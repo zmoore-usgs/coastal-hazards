@@ -87,10 +87,9 @@ var Session = function(name, isPerm) {
                 return null;
             }
             
-            if (!CONFIG.permSession.getCurrentSession().session[stage][name]) {
+            if (!me.session[stage][name]) {
                 me.session[stage][name] = me.session[stage]['default'];
                 me.session[stage][name].name = name;
-                
             }
             
             return Object.clone(this.session[stage][name])
