@@ -7,7 +7,11 @@ var Util =  {
             return '#'+Math.floor(Math.random()*16777215).toString(16)
         }
         
-        while (randomColor.length != 7) {
+        while (randomColor.length != 7 && 
+            randomColor.toLowerCase() != Baseline.reservedColor && 
+            randomColor.toLowerCase() != Transects.reservedColor && 
+            randomColor.toLowerCase() != Itersections.reservedColor &&
+            randomColor.toLowerCase() != Results.reservedColor) {
             randomColor = createRandomColor();
         }
         return randomColor;

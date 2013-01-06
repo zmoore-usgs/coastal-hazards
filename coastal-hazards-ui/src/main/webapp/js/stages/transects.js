@@ -1,6 +1,7 @@
 var Transects = {
     stage : 'transects',
     suffixes : ['_lt','_st','_transects'],
+    reservedColor : '#FF0033',
     calcTransects : function() {
         var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
             "geoserver/sample/wms",
@@ -16,6 +17,7 @@ var Transects = {
 	
     },
     addTransects : function(args) {
+        Transects.reservedColor;
         var transects = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
@@ -23,6 +25,12 @@ var Transects = {
                 featureType: args.name.split(':')[1], 
                 featureNS: CONFIG.namespace[args.name.split(':')[0]],
                 geometryName: "the_geom"
+            }),
+            styleMap: new OpenLayers.StyleMap({
+                "default": new OpenLayers.Style({
+                    strokeColor: Transects.reservedColor,
+                    strokeWidth: 2
+                })
             }),
             type : 'transects'
         });

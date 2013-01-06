@@ -2,6 +2,7 @@ var Baseline = {
     stage : 'baseline',
     suffixes :  ['_baseline'],
     baselineDrawButton : $('#baseline-draw-btn'),
+    reservedColor : '#66CCFF',
     addBaselineToMap : function(args) {
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
         
@@ -13,7 +14,12 @@ var Baseline = {
                 featureNS: CONFIG.namespace[args.name.split(':')[0]],
                 geometryName: "the_geom"
             }),
-            styleMap: new OpenLayers.StyleMap(CONFIG.sld.namedLayers["Simple Line"]["userStyles"][0])
+            styleMap: new OpenLayers.StyleMap({
+                "default": new OpenLayers.Style({
+                    strokeColor: Baseline.reservedColor,
+                    strokeWidth: 2
+                })
+            })
         });
         
         CONFIG.map.removeLayerByName(baselineLayer.name);
