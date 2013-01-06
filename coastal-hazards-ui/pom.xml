@@ -19,6 +19,10 @@
             <groupId>gov.usgs.cida</groupId>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida</groupId>
+            <artifactId>dynamicProperties</artifactId>
+        </dependency>
         <!-- Normal Servlet dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>

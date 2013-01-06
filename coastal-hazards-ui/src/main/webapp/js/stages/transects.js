@@ -17,7 +17,6 @@ var Transects = {
 	
     },
     addTransects : function(args) {
-        Transects.reservedColor;
         var transects = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
