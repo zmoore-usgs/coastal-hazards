@@ -32,6 +32,13 @@ var Session = function(name, isPerm) {
                     }
                 }
             }
+            newSession.baseline = {
+                'default' : {
+                    view : {
+                        isSelected : false
+                    }
+                }
+            }
             newSession.results = {
                 'default' : {
                     view : {
@@ -81,18 +88,20 @@ var Session = function(name, isPerm) {
             }
             
             if (!CONFIG.permSession.getCurrentSession().session[stage][name]) {
-                CONFIG.permSession.getCurrentSession().session[stage][name] = CONFIG.permSession.getCurrentSession().session[stage]['default'];
+                me.session[stage][name] = me.session[stage]['default'];
+                me.session[stage][name].name = name;
+                
             }
             
-            return Object.clone(CONFIG.permSession.getCurrentSession().session[stage][name])
+            return Object.clone(this.session[stage][name])
         }
         
         me.setStageConfig = function(args) {
             var config = args.config;
             var stage = args.stage;
-            CONFIG.permSession.getCurrentSession().session[stage][stage.name] = config;
+            me.session[stage][config.name] = config;
             me.persistCurrentSession();
-            return me.session[stage][stage.name];
+            return me.session[stage][config.name];
         }
         
         me.updateLayersFromWMS = function(caps) {

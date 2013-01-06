@@ -3,6 +3,7 @@
 // TODO - Deal with non-standard shapefiles
 var Shorelines = {
     stage : 'shorelines',
+    suffixes : ['_shorelines'],
     addShorelines : function(layers) {
         LOG.info('Shorelines.js::addShorelines: Adding ' + layers.length + ' shoreline layers to map'); 
         $(layers).each(function(index,layer) {
@@ -418,8 +419,8 @@ var Shorelines = {
             })
         })
     },
-    shorelineSelected : function() {
-        LOG.info('Shorelines.js::shorelineSelected: A shoreline was selected from the select list');
+    listboxChanged : function() {
+        LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
         
         // First remove all shorelines from the map that were not selected
         $("#shorelines-list option:not(:selected)").each(function (index, option) {
@@ -475,11 +476,14 @@ var Shorelines = {
             
     },
     populateFeaturesList : function(caps) {
-        CONFIG.ui.populateFeaturesList(caps, Shorelines.stage);
+        CONFIG.ui.populateFeaturesList({
+            caps : caps, 
+            caller : Shorelines
+        });
     },
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({
-            context : Shorelines.stage
+            caller : Shorelines
         }, args))
     }
 }
