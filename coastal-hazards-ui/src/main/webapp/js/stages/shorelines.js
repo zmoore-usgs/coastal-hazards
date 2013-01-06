@@ -2,7 +2,7 @@
 // TODO - Back end and front-end verification for uploaded shapefiles
 // TODO - Deal with non-standard shapefiles
 var Shorelines = {
-    
+    stage : 'shorelines',
     addShorelines : function(layers) {
         LOG.info('Shorelines.js::addShorelines: Adding ' + layers.length + ' shoreline layers to map'); 
         $(layers).each(function(index,layer) {
@@ -46,8 +46,8 @@ var Shorelines = {
                     
                         // Find the String match of our desired column from the layer attributes
                         var groupColumn = Object.keys(features[0].attributes).find(function(n) {
-                            return n.toLowerCase() === CONFIG.tempSession.getShorelineConfig({
-                                name : 'default'
+                            return n.toLowerCase() === CONFIG.tempSession.getStageConfig({
+                                stage : Shorelines.stage
                             }).groupingColumn.toLowerCase()
                         });
                     
@@ -133,8 +133,9 @@ var Shorelines = {
         var layer = args.layer;
         var layerTitle = args.layerTitle || layer.title;
         var layerName = args.layerName || layer.name;
-        var sessionLayer = CONFIG.tempSession.getShorelineConfig({
-            name : layerName
+        var sessionLayer = CONFIG.tempSession.getStageConfig({
+            name : layerName,
+            stage : Shorelines.stage
         });
         
         if (!isNaN(colorYearPairs[0][1])) {  
@@ -304,8 +305,9 @@ var Shorelines = {
         
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table body');
         
-        var sessionLayer = CONFIG.tempSession.getShorelineConfig({
-            name : layerName
+        var sessionLayer = CONFIG.tempSession.getStageConfig({
+            name : layerName,
+            stage : Shorelines.stage
         });
         
         $(event.object.colorGroups).each(function(i,colorGroup) {
@@ -363,8 +365,9 @@ var Shorelines = {
                         var layerName = this.attachedLayer;
                         var active = !$(event.target).parent().find('input')[0].checked;
                         var year = $(event.target).parent().find('input').val();
-                        var sessionLayer = CONFIG.tempSession.getShorelineConfig({
-                            name : layerName
+                        var sessionLayer = CONFIG.tempSession.getStageConfig({
+                            name : layerName,
+                            stage : Shorelines.stage
                         });
                         LOG.info('Shorelines.js::?: User has selected to ' + (active ? 'activate' : 'deactivate') + ' shoreline for year ' + year + ' on layer ' + layerName);
                         
@@ -386,8 +389,8 @@ var Shorelines = {
                         }
                         
                         // Persist the session
-                        CONFIG.tempSession.setShorelineConfig({ 
-                            name : layerName,
+                        CONFIG.tempSession.setStageConfig({ 
+                            stage :Shorelines.stage,
                             config : sessionLayer
                         });
                         
@@ -422,12 +425,13 @@ var Shorelines = {
         $("#shorelines-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
             
-            var layerConfig = CONFIG.tempSession.getShorelineConfig({
-                name : option.value
+            var layerConfig = CONFIG.tempSession.getStageConfig({
+                name : option.value,
+                stage : Shorelines.stage
             });
             layerConfig.view.isSelected = false;
-            CONFIG.tempSession.setShorelineConfig({
-                name : option.value,
+            CONFIG.tempSession.setStageConfig({ 
+                stage :Shorelines.stage,
                 config : layerConfig
             });
             
@@ -450,12 +454,13 @@ var Shorelines = {
             var layer = CONFIG.ows.getLayerByName(option.value);
             layerInfos.push(layer);
             
-            var layerConfig = CONFIG.tempSession.getShorelineConfig({
-                name : option.value
+            var layerConfig = CONFIG.tempSession.getStageConfig({
+                name : option.value,
+                stage : Shorelines.stage
             });
             layerConfig.view.isSelected = true;
-            CONFIG.tempSession.setShorelineConfig({
-                name : option.value,
+            CONFIG.tempSession.setStageConfig({ 
+                stage :Shorelines.stage,
                 config : layerConfig
             });
         });
@@ -470,11 +475,11 @@ var Shorelines = {
             
     },
     populateFeaturesList : function(caps) {
-        CONFIG.ui.populateFeaturesList(caps, 'shorelines');
+        CONFIG.ui.populateFeaturesList(caps, Shorelines.stage);
     },
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({
-            context : 'shorelines'
+            context : Shorelines.stage
         }, args))
     }
 }

@@ -39,6 +39,13 @@ var Session = function(name, isPerm) {
                     }
                 }
             }
+            newSession.transects = {
+                'default' : {
+                    view : {
+                        isSelected : false
+                    }
+                }
+            }
             
             me.session['sessions'][randID] = newSession;
             me.session['current-session'] = Object.extended();
@@ -65,36 +72,27 @@ var Session = function(name, isPerm) {
             me.save();
         }
         
-        me.getResultsConfig = function(args) {
-            var name = args.name;
-            if (!me.session.results[name]) {
-                me.session.results[name] = Object.clone(CONFIG.permSession.getCurrentSession().session.results['default'])
+        me.getStageConfig = function(args) {
+            var name = args.name || 'default';
+            var stage = args.stage;
+            
+            if (!stage) {
+                return null;
             }
-            me.persistCurrentSession();
-            return me.session.results[name];
-        }
-        me.setResultsConfig = function(args) {
-            var name = args.name;
-            var config = args.config;
-            CONFIG.permSession.getCurrentSession().session.results[name] = config;
-            me.persistCurrentSession();
-            return me.session.results[name];
+            
+            if (!CONFIG.permSession.getCurrentSession().session[stage][name]) {
+                CONFIG.permSession.getCurrentSession().session[stage][name] = CONFIG.permSession.getCurrentSession().session[stage]['default'];
+            }
+            
+            return Object.clone(CONFIG.permSession.getCurrentSession().session[stage][name])
         }
         
-        me.getShorelineConfig = function(args) {
-            var name = args.name;
-            if (!me.session.shorelines[name]) {
-                me.session.shorelines[name] = Object.clone(CONFIG.permSession.getCurrentSession().session.shorelines['default'])
-            }
-            me.persistCurrentSession();
-            return me.session.shorelines[name];
-        }
-        me.setShorelineConfig = function(args) {
-            var name = args.name;
+        me.setStageConfig = function(args) {
             var config = args.config;
-            CONFIG.permSession.getCurrentSession().session.shorelines[name] = config;
+            var stage = args.stage;
+            CONFIG.permSession.getCurrentSession().session[stage][stage.name] = config;
             me.persistCurrentSession();
-            return me.session.shorelines[name];
+            return me.session[stage][stage.name];
         }
         
         me.updateLayersFromWMS = function(caps) {
