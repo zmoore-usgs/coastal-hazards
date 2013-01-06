@@ -38,41 +38,41 @@
             <jsp:param name="development" value="true" />
         </jsp:include>
         <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.8.0/build/cssreset/cssreset-min.css">
-        
+
         <jsp:include page="js/dygraphs/dygraphs.jsp">
             <jsp:param name="debug-qualifier" value="true" />
         </jsp:include>
-        
+
         <jsp:include page="js/log4javascript/log4javascript.jsp">
             <jsp:param name="relPath" value="" />
         </jsp:include>
-        
+
         <jsp:include page="js/jquery/jquery.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        
+
         <jsp:include page="js/jquery-tablesorter/package.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        
+
         <jsp:include page="js/bootstrap/package.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        
+
         <script src='http://maps.google.com/maps/api/js?v=3&sensor=false' type="text/javascript"></script>
-        
+
         <jsp:include page="js/openlayers/openlayers.jsp">
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        
+
         <jsp:include page="js/sugar/sugar.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        
+
         <!-- TODO - Modularize this -->
         <script type="text/javascript" src="js/jquery-fineuploader/jquery.fineuploader-3.0.js"></script>
         <link type="text/css" rel="stylesheet" href="js/jquery-fineuploader/fineuploader.css" />
@@ -281,10 +281,29 @@
                                     <div class="well" id="transects-well">
                                         <select id="transects-list" style="width: 100%;"></select>
                                         <div id="transects-uploader"></div>
+                                        <button data-toggle="button" class="btn btn-success" disabled id="create-transects-toggle">
+                                            <i class="icon-pencil icon-white"></i>
+                                            &nbsp;Create Transects
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="fluid-row span12">
-                                    <button id="calculate-transects-btn" class="btn" title="Calculate Transects">Calculate Transects</button>
+                                    <div id="create-transects-panel-well" class="well hidden">
+                                        <div id="create-transects-panel-container" class="container-fluid">
+                                            <div class="row-fluid span12">
+                                                <form>
+                                                    <label for="create-transects-input-spacing">Spacing</label>
+                                                    <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="0">m
+                                                    <label for="create-transects-input-spacing">Name</label>
+                                                    <input type="text" id="create-transects-input-name">
+                                                    
+                                                    <div class="control-group">
+                                                        <button type="button" class="btn btn-success" id="create-transects-input-button">Calculate</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

@@ -57,6 +57,10 @@ img { max-width: none; }
     height: 5em;
 }
 
+#create-transects-input-spacing {
+    width: 6em;
+}
+
 #shoreline-table-container {
     height: 16.25em;
 }

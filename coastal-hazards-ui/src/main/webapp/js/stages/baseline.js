@@ -79,6 +79,14 @@ var Baseline = {
                 LOG.debug('Baseline.js::baselineSelected: Selected baseline is user-created and is writable. Displaying edit panel.');
                 Baseline.enableEditButton();
             }
+            
+            Transects.enableCreateTransectsButton();
+        } else {
+            LOG.debug('Baseline.js::baselineSelected: Baseline de-selected. Hiding create transects panel and disabling create transects button');
+            if (!$('#create-transects-panel-well').hasClass('hidden')) {
+                $('#create-transects-toggle').click();
+            }
+            Transects.disableCreateTransectsButton();
         }
     },
     editButtonToggled : function(event) {
