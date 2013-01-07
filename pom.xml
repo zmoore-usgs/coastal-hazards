@@ -110,11 +110,6 @@
         <!-- CIDA JAVA LIBS -->
         <dependency>
             <groupId>gov.usgs.cida</groupId>
-            <artifactId>dynamicProperties</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>gov.usgs.cida</groupId>
             <artifactId>tomcat-filters</artifactId>
             <version>1.0</version>
         </dependency>
@@ -142,10 +137,15 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>gov.usgs.cida</groupId>
+                <artifactId>dynamicProperties</artifactId>
+                <version>0.0.1</version>
+            </dependency>
+            <dependency>
                 <artifactId>proxy-utils</artifactId>
                 <groupId>gov.usgs.cida</groupId>
+                <version>1.0.2</version>
                 <type>jar</type>
-                <version>1.0.1</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>commons-logging</artifactId>
@@ -157,14 +157,24 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.0.6</version>
+                <version>1.0.9</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>log4j-over-slf4j</artifactId>
-                <version>1.6.6</version>
+                <version>1.7.2</version>
                 <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <artifactId>slf4j-api</artifactId>
+                <groupId>org.slf4j</groupId>
+                <version>1.7.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.7.2</version>
             </dependency>
             <!-- Normal Servlet dependencies -->
             <dependency>

@@ -1,5 +1,8 @@
 var Baseline = {
+    stage : 'baseline',
+    suffixes :  ['_baseline'],
     baselineDrawButton : $('#baseline-draw-btn'),
+    reservedColor : '#66CCFF',
     addBaselineToMap : function(args) {
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
         
@@ -11,14 +14,22 @@ var Baseline = {
                 featureNS: CONFIG.namespace[args.name.split(':')[0]],
                 geometryName: "the_geom"
             }),
-            styleMap: new OpenLayers.StyleMap(CONFIG.sld.namedLayers["Simple Line"]["userStyles"][0])
+            styleMap: new OpenLayers.StyleMap({
+                "default": new OpenLayers.Style({
+                    strokeColor: Baseline.reservedColor,
+                    strokeWidth: 2
+                })
+            })
         });
         
         CONFIG.map.removeLayerByName(baselineLayer.name);
         CONFIG.map.getMap().addLayer(baselineLayer);
     },
     populateFeaturesList : function(caps) {
-        CONFIG.ui.populateFeaturesList(caps, 'baseline');
+        CONFIG.ui.populateFeaturesList({
+            caps : caps, 
+            caller : Baseline
+        });
     },
     clearDrawFeatures : function() {
         LOG.info('Baseline.js::clearDrawFeatures: Clearing draw layer');
@@ -53,7 +64,7 @@ var Baseline = {
             }
         })
     },
-    baselineSelected : function() {
+    listboxChanged : function() {
         LOG.debug('Baseline.js::baselineSelected: A baseline was selected from the dropdown list');
         
         LOG.debug('Going through select listbox to remove layers on the map that are not selected');
@@ -79,6 +90,14 @@ var Baseline = {
                 LOG.debug('Baseline.js::baselineSelected: Selected baseline is user-created and is writable. Displaying edit panel.');
                 Baseline.enableEditButton();
             }
+            
+            Transects.enableCreateTransectsButton();
+        } else {
+            LOG.debug('Baseline.js::baselineSelected: Baseline de-selected. Hiding create transects panel and disabling create transects button');
+            if (!$('#create-transects-panel-well').hasClass('hidden')) {
+                $('#create-transects-toggle').click();
+            }
+            Transects.disableCreateTransectsButton();
         }
     },
     editButtonToggled : function(event) {
@@ -326,7 +345,7 @@ var Baseline = {
     },
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({
-            context : 'baseline'
+            caller : Baseline
         }, args))
     }
 }

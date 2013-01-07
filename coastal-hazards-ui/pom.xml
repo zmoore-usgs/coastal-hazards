@@ -19,6 +19,10 @@
             <groupId>gov.usgs.cida</groupId>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida</groupId>
+            <artifactId>dynamicProperties</artifactId>
+        </dependency>
         <!-- Normal Servlet dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -113,6 +117,14 @@
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
         </dependency>
+        <dependency>
+            <artifactId>slf4j-api</artifactId>
+            <groupId>org.slf4j</groupId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -129,7 +141,4 @@
         </plugins>
         <finalName>${project.artifactId}</finalName>
     </build>
-    <properties>
-        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
-    </properties>
 </project>

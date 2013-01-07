@@ -40,6 +40,8 @@ $(document).ready(function() {
             Results.populateFeatureList,
             function() {
                 $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
+                $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
+                $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
                 $("#calculate-transects-btn").on("click", Transects.calcTransects);
                 $("#create-intersections-btn").on("click", Intersections.calcIntersections);
             }

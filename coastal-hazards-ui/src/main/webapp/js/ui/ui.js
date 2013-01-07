@@ -172,8 +172,10 @@ var UI = function() {
             })
         },
         initializeUploader : function(args) {
-            var context = args.context;
             LOG.info('UI.js::initializeUploader: Initializing uploader for the '  + context + ' context');
+            var caller = args.caller;
+            var context = caller.stage;
+            
             var uploader = new qq.FineUploader({
                 element: document.getElementById(context + '-uploader'),
                 request: {
@@ -184,6 +186,7 @@ var UI = function() {
                 },
                 multiple : false,
                 autoUpload: true,
+                caller : caller,
                 text: {
                     uploadButton: '<i class="icon-upload icon-white"></i>Upload ' + context
                 },
@@ -218,7 +221,10 @@ var UI = function() {
                                                 success : [
                                                 function (data) {
                                                     CONFIG.tempSession.updateLayersFromWMS(data);
-                                                    CONFIG.ui.populateFeaturesList(data, context);
+                                                    CONFIG.ui.populateFeaturesList({
+                                                        caps : data,
+                                                        caller : caller
+                                                    });
                                                 }
                                                 ],
                                                 error : []
@@ -237,14 +243,19 @@ var UI = function() {
             
             return uploader;
         },
-        populateFeaturesList : function(caps, context) {
-            LOG.info('UI.js::populateFeatureList:: Populating feature list for ' + context);
-            $('#'+context+'-list').children().remove();
+        populateFeaturesList : function(args) {
+            var caps = args.caps;
+            var caller = args.caller;
+            var suffixes = caller.suffixes || [];
+            var stage = caller.stage;
+            
+            LOG.info('UI.js::populateFeatureList:: Populating feature list for ' + stage);
+            $('#'+stage+'-list').children().remove();
         
             // Add a blank spot at the top of the select list
-            if (context == 'baseline' || context == 'transects') {
-                $('#'+context+'-list')
-                .append($("<option></option>")
+            if (stage == 'baseline' || stage == 'transects') {
+                $('#'+stage+'-list')
+                .append($("<option />")
                     .attr("value",'')
                     .text(''));
             }
@@ -260,30 +271,37 @@ var UI = function() {
                     var shortenedTitle = title.has(currentSessionKey) ?  
                     title.remove(currentSessionKey + '_') : 
                     title;
-
-                    if (title.substr(title.lastIndexOf('_') + 1) == context) {
-                        LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+context+' listbox: ' + title)
-                        $('#'+context+'-list')
-                        .append($("<option></option>")
+                    
+                    var type = title.substr(title.lastIndexOf('_'));
+                    if (suffixes.length == 0 || suffixes.find(type.toLowerCase())) {
+                        LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title)
+                        
+                        var stageConfig = CONFIG.tempSession.getStageConfig({
+                            stage : stage,
+                            name : layer.name
+                        })
+                        
+                        $('#'+stage+'-list')
+                        .append($("<option />")
                             .attr("value",layer.name)
                             .text(shortenedTitle));
+                            
+                        
+                        CONFIG.tempSession.setStageConfig({
+                            stage : stage,
+                            config : stageConfig
+                        })
                     } 
                 }
             })
             
-            if (context == 'shorelines') {
-                LOG.debug('UI.js::populateFeaturesList: Re-binding select list for Shorelines');
-                $('#'+context+'-list').unbind('change');
-                $('#'+context+'-list').change(function(index, option) {
-                    Shorelines.shorelineSelected()
-                }) 
-            } else if (context == 'baseline') {
-                LOG.debug('UI.js::populateFeaturesList: Re-binding select list for Baseline');
-                $('#'+context+'-list').unbind('change');
-                $('#'+context+'-list').change(function(index, option) {
-                    Baseline.baselineSelected()
-                }) 
-            }
+            LOG.debug('UI.js::populateFeaturesList: Re-binding select list');
+            $('#'+stage+'-list').unbind('change');
+            $('#'+stage+'-list').change(function(index, option) {
+                caller.listboxChanged()
+            }) 
+            
+            return  $('#'+stage+'-list');
         },
         showShorelineInfo : function(event) {
             LOG.info('UI.js::showShorelineInfo: The map was clicked and a response from the OWS resource was received');
@@ -315,7 +333,9 @@ var UI = function() {
                     $(Object.values(v.attributes)).each(function(aInd, aVal) {
                         tbodyTr.append($('<td />').append(aVal))
                     })
-                    
+                    var year = this.attributes['DATE_'].split('/')[2];
+                    var  disableButton = $('<button />').addClass('btn btn-success btn-year-toggle').attr('type', 'button').attr('year', year).html('Disable');
+                    tbodyTr.append($('<td />').append(disableButton))
                     tbody.append(tbodyTr);
                 });
                 
@@ -332,6 +352,24 @@ var UI = function() {
                     null,
                     true
                     ));
+                        
+                $('.btn-year-toggle').click(function(event) {
+                    var year = $(event.target).attr('year');
+                    var toggle = $('#shoreline-color-table-row-'+year+' .toggle');
+                    
+                    toggle.click();
+                    
+                    var allButtonsOfSameYear = $('.btn-year-toggle[year="'+year+'"]');
+                    if (toggle.hasClass('disabled')) {
+                        allButtonsOfSameYear.removeClass('btn-success');
+                        allButtonsOfSameYear.addClass('btn-danger');
+                        allButtonsOfSameYear.html('Enable');
+                    } else {
+                        allButtonsOfSameYear.removeClass('btn-danger');
+                        allButtonsOfSameYear.addClass('btn-success');
+                        allButtonsOfSameYear.html('Disable');
+                    }
+                });
                         
             } else {
                 LOG.debug('UI.js::showShorelineInfo: No features were found at point of mouse click');

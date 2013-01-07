@@ -1,4 +1,5 @@
 var Intersections = {
+    reservedColor : '#8F009A',
     calcIntersections : function() {
         var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
             "geoserver/sample/wms",

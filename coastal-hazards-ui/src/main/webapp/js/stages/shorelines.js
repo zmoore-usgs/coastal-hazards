@@ -2,7 +2,8 @@
 // TODO - Back end and front-end verification for uploaded shapefiles
 // TODO - Deal with non-standard shapefiles
 var Shorelines = {
-    
+    stage : 'shorelines',
+    suffixes : ['_shorelines'],
     addShorelines : function(layers) {
         LOG.info('Shorelines.js::addShorelines: Adding ' + layers.length + ' shoreline layers to map'); 
         $(layers).each(function(index,layer) {
@@ -33,6 +34,16 @@ var Shorelines = {
             includeGeom : false
         });
         
+        var sessionLayer = CONFIG.tempSession.getStageConfig({
+            name : layer.name,
+            stage : Shorelines.stage
+        });
+        sessionLayer.nameSpace = args.describeFeaturetypeRespone.targetNamespace;
+        CONFIG.tempSession.setStageConfig({ 
+            stage :Shorelines.stage,
+            config : sessionLayer
+        });
+        
         CONFIG.ows.getFilteredFeature({ 
             layer : layer,
             propertyArray : properties[layer.title], 
@@ -46,8 +57,8 @@ var Shorelines = {
                     
                         // Find the String match of our desired column from the layer attributes
                         var groupColumn = Object.keys(features[0].attributes).find(function(n) {
-                            return n.toLowerCase() === CONFIG.tempSession.getShorelineConfig({
-                                name : 'default'
+                            return n.toLowerCase() === CONFIG.tempSession.getStageConfig({
+                                stage : Shorelines.stage
                             }).groupingColumn.toLowerCase()
                         });
                     
@@ -133,8 +144,9 @@ var Shorelines = {
         var layer = args.layer;
         var layerTitle = args.layerTitle || layer.title;
         var layerName = args.layerName || layer.name;
-        var sessionLayer = CONFIG.tempSession.getShorelineConfig({
-            name : layerName
+        var sessionLayer = CONFIG.tempSession.getStageConfig({
+            name : layerName,
+            stage : Shorelines.stage
         });
         
         if (!isNaN(colorYearPairs[0][1])) {  
@@ -146,7 +158,7 @@ var Shorelines = {
                     filterSet += '<ogc:Literal>' + colorLimitPairs[pairsIndex][0] + '</ogc:Literal>'
                     filterSet += '<ogc:Literal>' + colorLimitPairs[pairsIndex][1] + '</ogc:Literal>'
                 }
-                return filterSet + '<ogc:Literal>' + Util.getRandomColor().capitalize(true) + '</ogc:Literal>';
+                return filterSet + '<ogc:Literal>' + Util.getRandomColor({ fromDefinedColors : true }).capitalize(true) + '</ogc:Literal>';
             }
             sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>' + 
             '<StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' + 
@@ -304,8 +316,9 @@ var Shorelines = {
         
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table body');
         
-        var sessionLayer = CONFIG.tempSession.getShorelineConfig({
-            name : layerName
+        var sessionLayer = CONFIG.tempSession.getStageConfig({
+            name : layerName,
+            stage : Shorelines.stage
         });
         
         $(event.object.colorGroups).each(function(i,colorGroup) {
@@ -363,25 +376,32 @@ var Shorelines = {
                         var layerName = this.attachedLayer;
                         var active = !$(event.target).parent().find('input')[0].checked;
                         var year = $(event.target).parent().find('input').val();
-                        var sessionLayer = CONFIG.tempSession.getShorelineConfig({
-                            name : layerName
+                        var sessionLayer = CONFIG.tempSession.getStageConfig({
+                            name : layerName,
+                            stage : Shorelines.stage
                         });
                         LOG.info('Shorelines.js::?: User has selected to ' + (active ? 'activate' : 'deactivate') + ' shoreline for year ' + year + ' on layer ' + layerName);
                         
-                        // Persist the selection to session
+                        var idTableButtons = $('.btn-year-toggle[year="'+year+'"]');
                         if (!active) {
                             if (sessionLayer.view["years-disabled"].indexOf(year) == -1) {
                                 sessionLayer.view["years-disabled"].push(year);
                             }
+                            idTableButtons.removeClass('btn-success');
+                            idTableButtons.addClass('btn-danger');
+                            idTableButtons.html('Enable');
                         } else {
                             while (sessionLayer.view["years-disabled"].indexOf(year) != -1) {
                                 sessionLayer.view["years-disabled"].remove(year);
                             }
+                            idTableButtons.removeClass('btn-danger');
+                            idTableButtons.addClass('btn-success');
+                            idTableButtons.html('Disable');
                         }
                         
                         // Persist the session
-                        CONFIG.tempSession.setShorelineConfig({ 
-                            name : layerName,
+                        CONFIG.tempSession.setStageConfig({ 
+                            stage :Shorelines.stage,
                             config : sessionLayer
                         });
                         
@@ -409,19 +429,20 @@ var Shorelines = {
             })
         })
     },
-    shorelineSelected : function() {
-        LOG.info('Shorelines.js::shorelineSelected: A shoreline was selected from the select list');
+    listboxChanged : function() {
+        LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
         
         // First remove all shorelines from the map that were not selected
         $("#shorelines-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
             
-            var layerConfig = CONFIG.tempSession.getShorelineConfig({
-                name : option.value
+            var layerConfig = CONFIG.tempSession.getStageConfig({
+                name : option.value,
+                stage : Shorelines.stage
             });
             layerConfig.view.isSelected = false;
-            CONFIG.tempSession.setShorelineConfig({
-                name : option.value,
+            CONFIG.tempSession.setStageConfig({ 
+                stage :Shorelines.stage,
                 config : layerConfig
             });
             
@@ -444,12 +465,13 @@ var Shorelines = {
             var layer = CONFIG.ows.getLayerByName(option.value);
             layerInfos.push(layer);
             
-            var layerConfig = CONFIG.tempSession.getShorelineConfig({
-                name : option.value
+            var layerConfig = CONFIG.tempSession.getStageConfig({
+                name : option.value,
+                stage : Shorelines.stage
             });
             layerConfig.view.isSelected = true;
-            CONFIG.tempSession.setShorelineConfig({
-                name : option.value,
+            CONFIG.tempSession.setStageConfig({ 
+                stage :Shorelines.stage,
                 config : layerConfig
             });
         });
@@ -464,11 +486,14 @@ var Shorelines = {
             
     },
     populateFeaturesList : function(caps) {
-        CONFIG.ui.populateFeaturesList(caps, 'shorelines');
+        CONFIG.ui.populateFeaturesList({
+            caps : caps, 
+            caller : Shorelines
+        });
     },
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({
-            context : 'shorelines'
+            caller : Shorelines
         }, args))
     }
 }

@@ -1,4 +1,7 @@
 var Transects = {
+    stage : 'transects',
+    suffixes : ['_lt','_st','_transects'],
+    reservedColor : '#FF0033',
     calcTransects : function() {
         var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
             "geoserver/sample/wms",
@@ -21,41 +24,47 @@ var Transects = {
                 featureType: args.name.split(':')[1], 
                 featureNS: CONFIG.namespace[args.name.split(':')[0]],
                 geometryName: "the_geom"
-            })
+            }),
+            styleMap: new OpenLayers.StyleMap({
+                "default": new OpenLayers.Style({
+                    strokeColor: Transects.reservedColor,
+                    strokeWidth: 2
+                })
+            }),
+            type : 'transects'
         });
 	
         CONFIG.map.getMap().addLayer(transects);
+        
+        var stageConfig = CONFIG.tempSession.getStageConfig({
+            stage : Transects.stage,
+            name : args.name
+        })
+        stageConfig.view.isSelected = false;
+        CONFIG.tempSession.setStageConfig({
+            stage : Transects.stage,
+            config : stageConfig
+        })
+    },
+    removeTransects : function() {
+        CONFIG.map.getMap().getLayersBy('type', 'transects').each(function(layer) {
+            CONFIG.map.getMap().removeLayer(layer, false);
+            var stageConfig = CONFIG.tempSession.getStageConfig({
+                stage : Transects.stage,
+                name : layer.name
+            })
+            stageConfig.view.isSelected = false;
+            CONFIG.tempSession.setStageConfig({
+                stage : Transects.stage,
+                config : stageConfig
+            })
+        })
     },
     populateFeatureList : function(caps) {
-        LOG.info('Transects.js::populateFeatureList');
-
-        $('#transects-list').children().remove();
-
-        $(caps.capability.layers).each(function(i, layer) { 
-            var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
-            var title = layer.title;
-            
-            // Add the option to the list only if it's from the sample namespace or
-            // if it's from the input namespace and in the current session
-            if (layer.prefix === 'sample' || (layer.prefix === 'ch-input' && title.has(currentSessionKey) )) {
-                var shortenedTitle = title.has(currentSessionKey) ?  
-                title.remove(currentSessionKey + '_') : 
-                title;
-
-                var type = title.substr(title.lastIndexOf('_') + 1);
-                if (['lt','st','transects'].find(type.toLowerCase())) {
-                    LOG.debug('Found a layer to add to the transect listbox: ' + title)
-                    $('#transects-list')
-                    .append($("<option></option>")
-                        .attr("value",layer.name)
-                        .text(shortenedTitle));
-                } 
-            }
-        })
-            
-        $('#transects-list').change(function(index, option) {
-            Transects.listboxChanged()
-        }) 
+        CONFIG.ui.populateFeaturesList({
+            caps : caps, 
+            caller : Transects
+        });
     } ,       
     listboxChanged : function() {
         LOG.info('Transects.js::transectListboxChanged: Transect listbox changed');
@@ -63,19 +72,174 @@ var Transects = {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
             if (layers.length) {
                 $(layers).each(function(i,l) {
-                    CONFIG.map.getMap().removeLayer(l);
+                    CONFIG.map.getMap().removeLayer(l, false);
+                    var stageConfig = CONFIG.tempSession.getStageConfig({
+                        stage : Transects.stage,
+                        name : l.name
+                    })
+                    stageConfig.view.isSelected = false;
+                    CONFIG.tempSession.setStageConfig({
+                        stage : Transects.stage,
+                        config : stageConfig
+                    })
                 })
             }
         });
         if ($("#transects-list option:selected")[0].value) {
+            var name = $("#transects-list option:selected")[0].value; 
             Transects.addTransects({
-                name : $("#transects-list option:selected")[0].value 
+                name : name
+            })
+            var stageConfig = CONFIG.tempSession.getStageConfig({
+                stage : Transects.stage,
+                name : name
+            })
+            stageConfig.view.isSelected = true;
+            CONFIG.tempSession.setStageConfig({
+                stage : Transects.stage,
+                config : stageConfig
             })
         }
     },
+    enableCreateTransectsButton : function() {
+        LOG.info('Transects.js::enableCreateTransectsButton: Baseline has been added to the map. Enabling create transect button');
+        $('#create-transects-toggle').removeAttr('disabled')
+        
+    },
+    disableCreateTransectsButton : function() {
+        LOG.info('Transects.js::disableCreateTransectsButton: No valid baseline on the map. Disabling create transect button');
+        $('#create-transects-toggle').attr('disabled', 'disabled');
+         
+    },
+    createTransectsButtonToggled : function(event) {
+        LOG.info('Transects.js::createTransectsButtonToggled: Transect creation Button Clicked');
+        var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
+        
+        if (toggledOn) {
+            $('#transects-list').val('');
+            $('#create-transects-input-name').val(Util.getRandomLorem());
+        } else {
+            
+        // Hide transect layer if needed
+        }
+        $('#create-transects-panel-well').toggleClass('hidden');
+    },
+    createTransectSubmit : function(event) {
+        var visibleShorelines = $('#shorelines-list :selected').map(function(i,v){
+            return v.value
+        })
+        var visibleBaseline = $('#baseline-list :selected')[0].value;
+        var spacing = $('#create-transects-input-spacing').val() || 0;
+        var layerName = $('#create-transects-input-name').val();
+        var request = Transects.createWPSGenerateTransectsRequest({
+            shorelines : visibleShorelines,
+            baseline : visibleBaseline,
+            spacing : spacing,
+            workspace : 'ch-input',
+            store : 'ch-input',
+            layer : CONFIG.tempSession.getCurrentSessionKey() + '_' + layerName + '_transects'
+        })
+        CONFIG.ows.executeWPSProcess({
+            processIdentifier : 'gs:GenerateTransects',
+            request : request,
+            context : this,
+            callbacks : [
+            function(data, textStatus, jqXHR, context) {
+            //TODO - get result (int) and if successful, refresh transects listbox and load new transects layer
+            }
+            ]
+        })
+    },
+    createWPSGenerateTransectsRequest : function(args) {
+        var shorelines = args.shorelines;
+        var baseline = args.baseline;
+        var spacing = args.spacing;
+        var workspace = args.workspace;
+        var store = args.store;
+        var layer = args.layer;
+        
+        var request = '<?xml version="1.0" encoding="UTF-8"?>' +
+        '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
+        '<ows:Identifier>gs:GenerateTransects</ows:Identifier>' + 
+        '<wps:DataInputs>' + 
+        '<wps:Input>' + 
+        '<wps:Reference mimeType="text/xml; subtype=gml/3.1.1" xlink:href="http://geoserver/wps" method="POST">' + 
+        '<wps:Body>' + 
+        '<wps:Execute version="1.0.0" service="WPS">' + 
+        '<ows:Identifier>gs:CollectGeometries</ows:Identifier>' + 
+        '<wps:DataInputs>'
+        shorelines.each(function(i, shoreline) {
+            var sessionLayer = CONFIG.tempSession.getStageConfig({
+                name : shoreline,
+                stage : Shorelines.stage
+            });
+            request += '<wps:Input>' + 
+            '<ows:Identifier>features</ows:Identifier>' + 
+            '<wps:Reference mimeType="text/xml" xlink:href="http://geoserver/wfs" method="POST">' + 
+            '<wps:Body>' + 
+            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+shoreline.split(':')[0]+'="'+sessionLayer.nameSpace+'">' + 
+            '<wfs:Query typeName="'+shoreline+'"/>' + 
+            '</wfs:GetFeature>' + 
+            '</wps:Body>' + 
+            '</wps:Reference>' + 
+            '</wps:Input>';
+        })
+        request += '</wps:DataInputs>' + 
+        '<wps:ResponseForm>' + 
+        '<wps:RawDataOutput mimeType="text/xml; subtype=gml/3.1.1">' + 
+        '<ows:Identifier>result</ows:Identifier>' + 
+        '</wps:RawDataOutput>' + 
+        '</wps:ResponseForm>' + 
+        '</wps:Execute>' + 
+        '</wps:Body>' + 
+        '</wps:Reference>' + 
+        '</wps:Input>' + 
+        '<wps:Input>' + 
+        '<ows:Identifier>baseline</ows:Identifier>' + 
+        '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
+        '<wps:Body>' + 
+        '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2">' + 
+        '<wfs:Query typeName="'+baseline+'"/>' + 
+        '</wfs:GetFeature>' + 
+        '</wps:Body>' + 
+        '</wps:Reference>' + 
+        '</wps:Input>' + 
+        '<wps:Input>' + 
+        '<ows:Identifier>spacing</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+spacing+'</wps:LiteralData>' + 
+        '</wps:Data>' + 
+        '</wps:Input>' + 
+        '<wps:Input>' + 
+        '<ows:Identifier>workspace</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+workspace+'</wps:LiteralData>' + 
+        '</wps:Data>' + 
+        '</wps:Input>' +     
+        '<wps:Input>' + 
+        '<ows:Identifier>store</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+store+'</wps:LiteralData>' + 
+        '</wps:Data>' + 
+        '</wps:Input>' + 
+        '<wps:Input>' + 
+        '<ows:Identifier>layer</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+layer+'</wps:LiteralData>' + 
+        '</wps:Data>' + 
+        '</wps:Input>' +     
+        '</wps:DataInputs>' + 
+        '<wps:ResponseForm>' +
+        '<wps:RawDataOutput>' + 
+        '<ows:Identifier>result</ows:Identifier>' + 
+        '</wps:RawDataOutput>' + 
+        '</wps:ResponseForm>' + 
+        '</wps:Execute>';
+        return request;
+    },
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({
-            context : 'transects'
+            caller : Transects
         }, args))
     }
 }
