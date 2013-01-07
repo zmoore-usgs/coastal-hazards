@@ -60,7 +60,7 @@ var Results = {
             var layer = CONFIG.ows.getLayerByName(selectedResultValue)
             var layerConfig = CONFIG.tempSession.getStageConfig({
                 stage : Results.stage,
-                name : option.value
+                name : selectedResultValue
             });
             layerConfig.view.isSelected = true;
             CONFIG.tempSession.setStageConfig({
