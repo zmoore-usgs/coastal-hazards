@@ -15,7 +15,7 @@
     <entry key="charset">ISO-8859-1</entry>
     <entry key="filetype">shapefile</entry>
     <entry key="cache and reuse memory maps">true</entry>
-    <entry key="url">file:/tmp/geoserver-repo/input</entry>
+    <entry key="url">file:/opt/tomcat/instance/geoserver/data/input</entry>
     <entry key="namespace">gov.usgs.cida.ch.input</entry>
   </connectionParameters>
   <__default>false</__default>
