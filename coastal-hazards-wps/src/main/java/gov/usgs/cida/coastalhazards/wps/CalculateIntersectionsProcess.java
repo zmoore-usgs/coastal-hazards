@@ -1,6 +1,5 @@
 package gov.usgs.cida.coastalhazards.wps;
 
-import java.net.URL;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.process.factory.DescribeParameter;
@@ -25,6 +24,9 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
     }
     
     private class Process {
-    
+        // for each transect calculate intersections with coastlines
+        // if it is a lidar dataset, need to get weighted average
+        // retain identifiers of intersects or some sort
+        // return Coordinate feature collection
     }
 }
