@@ -18,6 +18,7 @@ import java.util.List;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureCollections;
@@ -216,7 +217,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
          * @return 
          */
         private SimpleFeatureCollection trimTransectsToFeatureCollection(VectorCoordAngle[] vectsOnBaseline, MultiLineString shorelines) {
-            SimpleFeatureCollection features = FeatureCollections.newCollection();
+            List<SimpleFeature> sfList = new LinkedList<SimpleFeature>();
             
             PreparedGeometry preparedShorelines = new PreparedGeometryFactory().create(shorelines);
             for (VectorCoordAngle vect : vectsOnBaseline) {
@@ -228,21 +229,20 @@ public class GenerateTransectsProcess implements GeoServerProcess {
                         continue; // not sure what to trim to
                     }
                 }
-                double length = 0.0d;
-                Geometry intersection = testLine.intersection(shorelines);
-                for (Coordinate coord : intersection.getCoordinates()) {
-                    if (vect.cartesianCoord.distance(coord) > length) {
-                        length = vect.cartesianCoord.distance(coord);
-                    }
-                }
-                LineString clipped = vect.getLineOfLength(length);
-                SimpleFeature feature = createFeatureInUTMZone(clipped);
-                // using deprecated method since this should be in memory
-                // TODO fix this to not use deprecated
-                features.add(feature);
-            }
+//                double length = 0.0d;
+//                Geometry intersection = testLine.intersection(shorelines);
+//                for (Coordinate coord : intersection.getCoordinates()) {
+//                    if (vect.cartesianCoord.distance(coord) > length) {
+//                        length = vect.cartesianCoord.distance(coord);
+//                    }
+//                }
+//                LineString clipped = vect.getLineOfLength(length);
+                SimpleFeature feature = createFeatureInUTMZone(testLine);
+                
+                sfList.add(feature);
 
-            return features;
+            }
+            return DataUtilities.collection(sfList);
         }
         
         // Thought these would be longer, but I'll leave them here
