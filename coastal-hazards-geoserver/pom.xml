@@ -32,7 +32,7 @@
             <dependency>
                 <groupId>gov.usgs.cida.geoserver</groupId>
                 <artifactId>geoserver</artifactId>
-                <version>2.2.2-1</version>
+                <version>2.2-1</version>
                 <type>war</type>
             </dependency>
 	</dependencies>
