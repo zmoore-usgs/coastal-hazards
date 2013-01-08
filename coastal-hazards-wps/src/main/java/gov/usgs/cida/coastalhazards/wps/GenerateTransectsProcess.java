@@ -30,6 +30,7 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeocentricCRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -48,7 +49,7 @@ import org.opengis.referencing.operation.TransformException;
         version = "1.0.0")
 public class GenerateTransectsProcess implements GeoServerProcess {
     
-    private static final CoordinateReferenceSystem ACCEPTED_CRS = DefaultGeographicCRS.WGS84;
+    private static final CoordinateReferenceSystem REQUIRED_CRS_WGS84 = DefaultGeographicCRS.WGS84;
     private ImportProcess importProcess;
     
     public GenerateTransectsProcess(ImportProcess importProcess) {
@@ -104,10 +105,10 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         private String execute() throws Exception {
             CoordinateReferenceSystem shorelinesCrs = findCRS(shorelines);
             CoordinateReferenceSystem baselineCrs = findCRS(baseline);
-            if (!shorelinesCrs.equals(ACCEPTED_CRS)) {
+            if (!CRS.equalsIgnoreMetadata(shorelinesCrs, REQUIRED_CRS_WGS84)) {
                 throw new UnsupportedCoordinateReferenceSystemException("Shorelines are not in accepted projection");
             }
-            if (!baselineCrs.equals(ACCEPTED_CRS)) {
+            if (!CRS.equalsIgnoreMetadata(baselineCrs, REQUIRED_CRS_WGS84)) {
                 throw new UnsupportedCoordinateReferenceSystemException("Baseline is not in accepted projection");
             }
             this.utmCrs = UTMFinder.findUTMZoneForFeatureCollection((SimpleFeatureCollection)baseline);
@@ -146,7 +147,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             List<LineString> lines = new LinkedList<LineString>();
             MathTransform transform = null;
             try {
-                transform = CRS.findMathTransform(ACCEPTED_CRS, utmCrs, true);
+                transform = CRS.findMathTransform(REQUIRED_CRS_WGS84, utmCrs, true);
             }
             catch (FactoryException ex) {
                 return null; // do something better than this
@@ -272,7 +273,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
                         throw new IllegalStateException("Line must have at least two points");
                     }
                     LineSegment segment = new LineSegment(currentCoord, nextCoord);
-                    double orthogonal = segment.angle() + Angle.PI_OVER_4;
+                    double orthogonal = segment.angle() + Angle.PI_OVER_2;
                     VectorCoordAngle vect = new VectorCoordAngle(currentCoord, orthogonal);
                     transectVectors.add(vect);
                     continue;
@@ -283,10 +284,13 @@ public class GenerateTransectsProcess implements GeoServerProcess {
                     double fraction = distanceToNewPoint / distance;
                     LineSegment segment = new LineSegment(currentCoord, coord);
                     Coordinate pointAlong = segment.pointAlong(fraction);
-                    double orthogonal = segment.angle() + Angle.PI_OVER_4;
+                    double orthogonal = segment.angle() + Angle.PI_OVER_2;
                     VectorCoordAngle vect = new VectorCoordAngle(pointAlong, orthogonal);
                     transectVectors.add(vect);
+                    
+                    // this retries to next coordinate
                     currentCoord = pointAlong;
+                    i--;
                     accumulatedDistance = 0.0d;
                 }
                 else {
@@ -329,7 +333,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         }
         
         private void flipAngle() {
-            angle += Angle.PI_OVER_2;
+            angle += Math.PI;
         }
     }
 }
