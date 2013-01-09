@@ -13,17 +13,15 @@ import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
-import java.util.HashMap;
+import gov.usgs.cida.coastalhazards.wps.geom.UnionSimpleFeatureCollection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -33,7 +31,6 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeocentricCRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -64,7 +61,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
      */
     @DescribeResult(name = "transects", description = "Layer containing Transects normal to baseline")
     public String execute(
-            @DescribeParameter(name = "shorelines", min = 1, max = 1) SimpleFeatureCollection shorelines,
+            @DescribeParameter(name = "shorelines", min = 1, max = Integer.MAX_VALUE) SimpleFeatureCollection[] shorelines,
             @DescribeParameter(name = "baseline", min = 1, max = 1) SimpleFeatureCollection baseline,
             @DescribeParameter(name = "spacing", min = 1, max = 1) Double spacing,
             @DescribeParameter(name = "workspace", min = 1, max = 1) String workspace,
@@ -76,7 +73,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
     private class Process {
         private static final int LONG_TEST_LENGTH = 1000;
         
-        private final FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines;
+        private final FeatureCollection<SimpleFeatureType, SimpleFeature>[] shorelines;
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> baseline;
         private final double spacing;
         private final String workspace;
@@ -88,7 +85,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         private final GeometryFactory geometryFactory;
         private SimpleFeatureType simpleFeatureType;
         
-        private Process(FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines,
+        private Process(FeatureCollection<SimpleFeatureType, SimpleFeature>[] shorelines,
                 FeatureCollection<SimpleFeatureType, SimpleFeature> baseline,
                 double spacing,
                 String workspace,
@@ -106,7 +103,10 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         }
         
         private String execute() throws Exception {
-            CoordinateReferenceSystem shorelinesCrs = findCRS(shorelines);
+            SimpleFeatureCollection unionedShorelines = 
+                    UnionSimpleFeatureCollection.unionCollectionsWithoutPreservingAttributes(shorelines);
+            
+            CoordinateReferenceSystem shorelinesCrs = findCRS(unionedShorelines);
             CoordinateReferenceSystem baselineCrs = findCRS(baseline);
             if (!CRS.equalsIgnoreMetadata(shorelinesCrs, REQUIRED_CRS_WGS84)) {
                 throw new UnsupportedCoordinateReferenceSystemException("Shorelines are not in accepted projection");
@@ -128,7 +128,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             MultiLineString baselineGeometry = getLinesFromFeatureCollection(baseline);
             VectorCoordAngle[] vectsOnBaseline = getEvenlySpacedOrthoVectorsAlongBaseline(baselineGeometry, spacing);
             
-            MultiLineString shorelineGeometry = getLinesFromFeatureCollection(shorelines);
+            MultiLineString shorelineGeometry = getLinesFromFeatureCollection(unionedShorelines);
             SimpleFeatureCollection resultingTransects = trimTransectsToFeatureCollection(vectsOnBaseline, shorelineGeometry);
             String layerName = addResultAsLayer(resultingTransects, workspace, store, layer);
             return layerName;
