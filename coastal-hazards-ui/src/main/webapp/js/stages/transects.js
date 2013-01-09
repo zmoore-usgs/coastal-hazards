@@ -2,6 +2,7 @@ var Transects = {
     stage : 'transects',
     suffixes : ['_lt','_st','_transects'],
     reservedColor : '#FF0033',
+    defaultSpacing : 500,
     calcTransects : function() {
         var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
             "geoserver/sample/wms",
@@ -20,10 +21,12 @@ var Transects = {
         var transects = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
+                version: '1.1.0',
                 url:  "geoserver/ows",
                 featureType: args.name.split(':')[1], 
                 featureNS: CONFIG.namespace[args.name.split(':')[0]],
-                geometryName: "the_geom"
+                geometryName: "the_geom",
+                srsName: CONFIG.map.getMap().getProjection()
             }),
             styleMap: new OpenLayers.StyleMap({
                 "default": new OpenLayers.Style({
@@ -136,7 +139,7 @@ var Transects = {
             baseline : visibleBaseline,
             spacing : spacing,
             workspace : 'ch-input',
-            store : 'ch-input',
+            store : 'Coastal Hazards Input',
             layer : CONFIG.tempSession.getCurrentSessionKey() + '_' + layerName + '_transects'
         })
         CONFIG.ows.executeWPSProcess({
@@ -144,8 +147,19 @@ var Transects = {
             request : request,
             context : this,
             callbacks : [
+            // TODO- Error Checking for WPS process response!
             function(data, textStatus, jqXHR, context) {
-            //TODO - get result (int) and if successful, refresh transects listbox and load new transects layer
+                CONFIG.ows.getWMSCapabilities({
+                    callbacks : {
+                        success : [
+                        Transects.populateFeatureList,
+                        function() {
+                            $('#transects-list').val(data);
+                            $('#transects-list').trigger('change');
+                        }                        
+                        ]
+                    }
+                })
             }
             ]
         })
@@ -161,45 +175,25 @@ var Transects = {
         var request = '<?xml version="1.0" encoding="UTF-8"?>' +
         '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
         '<ows:Identifier>gs:GenerateTransects</ows:Identifier>' + 
-        '<wps:DataInputs>' + 
-        '<wps:Input>' + 
-        '<wps:Reference mimeType="text/xml; subtype=gml/3.1.1" xlink:href="http://geoserver/wps" method="POST">' + 
-        '<wps:Body>' + 
-        '<wps:Execute version="1.0.0" service="WPS">' + 
-        '<ows:Identifier>gs:CollectGeometries</ows:Identifier>' + 
-        '<wps:DataInputs>'
+        '<wps:DataInputs>';
         shorelines.each(function(i, shoreline) {
-            var sessionLayer = CONFIG.tempSession.getStageConfig({
-                name : shoreline,
-                stage : Shorelines.stage
-            });
             request += '<wps:Input>' + 
-            '<ows:Identifier>features</ows:Identifier>' + 
-            '<wps:Reference mimeType="text/xml" xlink:href="http://geoserver/wfs" method="POST">' + 
+            '<ows:Identifier>shorelines</ows:Identifier>' + 
+            '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
             '<wps:Body>' + 
-            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+shoreline.split(':')[0]+'="'+sessionLayer.nameSpace+'">' + 
-            '<wfs:Query typeName="'+shoreline+'"/>' + 
+            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2">' + 
+            '<wfs:Query typeName="'+shoreline+'" srsName="EPSG:4326" />' + 
             '</wfs:GetFeature>' + 
             '</wps:Body>' + 
             '</wps:Reference>' + 
             '</wps:Input>';
         })
-        request += '</wps:DataInputs>' + 
-        '<wps:ResponseForm>' + 
-        '<wps:RawDataOutput mimeType="text/xml; subtype=gml/3.1.1">' + 
-        '<ows:Identifier>result</ows:Identifier>' + 
-        '</wps:RawDataOutput>' + 
-        '</wps:ResponseForm>' + 
-        '</wps:Execute>' + 
-        '</wps:Body>' + 
-        '</wps:Reference>' + 
-        '</wps:Input>' + 
-        '<wps:Input>' + 
+        request += '<wps:Input>' + 
         '<ows:Identifier>baseline</ows:Identifier>' + 
         '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
         '<wps:Body>' + 
         '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2">' + 
-        '<wfs:Query typeName="'+baseline+'"/>' + 
+        '<wfs:Query typeName="'+baseline+'" srsName="EPSG:4326" />' + 
         '</wfs:GetFeature>' + 
         '</wps:Body>' + 
         '</wps:Reference>' + 
@@ -207,7 +201,7 @@ var Transects = {
         '<wps:Input>' + 
         '<ows:Identifier>spacing</ows:Identifier>' + 
         '<wps:Data>' + 
-        '<wps:LiteralData>'+spacing+'</wps:LiteralData>' + 
+        '<wps:LiteralData>'+spacing ? spacing : Transects.defaultSpacing+'</wps:LiteralData>' + 
         '</wps:Data>' + 
         '</wps:Input>' + 
         '<wps:Input>' + 

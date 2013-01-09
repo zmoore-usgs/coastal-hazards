@@ -293,7 +293,7 @@
                                             <div class="row-fluid span12">
                                                 <form>
                                                     <label for="create-transects-input-spacing">Spacing</label>
-                                                    <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="0">m
+                                                    <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
                                                     <label for="create-transects-input-spacing">Name</label>
                                                     <input type="text" id="create-transects-input-name">
                                                     

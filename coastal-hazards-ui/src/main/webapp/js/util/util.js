@@ -176,7 +176,7 @@ var Util =  {
         "commodo" ,  "sagittis" ,  "lobortis" ,  "pharetra" ,  "interdum" ,  
         "ornare" ,  "aliquet" ,  "semper" ,  "blandit" ,  "tempor" ,  "aptent" ,  
         "taciti" ,  "sociosqu" ,  "litora" ,  "torquent" ,  "conubia" ,  "nostra" ,  
-        "inceptos" ,  "hymenaeos" ];
+        "inceptos" ,  "hymenaeos", "lorem", "ipsum" ];
         return loremArray[Math.floor(Math.random() * loremArray.length)]
     }
 }
