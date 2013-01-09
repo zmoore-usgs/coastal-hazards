@@ -13,8 +13,10 @@ import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
@@ -72,7 +74,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
     }
     
     private class Process {
-        private static final int HEURISTIC_LENGTH = 1000;
+        private static final int LONG_TEST_LENGTH = 1000;
         
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines;
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> baseline;
@@ -218,25 +220,28 @@ public class GenerateTransectsProcess implements GeoServerProcess {
          */
         private SimpleFeatureCollection trimTransectsToFeatureCollection(VectorCoordAngle[] vectsOnBaseline, MultiLineString shorelines) {
             List<SimpleFeature> sfList = new LinkedList<SimpleFeature>();
+            double guessLength = 50.0d;
             
-            PreparedGeometry preparedShorelines = new PreparedGeometryFactory().create(shorelines);
+            PreparedGeometry preparedShorelines = PreparedGeometryFactory.prepare(shorelines);
             for (VectorCoordAngle vect : vectsOnBaseline) {
-                LineString testLine = vect.getLineOfLength(HEURISTIC_LENGTH);
+                LineString testLine = vect.getLineOfLength(LONG_TEST_LENGTH);
                 if (!preparedShorelines.intersects(testLine)) {
                     vect.flipAngle();
-                    testLine = vect.getLineOfLength(HEURISTIC_LENGTH);
+                    testLine = vect.getLineOfLength(LONG_TEST_LENGTH);
                     if (!preparedShorelines.intersects(testLine)) {
                         continue; // not sure what to trim to
                     }
                 }
-//                double length = 0.0d;
-//                Geometry intersection = testLine.intersection(shorelines);
-//                for (Coordinate coord : intersection.getCoordinates()) {
-//                    if (vect.cartesianCoord.distance(coord) > length) {
-//                        length = vect.cartesianCoord.distance(coord);
-//                    }
+//                double length = guessLength / 2;
+//                Geometry intersection = testLine.intersection(shorelines).getEnvelope();
+//                LineString clipper = vect.getLineOfLength(length);
+//                // I'm banking on this not being an infinite loop because at some point the line will be at least as long as LONG_TEST_LENGTH
+//                while (!intersection.within(clipper.getEnvelope())){
+//                    length *= 2;
+//                    clipper = vect.getLineOfLength(length);
 //                }
-//                LineString clipped = vect.getLineOfLength(length);
+//                guessLength = length;
+//                SimpleFeature feature = createFeatureInUTMZone(clipper);
                 SimpleFeature feature = createFeatureInUTMZone(testLine);
                 
                 sfList.add(feature);
