@@ -24,11 +24,11 @@
                 <artifactId>jsp-api</artifactId>
                 <scope>provided</scope>
             </dependency>
-<!--            <dependency>
+            <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>coastal-hazards-wps</artifactId>
                 <version>${project.version}</version>
-            </dependency>-->
+            </dependency>
             <dependency>
                 <groupId>gov.usgs.cida.geoserver</groupId>
                 <artifactId>geoserver</artifactId>
