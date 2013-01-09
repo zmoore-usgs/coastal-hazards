@@ -13,11 +13,14 @@ import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureCollections;
@@ -71,7 +74,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
     }
     
     private class Process {
-        private static final int HEURISTIC_LENGTH = 1000;
+        private static final int LONG_TEST_LENGTH = 1000;
         
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines;
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> baseline;
@@ -216,33 +219,35 @@ public class GenerateTransectsProcess implements GeoServerProcess {
          * @return 
          */
         private SimpleFeatureCollection trimTransectsToFeatureCollection(VectorCoordAngle[] vectsOnBaseline, MultiLineString shorelines) {
-            SimpleFeatureCollection features = FeatureCollections.newCollection();
+            List<SimpleFeature> sfList = new LinkedList<SimpleFeature>();
+            double guessLength = 50.0d;
             
-            PreparedGeometry preparedShorelines = new PreparedGeometryFactory().create(shorelines);
+            PreparedGeometry preparedShorelines = PreparedGeometryFactory.prepare(shorelines);
             for (VectorCoordAngle vect : vectsOnBaseline) {
-                LineString testLine = vect.getLineOfLength(HEURISTIC_LENGTH);
+                LineString testLine = vect.getLineOfLength(LONG_TEST_LENGTH);
                 if (!preparedShorelines.intersects(testLine)) {
                     vect.flipAngle();
-                    testLine = vect.getLineOfLength(HEURISTIC_LENGTH);
+                    testLine = vect.getLineOfLength(LONG_TEST_LENGTH);
                     if (!preparedShorelines.intersects(testLine)) {
                         continue; // not sure what to trim to
                     }
                 }
-                double length = 0.0d;
-                Geometry intersection = testLine.intersection(shorelines);
-                for (Coordinate coord : intersection.getCoordinates()) {
-                    if (vect.cartesianCoord.distance(coord) > length) {
-                        length = vect.cartesianCoord.distance(coord);
-                    }
-                }
-                LineString clipped = vect.getLineOfLength(length);
-                SimpleFeature feature = createFeatureInUTMZone(clipped);
-                // using deprecated method since this should be in memory
-                // TODO fix this to not use deprecated
-                features.add(feature);
-            }
+//                double length = guessLength / 2;
+//                Geometry intersection = testLine.intersection(shorelines).getEnvelope();
+//                LineString clipper = vect.getLineOfLength(length);
+//                // I'm banking on this not being an infinite loop because at some point the line will be at least as long as LONG_TEST_LENGTH
+//                while (!intersection.within(clipper.getEnvelope())){
+//                    length *= 2;
+//                    clipper = vect.getLineOfLength(length);
+//                }
+//                guessLength = length;
+//                SimpleFeature feature = createFeatureInUTMZone(clipper);
+                SimpleFeature feature = createFeatureInUTMZone(testLine);
+                
+                sfList.add(feature);
 
-            return features;
+            }
+            return DataUtilities.collection(sfList);
         }
         
         // Thought these would be longer, but I'll leave them here
