@@ -167,7 +167,7 @@ var Transects = {
     createWPSGenerateTransectsRequest : function(args) {
         var shorelines = args.shorelines;
         var baseline = args.baseline;
-        var spacing = args.spacing;
+        var spacing = args.spacing ? args.spacing : Transects.defaultSpacing;
         var workspace = args.workspace;
         var store = args.store;
         var layer = args.layer;
@@ -201,7 +201,7 @@ var Transects = {
         '<wps:Input>' + 
         '<ows:Identifier>spacing</ows:Identifier>' + 
         '<wps:Data>' + 
-        '<wps:LiteralData>'+spacing ? spacing : Transects.defaultSpacing+'</wps:LiteralData>' + 
+        '<wps:LiteralData>'+ spacing +'</wps:LiteralData>' + 
         '</wps:Data>' + 
         '</wps:Input>' + 
         '<wps:Input>' + 
