@@ -2,7 +2,7 @@ var Baseline = {
     stage : 'baseline',
     suffixes :  ['_baseline'],
     baselineDrawButton : $('#baseline-draw-btn'),
-    reservedColor : '#66CCFF',
+    reservedColor : '#1B9E77',
     addBaselineToMap : function(args) {
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
         
