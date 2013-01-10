@@ -10,6 +10,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
+import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
@@ -106,8 +107,8 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             SimpleFeatureCollection unionedShorelines = 
                     UnionSimpleFeatureCollection.unionCollectionsWithoutPreservingAttributes(shorelines);
             
-            CoordinateReferenceSystem shorelinesCrs = findCRS(unionedShorelines);
-            CoordinateReferenceSystem baselineCrs = findCRS(baseline);
+            CoordinateReferenceSystem shorelinesCrs = CRSUtils.getCRSFromFeatureCollection(unionedShorelines);
+            CoordinateReferenceSystem baselineCrs = CRSUtils.getCRSFromFeatureCollection(baseline);
             if (!CRS.equalsIgnoreMetadata(shorelinesCrs, REQUIRED_CRS_WGS84)) {
                 throw new UnsupportedCoordinateReferenceSystemException("Shorelines are not in accepted projection");
             }
@@ -122,82 +123,16 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
             builder.setName("Transects");
             builder.add("geom", LineString.class, utmCrs);
-            simpleFeatureType = builder.buildFeatureType();
+            this.simpleFeatureType = builder.buildFeatureType();
             
             // probably want to get UTM zone and pass it in
-            MultiLineString baselineGeometry = getLinesFromFeatureCollection(baseline);
+            MultiLineString baselineGeometry = CRSUtils.getLinesFromFeatureCollection(baseline, REQUIRED_CRS_WGS84, utmCrs);
             VectorCoordAngle[] vectsOnBaseline = getEvenlySpacedOrthoVectorsAlongBaseline(baselineGeometry, spacing);
             
-            MultiLineString shorelineGeometry = getLinesFromFeatureCollection(unionedShorelines);
+            MultiLineString shorelineGeometry = CRSUtils.getLinesFromFeatureCollection(unionedShorelines, REQUIRED_CRS_WGS84, utmCrs);
             SimpleFeatureCollection resultingTransects = trimTransectsToFeatureCollection(vectsOnBaseline, shorelineGeometry);
             String layerName = addResultAsLayer(resultingTransects, workspace, store, layer);
             return layerName;
-        }
-        
-        private CoordinateReferenceSystem findCRS(FeatureCollection<SimpleFeatureType, SimpleFeature> simpleFeatureCollection) {
-            FeatureCollection<SimpleFeatureType, SimpleFeature> shorelineFeatureCollection = simpleFeatureCollection;
-            SimpleFeatureType sft = shorelineFeatureCollection.getSchema();
-            CoordinateReferenceSystem coordinateReferenceSystem = sft.getCoordinateReferenceSystem();
-            return coordinateReferenceSystem;
-        }
-        
-        /**
-         * Need to watch out here, the utm detection is in here, so there is the possibility of using two different projections
-         * @param featureCollection
-         * @return 
-         */
-        private MultiLineString getLinesFromFeatureCollection(FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection) {
-            List<LineString> lines = new LinkedList<LineString>();
-            MathTransform transform = null;
-            try {
-                transform = CRS.findMathTransform(REQUIRED_CRS_WGS84, utmCrs, true);
-            }
-            catch (FactoryException ex) {
-                return null; // do something better than this
-            }
-            FeatureIterator<SimpleFeature> features = featureCollection.features();
-            SimpleFeature feature = null;
-            while (features.hasNext()) {
-                feature = features.next();
-                Geometry geometry = (Geometry)feature.getDefaultGeometry();
-                
-                Geometry utmGeometry = null;
-                try {
-                    utmGeometry = JTS.transform(geometry, transform);
-                }
-                catch (TransformException ex) {
-                    // TODO handle exceptions
-                }
-                
-                Geometries geomType = Geometries.get(utmGeometry);
-                LineString lineString = null;
-                Coordinate[] coords = null;
-                switch (geomType) {
-                    case POLYGON:
-                    case MULTIPOLYGON:
-                        throw new UnsupportedFeatureTypeException("Polygons not supported in baseline");
-                    case LINESTRING:
-                        lineString = (LineString)utmGeometry;
-                        lines.add(lineString);
-                        break;
-                    case MULTILINESTRING:
-                        MultiLineString multiLineString = (MultiLineString)utmGeometry;
-                        for (int i=0; i < multiLineString.getNumGeometries(); i++) {
-                            lineString = (LineString)multiLineString.getGeometryN(i);
-                            lines.add(lineString);
-                        }
-                        break;
-                    case POINT:
-                    case MULTIPOINT:
-                        throw new UnsupportedFeatureTypeException("Points not supported in baseline");
-                    default:
-                        throw new UnsupportedFeatureTypeException("Only line type supported");
-                }
-            }
-            
-            LineString[] linesArr = new LineString[lines.size()];
-            lines.toArray(linesArr);
-            return geometryFactory.createMultiLineString(linesArr);
         }
 
         private VectorCoordAngle[] getEvenlySpacedOrthoVectorsAlongBaseline(MultiLineString baseline, double spacing) {
