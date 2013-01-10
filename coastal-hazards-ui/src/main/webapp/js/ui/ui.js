@@ -253,7 +253,7 @@ var UI = function() {
             $('#'+stage+'-list').children().remove();
         
             // Add a blank spot at the top of the select list
-            if (stage == 'baseline' || stage == 'transects') {
+            if (stage == 'baseline' || stage == 'transects'|| stage == 'intersections') {
                 $('#'+stage+'-list')
                 .append($("<option />")
                     .attr("value",'')
@@ -298,7 +298,7 @@ var UI = function() {
             LOG.debug('UI.js::populateFeaturesList: Re-binding select list');
             $('#'+stage+'-list').unbind('change');
             $('#'+stage+'-list').change(function(index, option) {
-                caller.listboxChanged()
+                caller.listboxChanged(index, option)
             }) 
             
             return  $('#'+stage+'-list');

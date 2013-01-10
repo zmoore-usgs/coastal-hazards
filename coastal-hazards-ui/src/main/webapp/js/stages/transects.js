@@ -70,7 +70,7 @@ var Transects = {
         });
     } ,       
     listboxChanged : function() {
-        LOG.info('Transects.js::transectListboxChanged: Transect listbox changed');
+        LOG.info('Transects.js::listboxChanged: Transect listbox changed');
         $("#transects-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
             if (layers.length) {
