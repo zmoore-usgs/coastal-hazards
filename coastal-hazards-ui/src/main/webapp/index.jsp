@@ -316,7 +316,7 @@
                                 <div class="fluid-row span12">
                                     <div class="well" id="intersections-well">
                                         <select id="intersections-list" style="width: 100%;"></select>
-                                        <button data-toggle="button" class="btn btn-success" disabled id="create-intersections-toggle">
+                                        <button data-toggle="button" class="btn btn-success" id="create-intersections-btn">
                                             <i class="icon-pencil icon-white"></i>
                                             &nbsp;Calculate Intersections
                                         </button>
