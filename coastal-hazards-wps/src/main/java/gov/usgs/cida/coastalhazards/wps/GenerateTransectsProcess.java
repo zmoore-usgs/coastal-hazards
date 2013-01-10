@@ -42,7 +42,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
         version = "1.0.0")
 public class GenerateTransectsProcess implements GeoServerProcess {
     
-    public static final String TRANSECT_ID_ATTR = "TransectId";
+    public static final String TRANSECT_ID_ATTR = "TransectID";
     
     private static final CoordinateReferenceSystem REQUIRED_CRS_WGS84 = DefaultGeographicCRS.WGS84;
     private ImportProcess importProcess;
@@ -56,7 +56,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
      */
     @DescribeResult(name = "transects", description = "Layer containing Transects normal to baseline")
     public String execute(
-            @DescribeParameter(name = "shorelines", min = 1, max = Integer.MAX_VALUE) SimpleFeatureCollection shorelines,
+            @DescribeParameter(name = "shorelines", min = 1, max = 1) SimpleFeatureCollection shorelines,
             @DescribeParameter(name = "baseline", min = 1, max = 1) SimpleFeatureCollection baseline,
             @DescribeParameter(name = "spacing", min = 1, max = 1) Double spacing,
             @DescribeParameter(name = "workspace", min = 1, max = 1) String workspace,
