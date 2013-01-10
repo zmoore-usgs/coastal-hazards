@@ -2,7 +2,6 @@ package gov.usgs.cida.coastalhazards.wps;
 
 import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
@@ -13,7 +12,6 @@ import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
-import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
 import gov.usgs.cida.coastalhazards.wps.geom.UnionSimpleFeatureCollection;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,11 +21,8 @@ import org.geoserver.wps.gs.ImportProcess;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.geometry.jts.Geometries;
-import org.geotools.geometry.jts.JTS;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
@@ -35,10 +30,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 /**
  *
@@ -49,6 +41,8 @@ import org.opengis.referencing.operation.TransformException;
         description = "Create a transect layer from the baseline and shorelines",
         version = "1.0.0")
 public class GenerateTransectsProcess implements GeoServerProcess {
+    
+    public static final String TRANSECT_ID_ATTR = "TransectId";
     
     private static final CoordinateReferenceSystem REQUIRED_CRS_WGS84 = DefaultGeographicCRS.WGS84;
     private ImportProcess importProcess;
@@ -62,7 +56,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
      */
     @DescribeResult(name = "transects", description = "Layer containing Transects normal to baseline")
     public String execute(
-            @DescribeParameter(name = "shorelines", min = 1, max = Integer.MAX_VALUE) SimpleFeatureCollection[] shorelines,
+            @DescribeParameter(name = "shorelines", min = 1, max = Integer.MAX_VALUE) SimpleFeatureCollection shorelines,
             @DescribeParameter(name = "baseline", min = 1, max = 1) SimpleFeatureCollection baseline,
             @DescribeParameter(name = "spacing", min = 1, max = 1) Double spacing,
             @DescribeParameter(name = "workspace", min = 1, max = 1) String workspace,
@@ -74,7 +68,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
     private class Process {
         private static final int LONG_TEST_LENGTH = 1000;
         
-        private final FeatureCollection<SimpleFeatureType, SimpleFeature>[] shorelines;
+        private final FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines;
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> baseline;
         private final double spacing;
         private final String workspace;
@@ -85,8 +79,9 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         
         private final GeometryFactory geometryFactory;
         private SimpleFeatureType simpleFeatureType;
+        private int transectId;
         
-        private Process(FeatureCollection<SimpleFeatureType, SimpleFeature>[] shorelines,
+        private Process(FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines,
                 FeatureCollection<SimpleFeatureType, SimpleFeature> baseline,
                 double spacing,
                 String workspace,
@@ -100,14 +95,11 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             this.layer = layer;
             
             this.geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
-            
+            this.transectId = 0; // start ids at 0
         }
         
         private String execute() throws Exception {
-            SimpleFeatureCollection unionedShorelines = 
-                    UnionSimpleFeatureCollection.unionCollectionsWithoutPreservingAttributes(shorelines);
-            
-            CoordinateReferenceSystem shorelinesCrs = CRSUtils.getCRSFromFeatureCollection(unionedShorelines);
+            CoordinateReferenceSystem shorelinesCrs = CRSUtils.getCRSFromFeatureCollection(shorelines);
             CoordinateReferenceSystem baselineCrs = CRSUtils.getCRSFromFeatureCollection(baseline);
             if (!CRS.equalsIgnoreMetadata(shorelinesCrs, REQUIRED_CRS_WGS84)) {
                 throw new UnsupportedCoordinateReferenceSystemException("Shorelines are not in accepted projection");
@@ -123,13 +115,14 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
             builder.setName("Transects");
             builder.add("geom", LineString.class, utmCrs);
+            builder.add(TRANSECT_ID_ATTR, Integer.class);
             this.simpleFeatureType = builder.buildFeatureType();
             
             // probably want to get UTM zone and pass it in
             MultiLineString baselineGeometry = CRSUtils.getLinesFromFeatureCollection(baseline, REQUIRED_CRS_WGS84, utmCrs);
             VectorCoordAngle[] vectsOnBaseline = getEvenlySpacedOrthoVectorsAlongBaseline(baselineGeometry, spacing);
             
-            MultiLineString shorelineGeometry = CRSUtils.getLinesFromFeatureCollection(unionedShorelines, REQUIRED_CRS_WGS84, utmCrs);
+            MultiLineString shorelineGeometry = CRSUtils.getLinesFromFeatureCollection(shorelines, REQUIRED_CRS_WGS84, utmCrs);
             SimpleFeatureCollection resultingTransects = trimTransectsToFeatureCollection(vectsOnBaseline, shorelineGeometry);
             String layerName = addResultAsLayer(resultingTransects, workspace, store, layer);
             return layerName;
@@ -187,7 +180,9 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         
         // Thought these would be longer, but I'll leave them here
         private SimpleFeature createFeatureInUTMZone(LineString line) {
-            return SimpleFeatureBuilder.build(this.simpleFeatureType, new Object[]{line}, null);
+            SimpleFeature feature = SimpleFeatureBuilder.build(this.simpleFeatureType, new Object[]{line, new Integer(transectId)}, null);
+            transectId++;
+            return feature;
         }
         
         private String addResultAsLayer(SimpleFeatureCollection transects, String workspace, String store, String layer) {
