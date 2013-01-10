@@ -12,9 +12,9 @@
     <packaging>jar</packaging>
     
     <name>CCH WPS Processes</name>
-	
+    
     <properties>
-
+        <netbeans.hint.license>usgs</netbeans.hint.license>
     </properties>
 	
     <dependencies>
