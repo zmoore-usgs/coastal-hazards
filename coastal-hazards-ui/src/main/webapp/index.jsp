@@ -296,7 +296,7 @@
                                                     <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
                                                     <label for="create-transects-input-spacing">Name</label>
                                                     <input type="text" id="create-transects-input-name">
-                                                    
+
                                                     <div class="control-group">
                                                         <button type="button" class="btn btn-success" id="create-transects-input-button">Calculate</button>
                                                     </div>
@@ -314,7 +314,13 @@
                                     <div class="span8" id="intersections-alert"></div>
                                 </div>
                                 <div class="fluid-row span12">
-                                    <button id="create-intersections-btn"  title="Show Intersections">Show Intersections</button>
+                                    <div class="well" id="intersections-well">
+                                        <select id="intersections-list" style="width: 100%;"></select>
+                                        <button data-toggle="button" class="btn btn-success" disabled id="create-intersections-toggle">
+                                            <i class="icon-pencil icon-white"></i>
+                                            &nbsp;Calculate Intersections
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 

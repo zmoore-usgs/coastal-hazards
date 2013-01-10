@@ -53,6 +53,13 @@ var Session = function(name, isPerm) {
                     }
                 }
             }
+            newSession.intersections = {
+                'default' : {
+                    view : {
+                        isSelected : false
+                    }
+                }
+            }
             
             me.session['sessions'][randID] = newSession;
             me.session['current-session'] = Object.extended();

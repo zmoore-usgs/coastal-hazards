@@ -37,6 +37,7 @@ $(document).ready(function() {
             Shorelines.populateFeaturesList,
             Baseline.populateFeaturesList,
             Transects.populateFeatureList,
+            Intersections.populateFeatureList,
             Results.populateFeatureList,
             function() {
                 $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
