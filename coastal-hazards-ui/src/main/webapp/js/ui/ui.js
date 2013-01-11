@@ -333,7 +333,10 @@ var UI = function() {
                     $(Object.values(v.attributes)).each(function(aInd, aVal) {
                         tbodyTr.append($('<td />').append(aVal))
                     })
-                    var year = this.attributes['DATE_'].split('/')[2];
+                    
+                    var dateAttribute = this.attributes['DATE_'] || this.attributes['Date_'];
+                    var year = dateAttribute.split('/')[2];
+                    
                     var  disableButton = $('<button />').addClass('btn btn-success btn-year-toggle').attr('type', 'button').attr('year', year).html('Disable');
                     tbodyTr.append($('<td />').append(disableButton))
                     tbody.append(tbodyTr);
