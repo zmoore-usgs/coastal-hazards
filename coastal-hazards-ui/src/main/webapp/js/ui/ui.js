@@ -253,7 +253,7 @@ var UI = function() {
             $('#'+stage+'-list').children().remove();
         
             // Add a blank spot at the top of the select list
-            if (stage == 'baseline' || stage == 'transects'|| stage == 'intersections') {
+            if (stage == Baseline.stage|| stage == Transects.stage||stage == Intersections.stage) {
                 $('#'+stage+'-list')
                 .append($("<option />")
                     .attr("value",'')

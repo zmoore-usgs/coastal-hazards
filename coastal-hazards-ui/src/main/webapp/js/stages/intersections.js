@@ -27,7 +27,7 @@ var Intersections = {
                         success : [
                         Intersections.populateFeatureList,
                         function() {
-                            $('#transects-list').val(data);
+                            $('#intersections-list').val(data);
                             Intersections.listboxChanged();
                         }      
                         ]
@@ -150,8 +150,8 @@ var Intersections = {
         var shorelines = args.shorelines || [];
         var transects = args.transects || '';
         var layer = args.layer || '';
-        var workspace = 'ch-output';
-        var store = 'Coastal Hazards Output';
+        var workspace = 'ch-input';
+        var store = 'Coastal Hazards Input';
         
         var wps = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
         '<ows:Identifier>gs:CalculateIntersections</ows:Identifier>' + 
@@ -180,26 +180,24 @@ var Intersections = {
         '</wps:Body>' + 
         '</wps:Reference>' + 
         '</wps:Input>' + 
-        //        Activate when available
-        //        
-        //        '<wps:Input>' + 
-        //        '<ows:Identifier>workspace</ows:Identifier>' + 
-        //        '<wps:Data>' + 
-        //        '<wps:LiteralData>'+workspace+'</wps:LiteralData>' + 
-        //        '</wps:Data>' + 
-        //        '</wps:Input>' +     
-        //        '<wps:Input>' + 
-        //        '<ows:Identifier>store</ows:Identifier>' + 
-        //        '<wps:Data>' + 
-        //        '<wps:LiteralData>'+store+'</wps:LiteralData>' + 
-        //        '</wps:Data>' + 
-        //        '</wps:Input>' +      
-        //        '<wps:Input>' + 
-        //        '<ows:Identifier>layer</ows:Identifier>' + 
-        //        '<wps:Data>' + 
-        //        '<wps:LiteralData>'+layer+'</wps:LiteralData>' + 
-        //        '</wps:Data>' + 
-        //        '</wps:Input>' +    
+        '<wps:Input>' + 
+        '<ows:Identifier>workspace</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+workspace+'</wps:LiteralData>' + 
+        '</wps:Data>' + 
+        '</wps:Input>' +     
+        '<wps:Input>' + 
+        '<ows:Identifier>store</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+store+'</wps:LiteralData>' + 
+        '</wps:Data>' + 
+        '</wps:Input>' +      
+        '<wps:Input>' + 
+        '<ows:Identifier>layer</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+layer+'</wps:LiteralData>' + 
+        '</wps:Data>' + 
+        '</wps:Input>' +    
         '</wps:DataInputs>' + 
         '<wps:ResponseForm>' + 
         '<wps:RawDataOutput>' + 
