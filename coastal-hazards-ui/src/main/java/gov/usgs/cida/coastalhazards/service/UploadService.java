@@ -103,31 +103,4 @@ public class UploadService extends HttpServlet {
         RequestResponseHelper.sendSuccessResponse(response, responseMap);
     }
 }
-//
-//    private String postToWPS(String url, String wfsEndpoint, File uploadedFile) throws IOException, MessagingException {
-//        HttpPost post = null;
-//        HttpClient httpClient = new DefaultHttpClient();
-//
-//        post = new HttpPost(url);
-//
-//        File wpsRequestFile = createWPSReceiveFilesXML(uploadedFile, wfsEndpoint);
-//        FileInputStream wpsRequestInputStream = null;
-//
-//      try {
-//            wpsRequestInputStream = new FileInputStream(wpsRequestFile);
-//
-//            AbstractHttpEntity entity = new InputStreamEntity(wpsRequestInputStream, wpsRequestFile.length());
-//
-//            post.setEntity(entity);
-//
-//            HttpResponse response = httpClient.execute(post);
-//
-//            return EntityUtils.toString(response.getEntity());
-//
-//        } finally {
-//            IOUtils.closeQuietly(wpsRequestInputStream);
-//            FileUtils.deleteQuietly(wpsRequestFile);
-//        }
-//    }
-//
 
