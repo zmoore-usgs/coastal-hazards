@@ -452,7 +452,25 @@ var Shorelines = {
             }
         })
         
-        $("table.tablesorter").tablesorter();
+        $.tablesorter.addParser({ 
+            id: 'visibility', 
+            is: function(s) { 
+                return false; 
+            }, 
+            format: function(s, table, cell, cellIndex) { 
+                return $(cell).find('.feature-toggle').toggleButtons('status') ? 1 : 0
+            }, 
+            // set type, either numeric or text 
+            type: 'numeric' 
+        }); 
+        
+        $("table.tablesorter").tablesorter({
+            headers : {
+                0 : {
+                    sorter : 'visibility'
+                }
+            }
+        });
     },
     listboxChanged : function() {
         LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
