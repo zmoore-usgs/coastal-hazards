@@ -188,13 +188,13 @@ var UI = function() {
                 autoUpload: true,
                 caller : caller,
                 text: {
-                    uploadButton: '<i class="icon-upload icon-white"></i>Upload ' + context
+                    uploadButton: '<i class="icon-upload icon-white"></i>Upload'
                 },
                 template: '<div class="qq-uploader span4">' +
-                '<pre class="qq-upload-drop-area span4 hidden"><span>{dragZoneText}</span></pre>' +
-                '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
-                '<ul class="qq-upload-list hidden" style="margin-top: 10px; text-align: center;"></ul>' +
-                '</div>',
+                    '<pre class="qq-upload-drop-area span4 hidden"><span>{dragZoneText}</span></pre>' +
+                    '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
+                    '<ul class="qq-upload-list hidden" style="margin-top: 10px; text-align: center;"></ul>' +
+                    '</div>',
                 classes: {
                     success: 'alert alert-success',
                     fail: 'alert alert-error'
@@ -214,27 +214,27 @@ var UI = function() {
                                 importName : importName, 
                                 workspace : 'ch-input',
                                 callbacks : [function(data) {
-                                    if (data.success === 'true') {
-                                        LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
-                                        CONFIG.ows.getWMSCapabilities({
-                                            callbacks : {
-                                                success : [
-                                                function (data) {
-                                                    CONFIG.tempSession.updateLayersFromWMS(data);
-                                                    CONFIG.ui.populateFeaturesList({
-                                                        caps : data,
-                                                        caller : caller
-                                                    });
+                                        if (data.success === 'true') {
+                                            LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
+                                            CONFIG.ows.getWMSCapabilities({
+                                                callbacks : {
+                                                    success : [
+                                                        function (data) {
+                                                            CONFIG.tempSession.updateLayersFromWMS(data);
+                                                            CONFIG.ui.populateFeaturesList({
+                                                                caps : data,
+                                                                caller : caller
+                                                            });
+                                                        }
+                                                    ],
+                                                    error : []
                                                 }
-                                                ],
-                                                error : []
-                                            }
-                                        })
-                                    } else {
-                                        // TODO - Notify the user
-                                        LOG.warn(data.error);
-                                    }
-                                }]
+                                            })
+                                        } else {
+                                            // TODO - Notify the user
+                                            LOG.warn(data.error);
+                                        }
+                                    }]
                             });
                         }
                     }
@@ -256,8 +256,8 @@ var UI = function() {
             if (stage == Baseline.stage|| stage == Transects.stage||stage == Intersections.stage) {
                 $('#'+stage+'-list')
                 .append($("<option />")
-                    .attr("value",'')
-                    .text(''));
+                .attr("value",'')
+                .text(''));
             }
         
             $(caps.capability.layers).each(function(i, layer) { 
@@ -269,8 +269,8 @@ var UI = function() {
                 if (layer.prefix === 'sample' || (layer.prefix === 'ch-input' && title.has(currentSessionKey) )) {
                         
                     var shortenedTitle = title.has(currentSessionKey) ?  
-                    title.remove(currentSessionKey + '_') : 
-                    title;
+                        title.remove(currentSessionKey + '_') : 
+                        title;
                     
                     var type = title.substr(title.lastIndexOf('_'));
                     if (suffixes.length == 0 || suffixes.find(type.toLowerCase())) {
@@ -283,8 +283,8 @@ var UI = function() {
                         
                         $('#'+stage+'-list')
                         .append($("<option />")
-                            .attr("value",layer.name)
-                            .text(shortenedTitle));
+                        .attr("value",layer.name)
+                        .text(shortenedTitle));
                             
                         
                         CONFIG.tempSession.setStageConfig({
@@ -334,10 +334,22 @@ var UI = function() {
                         tbodyTr.append($('<td />').append(aVal))
                     })
                     
+                    var layer =  CONFIG.tempSession.getStageConfig({
+                        name : layerName,
+                        stage : Shorelines.stage
+                    })
                     var dateAttribute = this.attributes['DATE_'] || this.attributes['Date_'];
                     var year = dateAttribute.split('/')[2];
-                    
-                    var  disableButton = $('<button />').addClass('btn btn-success btn-year-toggle').attr('type', 'button').attr('year', year).html('Disable');
+                    var isVisible = layer.view["years-disabled"].indexOf(year) == -1;
+                    var  disableButton = $('<button />').addClass('btn btn-year-toggle').attr({
+                        'type' : 'button',
+                        'year' :  year
+                    }).html(isVisible ? 'Disable' : 'Enable');
+                    if (isVisible) {
+                        disableButton.addClass('btn-success');
+                    } else {
+                        disableButton.addClass('btn-danger');
+                    }
                     tbodyTr.append($('<td />').append(disableButton))
                     tbody.append(tbodyTr);
                 });
@@ -348,19 +360,17 @@ var UI = function() {
                     
                 LOG.debug('UI.js::showShorelineInfo: Table created, displaying new identify window');
                 CONFIG.map.getMap().addPopup(new OpenLayers.Popup.FramedCloud(
-                    "FramedCloud", 
-                    CONFIG.map.getMap().getLonLatFromPixel(event.xy),
-                    null,
-                    shorelineIdContainer.html(),
-                    null,
-                    true
-                    ));
+                "FramedCloud", 
+                CONFIG.map.getMap().getLonLatFromPixel(event.xy),
+                null,
+                shorelineIdContainer.html(),
+                null,
+                true
+            ));
                         
                 $('.btn-year-toggle').click(function(event) {
                     var year = $(event.target).attr('year');
-                    var toggle = $('#shoreline-color-table-row-'+year+' .toggle');
-                    
-                    toggle.click();
+                    var toggle = $('#shoreline-color-table-row-'+year+' .toggle-button');
                     
                     var allButtonsOfSameYear = $('.btn-year-toggle[year="'+year+'"]');
                     if (toggle.hasClass('disabled')) {
@@ -372,6 +382,8 @@ var UI = function() {
                         allButtonsOfSameYear.addClass('btn-success');
                         allButtonsOfSameYear.html('Disable');
                     }
+                    
+                    toggle.toggleButtons('toggleState');
                 });
                         
             } else {

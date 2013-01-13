@@ -3,12 +3,16 @@ package gov.usgs.cida.coastalhazards.service;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.communication.UploadHandler;
+import gov.usgs.cida.utilities.file.FileHelper;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import org.apache.commons.fileupload.FileUploadException;
@@ -94,13 +98,25 @@ public class UploadService extends HttpServlet {
             RequestResponseHelper.sendErrorResponse(response, responseMap);
             return;
         }
+        Enumeration<? extends ZipEntry> entries = new ZipFile(uploadDestinationFile).entries();
+        Boolean needsMacFix = false;
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            String entryName = entry.getName();
+            if ((entry.isDirectory() && entryName.toLowerCase().contains("MACOSX"))
+                    || entryName.charAt(0) == '.') {
+                needsMacFix = true;
+            }
+        }
+        if (needsMacFix) {
+            FileHelper.fixMacZip(uploadDestinationFile);
+        }
 
         responseMap.put("file-token", destinationDirectoryChild);
         responseMap.put("file-checksum", Long.toString(FileUtils.checksumCRC32(uploadDestinationFile)));
         responseMap.put("file-size", Long.toString(FileUtils.sizeOf(uploadDestinationFile)));
         responseMap.put("file-name", fileName);
-        
+
         RequestResponseHelper.sendSuccessResponse(response, responseMap);
     }
 }
-

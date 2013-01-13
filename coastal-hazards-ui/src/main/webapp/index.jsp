@@ -126,8 +126,12 @@
 
 
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
+        
+        <link type="text/css" rel="stylesheet" href="css/jquery-bootstrap-toggle/bootstrap-toggle-buttons.css" />
+        <script type="text/javascript" src="js/jquery-bootstrap-toggle/jquery.toggle.buttons.js"></script>
 
         <script type="text/javascript" src="pages/index/onReady.js"></script>
+        
     </head>
     <body>
         <jsp:include page="template/USGSHeader.jsp">
@@ -147,11 +151,14 @@
                             <li><a href="#transects" data-toggle="tab"><img id="transects_img" src="images/workflow_figures/transects_future.png" title="Calculate Transects"/></a></li>
                             <li><a href="#intersections" data-toggle="tab"><img id="intersections_img" src="images/workflow_figures/intersections_future.png" title="Show Intersections"/></a></li>
                             <li><a href="#results" data-toggle="tab"><img id="results_img" src="images/workflow_figures/results_future.png" title="Display Results"/></a></li>
+                            <% if (development) { %>
+                            <li><button class="btn btn-success" id="clear-sessions-btn">Clear Sessions</button>
+                            <% } %>
                         </ul>
                     </div>
 
                     <!-- Toolbox -->
-                    <div class="span6">
+                    <div class="span4">
                         <div id="toolbox-well" class="well well-small tab-content">
 
                             <!-- Shorelines -->
@@ -166,6 +173,7 @@
                                         <div id="shorelines-uploader"></div>
                                     </div>
                                 </div>
+                                
                                 <div class="fluid-row span12">
                                     <div class="tabbable">
                                         <ul class="nav nav-tabs" id="shoreline-table-navtabs">
@@ -351,7 +359,7 @@
                     </div>
 
                     <!-- MAP -->
-                    <div class="span5">
+                    <div class="span7">
                         <div id="map-well" class="well well-small tab-content">
                             <div id="map"></div>
                         </div>

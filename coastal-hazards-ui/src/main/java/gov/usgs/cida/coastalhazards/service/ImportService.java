@@ -100,12 +100,11 @@ public class ImportService extends HttpServlet {
         }
 
         FileFilter zipFileFilter = new WildcardFileFilter("*.zip");
-        
+
         // We assume there is only one file per directory
         shapeFile = fileDirectoryHandle.listFiles(zipFileFilter)[0];
         name = StringUtils.isBlank(featureName) ? FilenameUtils.removeExtension(shapeFile.getName()) : featureName;
         HttpResponse importResponse = geoserverHandler.importFeatures(shapeFile, workspace, name);
-
         String responseText = IOUtils.toString(importResponse.getEntity().getContent());
 
         if (!responseText.toLowerCase().contains("ows:exception")) {

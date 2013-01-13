@@ -13,9 +13,12 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.codec.binary.Base64;
@@ -44,7 +47,7 @@ public class FileHelper {
      */
     public static byte[] base64Encode(final File input) throws IOException {
         byte[] result = null;
-        
+
         result = FileHelper.base64Encode(FileHelper.getByteArrayFromFile(input));
 
         return result;
@@ -609,6 +612,69 @@ public class FileHelper {
         }
     }
 
+    public static void fixMacZip(File zipFile) throws IOException {
+        ZipFile zf = new ZipFile(zipFile);
+        Enumeration<? extends ZipEntry> entries = zf.entries();
+        List<String> zipEntry = new ArrayList<String>();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            String entryName = entry.getName();
+            if ((entry.isDirectory() && entryName.toLowerCase().contains("MACOSX")) || entryName.charAt(0) == '.') {
+                zipEntry.add(entry.getName());
+            }
+        }
+
+        if (!zipEntry.isEmpty()) {
+            deleteZipEntries(zipFile, zipEntry.toArray(new String[0]));
+        }
+    }
+
+    // http://www.javaer.org/java/1-zip/3-delete-zipentry-from-zip-file
+    public static void deleteZipEntries(File zipFile,
+            String[] files) throws IOException {
+        // get a temp file
+        File tempFile = File.createTempFile(zipFile.getName(), null);
+        // delete it, otherwise you cannot rename your existing zip to it.
+        tempFile.delete();
+        tempFile.deleteOnExit();
+        boolean renameOk = zipFile.renameTo(tempFile);
+        if (!renameOk) {
+            throw new RuntimeException("could not rename the file " + zipFile.getAbsolutePath() + " to " + tempFile.getAbsolutePath());
+        }
+        byte[] buf = new byte[1024];
+
+        ZipInputStream zin = new ZipInputStream(new FileInputStream(tempFile));
+        ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(zipFile));
+        try {
+            ZipEntry entry = zin.getNextEntry();
+            while (entry != null) {
+                String name = entry.getName();
+                boolean toBeDeleted = false;
+                for (String f : files) {
+                    if (f.equals(name)) {
+                        toBeDeleted = true;
+                        break;
+                    }
+                }
+                if (!toBeDeleted) {
+                    // Add ZIP entry to output stream.
+                    zout.putNextEntry(new ZipEntry(name));
+                    // Transfer bytes from the ZIP file to the output file
+                    int len;
+                    while ((len = zin.read(buf)) > 0) {
+                        zout.write(buf, 0, len);
+                    }
+                }
+                entry = zin.getNextEntry();
+            }
+        } finally {
+            IOUtils.closeQuietly(zin);
+            IOUtils.closeQuietly(zout);
+            FileUtils.deleteQuietly(tempFile);
+        }
+
+    }
+
     public static File zipFile(File file, String newName, FileFilter filter) throws FileNotFoundException, IOException {
         String zipFileName = StringUtils.isBlank(newName) ? file.getName() : newName;
 
@@ -622,14 +688,14 @@ public class FileHelper {
             files = file.listFiles(filter != null ? filter : new WildcardFileFilter("*"));
             zipFile = new File(file.getPath() + File.separator + zipFileName + ".zip");
         } else {
-            files = new File[] {file};
+            files = new File[]{file};
             zipFile = new File(file.getParentFile().getPath() + File.separator + zipFileName + ".zip");
         }
 
         try {
             fos = new FileOutputStream(zipFile);
             zos = new ZipOutputStream(fos);
-            
+
             for (File fileItem : files) {
                 fis = new FileInputStream(fileItem);
                 ZipEntry ze = new ZipEntry(fileItem.getName());
