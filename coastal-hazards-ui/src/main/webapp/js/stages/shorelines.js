@@ -317,9 +317,9 @@ var Shorelines = {
         var colorTableHeadR = $('<tr />');
         var colorTableBody = $('<tbody />');
         
-        colorTableHeadR.append($('<td />').html('Selected'));
-        colorTableHeadR.append($('<td />').html('Year'));
-        colorTableHeadR.append($('<td />').html('Color'));
+        colorTableHeadR.append($('<th />').html('Selected'));
+        colorTableHeadR.append($('<th />').html('Year'));
+        colorTableHeadR.append($('<th />').attr('data-sorter',false).html('Color'));
         colorTableHead.append(colorTableHeadR);
         colorTable.append(colorTableHead);
     			
@@ -353,10 +353,11 @@ var Shorelines = {
             tableData.append(toggleDiv);
             tableRow.append(tableData);
             tableRow.append($('<td />').html(year));
-            tableRow.append($('<td />').attr({
-                style : 'background-color:' + colorGroup[0] + ';',
-                id : 'shoreline-color-table-color-'+year
-            }).html('&nbsp;'));
+            tableRow.append($('<td />')
+                .attr({
+                    style : 'background-color:' + colorGroup[0] + ';',
+                    id : 'shoreline-color-table-color-'+year
+                }).html('&nbsp;'));
             
             colorTableBody.append(tableRow);
         })
@@ -395,8 +396,6 @@ var Shorelines = {
         tabContent.append(
             $('<div />').addClass('tab-pane active').attr('id', this.name).append(
                 colorTableContainer));
-                        
-        $("table.tablesorter").tablesorter();
                         
         $('.feature-toggle').toggleButtons({
             style: {
@@ -453,7 +452,7 @@ var Shorelines = {
             }
         })
         
-           
+        $("table.tablesorter").tablesorter();
     },
     listboxChanged : function() {
         LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
