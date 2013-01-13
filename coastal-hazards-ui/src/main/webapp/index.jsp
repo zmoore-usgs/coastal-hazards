@@ -147,6 +147,9 @@
                             <li><a href="#transects" data-toggle="tab"><img id="transects_img" src="images/workflow_figures/transects_future.png" title="Calculate Transects"/></a></li>
                             <li><a href="#intersections" data-toggle="tab"><img id="intersections_img" src="images/workflow_figures/intersections_future.png" title="Show Intersections"/></a></li>
                             <li><a href="#results" data-toggle="tab"><img id="results_img" src="images/workflow_figures/results_future.png" title="Display Results"/></a></li>
+                            <% if (development) { %>
+                            <li><button class="btn btn-success" id="clear-sessions-btn">Clear Sessions</button>
+                            <% } %>
                         </ul>
                     </div>
 
