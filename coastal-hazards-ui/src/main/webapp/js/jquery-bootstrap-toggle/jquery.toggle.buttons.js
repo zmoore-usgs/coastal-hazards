@@ -81,7 +81,11 @@
               $element
                 .css('width', options.width * 2)
                 .find('>div').css('width', options.width * 3)
-                .find('>span, >label').css('width', options.width);
+                // IVAN- Necessary hack here. For some reason, at least in my testing,
+                // when the label is the same width is exactly half the width of the div,
+                // the "off" label becomes invisible. I'm not sure why. Making it .1 pixel
+                // smaller seems to do the trick
+                .find('>span, >label').css('width', options.width - .1); 
 
               // height of the bootstrap-toggle-button
               $element

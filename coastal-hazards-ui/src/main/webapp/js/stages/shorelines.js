@@ -395,8 +395,7 @@ var Shorelines = {
                         
         $('.feature-toggle').toggleButtons({
             style: {
-                enabled: "primary",
-                disabled: "danger"
+                enabled: "primary"
             },
             label: {
                 enabled: "ON",

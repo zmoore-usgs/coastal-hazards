@@ -171,7 +171,6 @@
                                     <div class="well" id="shorelines-well">
                                         <select id="shorelines-list" multiple="multiple" style="width: 100%;"></select>
                                         <div id="shorelines-uploader"></div>
-                                        <div id="test"><input type="checkbox"></div>
                                     </div>
                                 </div>
                                 
