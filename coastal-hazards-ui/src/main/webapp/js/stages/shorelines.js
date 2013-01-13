@@ -338,12 +338,17 @@ var Shorelines = {
             var tableData = $('<td />').attr('id','shoreline-color-table-toggle-'+year);
             var toggleDiv = $('<div />').addClass('feature-toggle');
             
-            toggleDiv.append($('<input />').attr({
+            var checkbox = $('<input />').attr({
                 type : 'checkbox',
-                checked : checked ? 'checked="checked"' : 'checked=""',
                 name : 'checkbox-'+year,
                 id : 'checkbox-'+year
-            }).val(year));
+            }).val(year)
+            
+            if (checked) {
+                checkbox.attr('checked', 'checked');
+            }
+            
+            toggleDiv.append(checkbox);
             
             tableData.append(toggleDiv);
             tableRow.append(tableData);
@@ -401,7 +406,6 @@ var Shorelines = {
                 enabled: "ON",
                 disabled: "OFF"
             },
-            animated: false,
             attachedLayer : layerName,
             onChange : function($element, status, event) {
                 var layerName = this.attachedLayer;
@@ -413,14 +417,21 @@ var Shorelines = {
                     
                 LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for year ' + year + ' on layer ' + layerName);
                         
+                var idTableButtons = $('.btn-year-toggle[year="'+year+'"]');
                 if (!status) {
                     if (sessionLayer.view["years-disabled"].indexOf(year) == -1) {
                         sessionLayer.view["years-disabled"].push(year);
                     }
+                    idTableButtons.removeClass('btn-success');
+                    idTableButtons.addClass('btn-danger');
+                    idTableButtons.html('Enable');
                 } else {
                     while (sessionLayer.view["years-disabled"].indexOf(year) != -1) {
                         sessionLayer.view["years-disabled"].remove(year);
                     }
+                    idTableButtons.removeClass('btn-danger');
+                    idTableButtons.addClass('btn-success');
+                    idTableButtons.html('Disable');
                 }
                         
                 // Persist the session
