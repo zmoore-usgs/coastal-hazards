@@ -158,7 +158,9 @@ var Shorelines = {
                     filterSet += '<ogc:Literal>' + colorLimitPairs[pairsIndex][0] + '</ogc:Literal>'
                     filterSet += '<ogc:Literal>' + colorLimitPairs[pairsIndex][1] + '</ogc:Literal>'
                 }
-                return filterSet + '<ogc:Literal>' + Util.getRandomColor({ fromDefinedColors : true }).capitalize(true) + '</ogc:Literal>';
+                return filterSet + '<ogc:Literal>' + Util.getRandomColor({
+                    fromDefinedColors : true
+                }).capitalize(true) + '</ogc:Literal>';
             }
             sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>' + 
             '<StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' + 
@@ -308,12 +310,19 @@ var Shorelines = {
         
         event.object.events.unregister('loadend', event.object, Shorelines.createFeatureTable);
         
-        var colorTableHTML = [];
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table header');
-        colorTableHTML.push("<div id='shoreline-table-container'><table class='table table-bordered table-condensed tablesorter shoreline-table' ><thead><tr><td>Selected</td><td>YEAR<td>COLOR</td>");
-    			
-        colorTableHTML.push("</tr></thead><tbody>");
+        var colorTableContainer = $('<div />').attr('id', 'shoreline-table-container');
+        var colorTable = $('<table />').addClass('table table-bordered table-condensed tablesorter shoreline-table');
+        var colorTableHead = $('<thead />');
+        var colorTableHeadR = $('<tr />');
+        var colorTableBody = $('<tbody />');
         
+        colorTableHeadR.append($('<td />').html('Selected'));
+        colorTableHeadR.append($('<td />').html('Year'));
+        colorTableHeadR.append($('<td />').html('Color'));
+        colorTableHead.append(colorTableHeadR);
+        colorTable.append(colorTableHead);
+    			
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table body');
         
         var sessionLayer = CONFIG.tempSession.getStageConfig({
@@ -323,20 +332,32 @@ var Shorelines = {
         
         $(event.object.colorGroups).each(function(i,colorGroup) {
             var year = colorGroup[1].split('/')[2];
-            var checked = (sessionLayer.view["years-disabled"].indexOf(year) == -1) ? "checked='checked'" : "";
-            colorTableHTML.push("<tr id='shoreline-color-table-row-" +year +"'>" +
-                "<td id='shoreline-color-table-toggle-"+year+"'>" + 
-                "<div class='toggle feature-toggle' data-enabled='ON' data-disabled='OFF' data-toggle='toggle'>" + 
-                "<input class='checkbox' type='checkbox' "+ checked +" name='checkbox-"+year+"' id='checkbox-"+year+"' value="+year+">" + 
-                "<label class='check' for='checkbox-"+year+"'></label>" + 
-                "</div>" + 
-                "</td>" + 
-                "<td>"+ year +"</td>" + 
-                "<td style='background-color:" + colorGroup[0] + ";' id='shoreline-color-table-color-"+year+"'>&nbsp;</td>");
-            colorTableHTML.push("</tr>");
+            var checked = sessionLayer.view["years-disabled"].indexOf(year) == -1;
+            
+            var tableRow = $('<tr />').attr('id', 'shoreline-color-table-row-' +year);
+            var tableData = $('<td />').attr('id','shoreline-color-table-toggle-'+year);
+            var toggleDiv = $('<div />').addClass('feature-toggle');
+            
+            toggleDiv.append($('<input />').attr({
+                type : 'checkbox',
+                checked : checked ? 'checked="checked"' : 'checked=""',
+                name : 'checkbox-'+year,
+                id : 'checkbox-'+year
+            }).val(year));
+            
+            tableData.append(toggleDiv);
+            tableRow.append(tableData);
+            tableRow.append($('<td />').html(year));
+            tableRow.append($('<td />').attr({
+                style : 'background-color:' + colorGroup[0] + ';',
+                id : 'shoreline-color-table-color-'+year
+            }).html('&nbsp;'));
+            
+            colorTableBody.append(tableRow);
         })
         
-        colorTableHTML.push("</tbody></table></div>");
+        colorTable.append(colorTableBody);
+        colorTableContainer.append(colorTable);
         
         LOG.debug('Shorelines.js::createFeatureTable:: Color feature table created');
         
@@ -357,77 +378,72 @@ var Shorelines = {
             }
         })
 
-        navTabs.append($('<li />').addClass('active').append($('<a />').attr('href', '#' + this.name).attr('data-toggle', 'tab').html(this.name)));
+        navTabs.append(
+            $('<li />').addClass('active').append(
+                $('<a />').attr({
+                    href :'#' + this.name,
+                    'data-toggle' : 'tab'
+                }).html(this.name)));
         
         LOG.debug('Shorelines.js::createFeatureTable:: Adding color feature table to DOM');
-        tabContent.
-        append($('<div />').addClass('tab-pane').addClass('active').attr('id', this.name).html(colorTableHTML.join('')))
+        
+        tabContent.append(
+            $('<div />').addClass('tab-pane active').attr('id', this.name).append(
+                colorTableContainer));
                         
         $("table.tablesorter").tablesorter();
-        
-        $('.feature-toggle').each(function(i,toggle) {
-            $(toggle).toggleSlide({
-                onClick : function(event, status) {
-                    // Sometimes the click event comes twice if clicking on the toggle graphic instead of 
-                    // the toggle text. When this happens, check for event.timeStamp being 0. When that happens,
-                    // we've already handled the onclick 
-                    LOG.trace('Shorelines.js::?: Event timestamp:' + event.timeStamp);
-                    if (event.timeStamp) {
-                        var layerName = this.attachedLayer;
-                        var active = !$(event.target).parent().find('input')[0].checked;
-                        var year = $(event.target).parent().find('input').val();
-                        var sessionLayer = CONFIG.tempSession.getStageConfig({
-                            name : layerName,
-                            stage : Shorelines.stage
-                        });
-                        LOG.info('Shorelines.js::?: User has selected to ' + (active ? 'activate' : 'deactivate') + ' shoreline for year ' + year + ' on layer ' + layerName);
                         
-                        var idTableButtons = $('.btn-year-toggle[year="'+year+'"]');
-                        if (!active) {
-                            if (sessionLayer.view["years-disabled"].indexOf(year) == -1) {
-                                sessionLayer.view["years-disabled"].push(year);
-                            }
-                            idTableButtons.removeClass('btn-success');
-                            idTableButtons.addClass('btn-danger');
-                            idTableButtons.html('Enable');
-                        } else {
-                            while (sessionLayer.view["years-disabled"].indexOf(year) != -1) {
-                                sessionLayer.view["years-disabled"].remove(year);
-                            }
-                            idTableButtons.removeClass('btn-danger');
-                            idTableButtons.addClass('btn-success');
-                            idTableButtons.html('Disable');
-                        }
+        $('.feature-toggle').toggleButtons({
+            style: {
+                enabled: "primary",
+                disabled: "danger"
+            },
+            label: {
+                enabled: "ON",
+                disabled: "OFF"
+            },
+            animated: false,
+            attachedLayer : layerName,
+            onChange : function($element, status, event) {
+                var layerName = this.attachedLayer;
+                var year = $element.parent().find('input').val();
+                var sessionLayer = CONFIG.tempSession.getStageConfig({
+                    name : layerName,
+                    stage : Shorelines.stage
+                });
+                    
+                LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for year ' + year + ' on layer ' + layerName);
                         
-                        // Persist the session
-                        CONFIG.tempSession.setStageConfig({ 
-                            stage :Shorelines.stage,
-                            config : sessionLayer
-                        });
-                        
-                        
-                        var layer  = CONFIG.map.getMap().getLayersByName(layerName.split(':')[1])[0];
-                        var sldBody = Shorelines.createSLDBody({
-                            colorYearPairs : layer.colorGroups,
-                            groupColumn : layer.groupByAttribute,
-                            layerTitle : layerName.split(':')[1],
-                            layerName : layerName
-                        })
-                        layer.params.SLD_BODY = sldBody;
-                        layer.redraw();
+                if (!status) {
+                    if (sessionLayer.view["years-disabled"].indexOf(year) == -1) {
+                        sessionLayer.view["years-disabled"].push(year);
                     }
-                },
-                text: {
-                    enabled: false, 
-                    disabled: false
-                },
-                style: {
-                    enabled: 'primary',
-                    disabled : 'danger'
-                },
-                attachedLayer : layerName
-            })
+                } else {
+                    while (sessionLayer.view["years-disabled"].indexOf(year) != -1) {
+                        sessionLayer.view["years-disabled"].remove(year);
+                    }
+                }
+                        
+                // Persist the session
+                CONFIG.tempSession.setStageConfig({ 
+                    stage :Shorelines.stage,
+                    config : sessionLayer
+                });
+                        
+                        
+                var layer  = CONFIG.map.getMap().getLayersByName(layerName.split(':')[1])[0];
+                var sldBody = Shorelines.createSLDBody({
+                    colorYearPairs : layer.colorGroups,
+                    groupColumn : layer.groupByAttribute,
+                    layerTitle : layerName.split(':')[1],
+                    layerName : layerName
+                })
+                layer.params.SLD_BODY = sldBody;
+                layer.redraw();
+            }
         })
+        
+           
     },
     listboxChanged : function() {
         LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');

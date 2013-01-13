@@ -188,7 +188,7 @@ var UI = function() {
                 autoUpload: true,
                 caller : caller,
                 text: {
-                    uploadButton: '<i class="icon-upload icon-white"></i>Upload ' + context
+                    uploadButton: '<i class="icon-upload icon-white"></i>Upload'
                 },
                 template: '<div class="qq-uploader span4">' +
                 '<pre class="qq-upload-drop-area span4 hidden"><span>{dragZoneText}</span></pre>' +

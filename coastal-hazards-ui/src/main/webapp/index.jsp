@@ -126,8 +126,12 @@
 
 
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
+        
+        <link type="text/css" rel="stylesheet" href="css/jquery-bootstrap-toggle/bootstrap-toggle-buttons.css" />
+        <script type="text/javascript" src="js/jquery-bootstrap-toggle/jquery.toggle.buttons.js"></script>
 
         <script type="text/javascript" src="pages/index/onReady.js"></script>
+        
     </head>
     <body>
         <jsp:include page="template/USGSHeader.jsp">
@@ -154,7 +158,7 @@
                     </div>
 
                     <!-- Toolbox -->
-                    <div class="span6">
+                    <div class="span4">
                         <div id="toolbox-well" class="well well-small tab-content">
 
                             <!-- Shorelines -->
@@ -167,8 +171,10 @@
                                     <div class="well" id="shorelines-well">
                                         <select id="shorelines-list" multiple="multiple" style="width: 100%;"></select>
                                         <div id="shorelines-uploader"></div>
+                                        <div id="test"><input type="checkbox"></div>
                                     </div>
                                 </div>
+                                
                                 <div class="fluid-row span12">
                                     <div class="tabbable">
                                         <ul class="nav nav-tabs" id="shoreline-table-navtabs">
@@ -354,7 +360,7 @@
                     </div>
 
                     <!-- MAP -->
-                    <div class="span5">
+                    <div class="span7">
                         <div id="map-well" class="well well-small tab-content">
                             <div id="map"></div>
                         </div>
