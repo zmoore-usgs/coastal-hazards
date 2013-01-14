@@ -15,13 +15,24 @@ var Map = function() {
     
     
     var layer = {};
-    layer["sat"] = new OpenLayers.Layer.Google(
-        "Google Satellite",
+    
+    layer['esriOcean'] = new OpenLayers.Layer.XYZ("ESRI Ocean Basemap",
+        "http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/${z}/${y}/${x}",
         {
-            type: google.maps.MapTypeId.SATELLITE, 
-            numZoomLevels: 20
-        });
-
+            sphericalMercator: true,
+            isBaseLayer: true,
+            numZoomLevels : 13
+        }
+        );
+    layer['worldImagery'] = new OpenLayers.Layer.XYZ("ESRI World Imagery",
+        "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
+        {
+            sphericalMercator: true,
+            isBaseLayer: true,
+            numZoomLevels : 20
+        }
+        );
+    
     layer['baseline-draw-layer']  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
         strategies : [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
         projection: new OpenLayers.Projection('EPSG:900913'),
@@ -60,7 +71,7 @@ var Map = function() {
     
     wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
             
-    me.map.addLayer(layer["sat"]);
+    me.map.addLayer(layer["worldImagery"]);
     
     me.map.addLayer(layer['baseline-draw-layer']);
     
