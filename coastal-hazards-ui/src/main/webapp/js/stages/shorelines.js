@@ -317,7 +317,7 @@ var Shorelines = {
         var colorTableHeadR = $('<tr />');
         var colorTableBody = $('<tbody />');
         
-        colorTableHeadR.append($('<th />').html('Selected'));
+        colorTableHeadR.append($('<th />').addClass('shoreline-table-selected-head-column').html('Visibility'));
         colorTableHeadR.append($('<th />').html('Year'));
         colorTableHeadR.append($('<th />').attr('data-sorter',false).html('Color'));
         colorTableHead.append(colorTableHeadR);
