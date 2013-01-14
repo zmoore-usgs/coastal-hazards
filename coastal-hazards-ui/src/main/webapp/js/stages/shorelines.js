@@ -453,9 +453,13 @@ var Shorelines = {
                 })
                 layer.params.SLD_BODY = sldBody;
                 layer.redraw();
+                $("table.tablesorter").trigger('update', false)
             }
         })
         
+        Shorelines.setupTableSorting();
+    },
+    setupTableSorting : function() {
         $.tablesorter.addParser({ 
             id: 'visibility', 
             is: function(s) { 
