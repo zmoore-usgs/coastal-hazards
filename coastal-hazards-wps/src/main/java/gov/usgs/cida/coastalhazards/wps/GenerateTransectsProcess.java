@@ -76,7 +76,8 @@ public class GenerateTransectsProcess implements GeoServerProcess {
     
     private class Process {
         private static final double MIN_TRANSECT_LENGTH = 50.0d; // meters
-        private static final int LONG_TEST_LENGTH = 50000; // meters
+        private static final double TRANSECT_BUFFER = 5.0d; // meters
+        private static final double LONG_TEST_LENGTH = 1000.d; // meters
         
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines;
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> baseline;
@@ -165,12 +166,12 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             PreparedGeometry preparedShorelines = PreparedGeometryFactory.prepare(shorelines);
             STRtree tree = new ShorelineSTRTreeBuilder(shorelines).build();
             
-            double testLength = 500.0d;
+            double testLength = LONG_TEST_LENGTH;
             while (!shorelines.isWithinDistance(vectsOnBaseline[0].getStartAsPoint(), testLength)) {
                 testLength *= 2;
             }
             // add an extra 1k for good measure
-            testLength += 1000.0d;
+            testLength += LONG_TEST_LENGTH;
             
             for (VectorCoordAngle vect : vectsOnBaseline) {
                 LineString testLine = vect.getLineOfLength(testLength);
@@ -193,7 +194,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
                         }
                     }
                 }
-                LineString clipped = vect.getLineOfLength(maxDistance);
+                LineString clipped = vect.getLineOfLength(maxDistance + TRANSECT_BUFFER);
                 SimpleFeature feature = createFeatureInUTMZone(clipped);
                 
                 sfList.add(feature);
