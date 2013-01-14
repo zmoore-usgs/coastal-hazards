@@ -1,18 +1,23 @@
 package gov.usgs.cida.coastalhazards.wps;
 
 import com.vividsolutions.jts.algorithm.Angle;
+import com.vividsolutions.jts.algorithm.LineIntersector;
+import com.vividsolutions.jts.algorithm.RobustLineIntersector;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
+import com.vividsolutions.jts.index.strtree.STRtree;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
-import gov.usgs.cida.coastalhazards.wps.geom.UnionSimpleFeatureCollection;
+import gov.usgs.cida.coastalhazards.wps.geom.ShorelineSTRTreeBuilder;
 import java.util.LinkedList;
 import java.util.List;
 import org.geoserver.catalog.ProjectionPolicy;
@@ -31,6 +36,10 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+/* Can you hear me now? */
+
+// test 
 
 /**
  *
@@ -66,7 +75,8 @@ public class GenerateTransectsProcess implements GeoServerProcess {
     }
     
     private class Process {
-        private static final int LONG_TEST_LENGTH = 1000;
+        private static final double MIN_TRANSECT_LENGTH = 50.0d; // meters
+        private static final int LONG_TEST_LENGTH = 50000; // meters
         
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines;
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> baseline;
@@ -147,33 +157,46 @@ public class GenerateTransectsProcess implements GeoServerProcess {
          * @return 
          */
         private SimpleFeatureCollection trimTransectsToFeatureCollection(VectorCoordAngle[] vectsOnBaseline, MultiLineString shorelines) {
+            if (vectsOnBaseline.length == 0) {
+                return DataUtilities.collection(new SimpleFeature[0]);
+            } 
             List<SimpleFeature> sfList = new LinkedList<SimpleFeature>();
-            double guessLength = 50.0d;
             
             PreparedGeometry preparedShorelines = PreparedGeometryFactory.prepare(shorelines);
+            STRtree tree = new ShorelineSTRTreeBuilder(shorelines).build();
+            
+            double testLength = 500.0d;
+            while (!shorelines.isWithinDistance(vectsOnBaseline[0].getStartAsPoint(), testLength)) {
+                testLength *= 2;
+            }
+            // add an extra 1k for good measure
+            testLength += 1000.0d;
+            
             for (VectorCoordAngle vect : vectsOnBaseline) {
-                LineString testLine = vect.getLineOfLength(LONG_TEST_LENGTH);
+                LineString testLine = vect.getLineOfLength(testLength);
                 if (!preparedShorelines.intersects(testLine)) {
                     vect.flipAngle();
-                    testLine = vect.getLineOfLength(LONG_TEST_LENGTH);
+                    testLine = vect.getLineOfLength(testLength);
                     if (!preparedShorelines.intersects(testLine)) {
-                        continue; // not sure what to trim to
+                        continue; // not sure what to trim to, skip
                     }
                 }
-//                double length = guessLength / 2;
-//                Geometry intersection = testLine.intersection(shorelines).getEnvelope();
-//                LineString clipper = vect.getLineOfLength(length);
-//                // I'm banking on this not being an infinite loop because at some point the line will be at least as long as LONG_TEST_LENGTH
-//                while (!intersection.within(clipper.getEnvelope())){
-//                    length *= 2;
-//                    clipper = vect.getLineOfLength(length);
-//                }
-//                guessLength = length;
-//                SimpleFeature feature = createFeatureInUTMZone(clipper);
-                SimpleFeature feature = createFeatureInUTMZone(testLine);
+                List<LineString> lines = tree.query(testLine.getEnvelopeInternal());
+                double maxDistance = MIN_TRANSECT_LENGTH;
+                for (LineString line : lines) {
+                    if (line.intersects(testLine)) {
+                        // must be a point
+                        Point intersection = (Point) line.intersection(testLine);
+                        double distance = vect.cartesianCoord.distance(intersection.getCoordinate());
+                        if (distance > maxDistance) {
+                            maxDistance = distance;
+                        }
+                    }
+                }
+                LineString clipped = vect.getLineOfLength(maxDistance);
+                SimpleFeature feature = createFeatureInUTMZone(clipped);
                 
                 sfList.add(feature);
-
             }
             return DataUtilities.collection(sfList);
         }
@@ -265,6 +288,10 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             Coordinate endpoint = new Coordinate(cartesianCoord.x + run, cartesianCoord.y + rise);
             LineString newLineString = gf.createLineString(new Coordinate[] {cartesianCoord, endpoint});
             return newLineString;
+        }
+        
+        private Point getStartAsPoint() {
+            return gf.createPoint(cartesianCoord);
         }
         
         private void flipAngle() {
