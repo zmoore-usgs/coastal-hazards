@@ -307,12 +307,15 @@ var Baseline = {
                     if (data.success === 'true') {
                         LOG.info('Baseline.js::saveDrawnFeatures: Layer imported successfully - Will attempt to update on server');
                         
-                        var schema = context.protocol.schema;
+                        var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
+                        var schema = context.protocol.schema.replace('geoserver/', geoserverEndpoint);
                         var newSchema = schema.substring(0, schema.lastIndexOf(':') + 1) + importName;
             
                         context.protocol.setFeatureType(importName);
                         context.protocol.format.options.schema = newSchema;
+                        context.protocol.format.schema = newSchema
                         context.protocol.schema = newSchema;
+                        context.protocol.options.featureType = importName;
                         
                         // Do WFS-T to fill out the layer
                         var saveStrategy = context.strategies.find(function(n) {

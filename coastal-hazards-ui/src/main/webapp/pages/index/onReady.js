@@ -44,6 +44,12 @@ $(document).ready(function() {
                 $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
                 $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
                 $("#create-intersections-btn").on("click", Intersections.calcIntersections);
+                $('#clear-sessions-btn').on("click", function(){
+                     localStorage.clear();
+                     sessionStorage.clear();
+                     LOG.debug('Cleared sessions')
+                     location.reload();
+                })
             }
             ],
             error : []

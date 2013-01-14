@@ -69,6 +69,10 @@
 	/* image */
 	/* background-image: url(images/black-desc.gif); */
 }
+.tablesorter-blue thead .sorter-false {
+	background-image: none;
+	padding: 4px;
+}
 
 /* tfoot */
 .tablesorter-blue tfoot .tablesorter-headerSortUp,
@@ -76,7 +80,7 @@
 .tablesorter-blue tfoot .tablesorter-headerAsc,
 .tablesorter-blue tfoot .tablesorter-headerDesc {
 	/* remove sort arrows from footer */
-	background-image: url();
+	background-image: none;
 }
 
 /* tbody */
