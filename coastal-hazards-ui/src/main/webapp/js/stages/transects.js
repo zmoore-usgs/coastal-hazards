@@ -177,12 +177,47 @@ var Transects = {
         '<ows:Identifier>gs:GenerateTransects</ows:Identifier>' + 
         '<wps:DataInputs>';
         shorelines.each(function(i, shoreline) {
+            var sessionLayer = CONFIG.tempSession.getStageConfig({
+                name : shoreline,
+                stage : Shorelines.stage
+            })
+            var excludedYears = sessionLayer.view['years-disabled'];
             request += '<wps:Input>' + 
             '<ows:Identifier>shorelines</ows:Identifier>' + 
             '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
             '<wps:Body>' + 
-            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2">' + 
-            '<wfs:Query typeName="'+shoreline+'" srsName="EPSG:4326" />' + 
+            '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2">' + 
+            
+            (function(args) {
+                var filter = '';
+                if (excludedYears) {
+                    var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + 'DATE_';
+                    
+                    filter += '<wfs:Query typeName="'+shoreline+'" srsName="EPSG:4326">' +
+                    '<ogc:Filter>' + 
+                    '<ogc:And>';
+                    
+                    excludedYears.each(function(year) {
+                        filter += '<ogc:Not>' + 
+                        //            '<ogc:GmlObjectId gml:id="InWaterA_1M.1013"/>' + 
+                        '<ogc:PropertyIsLike  wildCard="*" singleChar="." escape="!">' + 
+                        '<ogc:PropertyName>'+property+ '</ogc:PropertyName>' + 
+                        '<ogc:Literal>*' +year+ '</ogc:Literal>' + 
+                        '</ogc:PropertyIsLike>' + 
+                        '</ogc:Not>' 
+                    })
+                    
+                    filter += '</ogc:And>' + 
+                '</ogc:Filter>' + 
+                '</wfs:Query>';
+                } else {
+                    filter += '<wfs:Query typeName="'+shoreline+'" srsName="EPSG:4326" />';
+                }
+                return filter;
+            }({ 
+                shoreline : shoreline,
+                layer : layer
+            })) + 
             '</wfs:GetFeature>' + 
             '</wps:Body>' + 
             '</wps:Reference>' + 
