@@ -1,10 +1,7 @@
 package gov.usgs.cida.coastalhazards.wps;
 
 import com.vividsolutions.jts.algorithm.Angle;
-import com.vividsolutions.jts.algorithm.LineIntersector;
-import com.vividsolutions.jts.algorithm.RobustLineIntersector;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
@@ -18,6 +15,7 @@ import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineSTRTreeBuilder;
+import gov.usgs.cida.coastalhazards.wps.geom.VectorCoordAngle;
 import java.util.LinkedList;
 import java.util.List;
 import org.geoserver.catalog.ProjectionPolicy;
@@ -36,10 +34,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-/* Can you hear me now? */
-
-// test 
 
 /**
  *
@@ -167,7 +161,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             STRtree tree = new ShorelineSTRTreeBuilder(shorelines).build();
             
             double testLength = LONG_TEST_LENGTH;
-            while (!shorelines.isWithinDistance(vectsOnBaseline[0].getStartAsPoint(), testLength)) {
+            while (!shorelines.isWithinDistance(vectsOnBaseline[0].getOriginPoint(), testLength)) {
                 testLength *= 2;
             }
             // add an extra 1k for good measure
@@ -176,7 +170,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             for (VectorCoordAngle vect : vectsOnBaseline) {
                 LineString testLine = vect.getLineOfLength(testLength);
                 if (!preparedShorelines.intersects(testLine)) {
-                    vect.flipAngle();
+                    vect.rotate180Deg();
                     testLine = vect.getLineOfLength(testLength);
                     if (!preparedShorelines.intersects(testLine)) {
                         continue; // not sure what to trim to, skip
@@ -188,7 +182,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
                     if (line.intersects(testLine)) {
                         // must be a point
                         Point intersection = (Point) line.intersection(testLine);
-                        double distance = vect.cartesianCoord.distance(intersection.getCoordinate());
+                        double distance = vect.getOriginCoord().distance(intersection.getCoordinate());
                         if (distance > maxDistance) {
                             maxDistance = distance;
                         }
@@ -259,44 +253,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             }
             return transectVectors;
         }
-
-    }
-    
-    /**
-     * Creating this class because I'm having a hard time wrapping my head 
-     * around polar vs. cartesian arithmetic.  Holding a cartesian coord with
-     * a polar angle seemed to be my best way around it.
-     */
-    private class VectorCoordAngle {
         
-        private Coordinate cartesianCoord;
-        private double angle;
-        private GeometryFactory gf;
         
-        private VectorCoordAngle(Coordinate coord, double angle) {
-            this.cartesianCoord = coord;
-            this.angle = angle;
-            this.gf = new GeometryFactory();
-        }
-        
-        private VectorCoordAngle(double x, double y, double angle) {
-            this(new Coordinate(x, y), angle);
-        }
-        
-        private LineString getLineOfLength(double length) {
-            double rise = length * Math.sin(angle);
-            double run = length * Math.cos(angle);
-            Coordinate endpoint = new Coordinate(cartesianCoord.x + run, cartesianCoord.y + rise);
-            LineString newLineString = gf.createLineString(new Coordinate[] {cartesianCoord, endpoint});
-            return newLineString;
-        }
-        
-        private Point getStartAsPoint() {
-            return gf.createPoint(cartesianCoord);
-        }
-        
-        private void flipAngle() {
-            angle += Math.PI;
-        }
     }
 }
