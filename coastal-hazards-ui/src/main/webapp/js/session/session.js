@@ -29,6 +29,7 @@ var Session = function(name, isPerm) {
                     describeFeatureTypeResponse : null,
                     view : {
                         'years-disabled' : [],
+                        'dates-disabled' : [],
                         isSelected : false
                     }
                 }
