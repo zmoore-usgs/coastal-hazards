@@ -11,6 +11,18 @@ var UI = function() {
     })
     
     return $.extend(me, {
+        bindControls : function() {
+            $('#clear-sessions-btn').on("click", function(){
+                localStorage.clear();
+                sessionStorage.clear();
+                LOG.debug('UI.js::Cleared sessions. Reloading application.')
+                location.reload();
+            })
+            $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
+            $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
+            $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
+            $("#create-intersections-btn").on("click", Intersections.calcIntersections);
+        },
         switchImage : function (stage) {
             LOG.info('UI.js::switchImage: Changing application context to ' + me.work_stages[stage])
             for (var stageIndex = 0;stageIndex < me.work_stages.length;stageIndex++) {
@@ -191,10 +203,10 @@ var UI = function() {
                     uploadButton: '<i class="icon-upload icon-white"></i>Upload'
                 },
                 template: '<div class="qq-uploader span4">' +
-                    '<pre class="qq-upload-drop-area span4 hidden"><span>{dragZoneText}</span></pre>' +
-                    '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
-                    '<ul class="qq-upload-list hidden" style="margin-top: 10px; text-align: center;"></ul>' +
-                    '</div>',
+                '<pre class="qq-upload-drop-area span4 hidden"><span>{dragZoneText}</span></pre>' +
+                '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
+                '<ul class="qq-upload-list hidden" style="margin-top: 10px; text-align: center;"></ul>' +
+                '</div>',
                 classes: {
                     success: 'alert alert-success',
                     fail: 'alert alert-error'
@@ -214,27 +226,27 @@ var UI = function() {
                                 importName : importName, 
                                 workspace : 'ch-input',
                                 callbacks : [function(data) {
-                                        if (data.success === 'true') {
-                                            LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
-                                            CONFIG.ows.getWMSCapabilities({
-                                                callbacks : {
-                                                    success : [
-                                                        function (data) {
-                                                            CONFIG.tempSession.updateLayersFromWMS(data);
-                                                            CONFIG.ui.populateFeaturesList({
-                                                                caps : data,
-                                                                caller : caller
-                                                            });
-                                                        }
-                                                    ],
-                                                    error : []
+                                    if (data.success === 'true') {
+                                        LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
+                                        CONFIG.ows.getWMSCapabilities({
+                                            callbacks : {
+                                                success : [
+                                                function (data) {
+                                                    CONFIG.tempSession.updateLayersFromWMS(data);
+                                                    CONFIG.ui.populateFeaturesList({
+                                                        caps : data,
+                                                        caller : caller
+                                                    });
                                                 }
-                                            })
-                                        } else {
-                                            // TODO - Notify the user
-                                            LOG.warn(data.error);
-                                        }
-                                    }]
+                                                ],
+                                                error : []
+                                            }
+                                        })
+                                    } else {
+                                        // TODO - Notify the user
+                                        LOG.warn(data.error);
+                                    }
+                                }]
                             });
                         }
                     }
@@ -256,8 +268,8 @@ var UI = function() {
             if (stage == Baseline.stage|| stage == Transects.stage||stage == Intersections.stage) {
                 $('#'+stage+'-list')
                 .append($("<option />")
-                .attr("value",'')
-                .text(''));
+                    .attr("value",'')
+                    .text(''));
             }
         
             $(caps.capability.layers).each(function(i, layer) { 
@@ -269,8 +281,8 @@ var UI = function() {
                 if (layer.prefix === 'sample' || (layer.prefix === 'ch-input' && title.has(currentSessionKey) )) {
                         
                     var shortenedTitle = title.has(currentSessionKey) ?  
-                        title.remove(currentSessionKey + '_') : 
-                        title;
+                    title.remove(currentSessionKey + '_') : 
+                    title;
                     
                     var type = title.substr(title.lastIndexOf('_'));
                     if (suffixes.length == 0 || suffixes.find(type.toLowerCase())) {
@@ -283,8 +295,8 @@ var UI = function() {
                         
                         $('#'+stage+'-list')
                         .append($("<option />")
-                        .attr("value",layer.name)
-                        .text(shortenedTitle));
+                            .attr("value",layer.name)
+                            .text(shortenedTitle));
                             
                         
                         CONFIG.tempSession.setStageConfig({
@@ -360,13 +372,13 @@ var UI = function() {
                     
                 LOG.debug('UI.js::showShorelineInfo: Table created, displaying new identify window');
                 CONFIG.map.getMap().addPopup(new OpenLayers.Popup.FramedCloud(
-                "FramedCloud", 
-                CONFIG.map.getMap().getLonLatFromPixel(event.xy),
-                null,
-                shorelineIdContainer.html(),
-                null,
-                true
-            ));
+                    "FramedCloud", 
+                    CONFIG.map.getMap().getLonLatFromPixel(event.xy),
+                    null,
+                    shorelineIdContainer.html(),
+                    null,
+                    true
+                    ));
                         
                 $('.btn-year-toggle').click(function(event) {
                     var year = $(event.target).attr('year');

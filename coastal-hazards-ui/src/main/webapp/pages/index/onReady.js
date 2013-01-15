@@ -5,10 +5,11 @@ $(document).ready(function() {
         LOG4JS_LOG_THRESHOLD : CONFIG.development ? 'debug' : 'info'
     });
     
-//    Math.seedrandom('Look @ http://davidbau.com/encode/seedrandom.js')
+    //    Math.seedrandom('Look @ http://davidbau.com/encode/seedrandom.js')
     
     // Utility class for the user interface
     CONFIG.ui = new UI();
+    CONFIG.ui.bindControls();
     
     // Map interaction object. Holds the map and utilities 
     CONFIG.map = new Map();
@@ -39,18 +40,6 @@ $(document).ready(function() {
             Transects.populateFeatureList,
             Intersections.populateFeatureList,
             Results.populateFeatureList,
-            function() {
-                $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
-                $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
-                $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
-                $("#create-intersections-btn").on("click", Intersections.calcIntersections);
-                $('#clear-sessions-btn').on("click", function(){
-                     localStorage.clear();
-                     sessionStorage.clear();
-                     LOG.debug('Cleared sessions')
-                     location.reload();
-                })
-            }
             ],
             error : []
         }
