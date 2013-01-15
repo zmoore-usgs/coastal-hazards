@@ -4,12 +4,18 @@
 var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
+    
+    /**
+     * Calls DescribeFeatureType against OWS service and tries to add the layer(s) to the map 
+     */
     addShorelines : function(layers) {
+        LOG.info('Shorelines.js::addShorelines');
         LOG.info('Shorelines.js::addShorelines: Adding ' + layers.length + ' shoreline layers to map'); 
         $(layers).each(function(index,layer) {
-            
+            LOG.info('Shorelines.js::addShorelines: Attempting to add shoreline layer ' + layer.title + ' to the map'); 
             CONFIG.ows.getDescribeFeatureType({
-                featureName : layer.title, 
+                featureName : layer.title,
+                
                 callbacks : [
                 function(describeFeaturetypeRespone) {
                     Shorelines.addLayerToMap({
@@ -19,16 +25,19 @@ var Shorelines = {
                 }
                 ]
             })
-            
         })
     },
+    
+    /**
+     * Uses a OWS DescribeFeatureType response to add a layer to a map
+     */
     addLayerToMap : function(args) {
-        LOG.info('Shorelines.js::addLayerToMap: Adding shoreline layer to map'); 
-        
-        // Read the selected features for specific properties
+        LOG.info('Shorelines.js::addLayerToMap');
         var layer = args.layer;
         
-        // Parse the describeFeatureType response using this function
+        LOG.info('Shorelines.js::addLayerToMap: Adding shoreline layer ' + layer.title + 'to map'); 
+        
+        LOG.debug('Shorelines.js::addLayerToMap: Adding shoreline layer ' + layer.title + 'to map'); 
         var properties = CONFIG.ows.getLayerPropertiesFromWFSDescribeFeatureType({
             describeFeatureType : args.describeFeaturetypeRespone,
             includeGeom : false
@@ -38,6 +47,7 @@ var Shorelines = {
             name : layer.name,
             stage : Shorelines.stage
         });
+        
         sessionLayer.nameSpace = args.describeFeaturetypeRespone.targetNamespace;
         CONFIG.tempSession.setStageConfig({ 
             stage :Shorelines.stage,
@@ -55,16 +65,29 @@ var Shorelines = {
                     if (CONFIG.map.getMap().getLayersByName(layer.title).length == 0) {
                         LOG.info('Shorelines.js::?: Layer does not yet exist on the map. Loading layer: ' + layer.title);
                     
-                        // Find the String match of our desired column from the layer attributes
-                        var groupColumn = Object.keys(features[0].attributes).find(function(n) {
-                            return n.toLowerCase() === CONFIG.tempSession.getStageConfig({
-                                stage : Shorelines.stage
-                            }).groupingColumn.toLowerCase()
+                        var sessionLayer = CONFIG.tempSession.getStageConfig({
+                            stage : Shorelines.stage,
+                            name : layer.name
                         });
+                        
+                        LOG.trace('Shorelines.js::?: Trying to find correct grouping column capitalization for ' + layer.title);
+                        // Find the String match of our desired column from the layer attributes
+                        var groupingColumn = Object.keys(features[0].attributes).find(function(n) {
+                            return n.toLowerCase() === sessionLayer.groupingColumn.toLowerCase()
+                        });
+                        LOG.trace('Shorelines.js::?: Found correct grouping column capitalization for ' + layer.title + ', it is: ' + groupingColumn);
+                        
+                        LOG.trace('Shorelines.js::?: Saving grouping column to session');
+                        sessionLayer.groupingColumn = groupingColumn;
                     
+                        CONFIG.tempSession.setStageConfig({ 
+                            stage :Shorelines.stage,
+                            config : sessionLayer
+                        });
+                        
                         // Find the index of the desired column
                         var dateIndex = Object.keys(features[0].attributes).findIndex(function(n) {
-                            return n === groupColumn
+                            return n === groupingColumn
                         })
 
                         // Extract the values from the features array
@@ -100,7 +123,7 @@ var Shorelines = {
                         
                         var sldBody = Shorelines.createSLDBody({
                             colorYearPairs : colorYearPairs,
-                            groupColumn : groupColumn,
+                            groupColumn : groupingColumn,
                             layer : layer
                         })
                         
@@ -125,7 +148,7 @@ var Shorelines = {
                                 },
                                 singleTile: true, 
                                 ratio: 1,
-                                groupByAttribute : groupColumn,
+                                groupByAttribute : groupingColumn,
                                 groups : groups
                             });
                             
@@ -191,12 +214,12 @@ var Shorelines = {
             '</StyledLayerDescriptor>';
         } else if (!isNaN(Date.parse(colorYearPairs[0][1]))) { 
             LOG.debug('Shorelines.js::?: Grouping will be done by year')
-            var featureDescription = CONFIG.ows.getDescribeFeatureType({
-                featureName : layerTitle
-            });
+            var featureDescription = CONFIG.ows.featureTypeDescription[layerTitle];
+            
             var dateType = featureDescription.featureTypes[0].properties.find(function(n){
                 return n.name == groupColumn
             });
+            
             var createRuleSets;
             if (dateType.type === 'xsd:string') {
                 LOG.debug('Shorelines.js::?: Geoserver date column is actually a string');

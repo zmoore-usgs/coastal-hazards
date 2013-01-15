@@ -130,6 +130,7 @@ var Baseline = {
                 }),
                 cloneOf : originalLayer.name
             })
+            
             clonedLayer.addFeatures(originalLayer.features);
                     
             // For debugging purposes
@@ -153,6 +154,7 @@ var Baseline = {
                     
             LOG.debug('Baseline.js::editButtonToggled: Removing previous cloned layer from map, if any');
             CONFIG.map.removeLayerByName('baseline-edit-layer');
+            
             LOG.debug('Baseline.js::editButtonToggled: Adding cloned layer to map');
             CONFIG.map.getMap().addLayer(clonedLayer);
                     
@@ -160,11 +162,11 @@ var Baseline = {
             CONFIG.map.removeControl({
                 id : 'baseline-edit-control'
             });
+            
             LOG.debug('Baseline.js::editButtonToggled: Adding clone control to map');
             CONFIG.map.getMap().addControl(editControl);
                     
             CONFIG.ui.initializeBaselineEditForm();
-                    
         } else {
             // remove edit layer, remove edit control
             CONFIG.map.removeLayerByName('baseline-edit-layer');
