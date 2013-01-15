@@ -68,9 +68,12 @@ var Shorelines = {
                         })
 
                         // Extract the values from the features array
-                        var groups = Util.makeGroups(features.map(function(n) {
-                            return Object.values(n.attributes)[dateIndex]
-                        }));
+                        var groups = Util.makeGroups({ 
+                            groupItems : features.map(function(n) {
+                                return Object.values(n.attributes)[dateIndex]
+                            }),
+                            preserveDate : true
+                        });
                     
                         if (groups[0] instanceof Date) {
                             // If it's a date array Change the groups items back from Date item back into string
@@ -317,8 +320,8 @@ var Shorelines = {
         var colorTableHeadR = $('<tr />');
         var colorTableBody = $('<tbody />');
         
-        colorTableHeadR.append($('<th />').html('Selected'));
-        colorTableHeadR.append($('<th />').html('Year'));
+        colorTableHeadR.append($('<th />').addClass('shoreline-table-selected-head-column').html('Visibility'));
+        colorTableHeadR.append($('<th />').html('Date'));
         colorTableHeadR.append($('<th />').attr('data-sorter',false).html('Color'));
         colorTableHead.append(colorTableHeadR);
         colorTable.append(colorTableHead);
@@ -332,6 +335,7 @@ var Shorelines = {
         
         $(event.object.colorGroups).each(function(i,colorGroup) {
             var year = colorGroup[1].split('/')[2];
+            var fullDate = colorGroup[1];
             var checked = sessionLayer.view["years-disabled"].indexOf(year) == -1;
             
             var tableRow = $('<tr />').attr('id', 'shoreline-color-table-row-' +year);
@@ -352,7 +356,7 @@ var Shorelines = {
             
             tableData.append(toggleDiv);
             tableRow.append(tableData);
-            tableRow.append($('<td />').html(year));
+            tableRow.append($('<td />').html(fullDate));
             tableRow.append($('<td />')
                 .attr({
                     style : 'background-color:' + colorGroup[0] + ';',
@@ -449,9 +453,13 @@ var Shorelines = {
                 })
                 layer.params.SLD_BODY = sldBody;
                 layer.redraw();
+                $("table.tablesorter").trigger('update', false)
             }
         })
         
+        Shorelines.setupTableSorting();
+    },
+    setupTableSorting : function() {
         $.tablesorter.addParser({ 
             id: 'visibility', 
             is: function(s) { 

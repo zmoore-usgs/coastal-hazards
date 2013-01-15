@@ -65,6 +65,10 @@ img { max-width: none; }
     height: 16.25em;
 }
 
+.shoreline-table-selected-head-column {
+    width: 30%;
+}
+
 #results-table-container {
     height: 16.25em;
 }
