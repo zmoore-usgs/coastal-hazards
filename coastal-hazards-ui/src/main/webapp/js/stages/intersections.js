@@ -173,7 +173,7 @@ var Intersections = {
             (function(args) {
                 var filter = '';
                 if (excludedYears) {
-                    var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + 'DATE_';
+                    var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + sessionLayer.groupingColumn;
                     
                     filter += '<wfs:Query typeName="'+shoreline+'" srsName="EPSG:4326">' +
                     '<ogc:Filter>' + 
