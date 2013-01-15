@@ -100,17 +100,6 @@ var OWS = function(endpoint) {
         },
         getDescribeFeatureType : function(args) {
             LOG.info('OWS.js::getDescribeFeatureType: WFS featureType requested for feature ' + args.featureName);
-            // Check if we currently have this feature type from a previous call
-            if (me.featureTypes[args.featureName]) {
-                LOG.info('OWS.js::getDescribeFeatureType: WFS featureType already cached. Using cached version without making a call.');
-                if (!args.callbacks || args.callbacks.length == 0) {
-                    return me.featureTypes[args.featureName];
-                } else {
-                    $(args.callbacks || []).each(function(index, callback) {
-                        callback(me.featureTypes[args.featureName], this);
-                    })
-                }
-            }
             
             var url = me.wfsDescribeFeatureType + '&typeName=' + args.featureName;
             $.ajax(url, {
@@ -121,8 +110,11 @@ var OWS = function(endpoint) {
                     var describeFeaturetypeRespone = gmlReader.read(data); 
                     
                     me.featureTypes[describeFeaturetypeRespone.featureTypes[0].typeName] = describeFeaturetypeRespone;
+                    LOG.debug('OWS.js::getDescribeFeatureType: WFS featureType parsed and added to myself.');
                     
+                    LOG.debug('OWS.js::getDescribeFeatureType: Executing '+args.callbacks.length+'callbacks');
                     $(args.callbacks || []).each(function(index, callback) {
+                        LOG.trace('OWS.js::getDescribeFeatureType: Executing callback ' + index);
                         callback(describeFeaturetypeRespone, this);
                     })
                 }
@@ -145,7 +137,7 @@ var OWS = function(endpoint) {
                     })
                 },
                 error : function(data, textStatus, jqXHR) {
-                     $(args.callbacks.error || []).each(function(index, callback, allCallbacks) {
+                    $(args.callbacks.error || []).each(function(index, callback, allCallbacks) {
                         callback(data, this);
                     })
                 }
