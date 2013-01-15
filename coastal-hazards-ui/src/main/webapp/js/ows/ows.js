@@ -16,6 +16,9 @@ var OWS = function(endpoint) {
     // An object to hold the return from WFS DescribeFeatureType
     me.featureTypeDescription = Object.extended();
     
+    // An object to hold the return of a filtered WFS getFeature response
+    me.filteredFeature = Object.extended();
+    
     return $.extend(me, {
         /**
          * Imports file into GeoServer from the upload area
@@ -135,6 +138,8 @@ var OWS = function(endpoint) {
                     var gmlReader = new OpenLayers.Format.GML.v3();
                     var getFeatureResponse = gmlReader.read(data); 
                     LOG.debug('OWS.js::getFilteredFeature: WFS GetFeature parsed .');
+                    
+                    me.featureTypeDescription[args.layer.name] = getFeatureResponse;
                     
                     LOG.trace('OWS.js::getFilteredFeature: Executing '+args.callbacks.success+'callbacks');
                     $(args.callbacks.success || []).each(function(index, callback, allCallbacks) {
