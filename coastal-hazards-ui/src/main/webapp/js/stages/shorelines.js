@@ -213,12 +213,18 @@ var Shorelines = {
                         var year = colorLimitPairs[lpIndex][1].split('/')[2];
                         var date = colorLimitPairs[lpIndex][1];
                         
-                        if (sessionLayer.view["years-disabled"].indexOf(year) == -1) {
+                        var fidArray = CONFIG.ows.featureTypeDescription[layerName].findAll(function(n){
+                            return Date.parse(n.data['DATE_']) == Date.parse(date)
+                        }).map(function(n) {
+                            return n.fid
+                        })
+                        
+                        if (sessionLayer.view["dates-disabled"].indexOf(date) == -1) {
                             html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>';
                             html += groupColumn.trim();
                             html += '</ogc:PropertyName>';
                             html += '<ogc:Literal>';
-                            html += colorLimitPairs[lpIndex][1]; //'*' + colorLimitPairs[lpIndex][1].split('/')[2];
+                            html += colorLimitPairs[lpIndex][1];
                             html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">';
                             html += colorLimitPairs[lpIndex][0];
                             html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>';
