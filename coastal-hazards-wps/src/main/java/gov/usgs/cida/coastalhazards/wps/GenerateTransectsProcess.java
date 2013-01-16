@@ -133,7 +133,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             return layerName;
         }
 
-        private VectorCoordAngle[] getEvenlySpacedOrthoVectorsAlongBaseline(MultiLineString baseline, double spacing) {
+        protected VectorCoordAngle[] getEvenlySpacedOrthoVectorsAlongBaseline(MultiLineString baseline, double spacing) {
             List<VectorCoordAngle> vectList = new LinkedList<VectorCoordAngle>();
             
             for (int i=0; i < baseline.getNumGeometries(); i++) {
@@ -151,7 +151,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
          * @param shorelines
          * @return 
          */
-        private SimpleFeatureCollection trimTransectsToFeatureCollection(VectorCoordAngle[] vectsOnBaseline, MultiLineString shorelines) {
+        protected SimpleFeatureCollection trimTransectsToFeatureCollection(VectorCoordAngle[] vectsOnBaseline, MultiLineString shorelines) {
             if (vectsOnBaseline.length == 0) {
                 return DataUtilities.collection(new SimpleFeature[0]);
             } 
@@ -197,7 +197,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         }
         
         // Thought these would be longer, but I'll leave them here
-        private SimpleFeature createFeatureInUTMZone(LineString line) {
+        protected SimpleFeature createFeatureInUTMZone(LineString line) {
             SimpleFeature feature = SimpleFeatureBuilder.build(this.simpleFeatureType, new Object[]{line, new Integer(transectId)}, null);
             transectId++;
             return feature;
@@ -213,7 +213,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
          * @param spacing how often to create vectors along line
          * @return List of fancy vectors I concocted
          */
-        private List<VectorCoordAngle> handleLineString(LineString lineString, double spacing) {
+        protected List<VectorCoordAngle> handleLineString(LineString lineString, double spacing) {
             Coordinate currentCoord = null;
             List<VectorCoordAngle> transectVectors = new LinkedList<VectorCoordAngle>();
             double accumulatedDistance = 0.0d;
@@ -226,8 +226,8 @@ public class GenerateTransectsProcess implements GeoServerProcess {
                         throw new IllegalStateException("Line must have at least two points");
                     }
                     LineSegment segment = new LineSegment(currentCoord, nextCoord);
-                    double orthogonal = segment.angle() + Angle.PI_OVER_2;
-                    VectorCoordAngle vect = new VectorCoordAngle(currentCoord, orthogonal);
+                    VectorCoordAngle vect = 
+                            VectorCoordAngle.generatePerpendicularVector(currentCoord, segment, true);
                     transectVectors.add(vect);
                     continue;
                 }
@@ -236,9 +236,10 @@ public class GenerateTransectsProcess implements GeoServerProcess {
                     double distanceToNewPoint = spacing - accumulatedDistance;
                     double fraction = distanceToNewPoint / distance;
                     LineSegment segment = new LineSegment(currentCoord, coord);
+                    
                     Coordinate pointAlong = segment.pointAlong(fraction);
-                    double orthogonal = segment.angle() + Angle.PI_OVER_2;
-                    VectorCoordAngle vect = new VectorCoordAngle(pointAlong, orthogonal);
+                    VectorCoordAngle vect = 
+                            VectorCoordAngle.generatePerpendicularVector(pointAlong, segment, true);
                     transectVectors.add(vect);
                     
                     // this retries to next coordinate
