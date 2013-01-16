@@ -162,7 +162,7 @@ var Intersections = {
                 name : shoreline,
                 stage : Shorelines.stage
             })
-            var excludedYears = sessionLayer.view['years-disabled'];
+            var excludedDates = sessionLayer.view['dates-disabled'];
             
             wps += '<wps:Input>' + 
             '<ows:Identifier>shorelines</ows:Identifier>' + 
@@ -172,18 +172,18 @@ var Intersections = {
             
             (function(args) {
                 var filter = '';
-                if (excludedYears) {
+                if (excludedDates) {
                     var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + sessionLayer.groupingColumn;
                     
                     filter += '<wfs:Query typeName="'+shoreline+'" srsName="EPSG:4326">' +
                     '<ogc:Filter>' + 
                     '<ogc:And>';
                     
-                    excludedYears.each(function(year) {
+                    excludedDates.each(function(date) {
                         filter += '<ogc:Not>' + 
                         '<ogc:PropertyIsLike  wildCard="*" singleChar="." escape="!">' + 
                         '<ogc:PropertyName>'+property+ '</ogc:PropertyName>' + 
-                        '<ogc:Literal>*' +year+ '</ogc:Literal>' + 
+                        '<ogc:Literal>' +date+ '</ogc:Literal>' + 
                         '</ogc:PropertyIsLike>' + 
                         '</ogc:Not>' 
                     })

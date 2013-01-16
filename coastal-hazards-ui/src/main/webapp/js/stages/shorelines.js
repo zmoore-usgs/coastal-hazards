@@ -77,6 +77,11 @@ var Shorelines = {
                         
                         LOG.trace('Shorelines.js::?: Saving grouping column to session');
                         sessionLayer.groupingColumn = groupingColumn;
+                        
+                        sessionLayer.dateFormat = Util.getLayerDateFormatFromFeaturesArray({
+                            featureArray : features,
+                            groupingColumn : groupingColumn
+                        });
                     
                         CONFIG.tempSession.setStageConfig({ 
                             stage :Shorelines.stage,
@@ -99,7 +104,7 @@ var Shorelines = {
                         if (groups[0] instanceof Date) {
                             // If it's a date array Change the groups items back from Date item back into string
                             groups = groups.map(function(n) {
-                                return n.format(CONFIG.dateFormat)
+                                return n.format(sessionLayer.dateFormat)
                             });
                         }
                     
@@ -348,19 +353,16 @@ var Shorelines = {
         });
         
         $(event.object.colorGroups).each(function(i,colorGroup) {
-            var year = colorGroup[1].split('/')[2];
-            var fullDate = colorGroup[1];
-            var checked = sessionLayer.view["years-disabled"].indexOf(year) == -1;
+            var date = colorGroup[1];
+            var checked = sessionLayer.view["dates-disabled"].indexOf(date) == -1;
             
-            var tableRow = $('<tr />').attr('id', 'shoreline-color-table-row-' +year);
-            var tableData = $('<td />').attr('id','shoreline-color-table-toggle-'+year);
+            var tableRow = $('<tr />');
+            var tableData = $('<td />');
             var toggleDiv = $('<div />').addClass('feature-toggle').data('date', colorGroup[1]);
             var checkbox = $('<input />').attr({
-                type : 'checkbox',
-                name : 'checkbox-'+year,
-                id : 'checkbox-'+year
+                type : 'checkbox'
             })
-            .val(year)
+            .val(date)
             
             if (checked) {
                 checkbox.attr('checked', 'checked');
@@ -370,11 +372,10 @@ var Shorelines = {
             
             tableData.append(toggleDiv);
             tableRow.append(tableData);
-            tableRow.append($('<td />').html(fullDate));
+            tableRow.append($('<td />').html(date));
             tableRow.append($('<td />')
                 .attr({
-                    style : 'background-color:' + colorGroup[0] + ';',
-                    id : 'shoreline-color-table-color-'+year
+                    style : 'background-color:' + colorGroup[0] + ';'
                 }).html('&nbsp;'));
             
             colorTableBody.append(tableRow);
