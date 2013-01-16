@@ -181,7 +181,7 @@ var Transects = {
                 name : shoreline,
                 stage : Shorelines.stage
             })
-            var excludedYears = sessionLayer.view['years-disabled'];
+            var excludedDates = sessionLayer.view['dates-disabled'];
             request += '<wps:Input>' + 
             '<ows:Identifier>shorelines</ows:Identifier>' + 
             '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
@@ -190,19 +190,19 @@ var Transects = {
             
             (function(args) {
                 var filter = '';
-                if (excludedYears) {
+                if (excludedDates) {
                     var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + sessionLayer.groupingColumn;
                     
                     filter += '<wfs:Query typeName="'+shoreline+'" srsName="EPSG:4326">' +
                     '<ogc:Filter>' + 
                     '<ogc:And>';
                     
-                    excludedYears.each(function(year) {
+                    excludedDates.each(function(date) {
                         filter += '<ogc:Not>' + 
                         //            '<ogc:GmlObjectId gml:id="InWaterA_1M.1013"/>' + 
                         '<ogc:PropertyIsLike  wildCard="*" singleChar="." escape="!">' + 
                         '<ogc:PropertyName>'+property+ '</ogc:PropertyName>' + 
-                        '<ogc:Literal>' +year+ '</ogc:Literal>' + 
+                        '<ogc:Literal>' +date+ '</ogc:Literal>' + 
                         '</ogc:PropertyIsLike>' + 
                         '</ogc:Not>' 
                     })
