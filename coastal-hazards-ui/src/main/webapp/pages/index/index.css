@@ -1,7 +1,3 @@
-.olLayerGoogleCopyright, .olLayerGooglePoweredBy, .gmnoprint {
-    display : none
-}
-
 /* Add a drop shadow effect to scale and mouse position
     so they can be seen against a dark background */
 .olControlScaleLine {

@@ -316,9 +316,21 @@ var UI = function() {
             return  $('#'+stage+'-list');
         },
         showShorelineInfo : function(event) {
-            LOG.info('UI.js::showShorelineInfo: The map was clicked and a response from the OWS resource was received');
+            LOG.info('UI.js::showShorelineInfo');
+            LOG.debug('UI.js::showShorelineInfo: The map was clicked and a response from the OWS resource was received');
             if (event.features.length) {
                 LOG.debug('UI.js::showShorelineInfo: Features were returned from the OWS resource. Parsing and creating table to display');
+                
+                LOG.debug('UI.js::showShorelineInfo: Creating table for ' + event.features.length + ' features');
+                var groupingColumn = CONFIG.tempSession.getStageConfig({
+                    stage : Shorelines.stage, 
+                    name : event.features[0].gml.featureNSPrefix + ':' + event.features[0].gml.featureType
+                }).groupingColumn
+                var uniqueFeatures = event.features.unique(function(feature) {
+                    return feature.data[groupingColumn];
+                }).sortBy(function(feature) {
+                    return Date.parse(feature.data[groupingColumn]);
+                })
                 
                 LOG.trace('UI.js::showShorelineInfo: Closing any other open identify windows');
                 $('.olPopupCloseBox').each(function(i,v){
@@ -338,11 +350,12 @@ var UI = function() {
                 });
                 thead.append(theadTr);
                 
-                LOG.debug('UI.js::showShorelineInfo: Creating table for ' + event.features.length + ' features');
-                $(event.features).each(function(i,v) {
+                
+                
+                uniqueFeatures.each(function(feature) {
                     var tbodyTr = $('<tr />');
                     
-                    $(Object.values(v.attributes)).each(function(aInd, aVal) {
+                    $(Object.values(feature.attributes)).each(function(aInd, aVal) {
                         tbodyTr.append($('<td />').append(aVal))
                     })
                     
@@ -350,18 +363,23 @@ var UI = function() {
                         name : layerName,
                         stage : Shorelines.stage
                     })
-                    var dateAttribute = this.attributes['DATE_'] || this.attributes['Date_'];
-                    var year = dateAttribute.split('/')[2];
-                    var isVisible = layer.view["years-disabled"].indexOf(year) == -1;
-                    var  disableButton = $('<button />').addClass('btn btn-year-toggle').attr({
-                        'type' : 'button',
-                        'year' :  year
-                    }).html(isVisible ? 'Disable' : 'Enable');
+                    
+                    var date = new Date(feature.attributes[groupingColumn]).format(CONFIG.dateFormat);
+                    var isVisible = layer.view["dates-disabled"].indexOf(date) == -1;
+                    var  disableButton = $('<button />')
+                    .addClass('btn btn-year-toggle')
+                    .attr({
+                        type : 'button',
+                        date : date
+                    })
+                    .html(isVisible ? 'Disable' : 'Enable');
+                    
                     if (isVisible) {
                         disableButton.addClass('btn-success');
                     } else {
                         disableButton.addClass('btn-danger');
                     }
+                    
                     tbodyTr.append($('<td />').append(disableButton))
                     tbody.append(tbodyTr);
                 });
@@ -381,11 +399,15 @@ var UI = function() {
                     ));
                         
                 $('.btn-year-toggle').click(function(event) {
-                    var year = $(event.target).attr('year');
-                    var toggle = $('#shoreline-color-table-row-'+year+' .toggle-button');
+                    var date = $(event.target).attr('date');
+                    var toggle = $('#shoreline-table-tabcontent>#KauaiE_shorelines .feature-toggle').filter(function() {
+                        return Date.parse($(this).data('date')) == Date.parse(date)
+                    })
                     
-                    var allButtonsOfSameYear = $('.btn-year-toggle[year="'+year+'"]');
-                    if (toggle.hasClass('disabled')) {
+                    
+                    
+                    var allButtonsOfSameYear = $('.btn-year-toggle[date="'+date+'"]');
+                    if (toggle.toggleButtons('status')) {
                         allButtonsOfSameYear.removeClass('btn-success');
                         allButtonsOfSameYear.addClass('btn-danger');
                         allButtonsOfSameYear.html('Enable');

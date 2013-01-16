@@ -37,7 +37,8 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="true" />
         </jsp:include>
-        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.8.0/build/cssreset/cssreset-min.css">
+        
+        <link type="text/css" rel="stylesheet" href="css/yui-css-reset/css-reset-min.css" />
 
         <jsp:include page="js/dygraphs/dygraphs.jsp">
             <jsp:param name="debug-qualifier" value="true" />
@@ -61,8 +62,6 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-
-        <script src='http://maps.google.com/maps/api/js?v=3&sensor=false' type="text/javascript"></script>
 
         <jsp:include page="js/openlayers/openlayers.jsp">
             <jsp:param name="debug-qualifier" value="<%= development%>" />
@@ -88,6 +87,7 @@
             CONFIG.namespace.sample = 'gov.usgs.cida.ch.sample';
             CONFIG.namespace.input = 'gov.usgs.cida.ch.input';
             CONFIG.namespace.output = 'gov.usgs.cida.ch.output';
+            CONFIG.dateFormat = '{MM}/{dd}/{yyyy}';
             
             JSON.stringify = JSON.stringify || function (obj) {
                 var t = typeof (obj);
