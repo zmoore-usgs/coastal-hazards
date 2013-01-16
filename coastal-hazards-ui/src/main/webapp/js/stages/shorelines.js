@@ -99,7 +99,7 @@ var Shorelines = {
                         if (groups[0] instanceof Date) {
                             // If it's a date array Change the groups items back from Date item back into string
                             groups = groups.map(function(n) {
-                                return n.format('{MM}/{dd}/{yyyy}')
+                                return n.format(CONFIG.dateFormat)
                             });
                         }
                     
@@ -435,7 +435,7 @@ var Shorelines = {
                     
                 LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for year ' + year + ' on layer ' + layerName);
                         
-                var idTableButtons = $('.btn-year-toggle[year="'+year+'"]');
+                var idTableButtons = $('.btn-year-toggle[date="'+date+'"]');
                 if (!status) {
                     if (sessionLayer.view["years-disabled"].indexOf(year) == -1) {
                         sessionLayer.view["years-disabled"].push(year);

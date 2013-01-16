@@ -38,7 +38,7 @@
             <jsp:param name="development" value="true" />
         </jsp:include>
         
-        <link type="text/css" rel="stylesheet" href="js/yui-css-reset/css-reset-min.css" />
+        <link type="text/css" rel="stylesheet" href="css/yui-css-reset/css-reset-min.css" />
 
         <jsp:include page="js/dygraphs/dygraphs.jsp">
             <jsp:param name="debug-qualifier" value="true" />
@@ -87,6 +87,7 @@
             CONFIG.namespace.sample = 'gov.usgs.cida.ch.sample';
             CONFIG.namespace.input = 'gov.usgs.cida.ch.input';
             CONFIG.namespace.output = 'gov.usgs.cida.ch.output';
+            CONFIG.dateFormat = '{MM}/{dd}/{yyyy}';
             
             JSON.stringify = JSON.stringify || function (obj) {
                 var t = typeof (obj);
