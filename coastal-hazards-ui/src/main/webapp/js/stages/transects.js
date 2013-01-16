@@ -199,7 +199,6 @@ var Transects = {
                     
                     excludedDates.each(function(date) {
                         filter += '<ogc:Not>' + 
-                        //            '<ogc:GmlObjectId gml:id="InWaterA_1M.1013"/>' + 
                         '<ogc:PropertyIsLike  wildCard="*" singleChar="." escape="!">' + 
                         '<ogc:PropertyName>'+property+ '</ogc:PropertyName>' + 
                         '<ogc:Literal>' +date+ '</ogc:Literal>' + 
