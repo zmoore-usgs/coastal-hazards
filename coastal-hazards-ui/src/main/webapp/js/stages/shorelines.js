@@ -4,12 +4,18 @@
 var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
+    
+    /**
+     * Calls DescribeFeatureType against OWS service and tries to add the layer(s) to the map 
+     */
     addShorelines : function(layers) {
+        LOG.info('Shorelines.js::addShorelines');
         LOG.info('Shorelines.js::addShorelines: Adding ' + layers.length + ' shoreline layers to map'); 
         $(layers).each(function(index,layer) {
-            
+            LOG.info('Shorelines.js::addShorelines: Attempting to add shoreline layer ' + layer.title + ' to the map'); 
             CONFIG.ows.getDescribeFeatureType({
-                featureName : layer.title, 
+                featureName : layer.title,
+                
                 callbacks : [
                 function(describeFeaturetypeRespone) {
                     Shorelines.addLayerToMap({
@@ -19,16 +25,19 @@ var Shorelines = {
                 }
                 ]
             })
-            
         })
     },
+    
+    /**
+     * Uses a OWS DescribeFeatureType response to add a layer to a map
+     */
     addLayerToMap : function(args) {
-        LOG.info('Shorelines.js::addLayerToMap: Adding shoreline layer to map'); 
-        
-        // Read the selected features for specific properties
+        LOG.info('Shorelines.js::addLayerToMap');
         var layer = args.layer;
         
-        // Parse the describeFeatureType response using this function
+        LOG.info('Shorelines.js::addLayerToMap: Adding shoreline layer ' + layer.title + 'to map'); 
+        
+        LOG.debug('Shorelines.js::addLayerToMap: Adding shoreline layer ' + layer.title + 'to map'); 
         var properties = CONFIG.ows.getLayerPropertiesFromWFSDescribeFeatureType({
             describeFeatureType : args.describeFeaturetypeRespone,
             includeGeom : false
@@ -38,6 +47,7 @@ var Shorelines = {
             name : layer.name,
             stage : Shorelines.stage
         });
+        
         sessionLayer.nameSpace = args.describeFeaturetypeRespone.targetNamespace;
         CONFIG.tempSession.setStageConfig({ 
             stage :Shorelines.stage,
@@ -55,49 +65,54 @@ var Shorelines = {
                     if (CONFIG.map.getMap().getLayersByName(layer.title).length == 0) {
                         LOG.info('Shorelines.js::?: Layer does not yet exist on the map. Loading layer: ' + layer.title);
                     
-                        // Find the String match of our desired column from the layer attributes
-                        var groupColumn = Object.keys(features[0].attributes).find(function(n) {
-                            return n.toLowerCase() === CONFIG.tempSession.getStageConfig({
-                                stage : Shorelines.stage
-                            }).groupingColumn.toLowerCase()
+                        var sessionLayer = CONFIG.tempSession.getStageConfig({
+                            stage : Shorelines.stage,
+                            name : layer.name
+                        });
+                        
+                        var groupingColumn = Object.keys(features[0].attributes).find(function(n) {
+                            return n.toLowerCase() === sessionLayer.groupingColumn.toLowerCase()
+                        });
+                        LOG.trace('Shorelines.js::?: Found correct grouping column capitalization for ' + layer.title + ', it is: ' + groupingColumn);
+                        
+                        LOG.trace('Shorelines.js::?: Saving grouping column to session');
+                        sessionLayer.groupingColumn = groupingColumn;
+                        
+                        sessionLayer.dateFormat = Util.getLayerDateFormatFromFeaturesArray({
+                            featureArray : features,
+                            groupingColumn : groupingColumn
                         });
                     
+                        CONFIG.tempSession.setStageConfig({ 
+                            stage :Shorelines.stage,
+                            config : sessionLayer
+                        });
+                        
                         // Find the index of the desired column
                         var dateIndex = Object.keys(features[0].attributes).findIndex(function(n) {
-                            return n === groupColumn
+                            return n === groupingColumn
                         })
 
                         // Extract the values from the features array
-                        var groups = Util.makeGroups(features.map(function(n) {
-                            return Object.values(n.attributes)[dateIndex]
-                        }));
+                        var groups = Util.makeGroups({ 
+                            groupItems : features.map(function(n) {
+                                return Object.values(n.attributes)[dateIndex]
+                            }),
+                            preserveDate : true
+                        });
                     
                         if (groups[0] instanceof Date) {
                             // If it's a date array Change the groups items back from Date item back into string
                             groups = groups.map(function(n) {
-                                return n.format('{MM}/{dd}/{yyyy}')
+                                return n.format(sessionLayer.dateFormat)
                             });
                         }
-                        
-                        // Home of future color selection routines
-                        //                        var shorelineColorYearPairs = CONFIG.tempSession.getShorelineConfig({ name : layer.name });
-                        //                        var defaultColorYearPairs = CONFIG.tempSession.getShorelineConfig({ name : 'default'}).colorsParamPairs;
-                        //                        $(colorYearPairs).each(function(i,v,a) {
-                        //                            var ind = defaultColorYearPairs.findIndex(function(n) {
-                        //                                return n[1] === v[1]
-                        //                            })
-                        //                            if (ind == -1) {
-                        //                                defaultColorYearPairs.push(v);
-                        //                            } else {
-                        //                                colorYearPairs.push(defaultColorYearPairs[i])
-                        //                            }
-                        //                        })
                     
-                        var colorYearPairs = Util.createColorGroups(groups);
+                        var colorDatePairings = Util.createColorGroups(groups);
                         
                         var sldBody = Shorelines.createSLDBody({
-                            colorYearPairs : colorYearPairs,
-                            groupColumn : groupColumn,
+                            colorDatePairings : colorDatePairings,
+                            groupColumn : groupingColumn,
                             layer : layer
                         })
                         
@@ -113,7 +128,7 @@ var Shorelines = {
                                 zoomToWhenAdded : true, // Include this layer when performing an aggregated zoom
                                 isBaseLayer : false,
                                 unsupportedBrowsers: [],
-                                colorGroups : colorYearPairs,
+                                colorGroups : colorDatePairings,
                                 describedFeatures : features,
                                 tileOptions: {
                                     // http://www.faqs.org/rfcs/rfc2616.html
@@ -122,7 +137,7 @@ var Shorelines = {
                                 },
                                 singleTile: true, 
                                 ratio: 1,
-                                groupByAttribute : groupColumn,
+                                groupByAttribute : groupingColumn,
                                 groups : groups
                             });
                             
@@ -139,7 +154,7 @@ var Shorelines = {
     },
     createSLDBody : function(args) {
         var sldBody;
-        var colorYearPairs = args.colorYearPairs;
+        var colorDatePairings = args.colorDatePairings;
         var groupColumn = args.groupColumn;
         var layer = args.layer;
         var layerTitle = args.layerTitle || layer.title;
@@ -149,7 +164,7 @@ var Shorelines = {
             stage : Shorelines.stage
         });
         
-        if (!isNaN(colorYearPairs[0][1])) {  
+        if (!isNaN(colorDatePairings[0][1])) {  
             LOG.info('Shorelines.js::?: Grouping will be done by number');
             // Need to first find out about the featuretype
             var createUpperLimitFilterSet = function(colorLimitPairs) {
@@ -174,7 +189,7 @@ var Shorelines = {
             '<CssParameter name="stroke">' + 
             '<ogc:Function name="Categorize">' + 
             '<ogc:PropertyName>' +groupColumn+ '</ogc:PropertyName> '
-            +createUpperLimitFilterSet(colorYearPairs)+
+            +createUpperLimitFilterSet(colorDatePairings)+
             '</ogc:Function>' + 
             '</CssParameter>' + 
             '<CssParameter name="stroke-opacity">1</CssParameter>' + 
@@ -186,14 +201,14 @@ var Shorelines = {
             '</UserStyle>' + 
             '</NamedLayer>' + 
             '</StyledLayerDescriptor>';
-        } else if (!isNaN(Date.parse(colorYearPairs[0][1]))) { 
+        } else if (!isNaN(Date.parse(colorDatePairings[0][1]))) { 
             LOG.debug('Shorelines.js::?: Grouping will be done by year')
-            var featureDescription = CONFIG.ows.getDescribeFeatureType({
-                featureName : layerTitle
-            });
+            var featureDescription = CONFIG.ows.featureTypeDescription[layerTitle];
+            
             var dateType = featureDescription.featureTypes[0].properties.find(function(n){
                 return n.name == groupColumn
             });
+            
             var createRuleSets;
             if (dateType.type === 'xsd:string') {
                 LOG.debug('Shorelines.js::?: Geoserver date column is actually a string');
@@ -201,13 +216,20 @@ var Shorelines = {
                     var html = '';
                     for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
                         var year = colorLimitPairs[lpIndex][1].split('/')[2];
-                                        
-                        if (sessionLayer.view["years-disabled"].indexOf(year) == -1) {
+                        var date = colorLimitPairs[lpIndex][1];
+                        
+                        var fidArray = CONFIG.ows.featureTypeDescription[layerName].findAll(function(n){
+                            return Date.parse(n.data['DATE_']) == Date.parse(date)
+                        }).map(function(n) {
+                            return n.fid
+                        })
+                        
+                        if (sessionLayer.view["dates-disabled"].indexOf(date) == -1) {
                             html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>';
                             html += groupColumn.trim();
                             html += '</ogc:PropertyName>';
                             html += '<ogc:Literal>';
-                            html += '*' + colorLimitPairs[lpIndex][1].split('/')[2];
+                            html += colorLimitPairs[lpIndex][1];
                             html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">';
                             html += colorLimitPairs[lpIndex][0];
                             html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>';
@@ -266,7 +288,7 @@ var Shorelines = {
             '<NamedLayer>'+
             '<Name>#[layer]</Name>' + 
             '<UserStyle>' + 
-            '<FeatureTypeStyle> ' + createRuleSets(colorYearPairs) + '</FeatureTypeStyle>' +  
+            '<FeatureTypeStyle> ' + createRuleSets(colorDatePairings) + '</FeatureTypeStyle>' +  
             '</UserStyle>' + 
             '</NamedLayer>' +
             '</StyledLayerDescriptor>';
@@ -317,8 +339,8 @@ var Shorelines = {
         var colorTableHeadR = $('<tr />');
         var colorTableBody = $('<tbody />');
         
-        colorTableHeadR.append($('<th />').html('Selected'));
-        colorTableHeadR.append($('<th />').html('Year'));
+        colorTableHeadR.append($('<th />').addClass('shoreline-table-selected-head-column').html('Visibility'));
+        colorTableHeadR.append($('<th />').html('Date'));
         colorTableHeadR.append($('<th />').attr('data-sorter',false).html('Color'));
         colorTableHead.append(colorTableHeadR);
         colorTable.append(colorTableHead);
@@ -331,18 +353,16 @@ var Shorelines = {
         });
         
         $(event.object.colorGroups).each(function(i,colorGroup) {
-            var year = colorGroup[1].split('/')[2];
-            var checked = sessionLayer.view["years-disabled"].indexOf(year) == -1;
+            var date = colorGroup[1];
+            var checked = sessionLayer.view["dates-disabled"].indexOf(date) == -1;
             
-            var tableRow = $('<tr />').attr('id', 'shoreline-color-table-row-' +year);
-            var tableData = $('<td />').attr('id','shoreline-color-table-toggle-'+year);
-            var toggleDiv = $('<div />').addClass('feature-toggle');
-            
+            var tableRow = $('<tr />');
+            var tableData = $('<td />');
+            var toggleDiv = $('<div />').addClass('feature-toggle').data('date', colorGroup[1]);
             var checkbox = $('<input />').attr({
-                type : 'checkbox',
-                name : 'checkbox-'+year,
-                id : 'checkbox-'+year
-            }).val(year)
+                type : 'checkbox'
+            })
+            .val(date)
             
             if (checked) {
                 checkbox.attr('checked', 'checked');
@@ -352,11 +372,10 @@ var Shorelines = {
             
             tableData.append(toggleDiv);
             tableRow.append(tableData);
-            tableRow.append($('<td />').html(year));
+            tableRow.append($('<td />').html(date));
             tableRow.append($('<td />')
                 .attr({
-                    style : 'background-color:' + colorGroup[0] + ';',
-                    id : 'shoreline-color-table-color-'+year
+                    style : 'background-color:' + colorGroup[0] + ';'
                 }).html('&nbsp;'));
             
             colorTableBody.append(tableRow);
@@ -409,6 +428,7 @@ var Shorelines = {
             onChange : function($element, status, event) {
                 var layerName = this.attachedLayer;
                 var year = $element.parent().find('input').val();
+                var date = $element.parent().data('date');
                 var sessionLayer = CONFIG.tempSession.getStageConfig({
                     name : layerName,
                     stage : Shorelines.stage
@@ -416,11 +436,16 @@ var Shorelines = {
                     
                 LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for year ' + year + ' on layer ' + layerName);
                         
-                var idTableButtons = $('.btn-year-toggle[year="'+year+'"]');
+                var idTableButtons = $('.btn-year-toggle[date="'+date+'"]');
                 if (!status) {
                     if (sessionLayer.view["years-disabled"].indexOf(year) == -1) {
                         sessionLayer.view["years-disabled"].push(year);
                     }
+                    
+                    if (sessionLayer.view["dates-disabled"].indexOf(date) == -1) {
+                        sessionLayer.view["dates-disabled"].push(date);
+                    }
+                    
                     idTableButtons.removeClass('btn-success');
                     idTableButtons.addClass('btn-danger');
                     idTableButtons.html('Enable');
@@ -428,6 +453,11 @@ var Shorelines = {
                     while (sessionLayer.view["years-disabled"].indexOf(year) != -1) {
                         sessionLayer.view["years-disabled"].remove(year);
                     }
+                    
+                    while (sessionLayer.view["dates-disabled"].indexOf(date) != -1) {
+                        sessionLayer.view["dates-disabled"].remove(date);
+                    }
+                    
                     idTableButtons.removeClass('btn-danger');
                     idTableButtons.addClass('btn-success');
                     idTableButtons.html('Disable');
@@ -442,16 +472,20 @@ var Shorelines = {
                         
                 var layer  = CONFIG.map.getMap().getLayersByName(layerName.split(':')[1])[0];
                 var sldBody = Shorelines.createSLDBody({
-                    colorYearPairs : layer.colorGroups,
+                    colorDatePairings : layer.colorGroups,
                     groupColumn : layer.groupByAttribute,
                     layerTitle : layerName.split(':')[1],
                     layerName : layerName
                 })
                 layer.params.SLD_BODY = sldBody;
                 layer.redraw();
+                $("table.tablesorter").trigger('update', false)
             }
         })
         
+        Shorelines.setupTableSorting();
+    },
+    setupTableSorting : function() {
         $.tablesorter.addParser({ 
             id: 'visibility', 
             is: function(s) { 

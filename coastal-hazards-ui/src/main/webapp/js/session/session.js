@@ -26,8 +26,10 @@ var Session = function(name, isPerm) {
                 'default' : {
                     colorsParamPairs : [],
                     groupingColumn : 'date_',
+                    describeFeatureTypeResponse : null,
                     view : {
                         'years-disabled' : [],
+                        'dates-disabled' : [],
                         isSelected : false
                     }
                 }

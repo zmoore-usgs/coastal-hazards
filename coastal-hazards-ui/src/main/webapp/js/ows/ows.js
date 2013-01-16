@@ -5,14 +5,19 @@ var OWS = function(endpoint) {
     me.geoserverEndpoint = endpoint ? endpoint : CONFIG.geoServerEndpoint;
     me.wfsGetCapsUrl = 'geoserver/ows?service=wfs&version=1.1.0&request=GetCapabilities'
     me.wfsGetFeature = 'geoserver/ows?service=wfs&version=1.1.0&request=GetFeature'
-    me.wfsDescribeFeatureType = 'geoserver/ows?service=wfs&version=2.0.0&request=DescribeFeatureType'
+    me.wfsDescribeFeatureTypeEndpoint = 'geoserver/ows?service=wfs&version=2.0.0&request=DescribeFeatureType'
     me.wfsCapabilities = null;
     me.wfsCapabilitiesXML = null;
     me.wmsGetCapsUrl = 'geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
     me.wmsCapabilities = null;
     me.wmsCapabilitiesXML = null;
     me.wpsExecuteRequestPostUrl = 'geoserver/ows?service=wps&version=1.0.0&request=execute'
-    me.featureTypes = Object.extended();
+    
+    // An object to hold the return from WFS DescribeFeatureType
+    me.featureTypeDescription = Object.extended();
+    
+    // An object to hold the return of a filtered WFS getFeature response
+    me.filteredFeature = Object.extended();
     
     return $.extend(me, {
         /**
@@ -72,17 +77,20 @@ var OWS = function(endpoint) {
             })
         },
         getLayerPropertiesFromWFSDescribeFeatureType : function(args) {
-            LOG.info('OWS.js::getLayerPropertiesFromWFSDescribeFeatureType: Parsing WFS describe feature type response for properties');
+            LOG.info('OWS.js::getLayerPropertiesFromWFSDescribeFeatureType');
+            LOG.debug('OWS.js::getLayerPropertiesFromWFSDescribeFeatureType: Parsing WFS describe feature type response for properties');
+            
             var describeFeatureType = args.describeFeatureType;
             var includeGeom = args.includeGeom;
             var result = new Object.extended();
-            // For every layer pulled in...
+            
+            LOG.debug('OWS.js::getLayerPropertiesFromWFSDescribeFeatureType: Will attempt to parse ' + describeFeatureType.featureTypes.length + ' layers');
             $(describeFeatureType.featureTypes).each(function(i, featureType) {
                         
                 // For each layer, initilize a property array for it in the result object
                 result[featureType.typeName] = [];
                         
-                // Parse through its properties
+                LOG.trace('OWS.js::getLayerPropertiesFromWFSDescribeFeatureType: Will attempt to parse ' + featureType.properties.length+ ' layer properties');
                 $(featureType.properties).each(function(i,property) {
                 
                     if (!includeGeom) {
@@ -100,19 +108,7 @@ var OWS = function(endpoint) {
         },
         getDescribeFeatureType : function(args) {
             LOG.info('OWS.js::getDescribeFeatureType: WFS featureType requested for feature ' + args.featureName);
-            // Check if we currently have this feature type from a previous call
-            if (me.featureTypes[args.featureName]) {
-                LOG.info('OWS.js::getDescribeFeatureType: WFS featureType already cached. Using cached version without making a call.');
-                if (!args.callbacks || args.callbacks.length == 0) {
-                    return me.featureTypes[args.featureName];
-                } else {
-                    $(args.callbacks || []).each(function(index, callback) {
-                        callback(me.featureTypes[args.featureName], this);
-                    })
-                }
-            }
-            
-            var url = me.wfsDescribeFeatureType + '&typeName=' + args.featureName;
+            var url = me.wfsDescribeFeatureTypeEndpoint + '&typeName=' + args.featureName;
             $.ajax(url, {
                 context : args.scope || this,
                 success : function(data, textStatus, jqXHR) {
@@ -120,7 +116,7 @@ var OWS = function(endpoint) {
                     var gmlReader = new OpenLayers.Format.WFSDescribeFeatureType();
                     var describeFeaturetypeRespone = gmlReader.read(data); 
                     
-                    me.featureTypes[describeFeaturetypeRespone.featureTypes[0].typeName] = describeFeaturetypeRespone;
+                    me.featureTypeDescription[describeFeaturetypeRespone.featureTypes[0].typeName] = describeFeaturetypeRespone;
                     
                     $(args.callbacks || []).each(function(index, callback) {
                         callback(describeFeaturetypeRespone, this);
@@ -129,6 +125,7 @@ var OWS = function(endpoint) {
             })
         },
         getFilteredFeature : function(args) {
+            LOG.info('OWS.js::getFilteredFeature');
             LOG.info('OWS.js::getFilteredFeature: Building request for WFS GetFeature (filtered)');
             var layer = args.layer;
             var url = me.wfsGetFeature + '&typeName=' + layer.name + '&propertyName=';
@@ -137,15 +134,21 @@ var OWS = function(endpoint) {
             $.ajax(url, {
                 context : args.scope || this,
                 success : function(data, textStatus, jqXHR) {
+                    LOG.trace('OWS.js::getFilteredFeature: Successfully received WFS GetFeature response.');
                     var gmlReader = new OpenLayers.Format.GML.v3();
                     var getFeatureResponse = gmlReader.read(data); 
+                    LOG.debug('OWS.js::getFilteredFeature: WFS GetFeature parsed .');
                     
+                    me.featureTypeDescription[args.layer.name] = getFeatureResponse;
+                    
+                    LOG.trace('OWS.js::getFilteredFeature: Executing '+args.callbacks.success+'callbacks');
                     $(args.callbacks.success || []).each(function(index, callback, allCallbacks) {
+                        LOG.trace('OWS.js::getFilteredFeature: Executing callback ' + index);
                         callback(getFeatureResponse, this);
                     })
                 },
                 error : function(data, textStatus, jqXHR) {
-                     $(args.callbacks.error || []).each(function(index, callback, allCallbacks) {
+                    $(args.callbacks.error || []).each(function(index, callback, allCallbacks) {
                         callback(data, this);
                     })
                 }
@@ -204,7 +207,62 @@ var OWS = function(endpoint) {
                     })
                 }
             });
+        },
+        cloneLayer : function(args) {
+            var originalLayer = args.originalLayer;
+            var newLayer = args.newLayer;
             
+            var wps = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
+            '<ows:Identifier>gs:Import</ows:Identifier>' + 
+            '<wps:DataInputs>' + 
+            '<wps:Input>' + 
+            '<ows:Identifier>features</ows:Identifier>' + 
+            '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
+            '<wps:Body>' + 
+            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2">' + // xmlns:'+originalWorkspace+'="' +originalWorkspaceNS+ '">' + 
+            '<wfs:Query typeName="'+originalLayer+'"/>' + 
+            '</wfs:GetFeature>' + 
+            '</wps:Body>' + 
+            '</wps:Reference>' + 
+            '</wps:Input>' + 
+            '<wps:Input>' + 
+            '<ows:Identifier>workspace</ows:Identifier>' + 
+            '<wps:Data>' + 
+            '<wps:LiteralData>ch-input</wps:LiteralData>' + 
+            '</wps:Data>' + 
+            '</wps:Input>' + 
+            '<wps:Input>' + 
+            '<ows:Identifier>store</ows:Identifier>' + 
+            '<wps:Data>' + 
+            '<wps:LiteralData>Coastal Hazards Input</wps:LiteralData>' + 
+            '</wps:Data>' + 
+            '</wps:Input>' + 
+            '<wps:Input>' + 
+            '<ows:Identifier>name</ows:Identifier>' + 
+            '<wps:Data>' + 
+            '<wps:LiteralData>'+newLayer+'</wps:LiteralData>' + 
+            '</wps:Data>' + 
+            '</wps:Input>' + 
+            '<wps:Input>' + 
+            '<ows:Identifier>srsHandling</ows:Identifier>' + 
+            '<wps:Data>' + 
+            '<wps:LiteralData>REPROJECT_TO_DECLARED</wps:LiteralData>' + 
+            '</wps:Data>' + 
+            '</wps:Input>' + 
+            '</wps:DataInputs>' + 
+            '<wps:ResponseForm>' + 
+            '<wps:RawDataOutput>' + 
+            '<ows:Identifier>layerName</ows:Identifier>' + 
+            '</wps:RawDataOutput>' + 
+            '</wps:ResponseForm>' + 
+            '</wps:Execute>';
+        
+            CONFIG.ows.executeWPSProcess({
+                processIdentifier : 'gs:Import',
+                request : wps,
+                callbacks : args.callbacks || [],
+                context : args.context || this
+            })
         }
     });
 }
