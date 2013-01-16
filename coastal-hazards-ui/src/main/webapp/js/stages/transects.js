@@ -202,7 +202,7 @@ var Transects = {
                         //            '<ogc:GmlObjectId gml:id="InWaterA_1M.1013"/>' + 
                         '<ogc:PropertyIsLike  wildCard="*" singleChar="." escape="!">' + 
                         '<ogc:PropertyName>'+property+ '</ogc:PropertyName>' + 
-                        '<ogc:Literal>*' +year+ '</ogc:Literal>' + 
+                        '<ogc:Literal>' +year+ '</ogc:Literal>' + 
                         '</ogc:PropertyIsLike>' + 
                         '</ogc:Not>' 
                     })

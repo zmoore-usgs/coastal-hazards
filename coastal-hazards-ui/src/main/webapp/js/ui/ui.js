@@ -337,7 +337,7 @@ var UI = function() {
                     v.click();
                 }) 
                 
-                var layerName = event.features[0].fid.split('.')[0];
+                var layerName = event.features[0].gml.featureNSPrefix + ':' + event.features[0].fid.split('.')[0];
                 var shorelineIdContainer = $('<div />').attr('id', layerName + '-id-container').addClass('shoreline-id-container');
                 var shorelineIdTable = $('<table />').attr('id', layerName + '-id-table').addClass('shoreline-id-table table table-striped table-condensed');
                 var thead = $('<thead />');
@@ -364,7 +364,7 @@ var UI = function() {
                         stage : Shorelines.stage
                     })
                     
-                    var date = new Date(feature.attributes[groupingColumn]).format(CONFIG.dateFormat);
+                    var date = new Date(feature.attributes[groupingColumn]).format(layer.dateFormat);
                     var isVisible = layer.view["dates-disabled"].indexOf(date) == -1;
                     var  disableButton = $('<button />')
                     .addClass('btn btn-year-toggle')
