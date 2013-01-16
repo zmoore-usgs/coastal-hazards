@@ -58,5 +58,6 @@ public class Constants {
     public static final CoordinateReferenceSystem REQUIRED_CRS_WGS84 = DefaultGeographicCRS.WGS84;
     public static final String BASELINE_ORIENTATION_ATTR = "Orient";
     public static final String TRANSECT_ID_ATTR = "TransectID";
+    public static final String DISTANCE_ATTR = "Distance";
 
 }

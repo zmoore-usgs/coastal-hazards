@@ -129,7 +129,12 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
 
             SimpleFeatureIterator transectIterator = transectCollection.features();
             long[] transectIds = new long[transectCollection.size()];
+            int[] orientations = new int[transectCollection.size()];
             int idIndex = 0;
+            
+            // TODO this loop can be inside of the shoreline loop
+            // I just have to cache any of the expensive operations
+            // so they are not repeated
             while (transectIterator.hasNext()) {
                 SimpleFeature feature = transectIterator.next();
                 Object attrValue = feature.getAttribute(TRANSECT_ID_ATTR);
@@ -143,8 +148,12 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 else {
                     throw new IllegalStateException("TransectID must be a Long or Integer type");
                 }
-                transectIds[idIndex++] = id;
-
+                transectIds[idIndex] = id;
+                
+                int orient = (Integer) feature.getAttribute(BASELINE_ORIENTATION_ATTR);
+                orientations[idIndex] = orient;
+                idIndex++;
+                
                 Geometry transectGeom = (Geometry) feature.getDefaultGeometry();
                 Geometry transformedGeom = JTS.transform(transectGeom, transectTransform);
                 this.transectMap.put(id, transformedGeom);
@@ -156,20 +165,41 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 SimpleFeature feature = shoreIterator.next();
                 Geometry shoreGeom = (Geometry) feature.getDefaultGeometry();
                 Geometry transformedGeom = JTS.transform(shoreGeom, shorelineTransform);
-                for (long i : transectIds) {
-                    Geometry transectGeom = transectMap.get(i);
+                for (int i=0; i< transectCollection.size(); i++) {
+                    long transectId = transectIds[i];
+                    int orientation = orientations[i];
+                    Geometry transectGeom = transectMap.get(transectId);
                     Geometry intersection = transformedGeom.intersection(transectGeom);
                     Point point = getPointFromIntersection(intersection, transectGeom);
                     if (point == null) {
                         // no intersection, go to next transect
                         continue;
                     }
-                    SimpleFeature pointFeature = buildPointFeature(point, i, feature);
+                    double distance = calculateDistanceFromReference(transectGeom, point, orientation);
+                    SimpleFeature pointFeature = buildPointFeature(point, transectId, distance, feature);
                     sfList.add(pointFeature);
                 }
             }
             SimpleFeatureCollection intersectionCollection = DataUtilities.collection(sfList);
             return importProcess.execute(intersectionCollection, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED, null);
+        }
+        
+        private double calculateDistanceFromReference(Geometry transect, Point intersection, int orientation) {
+            Point referencePoint = null;
+            switch(Geometries.get(transect)) {
+                case LINESTRING:
+                    LineString line = (LineString)transect;
+                    referencePoint = line.getStartPoint();
+                    break;
+                default:
+                    throw new UnsupportedFeatureTypeException("Expected LineString here");
+            }
+            // distance should be calculated from coordinates, not points
+            double distance = orientation *
+                    referencePoint.getCoordinate().distance(
+                    intersection.getCoordinate());
+            
+            return distance;
         }
 
         private SimpleFeatureType buildSimpleFeatureType(SimpleFeatureCollection simpleFeatures) {
@@ -180,6 +210,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
             builder.setName("Intersections");
             builder.add("geom", Point.class, utmCrs);
             builder.add(TRANSECT_ID_ATTR, Integer.class);
+            builder.add(DISTANCE_ATTR, Double.class);
             for (AttributeType type : types) {
                 if (type instanceof GeometryType) {
                     // ignore the geom type of intersecting data
@@ -190,7 +221,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
             return builder.buildFeatureType();
         }
         
-        private SimpleFeature buildPointFeature(Point point, long transectId, SimpleFeature sourceFeature) {
+        private SimpleFeature buildPointFeature(Point point, long transectId, double distance, SimpleFeature sourceFeature) {
             List<AttributeType> types = this.outputFeatureType.getTypes();
             Object[] featureObjectArr = new Object[types.size()];
             for (int i =0; i<featureObjectArr.length; i++) {
@@ -200,6 +231,9 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 }
                 else if (type.getName().getLocalPart().equals(TRANSECT_ID_ATTR)) {
                     featureObjectArr[i] = new Long(transectId);
+                }
+                else if (type.getName().getLocalPart().equals(DISTANCE_ATTR)) {
+                    featureObjectArr[i] = new Double(distance);
                 }
                 else {
                     featureObjectArr[i] = sourceFeature.getAttribute(type.getName());
