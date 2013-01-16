@@ -43,44 +43,48 @@
  * The user assumes all risk for any damages whatsoever resulting from loss of use, data,
  * or profits arising in connection with the access, use, quality, or performance of this software.
  */
-package gov.usgs.cida.coastalhazards.wps;
+package gov.usgs.cida.coastalhazards.wps.geom;
 
-import com.vividsolutions.jts.geom.Point;
-import java.util.List;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.GeometryType;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import org.joda.time.DateTime;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class CalculateIntersectionsProcessTest {
+public class IntersectionPoint {
+    
+    private double distance;
+    private String time;
+    private double uncertainty;
+
+    /**
+     * Stores Intersections from feature for delivery to R
+     * 
+     * @param dist distance from reference (negative for seaward baselines)
+     * @param t Assumed to be in format mm/dd/yyyy
+     * @param uncy Uncertainty measurement
+     * @throws ParseException if date is in wrong format
+     */
+    public IntersectionPoint(double dist, String t, double uncy) throws ParseException {
+        this.distance = dist;
+        this.time = convertToYYYYMMDD(t);
+        this.uncertainty = uncy;
+    }
     
     /**
-     * Test of execute method, of class CalculateIntersectionsProcess.
+     * Helper function to convert from mm/dd/yyy to yyyy-mm-dd
      */
-    @Test
-    public void testExecute() throws Exception {
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+    protected static String convertToYYYYMMDD(String t) throws ParseException {
+        DateTime dateObj = new DateTime(new SimpleDateFormat("mm/dd/yyyy").parse(t));
+        String outDate = dateObj.toString("yyyy-mm-dd");
+        return outDate;
+    }
 
-        builder.setName("Intersections");
-        builder.add("geom", Point.class, DefaultGeographicCRS.WGS84);
-        builder.add("transect_id", String.class);
-        SimpleFeatureType ft = builder.buildFeatureType();
-        List<AttributeType> types = ft.getTypes();
-        
-        for (AttributeType type : types) {
-            if (type instanceof GeometryType) {
-                System.out.println("got a geom type");
-            }
-            else {
-                System.out.println("Type is: " + type.toString());
-            }
-        }
+    @Override
+    public String toString() {
+        String str = time + "\t" + distance + "\t" + uncertainty;
+        return str;
     }
 }

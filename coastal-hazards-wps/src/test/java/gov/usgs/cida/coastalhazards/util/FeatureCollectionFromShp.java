@@ -43,44 +43,63 @@
  * The user assumes all risk for any damages whatsoever resulting from loss of use, data,
  * or profits arising in connection with the access, use, quality, or performance of this software.
  */
-package gov.usgs.cida.coastalhazards.wps;
 
-import com.vividsolutions.jts.geom.Point;
-import java.util.List;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
+package gov.usgs.cida.coastalhazards.util;
+
+import gov.usgs.cida.coastalhazards.r.IntersectionParserTest;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import org.geotools.data.DataStore;
+import org.geotools.data.DataStoreFinder;
+import org.geotools.data.FeatureSource;
+import org.geotools.feature.FeatureCollection;
+import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.GeometryType;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class CalculateIntersectionsProcessTest {
-    
-    /**
-     * Test of execute method, of class CalculateIntersectionsProcess.
-     */
-    @Test
-    public void testExecute() throws Exception {
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+public class FeatureCollectionFromShp {
 
-        builder.setName("Intersections");
-        builder.add("geom", Point.class, DefaultGeographicCRS.WGS84);
-        builder.add("transect_id", String.class);
-        SimpleFeatureType ft = builder.buildFeatureType();
-        List<AttributeType> types = ft.getTypes();
-        
-        for (AttributeType type : types) {
-            if (type instanceof GeometryType) {
-                System.out.println("got a geom type");
-            }
-            else {
-                System.out.println("Type is: " + type.toString());
-            }
-        }
+    private URL shapefile;
+    
+    @Before
+    public void setupShape() {
+        shapefile = FeatureCollectionFromShp.class.getClassLoader().getResource("gov/usgs/cida/coastalhazards/blandit/blandit_intersects.shp");
     }
+
+    public static FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollectionFromShp(URL shp) throws IOException {
+        FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
+        
+        Map<String, URL> connectParameters = new HashMap<String, URL>();
+        connectParameters.put("url", shp);
+        DataStore dataStore = DataStoreFinder.getDataStore(connectParameters);
+        String[] typeNames = dataStore.getTypeNames();
+        String name = null;
+        if (typeNames.length == 1) {
+            name = typeNames[0];
+        }
+        else {
+            throw new RuntimeException("I don't know how to deal with this");
+        }
+        SimpleFeatureType schema = dataStore.getSchema(name);
+        FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = 
+                dataStore.getFeatureSource(name);
+        featureCollection = featureSource.getFeatures();
+        return featureCollection;
+    }
+    
+    @Test
+    public void testFeatureCollectionFromShp() throws IOException {
+        FeatureCollection<SimpleFeatureType, SimpleFeature> fc = featureCollectionFromShp(shapefile);
+        assertNotNull(fc);
+        assertEquals(fc.size(), 331);
+    }
+    
 }

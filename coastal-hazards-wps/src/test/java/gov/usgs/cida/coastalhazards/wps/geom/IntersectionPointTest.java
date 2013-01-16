@@ -43,44 +43,24 @@
  * The user assumes all risk for any damages whatsoever resulting from loss of use, data,
  * or profits arising in connection with the access, use, quality, or performance of this software.
  */
-package gov.usgs.cida.coastalhazards.wps;
+package gov.usgs.cida.coastalhazards.wps.geom;
 
-import com.vividsolutions.jts.geom.Point;
-import java.util.List;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
+import java.text.ParseException;
+import static org.junit.Assert.*;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.GeometryType;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class CalculateIntersectionsProcessTest {
+public class IntersectionPointTest {
     
     /**
-     * Test of execute method, of class CalculateIntersectionsProcess.
+     * Test of toString method, of class IntersectionPoint.
      */
     @Test
-    public void testExecute() throws Exception {
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-
-        builder.setName("Intersections");
-        builder.add("geom", Point.class, DefaultGeographicCRS.WGS84);
-        builder.add("transect_id", String.class);
-        SimpleFeatureType ft = builder.buildFeatureType();
-        List<AttributeType> types = ft.getTypes();
-        
-        for (AttributeType type : types) {
-            if (type instanceof GeometryType) {
-                System.out.println("got a geom type");
-            }
-            else {
-                System.out.println("Type is: " + type.toString());
-            }
-        }
+    public void testConvertToYYYYMMDD() throws ParseException {
+        String converted = IntersectionPoint.convertToYYYYMMDD("04/10/1999");
+        assertEquals(converted, "1999-04-10");
     }
 }

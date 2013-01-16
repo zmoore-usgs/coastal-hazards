@@ -13,8 +13,28 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
+import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.wps.gs.ImportProcess;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.shapefile.ShapefileDataStoreFactory;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.process.ProcessException;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  *
@@ -35,7 +55,6 @@ public class GenerateTransectsProcessTest {
         double rise = 100 * Math.sin(rotated);
         double run = 100 * Math.cos(rotated);
         
-        
         System.out.println("x: " + run + " y: " + rise);
     }
     
@@ -53,4 +72,94 @@ public class GenerateTransectsProcessTest {
         assertFalse(prep.within(line2));
     }
     
+    @Test
+    public void testExecute() throws Exception {
+        URL baselineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+                .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_baseline.shp");
+        URL shorelineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+                .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_shorelines.shp");
+        FeatureCollection<SimpleFeatureType, SimpleFeature> baselinefc =
+                FeatureCollectionFromShp.featureCollectionFromShp(baselineShapefile);
+        FeatureCollection<SimpleFeatureType, SimpleFeature> shorelinefc =
+                FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
+        GenerateTransectsProcess generate = new GenerateTransectsProcess(new DummyImportProcess());
+        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, null, null, null);
+    }
+    
+    /*
+     * Ignoring this because it is really just to get the shp for testing
+     */
+    @Test
+    //@Ignore
+    public void testExecuteAndWriteToFile() throws Exception {
+        File shpfile = File.createTempFile("test", ".shp");
+        URL baselineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+                .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_baseline.shp");
+        URL shorelineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+                .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_shorelines.shp");
+        FeatureCollection<SimpleFeatureType, SimpleFeature> baselinefc =
+                FeatureCollectionFromShp.featureCollectionFromShp(baselineShapefile);
+        FeatureCollection<SimpleFeatureType, SimpleFeature> shorelinefc =
+                FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
+        GenerateTransectsProcess generate = new GenerateTransectsProcess(new DummyImportProcess(shpfile));
+        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, null, null, null);
+    }
+    
+    
+    private class DummyImportProcess extends ImportProcess {
+        
+        private File shpfile;
+        
+        public DummyImportProcess() {
+            super(null);
+            this.shpfile = null;
+        }
+        
+        public DummyImportProcess(File shpfile) {
+            super(null);
+            this.shpfile = shpfile;
+        }
+
+        /**
+         * If anything goes wrong, return null
+         * @param features
+         * @param workspace
+         * @param store
+         * @param name
+         * @param srs
+         * @param srsHandling
+         * @param styleName
+         * @return
+         * @throws ProcessException 
+         */
+        @Override
+        public String execute(SimpleFeatureCollection features, String workspace, String store, String name, CoordinateReferenceSystem srs, ProjectionPolicy srsHandling, String styleName) throws ProcessException {
+            if (shpfile != null) {
+                ShapefileDataStoreFactory dsFactory = new ShapefileDataStoreFactory();
+                Map<String, Serializable> params = new HashMap<String, Serializable>();
+                try {
+                    params.put("url", shpfile.toURI().toURL());
+                    params.put("create spatial index", Boolean.TRUE);
+                }
+                catch (MalformedURLException ex) {
+                    return null;
+                }
+                
+                ShapefileDataStore dataStore;
+                try {
+                    dataStore = (ShapefileDataStore) dsFactory.createDataStore(params);
+                    dataStore.createSchema(features.getSchema());
+                    SimpleFeatureStore newStore = (SimpleFeatureStore) dataStore.getFeatureSource();
+                    newStore.addFeatures(features);
+                }
+                catch (IOException ex) {
+                    return null;
+                }
+                
+            }
+            return null;
+        }
+        
+        
+    }
 }

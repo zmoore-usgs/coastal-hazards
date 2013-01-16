@@ -43,44 +43,85 @@
  * The user assumes all risk for any damages whatsoever resulting from loss of use, data,
  * or profits arising in connection with the access, use, quality, or performance of this software.
  */
-package gov.usgs.cida.coastalhazards.wps;
 
-import com.vividsolutions.jts.geom.Point;
-import java.util.List;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
+package gov.usgs.cida.coastalhazards.r;
+
+import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
+import gov.usgs.cida.coastalhazards.wps.geom.IntersectionPoint;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URL;
+import java.text.ParseException;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.filter.FilterFactoryImpl;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.GeometryType;
+import org.opengis.filter.FilterFactory;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class CalculateIntersectionsProcessTest {
+public class IntersectionParserTest {
     
-    /**
-     * Test of execute method, of class CalculateIntersectionsProcess.
-     */
-    @Test
-    public void testExecute() throws Exception {
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-
-        builder.setName("Intersections");
-        builder.add("geom", Point.class, DefaultGeographicCRS.WGS84);
-        builder.add("transect_id", String.class);
-        SimpleFeatureType ft = builder.buildFeatureType();
-        List<AttributeType> types = ft.getTypes();
-        
-        for (AttributeType type : types) {
-            if (type instanceof GeometryType) {
-                System.out.println("got a geom type");
-            }
-            else {
-                System.out.println("Type is: " + type.toString());
-            }
-        }
+    private URL shapefile;
+    private File outfile;
+    private BufferedWriter buf;
+    private FilterFactory filterFactory;
+    
+    @Before
+    public void setupShape() throws IOException {
+        filterFactory = new FilterFactoryImpl();
+        shapefile = IntersectionParserTest.class.getClassLoader()
+                .getResource("gov/usgs/cida/coastalhazards/blandit/blandit_intersects.shp");
+        outfile = File.createTempFile("testOut", ".csv");
+        buf = new BufferedWriter(new FileWriter(outfile));
     }
+
+    @Test
+    @Ignore
+    public void csvFromFeatureCollection() throws IOException, ParseException {
+        FeatureCollection<SimpleFeatureType, SimpleFeature> fc =
+                FeatureCollectionFromShp.featureCollectionFromShp(shapefile);
+        
+        //        SimpleFeatureType schema = fc.getSchema();
+        //        List<AttributeDescriptor> attrs = schema.getAttributeDescriptors();
+        //        for (AttributeDescriptor attr : attrs) {
+        //            System.out.println(attr.getLocalName() + ": " + attr.getType().toString());
+        //        }
+        
+        
+        
+        FeatureIterator<SimpleFeature> features = fc.features();
+        int prevTransect = -1;
+        while (features.hasNext()) {
+            SimpleFeature feature = features.next();
+            int currTransect = (Integer)feature.getAttribute("TransectID");
+            if (currTransect != prevTransect) {
+                if (prevTransect >= 0) {
+                    buf.newLine();
+                }
+                buf.write("# " + currTransect);
+                buf.newLine();
+                buf.append("t\tdist\tuncy");
+                buf.newLine();
+                prevTransect = currTransect;
+            }
+            
+            IntersectionPoint intersection = new IntersectionPoint(
+                    (Double)feature.getAttribute("Distance"),
+                    (String)feature.getAttribute("Date_"),
+                    (Double)feature.getAttribute("Uncy"));
+            buf.write(intersection.toString());
+            buf.newLine();
+        }
+        
+    }
+
 }

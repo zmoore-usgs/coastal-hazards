@@ -43,44 +43,21 @@
  * The user assumes all risk for any damages whatsoever resulting from loss of use, data,
  * or profits arising in connection with the access, use, quality, or performance of this software.
  */
-package gov.usgs.cida.coastalhazards.wps;
 
-import com.vividsolutions.jts.geom.Point;
-import java.util.List;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.referencing.CRS;
+package gov.usgs.cida.coastalhazards.util;
+
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.GeometryType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class CalculateIntersectionsProcessTest {
+public class Constants {
     
-    /**
-     * Test of execute method, of class CalculateIntersectionsProcess.
-     */
-    @Test
-    public void testExecute() throws Exception {
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+    public static final CoordinateReferenceSystem REQUIRED_CRS_WGS84 = DefaultGeographicCRS.WGS84;
+    public static final String BASELINE_ORIENTATION_ATTR = "Orient";
+    public static final String TRANSECT_ID_ATTR = "TransectID";
+    public static final String DISTANCE_ATTR = "Distance";
 
-        builder.setName("Intersections");
-        builder.add("geom", Point.class, DefaultGeographicCRS.WGS84);
-        builder.add("transect_id", String.class);
-        SimpleFeatureType ft = builder.buildFeatureType();
-        List<AttributeType> types = ft.getTypes();
-        
-        for (AttributeType type : types) {
-            if (type instanceof GeometryType) {
-                System.out.println("got a geom type");
-            }
-            else {
-                System.out.println("Type is: " + type.toString());
-            }
-        }
-    }
 }
