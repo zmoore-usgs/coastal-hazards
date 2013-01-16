@@ -62,8 +62,6 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
 
-        <script src='http://maps.google.com/maps/api/js?v=3&sensor=false' type="text/javascript"></script>
-
         <jsp:include page="js/openlayers/openlayers.jsp">
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
