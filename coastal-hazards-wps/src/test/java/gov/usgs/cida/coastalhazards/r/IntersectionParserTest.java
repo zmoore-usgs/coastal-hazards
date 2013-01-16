@@ -46,7 +46,6 @@
 
 package gov.usgs.cida.coastalhazards.r;
 
-import com.vividsolutions.jts.geom.Point;
 import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
 import gov.usgs.cida.coastalhazards.wps.geom.IntersectionPoint;
 import java.io.BufferedWriter;
@@ -59,6 +58,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.FilterFactoryImpl;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -85,6 +85,7 @@ public class IntersectionParserTest {
     }
 
     @Test
+    @Ignore
     public void csvFromFeatureCollection() throws IOException, ParseException {
         FeatureCollection<SimpleFeatureType, SimpleFeature> fc =
                 FeatureCollectionFromShp.featureCollectionFromShp(shapefile);

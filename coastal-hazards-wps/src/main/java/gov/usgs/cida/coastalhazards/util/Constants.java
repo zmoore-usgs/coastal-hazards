@@ -43,93 +43,20 @@
  * The user assumes all risk for any damages whatsoever resulting from loss of use, data,
  * or profits arising in connection with the access, use, quality, or performance of this software.
  */
-package gov.usgs.cida.coastalhazards.wps.geom;
 
-import com.vividsolutions.jts.algorithm.Angle;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.PrecisionModel;
+package gov.usgs.cida.coastalhazards.util;
+
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
- * VectorCoordAngle.
- * 
- * Creating this class because I'm having a hard time wrapping my head around
- * polar vs. cartesian arithmetic. Holding a cartesian coord with a polar angle
- * seemed to be my best way around it.
- * 
+ *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class VectorCoordAngle {
-
-    private Coordinate cartesianCoord;
-    private double angle; // radians
-    private static final GeometryFactory gf;
-
-    static {
-        gf = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
-    }
+public class Constants {
     
-    public VectorCoordAngle(Coordinate coord, double angle) {
-        this.cartesianCoord = coord;
-        this.angle = angle;
-    }
+    public static final CoordinateReferenceSystem REQUIRED_CRS_WGS84 = DefaultGeographicCRS.WGS84;
+    public static final String BASELINE_ORIENTATION_ATTR = "Orient";
+    public static final String TRANSECT_ID_ATTR = "TransectID";
 
-    public VectorCoordAngle(double x, double y, double angle) {
-        this(new Coordinate(x, y), angle);
-    }
-
-    public LineString getLineOfLength(double length) {
-        double rise = length * Math.sin(angle);
-        double run = length * Math.cos(angle);
-        Coordinate endpoint = new Coordinate(cartesianCoord.x + run, cartesianCoord.y + rise);
-        LineString newLineString = gf.createLineString(new Coordinate[]{cartesianCoord, endpoint});
-        return newLineString;
-    }
-
-    public Coordinate getOriginCoord() {
-        return cartesianCoord;
-    }
-    
-    public Point getOriginPoint() {
-        return gf.createPoint(cartesianCoord);
-    }
-    
-    /**
-     * 
-     * @return Angle in radians
-     */
-    public double getAngle() {
-        return angle;
-    }
-
-    public void rotate180Deg() {
-        angle += Math.PI;
-    }
-    
-    public static VectorCoordAngle generatePerpendicularVector(Coordinate origin, LineSegment segment, int direction) {
-        double angle;
-        switch (direction) {
-            case Angle.CLOCKWISE:
-                angle = segment.angle() - Angle.PI_OVER_2;
-                break;
-            case Angle.COUNTERCLOCKWISE:
-                angle = segment.angle() + Angle.PI_OVER_2;
-                break;
-            default:
-                throw new IllegalStateException("Must be either clockwise or counterclockwise");
-        }
-        return new VectorCoordAngle(origin, angle);
-    }
-    
-    public boolean equals(VectorCoordAngle b) {
-        if (this.cartesianCoord.equals2D(b.getOriginCoord()) && this.angle == b.angle) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
 }

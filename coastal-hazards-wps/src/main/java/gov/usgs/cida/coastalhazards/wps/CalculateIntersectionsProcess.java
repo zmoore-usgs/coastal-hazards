@@ -28,7 +28,7 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
+import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeType;
@@ -46,7 +46,6 @@ description = "Create an intersection layer from the transects and shorelines, w
 version = "1.0.0")
 public class CalculateIntersectionsProcess implements GeoServerProcess {
 
-    private static final CoordinateReferenceSystem REQUIRED_CRS_WGS84 = DefaultGeographicCRS.WGS84;
     private ImportProcess importProcess;
     
     public CalculateIntersectionsProcess(ImportProcess importProcess) {
@@ -133,7 +132,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
             int idIndex = 0;
             while (transectIterator.hasNext()) {
                 SimpleFeature feature = transectIterator.next();
-                Object attrValue = feature.getAttribute(GenerateTransectsProcess.TRANSECT_ID_ATTR);
+                Object attrValue = feature.getAttribute(TRANSECT_ID_ATTR);
                 Long id = null;
                 if (attrValue instanceof Integer) {
                     id = new Long(((Integer)attrValue).longValue());
@@ -180,7 +179,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
 
             builder.setName("Intersections");
             builder.add("geom", Point.class, utmCrs);
-            builder.add(GenerateTransectsProcess.TRANSECT_ID_ATTR, Integer.class);
+            builder.add(TRANSECT_ID_ATTR, Integer.class);
             for (AttributeType type : types) {
                 if (type instanceof GeometryType) {
                     // ignore the geom type of intersecting data
@@ -199,7 +198,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 if (type instanceof GeometryType) {
                     featureObjectArr[i] = point;
                 }
-                else if (type.getName().getLocalPart().equals(GenerateTransectsProcess.TRANSECT_ID_ATTR)) {
+                else if (type.getName().getLocalPart().equals(TRANSECT_ID_ATTR)) {
                     featureObjectArr[i] = new Long(transectId);
                 }
                 else {

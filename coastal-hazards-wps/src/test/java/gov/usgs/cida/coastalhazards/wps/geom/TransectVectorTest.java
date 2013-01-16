@@ -58,17 +58,17 @@ import org.junit.Test;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class VectorCoordAngleTest {
+public class TransectVectorTest {
     
     private static GeometryFactory factory = new GeometryFactory();
     
     @Test
     public void testAngles() {
         Coordinate a = new Coordinate(0.0, 0.0);
-        VectorCoordAngle east = new VectorCoordAngle(a, 0.0);
-        VectorCoordAngle north = new VectorCoordAngle(a, Angle.PI_OVER_2);
-        VectorCoordAngle west = new VectorCoordAngle(a, Math.PI);
-        VectorCoordAngle south = new VectorCoordAngle(a, 3 * Angle.PI_OVER_2);
+        TransectVector east = new TransectVector(a, 0.0);
+        TransectVector north = new TransectVector(a, Angle.PI_OVER_2);
+        TransectVector west = new TransectVector(a, Math.PI);
+        TransectVector south = new TransectVector(a, 3 * Angle.PI_OVER_2);
         assertEquals(east.getLineOfLength(1.0).getEndPoint().getX(), 1.0, 0.00001);
         assertEquals(north.getLineOfLength(1.0).getEndPoint().getY(), 1.0, 0.00001);
         assertEquals(west.getLineOfLength(1.0).getEndPoint().getX(), -1.0, 0.00001);
@@ -82,7 +82,7 @@ public class VectorCoordAngleTest {
     public void testGetLineOfLength() {
         Coordinate a = new Coordinate(0.0, 0.0);
         Coordinate b = new Coordinate(0.0, 1.0);
-        VectorCoordAngle instance = new VectorCoordAngle(a, Angle.PI_OVER_2);
+        TransectVector instance = new TransectVector(a, Angle.PI_OVER_2);
         LineString expResult = factory.createLineString(new Coordinate[] {a, b});
         LineString result = instance.getLineOfLength(1.0);
         assertEquals(expResult.getCoordinateN(0).x, result.getCoordinateN(0).x, 0.00001);
@@ -97,7 +97,7 @@ public class VectorCoordAngleTest {
     @Test
     public void testGetOriginPoint() {
         Coordinate a = new Coordinate(0.0, 0.0);
-        VectorCoordAngle instance = new VectorCoordAngle(a, Angle.PI_OVER_2);
+        TransectVector instance = new TransectVector(a, Angle.PI_OVER_2);
         Point result = instance.getOriginPoint();
         Point expResult = factory.createPoint(a);
         assertEquals(expResult.getX(), result.getX(), 0.00001);
@@ -111,7 +111,7 @@ public class VectorCoordAngleTest {
     public void testRotate180Deg() {
         Coordinate a = new Coordinate(0.0, 0.0);
         Coordinate b = new Coordinate(0.0, -1.0);
-        VectorCoordAngle instance = new VectorCoordAngle(a, Angle.PI_OVER_2);
+        TransectVector instance = new TransectVector(a, Angle.PI_OVER_2);
         instance.rotate180Deg();
         LineString expResult = factory.createLineString(new Coordinate[] {a, b});
         LineString result = instance.getLineOfLength(1.0);
@@ -130,8 +130,8 @@ public class VectorCoordAngleTest {
         Coordinate b = new Coordinate(1.0, 0.0);
         LineSegment segment = new LineSegment(origin, b);
         boolean clockwise = false;
-        VectorCoordAngle expResult = new VectorCoordAngle(origin, Angle.PI_OVER_2);
-        VectorCoordAngle result = VectorCoordAngle.generatePerpendicularVector(origin, segment, Angle.CLOCKWISE);
+        TransectVector expResult = new TransectVector(origin, Angle.PI_OVER_2);
+        TransectVector result = TransectVector.generatePerpendicularVector(origin, segment, Angle.CLOCKWISE);
         assertEquals(expResult.getOriginCoord().x, result.getOriginCoord().x, 0.00001);
         assertEquals(expResult.getOriginCoord().y, result.getOriginCoord().y, 0.00001);
         assertEquals(expResult.getAngle(), result.getAngle(), 0.00001);
