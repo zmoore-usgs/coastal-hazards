@@ -65,7 +65,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 public class VectorCoordAngle {
 
     private Coordinate cartesianCoord;
-    private double angle;
+    private double angle; // radians
     private static final GeometryFactory gf;
 
     static {
@@ -96,13 +96,30 @@ public class VectorCoordAngle {
     public Point getOriginPoint() {
         return gf.createPoint(cartesianCoord);
     }
+    
+    /**
+     * 
+     * @return Angle in radians
+     */
+    public double getAngle() {
+        return angle;
+    }
 
     public void rotate180Deg() {
         angle += Math.PI;
     }
     
     public static VectorCoordAngle generatePerpendicularVector(Coordinate origin, LineSegment segment, boolean clockwise) {
-        double angle = segment.angle() + ((clockwise) ? Angle.PI_OVER_2 : -Angle.PI_OVER_2);
+        double angle = segment.angle() + ((clockwise) ? -Angle.PI_OVER_2 : Angle.PI_OVER_2);
         return new VectorCoordAngle(origin, angle);
+    }
+    
+    public boolean equals(VectorCoordAngle b) {
+        if (this.cartesianCoord.equals2D(b.getOriginCoord()) && this.angle == b.angle) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
