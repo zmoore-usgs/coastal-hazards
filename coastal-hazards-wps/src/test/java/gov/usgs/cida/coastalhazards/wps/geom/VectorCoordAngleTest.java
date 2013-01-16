@@ -131,7 +131,7 @@ public class VectorCoordAngleTest {
         LineSegment segment = new LineSegment(origin, b);
         boolean clockwise = false;
         VectorCoordAngle expResult = new VectorCoordAngle(origin, Angle.PI_OVER_2);
-        VectorCoordAngle result = VectorCoordAngle.generatePerpendicularVector(origin, segment, clockwise);
+        VectorCoordAngle result = VectorCoordAngle.generatePerpendicularVector(origin, segment, Angle.CLOCKWISE);
         assertEquals(expResult.getOriginCoord().x, result.getOriginCoord().x, 0.00001);
         assertEquals(expResult.getOriginCoord().y, result.getOriginCoord().y, 0.00001);
         assertEquals(expResult.getAngle(), result.getAngle(), 0.00001);

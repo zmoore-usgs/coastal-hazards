@@ -109,8 +109,18 @@ public class VectorCoordAngle {
         angle += Math.PI;
     }
     
-    public static VectorCoordAngle generatePerpendicularVector(Coordinate origin, LineSegment segment, boolean clockwise) {
-        double angle = segment.angle() + ((clockwise) ? -Angle.PI_OVER_2 : Angle.PI_OVER_2);
+    public static VectorCoordAngle generatePerpendicularVector(Coordinate origin, LineSegment segment, int direction) {
+        double angle;
+        switch (direction) {
+            case Angle.CLOCKWISE:
+                angle = segment.angle() - Angle.PI_OVER_2;
+                break;
+            case Angle.COUNTERCLOCKWISE:
+                angle = segment.angle() + Angle.PI_OVER_2;
+                break;
+            default:
+                throw new IllegalStateException("Must be either clockwise or counterclockwise");
+        }
         return new VectorCoordAngle(origin, angle);
     }
     
