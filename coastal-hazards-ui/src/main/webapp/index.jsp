@@ -37,7 +37,8 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="true" />
         </jsp:include>
-        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.8.0/build/cssreset/cssreset-min.css">
+        
+        <link type="text/css" rel="stylesheet" href="js/yui-css-reset/css-reset-min.css" />
 
         <jsp:include page="js/dygraphs/dygraphs.jsp">
             <jsp:param name="debug-qualifier" value="true" />
