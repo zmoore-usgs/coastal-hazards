@@ -45,15 +45,16 @@
  */
 package gov.usgs.cida.coastalhazards.wps;
 
-import com.vividsolutions.jts.geom.Point;
-import java.util.List;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
+import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
+import java.io.File;
+import java.net.URL;
+import org.geoserver.wps.gs.ImportProcess;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.FeatureCollection;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.GeometryType;
 
 /**
  *
@@ -65,22 +66,40 @@ public class CalculateIntersectionsProcessTest {
      * Test of execute method, of class CalculateIntersectionsProcess.
      */
     @Test
+    @Ignore
     public void testExecute() throws Exception {
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-
-        builder.setName("Intersections");
-        builder.add("geom", Point.class, DefaultGeographicCRS.WGS84);
-        builder.add("transect_id", String.class);
-        SimpleFeatureType ft = builder.buildFeatureType();
-        List<AttributeType> types = ft.getTypes();
+        URL transectShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+                .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_transects.shp");
+        URL shorelineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+                .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_shorelines.shp");
+        SimpleFeatureCollection baselinefc = (SimpleFeatureCollection)
+                FeatureCollectionFromShp.featureCollectionFromShp(transectShapefile);
+        SimpleFeatureCollection shorelinefc = (SimpleFeatureCollection)
+                FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
         
-        for (AttributeType type : types) {
-            if (type instanceof GeometryType) {
-                System.out.println("got a geom type");
-            }
-            else {
-                System.out.println("Type is: " + type.toString());
-            }
-        }
+        ImportProcess dummy = new DummyImportProcess();
+        CalculateIntersectionsProcess process = new CalculateIntersectionsProcess(dummy);
+        process.execute(shorelinefc, baselinefc, Boolean.TRUE, null, null, null);
+    }
+    
+       /**
+     * Test of execute method, of class CalculateIntersectionsProcess.
+     */
+    @Test
+    @Ignore
+    public void testExecuteAndOutputShp() throws Exception {
+        File shpfile = File.createTempFile("test", ".shp");
+        URL transectShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+                .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_transects.shp");
+        URL shorelineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+                .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_shorelines.shp");
+        SimpleFeatureCollection baselinefc = (SimpleFeatureCollection)
+                FeatureCollectionFromShp.featureCollectionFromShp(transectShapefile);
+        SimpleFeatureCollection shorelinefc = (SimpleFeatureCollection)
+                FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
+        
+        ImportProcess dummy = new DummyImportProcess(shpfile);
+        CalculateIntersectionsProcess process = new CalculateIntersectionsProcess(dummy);
+        process.execute(shorelinefc, baselinefc, Boolean.TRUE, null, null, null);
     }
 }
