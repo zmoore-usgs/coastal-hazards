@@ -67,6 +67,9 @@ var Baseline = {
     listboxChanged : function() {
         LOG.debug('Baseline.js::baselineSelected: A baseline was selected from the dropdown list');
         
+        Baseline.disableEditButton();
+        Baseline.disableCloneButton();
+        
         LOG.debug('Going through select listbox to remove layers on the map that are not selected');
         $("#baseline-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
@@ -77,9 +80,9 @@ var Baseline = {
             }
         });
         
-        Baseline.disableEditButton();
-        if ($("#baseline-list option:selected")[0].value) {
-            var selectedBaseline = $("#baseline-list option:selected")[0].value;
+        var selectVal = $("#baseline-list option:selected")[0].value;
+        if (selectVal) {
+            var selectedBaseline = selectVal;
             LOG.debug('Baseline.js::baselineSelected: Adding selected baseline ( ' + selectedBaseline + ' ) from list');
             
             Baseline.addBaselineToMap({
@@ -89,6 +92,8 @@ var Baseline = {
             if (selectedBaseline.startsWith('ch-input')) {
                 LOG.debug('Baseline.js::baselineSelected: Selected baseline is user-created and is writable. Displaying edit panel.');
                 Baseline.enableEditButton();
+            } else {
+                Baseline.enableCloneButton();
             }
             
             Transects.enableCreateTransectsButton();
@@ -176,6 +181,28 @@ var Baseline = {
                 
         $("#baseline-edit-panel-well").toggleClass('hidden');
             
+    },
+    enableCloneButton : function() {
+        $('#baseline-clone-btn').removeAttr('disabled');
+    },
+    disableCloneButton : function() {
+        $('#baseline-clone-btn').attr('disabled', 'disabled');
+    },
+    cloneButtonClicked : function() {
+        LOG.debug('Baseline.js::cloneButtonClicked');
+        var selectVal = $("#baseline-list option:selected")[0].value;
+        var selectText = $("#baseline-list option:selected")[0].text;
+        CONFIG.ows.cloneLayer({
+            originalLayer : selectVal,
+            newLayer : CONFIG.tempSession.getCurrentSessionKey() + '_' + selectText.split('_')[0] + '_clone_baseline',
+            callbacks : [
+                function(data, textStatus, jqXHR, context) {
+                    Baseline.refreshFeatureList({
+                        selectLayer : data
+                    })
+                }
+            ]
+        })
     },
     disableDrawButton : function() {
         if (!$('#draw-panel-well').hasClass('hidden')) {
