@@ -153,8 +153,10 @@ var Baseline = {
             //                "sketchcomplete": report
             //            });
                     
-            var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, {
-                id : 'baseline-edit-control'
+            var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, 
+            {
+                id : 'baseline-edit-control',
+                deleteCodes : [8, 46, 48]
             })
                     
             LOG.debug('Baseline.js::editButtonToggled: Removing previous cloned layer from map, if any');
