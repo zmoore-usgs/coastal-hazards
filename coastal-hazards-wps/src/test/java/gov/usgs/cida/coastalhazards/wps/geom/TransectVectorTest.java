@@ -129,9 +129,8 @@ public class TransectVectorTest {
         Coordinate origin = new Coordinate(0.0, 0.0);
         Coordinate b = new Coordinate(1.0, 0.0);
         LineSegment segment = new LineSegment(origin, b);
-        boolean clockwise = false;
         TransectVector expResult = new TransectVector(origin, Angle.PI_OVER_2);
-        TransectVector result = TransectVector.generatePerpendicularVector(origin, segment, Angle.CLOCKWISE);
+        TransectVector result = TransectVector.generatePerpendicularVector(origin, segment, Angle.COUNTERCLOCKWISE);
         assertEquals(expResult.getOriginCoord().x, result.getOriginCoord().x, 0.00001);
         assertEquals(expResult.getOriginCoord().y, result.getOriginCoord().y, 0.00001);
         assertEquals(expResult.getAngle(), result.getAngle(), 0.00001);
