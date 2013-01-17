@@ -37,7 +37,7 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="true" />
         </jsp:include>
-        
+
         <link type="text/css" rel="stylesheet" href="css/yui-css-reset/css-reset-min.css" />
 
         <jsp:include page="js/dygraphs/dygraphs.jsp">
@@ -129,12 +129,12 @@
 
 
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
-        
+
         <link type="text/css" rel="stylesheet" href="css/jquery-bootstrap-toggle/bootstrap-toggle-buttons.css" />
         <script type="text/javascript" src="js/jquery-bootstrap-toggle/jquery.toggle.buttons.js"></script>
 
         <script type="text/javascript" src="pages/index/onReady.js"></script>
-        
+
     </head>
     <body>
         <jsp:include page="template/USGSHeader.jsp">
@@ -154,9 +154,9 @@
                             <li><a href="#transects" data-toggle="tab"><img id="transects_img" src="images/workflow_figures/transects_future.png" title="Calculate Transects"/></a></li>
                             <li><a href="#intersections" data-toggle="tab"><img id="intersections_img" src="images/workflow_figures/intersections_future.png" title="Show Intersections"/></a></li>
                             <li><a href="#results" data-toggle="tab"><img id="results_img" src="images/workflow_figures/results_future.png" title="Display Results"/></a></li>
-                            <% if (development) { %>
+                                    <% if (development) {%>
                             <li><button class="btn btn-success" id="clear-sessions-btn">Clear Sessions</button>
-                            <% } %>
+                                <% }%>
                         </ul>
                     </div>
 
@@ -176,7 +176,7 @@
                                         <div id="shorelines-uploader"></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="fluid-row span12">
                                     <div class="tabbable">
                                         <ul class="nav nav-tabs" id="shoreline-table-navtabs">
@@ -383,5 +383,21 @@
             <jsp:param name="site-url" value="" />
             <jsp:param name="contact-info" value="" />
         </jsp:include>
+
+        <div id="modal-window" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-window-label" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="modal-window-label"> </h3>
+            </div>
+            <div class="modal-body">
+                <div id="modal-body-content">
+                
+            </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                <button class="btn btn-primary" id="modal-window-button-primary"> </button>
+            </div>
+        </div>
     </body>
 </html>

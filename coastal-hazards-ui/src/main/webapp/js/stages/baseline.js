@@ -196,11 +196,11 @@ var Baseline = {
             originalLayer : selectVal,
             newLayer : CONFIG.tempSession.getCurrentSessionKey() + '_' + selectText.split('_')[0] + '_clone_baseline',
             callbacks : [
-                function(data, textStatus, jqXHR, context) {
-                    Baseline.refreshFeatureList({
-                        selectLayer : data
-                    })
-                }
+            function(data, textStatus, jqXHR, context) {
+                Baseline.refreshFeatureList({
+                    selectLayer : data
+                })
+            }
             ]
         })
     },
@@ -244,9 +244,11 @@ var Baseline = {
         LOG.debug('Baseline.js::drawButtonToggled: User wishes to ' + beginDrawing ? 'begin' : 'stop' + 'drawing');
         
         if (beginDrawing) {
+            Baseline.getDrawControl().activate();
             Baseline.disableEditButton();
             Baseline.beginDrawing();
         } else {
+            Baseline.getDrawControl().deactivate();
             Baseline.enableEditButton();
             Baseline.stopDrawing();
         }
@@ -257,6 +259,10 @@ var Baseline = {
         LOG.debug('Baseline.js::beginDrawing: Removing currently drawn features, if any');
         Baseline.clearDrawFeatures();
         
+        LOG.debug('Baseline.js::beginDrawing: Clearing any current layers on map');
+        $('#baseline-list').val('');
+        $('#baseline-list').trigger('change');
+        
         LOG.debug('Baseline.js::beginDrawing: Activating draw control');
         Baseline.getDrawControl().activate();
         
@@ -264,7 +270,7 @@ var Baseline = {
         $('#baseline-draw-form-name').val(Util.getRandomLorem());
         
         LOG.debug('Baseline.js::beginDrawing: Initializing control panel buttons');
-        $('#baseline-draw-form-save').on('click', Baseline.saveDrawnFeatures);
+        $('#baseline-draw-form-save').on('click', Baseline.saveButtonClickHandler);
         $('#baseline-draw-form-clear').on('click', Baseline.clearDrawFeatures);
         
         LOG.debug('Baseline.js::beginDrawing: Displaying draw control panel ');
@@ -280,7 +286,7 @@ var Baseline = {
         Baseline.clearDrawFeatures();
         
         LOG.debug('Baseline.js::beginDrawing: Uninitializing control panel buttons');
-        $('#baseline-draw-form-save').unbind('click', Baseline.saveDrawnFeatures);
+        $('#baseline-draw-form-save').unbind('click', Baseline.saveButtonClickHandler);
         $('#baseline-draw-form-clear').unbind('click', Baseline.clearDrawFeatures);
         
         LOG.debug('Baseline.js::stopDrawing: Hiding draw control panel ');
@@ -317,63 +323,118 @@ var Baseline = {
                 
         saveStrategy.save();  
     }, 
-    saveDrawnFeatures : function() {
-        LOG.info('Baseline.js::saveDrawnFeatures: User wishes to save thir drawn features');
-        
+    saveButtonClickHandler : function() {
+        LOG.info('Baseline.js::saveButtonClickHandler');
         var drawLayer = Baseline.getDrawLayer();
-        var desiredLayerName = $('#baseline-draw-form-name').val() || Util.getRandomLorem();
-        var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + desiredLayerName + '_baseline';
+        var desiredLayerName = ($('#baseline-draw-form-name').val() || Util.getRandomLorem())  + '_baseline';
+        var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + desiredLayerName;
         
         if (drawLayer.features.length) {
             LOG.info('Baseline.js::saveDrawnFeatures: Layer to be saved, "'+importName+ '" has ' + drawLayer.features.length + ' features');
-            CONFIG.ows.importFile({
-                'file-token' : '',  // Not including a file token denotes a new, blank file should be imported
-                importName : importName, 
-                workspace : 'ch-input',
-                context : drawLayer,
-                callbacks : [
-                function(data, context) {
-                    if (data.success === 'true') {
-                        LOG.info('Baseline.js::saveDrawnFeatures: Layer imported successfully - Will attempt to update on server');
-                        
-                        var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
-                        var schema = context.protocol.schema.replace('geoserver/', geoserverEndpoint);
-                        var newSchema = schema.substring(0, schema.lastIndexOf(':') + 1) + importName;
             
-                        context.protocol.setFeatureType(importName);
-                        context.protocol.format.options.schema = newSchema;
-                        context.protocol.format.schema = newSchema
-                        context.protocol.schema = newSchema;
-                        context.protocol.options.featureType = importName;
+            var layerExists = $("#baseline-list option").filter(function(n){
+                return this.text == desiredLayerName
+            }).length
+            
+            if (layerExists) {
+                CONFIG.ui.createModalWindow({
+                    context : {
+                        scope : this
+                    },
+                    headerHtml : 'Resource Exists',
+                    bodyHtml : 'A resource already exists with the name ' + desiredLayerName + '. Would you like to overwrite this resource?',
+                    primaryButtonText : 'Overwrite',
+                    primaryButtonCallbacks : [function(event, context) {
+                        Baseline.saveDrawnFeatures();
+                    }]
+                })
+            } else {
+                CONFIG.ows.importFile({
+                    'file-token' : '',  // Not including a file token denotes a new, blank file should be imported
+                    importName : importName, 
+                    workspace : 'ch-input',
+                    context : drawLayer,
+                    callbacks : [
+                    function(data, context) {
+                        if (data.success === 'true') {
+                            LOG.info('Baseline.js::saveDrawnFeatures: Layer imported successfully - Will attempt to update on server');
                         
-                        // Do WFS-T to fill out the layer
-                        var saveStrategy = context.strategies.find(function(n) {
-                            return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
-                        });
+                            var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
+                            var schema = context.protocol.schema.replace('geoserver/', geoserverEndpoint);
+                            var newSchema = schema.substring(0, schema.lastIndexOf(':') + 1) + importName;
+            
+                            context.protocol.setFeatureType(importName);
+                            context.protocol.format.options.schema = newSchema;
+                            context.protocol.format.schema = newSchema
+                            context.protocol.schema = newSchema;
+                            context.protocol.options.featureType = importName;
                         
-                        // Re-bind the save strategy
-                        saveStrategy.events.remove('success');
-                        saveStrategy.events.register('success', null, function() {
-                            LOG.info('Baseline.js::saveDrawnFeatures: Drawn baseline saved successfully - reloading current layer set from server');
-                            Baseline.refreshFeatureList({
-                                selectLayer : 'ch-input:' + importName
-                            })
+                            // Do WFS-T to fill out the layer
+                            var saveStrategy = context.strategies.find(function(n) {
+                                return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
+                            });
+                        
+                            // Re-bind the save strategy
+                            saveStrategy.events.remove('success');
+                            saveStrategy.events.register('success', null, function() {
+                                LOG.info('Baseline.js::saveDrawnFeatures: Drawn baseline saved successfully - reloading current layer set from server');
+                                Baseline.refreshFeatureList({
+                                    selectLayer : 'ch-input:' + importName
+                                })
                             
-                            LOG.info('Baseline.js::saveDrawnFeatures: Triggering click on baseline draw button')
-                            $('#baseline-draw-btn').click();
-                        });
+                                LOG.info('Baseline.js::saveDrawnFeatures: Triggering click on baseline draw button')
+                                $('#baseline-draw-btn').click();
+                            });
                         
-                        LOG.info('Baseline.js::saveDrawnFeatures: Saving draw features to OWS server');
-                        saveStrategy.save();
-                    } else {
-                        // TODO - Notify the user
-                        LOG.warn(data.error);
-                    }
-                }]
-            });
+                            LOG.info('Baseline.js::saveDrawnFeatures: Saving draw features to OWS server');
+                            saveStrategy.save();
+                        } else {
+                            // TODO - Notify the user
+                            LOG.warn(data.error);
+                        }
+                    }]
+                });
+                Baseline.saveDrawnFeatures();
+            }
         } else {
             LOG.info('User has not drawn any features to save or did not name the new feature');
         }
+    },
+    saveDrawnFeatures : function() {
+        LOG.info('Baseline.js::saveDrawnFeatures: User wishes to save thir drawn features');
+        var drawLayer = Baseline.getDrawLayer();
+        var desiredLayerName = ($('#baseline-draw-form-name').val() || Util.getRandomLorem())  + '_baseline';
+        var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + desiredLayerName;
+        var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
+        var schema = drawLayer.protocol.schema.replace('geoserver/', geoserverEndpoint);
+        var newSchema = schema.substring(0, schema.lastIndexOf(':') + 1) + importName;
+            
+        drawLayer.protocol.setFeatureType(importName);
+        drawLayer.protocol.format.options.schema = newSchema;
+        drawLayer.protocol.format.schema = newSchema
+        drawLayer.protocol.schema = newSchema;
+        drawLayer.protocol.options.featureType = importName;
+                        
+        // Do WFS-T to fill out the layer
+        var saveStrategy = drawLayer.strategies.find(function(n) {
+            return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
+        });
+                        
+        // Re-bind the save strategy
+        saveStrategy.events.remove('success');
+        saveStrategy.events.register('success', null, function() {
+            LOG.info('Baseline.js::saveDrawnFeatures: Drawn baseline saved successfully - reloading current layer set from server');
+            Baseline.refreshFeatureList({
+                selectLayer : 'ch-input:' + importName
+            })
+                            
+            LOG.info('Baseline.js::saveDrawnFeatures: Triggering click on baseline draw button')
+            $('#baseline-draw-btn').click();
+            Baseline.getDrawControl().deactivate();
+        });
+                        
+        LOG.info('Baseline.js::saveDrawnFeatures: Saving draw features to OWS server');
+        saveStrategy.save();
     },
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({
