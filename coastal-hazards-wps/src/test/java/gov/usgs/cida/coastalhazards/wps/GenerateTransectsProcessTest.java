@@ -90,76 +90,18 @@ public class GenerateTransectsProcessTest {
      * Ignoring this because it is really just to get the shp for testing
      */
     @Test
-    //@Ignore
+    @Ignore
     public void testExecuteAndWriteToFile() throws Exception {
         File shpfile = File.createTempFile("test", ".shp");
         URL baselineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_baseline.shp");
         URL shorelineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_shorelines.shp");
-        FeatureCollection<SimpleFeatureType, SimpleFeature> baselinefc =
+        SimpleFeatureCollection baselinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.featureCollectionFromShp(baselineShapefile);
-        FeatureCollection<SimpleFeatureType, SimpleFeature> shorelinefc =
+        SimpleFeatureCollection shorelinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
         GenerateTransectsProcess generate = new GenerateTransectsProcess(new DummyImportProcess(shpfile));
-        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, null, null, null);
-    }
-    
-    
-    private class DummyImportProcess extends ImportProcess {
-        
-        private File shpfile;
-        
-        public DummyImportProcess() {
-            super(null);
-            this.shpfile = null;
-        }
-        
-        public DummyImportProcess(File shpfile) {
-            super(null);
-            this.shpfile = shpfile;
-        }
-
-        /**
-         * If anything goes wrong, return null
-         * @param features
-         * @param workspace
-         * @param store
-         * @param name
-         * @param srs
-         * @param srsHandling
-         * @param styleName
-         * @return
-         * @throws ProcessException 
-         */
-        @Override
-        public String execute(SimpleFeatureCollection features, String workspace, String store, String name, CoordinateReferenceSystem srs, ProjectionPolicy srsHandling, String styleName) throws ProcessException {
-            if (shpfile != null) {
-                ShapefileDataStoreFactory dsFactory = new ShapefileDataStoreFactory();
-                Map<String, Serializable> params = new HashMap<String, Serializable>();
-                try {
-                    params.put("url", shpfile.toURI().toURL());
-                    params.put("create spatial index", Boolean.TRUE);
-                }
-                catch (MalformedURLException ex) {
-                    return null;
-                }
-                
-                ShapefileDataStore dataStore;
-                try {
-                    dataStore = (ShapefileDataStore) dsFactory.createDataStore(params);
-                    dataStore.createSchema(features.getSchema());
-                    SimpleFeatureStore newStore = (SimpleFeatureStore) dataStore.getFeatureSource();
-                    newStore.addFeatures(features);
-                }
-                catch (IOException ex) {
-                    return null;
-                }
-                
-            }
-            return null;
-        }
-        
-        
+        generate.execute(shorelinefc, baselinefc, 50.0d, null, null, null);
     }
 }

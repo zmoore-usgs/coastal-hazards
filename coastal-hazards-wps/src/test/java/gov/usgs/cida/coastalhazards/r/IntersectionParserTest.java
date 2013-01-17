@@ -54,11 +54,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import org.apache.commons.io.IOUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.FilterFactoryImpl;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -79,17 +84,32 @@ public class IntersectionParserTest {
     public void setupShape() throws IOException {
         filterFactory = new FilterFactoryImpl();
         shapefile = IntersectionParserTest.class.getClassLoader()
-                .getResource("gov/usgs/cida/coastalhazards/blandit/blandit_intersects.shp");
+                .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_intersections.shp");
         outfile = File.createTempFile("testOut", ".csv");
         buf = new BufferedWriter(new FileWriter(outfile));
     }
+    
+    @After
+    public void tearDown() {
+        IOUtils.closeQuietly(buf);
+    }
 
     @Test
-    @Ignore
+    //@Ignore
     public void csvFromFeatureCollection() throws IOException, ParseException {
+        //ShapefileDataStore dataStore = (ShapefileDataStore)new ShapefileDataStoreFactory().createDataStore(shapefile);
+        Map<Integer, List<IntersectionPoint>> map = new TreeMap<Integer, List<IntersectionPoint>>();
         FeatureCollection<SimpleFeatureType, SimpleFeature> fc =
-                FeatureCollectionFromShp.featureCollectionFromShp(shapefile);
+            FeatureCollectionFromShp.featureCollectionFromShp(shapefile);
         
+//        FeatureSource source = dataStore.getFeatureSource();
+//        Query query = new Query();
+//        SortBy transectSort = filterFactory.sort("TransectID", SortOrder.DESCENDING);
+//        SortBy dateSort = filterFactory.sort("Date_", SortOrder.DESCENDING);
+//        query.setSortBy(new SortBy[] {transectSort, dateSort});
+//        FeatureCollection sorted = source.getFeatures(query);
+       // FeatureCollection<SimpleFeatureType, SimpleFeature> sorted = fc.sort(sort);
+        //fc.subCollection()
         //        SimpleFeatureType schema = fc.getSchema();
         //        List<AttributeDescriptor> attrs = schema.getAttributeDescriptors();
         //        for (AttributeDescriptor attr : attrs) {
@@ -99,29 +119,36 @@ public class IntersectionParserTest {
         
         
         FeatureIterator<SimpleFeature> features = fc.features();
-        int prevTransect = -1;
         while (features.hasNext()) {
             SimpleFeature feature = features.next();
-            int currTransect = (Integer)feature.getAttribute("TransectID");
-            if (currTransect != prevTransect) {
-                if (prevTransect >= 0) {
-                    buf.newLine();
-                }
-                buf.write("# " + currTransect);
-                buf.newLine();
-                buf.append("t\tdist\tuncy");
-                buf.newLine();
-                prevTransect = currTransect;
-            }
-            
+            int transectId = (Integer)feature.getAttribute("TransectID");
+
             IntersectionPoint intersection = new IntersectionPoint(
                     (Double)feature.getAttribute("Distance"),
                     (String)feature.getAttribute("Date_"),
                     (Double)feature.getAttribute("Uncy"));
-            buf.write(intersection.toString());
-            buf.newLine();
+
+            if (map.containsKey(transectId)) {
+                map.get(transectId).add(intersection);
+            }
+            else {
+                List<IntersectionPoint> pointList = new LinkedList<IntersectionPoint>();
+                pointList.add(intersection);
+                map.put(transectId, pointList);
+            }
         }
         
+        for (int key : map.keySet()) {
+            List<IntersectionPoint> points = map.get(key);
+            buf.write("# " + key);
+            buf.newLine();
+            buf.append("t\tdist\tuncy");
+            buf.newLine();
+            for (IntersectionPoint p : points) {
+                buf.write(p.toString());
+                buf.newLine();
+            }
+        }
     }
 
 }

@@ -126,7 +126,16 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
 
             this.shorelineTransform = CRS.findMathTransform(shorelinesCrs, utmCrs, true);
             this.transectTransform = CRS.findMathTransform(transectsCrs, utmCrs, true);
-
+            
+            SimpleFeatureType schema = transectCollection.getSchema();
+            if (null == schema.getType(TRANSECT_ID_ATTR) || null == schema.getType(BASELINE_ORIENTATION_ATTR)) {
+                StringBuilder build = new StringBuilder();
+                build.append("Transect must have attributes: ")
+                    .append(TRANSECT_ID_ATTR)
+                    .append(" and ")
+                    .append(BASELINE_ORIENTATION_ATTR);
+                throw new UnsupportedFeatureTypeException(build.toString());
+            }
             SimpleFeatureIterator transectIterator = transectCollection.features();
             long[] transectIds = new long[transectCollection.size()];
             int[] orientations = new int[transectCollection.size()];
@@ -137,6 +146,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
             // so they are not repeated
             while (transectIterator.hasNext()) {
                 SimpleFeature feature = transectIterator.next();
+                
                 Object attrValue = feature.getAttribute(TRANSECT_ID_ATTR);
                 Long id = null;
                 if (attrValue instanceof Integer) {
@@ -185,15 +195,21 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
         }
         
         private double calculateDistanceFromReference(Geometry transect, Point intersection, int orientation) {
-            Point referencePoint = null;
+            LineString line = null;
             switch(Geometries.get(transect)) {
+                case MULTILINESTRING:
+                    line = (LineString)transect.getGeometryN(0);
+                    break;
                 case LINESTRING:
-                    LineString line = (LineString)transect;
-                    referencePoint = line.getStartPoint();
+                    line = (LineString)transect;
+                    
                     break;
                 default:
                     throw new UnsupportedFeatureTypeException("Expected LineString here");
             }
+            
+            Point referencePoint = line.getStartPoint();
+            
             // distance should be calculated from coordinates, not points
             double distance = orientation *
                     referencePoint.getCoordinate().distance(
