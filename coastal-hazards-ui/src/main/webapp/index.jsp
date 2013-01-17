@@ -209,6 +209,10 @@
                                                 <i class="icon-pencil icon-white"></i>
                                                 &nbsp;Edit Baseline
                                             </button>
+                                            <button class="btn btn-success" disabled id="baseline-clone-btn">
+                                                <i class="icon-pencil icon-white"></i>
+                                                &nbsp;Clone Baseline
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
