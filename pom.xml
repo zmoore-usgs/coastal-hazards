@@ -96,6 +96,11 @@
             <name>CIDA Nexus</name>
             <url>${cida.maven.url}/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>geosolutions</id>
+            <name>GeoSolutions</name>
+            <url>http://maven.geo-solutions.it/</url>
+        </repository>
     </repositories>
 	
     <pluginRepositories>
@@ -135,6 +140,13 @@
 	
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>it.geosolutions</groupId>
+                <artifactId>geoserver-manager</artifactId>
+                <version>1.3.0</version>
+            </dependency>
+        
+            
             <dependency>
                 <groupId>gov.usgs.cida</groupId>
                 <artifactId>dynamicProperties</artifactId>
