@@ -120,7 +120,7 @@ var Transects = {
         
         if (toggledOn) {
             $('#transects-list').val('');
-            $('#create-transects-input-name').val(Util.getRandomLorem());
+//            $('#create-transects-input-name').val(Util.getRandomLorem());
         } else {
             
         // Hide transect layer if needed
