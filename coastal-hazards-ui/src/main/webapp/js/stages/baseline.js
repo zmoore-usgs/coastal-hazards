@@ -329,13 +329,13 @@ var Baseline = {
         var drawLayer = Baseline.getDrawLayer();
         var desiredLayerName = ($('#baseline-draw-form-name').val() || Util.getRandomLorem())  + '_baseline';
         var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + desiredLayerName;
-        
+        var existingLayer = $("#baseline-list option").filter(function(){
+            return $(this).val().split(':')[1] == importName
+        })
         if (drawLayer.features.length) {
             LOG.info('Baseline.js::saveDrawnFeatures: Layer to be saved, "'+importName+ '" has ' + drawLayer.features.length + ' features');
             
-            var layerExists = $("#baseline-list option").filter(function(){
-                return $(this).val().split(':')[1] == importName
-            }).length
+            var layerExists = existingLayer.length
             
             if (layerExists) {
                 CONFIG.ui.createModalWindow({
@@ -348,11 +348,9 @@ var Baseline = {
                     callbacks : [
                     function(event, context) {
                         CONFIG.ows.clearFeaturesOnServer({
-                            layer : importName,
+                            layer : existingLayer.val(),
                             callbacks : [
-                            Baseline.saveDrawnFeatures({
-                                context : context
-                            })
+                            Baseline.saveDrawnFeatures
                             ]
                         })
                     }]
@@ -382,7 +380,7 @@ var Baseline = {
             LOG.info('User has not drawn any features to save or did not name the new feature');
         }
     },
-    saveDrawnFeatures : function() {
+    saveDrawnFeatures : function(args) {
         LOG.info('Baseline.js::saveDrawnFeatures: User wishes to save thir drawn features');
         var drawLayer = Baseline.getDrawLayer();
         var desiredLayerName = ($('#baseline-draw-form-name').val() || Util.getRandomLorem())  + '_baseline';

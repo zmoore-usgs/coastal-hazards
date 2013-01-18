@@ -31,14 +31,15 @@ var UI = function() {
             var primaryButtonText = args.primaryButtonText || '';
             var context = args.context || this;
             var callbacks = args.callbacks || [];
-            var unregister = function() {
-                $("#modal-window").on('hidden', callbackFunction);
-            }
+            
             var callbackFunction = function(event) {
                 callbacks.each(function(callback) {
                     callback(event, context);
                 })
                 unregister();
+            }
+            var unregister = function() {
+                $("#modal-window").on('hidden', callbackFunction);
             }
             $('#modal-window-label').html(headerHtml);
             $('#modal-body-content').html(bodyHtml);
