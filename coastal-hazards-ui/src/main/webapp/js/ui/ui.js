@@ -18,11 +18,33 @@ var UI = function() {
                 LOG.debug('UI.js::Cleared sessions. Reloading application.')
                 location.reload();
             })
+            $('#baseline-draw-form-name').val(Util.getRandomLorem());
             $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
             $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
             $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
             $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
             $("#create-intersections-btn").on("click", Intersections.calcIntersections);
+        },
+        createModalWindow : function(args) {
+            var headerHtml = args.headerHtml || '';
+            var bodyHtml = args.bodyHtml || '';
+            var primaryButtonText = args.primaryButtonText || '';
+            var primaryButtonCallbacks = args.primaryButtonCallbacks || [];
+            var context = args.context || this;
+            
+            $('#modal-window-label').html(headerHtml);
+            $('#modal-body-content').html(bodyHtml);
+            $('#modal-window-button-primary').html(primaryButtonText);
+            
+            $("#modal-window").modal();
+            
+            $('#modal-window-button-primary').click(function(event) {
+                primaryButtonCallbacks.each(function(callback) {
+                    callback(event, context);
+                })
+                $("#modal-window").modal('toggle');
+            })
+            
         },
         switchImage : function (stage) {
             LOG.info('UI.js::switchImage: Changing application context to ' + me.work_stages[stage])
