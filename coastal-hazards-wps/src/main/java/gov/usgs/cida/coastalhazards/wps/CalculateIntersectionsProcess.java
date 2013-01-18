@@ -29,6 +29,9 @@ import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
+import gov.usgs.cida.coastalhazards.wps.exceptions.LayerAlreadyExistsException;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeType;
@@ -47,9 +50,11 @@ version = "1.0.0")
 public class CalculateIntersectionsProcess implements GeoServerProcess {
 
     private ImportProcess importProcess;
+    private Catalog catalog;
     
-    public CalculateIntersectionsProcess(ImportProcess importProcess) {
+    public CalculateIntersectionsProcess(ImportProcess importProcess, Catalog catalog) {
         this.importProcess = importProcess;
+        this.catalog = catalog;
     }
 
     @DescribeResult(name = "intersections", description = "Layer containing intersections of shorelines and transects")
@@ -191,7 +196,15 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 }
             }
             SimpleFeatureCollection intersectionCollection = DataUtilities.collection(sfList);
-            return importProcess.execute(intersectionCollection, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED, null);
+            
+            LayerInfo layerByName = catalog.getLayerByName(workspace + ":" + layer);
+            if (layerByName == null) {
+                return importProcess.execute(intersectionCollection, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED, null);
+            }
+            else {
+                throw new LayerAlreadyExistsException("Please specify a new layer name");
+            }
+            
         }
         
         private double calculateDistanceFromReference(Geometry transect, Point intersection, int orientation) {
