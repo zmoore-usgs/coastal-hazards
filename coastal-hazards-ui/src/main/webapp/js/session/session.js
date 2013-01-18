@@ -23,6 +23,9 @@ var Session = function(name, isPerm) {
             newSession[randID] = Object.extended(); 
             newSession.layers = [];
             newSession.shorelines = {
+                view : {
+                    selectedLayers : []
+                },
                 'default' : {
                     colorsParamPairs : [],
                     groupingColumn : 'date_',

@@ -537,10 +537,13 @@ var Shorelines = {
         });
             
         var layerInfos = []
+        CONFIG.tempSession.session[Shorelines.stage].view.activeLayers = [];
         $("#shorelines-list option:selected").each(function (index, option) {
             LOG.debug('Shorelines.js::shorelineSelected: A shoreline ('+option.text+') was selected from the select list');
             var layer = CONFIG.ows.getLayerByName(option.value);
             layerInfos.push(layer);
+            
+            CONFIG.tempSession.session[Shorelines.stage].view.activeLayers.push(option.value);
             
             var layerConfig = CONFIG.tempSession.getStageConfig({
                 name : option.value,
