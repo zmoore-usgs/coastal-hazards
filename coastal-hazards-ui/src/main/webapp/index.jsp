@@ -11,7 +11,7 @@
         try {
             props = props.addJNDIContexts(new String[0]);
         } catch (Exception e) {
-            log.error("Could not find JNDI");
+            log.error("Could not find JNDI - Application will probably not function correctly");
         }
     }
     boolean development = Boolean.parseBoolean(props.getProperty("coastal-hazards.development"));
@@ -37,104 +37,6 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="true" />
         </jsp:include>
-
-        <link type="text/css" rel="stylesheet" href="css/yui-css-reset/css-reset-min.css" />
-
-        <jsp:include page="js/dygraphs/dygraphs.jsp">
-            <jsp:param name="debug-qualifier" value="true" />
-        </jsp:include>
-
-        <jsp:include page="js/log4javascript/log4javascript.jsp">
-            <jsp:param name="relPath" value="" />
-        </jsp:include>
-
-        <jsp:include page="js/jquery/jquery.jsp">
-            <jsp:param name="relPath" value="" />
-            <jsp:param name="debug-qualifier" value="<%= development%>" />
-        </jsp:include>
-
-        <jsp:include page="js/jquery-tablesorter/package.jsp">
-            <jsp:param name="relPath" value="" />
-            <jsp:param name="debug-qualifier" value="<%= development%>" />
-        </jsp:include>
-
-        <jsp:include page="js/bootstrap/package.jsp">
-            <jsp:param name="relPath" value="" />
-            <jsp:param name="debug-qualifier" value="<%= development%>" />
-        </jsp:include>
-
-        <jsp:include page="js/openlayers/openlayers.jsp">
-            <jsp:param name="debug-qualifier" value="<%= development%>" />
-        </jsp:include>
-
-        <jsp:include page="js/sugar/sugar.jsp">
-            <jsp:param name="relPath" value="" />
-            <jsp:param name="debug-qualifier" value="<%= development%>" />
-        </jsp:include>
-
-        <!-- TODO - Modularize this -->
-        <script type="text/javascript" src="js/jquery-fineuploader/jquery.fineuploader-3.0.js"></script>
-        <link type="text/css" rel="stylesheet" href="js/jquery-fineuploader/fineuploader.css" />
-        <script type="text/javascript" src="js/bootstrap-toggle/bootstrap-toggle.js"></script>
-        <link type="text/css" rel="stylesheet" href="css/bootstrap-toggle/bootstrap-toggle-animated.css" />
-
-        <script type="text/javascript">
-            var CONFIG = {};
-			
-            CONFIG.development = <%= development%>;
-            CONFIG.geoServerEndpoint = '<%= geoserverEndpoint%>';
-            CONFIG.namespace = Object.extended();
-            CONFIG.namespace.sample = 'gov.usgs.cida.ch.sample';
-            CONFIG.namespace.input = 'gov.usgs.cida.ch.input';
-            CONFIG.namespace.output = 'gov.usgs.cida.ch.output';
-            CONFIG.dateFormat = {
-                padded : '{MM}/{dd}/{yyyy}',
-                nonPadded : '{M}/{d}/{yyyy}'
-            };
-            
-            JSON.stringify = JSON.stringify || function (obj) {
-                var t = typeof (obj);
-                if (t != "object" || obj === null) {
-                    // simple data type
-                    if (t == "string") obj = '"'+obj+'"';
-                    return String(obj);
-                }
-                else {
-                    // recurse array or object
-                    var n, v, json = [], arr = (obj && obj.constructor == Array);
-                    for (n in obj) {
-                        v = obj[n]; t = typeof(v);
-                        if (t == "string") v = '"'+v+'"';
-                        else if (t == "object" && v !== null) v = JSON.stringify(v);
-                        json.push((arr ? "" : '"' + n + '":') + String(v));
-                    }
-                    return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
-                }
-            };
-
-            
-        </script>
-        <script type="text/javascript" src="js/util/seedrandom.js"></script>
-        <script type="text/javascript" src="js/ui/ui.js"></script>
-        <script type="text/javascript" src="js/util/util.js"></script>
-        <script type="text/javascript" src="js/map/map.js"></script>
-        <script type="text/javascript" src="js/session/session.js"></script>
-        <script type="text/javascript" src="js/ows/ows.js"></script>
-        <script type="text/javascript" src="js/stages/shorelines.js"></script>
-        <script type="text/javascript" src="js/stages/baseline.js"></script>
-        <script type="text/javascript" src="js/stages/transects.js"></script>
-        <script type="text/javascript" src="js/stages/intersections.js"></script>
-        <script type="text/javascript" src="js/stages/results.js"></script>
-        <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
-
-
-        <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
-
-        <link type="text/css" rel="stylesheet" href="css/jquery-bootstrap-toggle/bootstrap-toggle-buttons.css" />
-        <script type="text/javascript" src="js/jquery-bootstrap-toggle/jquery.toggle.buttons.js"></script>
-
-        <script type="text/javascript" src="pages/index/onReady.js"></script>
-
     </head>
     <body>
         <jsp:include page="template/USGSHeader.jsp">
@@ -420,4 +322,105 @@
             </div>
         </div>
     </body>
+
+    <!-- TODO - Modularize -->
+    <link type="text/css" rel="stylesheet" href="css/yui-css-reset/css-reset-min.css" />
+
+    <jsp:include page="js/dygraphs/dygraphs.jsp">
+        <jsp:param name="debug-qualifier" value="true" />
+    </jsp:include>
+
+    <jsp:include page="js/log4javascript/log4javascript.jsp">
+        <jsp:param name="relPath" value="" />
+    </jsp:include>
+
+    <jsp:include page="js/jquery/jquery.jsp">
+        <jsp:param name="relPath" value="" />
+        <jsp:param name="debug-qualifier" value="<%= development%>" />
+    </jsp:include>
+
+    <jsp:include page="js/jquery-tablesorter/package.jsp">
+        <jsp:param name="relPath" value="" />
+        <jsp:param name="debug-qualifier" value="<%= development%>" />
+    </jsp:include>
+
+    <jsp:include page="js/bootstrap/package.jsp">
+        <jsp:param name="relPath" value="" />
+        <jsp:param name="debug-qualifier" value="<%= development%>" />
+    </jsp:include>
+
+    <jsp:include page="js/openlayers/openlayers.jsp">
+        <jsp:param name="debug-qualifier" value="<%= development%>" />
+    </jsp:include>
+
+    <jsp:include page="js/sugar/sugar.jsp">
+        <jsp:param name="relPath" value="" />
+        <jsp:param name="debug-qualifier" value="<%= development%>" />
+    </jsp:include>
+
+    <!-- TODO - Modularize -->
+    <script type="text/javascript" src="js/jquery-fineuploader/jquery.fineuploader-3.0.js"></script>
+    <link type="text/css" rel="stylesheet" href="js/jquery-fineuploader/fineuploader.css" />
+
+    <!-- TODO - Modularize -->
+    <script type="text/javascript" src="js/bootstrap-toggle/bootstrap-toggle.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/bootstrap-toggle/bootstrap-toggle-animated.css" />
+
+    <script type="text/javascript">
+        var CONFIG = {};
+			
+        CONFIG.development = <%= development%>;
+        CONFIG.geoServerEndpoint = '<%=geoserverEndpoint%>';
+        CONFIG.namespace = Object.extended();
+        CONFIG.namespace.sample = 'gov.usgs.cida.ch.sample';
+        CONFIG.namespace.input = 'gov.usgs.cida.ch.input';
+        CONFIG.namespace.output = 'gov.usgs.cida.ch.output';
+        CONFIG.dateFormat = {
+            padded : '{MM}/{dd}/{yyyy}',
+            nonPadded : '{M}/{d}/{yyyy}'
+        };
+            
+        JSON.stringify = JSON.stringify || function (obj) {
+            var t = typeof (obj);
+            if (t != "object" || obj === null) {
+                // simple data type
+                if (t == "string") obj = '"'+obj+'"';
+                return String(obj);
+            }
+            else {
+                // recurse array or object
+                var n, v, json = [], arr = (obj && obj.constructor == Array);
+                for (n in obj) {
+                    v = obj[n]; t = typeof(v);
+                    if (t == "string") v = '"'+v+'"';
+                    else if (t == "object" && v !== null) v = JSON.stringify(v);
+                    json.push((arr ? "" : '"' + n + '":') + String(v));
+                }
+                return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+            }
+        };
+
+            
+    </script>
+    <script type="text/javascript" src="js/util/seedrandom.js"></script>
+    <script type="text/javascript" src="js/ui/ui.js"></script>
+    <script type="text/javascript" src="js/util/util.js"></script>
+    <script type="text/javascript" src="js/map/map.js"></script>
+    <script type="text/javascript" src="js/session/session.js"></script>
+    <script type="text/javascript" src="js/ows/ows.js"></script>
+    <script type="text/javascript" src="js/stages/shorelines.js"></script>
+    <script type="text/javascript" src="js/stages/baseline.js"></script>
+    <script type="text/javascript" src="js/stages/transects.js"></script>
+    <script type="text/javascript" src="js/stages/intersections.js"></script>
+    <script type="text/javascript" src="js/stages/results.js"></script>
+    <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
+
+
+    <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
+
+    <!-- TODO - Modularize -->
+    <link type="text/css" rel="stylesheet" href="css/jquery-bootstrap-toggle/bootstrap-toggle-buttons.css" />
+    <script type="text/javascript" src="js/jquery-bootstrap-toggle/jquery.toggle.buttons.js"></script>
+
+    <script type="text/javascript" src="pages/index/onReady.js"></script>
 </html>
