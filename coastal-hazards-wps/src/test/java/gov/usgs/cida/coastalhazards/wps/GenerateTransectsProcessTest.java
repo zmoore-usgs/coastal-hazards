@@ -82,7 +82,7 @@ public class GenerateTransectsProcessTest {
                 FeatureCollectionFromShp.featureCollectionFromShp(baselineShapefile);
         FeatureCollection<SimpleFeatureType, SimpleFeature> shorelinefc =
                 FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
-        GenerateTransectsProcess generate = new GenerateTransectsProcess(new DummyImportProcess());
+        GenerateTransectsProcess generate = new GenerateTransectsProcess(new DummyImportProcess(), new DummyCatalog());
         generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, null, null, null);
     }
     
@@ -101,7 +101,7 @@ public class GenerateTransectsProcessTest {
                 FeatureCollectionFromShp.featureCollectionFromShp(baselineShapefile);
         SimpleFeatureCollection shorelinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
-        GenerateTransectsProcess generate = new GenerateTransectsProcess(new DummyImportProcess(shpfile));
+        GenerateTransectsProcess generate = new GenerateTransectsProcess(new DummyImportProcess(shpfile), new DummyCatalog());
         generate.execute(shorelinefc, baselinefc, 50.0d, null, null, null);
     }
 }

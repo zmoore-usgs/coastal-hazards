@@ -142,8 +142,6 @@ public class IntersectionParserTest {
             List<IntersectionPoint> points = map.get(key);
             buf.write("# " + key);
             buf.newLine();
-            buf.append("t\tdist\tuncy");
-            buf.newLine();
             for (IntersectionPoint p : points) {
                 buf.write(p.toString());
                 buf.newLine();
