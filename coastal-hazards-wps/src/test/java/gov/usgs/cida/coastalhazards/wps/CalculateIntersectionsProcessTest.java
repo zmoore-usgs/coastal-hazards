@@ -48,19 +48,19 @@ package gov.usgs.cida.coastalhazards.wps;
 import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
 import java.io.File;
 import java.net.URL;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.wps.gs.ImportProcess;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.feature.FeatureCollection;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class CalculateIntersectionsProcessTest {
+    
+    private Catalog dummyCat = new DummyCatalog();
     
     /**
      * Test of execute method, of class CalculateIntersectionsProcess.
@@ -77,8 +77,8 @@ public class CalculateIntersectionsProcessTest {
         SimpleFeatureCollection shorelinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
         
-        ImportProcess dummy = new DummyImportProcess();
-        CalculateIntersectionsProcess process = new CalculateIntersectionsProcess(dummy);
+        ImportProcess dummyImport = new DummyImportProcess();
+        CalculateIntersectionsProcess process = new CalculateIntersectionsProcess(dummyImport, dummyCat);
         process.execute(shorelinefc, baselinefc, Boolean.TRUE, null, null, null);
     }
     
@@ -98,8 +98,8 @@ public class CalculateIntersectionsProcessTest {
         SimpleFeatureCollection shorelinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
         
-        ImportProcess dummy = new DummyImportProcess(shpfile);
-        CalculateIntersectionsProcess process = new CalculateIntersectionsProcess(dummy);
+        ImportProcess dummyImport = new DummyImportProcess(shpfile);
+        CalculateIntersectionsProcess process = new CalculateIntersectionsProcess(dummyImport, dummyCat);
         process.execute(shorelinefc, baselinefc, Boolean.TRUE, null, null, null);
     }
 }

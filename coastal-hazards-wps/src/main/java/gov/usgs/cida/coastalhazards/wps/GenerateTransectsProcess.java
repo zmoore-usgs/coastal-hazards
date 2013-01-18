@@ -15,13 +15,18 @@ import com.vividsolutions.jts.index.strtree.STRtree;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
+import gov.usgs.cida.coastalhazards.wps.exceptions.LayerAlreadyExistsException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineSTRTreeBuilder;
 import gov.usgs.cida.coastalhazards.wps.geom.TransectVector;
 import java.util.LinkedList;
 import java.util.List;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
 import org.geotools.data.DataUtilities;
@@ -48,9 +53,11 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class GenerateTransectsProcess implements GeoServerProcess {
 
     private ImportProcess importProcess;
+    private Catalog catalog;
     
-    public GenerateTransectsProcess(ImportProcess importProcess) {
+    public GenerateTransectsProcess(ImportProcess importProcess, Catalog catalog) {
         this.importProcess = importProcess;
+        this.catalog = catalog;
     }
 
     /** May actually want to return reference to new layer
@@ -204,7 +211,13 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         }
         
         private String addResultAsLayer(SimpleFeatureCollection transects, String workspace, String store, String layer) {
-            return importProcess.execute(transects, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED, null);
+            LayerInfo layerByName = catalog.getLayerByName(workspace + ":" + layer);
+            if (layerByName == null) {
+                return importProcess.execute(transects, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED, null);
+            }
+            else {
+                throw new LayerAlreadyExistsException("Please specify a new layer name");
+            }
         }
 
         /**
