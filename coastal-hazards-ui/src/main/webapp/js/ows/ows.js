@@ -213,7 +213,7 @@ var OWS = function(endpoint) {
             var context = args.context || this;
             var callbacks = args.callbacks || [];
             var errorCallbacks = args.errorCallbacks || [];
-            if (args.layer.split(':')[1] == 'ch-input') {
+            if (args.layer.split(':')[0] == 'ch-input') {
                 var url = 'geoserver/ch-input/wfs';
                 var wfst = '<wfs:Transaction service="WFS" version="1.1.0" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">' + 
                 '<wfs:Delete typeName="feature:'+layerName+'">' + 
@@ -236,12 +236,12 @@ var OWS = function(endpoint) {
                     context : context || this,
                     success: function(data, textStatus, jqXHR) {
                         callbacks.each(function(callback) {
-                            callback(data, textStatus, jqXHR, this);
+                            callback(data, textStatus, jqXHR, context);
                         })
                     },
                     error: function(data, textStatus, jqXHR) {
                         errorCallbacks.each(function(callback) {
-                            callback(data, textStatus, jqXHR, this);
+                            callback(data, textStatus, jqXHR, context);
                         })
                     }
                 });
