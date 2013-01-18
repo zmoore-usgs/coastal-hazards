@@ -555,6 +555,33 @@ var Shorelines = {
                 config : layerConfig
             });
         });
+        
+        // Provide default names for base layers and transects
+        var currentlySelectedShorelines = CONFIG.tempSession.session[Shorelines.stage].view.activeLayers;
+        var derivedName = '';
+        var getSeries = function(series) {
+            var skey = CONFIG.tempSession.getCurrentSessionKey();
+            var startPoint = series.contains(skey) ? skey.length : 0;
+            return series.substr(startPoint, series.lastIndexOf('_') - startPoint)
+        }
+        if (currentlySelectedShorelines.length == 0) {
+            derivedName += Util.getRandomLorem();
+        }
+        
+        if (currentlySelectedShorelines.length > 0) {
+            derivedName += getSeries(currentlySelectedShorelines[0].split(':')[1]);
+        }
+        
+        if (currentlySelectedShorelines.length > 1) {
+            derivedName += '_' + getSeries(currentlySelectedShorelines[1].split(':')[1]);
+        } 
+        
+        if (currentlySelectedShorelines.length > 2) {
+            derivedName += '_etal';
+        }
+        
+        $('#baseline-draw-form-name').val(derivedName);
+        $('#create-transects-input-name').val(derivedName);
             
         if (layerInfos.length) {
             Shorelines.addShorelines(layerInfos);

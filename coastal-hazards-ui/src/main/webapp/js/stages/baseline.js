@@ -269,30 +269,6 @@ var Baseline = {
         Baseline.getDrawControl().activate();
         
         LOG.debug('Baseline.js::beginDrawing: Populating layer name textbox');
-        var currentlySelectedShorelines = CONFIG.tempSession.session[Shorelines.stage].view.activeLayers;
-        var baseLayerName = '';
-        var getSeries = function(series) {
-            var skey = CONFIG.tempSession.getCurrentSessionKey();
-            var startPoint = series.contains(skey) ? skey.length : 0;
-            return series.substr(startPoint, series.lastIndexOf('_') - startPoint)
-        }
-        if (currentlySelectedShorelines.length == 0) {
-            baseLayerName += Util.getRandomLorem();
-        }
-        
-        if (currentlySelectedShorelines.length > 0) {
-            baseLayerName += getSeries(currentlySelectedShorelines[0].split(':')[1]);
-        }
-        
-        if (currentlySelectedShorelines.length > 1) {
-            baseLayerName += '_' + getSeries(currentlySelectedShorelines[1].split(':')[1]);
-        } 
-        
-        if (currentlySelectedShorelines.length > 2) {
-            baseLayerName += '_etal';
-        }
-        
-        $('#baseline-draw-form-name').val(baseLayerName);
         
         LOG.debug('Baseline.js::beginDrawing: Initializing control panel buttons');
         $('#baseline-draw-form-save').on('click', Baseline.saveButtonClickHandler);
