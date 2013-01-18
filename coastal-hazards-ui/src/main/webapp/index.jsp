@@ -170,19 +170,22 @@
                                     <div class="span4"><h3>Shorelines</h3></div>
                                     <div class="span8" id="shorelines-alert"></div>
                                 </div>
-                                <div class="fluid-row span12">
-                                    <div class="well" id="shorelines-well">
+                                <ul class="nav nav-tabs" id="action-shoreline-tablist">
+                                    <li class="active"><a  data-toggle="tab" href="#shoreline-view-tab">View</a></li>
+                                    <li><a data-toggle="tab" href="#shoreline-manage-tab">Manage</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="shoreline-view-tab">
                                         <select id="shorelines-list" multiple="multiple" style="width: 100%;"></select>
-                                        <div id="shorelines-uploader"></div>
-                                    </div>
-                                </div>
-
-                                <div class="fluid-row span12">
-                                    <div class="tabbable">
-                                        <ul class="nav nav-tabs" id="shoreline-table-navtabs">
-                                        </ul>
-                                        <div class="tab-content" id="shoreline-table-tabcontent">
+                                        <div class="tabbable">
+                                            <ul class="nav nav-tabs" id="shoreline-table-navtabs">
+                                            </ul>
+                                            <div class="tab-content" id="shoreline-table-tabcontent">
+                                            </div>
                                         </div>
+                                    </div>
+                                    <div class="tab-pane" id="shoreline-manage-tab">
+                                        <div id="shorelines-uploader"></div>
                                     </div>
                                 </div>
                             </div>
@@ -193,12 +196,15 @@
                                     <div class="span4"><h3>Baseline</h3></div>
                                     <div class="span8" id="baseline-alert"></div>
                                 </div>
-
-                                <div class="fluid-row span12">
-                                    <div id="baseline-well" class="well">
-                                        <div class="fluid-row span12">
-                                            <select id="baseline-list" style="width: 100%;"></select>
-                                        </div>
+                                <ul class="nav nav-tabs" id="action-baseline-tablist">
+                                    <li class="active"><a data-toggle="tab" href="#baseline-view-tab">View</a></li>
+                                    <li><a data-toggle="tab" href="#baseline-manage-tab">Manage</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="baseline-view-tab">
+                                        <select id="baseline-list" style="width: 100%;"></select>
+                                    </div>
+                                    <div class="tab-pane" id="baseline-manage-tab">
                                         <div id="baseline-button-row" class="fluid-row">
                                             <div id="baseline-uploader"></div>
                                             <button id="baseline-draw-btn" class="btn btn-success" data-toggle="button">
@@ -214,72 +220,74 @@
                                                 &nbsp;Clone Baseline
                                             </button>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <!-- Baseline Drawing -->
-                                <div class="fluid-row span12">
-                                    <div id="draw-panel-well" class="well hidden">
-                                        <div id="draw-panel-container" class="container-fluid">
-                                            <div class="row-fluid span12">
-                                                <label class="control-label" for="baseline-draw-form-name">Baseline Name</label>
-                                                <input class="input-large span5" name="baseline-draw-form-name" id="baseline-draw-form-name">
+                                        <div class="fluid-row span12">
+                                            <!-- Baseline Drawing -->
+                                            <div class="fluid-row span12">
+                                                <div id="draw-panel-well" class="well hidden">
+                                                    <div id="draw-panel-container" class="container-fluid">
+                                                        <div class="row-fluid span12">
+                                                            <label class="control-label" for="baseline-draw-form-name">Baseline Name</label>
+                                                            <input class="input-large span5" name="baseline-draw-form-name" id="baseline-draw-form-name">
+                                                        </div>
+                                                        <div class="row-fluid span12">
+                                                            <button class="btn btn-success span2" id="baseline-draw-form-save">Save</button>
+                                                            <button class="btn btn-success span2" id="baseline-draw-form-clear">Clear</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="row-fluid span12">
-                                                <button class="btn btn-success span2" id="baseline-draw-form-save">Save</button>
-                                                <button class="btn btn-success span2" id="baseline-draw-form-clear">Clear</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <!-- Baseline Editing -->
-                                <div class="fluid-row span12">
-                                    <div id="baseline-edit-panel-well" class="well hidden">
-                                        <div id="baseline-edit-container" class="container-fluid">
-                                            <div class="row-fluid span12">
-                                                <div class="span2">Create Vertex</div>
-                                                <div class="span4">
-                                                    <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
-                                                        <input type="checkbox" class="checkbox" name="toggle-create-vertex-checkbox" id="toggle-create-vertex-checkbox" value="1">
-                                                        <label class="check" for="toggle-create-vertex-checkbox"></label>
+                                            <!-- Baseline Editing -->
+                                            <div class="fluid-row span12">
+                                                <div id="baseline-edit-panel-well" class="well hidden">
+                                                    <div id="baseline-edit-container" class="container-fluid">
+                                                        <div class="row-fluid span12">
+                                                            <div class="span2">Create Vertex</div>
+                                                            <div class="span4">
+                                                                <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
+                                                                    <input type="checkbox" class="checkbox" name="toggle-create-vertex-checkbox" id="toggle-create-vertex-checkbox" value="1">
+                                                                    <label class="check" for="toggle-create-vertex-checkbox"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row-fluid span12">
+                                                            <div class="span2">Allow Rotation</div>
+                                                            <div class="span4">
+                                                                <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
+                                                                    <input type="checkbox" class="checkbox" name="toggle-allow-rotation-checkbox" id="toggle-allow-rotation-checkbox" value="1">
+                                                                    <label class="check" for="toggle-allow-rotation-checkbox"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row-fluid span12">
+                                                            <div class="span2">Allow Resizing</div>
+                                                            <div class="span4">
+                                                                <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
+                                                                    <input type="checkbox" class="checkbox" name="toggle-allow-resizing-checkbox" id="toggle-allow-resizing-checkbox" value="1">
+                                                                    <label class="check" for="toggle-allow-resizing-checkbox"></label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="span2">Maintain Aspect Ratio</div>
+                                                            <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
+                                                                <input type="checkbox" class="checkbox" name="toggle-aspect-ratio-checkbox" id="toggle-aspect-ratio-checkbox" value="1">
+                                                                <label class="check" for="toggle-aspect-ratio-checkbox"></label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row-fluid span12">
+                                                            <div class="span2">Allow Dragging</div>
+                                                            <div class="span4">
+                                                                <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
+                                                                    <input type="checkbox" class="checkbox" name="toggle-allow-dragging-checkbox" id="toggle-allow-dragging-checkbox" value="1">
+                                                                    <label class="check" for="toggle-allow-dragging-checkbox"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row-fluid span12">
+                                                            <button class="span3 btn btn-success" id="baseline-edit-save-button" title="Update Modified Baseline">Update Baseline</button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row-fluid span12">
-                                                <div class="span2">Allow Rotation</div>
-                                                <div class="span4">
-                                                    <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
-                                                        <input type="checkbox" class="checkbox" name="toggle-allow-rotation-checkbox" id="toggle-allow-rotation-checkbox" value="1">
-                                                        <label class="check" for="toggle-allow-rotation-checkbox"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row-fluid span12">
-                                                <div class="span2">Allow Resizing</div>
-                                                <div class="span4">
-                                                    <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
-                                                        <input type="checkbox" class="checkbox" name="toggle-allow-resizing-checkbox" id="toggle-allow-resizing-checkbox" value="1">
-                                                        <label class="check" for="toggle-allow-resizing-checkbox"></label>
-                                                    </div>
-                                                </div>
-                                                <div class="span2">Maintain Aspect Ratio</div>
-                                                <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
-                                                    <input type="checkbox" class="checkbox" name="toggle-aspect-ratio-checkbox" id="toggle-aspect-ratio-checkbox" value="1">
-                                                    <label class="check" for="toggle-aspect-ratio-checkbox"></label>
-                                                </div>
-                                            </div>
-                                            <div class="row-fluid span12">
-                                                <div class="span2">Allow Dragging</div>
-                                                <div class="span4">
-                                                    <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
-                                                        <input type="checkbox" class="checkbox" name="toggle-allow-dragging-checkbox" id="toggle-allow-dragging-checkbox" value="1">
-                                                        <label class="check" for="toggle-allow-dragging-checkbox"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row-fluid span12">
-                                                <button class="span3 btn btn-success" id="baseline-edit-save-button" title="Update Modified Baseline">Update Baseline</button>
                                             </div>
                                         </div>
                                     </div>
@@ -287,35 +295,41 @@
                             </div>
 
                             <!-- Transects --> 
-                            <div class="tab-pane  container-fluid" id="transects">
+                            <div class="tab-pane container-fluid" id="transects">
                                 <div class="fluid-row span12">
                                     <div class="span4"><h3>Transects</h3></div>
                                     <div class="span8" id="transects-alert"></div>
                                 </div>
-                                <div class="fluid-row span12">
-                                    <div class="well" id="transects-well">
+                                <ul class="nav nav-tabs" id="action-transects-tablist">
+                                    <li class="active"><a  data-toggle="tab" href="#transects-view-tab">View</a></li>
+                                    <li><a data-toggle="tab" href="#transects-manage-tab">Manage</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="transects-view-tab">
                                         <select id="transects-list" style="width: 100%;"></select>
+                                    </div>
+                                    <div class="tab-pane" id="transects-manage-tab">
                                         <div id="transects-uploader"></div>
                                         <button data-toggle="button" class="btn btn-success" disabled id="create-transects-toggle">
                                             <i class="icon-pencil icon-white"></i>
                                             &nbsp;Create Transects
                                         </button>
-                                    </div>
-                                </div>
-                                <div class="fluid-row span12">
-                                    <div id="create-transects-panel-well" class="well hidden">
-                                        <div id="create-transects-panel-container" class="container-fluid">
-                                            <div class="row-fluid span12">
-                                                <form>
-                                                    <label for="create-transects-input-spacing">Spacing</label>
-                                                    <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
-                                                    <label for="create-transects-input-spacing">Name</label>
-                                                    <input type="text" id="create-transects-input-name">
+                                        <div class="fluid-row span12">
+                                            <div id="create-transects-panel-well" class="well hidden">
+                                                <div id="create-transects-panel-container" class="container-fluid">
+                                                    <div class="row-fluid span12">
+                                                        <form>
+                                                            <label for="create-transects-input-spacing">Spacing</label>
+                                                            <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
+                                                            <label for="create-transects-input-spacing">Name</label>
+                                                            <input type="text" id="create-transects-input-name">
 
-                                                    <div class="control-group">
-                                                        <button type="button" class="btn btn-success" id="create-transects-input-button">Calculate</button>
+                                                            <div class="control-group">
+                                                                <button type="button" class="btn btn-success" id="create-transects-input-button">Calculate</button>
+                                                            </div>
+                                                        </form>
                                                     </div>
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -328,9 +342,15 @@
                                     <div class="span4"><h3>Intersections</h3></div>
                                     <div class="span8" id="intersections-alert"></div>
                                 </div>
-                                <div class="fluid-row span12">
-                                    <div class="well" id="intersections-well">
+                                <ul class="nav nav-tabs" id="action-intersections-tablist">
+                                    <li class="active"><a  data-toggle="tab" href="#intersections-view-tab">View</a></li>
+                                    <li><a data-toggle="tab" href="#intersections-manage-tab">Manage</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="intersections-view-tab">
                                         <select id="intersections-list" style="width: 100%;"></select>
+                                    </div>
+                                    <div class="tab-pane" id="intersections-manage-tab">
                                         <button data-toggle="button" class="btn btn-success" id="create-intersections-btn">
                                             <i class="icon-pencil icon-white"></i>
                                             &nbsp;Calculate Intersections
@@ -391,8 +411,8 @@
             </div>
             <div class="modal-body">
                 <div id="modal-body-content">
-                
-            </div>
+
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>

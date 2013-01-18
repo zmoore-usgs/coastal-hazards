@@ -29,10 +29,6 @@ img { max-width: none; }
     height: auto !important;
 }
 
-#shorelines-well {
-    height: 9.5em;
-}
-
 #shorelines-list {
     height: 7.25em;
 }

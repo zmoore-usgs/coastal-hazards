@@ -18,6 +18,7 @@ var UI = function() {
                 LOG.debug('UI.js::Cleared sessions. Reloading application.')
                 location.reload();
             })
+            $('#baseline-draw-form-name').val(Util.getRandomLorem());
             $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
             $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
             $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
