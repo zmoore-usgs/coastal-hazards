@@ -1,8 +1,22 @@
 
 var UI = function() {
+    LOG.info('UI.js::init: UI class is initializing.')
     var me = (this === window) ? {} : this;
     
     me.work_stages = ['shorelines', 'baseline', 'transects', 'intersections', 'results'];
+    
+    $('#clear-sessions-btn').on("click", function(){
+        localStorage.clear();
+        sessionStorage.clear();
+        LOG.debug('UI.js::Cleared sessions. Reloading application.')
+        location.reload();
+    })
+    $('#baseline-draw-form-name').val(Util.getRandomLorem());
+    $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
+    $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
+    $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
+    $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
+    $("#create-intersections-btn").on("click", Intersections.calcIntersections);
     
     $('.nav-stacked>li>a').each(function(indexInArray, valueOfElement) { 
         $(valueOfElement).on('click', function() {
@@ -11,20 +25,6 @@ var UI = function() {
     })
     
     return $.extend(me, {
-        bindControls : function() {
-            $('#clear-sessions-btn').on("click", function(){
-                localStorage.clear();
-                sessionStorage.clear();
-                LOG.debug('UI.js::Cleared sessions. Reloading application.')
-                location.reload();
-            })
-            $('#baseline-draw-form-name').val(Util.getRandomLorem());
-            $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
-            $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
-            $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
-            $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
-            $("#create-intersections-btn").on("click", Intersections.calcIntersections);
-        },
         createModalWindow : function(args) {
             var headerHtml = args.headerHtml || '';
             var bodyHtml = args.bodyHtml || '';
