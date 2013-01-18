@@ -29,22 +29,27 @@ var UI = function() {
             var headerHtml = args.headerHtml || '';
             var bodyHtml = args.bodyHtml || '';
             var primaryButtonText = args.primaryButtonText || '';
-            var primaryButtonCallbacks = args.primaryButtonCallbacks || [];
             var context = args.context || this;
-            
-            $('#modal-window-label').html(headerHtml);
-            $('#modal-body-content').html(bodyHtml);
-            $('#modal-window-button-primary').html(primaryButtonText);
-            
-            $("#modal-window").modal();
-            
-            $('#modal-window-button-primary').click(function(event) {
-                primaryButtonCallbacks.each(function(callback) {
+            var callbacks = args.callbacks || [];
+            var unregister = function() {
+                $("#modal-window").on('hidden', callbackFunction);
+            }
+            var callbackFunction = function(event) {
+                callbacks.each(function(callback) {
                     callback(event, context);
                 })
+                unregister();
+            }
+            $('#modal-window-label').html(headerHtml);
+            $('#modal-body-content').html(bodyHtml);
+            $('#modal-window-button-primary')
+            .html(primaryButtonText)
+            .click(function(event) {
+                $("#modal-window").on('hidden', callbackFunction)
                 $("#modal-window").modal('toggle');
             })
             
+            $("#modal-window").modal();
         },
         switchImage : function (stage) {
             LOG.info('UI.js::switchImage: Changing application context to ' + me.work_stages[stage])
