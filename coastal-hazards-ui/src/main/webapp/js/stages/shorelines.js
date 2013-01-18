@@ -15,7 +15,6 @@ var Shorelines = {
             LOG.info('Shorelines.js::addShorelines: Attempting to add shoreline layer ' + layer.title + ' to the map'); 
             CONFIG.ows.getDescribeFeatureType({
                 featureName : layer.title,
-                
                 callbacks : [
                 function(describeFeaturetypeRespone) {
                     Shorelines.addLayerToMap({
