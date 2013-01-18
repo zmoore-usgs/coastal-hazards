@@ -333,8 +333,8 @@ var Baseline = {
         if (drawLayer.features.length) {
             LOG.info('Baseline.js::saveDrawnFeatures: Layer to be saved, "'+importName+ '" has ' + drawLayer.features.length + ' features');
             
-            var layerExists = $("#baseline-list option").filter(function(n){
-                return this.text == desiredLayerName
+            var layerExists = $("#baseline-list option").filter(function(){
+                return $(this).val().split(':')[1] == importName
             }).length
             
             if (layerExists) {
@@ -345,8 +345,16 @@ var Baseline = {
                     headerHtml : 'Resource Exists',
                     bodyHtml : 'A resource already exists with the name ' + desiredLayerName + '. Would you like to overwrite this resource?',
                     primaryButtonText : 'Overwrite',
-                    primaryButtonCallbacks : [function(event, context) {
-                        Baseline.saveDrawnFeatures();
+                    callbacks : [
+                    function(event, context) {
+                        CONFIG.ows.clearFeaturesOnServer({
+                            layer : importName,
+                            callbacks : [
+                            Baseline.saveDrawnFeatures({
+                                context : context
+                            })
+                            ]
+                        })
                     }]
                 })
             } else {
@@ -359,43 +367,16 @@ var Baseline = {
                     function(data, context) {
                         if (data.success === 'true') {
                             LOG.info('Baseline.js::saveDrawnFeatures: Layer imported successfully - Will attempt to update on server');
-                        
-                            var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
-                            var schema = context.protocol.schema.replace('geoserver/', geoserverEndpoint);
-                            var newSchema = schema.substring(0, schema.lastIndexOf(':') + 1) + importName;
-            
-                            context.protocol.setFeatureType(importName);
-                            context.protocol.format.options.schema = newSchema;
-                            context.protocol.format.schema = newSchema
-                            context.protocol.schema = newSchema;
-                            context.protocol.options.featureType = importName;
-                        
-                            // Do WFS-T to fill out the layer
-                            var saveStrategy = context.strategies.find(function(n) {
-                                return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
+                            Baseline.saveDrawnFeatures({
+                                context : context
                             });
-                        
-                            // Re-bind the save strategy
-                            saveStrategy.events.remove('success');
-                            saveStrategy.events.register('success', null, function() {
-                                LOG.info('Baseline.js::saveDrawnFeatures: Drawn baseline saved successfully - reloading current layer set from server');
-                                Baseline.refreshFeatureList({
-                                    selectLayer : 'ch-input:' + importName
-                                })
-                            
-                                LOG.info('Baseline.js::saveDrawnFeatures: Triggering click on baseline draw button')
-                                $('#baseline-draw-btn').click();
-                            });
-                        
-                            LOG.info('Baseline.js::saveDrawnFeatures: Saving draw features to OWS server');
-                            saveStrategy.save();
                         } else {
                             // TODO - Notify the user
                             LOG.warn(data.error);
                         }
                     }]
                 });
-                Baseline.saveDrawnFeatures();
+                
             }
         } else {
             LOG.info('User has not drawn any features to save or did not name the new feature');

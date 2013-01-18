@@ -208,6 +208,45 @@ var OWS = function(endpoint) {
                 }
             });
         },
+        clearFeaturesOnServer : function(args) {
+            var layerName = args.layer.split(':')[1];
+            var context = args.context || this;
+            var callbacks = args.callbacks || [];
+            var errorCallbacks = args.errorCallbacks || [];
+            if (args.layer.split(':')[1] == 'ch-input') {
+                var url = 'geoserver/ch-input/wfs';
+                var wfst = '<wfs:Transaction service="WFS" version="1.1.0" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">' + 
+                '<wfs:Delete typeName="feature:'+layerName+'">' + 
+                '<ogc:Filter>' + 
+                '<ogc:BBOX>' + 
+                '<ogc:PropertyName>the_geom</ogc:PropertyName>' + 
+                '<gml:Envelope srsName="EPSG:900913" xmlns:gml="http://www.opengis.net/gml">' + 
+                '<gml:lowerCorner>-20037508.34 -20037508.34</gml:lowerCorner>' + 
+                '<gml:upperCorner>20037508.34 20037508.34</gml:upperCorner>' + 
+                '</gml:Envelope>' + 
+                '</ogc:BBOX>' + 
+                '</ogc:Filter>' + 
+                '</wfs:Delete>' + 
+                '</wfs:Transaction>';
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    contentType: 'application/xml',
+                    data: wfst,
+                    context : context || this,
+                    success: function(data, textStatus, jqXHR) {
+                        callbacks.each(function(callback) {
+                            callback(data, textStatus, jqXHR, this);
+                        })
+                    },
+                    error: function(data, textStatus, jqXHR) {
+                        errorCallbacks.each(function(callback) {
+                            callback(data, textStatus, jqXHR, this);
+                        })
+                    }
+                });
+            }
+        },
         cloneLayer : function(args) {
             var originalLayer = args.originalLayer;
             var newLayer = args.newLayer;
@@ -219,7 +258,7 @@ var OWS = function(endpoint) {
             '<ows:Identifier>features</ows:Identifier>' + 
             '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
             '<wps:Body>' + 
-            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2">' + // xmlns:'+originalWorkspace+'="' +originalWorkspaceNS+ '">' + 
+            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2">' + 
             '<wfs:Query typeName="'+originalLayer+'"/>' + 
             '</wfs:GetFeature>' + 
             '</wps:Body>' + 
