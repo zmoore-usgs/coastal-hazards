@@ -9,7 +9,6 @@ $(document).ready(function() {
     
     // Utility class for the user interface
     CONFIG.ui = new UI();
-    CONFIG.ui.bindControls();
     
     // Map interaction object. Holds the map and utilities 
     CONFIG.map = new Map();
