@@ -3,8 +3,10 @@
 <beans>
     <bean id="generateTransects" class="gov.usgs.cida.coastalhazards.wps.GenerateTransectsProcess">
         <constructor-arg index="0" ref="importProcess"/>
+        <constructor-arg index="1" ref="catalog"/>
     </bean>
     <bean id="calcIntersects" class="gov.usgs.cida.coastalhazards.wps.CalculateIntersectionsProcess">
         <constructor-arg index="0" ref="importProcess"/>
+        <constructor-arg index="1" ref="catalog"/>
     </bean>
 </beans>
