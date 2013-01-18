@@ -111,6 +111,10 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
         }
 
         private String execute() throws Exception {
+            LayerInfo layerByName = catalog.getLayerByName(workspace + ":" + layer);
+            if (layerByName != null) {
+                throw new LayerAlreadyExistsException("Please specify a new layer name");
+            }
 
             CoordinateReferenceSystem shorelinesCrs = CRSUtils.getCRSFromFeatureCollection(shorelines);
             CoordinateReferenceSystem transectsCrs = CRSUtils.getCRSFromFeatureCollection(transects);
@@ -197,13 +201,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
             }
             SimpleFeatureCollection intersectionCollection = DataUtilities.collection(sfList);
             
-            LayerInfo layerByName = catalog.getLayerByName(workspace + ":" + layer);
-            if (layerByName == null) {
-                return importProcess.execute(intersectionCollection, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED, null);
-            }
-            else {
-                throw new LayerAlreadyExistsException("Please specify a new layer name");
-            }
+            return importProcess.execute(intersectionCollection, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED, null);
             
         }
         

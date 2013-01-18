@@ -112,6 +112,11 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         }
         
         protected String execute() throws Exception {
+            LayerInfo layerByName = catalog.getLayerByName(workspace + ":" + layer);
+            if (layerByName != null) {
+                throw new LayerAlreadyExistsException("Please specify a new layer name");
+            }
+            
             CoordinateReferenceSystem shorelinesCrs = CRSUtils.getCRSFromFeatureCollection(shorelineFeatureCollection);
             CoordinateReferenceSystem baselineCrs = CRSUtils.getCRSFromFeatureCollection(baselineFeatureCollection);
             if (!CRS.equalsIgnoreMetadata(shorelinesCrs, REQUIRED_CRS_WGS84)) {
@@ -211,13 +216,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         }
         
         private String addResultAsLayer(SimpleFeatureCollection transects, String workspace, String store, String layer) {
-            LayerInfo layerByName = catalog.getLayerByName(workspace + ":" + layer);
-            if (layerByName == null) {
-                return importProcess.execute(transects, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED, null);
-            }
-            else {
-                throw new LayerAlreadyExistsException("Please specify a new layer name");
-            }
+            return importProcess.execute(transects, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED, null);
         }
 
         /**
