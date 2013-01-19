@@ -591,9 +591,8 @@ var Shorelines = {
         }
             
     },
-    populateFeaturesList : function(caps) {
+    populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
-            caps : caps, 
             caller : Shorelines
         });
     },

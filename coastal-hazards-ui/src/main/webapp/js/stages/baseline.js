@@ -25,9 +25,8 @@ var Baseline = {
         CONFIG.map.removeLayerByName(baselineLayer.name);
         CONFIG.map.getMap().addLayer(baselineLayer);
     },
-    populateFeaturesList : function(caps) {
+    populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
-            caps : caps, 
             caller : Baseline
         });
     },

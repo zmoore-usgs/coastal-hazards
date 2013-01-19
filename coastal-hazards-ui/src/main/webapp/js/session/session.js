@@ -115,61 +115,76 @@ var Session = function(name, isPerm) {
             return me.session[stage][config.name];
         }
         
-        me.updateLayersFromWMS = function(caps) {
-            LOG.info('Session.js::updateLayersFromWMS: Updating session layer list from WMS Capabilities');
+        me.updateLayersFromWMS = function(args) {
+            LOG.info('Session.js::updateLayersFromWMS');
             
-            var wmsLayers = caps.capability.layers;
-            var sessionLayers = me.session.layers;
+            var wmsCapabilities = args.wmsCapabilities;
+            var data = args.data; 
+            var jqXHR = args.jqXHR;
             
-            LOG.debug('Session.js::updateLayersFromWMS: Scanning session for expired/missing layers.');
-            for (var sessionLayerIndex = 0;sessionLayerIndex < sessionLayers.length;sessionLayerIndex++) {
-                var sessionLayer = sessionLayers[sessionLayerIndex];
-                if (sessionLayer.name.indexOf(me.getCurrentSessionKey() > -1)) {
-                    var foundLayer = wmsLayers.find(function(wmsLayer) {
-                        return wmsLayer.name === sessionLayer.name
-                    })
+            if (wmsCapabilities) {
+                LOG.info('Session.js::updateLayersFromWMS: Updating session layer list from WMS Capabilities');
+            
+                var wmsLayers = wmsCapabilities.capability.layers;
+                var namespace = wmsLayers[0].prefix;
+                var sessionLayers = me.session.layers.filter(function(n) {
+                    return n.prefix == namespace
+                });
+            
+                if (namespace == me.getCurrentSessionKey()) {
+                    LOG.debug('Session.js::updateLayersFromWMS: Scanning session for expired/missing layers in the ' + namespace + ' prefix');
+                    sessionLayers.each(function(sessionLayer, index) {
+                        if (sessionLayer.name.indexOf(me.getCurrentSessionKey() > -1)) {
+                            var foundLayer = wmsLayers.find(function(wmsLayer) {
+                                return wmsLayer.name === sessionLayer.name
+                            })
                         
-                    if (!foundLayer) {
-                        LOG.debug('Session.js::updateLayersFromWMS: Removing layer ' + sessionLayer.name + ' from session object. This layer is not found on the OWS server');
-                        me.session.layers[sessionLayerIndex] = null;
-                    }
+                            if (!foundLayer) {
+                                LOG.debug('Session.js::updateLayersFromWMS: Removing layer ' + sessionLayer.name + ' from session object. This layer is not found on the OWS server');
+                                me.session.layers[index] = null;
+                            }
+                        }
+                    })
+            
+                    // Removes all undefined or null from the layers array
+                    me.session.layers = me.session.layers.compact();
+            
+                    LOG.debug('Session.js::updateLayersFromWMS: Scanning layers on server for layers in this session');
+                    var ioLayers = wmsLayers.findAll(function(wmsLayer) {
+                        return (wmsLayer.prefix == 'ch-input' || wmsLayer.prefix == 'ch-output') &&
+                        wmsLayer.name.indexOf(me.getCurrentSessionKey() != -1);
+                    })
+            
+                    $(ioLayers).each(function(index, layer) {
+                        LOG.debug('Session.js::updateLayersFromWMS: Remote layer found. Adding it to current session');
+                        var incomingLayer = {
+                            name : layer.name,
+                            title : layer.title,
+                            prefix : layer.prefix,
+                            bbox : layer.bbox
+                        }
+                    
+                        var foundLayerAtIndex = me.session.layers.findIndex(function(l) {
+                            return l.name === layer.name
+                        })
+                    
+                        if (foundLayerAtIndex != -1) {
+                            LOG.debug('Session.js::updateLayersFromWMS: Layer ' + 
+                                'provided by WMS GetCapabilities response already in session layers. ' +
+                                'Updating session layers with latest info.');
+                            me.session.layers[foundLayerAtIndex] = incomingLayer;
+                        } else {
+                            LOG.debug('Session.js::updateLayersFromWMS: Layer ' + 
+                                'provided by WMS GetCapabilities response not in session layers. ' +
+                                'Adding layer to session layers.');
+                            me.addLayerToSession(incomingLayer)
+                        }
+                    })
+                    me.persistCurrentSession();
                 }
+            } else {
+                LOG.debug('Session.js::updateLayersFromWMS: Capabilities could not be parsed for the given namespace. Error: ' + data.status + ': '+ jqXHR);
             }
-            // Removes all undefined or null from the layers array
-            me.session.layers = me.session.layers.compact();
-            
-            LOG.debug('Session.js::updateLayersFromWMS: Scanning layers on server for layers in this session');
-            var ioLayers = wmsLayers.findAll(function(wmsLayer) {
-                return (wmsLayer.prefix == 'ch-input' || wmsLayer.prefix == 'ch-output') &&
-                wmsLayer.name.indexOf(me.getCurrentSessionKey() != -1);
-            })
-            
-            $(ioLayers).each(function(index, layer) {
-                LOG.debug('Session.js::updateLayersFromWMS: Remote layer found. Adding it to current session');
-                var incomingLayer = {
-                    name : layer.name,
-                    title : layer.title,
-                    prefix : layer.prefix,
-                    bbox : layer.bbox
-                }
-                    
-                var foundLayerAtIndex = me.session.layers.findIndex(function(l) {
-                    return l.name === layer.name
-                })
-                    
-                if (foundLayerAtIndex != -1) {
-                    LOG.debug('Session.js::updateLayersFromWMS: Layer ' + 
-                        'provided by WMS GetCapabilities response already in session layers. ' +
-                        'Updating session layers with latest info.');
-                    me.session.layers[foundLayerAtIndex] = incomingLayer;
-                } else {
-                    LOG.debug('Session.js::updateLayersFromWMS: Layer ' + 
-                        'provided by WMS GetCapabilities response not in session layers. ' +
-                        'Adding layer to session layers.');
-                    me.addLayerToSession(incomingLayer)
-                }
-            })
-            me.persistCurrentSession();
         }
         
         me.addLayerToSession = function(params) {

@@ -6,11 +6,10 @@ var OWS = function(endpoint) {
     me.wfsGetCapsUrl = 'geoserver/ows?service=wfs&version=1.1.0&request=GetCapabilities'
     me.wfsGetFeature = 'geoserver/ows?service=wfs&version=1.1.0&request=GetFeature'
     me.wfsDescribeFeatureTypeEndpoint = 'geoserver/ows?service=wfs&version=2.0.0&request=DescribeFeatureType'
-    me.wfsCapabilities = null;
+    me.wfsCapabilities = Object.extended();
     me.wfsCapabilitiesXML = null;
-    me.wmsGetCapsUrl = 'geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
-    me.wmsCapabilities = null;
-    me.wmsCapabilitiesXML = null;
+    me.wmsCapabilities = Object.extended();
+    me.wmsCapabilitiesXML = Object.extended();
     me.wpsExecuteRequestPostUrl = 'geoserver/ows?service=wps&version=1.0.0&request=execute'
     
     // An object to hold the return from WFS DescribeFeatureType
@@ -41,14 +40,36 @@ var OWS = function(endpoint) {
             });
         },
         getWMSCapabilities : function(args) {
-            $.ajax(me.wmsGetCapsUrl, {
+            LOG.info('OWS.js::getWMSCapabilities');
+            var namespace = args.namespace || 'ows'
+            var url = 'geoserver/' + namespace + '/wms?service=wms&version=1.3.0&request=GetCapabilities'
+            var callbacks = args.callbacks || {}
+            var sucessCallbacks = callbacks.success || [];
+            var errorCallbacks = callbacks.error || [];
+            
+            LOG.debug('OWS.js::getWMSCapabilities: A request is being made for GetCapabilities for the namespace: ' + namespace);
+            $.ajax(url, {
                 context: args,
                 success : function(data, textStatus, jqXHR) {
                     var getCapsResponse = new OpenLayers.Format.WMSCapabilities.v1_3_0().read(data); 
-                    me.wmsCapabilities = getCapsResponse;
-                    me.wmsCapabilitiesXML = data;
-                    $(args.callbacks.success).each(function(index, callback, allCallbacks) {
-                        callback(getCapsResponse, args);
+                    me.wmsCapabilities[namespace] = getCapsResponse;
+                    me.wmsCapabilitiesXML[namespace] = data;
+                    $(sucessCallbacks).each(function(index, callback, allCallbacks) {
+                        callback({
+                            wmsCapabilities : getCapsResponse,
+                            data : data, 
+                            textStatus : textStatus,
+                            jqXHR : jqXHR
+                        });
+                    })
+                },
+                error : function(data, textStatus, jqXHR) {
+                    $(errorCallbacks).each(function(index, callback, allCallbacks) {
+                        callback({
+                            data : data, 
+                            textStatus : textStatus,
+                            jqXHR : jqXHR
+                        });
                     })
                 }
             })
@@ -63,6 +84,9 @@ var OWS = function(endpoint) {
                     $(args.callbacks).each(function(index, callback, allCallbacks) {
                         callback(getCapsResponse, this);
                     })
+                },
+                error : function(data,textStatus, jqXHR) {
+                    
                 }
             })
         },

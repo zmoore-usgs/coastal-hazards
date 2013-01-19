@@ -25,7 +25,7 @@ var Intersections = {
                 CONFIG.ows.getWMSCapabilities({
                     callbacks : {
                         success : [
-                        Intersections.populateFeatureList,
+                        Intersections.populateFeaturesList,
                         function() {
                             $('#intersections-list').val(data);
                             Intersections.listboxChanged();
@@ -38,9 +38,8 @@ var Intersections = {
         })
         
     },
-    populateFeatureList : function(caps) {
+    populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
-            caps : caps, 
             caller : Intersections
         });
     },

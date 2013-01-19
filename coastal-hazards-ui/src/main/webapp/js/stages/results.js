@@ -1,40 +1,12 @@
 var Results = {
     stage : 'results',
     viewableResultsColumns : ['LRR','LR2','LSE','LCI90'],
+    suffixes : ['_rates','_results','_clip','_lt'],
     reservedColor: '#0061A3',
-    populateFeatureList : function(caps) {
-        LOG.info('Results.js::populateFeatureList');
-
-        $('#results-list').children().remove();
-        
-        $('#results-list')
-        .append($("<option></option>")
-            .attr("value",'')
-            .text(''));
-        
-        $(caps.capability.layers).each(function(i, layer) { 
-            var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
-            var title = layer.title;
-            
-            if (layer.prefix === 'sample' || (layer.prefix === 'ch-output' && title.has(currentSessionKey) )) {
-                var shortenedTitle = title.has(currentSessionKey) ? 
-                title.remove(currentSessionKey + '_') : 
-                title;
-
-                var type = title.substr(title.lastIndexOf('_') + 1);
-                if (['rates','results','clip','lt'].find(type.toLowerCase())) {
-                    LOG.debug('Found a layer to add to the results listbox: ' + title)
-                    $('#results-list')
-                    .append($("<option></option>")
-                        .attr("value",layer.name)
-                        .text(shortenedTitle));
-                } 
-            }
-        })
-            
-        $('#results-list').change(function(index, option) {
-            Results.listboxChanged()
-        }) 
+    populateFeaturesList : function() {
+        CONFIG.ui.populateFeaturesList({
+            caller : Results
+        });
     },
     listboxChanged : function() {
         LOG.info('Results.js::listboxChanged: A result was selected from the select list');

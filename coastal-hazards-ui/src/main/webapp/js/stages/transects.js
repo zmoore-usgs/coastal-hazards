@@ -63,9 +63,8 @@ var Transects = {
             })
         })
     },
-    populateFeatureList : function(caps) {
+    populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
-            caps : caps, 
             caller : Transects
         });
     } ,       
@@ -152,7 +151,7 @@ var Transects = {
                 CONFIG.ows.getWMSCapabilities({
                     callbacks : {
                         success : [
-                        Transects.populateFeatureList,
+                        Transects.populateFeaturesList,
                         function() {
                             $('#transects-list').val(data);
                             $('#transects-list').trigger('change');

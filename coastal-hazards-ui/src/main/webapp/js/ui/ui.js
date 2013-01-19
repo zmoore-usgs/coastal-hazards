@@ -268,7 +268,11 @@ var UI = function() {
                                                     });
                                                 }
                                                 ],
-                                                error : []
+                                                error : [
+                                                function() {
+                                                    LOG.info('UI.js::Uploader Error Callback: Import incomplete.');
+                                                }
+                                                ]
                                             }
                                         })
                                     } else {
@@ -285,55 +289,58 @@ var UI = function() {
             return uploader;
         },
         populateFeaturesList : function(args) {
-            var caps = args.caps;
+            var wmsCapabilities = CONFIG.ows.wmsCapabilities;
             var caller = args.caller;
             var suffixes = caller.suffixes || [];
             var stage = caller.stage;
             
-            LOG.info('UI.js::populateFeatureList:: Populating feature list for ' + stage);
+            LOG.info('UI.js::populateFeaturesList:: Populating feature list for ' + stage);
             $('#'+stage+'-list').children().remove();
         
             // Add a blank spot at the top of the select list
-            if (stage == Baseline.stage|| stage == Transects.stage||stage == Intersections.stage) {
+            if (stage == Baseline.stage
+                || stage == Transects.stage
+                ||stage == Intersections.stage 
+                || stage == Results.stage) {
                 $('#'+stage+'-list')
                 .append($("<option />")
                     .attr("value",'')
                     .text(''));
             }
         
-            $(caps.capability.layers).each(function(i, layer) { 
-                var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
-                var title = layer.title;
+            wmsCapabilities.keys().each(function(layerNS) {
+                var cap = wmsCapabilities[layerNS];
+                var layers = cap.capability.layers;
+                
+                for (var lIndex = 0;lIndex < layers.length;lIndex++) {
+                    var layer = layers[lIndex];
+                    var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
+                    var title = layer.title;
             
-                // Add the option to the list only if it's from the sample namespace or
-                // if it's from the input namespace and in the current session
-                if (layer.prefix === 'sample' || (layer.prefix === 'ch-input' && title.has(currentSessionKey) )) {
+                    // Add the option to the list only if it's from the sample namespace or
+                    // if it's from the input namespace and in the current session
+                    if (layerNS == 'sample' || layerNS == currentSessionKey) {
+                        var type = title.substr(title.lastIndexOf('_'));
+                        if (suffixes.length == 0 || suffixes.find(type.toLowerCase())) {
+                            LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title)
+                            var stageConfig = CONFIG.tempSession.getStageConfig({
+                                stage : stage,
+                                name : layerNS + ':' + layer.name
+                            })
                         
-                    var shortenedTitle = title.has(currentSessionKey) ?  
-                    title.remove(currentSessionKey + '_') : 
-                    title;
-                    
-                    var type = title.substr(title.lastIndexOf('_'));
-                    if (suffixes.length == 0 || suffixes.find(type.toLowerCase())) {
-                        LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title)
-                        
-                        var stageConfig = CONFIG.tempSession.getStageConfig({
-                            stage : stage,
-                            name : layer.name
-                        })
-                        
-                        $('#'+stage+'-list')
-                        .append($("<option />")
-                            .attr("value",layer.name)
-                            .text(shortenedTitle));
+                            $('#'+stage+'-list')
+                            .append($("<option />")
+                                .attr("value",layerNS + ':' + layer.name)
+                                .text(layer.name));
                             
                         
-                        CONFIG.tempSession.setStageConfig({
-                            stage : stage,
-                            config : stageConfig
-                        })
-                    } 
-                }
+                            CONFIG.tempSession.setStageConfig({
+                                stage : stage,
+                                config : stageConfig
+                            })
+                        } 
+                    }
+                } 
             })
             
             LOG.debug('UI.js::populateFeaturesList: Re-binding select list');
