@@ -5,11 +5,20 @@ import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.file.FileHelper;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
+import it.geosolutions.geoserver.rest.GeoServerRESTManager;
+import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
+import it.geosolutions.geoserver.rest.GeoServerRESTReader;
+import it.geosolutions.geoserver.rest.encoder.datastore.GSShapefileDatastoreEncoder;
+import it.geosolutions.geoserver.rest.manager.GeoServerRESTDatastoreManager;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -45,12 +54,15 @@ public class ImportService extends HttpServlet {
     private static String geoserverEndpoint = null;
     private static String geoserverUsername = null;
     private static String geoserverPassword = null;
+    private static String geoserverDataDir = null;
     private static String DIRECTORY_BASE_PARAM_CONFIG_KEY = "coastal-hazards.files.directory.base";
     private static String DIRECTORY_UPLOAD_PARAM_CONFIG_KEY = "coastal-hazards.files.directory.upload";
     private static String GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.endpoint";
     private static String GEOSERVER_USER_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.username";
     private static String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
+    private static String GEOSERVER_DATA_DIR_KEY = "coastal-hazards.geoserver.datadir";
     private static GeoserverHandler geoserverHandler = null;
+    private static GeoServerRESTManager gsrm = null;
 
     @Override
     public void init() throws ServletException {
@@ -60,14 +72,21 @@ public class ImportService extends HttpServlet {
         geoserverEndpoint = props.getProperty(GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY);
         geoserverUsername = props.getProperty(GEOSERVER_USER_PARAM_CONFIG_KEY);
         geoserverPassword = props.getProperty(GEOSERVER_PASS_PARAM_CONFIG_KEY);
+        geoserverDataDir = props.getProperty(GEOSERVER_DATA_DIR_KEY);
         geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
+        try {
+            gsrm = new GeoServerRESTManager(new URL(geoserverEndpoint), geoserverUsername, geoserverPassword);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(ImportService.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, IllegalArgumentException {
         String fileToken = request.getParameter("file-token");
         String featureName = request.getParameter("feature-name");
         String workspace = request.getParameter("workspace");
+        String store = request.getParameter("store");
         File shapeFile;
         String name;
         Map<String, String> responseMap = new HashMap<String, String>();
@@ -98,13 +117,20 @@ public class ImportService extends HttpServlet {
             RequestResponseHelper.sendErrorResponse(response, responseMap);
             return;
         }
+        try {
+            geoserverHandler.prepareWorkspace(geoserverDataDir, workspace);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(ImportService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(ImportService.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         FileFilter zipFileFilter = new WildcardFileFilter("*.zip");
 
         // We assume there is only one file per directory
         shapeFile = fileDirectoryHandle.listFiles(zipFileFilter)[0];
         name = StringUtils.isBlank(featureName) ? FilenameUtils.removeExtension(shapeFile.getName()) : featureName;
-        HttpResponse importResponse = geoserverHandler.importFeaturesFromFile(shapeFile, workspace, name);
+        HttpResponse importResponse = geoserverHandler.importFeaturesFromFile(shapeFile, workspace, store, name);
         String responseText = IOUtils.toString(importResponse.getEntity().getContent());
 
         if (!responseText.toLowerCase().contains("ows:exception")) {
@@ -129,6 +155,7 @@ public class ImportService extends HttpServlet {
             RequestResponseHelper.sendErrorResponse(response, responseMap);
         }
     }
+
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

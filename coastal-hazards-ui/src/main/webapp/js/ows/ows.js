@@ -29,7 +29,8 @@ var OWS = function(endpoint) {
                 data : {
                     'file-token': args['file-token'],
                     'feature-name' : args.importName,
-                    'workspace' : args.workspace
+                    'workspace' : args.workspace,
+                    'store' : args.store || 'ch-input'
                 },
                 success : function(data, textStatus, jqXHR) {
                     var scope = this;
@@ -291,13 +292,13 @@ var OWS = function(endpoint) {
             '<wps:Input>' + 
             '<ows:Identifier>workspace</ows:Identifier>' + 
             '<wps:Data>' + 
-            '<wps:LiteralData>ch-input</wps:LiteralData>' + 
+            '<wps:LiteralData>'+CONFIG.tempSession.getCurrentSessionKey()+'</wps:LiteralData>' + 
             '</wps:Data>' + 
             '</wps:Input>' + 
             '<wps:Input>' + 
             '<ows:Identifier>store</ows:Identifier>' + 
             '<wps:Data>' + 
-            '<wps:LiteralData>Coastal Hazards Input</wps:LiteralData>' + 
+            '<wps:LiteralData>ch-input</wps:LiteralData>' + 
             '</wps:Data>' + 
             '</wps:Input>' + 
             '<wps:Input>' + 

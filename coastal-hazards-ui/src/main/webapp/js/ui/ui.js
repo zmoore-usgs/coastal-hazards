@@ -243,8 +243,7 @@ var UI = function() {
                 callbacks: {
                     onComplete: function(id, fileName, responseJSON) {
                         if (responseJSON.success != 'true') {
-                            // TODO - Notify the user
-                            LOG.info('File failed to complete upload')
+                            LOG.warn('File failed to complete upload')
                         } else {
                             LOG.info("UI.js::initializeUploader: Upload complete: File token returned: :" + responseJSON['file-token']);
                             
@@ -253,11 +252,13 @@ var UI = function() {
                             CONFIG.ows.importFile({
                                 'file-token' : responseJSON['file-token'],
                                 importName : importName, 
-                                workspace : 'ch-input',
-                                callbacks : [function(data) {
+                                workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                                callbacks : [
+                                function(data) {
                                     if (data.success === 'true') {
                                         LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
                                         CONFIG.ows.getWMSCapabilities({
+                                            namespace : CONFIG.tempSession.getCurrentSessionKey(),
                                             callbacks : {
                                                 success : [
                                                 function (data) {
