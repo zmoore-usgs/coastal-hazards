@@ -12,6 +12,14 @@
 <Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="/upload" />
 
 <!-- GeoServer Config -->
+<!-- 
+coastal-hazards.geoserver.datadir - 
+Data Directory. Where GeoServer stores its files. 
+The combination of coastal-hazards.files.directory.base + coastal-hazards.files.directory.data should also
+be set in Geoserver's bin/setenv.sh as GEOSERVER_DATA_DIR 
+Example: JAVA_OPTS="$JAVA_OPTS -DGEOSERVER_DATA_DIR=/path/to/your/data/dir"
+-->
+<Environment name="coastal-hazards.geoserver.datadir" type="java.lang.String" value="/Users/isuftin/Source/CIDA/coastal-hazards/coastal-hazards-geoserver/target/geoserver/data" />
 <Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/coastal-hazards-geoserver" />
 <Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="admin" />
 <Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="supply.your.own" />
