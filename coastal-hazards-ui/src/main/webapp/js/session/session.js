@@ -2,7 +2,7 @@ var Session = function(name, isPerm) {
     var me = (this === window) ? {} : this;
     
     me.isPerm = isPerm;
-    me.name = (!name) ? Util.randomUUID() : name;
+    me.name = name;
     me.sessionObject = isPerm ? localStorage : sessionStorage;
     me.session =  isPerm ? $.parseJSON(me.sessionObject.getItem(me.name)) : new Object();
     
@@ -14,6 +14,18 @@ var Session = function(name, isPerm) {
             // - Because the session is used in the namespace for WFS-T, it needs to 
             // not have a number at the head of it so add a random letter
             var randID = String.fromCharCode(97 + Math.round(Math.random() * 25)) + Util.randomUUID();
+            
+            // Prepare the session on the OWS server
+            $.ajax('service/session?action=prepare&workspace=' + randID, 
+            {
+                success : function(data, textStatus, jqXHR) {
+                    LOG.info('Session.js::init: A workspace has been prepared on the OWS server with the name of ' + randID)
+                },
+                error : function(data, textStatus, jqXHR) {
+                    LOG.error('Session.js::init: A workspace could not be created on the OWS server with the name of ' + randID)
+                }
+            })
+            
             var newSession = new Object();
         
             me.session = {
@@ -122,7 +134,7 @@ var Session = function(name, isPerm) {
             var data = args.data; 
             var jqXHR = args.jqXHR;
             
-            if (wmsCapabilities) {
+            if (wmsCapabilities && wmsCapabilities.capability.layers.length) {
                 LOG.info('Session.js::updateLayersFromWMS: Updating session layer list from WMS Capabilities');
             
                 var wmsLayers = wmsCapabilities.capability.layers;

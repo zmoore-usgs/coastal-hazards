@@ -6,10 +6,6 @@ import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.file.FileHelper;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
-import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
-import it.geosolutions.geoserver.rest.GeoServerRESTReader;
-import it.geosolutions.geoserver.rest.encoder.datastore.GSShapefileDatastoreEncoder;
-import it.geosolutions.geoserver.rest.manager.GeoServerRESTDatastoreManager;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -18,7 +14,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -120,9 +115,13 @@ public class ImportService extends HttpServlet {
         try {
             geoserverHandler.prepareWorkspace(geoserverDataDir, workspace);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(ImportService.class.getName()).log(Level.SEVERE, null, ex);
+            responseMap.put("error", "Could not create workspace: " + ex.getMessage());
+            RequestResponseHelper.sendErrorResponse(response, responseMap);
+            return;
         } catch (URISyntaxException ex) {
-            Logger.getLogger(ImportService.class.getName()).log(Level.SEVERE, null, ex);
+            responseMap.put("error", "Could not create workspace: " + ex.getMessage());
+            RequestResponseHelper.sendErrorResponse(response, responseMap);
+            return;
         }
 
         FileFilter zipFileFilter = new WildcardFileFilter("*.zip");
