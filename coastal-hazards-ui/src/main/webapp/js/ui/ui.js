@@ -247,7 +247,7 @@ var UI = function() {
                         } else {
                             LOG.info("UI.js::initializeUploader: Upload complete: File token returned: :" + responseJSON['file-token']);
                             
-                            var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + responseJSON['file-name'].split('.')[0] + '_' + context;
+                            var importName = responseJSON['file-name'].split('.')[0] + '_' + context;
                             
                             CONFIG.ows.importFile({
                                 'file-token' : responseJSON['file-token'],
@@ -261,10 +261,9 @@ var UI = function() {
                                             namespace : CONFIG.tempSession.getCurrentSessionKey(),
                                             callbacks : {
                                                 success : [
-                                                function (data) {
-                                                    CONFIG.tempSession.updateLayersFromWMS(data);
+                                                function (args) {
+                                                    CONFIG.tempSession.updateLayersFromWMS(args);
                                                     CONFIG.ui.populateFeaturesList({
-                                                        caps : data,
                                                         caller : caller
                                                     });
                                                 }

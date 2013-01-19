@@ -5,7 +5,7 @@ var OWS = function(endpoint) {
     me.geoserverEndpoint = endpoint ? endpoint : CONFIG.geoServerEndpoint;
     me.wfsGetCapsUrl = 'geoserver/ows?service=wfs&version=1.1.0&request=GetCapabilities'
     me.wfsGetFeature = 'geoserver/ows?service=wfs&version=1.1.0&request=GetFeature'
-    me.wfsDescribeFeatureTypeEndpoint = 'geoserver/ows?service=wfs&version=2.0.0&request=DescribeFeatureType'
+    //    me.wfsDescribeFeatureTypeEndpoint = 'geoserver/ows?service=wfs&version=2.0.0&request=DescribeFeatureType'
     me.wfsCapabilities = Object.extended();
     me.wfsCapabilitiesXML = null;
     me.wmsCapabilities = Object.extended();
@@ -53,6 +53,10 @@ var OWS = function(endpoint) {
                 context: args,
                 success : function(data, textStatus, jqXHR) {
                     var getCapsResponse = new OpenLayers.Format.WMSCapabilities.v1_3_0().read(data); 
+                    // Fix an issue with prefixes not being parsed correctly from response
+                    getCapsResponse.capability.layers.each(function(n, i) {
+                        n.prefix = namespace
+                    })
                     me.wmsCapabilities[namespace] = getCapsResponse;
                     me.wmsCapabilitiesXML[namespace] = data;
                     $(sucessCallbacks).each(function(index, callback, allCallbacks) {
@@ -96,8 +100,10 @@ var OWS = function(endpoint) {
                 return featureType.name === name;
             })
         },
-        getLayerByName : function(name) {
-            return me.wmsCapabilities.capability.layers.find(function(layer) {
+        getLayerByName : function(args) {
+            var ns = args.layerNS;
+            var name = args.layerName;
+            return me.wmsCapabilities[ns].capability.layers.find(function(layer) {
                 return layer.name === name;
             })
         },
@@ -132,16 +138,22 @@ var OWS = function(endpoint) {
             return result;
         },
         getDescribeFeatureType : function(args) {
-            LOG.info('OWS.js::getDescribeFeatureType: WFS featureType requested for feature ' + args.featureName);
-            var url = me.wfsDescribeFeatureTypeEndpoint + '&typeName=' + args.featureName;
+            LOG.info('OWS.js::getDescribeFeatureType: WFS featureType requested for feature ' + args.layerName);
+            var layerNS = args.layerNS;
+            var layerName = args.layerName;
+            var url = 'geoserver/' + layerNS+ '/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType&typeName=' + layerName;
             $.ajax(url, {
                 context : args.scope || this,
                 success : function(data, textStatus, jqXHR) {
                     LOG.info('OWS.js::getDescribeFeatureType: WFS featureType response received.');
                     var gmlReader = new OpenLayers.Format.WFSDescribeFeatureType();
                     var describeFeaturetypeRespone = gmlReader.read(data); 
+                    var prefix = args.layerNS;//describeFeaturetypeRespone.featureTypes[0].targetPrefix;
                     
-                    me.featureTypeDescription[describeFeaturetypeRespone.featureTypes[0].typeName] = describeFeaturetypeRespone;
+                    if (!me.featureTypeDescription[prefix]) {
+                        me.featureTypeDescription[prefix] = Object.extended();
+                    }
+                    me.featureTypeDescription[prefix][describeFeaturetypeRespone.featureTypes[0].typeName] = describeFeaturetypeRespone;
                     
                     $(args.callbacks || []).each(function(index, callback) {
                         callback(describeFeaturetypeRespone, this);
@@ -153,7 +165,7 @@ var OWS = function(endpoint) {
             LOG.info('OWS.js::getFilteredFeature');
             LOG.info('OWS.js::getFilteredFeature: Building request for WFS GetFeature (filtered)');
             var layer = args.layer;
-            var url = me.wfsGetFeature + '&typeName=' + layer.name + '&propertyName=';
+            var url = 'geoserver/'+layer.prefix+'/wfs?service=wfs&version=1.1.0&request=GetFeature&typeName=' + layer.name + '&propertyName=';
             url += (args.propertyArray || []).join(',');
             
             $.ajax(url, {
@@ -164,7 +176,7 @@ var OWS = function(endpoint) {
                     var getFeatureResponse = gmlReader.read(data); 
                     LOG.debug('OWS.js::getFilteredFeature: WFS GetFeature parsed .');
                     
-                    me.featureTypeDescription[args.layer.name] = getFeatureResponse;
+                    me.featureTypeDescription[args.layer.prefix][args.layer.name] = getFeatureResponse;
                     
                     LOG.trace('OWS.js::getFilteredFeature: Executing '+args.callbacks.success+'callbacks');
                     $(args.callbacks.success || []).each(function(index, callback, allCallbacks) {
