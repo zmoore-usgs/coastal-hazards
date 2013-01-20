@@ -262,22 +262,49 @@ var UI = function() {
                                             callbacks : {
                                                 success : [
                                                 function (args) {
+                                                    CONFIG.ui.showAlert({
+                                                        message : 'Upload Successful',
+                                                        caller : caller,
+                                                        displayTime : 3000,
+                                                        style: {
+                                                            classes : ['alert-success']
+                                                        }
+                                                    })
                                                     CONFIG.tempSession.updateLayersFromWMS(args);
                                                     CONFIG.ui.populateFeaturesList({
                                                         caller : caller
                                                     });
+                                                    href="#shorelines-view-tab"
+                                                    $('a[href="#' + caller.stage + '-view-tab"]').tab('show');
                                                 }
                                                 ],
                                                 error : [
-                                                function() {
+                                                function(args) {
                                                     LOG.info('UI.js::Uploader Error Callback: Import incomplete.');
+                                                    CONFIG.ui.showAlert({
+                                                        message : 'Import incomplete',
+                                                        caller : caller,
+                                                        displayTime : 3000,
+                                                        style: {
+                                                            classes : ['alert-error']
+                                                        }
+                                                    })
                                                 }
                                                 ]
                                             }
                                         })
                                     } else {
-                                        // TODO - Notify the user
                                         LOG.warn(data.error);
+                                        LOG.info('UI.js::Uploader Error Callback: Import incomplete.');
+                                        CONFIG.ui.showAlert({
+                                            message : 'Import incomplete',
+                                            caller : caller,
+                                            displayTime : 3000,
+                                            style: {
+                                                classes : ['alert-error']
+                                            }
+                                        })
+                                                
                                     }
                                 }]
                             });
@@ -465,13 +492,13 @@ var UI = function() {
             } else {
                 LOG.debug('UI.js::showShorelineInfo: No features were found at point of mouse click');
                 CONFIG.ui.showAlert({
-                        message : 'No shorelines found',
-                        caller : Shorelines,
-                        displayTime : 2000,
-                        style: {
-                            classes : ['alert-info']
-                        }
-                    })
+                    message : 'No shorelines found',
+                    caller : Shorelines,
+                    displayTime : 2000,
+                    style: {
+                        classes : ['alert-info']
+                    }
+                })
             }
         },
         showAlert : function(args) {

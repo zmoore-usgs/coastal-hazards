@@ -9,8 +9,12 @@
     color: #000000;
 }
 
-.alert-queue-notifier {
-    
+select option.published-layer{
+    color : #661111; 
+}
+
+select option.session-layer{
+    color : #116611; 
 }
 
 /* Because of a conflict between twitter bootstrap and openlayers */

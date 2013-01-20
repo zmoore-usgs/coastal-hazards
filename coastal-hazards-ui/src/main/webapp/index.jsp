@@ -73,11 +73,11 @@
                                     <div class="span8" id="shorelines-alert-container"></div>
                                 </div>
                                 <ul class="nav nav-tabs" id="action-shoreline-tablist">
-                                    <li class="active"><a  data-toggle="tab" href="#shoreline-view-tab">View</a></li>
+                                    <li class="active"><a  data-toggle="tab" href="#shorelines-view-tab">View</a></li>
                                     <li><a data-toggle="tab" href="#shoreline-manage-tab">Manage</a></li>
                                 </ul>
                                 <div class="tab-content">
-                                    <div class="tab-pane active" id="shoreline-view-tab">
+                                    <div class="tab-pane active" id="shorelines-view-tab">
                                         <select id="shorelines-list" multiple="multiple" style="width: 100%;"></select>
                                         <div class="tabbable">
                                             <ul class="nav nav-tabs" id="shoreline-table-navtabs">
