@@ -311,6 +311,8 @@ var UI = function() {
             wmsCapabilities.keys().each(function(layerNS) {
                 var cap = wmsCapabilities[layerNS];
                 var layers = cap.capability.layers;
+                var sessionLayerClass = 'session-layer';
+                var publishedLayerClass = 'published-layer';
                 
                 for (var lIndex = 0;lIndex < layers.length;lIndex++) {
                     var layer = layers[lIndex];
@@ -328,12 +330,15 @@ var UI = function() {
                                 name : layerNS + ':' + layer.name
                             })
                         
-                            $('#'+stage+'-list')
-                            .append($("<option />")
-                                .attr("value",layerNS + ':' + layer.name)
-                                .text(layer.name));
+                            var option = $("<option />")
+                            .attr({
+                                "value" : layerNS + ':' + layer.name
+                            })
+                            .addClass(layerNS == 'sample' ? publishedLayerClass : sessionLayerClass)
+                            .text(layer.name)
                             
-                        
+                            $('#'+stage+'-list')
+                            .append(option);
                             CONFIG.tempSession.setStageConfig({
                                 stage : stage,
                                 config : stageConfig
@@ -460,6 +465,87 @@ var UI = function() {
             } else {
                 LOG.debug('UI.js::showShorelineInfo: No features were found at point of mouse click');
             }
+        },
+        showAlert : function(args) {
+            var caller = args.caller || {
+                stage : 'application'
+            };
+            var message = args.message || '';
+            var style = args.style || Object.extended();
+            var alertContainer = $('#' + caller.stage + '-alert-container');
+            var alertDom = $('<div />').attr('id', 'application-alert');
+            var close = args.close || true;
+            var displayTime = args.displayTime || 0;
+            
+            CONFIG.alertQueue[caller.stage].unshift({
+                message : message,
+                style : style,
+                displayTime : displayTime,
+                close : close
+            })
+            
+            
+            var createAlert = function(args) {
+                var nextMessageObj = CONFIG.alertQueue[args.caller.stage].pop();
+                if (nextMessageObj.hasOwnProperty('message')) {
+                    var alertContainer = args.alertContainer;
+                    var alertDom = $('<div />');
+                    var style = nextMessageObj.style;
+                    var close = nextMessageObj.close;
+                    var message = nextMessageObj.message;
+                    var displayTime = nextMessageObj.displayTime;
+                    var createAlertFn = args.createAlertFn
+                    
+                    alertDom.addClass('alert fade in');
+                    if (style.classes) {
+                        alertDom.addClass(style.classes.join(' '));
+                    }
+            
+                    if (close) {
+                        alertDom.append($('<button />')
+                            .attr({
+                                'type' : 'button',
+                                'data-dismiss' : 'alert',
+                                'href' : '#'
+                            })
+                            .addClass('close')
+                            .html('&times;'))
+                    }
+            
+                    alertDom.append($('<div />').html(message));
+                    alertContainer.append(alertDom);
+                
+                    alertDom.on('closed', function() {
+                        if (CONFIG.alertQueue[args.caller.stage].length) {
+                            createAlertFn({
+                                alertDom : alertDom,
+                                alertContainer : alertContainer,
+                                createAlertFn : createAlertFn,
+                                caller : args.caller
+                            })
+                        }
+                    })
+                
+                    alertDom.alert()
+                
+                    if (displayTime) {
+                        setTimeout(function() {
+                            alertDom.alert('close');
+                        },displayTime)
+                    }
+                }
+            }
+            
+            // The container is empty so go ahead and fire the alert
+            if (alertContainer.children().length == 0) {
+                createAlert({
+                    alertDom : alertDom,
+                    alertContainer : alertContainer,
+                    createAlertFn : createAlert,
+                    caller : caller
+                })
+            }
+            
         }
     });
 }
