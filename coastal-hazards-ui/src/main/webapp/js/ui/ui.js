@@ -464,6 +464,14 @@ var UI = function() {
                         
             } else {
                 LOG.debug('UI.js::showShorelineInfo: No features were found at point of mouse click');
+                CONFIG.ui.showAlert({
+                        message : 'No shorelines found',
+                        caller : Shorelines,
+                        displayTime : 2000,
+                        style: {
+                            classes : ['alert-info']
+                        }
+                    })
             }
         },
         showAlert : function(args) {
@@ -475,7 +483,7 @@ var UI = function() {
                 classes : []
             }
             var alertContainer = $('#' + caller.stage + '-alert-container');
-            var alertDom = $('<div />').attr('id', 'application-alert');
+            var alertDom = $('<div />').attr('id', caller.stage + '-alert');
             var close = args.close || true;
             var displayTime = args.displayTime || 0;
             

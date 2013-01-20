@@ -103,8 +103,6 @@ var OWS = function(endpoint) {
                                 })
                             }
                         })
-                        
-                        
                     }
                 }
             })

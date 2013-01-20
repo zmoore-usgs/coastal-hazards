@@ -68,7 +68,7 @@
 
                             <!-- Shorelines -->
                             <div class="tab-pane container-fluid active" id="shorelines">
-                                <div class="row-fluid span12">
+                                <div class="row-fluid">
                                     <div class="span4"><h3>Shorelines</h3></div>
                                     <div class="span8" id="shorelines-alert-container"></div>
                                 </div>
@@ -94,7 +94,7 @@
 
                             <!-- Baseline -->
                             <div class="tab-pane container-fluid" id="baseline">
-                                <div class="row-fluid span12">
+                                <div class="row-fluid">
                                     <div class="span4"><h3>Baseline</h3></div>
                                     <div class="span8" id="baseline-alert-container"></div>
                                 </div>
@@ -198,7 +198,7 @@
 
                             <!-- Transects --> 
                             <div class="tab-pane container-fluid" id="transects">
-                                <div class="row-fluid span12">
+                                <div class="row-fluid">
                                     <div class="span4"><h3>Transects</h3></div>
                                     <div class="span8" id="transects-alert-container"></div>
                                 </div>
@@ -240,7 +240,7 @@
 
                             <!-- Intersection -->
                             <div class="tab-pane  container-fluid" id="intersections">
-                                <div class="row-fluid span12">
+                                <div class="row-fluid">
                                     <div class="span4"><h3>Intersections</h3></div>
                                     <div class="span8" id="intersections-alert-container"></div>
                                 </div>
@@ -263,7 +263,7 @@
 
                             <!-- Results -->
                             <div class="tab-pane container-fluid" id="results">
-                                <div class="row-fluid span12">
+                                <div class="row-fluid">
                                     <div class="span4"><h3>Results</h3></div>
                                     <div class="span8" id="results-alert-container"></div>
                                 </div>
