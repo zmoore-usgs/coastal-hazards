@@ -343,7 +343,7 @@ var Shorelines = {
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table body');
         
         var sessionLayer = CONFIG.tempSession.getStageConfig({
-            name : layerName,
+            name : event.object.prefix + ':' + layerName,
             stage : Shorelines.stage
         });
         
@@ -419,24 +419,19 @@ var Shorelines = {
                 enabled: "ON",
                 disabled: "OFF"
             },
-            attachedLayer : layerName,
+            attachedLayer : event.object.prefix + ':' + layerName,
             onChange : function($element, status, event) {
                 var layerName = this.attachedLayer;
-                var year = $element.parent().find('input').val();
                 var date = $element.parent().data('date');
                 var sessionLayer = CONFIG.tempSession.getStageConfig({
                     name : layerName,
                     stage : Shorelines.stage
                 });
                     
-                LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for year ' + year + ' on layer ' + layerName);
+                LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for date ' + date + ' on layer ' + layerName);
                         
                 var idTableButtons = $('.btn-year-toggle[date="'+date+'"]');
                 if (!status) {
-                    if (sessionLayer.view["years-disabled"].indexOf(year) == -1) {
-                        sessionLayer.view["years-disabled"].push(year);
-                    }
-                    
                     if (sessionLayer.view["dates-disabled"].indexOf(date) == -1) {
                         sessionLayer.view["dates-disabled"].push(date);
                     }
@@ -445,10 +440,6 @@ var Shorelines = {
                     idTableButtons.addClass('btn-danger');
                     idTableButtons.html('Enable');
                 } else {
-                    while (sessionLayer.view["years-disabled"].indexOf(year) != -1) {
-                        sessionLayer.view["years-disabled"].remove(year);
-                    }
-                    
                     while (sessionLayer.view["dates-disabled"].indexOf(date) != -1) {
                         sessionLayer.view["dates-disabled"].remove(date);
                     }
