@@ -67,7 +67,7 @@ var Shorelines = {
                     
                         var sessionLayer = CONFIG.tempSession.getStageConfig({
                             stage : Shorelines.stage,
-                            name : layer.name
+                            name : layer.prefix + ':' + layer.name
                         });
                         
                         var groupingColumn = Object.keys(features[0].attributes).find(function(n) {
@@ -125,6 +125,7 @@ var Shorelines = {
                                 sld_body : sldBody
                             },
                             {
+                                prefix : layer.prefix,
                                 zoomToWhenAdded : true, // Include this layer when performing an aggregated zoom
                                 isBaseLayer : false,
                                 unsupportedBrowsers: [],
@@ -294,8 +295,8 @@ var Shorelines = {
         
         $(layers).each(function(i, layer) {
             if (layer.zoomToWhenAdded) {
-                var layerNS = layer.name.split(':')[0]
-                var layerName = layer.name.split(':')[1]
+                var layerNS = layer.prefix
+                var layerName = layer.name
                 bounds.extend(new OpenLayers.Bounds(CONFIG.ows.getLayerByName({
                     layerNS : layerNS,
                     layerName : layerName
