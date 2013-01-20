@@ -373,13 +373,14 @@ var UI = function() {
                     v.click();
                 }) 
                 
-                var layerName = event.features[0].gml.featureNSPrefix + ':' + event.features[0].fid.split('.')[0];
+                var layerTitle = event.features[0].fid.split('.')[0]
+                var layerName = event.features[0].gml.featureNSPrefix + ':' + layerTitle;
                 var shorelineIdContainer = $('<div />').attr('id', layerName + '-id-container').addClass('shoreline-id-container');
                 var shorelineIdTable = $('<table />').attr('id', layerName + '-id-table').addClass('shoreline-id-table table table-striped table-condensed');
                 var thead = $('<thead />');
                 var theadTr = $('<tr />');
                 var tbody = $('<tbody />');
-                thead.append($('<caption />').append($('<h3 />').append(layerName)))
+                thead.append($('<caption />').append($('<h3 />').append(layerTitle)))
                 
                 $(Object.keys(event.features[0].attributes)).each(function(i,v) {
                     theadTr.append($('<th />').append(v))
