@@ -88,7 +88,7 @@ var Baseline = {
                 name : selectedBaseline
             })
             
-            if (selectedBaseline.startsWith('ch-input')) {
+            if (selectedBaseline.startsWith(CONFIG.tempSession.getCurrentSessionKey())) {
                 LOG.debug('Baseline.js::baselineSelected: Selected baseline is user-created and is writable. Displaying edit panel.');
                 Baseline.enableEditButton();
             } else {
@@ -230,7 +230,7 @@ var Baseline = {
         $('#baseline-edit-form-toggle').attr('disabled', 'disabled');
     },
     enableEditButton : function() {
-        if ($("#baseline-list option:selected")[0].value.startsWith('ch-input')) {
+        if ($("#baseline-list option:selected")[0].value.startsWith(CONFIG.tempSession.getCurrentSessionKey())) {
             LOG.info('Baseline.js::enableEditButton: Showing baseline edit button on panel')
             
             var baselineEditButton = $('#baseline-edit-form-toggle');
