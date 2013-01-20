@@ -333,8 +333,7 @@ var Baseline = {
     saveButtonClickHandler : function() {
         LOG.info('Baseline.js::saveButtonClickHandler');
         var drawLayer = Baseline.getDrawLayer();
-        var desiredLayerName = ($('#baseline-draw-form-name').val() || Util.getRandomLorem())  + '_baseline';
-        var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + desiredLayerName;
+        var importName = ($('#baseline-draw-form-name').val() || Util.getRandomLorem()) + '_baseline';
         var existingLayer = $("#baseline-list option").filter(function(){
             return $(this).val().split(':')[1] == importName
         })
@@ -349,7 +348,7 @@ var Baseline = {
                         scope : this
                     },
                     headerHtml : 'Resource Exists',
-                    bodyHtml : 'A resource already exists with the name ' + desiredLayerName + '. Would you like to overwrite this resource?',
+                    bodyHtml : 'A resource already exists with the name ' + importName + '. Would you like to overwrite this resource?',
                     primaryButtonText : 'Overwrite',
                     callbacks : [
                     function(event, context) {
@@ -365,7 +364,8 @@ var Baseline = {
                 CONFIG.ows.importFile({
                     'file-token' : '',  // Not including a file token denotes a new, blank file should be imported
                     importName : importName, 
-                    workspace : 'ch-input',
+                    workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                    store : 'ch-input',
                     context : drawLayer,
                     callbacks : [
                     function(data, context) {
@@ -389,17 +389,17 @@ var Baseline = {
     saveDrawnFeatures : function(args) {
         LOG.info('Baseline.js::saveDrawnFeatures: User wishes to save thir drawn features');
         var drawLayer = Baseline.getDrawLayer();
-        var desiredLayerName = ($('#baseline-draw-form-name').val() || Util.getRandomLorem())  + '_baseline';
-        var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + desiredLayerName;
+        var desiredLayer = ($('#baseline-draw-form-name').val() || Util.getRandomLorem())  + '_baseline';
+        var importName = CONFIG.tempSession.getCurrentSessionKey() + ':' + ($('#baseline-draw-form-name').val() || Util.getRandomLorem())  + '_baseline';
         var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
         var schema = drawLayer.protocol.schema.replace('geoserver/', geoserverEndpoint);
-        var newSchema = schema.substring(0, schema.lastIndexOf(':') + 1) + importName;
+        var newSchema = schema.substring(0, schema.lastIndexOf('typename=') + 9) + importName;
             
-        drawLayer.protocol.setFeatureType(importName);
+        drawLayer.protocol.setFeatureType(desiredLayer);
         drawLayer.protocol.format.options.schema = newSchema;
         drawLayer.protocol.format.schema = newSchema
         drawLayer.protocol.schema = newSchema;
-        drawLayer.protocol.options.featureType = importName;
+        drawLayer.protocol.options.featureType = desiredLayer;
                         
         // Do WFS-T to fill out the layer
         var saveStrategy = drawLayer.strategies.find(function(n) {
@@ -411,7 +411,7 @@ var Baseline = {
         saveStrategy.events.register('success', null, function() {
             LOG.info('Baseline.js::saveDrawnFeatures: Drawn baseline saved successfully - reloading current layer set from server');
             Baseline.refreshFeatureList({
-                selectLayer : 'ch-input:' + importName
+                selectLayer : importName
             })
                             
             LOG.info('Baseline.js::saveDrawnFeatures: Triggering click on baseline draw button')

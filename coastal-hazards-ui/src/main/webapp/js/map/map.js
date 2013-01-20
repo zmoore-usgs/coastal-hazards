@@ -39,11 +39,11 @@ var Map = function() {
         protocol: new OpenLayers.Protocol.WFS({
             version: "1.1.0",
             url: "geoserver/ows",
-            featureNS :  "gov.usgs.cida.ch.input",
+            featureNS :  CONFIG.tempSession.getCurrentSessionKey(),
             maxExtent: me.map.getExtent(),
-            featureType: "wfst_test",
+            featureType: "featureType",
             geometryName: "the_geom",
-            schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&typename=ch-input:wfst_test"
+            schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&typename=" + CONFIG.tempSession.getCurrentSessionKey() + ":featureType"
         })
     });
 
