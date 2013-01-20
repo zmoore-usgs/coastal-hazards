@@ -18,6 +18,24 @@ var UI = function() {
     $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
     $("#create-intersections-btn").on("click", Intersections.calcIntersections);
     
+    // Add tooltips to all the things
+    $('select').tooltip({
+        title : $('<div />')
+        .append($('<div />').css({
+            'color': '#661111',
+            'text-shadow' : '0px 0px 1px #ffffff',
+            'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
+        }).html('Published'))
+        .append($('<div />').css({
+            'color' : '#116611',
+            'text-shadow' : '0px 0px 1px #ffffff',
+            'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
+        }).html('Yours'))
+        .html(),
+        html : true,
+        placement : 'left'
+    })
+    
     $('.nav-stacked>li>a').each(function(indexInArray, valueOfElement) { 
         $(valueOfElement).on('click', function() {
             me.switchImage(indexInArray);
