@@ -37,9 +37,9 @@ var Baseline = {
     refreshFeatureList : function(args) {
         LOG.info('Baseline.js::refreshFeatureList: Will cause WMS GetCapabilities call to refresh current feature list')
         var selectLayer = args.selectLayer; 
-        
+        var namespace = selectLayer.split(':')[0];
         CONFIG.ows.getWMSCapabilities({
-            selectLayer : selectLayer,
+            namespace : namespace,
             callbacks : {
                 success : [
                 CONFIG.tempSession.updateLayersFromWMS,
@@ -191,19 +191,26 @@ var Baseline = {
     },
     cloneButtonClicked : function() {
         LOG.debug('Baseline.js::cloneButtonClicked');
-        var selectVal = $("#baseline-list option:selected")[0].value;
-        var selectText = $("#baseline-list option:selected")[0].text;
-        CONFIG.ows.cloneLayer({
-            originalLayer : selectVal,
-            newLayer : CONFIG.tempSession.getCurrentSessionKey() + '_' + selectText.split('_')[0] + '_clone_baseline',
-            callbacks : [
-            function(data, textStatus, jqXHR, context) {
-                Baseline.refreshFeatureList({
-                    selectLayer : data
-                })
-            }
-            ]
-        })
+        var selectVal = $("#baseline-list option:selected").val();
+        var selectText = $("#baseline-list option:selected").html();
+        if (selectVal) {
+            CONFIG.ows.cloneLayer({
+                originalLayer : selectVal,
+                newLayer : selectText.split('_')[0] + '_clone_baseline',
+                callbacks : [
+                function(data, textStatus, jqXHR, context) {
+                    // Check if we got a document (error) or a string (success) back
+                    if (typeof data == "string") {
+                        Baseline.refreshFeatureList({
+                            selectLayer : data
+                        })
+                    } else {
+                        LOG.warn('Baseline.js::cloneButtonClicked: Error returned from server: ' + $(data).find('ows\\:ExceptionText').text());
+                    }
+                }
+                ]
+            })
+        }
     },
     disableDrawButton : function() {
         if (!$('#draw-panel-well').hasClass('hidden')) {
