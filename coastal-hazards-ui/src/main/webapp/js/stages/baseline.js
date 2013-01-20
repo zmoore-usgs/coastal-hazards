@@ -9,9 +9,8 @@ var Baseline = {
         var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
-                url:  "geoserver/ows",
+                url:  "geoserver/"+args.name.split(':')[0]+"/wfs",
                 featureType: args.name.split(':')[1],
-                featureNS: CONFIG.namespace[args.name.split(':')[0]],
                 geometryName: "the_geom"
             }),
             styleMap: new OpenLayers.StyleMap({
@@ -335,7 +334,7 @@ var Baseline = {
         var drawLayer = Baseline.getDrawLayer();
         var importName = ($('#baseline-draw-form-name').val() || Util.getRandomLorem()) + '_baseline';
         var existingLayer = $("#baseline-list option").filter(function(){
-            return $(this).val().split(':')[1] == importName
+            return $(this).val().split(':')[1] == CONFIG.tempSession.getCurrentSessionKey() + ':' + importName
         })
         if (drawLayer.features.length) {
             LOG.info('Baseline.js::saveDrawnFeatures: Layer to be saved, "'+importName+ '" has ' + drawLayer.features.length + ' features');

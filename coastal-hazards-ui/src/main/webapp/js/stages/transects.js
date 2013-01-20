@@ -137,9 +137,7 @@ var Transects = {
             shorelines : visibleShorelines,
             baseline : visibleBaseline,
             spacing : spacing,
-            workspace : 'ch-input',
-            store : 'Coastal Hazards Input',
-            layer : CONFIG.tempSession.getCurrentSessionKey() + '_' + layerName + '_transects'
+            layer : layerName + '_transects'
         })
         CONFIG.ows.executeWPSProcess({
             processIdentifier : 'gs:GenerateTransects',
@@ -149,6 +147,7 @@ var Transects = {
             // TODO- Error Checking for WPS process response!
             function(data, textStatus, jqXHR, context) {
                 CONFIG.ows.getWMSCapabilities({
+                    namespace : CONFIG.tempSession.getCurrentSessionKey(),
                     callbacks : {
                         success : [
                         Transects.populateFeaturesList,
@@ -167,8 +166,6 @@ var Transects = {
         var shorelines = args.shorelines;
         var baseline = args.baseline;
         var spacing = args.spacing ? args.spacing : Transects.defaultSpacing;
-        var workspace = args.workspace;
-        var store = args.store;
         var layer = args.layer;
         
         var request = '<?xml version="1.0" encoding="UTF-8"?>' +
@@ -181,11 +178,12 @@ var Transects = {
                 stage : Shorelines.stage
             })
             var excludedDates = sessionLayer.view['dates-disabled'];
+            var prefix = sessionLayer.name.split(':')[0];
             request += '<wps:Input>' + 
             '<ows:Identifier>shorelines</ows:Identifier>' + 
             '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
             '<wps:Body>' + 
-            '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2">' + 
+            '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2" xmlns:'+prefix+'="gov.usgs.cida.ch.' + prefix + '">' + 
             
             (function(args) {
                 var filter = '';
@@ -225,7 +223,7 @@ var Transects = {
         '<ows:Identifier>baseline</ows:Identifier>' + 
         '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
         '<wps:Body>' + 
-        '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2">' + 
+        '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+baseline.split(':')[0]+'="gov.usgs.cida.ch.'+baseline.split(':')[0]+'">' + 
         '<wfs:Query typeName="'+baseline+'" srsName="EPSG:4326" />' + 
         '</wfs:GetFeature>' + 
         '</wps:Body>' + 
@@ -240,13 +238,13 @@ var Transects = {
         '<wps:Input>' + 
         '<ows:Identifier>workspace</ows:Identifier>' + 
         '<wps:Data>' + 
-        '<wps:LiteralData>'+workspace+'</wps:LiteralData>' + 
+        '<wps:LiteralData>'+CONFIG.tempSession.getCurrentSessionKey()+'</wps:LiteralData>' + 
         '</wps:Data>' + 
         '</wps:Input>' +     
         '<wps:Input>' + 
         '<ows:Identifier>store</ows:Identifier>' + 
         '<wps:Data>' + 
-        '<wps:LiteralData>'+store+'</wps:LiteralData>' + 
+        '<wps:LiteralData>ch-input</wps:LiteralData>' + 
         '</wps:Data>' + 
         '</wps:Input>' + 
         '<wps:Input>' + 
