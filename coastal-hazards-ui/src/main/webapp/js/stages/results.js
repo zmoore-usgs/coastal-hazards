@@ -29,7 +29,10 @@ var Results = {
             var selectedResultValue = selectedResult.value
             
             LOG.debug('Results.js::listboxChanged: A result ('+selectedResultText+') was selected from the select list');
-            var layer = CONFIG.ows.getLayerByName(selectedResultValue)
+            var layer = CONFIG.ows.getLayerByName({
+                layerNS: selectedResultValue.split(':')[0],
+                layerName : selectedResultValue.split(':')[1]
+            })
             var layerConfig = CONFIG.tempSession.getStageConfig({
                 stage : Results.stage,
                 name : selectedResultValue

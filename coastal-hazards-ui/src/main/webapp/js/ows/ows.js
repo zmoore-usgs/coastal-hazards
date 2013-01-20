@@ -175,7 +175,9 @@ var OWS = function(endpoint) {
                     var gmlReader = new OpenLayers.Format.GML.v3();
                     var getFeatureResponse = gmlReader.read(data); 
                     LOG.debug('OWS.js::getFilteredFeature: WFS GetFeature parsed .');
-                    
+                    if (!me.featureTypeDescription[args.layer.prefix]) {
+                        me.featureTypeDescription[args.layer.prefix] = Object.extended();
+                    }
                     me.featureTypeDescription[args.layer.prefix][args.layer.name] = getFeatureResponse;
                     
                     LOG.trace('OWS.js::getFilteredFeature: Executing '+args.callbacks.success+'callbacks');
