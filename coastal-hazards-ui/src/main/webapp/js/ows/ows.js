@@ -280,8 +280,8 @@ var OWS = function(endpoint) {
             var context = args.context || this;
             var callbacks = args.callbacks || [];
             var errorCallbacks = args.errorCallbacks || [];
-            if (args.layer.split(':')[0] == 'ch-input') {
-                var url = 'geoserver/ch-input/wfs';
+            if (args.layer.split(':')[0] == CONFIG.tempSession.getCurrentSessionKey()) {
+                var url = 'geoserver/'+CONFIG.tempSession.getCurrentSessionKey()+'/wfs';
                 var wfst = '<wfs:Transaction service="WFS" version="1.1.0" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">' + 
                 '<wfs:Delete typeName="feature:'+layerName+'">' + 
                 '<ogc:Filter>' + 

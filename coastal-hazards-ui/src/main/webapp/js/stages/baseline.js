@@ -334,7 +334,7 @@ var Baseline = {
         var drawLayer = Baseline.getDrawLayer();
         var importName = ($('#baseline-draw-form-name').val() || Util.getRandomLorem()) + '_baseline';
         var existingLayer = $("#baseline-list option").filter(function(){
-            return $(this).val().split(':')[1] == CONFIG.tempSession.getCurrentSessionKey() + ':' + importName
+            return $(this).val() == CONFIG.tempSession.getCurrentSessionKey() + ':' + importName
         })
         if (drawLayer.features.length) {
             LOG.info('Baseline.js::saveDrawnFeatures: Layer to be saved, "'+importName+ '" has ' + drawLayer.features.length + ' features');
@@ -374,8 +374,15 @@ var Baseline = {
                                 context : context
                             });
                         } else {
-                            // TODO - Notify the user
                             LOG.warn(data.error);
+                            CONFIG.ui.showAlert({
+                                message : 'Draw Failed - Check browser logs',
+                                caller : Baseline,
+                                displayTime : 4000,
+                                style: {
+                                    classes : ['alert-error']
+                                }
+                            })
                         }
                     }]
                 });
@@ -412,11 +419,32 @@ var Baseline = {
             Baseline.refreshFeatureList({
                 selectLayer : importName
             })
+            
+            CONFIG.ui.showAlert({
+                message : 'Draw Successful',
+                caller : Baseline,
+                displayTime : 3000,
+                style: {
+                    classes : ['alert-success']
+                }
+            })
+            $('a[href="#' + Baseline.stage + '-view-tab"]').tab('show');
                             
             LOG.info('Baseline.js::saveDrawnFeatures: Triggering click on baseline draw button')
             $('#baseline-draw-btn').click();
             Baseline.getDrawControl().deactivate();
         });
+        
+        saveStrategy.events.register('fail', null, function() {
+            CONFIG.ui.showAlert({
+                message : 'Draw Failed - Check browser logs',
+                caller : Baseline,
+                displayTime : 4000,
+                style: {
+                    classes : ['alert-error']
+                }
+            })
+        })
                         
         LOG.info('Baseline.js::saveDrawnFeatures: Saving draw features to OWS server');
         saveStrategy.save();

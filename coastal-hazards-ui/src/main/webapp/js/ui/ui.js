@@ -292,7 +292,6 @@ var UI = function() {
                                                     CONFIG.ui.populateFeaturesList({
                                                         caller : caller
                                                     });
-                                                    href="#shorelines-view-tab"
                                                     $('a[href="#' + caller.stage + '-view-tab"]').tab('show');
                                                 }
                                                 ],
