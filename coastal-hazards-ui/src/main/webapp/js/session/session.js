@@ -20,9 +20,22 @@ var Session = function(name, isPerm) {
             {
                 success : function(data, textStatus, jqXHR) {
                     LOG.info('Session.js::init: A workspace has been prepared on the OWS server with the name of ' + randID)
+                    CONFIG.ui.showAlert({
+                        message : 'No session could be found. A new session has been created',
+                        displayTime : 7500,
+                        style: {
+                            classes : ['alert-info']
+                        }
+                    })
                 },
                 error : function(data, textStatus, jqXHR) {
                     LOG.error('Session.js::init: A workspace could not be created on the OWS server with the name of ' + randID)
+                    CONFIG.ui.showAlert({
+                        message : 'No session could be found. A new session could not be created on server. This application may not function correctly.',
+                        style: {
+                            classes : ['alert-error']
+                        }
+                    })
                 }
             })
             

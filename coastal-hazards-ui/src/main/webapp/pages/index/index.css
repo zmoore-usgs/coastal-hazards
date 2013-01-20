@@ -9,6 +9,10 @@
     color: #000000;
 }
 
+.alert-queue-notifier {
+    
+}
+
 /* Because of a conflict between twitter bootstrap and openlayers */
 img { max-width: none; }
 

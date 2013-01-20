@@ -471,11 +471,18 @@ var UI = function() {
                 stage : 'application'
             };
             var message = args.message || '';
-            var style = args.style || Object.extended();
+            var style = args.style || {
+                classes : []
+            }
             var alertContainer = $('#' + caller.stage + '-alert-container');
             var alertDom = $('<div />').attr('id', 'application-alert');
             var close = args.close || true;
             var displayTime = args.displayTime || 0;
+            
+            if (caller.stage == 'application') {
+                style.classes.push(['offset1']);
+                style.classes.push(['span11']);
+            }
             
             CONFIG.alertQueue[caller.stage].unshift({
                 message : message,
@@ -495,6 +502,7 @@ var UI = function() {
                     var message = nextMessageObj.message;
                     var displayTime = nextMessageObj.displayTime;
                     var createAlertFn = args.createAlertFn
+                    var queueLength = CONFIG.alertQueue[args.caller.stage].length;
                     
                     alertDom.addClass('alert fade in');
                     if (style.classes) {
@@ -510,6 +518,10 @@ var UI = function() {
                             })
                             .addClass('close')
                             .html('&times;'))
+                    }
+                    
+                    if (queueLength) {
+                        alertDom.append($('<div />').addClass('alert-queue-notifier').html(queueLength + ' more'))
                     }
             
                     alertDom.append($('<div />').html(message));

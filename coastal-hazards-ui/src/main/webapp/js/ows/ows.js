@@ -69,13 +69,43 @@ var OWS = function(endpoint) {
                     })
                 },
                 error : function(data, textStatus, jqXHR) {
-                    $(errorCallbacks).each(function(index, callback, allCallbacks) {
-                        callback({
-                            data : data, 
-                            textStatus : textStatus,
-                            jqXHR : jqXHR
-                        });
-                    })
+                    if (this.namespace == CONFIG.tempSession.getCurrentSessionKey() && jqXHR.toLowerCase() == 'not found') {
+                        CONFIG.ui.showAlert({
+                            message : 'Current session was not found on server. Attempting to initialize session on server.'
+                        })
+                        
+                        $.ajax('service/session?action=prepare&workspace=' + this.namespace, 
+                        {
+                            success : function(data, textStatus, jqXHR) {
+                                LOG.info('Session.js::init: A workspace has been prepared on the OWS server with the name of ' + CONFIG.tempSession.getCurrentSessionKey())
+                                CONFIG.ui.showAlert({
+                                    message : 'Your session has been created on the server',
+                                    displayTime : 7500,
+                                    style: {
+                                        classes : ['alert-info']
+                                    }
+                                })
+                                $(errorCallbacks).each(function(index, callback, allCallbacks) {
+                                    callback({
+                                        data : data, 
+                                        textStatus : textStatus,
+                                        jqXHR : jqXHR
+                                    });
+                                })
+                            },
+                            error : function(data, textStatus, jqXHR) {
+                                LOG.error('Session.js::init: A workspace could not be created on the OWS server with the name of ' + randID)
+                                CONFIG.ui.showAlert({
+                                    message : 'No session could be found. A new session could not be created on server. This application may not function correctly.',
+                                    style: {
+                                        classes : ['alert-error']
+                                    }
+                                })
+                            }
+                        })
+                        
+                        
+                    }
                 }
             })
         },
