@@ -53,22 +53,34 @@ public class SessionService extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         String workspace = request.getParameter("workspace");
+        String layer = request.getParameter("layer");
+        String store = request.getParameter("store");
         Map<String, String> responseMap = new HashMap<String, String>();
 
-        if (!StringUtils.isEmpty(action) && "prepare".equals(action.trim().toLowerCase())) {
-            try {
-                geoserverHandler.prepareWorkspace(geoserverDataDir, workspace);
-            } catch (MalformedURLException ex) {
-                responseMap.put("error", "Could not create workspace: " + ex.getMessage());
-                RequestResponseHelper.sendErrorResponse(response, responseMap);
-                return;
-            } catch (URISyntaxException ex) {
-                responseMap.put("error", "Could not create workspace: " + ex.getMessage());
-                RequestResponseHelper.sendErrorResponse(response, responseMap);
-                return;
+        if (!StringUtils.isEmpty(action)) {
+            if ("prepare".equals(action.trim().toLowerCase())) {
+                try {
+                    geoserverHandler.prepareWorkspace(geoserverDataDir, workspace);
+                } catch (MalformedURLException ex) {
+                    responseMap.put("error", "Could not create workspace: " + ex.getMessage());
+                    RequestResponseHelper.sendErrorResponse(response, responseMap);
+                    return;
+                } catch (URISyntaxException ex) {
+                    responseMap.put("error", "Could not create workspace: " + ex.getMessage());
+                    RequestResponseHelper.sendErrorResponse(response, responseMap);
+                    return;
+                }
+            } else if ("remove-layer".equals(action.trim().toLowerCase()) && !"sample".equals(workspace.trim().toLowerCase())) {
+                try {
+                    geoserverHandler.removeLayer(geoserverDataDir, workspace, store, layer);
+                } catch (MalformedURLException ex) {
+                    responseMap.put("error", "Could not remove layer: " + ex.getMessage());
+                    RequestResponseHelper.sendErrorResponse(response, responseMap);
+                    return;
+                } 
             }
         }
-        
+
         RequestResponseHelper.sendSuccessResponse(response, responseMap);
 
     }
