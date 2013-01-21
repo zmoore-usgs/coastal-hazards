@@ -5,27 +5,7 @@ var Map = function() {
         projection : "EPSG:900913"
     });
     
-    
-    var layer = {};
-    
-    layer['esriOcean'] = new OpenLayers.Layer.XYZ("ESRI Ocean Basemap",
-        "http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/${z}/${y}/${x}",
-        {
-            sphericalMercator: true,
-            isBaseLayer: true,
-            numZoomLevels : 13
-        }
-        );
-    layer['worldImagery'] = new OpenLayers.Layer.XYZ("ESRI World Imagery",
-        "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
-        {
-            sphericalMercator: true,
-            isBaseLayer: true,
-            numZoomLevels : 20
-        }
-        );
-    
-    layer['baseline-draw-layer']  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
+    var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
         strategies : [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
         projection: new OpenLayers.Projection('EPSG:900913'),
         protocol: new OpenLayers.Protocol.WFS({
@@ -40,13 +20,12 @@ var Map = function() {
     });
 
     var baselineDrawControl = new OpenLayers.Control.DrawFeature(
-        layer['baseline-draw-layer'],
+        drawLayer,
         OpenLayers.Handler.Path,
         {
             id: 'baseline-draw-control',
             multi: true
-        }
-        );
+        });
             
     var wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
         title: 'shoreline-identify-control',
@@ -63,22 +42,26 @@ var Map = function() {
     
     wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
             
-    me.map.addLayer(layer["worldImagery"]);
+    me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
+        "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
+        {
+            sphericalMercator: true,
+            isBaseLayer: true,
+            numZoomLevels : 20
+        }
+        ));
     
-    me.map.addLayer(layer['baseline-draw-layer']);
-    
-    me.map.zoomToMaxExtent();
-	
+    me.map.addLayer(drawLayer);
+    me.map.addControl(baselineDrawControl);
     me.map.addControl(wmsGetFeatureInfoControl);
-    
     me.map.addControl(new OpenLayers.Control.MousePosition());
     me.map.addControl(new OpenLayers.Control.ScaleLine({
         geodesic : true
     }));
     
-    me.map.addControl(baselineDrawControl);
     wmsGetFeatureInfoControl.activate();
     
+    me.map.zoomToMaxExtent();
     
     return $.extend(me, {
         getMap : function() {

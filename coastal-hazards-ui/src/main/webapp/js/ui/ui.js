@@ -52,16 +52,21 @@ var UI = function() {
     })
     
     $('#map-well').popover({
-            title : 'Map',
-            content : $('<div />')
-            .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. '))
-            .html(),
-            html : true,
-            placement : 'left',
-            trigger : 'hover'
-        })
+        title : 'Map',
+        content : $('<div />')
+        .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. '))
+        .html(),
+        html : true,
+        placement : 'left',
+        trigger : 'hover'
+    })
     
-    // Add tooltips to all the things
+//    $('#map').on('hover', function() {
+//        setTimeout(function() {
+//            $('#map-well').popover('hide');
+//        }, 3000);
+//    })  
+        
     $('select').popover({
         title : 'Layer Selection',
         content : $('<div />')
