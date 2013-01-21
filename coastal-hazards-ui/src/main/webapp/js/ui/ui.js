@@ -4,6 +4,7 @@ var UI = function() {
     var me = (this === window) ? {} : this;
     
     me.work_stages = ['shorelines', 'baseline', 'transects', 'intersections', 'results'];
+    me.work_stages_objects = [Shorelines, Baseline, Transects, Results, Intersections];
     
     $('#clear-sessions-btn').on("click", function(){
         localStorage.clear();
@@ -17,6 +18,48 @@ var UI = function() {
     $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
     $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
     $("#create-intersections-btn").on("click", Intersections.calcIntersections);
+    
+    me.work_stages_objects.each(function(stage) {
+        $('#nav-list a[href="#'+stage.stage+'"]').popover({
+            title : stage.stage.capitalize(),
+            content : $('<div />')
+            .append($('<div />').html(stage.description))
+            .html(),
+            html : true,
+            placement : 'right',
+            trigger : 'hover'
+        })
+        
+        $('#'+stage.stage+' [href="#'+stage.stage+'-view-tab"]').popover({
+            title : stage.stage.capitalize() + ' View',
+            content : $('<div />')
+            .append($('<div />').html(stage.description))
+            .html(),
+            html : true,
+            placement : 'top',
+            trigger : 'hover'
+        })
+        
+        $('#'+stage.stage+' [href="#'+stage.stage+'-manage-tab"]').popover({
+            title : stage.stage.capitalize() + ' Manage',
+            content : $('<div />')
+            .append($('<div />').html(stage.description))
+            .html(),
+            html : true,
+            placement : 'top',
+            trigger : 'hover'
+        })
+    })
+    
+    $('#map-well').popover({
+            title : 'Map',
+            content : $('<div />')
+            .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. '))
+            .html(),
+            html : true,
+            placement : 'left',
+            trigger : 'hover'
+        })
     
     // Add tooltips to all the things
     $('select').popover({
@@ -177,11 +220,11 @@ var UI = function() {
                 text: {
                     uploadButton: '<i class="icon-upload icon-white"></i>Upload'
                 },
-                template: '<div class="qq-uploader span4">' +
-                '<pre class="qq-upload-drop-area span4 hidden"><span>{dragZoneText}</span></pre>' +
-                '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
-                '<ul class="qq-upload-list hidden" style="margin-top: 10px; text-align: center;"></ul>' +
-                '</div>',
+                //                template: '<div class="qq-uploader span4">' +
+                //                '<pre class="qq-upload-drop-area span4 hidden"><span>{dragZoneText}</span></pre>' +
+                //                '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
+                //                '<ul class="qq-upload-list hidden" style="margin-top: 10px; text-align: center;"></ul>' +
+                //                '</div>',
                 classes: {
                     success: 'alert alert-success',
                     fail: 'alert alert-error'
@@ -458,6 +501,11 @@ var UI = function() {
             var alertDom = $('<div />').attr('id', caller.stage + '-alert');
             var close = args.close || true;
             var displayTime = args.displayTime || 0;
+            
+            if (caller.stage == 'application') {
+                style.classes.push('span11');
+                style.classes.push('offset1');
+            }
             
             CONFIG.alertQueue[caller.stage].unshift({
                 message : message,

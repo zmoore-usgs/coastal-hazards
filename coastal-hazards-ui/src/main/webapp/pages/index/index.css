@@ -9,10 +9,29 @@
     color: #000000;
 }
 
+/* Left Nav Bar Image Sizing */
+.nav-stacked li.active a img {
+    height: 3.5em;
+    width: 4.5em;
+}
+.nav-stacked li a img {
+    height: 2.5em;
+    width: 3.5em;
+}
+.nav-pills.nav-stacked > li > a {
+    text-align: center;
+}
+
+/* For now, turn off qqUploader completed lists */
+.qq-upload-list {
+    display: none;
+}
+
+/* Color differentiation for published and personal layers
+   in select views */
 select option.published-layer{
     color : #661111; 
 }
-
 select option.session-layer{
     color : #116611; 
 }
@@ -90,24 +109,4 @@ li.alert-error {
 
 .alert-error .qq-upload-failed-text {
     display: inline;
-}
-
-.qq-uploader {
-    width: 50%;
-}
-
-.qq-upload-button {
-    background: none repeat scroll 0 0 #5BB75B;
-}
-
-.nav-stacked li a img {
-    width : 70%;
-}
-
-.nav-stacked li.active a img {
-    width : 100%;
-}
-
-.nav-pills.nav-stacked > li > a {
-    text-align: center;
 }
