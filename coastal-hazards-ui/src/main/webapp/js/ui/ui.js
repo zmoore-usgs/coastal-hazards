@@ -29,7 +29,37 @@ var UI = function() {
             placement : 'right',
             trigger : 'hover'
         })
+        
+        $('#'+stage.stage+' [href="#'+stage.stage+'-view-tab"]').popover({
+            title : stage.stage.capitalize() + ' View',
+            content : $('<div />')
+            .append($('<div />').html(stage.description))
+            .html(),
+            html : true,
+            placement : 'top',
+            trigger : 'hover'
+        })
+        
+        $('#'+stage.stage+' [href="#'+stage.stage+'-manage-tab"]').popover({
+            title : stage.stage.capitalize() + ' Manage',
+            content : $('<div />')
+            .append($('<div />').html(stage.description))
+            .html(),
+            html : true,
+            placement : 'top',
+            trigger : 'hover'
+        })
     })
+    
+    $('#map-well').popover({
+            title : 'Map',
+            content : $('<div />')
+            .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. '))
+            .html(),
+            html : true,
+            placement : 'left',
+            trigger : 'hover'
+        })
     
     // Add tooltips to all the things
     $('select').popover({

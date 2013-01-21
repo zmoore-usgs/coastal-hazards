@@ -75,7 +75,7 @@
                             </div>
                             <ul class="nav nav-tabs" id="action-shoreline-tablist">
                                 <li class="active"><a  data-toggle="tab" href="#shorelines-view-tab">View</a></li>
-                                <li><a data-toggle="tab" href="#shoreline-manage-tab">Manage</a></li>
+                                <li><a data-toggle="tab" href="#shorelines-manage-tab">Manage</a></li>
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="shorelines-view-tab">
@@ -87,7 +87,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane" id="shoreline-manage-tab">
+                                <div class="tab-pane" id="shorelines-manage-tab">
                                     <div id="shorelines-uploader"></div>
                                 </div>
                             </div>
