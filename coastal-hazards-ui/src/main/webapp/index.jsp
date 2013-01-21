@@ -424,15 +424,13 @@
     <script type="text/javascript" src="js/stages/transects.js"></script>
     <script type="text/javascript" src="js/stages/intersections.js"></script>
     <script type="text/javascript" src="js/stages/results.js"></script>
-    <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
-
 
     <!-- TODO - Modularize -->
     <link type="text/css" rel="stylesheet" href="css/jquery-bootstrap-toggle/bootstrap-toggle-buttons.css" />
     <script type="text/javascript" src="js/jquery-bootstrap-toggle/jquery.toggle.buttons.js"></script>
     <!-- TODO - Modularize -->
     <link type="text/css" rel="stylesheet" href="css/normalize/normalize.css" />
-    <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
+    <link type="text/css" rel="stylesheet" href="css/custom.css" />
     
-    <script type="text/javascript" src="pages/index/onReady.js"></script>
+    <script type="text/javascript" src="js/onReady.js"></script>
 </html>

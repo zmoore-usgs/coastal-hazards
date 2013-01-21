@@ -1,14 +1,6 @@
 var Map = function() {
     var me = (this === window) ? {} : this;
     
-    OpenLayers.Request.GET({
-        url: "pages/index/sld-shorelines.xml",
-        success: function(req) {
-            var format = new OpenLayers.Format.SLD();
-            CONFIG.sld = format.read(req.responseXML || req.responseText);
-        }
-    });
-    
     me.map = new OpenLayers.Map('map', {
         projection : "EPSG:900913"
     });
