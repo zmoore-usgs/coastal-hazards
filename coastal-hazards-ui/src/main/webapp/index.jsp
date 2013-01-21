@@ -201,20 +201,28 @@
                                     <div class="span8" id="transects-alert-container"></div>
                                 </div>
                                 <ul class="nav nav-tabs" id="action-transects-tablist">
-                                    <li class="active"><a  data-toggle="tab" href="#transects-view-tab">View</a></li>
-                                    <li><a data-toggle="tab" href="#transects-manage-tab">Manage</a></li>
+                                    <li class="active">
+                                        <a  data-toggle="tab" href="#transects-view-tab">View</a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#transects-manage-tab">Manage</a>
+                                    </li>
                                 </ul>
                                 <div class="tab-content">
                                     <div class="tab-pane active" id="transects-view-tab">
                                         <select id="transects-list" style="width: 100%;"></select>
                                     </div>
                                     <div class="tab-pane" id="transects-manage-tab">
-                                        <div id="transects-uploader"></div>
-                                        <button data-toggle="button" class="btn btn-success" disabled id="create-transects-toggle">
-                                            <i class="icon-pencil icon-white"></i>
-                                            &nbsp;Create Transects
-                                        </button>
-                                        <div class="row-fluid span12">
+                                        <div class="row-fluid">
+                                            <div id="transects-uploader"></div>
+                                        </div>
+                                        <div class="row-fluid">
+                                            <button data-toggle="button" class="btn btn-success" disabled id="create-transects-toggle">
+                                                <i class="icon-pencil icon-white"></i>
+                                                &nbsp;Create Transects
+                                            </button>
+                                        </div>
+                                        <div class="row-fluid">
                                             <div id="create-transects-panel-well" class="well hidden">
                                                 <div id="create-transects-panel-container" class="container-fluid">
                                                     <div class="row-fluid span12">
@@ -251,7 +259,7 @@
                                         <select id="intersections-list" style="width: 100%;"></select>
                                     </div>
                                     <div class="tab-pane" id="intersections-manage-tab">
-                                        <button data-toggle="button" class="btn btn-success" id="create-intersections-btn">
+                                        <button class="btn btn-success" id="create-intersections-btn">
                                             <i class="icon-pencil icon-white"></i>
                                             &nbsp;Calculate Intersections
                                         </button>

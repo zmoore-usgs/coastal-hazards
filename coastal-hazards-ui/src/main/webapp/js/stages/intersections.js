@@ -19,20 +19,40 @@ var Intersections = {
             request : request,
             context : this,
             callbacks : [
-            // TODO- Error Checking for WPS process response!
             function(data, textStatus, jqXHR, context) {
-                CONFIG.ows.getWMSCapabilities({
-                    namespace : CONFIG.tempSession.getCurrentSessionKey(),
-                    callbacks : {
-                        success : [
-                        Intersections.populateFeaturesList,
-                        function() {
-                            $('#intersections-list').val(data);
-                            Intersections.listboxChanged();
-                        }      
-                        ]
-                    }
-                })
+                if (typeof data == 'string') {
+                    CONFIG.ows.getWMSCapabilities({
+                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
+                        callbacks : {
+                            success : [
+                            Intersections.populateFeaturesList,
+                            function() {
+                                $('#intersections-list').val(data);
+                                Intersections.listboxChanged();
+                                $('a[href="#' + Intersections.stage + '-view-tab"]').tab('show');
+                                CONFIG.ui.showAlert({
+                                    message : 'Intersection creation succeeded.',
+                                    displayTime : 7500,
+                                    caller : Intersections,
+                                    style: {
+                                        classes : ['alert-success']
+                                    }
+                                })
+                            }      
+                            ]
+                        }
+                    })
+                } else {
+                    LOG.error($(data).find('ows\\:ExceptionText').first().text());
+                    CONFIG.ui.showAlert({
+                        message : 'Intersection creation failed. Check logs.',
+                        displayTime : 7500,
+                        caller : Intersections,
+                        style: {
+                            classes : ['alert-error']
+                        }
+                    })
+                }
             }
             ]
         })
@@ -148,7 +168,6 @@ var Intersections = {
     createWPSCalculateIntersectionsRequest : function(args) {
         var shorelines = args.shorelines || [];
         var transects = args.transects || '';
-        var layer = args.layer || '';
         
         var wps = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
         '<ows:Identifier>gs:CalculateIntersections</ows:Identifier>' + 

@@ -3,20 +3,7 @@ var Transects = {
     suffixes : ['_lt','_st','_transects'],
     reservedColor : '#FF0033',
     defaultSpacing : 500,
-    calcTransects : function() {
-        var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
-            "geoserver/sample/wms",
-            {
-                layers: 'sample:DE_to_VA_rates',
-                transparent : true
-            }, {
-                isBaseLayer : false
-            } );
-
-	
-        CONFIG.map.getMap().addLayer(layer);
-	
-    },
+    
     addTransects : function(args) {
         var transects = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
@@ -119,7 +106,7 @@ var Transects = {
         
         if (toggledOn) {
             $('#transects-list').val('');
-//            $('#create-transects-input-name').val(Util.getRandomLorem());
+        //            $('#create-transects-input-name').val(Util.getRandomLorem());
         } else {
             
         // Hide transect layer if needed
@@ -146,18 +133,39 @@ var Transects = {
             callbacks : [
             // TODO- Error Checking for WPS process response!
             function(data, textStatus, jqXHR, context) {
-                CONFIG.ows.getWMSCapabilities({
-                    namespace : CONFIG.tempSession.getCurrentSessionKey(),
-                    callbacks : {
-                        success : [
-                        Transects.populateFeaturesList,
-                        function() {
-                            $('#transects-list').val(data);
-                            $('#transects-list').trigger('change');
-                        }                        
-                        ]
-                    }
-                })
+                if (typeof data == 'string') {
+                    CONFIG.ows.getWMSCapabilities({
+                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
+                        callbacks : {
+                            success : [
+                            Transects.populateFeaturesList,
+                            function() {
+                                CONFIG.ui.showAlert({
+                                    message : 'Transect calculation succeeded.',
+                                    displayTime : 7500,
+                                    caller : Transects,
+                                    style: {
+                                        classes : ['alert-success']
+                                    }
+                                })
+                                $('#transects-list').val(data);
+                                $('#transects-list').trigger('change');
+                                $('a[href="#' + Transects.stage + '-view-tab"]').tab('show');
+                            }                        
+                            ]
+                        }
+                    })
+                } else {
+                    LOG.error($(data).find('ows\\:ExceptionText').first().text());
+                    CONFIG.ui.showAlert({
+                        message : 'Transect calculation failed. Check logs.',
+                        displayTime : 7500,
+                        caller : Transects,
+                        style: {
+                            classes : ['alert-error']
+                        }
+                    })
+                }
             }
             ]
         })
