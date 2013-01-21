@@ -137,19 +137,19 @@ var Baseline = {
             clonedLayer.addFeatures(originalLayer.features);
                     
             // For debugging purposes
-//                        var report = function(event) {
-//                            LOG.debug(event.type, event.feature ? event.feature.id : event.components);
-//                        }
-//                                
-//                        clonedLayer.events.on({
-//                            "beforefeaturemodified": report,
-//                            "featuremodified": report,
-//                            "afterfeaturemodified": report,
-//                            "vertexmodified": report,
-//                            "sketchmodified": report,
-//                            "sketchstarted": report,
-//                            "sketchcomplete": report
-//                        });
+            //                        var report = function(event) {
+            //                            LOG.debug(event.type, event.feature ? event.feature.id : event.components);
+            //                        }
+            //                                
+            //                        clonedLayer.events.on({
+            //                            "beforefeaturemodified": report,
+            //                            "featuremodified": report,
+            //                            "afterfeaturemodified": report,
+            //                            "vertexmodified": report,
+            //                            "sketchmodified": report,
+            //                            "sketchstarted": report,
+            //                            "sketchcomplete": report
+            //                        });
                     
             var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, 
             {
@@ -196,22 +196,51 @@ var Baseline = {
         var selectVal = $("#baseline-list option:selected").val();
         var selectText = $("#baseline-list option:selected").html();
         if (selectVal) {
-            CONFIG.ows.cloneLayer({
-                originalLayer : selectVal,
-                newLayer : selectText.split('_')[0] + '_clone_baseline',
-                callbacks : [
-                function(data, textStatus, jqXHR, context) {
-                    // Check if we got a document (error) or a string (success) back
-                    if (typeof data == "string") {
-                        Baseline.refreshFeatureList({
-                            selectLayer : data
-                        })
-                    } else {
-                        LOG.warn('Baseline.js::cloneButtonClicked: Error returned from server: ' + $(data).find('ows\\:ExceptionText').text());
+            var cloneName = selectText.split('_')[0] + '_cloned_baseline';
+            if (!$('#baseline-list option[value="'+cloneName+'"]').length) {
+                CONFIG.ows.cloneLayer({
+                    originalLayer : selectVal,
+                    newLayer : cloneName,
+                    callbacks : [
+                    function(data, textStatus, jqXHR, context) {
+                        // Check if we got a document (error) or a string (success) back
+                        if (typeof data == "string") {
+                            CONFIG.ui.showAlert({
+                                message : 'Layer cloned successfully.',
+                                displayTime : 7500,
+                                caller : Baseline,
+                                style: {
+                                    classes : ['alert-success']
+                                }
+                            })
+                            
+                            Baseline.refreshFeatureList({
+                                selectLayer : data
+                            })
+                            
+                            $('a[href="#' + Baseline.stage + '-view-tab"]').tab('show');
+                            
+                        } else {
+                            LOG.warn('Baseline.js::cloneButtonClicked: Error returned from server: ' + $(data).find('ows\\:ExceptionText').text());
+                            CONFIG.ui.showAlert({
+                                message : 'Layer not cloned. Check logs.',
+                                displayTime : 7500,
+                                caller : Baseline,
+                                style: {
+                                    classes : ['alert-error']
+                                }
+                            })
+                        }
                     }
-                }
-                ]
-            })
+                    ]
+                })
+            } else {
+                CONFIG.ui.showAlert({
+                    message : 'Cloned layer exists.',
+                    displayTime : 7500,
+                    caller : Baseline
+                })
+            }
         }
     },
     disableDrawButton : function() {
