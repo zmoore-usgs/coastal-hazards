@@ -4,7 +4,7 @@
 var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
-    
+    description : 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     /**
      * Calls DescribeFeatureType against OWS service and tries to add the layer(s) to the map 
      */

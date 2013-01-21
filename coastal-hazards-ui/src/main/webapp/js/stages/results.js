@@ -3,6 +3,7 @@ var Results = {
     viewableResultsColumns : ['LRR','LR2','LSE','LCI90'],
     suffixes : ['_rates','_results','_clip','_lt'],
     reservedColor: '#0061A3',
+    description : 'Et harum quidem rerum facilis est et expedita distinctio.',
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
             caller : Results

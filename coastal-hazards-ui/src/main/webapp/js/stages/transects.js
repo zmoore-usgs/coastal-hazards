@@ -3,7 +3,7 @@ var Transects = {
     suffixes : ['_lt','_st','_transects'],
     reservedColor : '#FF0033',
     defaultSpacing : 500,
-    
+    description : 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
     addTransects : function(args) {
         var transects = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
