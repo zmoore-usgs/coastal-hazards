@@ -1,4 +1,126 @@
 /* put all your application wide styles here */
+/* Add a drop shadow effect to scale and mouse position
+    so they can be seen against a dark background */
+.olControlScaleLine {
+    text-shadow: #FFFFFF 0px 0px 2px;
+    color: #000000;
+}
+.olControlMousePosition {
+    text-shadow: #FFFFFF 0px 0px 2px;
+    color: #000000;
+}
 
+/* Left Nav Bar Image Sizing */
+.nav-stacked li.active a img {
+    height: 3.5em;
+    width: 4.5em;
+}
+.nav-stacked li a img {
+    height: 2.5em;
+    width: 3.5em;
+}
+.nav-pills.nav-stacked > li > a {
+    text-align: center;
+}
 
+#application-spinner {
+    text-align: center;
+    display: none;
+}
 
+.uploader {
+    padding-bottom: 10px;
+}
+
+/* For now, turn off qqUploader completed lists */
+.qq-upload-list {
+    display: none;
+}
+
+/* Color differentiation for published and personal layers
+   in select views */
+select option.published-layer{
+    color : #661111; 
+}
+select option.session-layer{
+    color : #116611; 
+}
+
+/* Because of a conflict between twitter bootstrap and openlayers */
+img { max-width: none; }
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+#site-title {
+    line-height: 20px;
+}
+
+#application-overlay-content {
+    height: 50%;
+    padding-left: 25%;
+    position: relative;
+    top: 25%;
+    width: 50%;
+}
+
+#ccsa-area {
+    font : 1em/0.5em Verdana,Arial,Helvetica,sans-serif;
+}
+
+.hide {
+    height: auto !important;
+}
+
+#shorelines-list {
+    height: 7.25em;
+}
+
+#map-well {
+    height: 39em;
+}
+
+#toolbox-well {
+    height: 39em;
+}
+
+#transects-well {
+    height: 5em;
+}
+
+#create-transects-input-spacing {
+    width: 6em;
+}
+
+#shoreline-table-container {
+    height: 16.25em;
+}
+
+.shoreline-table-selected-head-column {
+    width: 30%;
+}
+
+#results-table-container {
+    height: 16.25em;
+}
+
+/* Fine Uploader
+-------------------------------------------------- */
+.qq-upload-list {
+    text-align: left;
+}
+
+/* Uploader */
+li.alert-success {
+    background-color: #DFF0D8;
+}
+
+li.alert-error {
+    background-color: #F2DEDE;
+}
+
+.alert-error .qq-upload-failed-text {
+    display: inline;
+}
