@@ -9,7 +9,6 @@ $(document).ready(function() {
         LOG.debug('start');
         $("#application-spinner").fadeIn();
     });
-    
     $(document).ajaxStop(function() {
         LOG.debug('end');
         $("#application-spinner").fadeOut();
