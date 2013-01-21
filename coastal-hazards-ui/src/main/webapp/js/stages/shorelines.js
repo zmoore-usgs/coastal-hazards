@@ -14,7 +14,8 @@ var Shorelines = {
         $(layers).each(function(index,layer) {
             LOG.info('Shorelines.js::addShorelines: Attempting to add shoreline layer ' + layer.title + ' to the map'); 
             CONFIG.ows.getDescribeFeatureType({
-                featureName : layer.title,
+                layerNS : layer.prefix,
+                layerName : layer.name,
                 callbacks : [
                 function(describeFeaturetypeRespone) {
                     Shorelines.addLayerToMap({
@@ -55,7 +56,7 @@ var Shorelines = {
         
         CONFIG.ows.getFilteredFeature({ 
             layer : layer,
-            propertyArray : properties[layer.title], 
+            propertyArray : properties[layer.name], 
             scope : this,
             callbacks : {
                 success : [
@@ -66,7 +67,7 @@ var Shorelines = {
                     
                         var sessionLayer = CONFIG.tempSession.getStageConfig({
                             stage : Shorelines.stage,
-                            name : layer.name
+                            name : layer.prefix + ':' + layer.name
                         });
                         
                         var groupingColumn = Object.keys(features[0].attributes).find(function(n) {
@@ -117,13 +118,14 @@ var Shorelines = {
                         
                         var wmsLayer = new OpenLayers.Layer.WMS(
                             layer.title, 
-                            'geoserver/ows',
+                            'geoserver/'+layer.prefix+'/wms',
                             {
                                 layers : layer.name,
                                 transparent : true,
                                 sld_body : sldBody
                             },
                             {
+                                prefix : layer.prefix,
                                 zoomToWhenAdded : true, // Include this layer when performing an aggregated zoom
                                 isBaseLayer : false,
                                 unsupportedBrowsers: [],
@@ -156,8 +158,7 @@ var Shorelines = {
         var colorDatePairings = args.colorDatePairings;
         var groupColumn = args.groupColumn;
         var layer = args.layer;
-        var layerTitle = args.layerTitle || layer.title;
-        var layerName = args.layerName || layer.name;
+        var layerName = args.layerName || layer.prefix + ':' + layer.name;
         var sessionLayer = CONFIG.tempSession.getStageConfig({
             name : layerName,
             stage : Shorelines.stage
@@ -187,7 +188,7 @@ var Shorelines = {
             '<Stroke>' + 
             '<CssParameter name="stroke">' + 
             '<ogc:Function name="Categorize">' + 
-            '<ogc:PropertyName>' +groupColumn+ '</ogc:PropertyName> '
+            '<ogc:PropertyName>' +groupColumn.trim()+ '</ogc:PropertyName> '
             +createUpperLimitFilterSet(colorDatePairings)+
             '</ogc:Function>' + 
             '</CssParameter>' + 
@@ -202,85 +203,72 @@ var Shorelines = {
             '</StyledLayerDescriptor>';
         } else if (!isNaN(Date.parse(colorDatePairings[0][1]))) { 
             LOG.debug('Shorelines.js::?: Grouping will be done by year')
-            var featureDescription = CONFIG.ows.featureTypeDescription[layerTitle];
-            
-            var dateType = featureDescription.featureTypes[0].properties.find(function(n){
-                return n.name == groupColumn
-            });
             
             var createRuleSets;
-            if (dateType.type === 'xsd:string') {
-                LOG.debug('Shorelines.js::?: Geoserver date column is actually a string');
-                createRuleSets = function(colorLimitPairs) {
-                    var html = '';
-                    for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
-                        var year = colorLimitPairs[lpIndex][1].split('/')[2];
-                        var date = colorLimitPairs[lpIndex][1];
+            LOG.debug('Shorelines.js::?: Geoserver date column is actually a string');
+            createRuleSets = function(colorLimitPairs) {
+                var html = '';
+                for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
+                    var date = colorLimitPairs[lpIndex][1];
                         
-                        var fidArray = CONFIG.ows.featureTypeDescription[layerName].findAll(function(n){
-                            return Date.parse(n.data['DATE_']) == Date.parse(date)
-                        }).map(function(n) {
-                            return n.fid
-                        })
-                        
-                        if (sessionLayer.view["dates-disabled"].indexOf(date) == -1) {
-                            html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>';
-                            html += groupColumn.trim();
-                            html += '</ogc:PropertyName>';
-                            html += '<ogc:Literal>';
-                            html += colorLimitPairs[lpIndex][1];
-                            html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">';
-                            html += colorLimitPairs[lpIndex][0];
-                            html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>';
-                        }
-                    }
-                                    
-                    // default rule 
-                    html += '<Rule><ElseFilter />'
-                    html += '<LineSymbolizer>' 
-                    html += '<Stroke>'
-                    html += '<CssParameter name="stroke-opacity">0</CssParameter>'
-                    html += '</Stroke>'
-                    html+= '</LineSymbolizer>'
-                    html += '</Rule>'
-                                    
-                    return html;
-                }
-            } else {
-                LOG.debug('Shorelines.js::?: Geoserver date column is a date type');
-                createRuleSets = function(colorLimitPairs) {
-                    var html = '';
-                            
-                    for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
-                        var lowerBoundary = '';
-                        var upperBoundary = '';
-                        if (lpIndex == 0) {
-                            lowerBoundary = colorLimitPairs[0][1];
-                            if (colorLimitPairs.length == lpIndex) {
-                                upperBoundary = colorLimitPairs[0][1]; // This means there's only one group'
-                            } else {
-                                upperBoundary = colorLimitPairs[lpIndex + 1][1];
-                            }
-                        } else {
-                            upperBoundary = colorLimitPairs[lpIndex][1]
-                            lowerBoundary = colorLimitPairs[lpIndex - 1][1]
-                        }
-                                
-                        html += '<Rule><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>'
+                    if (sessionLayer.view["dates-disabled"].indexOf(date) == -1) {
+                        html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>';
                         html += groupColumn.trim();
-                        html += ' </ogc:PropertyName><ogc:LowerBoundary>'
-                        html += ' <ogc:Literal>'
-                        html += lowerBoundary
-                        html += '</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary>'
-                        html += '<ogc:Literal>'
-                        html += upperBoundary
-                        html += '</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
-                        html += colorLimitPairs[lpIndex][0]
-                        html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
+                        html += '</ogc:PropertyName>';
+                        html += '<ogc:Literal>';
+                        html += colorLimitPairs[lpIndex][1];
+                        html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">';
+                        html += colorLimitPairs[lpIndex][0];
+                        html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>';
                     }
-                    return html;
                 }
+                                    
+                // default rule 
+                html += '<Rule><ElseFilter />'
+                html += '<LineSymbolizer>' 
+                html += '<Stroke>'
+                html += '<CssParameter name="stroke-opacity">0</CssParameter>'
+                html += '</Stroke>'
+                html+= '</LineSymbolizer>'
+                html += '</Rule>'
+                                    
+                return html;
             }
+            //            } else {
+            //                LOG.debug('Shorelines.js::?: Geoserver date column is a date type');
+            //                createRuleSets = function(colorLimitPairs) {
+            //                    var html = '';
+            //                            
+            //                    for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
+            //                        var lowerBoundary = '';
+            //                        var upperBoundary = '';
+            //                        if (lpIndex == 0) {
+            //                            lowerBoundary = colorLimitPairs[0][1];
+            //                            if (colorLimitPairs.length == lpIndex) {
+            //                                upperBoundary = colorLimitPairs[0][1]; // This means there's only one group'
+            //                            } else {
+            //                                upperBoundary = colorLimitPairs[lpIndex + 1][1];
+            //                            }
+            //                        } else {
+            //                            upperBoundary = colorLimitPairs[lpIndex][1]
+            //                            lowerBoundary = colorLimitPairs[lpIndex - 1][1]
+            //                        }
+            //                                
+            //                        html += '<Rule><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>'
+            //                        html += groupColumn.trim();
+            //                        html += ' </ogc:PropertyName><ogc:LowerBoundary>'
+            //                        html += ' <ogc:Literal>'
+            //                        html += lowerBoundary
+            //                        html += '</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary>'
+            //                        html += '<ogc:Literal>'
+            //                        html += upperBoundary
+            //                        html += '</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
+            //                        html += colorLimitPairs[lpIndex][0]
+            //                        html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
+            //                    }
+            //                    return html;
+            //                }
+            //            }
                         
             sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>'+
             '<StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'+
@@ -303,8 +291,12 @@ var Shorelines = {
         
         $(layers).each(function(i, layer) {
             if (layer.zoomToWhenAdded) {
-                
-                bounds.extend(new OpenLayers.Bounds(CONFIG.ows.getLayerByName(layer.params.LAYERS).bbox["EPSG:900913"].bbox));
+                var layerNS = layer.prefix
+                var layerName = layer.name
+                bounds.extend(new OpenLayers.Bounds(CONFIG.ows.getLayerByName({
+                    layerNS : layerNS,
+                    layerName : layerName
+                    }).bbox["EPSG:900913"].bbox));
                 
                 if (layer.events.listeners.loadend.length) {
                     layer.events.unregister('loadend', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);
@@ -347,7 +339,7 @@ var Shorelines = {
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table body');
         
         var sessionLayer = CONFIG.tempSession.getStageConfig({
-            name : layerName,
+            name : event.object.prefix + ':' + layerName,
             stage : Shorelines.stage
         });
         
@@ -415,7 +407,7 @@ var Shorelines = {
             $('<div />').addClass('tab-pane active').attr('id', this.name).append(
                 colorTableContainer));
                         
-        $('.feature-toggle').toggleButtons({
+        $('#' + layerName + ' .feature-toggle').toggleButtons({
             style: {
                 enabled: "primary"
             },
@@ -423,24 +415,19 @@ var Shorelines = {
                 enabled: "ON",
                 disabled: "OFF"
             },
-            attachedLayer : layerName,
+            attachedLayer : event.object.prefix + ':' + layerName,
             onChange : function($element, status, event) {
                 var layerName = this.attachedLayer;
-                var year = $element.parent().find('input').val();
                 var date = $element.parent().data('date');
                 var sessionLayer = CONFIG.tempSession.getStageConfig({
                     name : layerName,
                     stage : Shorelines.stage
                 });
                     
-                LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for year ' + year + ' on layer ' + layerName);
+                LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for date ' + date + ' on layer ' + layerName);
                         
                 var idTableButtons = $('.btn-year-toggle[date="'+date+'"]');
                 if (!status) {
-                    if (sessionLayer.view["years-disabled"].indexOf(year) == -1) {
-                        sessionLayer.view["years-disabled"].push(year);
-                    }
-                    
                     if (sessionLayer.view["dates-disabled"].indexOf(date) == -1) {
                         sessionLayer.view["dates-disabled"].push(date);
                     }
@@ -449,10 +436,6 @@ var Shorelines = {
                     idTableButtons.addClass('btn-danger');
                     idTableButtons.html('Enable');
                 } else {
-                    while (sessionLayer.view["years-disabled"].indexOf(year) != -1) {
-                        sessionLayer.view["years-disabled"].remove(year);
-                    }
-                    
                     while (sessionLayer.view["dates-disabled"].indexOf(date) != -1) {
                         sessionLayer.view["dates-disabled"].remove(date);
                     }
@@ -539,7 +522,10 @@ var Shorelines = {
         CONFIG.tempSession.session[Shorelines.stage].view.activeLayers = [];
         $("#shorelines-list option:selected").each(function (index, option) {
             LOG.debug('Shorelines.js::shorelineSelected: A shoreline ('+option.text+') was selected from the select list');
-            var layer = CONFIG.ows.getLayerByName(option.value);
+            var layer = CONFIG.ows.getLayerByName({
+                layerNS : option.value.split(':')[0],
+                layerName : option.value.split(':')[1]
+            });
             layerInfos.push(layer);
             
             CONFIG.tempSession.session[Shorelines.stage].view.activeLayers.push(option.value);
@@ -591,9 +577,8 @@ var Shorelines = {
         }
             
     },
-    populateFeaturesList : function(caps) {
+    populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
-            caps : caps, 
             caller : Shorelines
         });
     },

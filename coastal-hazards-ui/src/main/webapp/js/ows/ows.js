@@ -5,12 +5,11 @@ var OWS = function(endpoint) {
     me.geoserverEndpoint = endpoint ? endpoint : CONFIG.geoServerEndpoint;
     me.wfsGetCapsUrl = 'geoserver/ows?service=wfs&version=1.1.0&request=GetCapabilities'
     me.wfsGetFeature = 'geoserver/ows?service=wfs&version=1.1.0&request=GetFeature'
-    me.wfsDescribeFeatureTypeEndpoint = 'geoserver/ows?service=wfs&version=2.0.0&request=DescribeFeatureType'
-    me.wfsCapabilities = null;
+    //    me.wfsDescribeFeatureTypeEndpoint = 'geoserver/ows?service=wfs&version=2.0.0&request=DescribeFeatureType'
+    me.wfsCapabilities = Object.extended();
     me.wfsCapabilitiesXML = null;
-    me.wmsGetCapsUrl = 'geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
-    me.wmsCapabilities = null;
-    me.wmsCapabilitiesXML = null;
+    me.wmsCapabilities = Object.extended();
+    me.wmsCapabilitiesXML = Object.extended();
     me.wpsExecuteRequestPostUrl = 'geoserver/ows?service=wps&version=1.0.0&request=execute'
     
     // An object to hold the return from WFS DescribeFeatureType
@@ -30,7 +29,8 @@ var OWS = function(endpoint) {
                 data : {
                     'file-token': args['file-token'],
                     'feature-name' : args.importName,
-                    'workspace' : args.workspace
+                    'workspace' : args.workspace,
+                    'store' : args.store || 'ch-input'
                 },
                 success : function(data, textStatus, jqXHR) {
                     var scope = this;
@@ -41,15 +41,69 @@ var OWS = function(endpoint) {
             });
         },
         getWMSCapabilities : function(args) {
-            $.ajax(me.wmsGetCapsUrl, {
+            LOG.info('OWS.js::getWMSCapabilities');
+            var namespace = args.namespace || 'ows'
+            var url = 'geoserver/' + namespace + '/wms?service=wms&version=1.3.0&request=GetCapabilities'
+            var callbacks = args.callbacks || {}
+            var sucessCallbacks = callbacks.success || [];
+            var errorCallbacks = callbacks.error || [];
+            
+            LOG.debug('OWS.js::getWMSCapabilities: A request is being made for GetCapabilities for the namespace: ' + namespace);
+            $.ajax(url, {
                 context: args,
                 success : function(data, textStatus, jqXHR) {
                     var getCapsResponse = new OpenLayers.Format.WMSCapabilities.v1_3_0().read(data); 
-                    me.wmsCapabilities = getCapsResponse;
-                    me.wmsCapabilitiesXML = data;
-                    $(args.callbacks.success).each(function(index, callback, allCallbacks) {
-                        callback(getCapsResponse, args);
+                    // Fix an issue with prefixes not being parsed correctly from response
+                    getCapsResponse.capability.layers.each(function(n, i) {
+                        n.prefix = namespace
                     })
+                    me.wmsCapabilities[namespace] = getCapsResponse;
+                    me.wmsCapabilitiesXML[namespace] = data;
+                    $(sucessCallbacks).each(function(index, callback, allCallbacks) {
+                        callback({
+                            wmsCapabilities : getCapsResponse,
+                            data : data, 
+                            textStatus : textStatus,
+                            jqXHR : jqXHR
+                        });
+                    })
+                },
+                error : function(data, textStatus, jqXHR) {
+                    if (this.namespace == CONFIG.tempSession.getCurrentSessionKey() && jqXHR.toLowerCase() == 'not found') {
+                        CONFIG.ui.showAlert({
+                            message : 'Current session was not found on server. Attempting to initialize session on server.'
+                        })
+                        
+                        $.ajax('service/session?action=prepare&workspace=' + this.namespace, 
+                        {
+                            success : function(data, textStatus, jqXHR) {
+                                LOG.info('Session.js::init: A workspace has been prepared on the OWS server with the name of ' + CONFIG.tempSession.getCurrentSessionKey())
+                                CONFIG.ui.showAlert({
+                                    message : 'Your session has been created on the server',
+                                    displayTime : 7500,
+                                    style: {
+                                        classes : ['alert-info']
+                                    }
+                                })
+                                $(errorCallbacks).each(function(index, callback, allCallbacks) {
+                                    callback({
+                                        data : data, 
+                                        textStatus : textStatus,
+                                        jqXHR : jqXHR
+                                    });
+                                })
+                            },
+                            error : function(data, textStatus, jqXHR) {
+                                LOG.error('Session.js::init: A workspace could not be created on the OWS server with the name of ' + randID)
+                                CONFIG.ui.showAlert({
+                                    message : 'No session could be found. A new session could not be created on server. This application may not function correctly.',
+                                    style: {
+                                        classes : ['alert-error']
+                                    }
+                                })
+                            }
+                        })
+                    }
                 }
             })
         },
@@ -63,6 +117,9 @@ var OWS = function(endpoint) {
                     $(args.callbacks).each(function(index, callback, allCallbacks) {
                         callback(getCapsResponse, this);
                     })
+                },
+                error : function(data,textStatus, jqXHR) {
+                    
                 }
             })
         },
@@ -71,8 +128,10 @@ var OWS = function(endpoint) {
                 return featureType.name === name;
             })
         },
-        getLayerByName : function(name) {
-            return me.wmsCapabilities.capability.layers.find(function(layer) {
+        getLayerByName : function(args) {
+            var ns = args.layerNS;
+            var name = args.layerName;
+            return me.wmsCapabilities[ns].capability.layers.find(function(layer) {
                 return layer.name === name;
             })
         },
@@ -107,16 +166,22 @@ var OWS = function(endpoint) {
             return result;
         },
         getDescribeFeatureType : function(args) {
-            LOG.info('OWS.js::getDescribeFeatureType: WFS featureType requested for feature ' + args.featureName);
-            var url = me.wfsDescribeFeatureTypeEndpoint + '&typeName=' + args.featureName;
+            LOG.info('OWS.js::getDescribeFeatureType: WFS featureType requested for feature ' + args.layerName);
+            var layerNS = args.layerNS;
+            var layerName = args.layerName;
+            var url = 'geoserver/' + layerNS+ '/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType&typeName=' + layerName;
             $.ajax(url, {
                 context : args.scope || this,
                 success : function(data, textStatus, jqXHR) {
                     LOG.info('OWS.js::getDescribeFeatureType: WFS featureType response received.');
                     var gmlReader = new OpenLayers.Format.WFSDescribeFeatureType();
                     var describeFeaturetypeRespone = gmlReader.read(data); 
+                    var prefix = args.layerNS;//describeFeaturetypeRespone.featureTypes[0].targetPrefix;
                     
-                    me.featureTypeDescription[describeFeaturetypeRespone.featureTypes[0].typeName] = describeFeaturetypeRespone;
+                    if (!me.featureTypeDescription[prefix]) {
+                        me.featureTypeDescription[prefix] = Object.extended();
+                    }
+                    me.featureTypeDescription[prefix][describeFeaturetypeRespone.featureTypes[0].typeName] = describeFeaturetypeRespone;
                     
                     $(args.callbacks || []).each(function(index, callback) {
                         callback(describeFeaturetypeRespone, this);
@@ -128,7 +193,7 @@ var OWS = function(endpoint) {
             LOG.info('OWS.js::getFilteredFeature');
             LOG.info('OWS.js::getFilteredFeature: Building request for WFS GetFeature (filtered)');
             var layer = args.layer;
-            var url = me.wfsGetFeature + '&typeName=' + layer.name + '&propertyName=';
+            var url = 'geoserver/'+layer.prefix+'/wfs?service=wfs&version=1.1.0&request=GetFeature&typeName=' + layer.name + '&propertyName=';
             url += (args.propertyArray || []).join(',');
             
             $.ajax(url, {
@@ -138,8 +203,10 @@ var OWS = function(endpoint) {
                     var gmlReader = new OpenLayers.Format.GML.v3();
                     var getFeatureResponse = gmlReader.read(data); 
                     LOG.debug('OWS.js::getFilteredFeature: WFS GetFeature parsed .');
-                    
-                    me.featureTypeDescription[args.layer.name] = getFeatureResponse;
+                    if (!me.featureTypeDescription[args.layer.prefix]) {
+                        me.featureTypeDescription[args.layer.prefix] = Object.extended();
+                    }
+                    me.featureTypeDescription[args.layer.prefix][args.layer.name] = getFeatureResponse;
                     
                     LOG.trace('OWS.js::getFilteredFeature: Executing '+args.callbacks.success+'callbacks');
                     $(args.callbacks.success || []).each(function(index, callback, allCallbacks) {
@@ -213,8 +280,8 @@ var OWS = function(endpoint) {
             var context = args.context || this;
             var callbacks = args.callbacks || [];
             var errorCallbacks = args.errorCallbacks || [];
-            if (args.layer.split(':')[0] == 'ch-input') {
-                var url = 'geoserver/ch-input/wfs';
+            if (args.layer.split(':')[0] == CONFIG.tempSession.getCurrentSessionKey()) {
+                var url = 'geoserver/'+CONFIG.tempSession.getCurrentSessionKey()+'/wfs';
                 var wfst = '<wfs:Transaction service="WFS" version="1.1.0" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">' + 
                 '<wfs:Delete typeName="feature:'+layerName+'">' + 
                 '<ogc:Filter>' + 
@@ -267,13 +334,13 @@ var OWS = function(endpoint) {
             '<wps:Input>' + 
             '<ows:Identifier>workspace</ows:Identifier>' + 
             '<wps:Data>' + 
-            '<wps:LiteralData>ch-input</wps:LiteralData>' + 
+            '<wps:LiteralData>'+CONFIG.tempSession.getCurrentSessionKey()+'</wps:LiteralData>' + 
             '</wps:Data>' + 
             '</wps:Input>' + 
             '<wps:Input>' + 
             '<ows:Identifier>store</ows:Identifier>' + 
             '<wps:Data>' + 
-            '<wps:LiteralData>Coastal Hazards Input</wps:LiteralData>' + 
+            '<wps:LiteralData>ch-input</wps:LiteralData>' + 
             '</wps:Data>' + 
             '</wps:Input>' + 
             '<wps:Input>' + 

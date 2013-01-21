@@ -9,9 +9,8 @@ var Baseline = {
         var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
-                url:  "geoserver/ows",
+                url:  "geoserver/"+args.name.split(':')[0]+"/wfs",
                 featureType: args.name.split(':')[1],
-                featureNS: CONFIG.namespace[args.name.split(':')[0]],
                 geometryName: "the_geom"
             }),
             styleMap: new OpenLayers.StyleMap({
@@ -25,9 +24,8 @@ var Baseline = {
         CONFIG.map.removeLayerByName(baselineLayer.name);
         CONFIG.map.getMap().addLayer(baselineLayer);
     },
-    populateFeaturesList : function(caps) {
+    populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
-            caps : caps, 
             caller : Baseline
         });
     },
@@ -38,9 +36,9 @@ var Baseline = {
     refreshFeatureList : function(args) {
         LOG.info('Baseline.js::refreshFeatureList: Will cause WMS GetCapabilities call to refresh current feature list')
         var selectLayer = args.selectLayer; 
-        
+        var namespace = selectLayer.split(':')[0];
         CONFIG.ows.getWMSCapabilities({
-            selectLayer : selectLayer,
+            namespace : namespace,
             callbacks : {
                 success : [
                 CONFIG.tempSession.updateLayersFromWMS,
@@ -89,7 +87,7 @@ var Baseline = {
                 name : selectedBaseline
             })
             
-            if (selectedBaseline.startsWith('ch-input')) {
+            if (selectedBaseline.startsWith(CONFIG.tempSession.getCurrentSessionKey())) {
                 LOG.debug('Baseline.js::baselineSelected: Selected baseline is user-created and is writable. Displaying edit panel.');
                 Baseline.enableEditButton();
             } else {
@@ -127,11 +125,11 @@ var Baseline = {
             var clonedLayer = new OpenLayers.Layer.Vector('baseline-edit-layer',{
                 strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
                 protocol: new OpenLayers.Protocol.WFS({
-                    url:  "geoserver/ows",
+                    url:  "geoserver/"+originalLayer.name.split(':')[0]+"/wfs",
                     featureType: originalLayer.name.split(':')[1],
                     featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
                     geometryName: "the_geom",
-                    schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&;typename=" + originalLayer.name
+                    schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&typename=" + originalLayer.name
                 }),
                 cloneOf : originalLayer.name
             })
@@ -139,19 +137,19 @@ var Baseline = {
             clonedLayer.addFeatures(originalLayer.features);
                     
             // For debugging purposes
-            //            var report = function(event) {
-            //                LOG.debug(event.type, event.feature ? event.feature.id : event.components);
-            //            }
-            //                    
-            //            clonedLayer.events.on({
-            //                "beforefeaturemodified": report,
-            //                "featuremodified": report,
-            //                "afterfeaturemodified": report,
-            //                "vertexmodified": report,
-            //                "sketchmodified": report,
-            //                "sketchstarted": report,
-            //                "sketchcomplete": report
-            //            });
+            //                        var report = function(event) {
+            //                            LOG.debug(event.type, event.feature ? event.feature.id : event.components);
+            //                        }
+            //                                
+            //                        clonedLayer.events.on({
+            //                            "beforefeaturemodified": report,
+            //                            "featuremodified": report,
+            //                            "afterfeaturemodified": report,
+            //                            "vertexmodified": report,
+            //                            "sketchmodified": report,
+            //                            "sketchstarted": report,
+            //                            "sketchcomplete": report
+            //                        });
                     
             var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, 
             {
@@ -164,7 +162,7 @@ var Baseline = {
             
             LOG.debug('Baseline.js::editButtonToggled: Adding cloned layer to map');
             CONFIG.map.getMap().addLayer(clonedLayer);
-                    
+            
             LOG.debug('Baseline.js::editButtonToggled: Removing previous cloned layer from map, if any');
             CONFIG.map.removeControl({
                 id : 'baseline-edit-control'
@@ -172,16 +170,19 @@ var Baseline = {
             
             LOG.debug('Baseline.js::editButtonToggled: Adding clone control to map');
             CONFIG.map.getMap().addControl(editControl);
-                    
+            
+            $("#baseline-edit-container").removeClass('hidden');
+            
             CONFIG.ui.initializeBaselineEditForm();
         } else {
             // remove edit layer, remove edit control
             CONFIG.map.removeLayerByName('baseline-edit-layer');
             CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0])
             $('#baseline-draw-btn').removeAttr('disabled')
+            $("#baseline-edit-container").addClass('hidden');
         }
                 
-        $("#baseline-edit-panel-well").toggleClass('hidden');
+        
             
     },
     enableCloneButton : function() {
@@ -192,19 +193,55 @@ var Baseline = {
     },
     cloneButtonClicked : function() {
         LOG.debug('Baseline.js::cloneButtonClicked');
-        var selectVal = $("#baseline-list option:selected")[0].value;
-        var selectText = $("#baseline-list option:selected")[0].text;
-        CONFIG.ows.cloneLayer({
-            originalLayer : selectVal,
-            newLayer : CONFIG.tempSession.getCurrentSessionKey() + '_' + selectText.split('_')[0] + '_clone_baseline',
-            callbacks : [
-            function(data, textStatus, jqXHR, context) {
-                Baseline.refreshFeatureList({
-                    selectLayer : data
+        var selectVal = $("#baseline-list option:selected").val();
+        var selectText = $("#baseline-list option:selected").html();
+        if (selectVal) {
+            var cloneName = selectText.split('_')[0] + '_cloned_baseline';
+            if (!$('#baseline-list option[value="'+cloneName+'"]').length) {
+                CONFIG.ows.cloneLayer({
+                    originalLayer : selectVal,
+                    newLayer : cloneName,
+                    callbacks : [
+                    function(data, textStatus, jqXHR, context) {
+                        // Check if we got a document (error) or a string (success) back
+                        if (typeof data == "string") {
+                            CONFIG.ui.showAlert({
+                                message : 'Layer cloned successfully.',
+                                displayTime : 7500,
+                                caller : Baseline,
+                                style: {
+                                    classes : ['alert-success']
+                                }
+                            })
+                            
+                            Baseline.refreshFeatureList({
+                                selectLayer : data
+                            })
+                            
+                            $('a[href="#' + Baseline.stage + '-view-tab"]').tab('show');
+                            
+                        } else {
+                            LOG.warn('Baseline.js::cloneButtonClicked: Error returned from server: ' + $(data).find('ows\\:ExceptionText').text());
+                            CONFIG.ui.showAlert({
+                                message : 'Layer not cloned. Check logs.',
+                                displayTime : 7500,
+                                caller : Baseline,
+                                style: {
+                                    classes : ['alert-error']
+                                }
+                            })
+                        }
+                    }
+                    ]
+                })
+            } else {
+                CONFIG.ui.showAlert({
+                    message : 'Cloned layer exists.',
+                    displayTime : 7500,
+                    caller : Baseline
                 })
             }
-            ]
-        })
+        }
     },
     disableDrawButton : function() {
         if (!$('#draw-panel-well').hasClass('hidden')) {
@@ -217,14 +254,14 @@ var Baseline = {
         $('#baseline-draw-btn').removeAttr('disabled');
     },
     disableEditButton : function() {
-        if (!$('#baseline-edit-panel-well').hasClass('hidden')) {
+        if (!$('#baseline-edit-container').hasClass('hidden')) {
             LOG.debug('UI.js::?: Edit form was found to be active. Deactivating edit form');
             $('#baseline-edit-form-toggle').click();
         }
         $('#baseline-edit-form-toggle').attr('disabled', 'disabled');
     },
     enableEditButton : function() {
-        if ($("#baseline-list option:selected")[0].value.startsWith('ch-input')) {
+        if ($("#baseline-list option:selected")[0].value.startsWith(CONFIG.tempSession.getCurrentSessionKey())) {
             LOG.info('Baseline.js::enableEditButton: Showing baseline edit button on panel')
             
             var baselineEditButton = $('#baseline-edit-form-toggle');
@@ -327,10 +364,9 @@ var Baseline = {
     saveButtonClickHandler : function() {
         LOG.info('Baseline.js::saveButtonClickHandler');
         var drawLayer = Baseline.getDrawLayer();
-        var desiredLayerName = ($('#baseline-draw-form-name').val() || Util.getRandomLorem())  + '_baseline';
-        var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + desiredLayerName;
+        var importName = ($('#baseline-draw-form-name').val() || Util.getRandomLorem()) + '_baseline';
         var existingLayer = $("#baseline-list option").filter(function(){
-            return $(this).val().split(':')[1] == importName
+            return $(this).val() == CONFIG.tempSession.getCurrentSessionKey() + ':' + importName
         })
         if (drawLayer.features.length) {
             LOG.info('Baseline.js::saveDrawnFeatures: Layer to be saved, "'+importName+ '" has ' + drawLayer.features.length + ' features');
@@ -343,7 +379,7 @@ var Baseline = {
                         scope : this
                     },
                     headerHtml : 'Resource Exists',
-                    bodyHtml : 'A resource already exists with the name ' + desiredLayerName + '. Would you like to overwrite this resource?',
+                    bodyHtml : 'A resource already exists with the name ' + importName + '. Would you like to overwrite this resource?',
                     primaryButtonText : 'Overwrite',
                     callbacks : [
                     function(event, context) {
@@ -359,7 +395,8 @@ var Baseline = {
                 CONFIG.ows.importFile({
                     'file-token' : '',  // Not including a file token denotes a new, blank file should be imported
                     importName : importName, 
-                    workspace : 'ch-input',
+                    workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                    store : 'ch-input',
                     context : drawLayer,
                     callbacks : [
                     function(data, context) {
@@ -369,8 +406,15 @@ var Baseline = {
                                 context : context
                             });
                         } else {
-                            // TODO - Notify the user
                             LOG.warn(data.error);
+                            CONFIG.ui.showAlert({
+                                message : 'Draw Failed - Check browser logs',
+                                caller : Baseline,
+                                displayTime : 4000,
+                                style: {
+                                    classes : ['alert-error']
+                                }
+                            })
                         }
                     }]
                 });
@@ -383,17 +427,17 @@ var Baseline = {
     saveDrawnFeatures : function(args) {
         LOG.info('Baseline.js::saveDrawnFeatures: User wishes to save thir drawn features');
         var drawLayer = Baseline.getDrawLayer();
-        var desiredLayerName = ($('#baseline-draw-form-name').val() || Util.getRandomLorem())  + '_baseline';
-        var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + desiredLayerName;
+        var desiredLayer = ($('#baseline-draw-form-name').val() || Util.getRandomLorem())  + '_baseline';
+        var importName = CONFIG.tempSession.getCurrentSessionKey() + ':' + ($('#baseline-draw-form-name').val() || Util.getRandomLorem())  + '_baseline';
         var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
         var schema = drawLayer.protocol.schema.replace('geoserver/', geoserverEndpoint);
-        var newSchema = schema.substring(0, schema.lastIndexOf(':') + 1) + importName;
+        var newSchema = schema.substring(0, schema.lastIndexOf('typename=') + 9) + importName;
             
-        drawLayer.protocol.setFeatureType(importName);
+        drawLayer.protocol.setFeatureType(desiredLayer);
         drawLayer.protocol.format.options.schema = newSchema;
         drawLayer.protocol.format.schema = newSchema
         drawLayer.protocol.schema = newSchema;
-        drawLayer.protocol.options.featureType = importName;
+        drawLayer.protocol.options.featureType = desiredLayer;
                         
         // Do WFS-T to fill out the layer
         var saveStrategy = drawLayer.strategies.find(function(n) {
@@ -405,13 +449,34 @@ var Baseline = {
         saveStrategy.events.register('success', null, function() {
             LOG.info('Baseline.js::saveDrawnFeatures: Drawn baseline saved successfully - reloading current layer set from server');
             Baseline.refreshFeatureList({
-                selectLayer : 'ch-input:' + importName
+                selectLayer : importName
             })
+            
+            CONFIG.ui.showAlert({
+                message : 'Draw Successful',
+                caller : Baseline,
+                displayTime : 3000,
+                style: {
+                    classes : ['alert-success']
+                }
+            })
+            $('a[href="#' + Baseline.stage + '-view-tab"]').tab('show');
                             
             LOG.info('Baseline.js::saveDrawnFeatures: Triggering click on baseline draw button')
             $('#baseline-draw-btn').click();
             Baseline.getDrawControl().deactivate();
         });
+        
+        saveStrategy.events.register('fail', null, function() {
+            CONFIG.ui.showAlert({
+                message : 'Draw Failed - Check browser logs',
+                caller : Baseline,
+                displayTime : 4000,
+                style: {
+                    classes : ['alert-error']
+                }
+            })
+        })
                         
         LOG.info('Baseline.js::saveDrawnFeatures: Saving draw features to OWS server');
         saveStrategy.save();

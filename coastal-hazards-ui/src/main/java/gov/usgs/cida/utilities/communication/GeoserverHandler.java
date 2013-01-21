@@ -2,6 +2,11 @@ package gov.usgs.cida.utilities.communication;
 
 import com.vividsolutions.jts.geom.Envelope;
 import gov.usgs.cida.utilities.xml.XMLUtils;
+import it.geosolutions.geoserver.rest.GeoServerRESTManager;
+import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
+import it.geosolutions.geoserver.rest.GeoServerRESTReader;
+import it.geosolutions.geoserver.rest.encoder.datastore.GSShapefileDatastoreEncoder;
+import it.geosolutions.geoserver.rest.manager.GeoServerRESTDatastoreManager;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +15,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,10 +52,11 @@ import org.w3c.dom.NodeList;
 
 /**
  * Manage GeoServer with its REST interface.
- * 
+ *
  * @see http://docs.geoserver.org/latest/en/user/restconfig/rest-config-api.html
  */
 public class GeoserverHandler {
+
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(GeoserverHandler.class);
     private static final String PARAM_POST = "POST";
     private static final String PARAM_PUT = "PUT";
@@ -71,14 +81,14 @@ public class GeoserverHandler {
     public void reloadConfiguration() throws IOException {
         sendRequest("rest/reload/", PARAM_POST, null, "");
     }
-    
-    public HttpResponse importFeaturesFromFile(File file, String workspace, String name) throws IOException {
-        File wpsRequestFile = createImportFromFileProcessXMLFile(file, workspace, name);
-        HttpResponse requestResponse = sendRequest("wps", PARAM_POST, PARAM_TEXT_XML, wpsRequestFile); 
+
+    public HttpResponse importFeaturesFromFile(File file, String workspace, String store, String name) throws IOException {
+        File wpsRequestFile = createImportFromFileProcessXMLFile(file, workspace, store, name);
+        HttpResponse requestResponse = sendRequest("wps", PARAM_POST, PARAM_TEXT_XML, wpsRequestFile);
         return requestResponse;
-    }  
-    
-    File createImportFromFileProcessXMLFile(File shapeFileZip, String workspace, String name) throws IOException {
+    }
+
+    File createImportFromFileProcessXMLFile(File shapeFileZip, String workspace, String store, String name) throws IOException {
         File wpsRequestFile = null;
         FileOutputStream wpsRequestOutputStream = null;
         FileInputStream shapeZipInputStream = null;
@@ -110,7 +120,8 @@ public class GeoserverHandler {
 
             IOUtils.copy(shapeZipInputStream, new Base64OutputStream(wpsRequestOutputStream, true, 0, null));
 
-            wpsRequestOutputStream.write(new StringBuilder("]]></wps:ComplexData>")
+            wpsRequestOutputStream.write(
+                    new StringBuilder("]]></wps:ComplexData>")
                     .append("</wps:Data>")
                     .append("</wps:Input>")
                     .append("<wps:Input>")
@@ -118,8 +129,19 @@ public class GeoserverHandler {
                     .append("<wps:Data>")
                     .append("<wps:LiteralData>").append(workspace).append("</wps:LiteralData>")
                     .append("</wps:Data>")
-                    .append("</wps:Input>")
-                    .append("<wps:Input>")
+                    .append("</wps:Input>").toString().getBytes());
+
+            if (!StringUtils.isEmpty(store)) {
+                wpsRequestOutputStream.write(
+                        new StringBuilder("<wps:Input>")
+                        .append("<ows:Identifier>store</ows:Identifier>")
+                        .append("<wps:Data>")
+                        .append("<wps:LiteralData>").append(store).append("</wps:LiteralData>")
+                        .append("</wps:Data>")
+                        .append("</wps:Input>").toString().getBytes());
+            }
+
+            wpsRequestOutputStream.write(new StringBuilder("<wps:Input>")
                     .append("<ows:Identifier>name</ows:Identifier>")
                     .append("<wps:Data>")
                     .append("<wps:LiteralData>").append(name).append("</wps:LiteralData>")
@@ -155,9 +177,9 @@ public class GeoserverHandler {
 
     public void createDataStoreFromShapefile(String shapefilePath, String layer,
             String workspace, String nativeCRS, String declaredCRS) throws IOException {
-        
+
         LOG.debug("Creating data store on WFS server located at: " + url);
-        
+
         String workspacesPath = PARAM_REST_WORKSPACES;
         if (!workspaceExists(workspace)) {
             String workspaceXML = createWorkspaceXML(workspace);
@@ -166,13 +188,13 @@ public class GeoserverHandler {
         }
 
         String dataStoresPath = workspacesPath + workspace + PARAM_DATASTORES;
-        
+
         String namespace = "";
         Matcher nsMatcher = Pattern.compile(".*<uri>(.*)</uri>.*", Pattern.DOTALL).matcher(getNameSpaceXML(workspace));
         if (nsMatcher.matches()) {
             namespace = nsMatcher.group(1);
         }
-        
+
         String dataStoreXML = createDataStoreXML(layer, workspace, namespace, shapefilePath);
         if (!dataStoreExists(workspace, layer)) {
             // send POST to create the datastore if it doesn't exist
@@ -194,7 +216,7 @@ public class GeoserverHandler {
         sendRequest("rest/layers/" + workspace + ":" + layer, PARAM_PUT, PARAM_TEXT_XML,
                 "<layer><defaultStyle><name>polygon</name></defaultStyle>"
                 + "<enabled>true</enabled></layer>");
-        
+
         LOG.debug("Datastore successfully created on WFS server located at: " + url);
     }
 
@@ -203,11 +225,12 @@ public class GeoserverHandler {
     }
 
     /**
-     * @param maximumFileAge 
-     * @param workspaces 
-     * @throws IOException 
-     * @throws XPathExpressionException 
-     * @See http://internal.cida.usgs.gov/jira/browse/GDP-174?focusedCommentId=18712&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#action_18712
+     * @param maximumFileAge
+     * @param workspaces
+     * @throws IOException
+     * @throws XPathExpressionException
+     * @See
+     * http://internal.cida.usgs.gov/jira/browse/GDP-174?focusedCommentId=18712&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#action_18712
      */
     public void deleteOutdatedDataStores(long maximumFileAge, String... workspaces)
             throws IOException, XPathExpressionException {
@@ -236,15 +259,15 @@ public class GeoserverHandler {
                 boolean deleteFromGeoserver = false;
                 if (diskLocationFileObject.exists()) {
                     if (diskLocationFileObject.lastModified() < now - maximumFileAge) {
-                        LOG.info("File " + diskLocationFileObject.getPath() + 
-                                " older than cutoff. Will remove from Geoserver.");
-                        
+                        LOG.info("File " + diskLocationFileObject.getPath()
+                                + " older than cutoff. Will remove from Geoserver.");
+
                         deleteFromGeoserver = true;
                     }
                 } else {
-                    LOG.info("File " + diskLocationFileObject.getPath() + 
-                            " not found on disk. Will remove from Geoserver.");
-                    
+                    LOG.info("File " + diskLocationFileObject.getPath()
+                            + " not found on disk. Will remove from Geoserver.");
+
                     deleteFromGeoserver = true;
                 }
 
@@ -257,53 +280,54 @@ public class GeoserverHandler {
 
     /**
      * Deletes the directory the shapefiles are located in on disk.
-     * @param workspace 
-     * @param dataStore 
+     *
+     * @param workspace
+     * @param dataStore
      * @throws IOException
-     * @throws XPathExpressionException  
+     * @throws XPathExpressionException
      */
     public void deleteAndWipeDataStore(String workspace, String dataStore)
             throws IOException, XPathExpressionException {
-        
+
         String diskLocation = retrieveDiskLocationOfDataStore(workspace, dataStore).split("file:")[1];
-        
+
         deleteDataStore(workspace, dataStore);
 
         // Get the location of the file from GeoServer
         File diskLocationFileObject = new File(diskLocation);
         if (diskLocationFileObject.isDirectory() && diskLocationFileObject.listFiles().length == 0) {
             // The location is a directory. Delete it
-            try { FileUtils.deleteDirectory(diskLocationFileObject); }
-            catch (IOException e) { 
-                LOG.warn("An error occurred while trying to delete directory" + 
-                         diskLocationFileObject.getPath() + ". This may need to " +
-                         "be deleted manually. \nError: "+e.getMessage()+"\nContinuing."); 
+            try {
+                FileUtils.deleteDirectory(diskLocationFileObject);
+            } catch (IOException e) {
+                LOG.warn("An error occurred while trying to delete directory"
+                        + diskLocationFileObject.getPath() + ". This may need to "
+                        + "be deleted manually. \nError: " + e.getMessage() + "\nContinuing.");
             }
         } else {
-            if(!FileUtils.deleteQuietly(new File(diskLocationFileObject.getParent()))) {
-                LOG.warn("Could not fully remove the directory: " + 
-                         diskLocationFileObject.getParent() + "\nPossibly files left over.");
+            if (!FileUtils.deleteQuietly(new File(diskLocationFileObject.getParent()))) {
+                LOG.warn("Could not fully remove the directory: "
+                        + diskLocationFileObject.getParent() + "\nPossibly files left over.");
             }
         }
     }
 
     boolean workspaceExists(String workspace) throws IOException {
         int responseCode = getResponseCode(PARAM_REST_WORKSPACES + workspace, PARAM_GET);
-        
+
         return isSuccessResponse(responseCode);
     }
 
-
     boolean dataStoreExists(String workspace, String dataStore) throws IOException {
-        int responseCode = getResponseCode(PARAM_REST_WORKSPACES + workspace + 
-                PARAM_DATASTORES + dataStore, PARAM_GET);
-        
+        int responseCode = getResponseCode(PARAM_REST_WORKSPACES + workspace
+                + PARAM_DATASTORES + dataStore, PARAM_GET);
+
         return isSuccessResponse(responseCode);
     }
 
     boolean layerExists(String workspace, String dataStore, String layerName) throws IOException {
-        int responseCode = getResponseCode(PARAM_REST_WORKSPACES + workspace + 
-                PARAM_DATASTORES + dataStore + "/featuretypes/" + layerName + PARAM_DOT_XML, PARAM_GET);
+        int responseCode = getResponseCode(PARAM_REST_WORKSPACES + workspace
+                + PARAM_DATASTORES + dataStore + "/featuretypes/" + layerName + PARAM_DOT_XML, PARAM_GET);
 
         return isSuccessResponse(responseCode);
     }
@@ -313,86 +337,89 @@ public class GeoserverHandler {
 
         return isSuccessResponse(responseCode);
     }
-    
+
     boolean isSuccessResponse(int responseCode) {
-        switch(responseCode) {
-            case PARAM_SERVER_OK: return true;
-            default: return false;
+        switch (responseCode) {
+            case PARAM_SERVER_OK:
+                return true;
+            default:
+                return false;
         }
     }
 
     boolean deleteLayer(String layerName, boolean recursive) throws IOException {
-        LOG.info("Deleting layer '"+layerName+"'");
-        int responseCode = getResponseCode("rest/layers/" + layerName + 
-                ((recursive) ? "?recurse=true" : ""), PARAM_DELETE);
-        
+        LOG.info("Deleting layer '" + layerName + "'");
+        int responseCode = getResponseCode("rest/layers/" + layerName
+                + ((recursive) ? "?recurse=true" : ""), PARAM_DELETE);
+
         switch (responseCode) {
-            case PARAM_SERVER_OK: 
-                LOG.info("Layer '"+layerName+"' was successfully deleted.");
+            case PARAM_SERVER_OK:
+                LOG.info("Layer '" + layerName + "' was successfully deleted.");
                 break;
-            case PARAM_SERVER_NOT_FOUND: 
-                LOG.info("Layer '"+layerName+"' was not found on server.");
+            case PARAM_SERVER_NOT_FOUND:
+                LOG.info("Layer '" + layerName + "' was not found on server.");
                 break;
-            default:  
-                LOG.info("Layer '"+layerName+"' could not be deleted.");
+            default:
+                LOG.info("Layer '" + layerName + "' could not be deleted.");
         }
-        
+
         return isSuccessResponse(responseCode);
     }
 
     boolean deleteDataStore(String workspace, String dataStore)
             throws IOException, XPathExpressionException {
-        
-        LOG.info("Deleting datastore '"+dataStore+"' under workspace '"+workspace+"'");
-        
-        int responseCode = getResponseCode(PARAM_REST_WORKSPACES + workspace + 
-                PARAM_DATASTORES + dataStore + "?recurse=true", PARAM_DELETE);
+
+        LOG.info("Deleting datastore '" + dataStore + "' under workspace '" + workspace + "'");
+
+        int responseCode = getResponseCode(PARAM_REST_WORKSPACES + workspace
+                + PARAM_DATASTORES + dataStore + "?recurse=true", PARAM_DELETE);
 
         switch (responseCode) {
-            case PARAM_SERVER_OK: 
-                LOG.info("Datastore '"+workspace+":"+dataStore+"' was successfully deleted.");
+            case PARAM_SERVER_OK:
+                LOG.info("Datastore '" + workspace + ":" + dataStore + "' was successfully deleted.");
                 break;
-            case PARAM_SERVER_NOT_FOUND: 
-                LOG.info("Datastore '"+workspace+":"+dataStore+"' was not found on server.");
+            case PARAM_SERVER_NOT_FOUND:
+                LOG.info("Datastore '" + workspace + ":" + dataStore + "' was not found on server.");
                 break;
-            default:  
-                LOG.info("Datastore '"+workspace+":"+dataStore+"' could not be deleted.");
+            default:
+                LOG.info("Datastore '" + workspace + ":" + dataStore + "' could not be deleted.");
         }
-        
+
         return isSuccessResponse(responseCode);
     }
 
     /**
-     * Attempts to remove a featuretype from underneath a datastore on the Geoserver server.
+     * Attempts to remove a featuretype from underneath a datastore on the
+     * Geoserver server.
      */
-    boolean deleteFeatureType(String workspace, String dataStore, String featureType, boolean recursive) 
+    boolean deleteFeatureType(String workspace, String dataStore, String featureType, boolean recursive)
             throws IOException {
 
-        LOG.info("Deleting feature type '"+workspace+":"+featureType+"'");
+        LOG.info("Deleting feature type '" + workspace + ":" + featureType + "'");
 
-        int responseCode = getResponseCode(PARAM_REST_WORKSPACES + workspace + 
-                PARAM_DATASTORES + dataStore + "/featuretypes/" + featureType + 
-                ((recursive) ? "?recurse=true" : ""), PARAM_DELETE);
-        
+        int responseCode = getResponseCode(PARAM_REST_WORKSPACES + workspace
+                + PARAM_DATASTORES + dataStore + "/featuretypes/" + featureType
+                + ((recursive) ? "?recurse=true" : ""), PARAM_DELETE);
+
         switch (responseCode) {
-            case PARAM_SERVER_OK: 
-                LOG.info("Feature type '"+workspace+":"+featureType+"' was successfully deleted.");
+            case PARAM_SERVER_OK:
+                LOG.info("Feature type '" + workspace + ":" + featureType + "' was successfully deleted.");
                 break;
-            case PARAM_SERVER_NOT_FOUND: 
-                LOG.info("Feature type '"+workspace+":"+featureType+"' was not found on server.");
+            case PARAM_SERVER_NOT_FOUND:
+                LOG.info("Feature type '" + workspace + ":" + featureType + "' was not found on server.");
                 break;
-            default:  
-                LOG.info("Feature type '"+workspace+":"+featureType+"' could not be deleted.");
+            default:
+                LOG.info("Feature type '" + workspace + ":" + featureType + "' could not be deleted.");
         }
-        
+
         return isSuccessResponse(responseCode);
     }
 
-    String retrieveDiskLocationOfDataStore(String workspace, String dataStore) 
+    String retrieveDiskLocationOfDataStore(String workspace, String dataStore)
             throws IOException, XPathExpressionException {
-        
+
         String responseXML = getResponse(PARAM_REST_WORKSPACES + workspace + PARAM_DATASTORES + dataStore + PARAM_DOT_XML);
-        
+
         String result = XMLUtils.createNodeUsingXPathExpression(
                 "/dataStore/connectionParameters/entry[@key='url']", responseXML).getTextContent();
 
@@ -401,41 +428,41 @@ public class GeoserverHandler {
 
     public List<String> listWorkspaces()
             throws IOException, XPathExpressionException {
-        
+
         return createListFromXML("/workspaces/workspace/name", getWorkspacesXML());
     }
 
     public List<String> listDataStores(String workspace)
             throws IOException, XPathExpressionException {
-        
+
         if (!workspaceExists(workspace)) {
             return new ArrayList<String>(0);
         }
 
         return createListFromXML("/dataStores/dataStore/name", getDataStoresXML(workspace));
     }
-    
+
     public List<String> listFeatureTypes(String workspace, String dataStore)
             throws XPathExpressionException, IOException {
-        
+
         if (!workspaceExists(workspace) || !dataStoreExists(workspace, dataStore)) {
             return new ArrayList<String>(0);
         }
-        
-        return createListFromXML("/featureTypes/featureType/name", 
+
+        return createListFromXML("/featureTypes/featureType/name",
                 getFeatureTypesXML(workspace, dataStore));
     }
-    
-    List<String> createListFromXML(String expression, String xml) 
+
+    List<String> createListFromXML(String expression, String xml)
             throws XPathExpressionException, UnsupportedEncodingException {
-        
+
         NodeList nodeList = XMLUtils.createNodeListUsingXPathExpression(expression, xml);
-        
+
         List<String> result = new ArrayList<String>(nodeList.getLength());
-        for (int nodeIndex = 0;nodeIndex < nodeList.getLength();nodeIndex++) {
+        for (int nodeIndex = 0; nodeIndex < nodeList.getLength(); nodeIndex++) {
             result.add(nodeList.item(nodeIndex).getTextContent());
         }
-        
+
         return result;
     }
 
@@ -450,16 +477,16 @@ public class GeoserverHandler {
     String getFeatureTypesXML(String workspace, String dataStore) throws IOException {
         return getResponse(PARAM_REST_WORKSPACES + workspace + PARAM_DATASTORES + dataStore + "/featuretypes.xml");
     }
-    
+
     int getResponseCode(String path, String requestMethod) throws IOException {
         HttpResponse response = sendRequest(path, requestMethod, null, "");
         return response.getStatusLine().getStatusCode();
     }
-    
+
     String getResponse(String path) throws IOException {
-        
+
         HttpResponse response = sendRequest(path, PARAM_GET, null, "");
-        
+
         ByteArrayOutputStream baos = null;
         try {
             baos = new ByteArrayOutputStream();
@@ -469,14 +496,14 @@ public class GeoserverHandler {
         } finally {
             baos.close();
         }
-        
+
         return baos.toString();
     }
-    
+
     HttpResponse sendRequest(String path, String requestMethod, String contentType, File content) throws FileNotFoundException, IOException {
         HttpPost post;
         HttpClient httpClient = new DefaultHttpClient();
-        
+
         post = new HttpPost(url + path);
 
         FileInputStream wpsRequestInputStream = null;
@@ -484,7 +511,7 @@ public class GeoserverHandler {
             wpsRequestInputStream = new FileInputStream(content);
 
             AbstractHttpEntity entity = new InputStreamEntity(wpsRequestInputStream, content.length());
-        
+
             post.setEntity(entity);
 
             HttpResponse response = httpClient.execute(post);
@@ -495,36 +522,36 @@ public class GeoserverHandler {
             IOUtils.closeQuietly(wpsRequestInputStream);
         }
     }
-    
+
     HttpResponse sendRequest(String path, String requestMethod, String contentType, String content)
             throws IOException {
-        
+
         String fullURL = url + path;
-        
+
         HttpUriRequest request = null;
-        
+
         if (PARAM_GET.equals(requestMethod)) {
             request = new HttpGet(fullURL);
-            
+
         } else if (PARAM_POST.equals(requestMethod)) {
             request = new HttpPost(fullURL);
-            
+
         } else if (PARAM_PUT.equals(requestMethod)) {
             request = new HttpPut(fullURL);
-            
+
         } else if (PARAM_DELETE.equals(requestMethod)) {
             request = new HttpDelete(fullURL);
-            
+
         } else {
             throw new InvalidParameterException();
         }
-        
+
         HttpClient client = new DefaultHttpClient();
-        
+
         //Set authentication
         String encoding = new sun.misc.BASE64Encoder().encode((user + ":" + password).getBytes());
         request.addHeader("Authorization", "Basic " + encoding);
-        
+
         if (contentType != null) {
             request.addHeader("Content-Type", contentType);
         }
@@ -537,55 +564,55 @@ public class GeoserverHandler {
         LOG.debug("Response: " + response.getStatusLine().getReasonPhrase() + " " + response.getStatusLine().getStatusCode());
         return response;
     }
-  
+
     static String createWorkspaceXML(String workspace) {
         return "<workspace><name>" + workspace + "</name></workspace>";
     }
 
     static String createDataStoreXML(String name, String workspace, String namespace, String url) {
 
-        return  "<dataStore>" +
-                "  <name>" + name + "</name>" +
-                "  <type>Shapefile</type>" +
-                "  <enabled>true</enabled>" +
-                "  <workspace>" +
-                "    <name>" + workspace + "</name>" +
-                "  </workspace>" +
-                "  <connectionParameters>" +
-                "    <entry key=\"memory mapped buffer\">true</entry>" +
-                "    <entry key=\"create spatial index\">true</entry>" +
-                "    <entry key=\"charset\">ISO-8859-1</entry>" +
-                "    <entry key=\"url\">file:" + url + "</entry>" +
-                "    <entry key=\"namespace\">" + namespace + "</entry>" +
-                "  </connectionParameters>" +
-                "</dataStore>";
+        return "<dataStore>"
+                + "  <name>" + name + "</name>"
+                + "  <type>Shapefile</type>"
+                + "  <enabled>true</enabled>"
+                + "  <workspace>"
+                + "    <name>" + workspace + "</name>"
+                + "  </workspace>"
+                + "  <connectionParameters>"
+                + "    <entry key=\"memory mapped buffer\">true</entry>"
+                + "    <entry key=\"create spatial index\">true</entry>"
+                + "    <entry key=\"charset\">ISO-8859-1</entry>"
+                + "    <entry key=\"url\">file:" + url + "</entry>"
+                + "    <entry key=\"namespace\">" + namespace + "</entry>"
+                + "  </connectionParameters>"
+                + "</dataStore>";
     }
 
     static String createFeatureTypeXML(String name, String workspace, String nativeCRS, String declaredCRS) {
 
-        return  "<featureType>" +
-                "  <name>" + name + "</name>" +
-                "  <nativeName>" + name + "</nativeName>" +
-                "  <namespace>" +
-                "    <name>" + workspace + "</name>" +
-                "  </namespace>" +
-                "  <title>" + name + "</title>" +
-                // use CDATA as this may contain WKT with XML reserved characters
-                "  <nativeCRS><![CDATA[" + nativeCRS + "]]></nativeCRS>" +
-                "  <srs>" + declaredCRS + "</srs>" +
-                "  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>" +
-                "  <enabled>true</enabled>" +
-                "  <metadata>"+
-                "    <entry key=\"cachingEnabled\">true</entry>" +
-                "  </metadata>" +
-                "  <store class=\"dataStore\">" +
-                "    <name>" + name + "</name>" + // this is actually the datastore name (we keep it the same as the layer name)
-                "  </store>" +
-                "</featureType>";
-}
-    
+        return "<featureType>"
+                + "  <name>" + name + "</name>"
+                + "  <nativeName>" + name + "</nativeName>"
+                + "  <namespace>"
+                + "    <name>" + workspace + "</name>"
+                + "  </namespace>"
+                + "  <title>" + name + "</title>"
+                + // use CDATA as this may contain WKT with XML reserved characters
+                "  <nativeCRS><![CDATA[" + nativeCRS + "]]></nativeCRS>"
+                + "  <srs>" + declaredCRS + "</srs>"
+                + "  <projectionPolicy>REPROJECT_TO_DECLARED</projectionPolicy>"
+                + "  <enabled>true</enabled>"
+                + "  <metadata>"
+                + "    <entry key=\"cachingEnabled\">true</entry>"
+                + "  </metadata>"
+                + "  <store class=\"dataStore\">"
+                + "    <name>" + name + "</name>" + // this is actually the datastore name (we keep it the same as the layer name)
+                "  </store>"
+                + "</featureType>";
+    }
+
     /**
-     *  Ensure url ends with a '/'
+     * Ensure url ends with a '/'
      */
     static String fixURL(String url) {
         String localUrl = "";
@@ -596,13 +623,41 @@ public class GeoserverHandler {
 
         return localUrl;
     }
-    
+
+    public void prepareWorkspace(String geoserverDataDir, String workspace) throws IllegalArgumentException, MalformedURLException, IOException, URISyntaxException {
+        GeoServerRESTManager gsrm = new GeoServerRESTManager(new URL(this.url), this.user, this.password);
+        GeoServerRESTReader reader = gsrm.getReader();
+        GeoServerRESTPublisher publisher = gsrm.getPublisher();
+        GeoServerRESTDatastoreManager dsm = gsrm.getDatastoreManager();
+
+        String inputStorename = "ch-input";
+        String outputStorename = "ch-output";
+        String workspaceLocation = geoserverDataDir + "/workspaces/" + workspace;
+
+        File workspaceDirectory = new File(workspaceLocation);
+        File chInputDirectory = new File(workspaceDirectory, inputStorename);
+        File chOutputDirectory = new File(workspaceDirectory, outputStorename);
+        List<String> workspaceNames = reader.getWorkspaceNames();
+        boolean workspaceExists = workspaceNames.contains(workspace);
+
+        // Prepare the workspace directory to contain the proper dir structure if 
+        // if it doesn't already exist
+        chInputDirectory.mkdirs();
+        chOutputDirectory.mkdirs();
+        if (!workspaceExists) {
+            URI namespaceURI = new URI("gov.usgs.cida.ch." + workspace);
+            publisher.createWorkspace(workspace, namespaceURI);
+            dsm.create(workspace, new GSShapefileDatastoreEncoder(inputStorename, chInputDirectory.toURI().toURL()));
+            dsm.create(workspace, new GSShapefileDatastoreEncoder(outputStorename, chOutputDirectory.toURI().toURL()));
+        }
+    }
+
     public File createEmptyShapefile(String path, String name) throws IOException {
         File shpFile = new File(path, name + ".shp");
         File shxFile = new File(path, name + ".shx");
         File dbfFile = new File(path, name + ".dbf");
         File prjFile = new File(path, name + ".prj");
-        
+
         // Make sure all parent directories exist
         shpFile.getParentFile().mkdirs();
 
@@ -623,7 +678,7 @@ public class GeoserverHandler {
         shxFile.createNewFile();
         dbfFile.createNewFile();
         prjFile.createNewFile();
-        
+
         FileOutputStream shpFileOutputStream = new FileOutputStream(shpFile);
         FileOutputStream shxFileOutputStream = new FileOutputStream(shxFile);
         FileOutputStream dbfFileOutputStream = new FileOutputStream(dbfFile);
@@ -634,11 +689,11 @@ public class GeoserverHandler {
         DbaseFileHeader header = new DbaseFileHeader();
         header.addColumn("ID", 'N', 4, 0);
         header.setNumRecords(0);
-        
+
 
         DbaseFileWriter dfw = new DbaseFileWriter(header, dbfFileOutputStream.getChannel());
         dfw.close();
-        
+
         // Only write headers, geometry will be added over WFS-T
         ShapefileWriter sw = new ShapefileWriter(shpFileOutputStream.getChannel(),
                 shxFileOutputStream.getChannel());
@@ -652,7 +707,7 @@ public class GeoserverHandler {
         String wgs84Prj = "GEOGCS[\"GCS_WGS_1984\",  DATUM[\"D_WGS_1984\",  SPHEROID[\"WGS_1984\", 6378137.0, 298.257223563]],  PRIMEM[\"Greenwich\", 0.0],  UNIT[\"degree\", 0.017453292519943295],  AXIS[\"Longitude\", EAST],  AXIS[\"Latitude\", NORTH]]";
         IOUtils.write(googlePrj, prjFileOutputStream, "UTF-8");
         prjFileOutputStream.close();
-        
+
         return shpFile;
     }
 }

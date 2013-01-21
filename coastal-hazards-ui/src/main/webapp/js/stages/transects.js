@@ -3,20 +3,7 @@ var Transects = {
     suffixes : ['_lt','_st','_transects'],
     reservedColor : '#FF0033',
     defaultSpacing : 500,
-    calcTransects : function() {
-        var layer = new OpenLayers.Layer.WMS( "OpenLayers WMS",
-            "geoserver/sample/wms",
-            {
-                layers: 'sample:DE_to_VA_rates',
-                transparent : true
-            }, {
-                isBaseLayer : false
-            } );
-
-	
-        CONFIG.map.getMap().addLayer(layer);
-	
-    },
+    
     addTransects : function(args) {
         var transects = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
@@ -63,9 +50,8 @@ var Transects = {
             })
         })
     },
-    populateFeatureList : function(caps) {
+    populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
-            caps : caps, 
             caller : Transects
         });
     } ,       
@@ -120,7 +106,7 @@ var Transects = {
         
         if (toggledOn) {
             $('#transects-list').val('');
-//            $('#create-transects-input-name').val(Util.getRandomLorem());
+        //            $('#create-transects-input-name').val(Util.getRandomLorem());
         } else {
             
         // Hide transect layer if needed
@@ -138,9 +124,7 @@ var Transects = {
             shorelines : visibleShorelines,
             baseline : visibleBaseline,
             spacing : spacing,
-            workspace : 'ch-input',
-            store : 'Coastal Hazards Input',
-            layer : CONFIG.tempSession.getCurrentSessionKey() + '_' + layerName + '_transects'
+            layer : layerName + '_transects'
         })
         CONFIG.ows.executeWPSProcess({
             processIdentifier : 'gs:GenerateTransects',
@@ -149,17 +133,39 @@ var Transects = {
             callbacks : [
             // TODO- Error Checking for WPS process response!
             function(data, textStatus, jqXHR, context) {
-                CONFIG.ows.getWMSCapabilities({
-                    callbacks : {
-                        success : [
-                        Transects.populateFeatureList,
-                        function() {
-                            $('#transects-list').val(data);
-                            $('#transects-list').trigger('change');
-                        }                        
-                        ]
-                    }
-                })
+                if (typeof data == 'string') {
+                    CONFIG.ows.getWMSCapabilities({
+                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
+                        callbacks : {
+                            success : [
+                            Transects.populateFeaturesList,
+                            function() {
+                                CONFIG.ui.showAlert({
+                                    message : 'Transect calculation succeeded.',
+                                    displayTime : 7500,
+                                    caller : Transects,
+                                    style: {
+                                        classes : ['alert-success']
+                                    }
+                                })
+                                $('#transects-list').val(data);
+                                $('#transects-list').trigger('change');
+                                $('a[href="#' + Transects.stage + '-view-tab"]').tab('show');
+                            }                        
+                            ]
+                        }
+                    })
+                } else {
+                    LOG.error($(data).find('ows\\:ExceptionText').first().text());
+                    CONFIG.ui.showAlert({
+                        message : 'Transect calculation failed. Check logs.',
+                        displayTime : 7500,
+                        caller : Transects,
+                        style: {
+                            classes : ['alert-error']
+                        }
+                    })
+                }
             }
             ]
         })
@@ -168,8 +174,6 @@ var Transects = {
         var shorelines = args.shorelines;
         var baseline = args.baseline;
         var spacing = args.spacing ? args.spacing : Transects.defaultSpacing;
-        var workspace = args.workspace;
-        var store = args.store;
         var layer = args.layer;
         
         var request = '<?xml version="1.0" encoding="UTF-8"?>' +
@@ -182,11 +186,12 @@ var Transects = {
                 stage : Shorelines.stage
             })
             var excludedDates = sessionLayer.view['dates-disabled'];
+            var prefix = sessionLayer.name.split(':')[0];
             request += '<wps:Input>' + 
             '<ows:Identifier>shorelines</ows:Identifier>' + 
             '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
             '<wps:Body>' + 
-            '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2">' + 
+            '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2" xmlns:'+prefix+'="gov.usgs.cida.ch.' + prefix + '">' + 
             
             (function(args) {
                 var filter = '';
@@ -226,7 +231,7 @@ var Transects = {
         '<ows:Identifier>baseline</ows:Identifier>' + 
         '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
         '<wps:Body>' + 
-        '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2">' + 
+        '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+baseline.split(':')[0]+'="gov.usgs.cida.ch.'+baseline.split(':')[0]+'">' + 
         '<wfs:Query typeName="'+baseline+'" srsName="EPSG:4326" />' + 
         '</wfs:GetFeature>' + 
         '</wps:Body>' + 
@@ -241,13 +246,13 @@ var Transects = {
         '<wps:Input>' + 
         '<ows:Identifier>workspace</ows:Identifier>' + 
         '<wps:Data>' + 
-        '<wps:LiteralData>'+workspace+'</wps:LiteralData>' + 
+        '<wps:LiteralData>'+CONFIG.tempSession.getCurrentSessionKey()+'</wps:LiteralData>' + 
         '</wps:Data>' + 
         '</wps:Input>' +     
         '<wps:Input>' + 
         '<ows:Identifier>store</ows:Identifier>' + 
         '<wps:Data>' + 
-        '<wps:LiteralData>'+store+'</wps:LiteralData>' + 
+        '<wps:LiteralData>ch-input</wps:LiteralData>' + 
         '</wps:Data>' + 
         '</wps:Input>' + 
         '<wps:Input>' + 

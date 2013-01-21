@@ -18,6 +18,26 @@ var UI = function() {
     $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
     $("#create-intersections-btn").on("click", Intersections.calcIntersections);
     
+    // Add tooltips to all the things
+    $('select').popover({
+        title : 'Layer Selection',
+        content : $('<div />')
+        .append($('<div />').css({
+            'color': '#661111',
+            'text-shadow' : '0px 0px 1px #ffffff',
+            'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
+        }).html('Published (read-only)'))
+        .append($('<div />').css({
+            'color' : '#116611',
+            'text-shadow' : '0px 0px 1px #ffffff',
+            'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
+        }).html('Yours'))
+        .html(),
+        html : true,
+        placement : 'bottom',
+        trigger : 'hover'
+    })
+    
     $('.nav-stacked>li>a').each(function(indexInArray, valueOfElement) { 
         $(valueOfElement).on('click', function() {
             me.switchImage(indexInArray);
@@ -70,146 +90,72 @@ var UI = function() {
             LOG.info('UI.js::initializeBaselineEditForm: Initializing Display')
             
             var layerName = $("#baseline-list option:selected")[0].value;
-            var layerTitle = $("#baseline-list option:selected")[0].text;
             LOG.debug('UI.js::initializeBaselineEditForm: Layer to be edited: ' + layerName);
             
             LOG.debug('UI.js::initializeBaselineEditForm: Re-binding edit layer save button click event');
             $('#baseline-edit-save-button').unbind('click', Baseline.saveEditedLayer);
             $('#baseline-edit-save-button').on('click', Baseline.saveEditedLayer);
             
-            $('.baseline-edit-toggle').each(function(i,toggle) {
-                
-                LOG.debug('UI.js::initializeBaselineEditForm: Turning all toggles to DISABLED');
-                if ($(toggle).find('input').attr('checked')) {
-                    $(toggle).find('input').removeAttr('checked');
-                    $(toggle).toggleSlide();
-                }
-                
-                LOG.debug('UI.js::initializeBaselineEditForm: Attaching toggle event to all toggles');
-                $(toggle).toggleSlide({
-                    onClick: function (event, status) {
-                        // Sometimes the click event comes twice if clicking on the toggle graphic instead of 
-                        // the toggle text. When this happens, check for event.timeStamp being 0. When that happens,
-                        // we've already handled the onclick 
-                        LOG.trace('UI.js::initializeBaselineEditForm: Event timestamp:' + event.timeStamp);
-                        if (event.timeStamp) {
-                            var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
-                            var editLayer = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0];
+            // Searching for toggles that do NOT have the toggle-button class means 
+            // we won't re-intialize a toggle button (which causes all sorts of issues)
+            $('.baseline-edit-toggle:not(.toggle-button)').removeAttr('checked')
+            $('.baseline-edit-toggle:not(.toggle-button)').toggleButtons({
+                onChange : function ($el, status, e) {
+                    
+                    var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+                    var editLayer = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0];
+                    var id = $el.parent().attr('id');
                         
-                            var selectedOptions = {};    
-                            var anyTrue = false;
+                        
+                    LOG.debug('UI.js::initializeBaselineEditForm: Edit control is being deactivated. Will get reactivated after initialization');
+                        
+                    if (modifyControl.active) {
+                        modifyControl.deactivate();
+                    }
+                    if (status) {
+                        if (id != 'toggle-aspect-ratio-checkbox') {
+                            $('.baseline-edit-toggle:not(#'+id+')').toggleButtons('setState', false);
+                        }
+                        
+                        modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
                             
-                            LOG.debug('UI.js::initializeBaselineEditForm: Edit control is being deactivated. Will get reactivated after initialization');
-                            modifyControl.deactivate();
-                                                
-                            LOG.trace('UI.js::initializeBaselineEditForm: Checking which toggles are active and which are not');
-                            $('.baseline-edit-toggle>input').each(function(i,cb) {
-                                selectedOptions[cb.id] = $(cb).attr('checked') ? true : false;
-                                
-                                // If we are reading the current target's boolean state, we need to 
-                                // flip it because this event happens before the checkbox gets a check in it
-                                if ($(event.currentTarget).children()[0].id === $(cb).attr('id')) {
-                                    selectedOptions[cb.id] = !selectedOptions[cb.id];
-                                }
-                            })
-                            
-                            modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
-                            
-                            if ($(event.currentTarget).children()[0].id === 'toggle-create-vertex-checkbox' &&
-                                selectedOptions['toggle-create-vertex-checkbox']) {
+                        switch(id) {
+                            case 'toggle-create-vertex-checkbox': {
                                 modifyControl.mode.createVertices = true;
-                                if (!$('#toggle-allow-rotation-checkbox').parent().hasClass('disabled')) {
-                                    $('#toggle-allow-rotation-checkbox').removeAttr('checked');
-                                    $('#toggle-allow-rotation-checkbox').parent().toggleSlide();
-                                }
-                                if (!$('#toggle-allow-resizing-checkbox').parent().hasClass('disabled')) {
-                                    $('#toggle-allow-resizing-checkbox').removeAttr('checked');
-                                    $('#toggle-allow-resizing-checkbox').parent().toggleSlide();
-                                }
-                                if (!$('#toggle-allow-dragging-checkbox').parent().hasClass('disabled')) {
-                                    $('#toggle-allow-dragging-checkbox').removeAttr('checked');
-                                    $('#toggle-allow-dragging-checkbox').parent().toggleSlide();
-                                }
-                                if (!$('#toggle-aspect-ratio-checkbox').parent().hasClass('disabled')) {
-                                    $('#toggle-allow-dragging-checkbox').removeAttr('checked');
-                                    $('#toggle-allow-dragging-checkbox').parent().toggleSlide();
-                                }
-                                            
-                                anyTrue = true;
-                            } else {
-                                $(Object.keys(selectedOptions)).each(function(i,v){
-                                    var createVertexCheckbox = $('#toggle-create-vertex-checkbox')
-                                    if (selectedOptions[v]) {
-                                        switch (v) {
-                                            case 'toggle-allow-rotation-checkbox':
-                                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
-                                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                                if (!createVertexCheckbox.parent().hasClass('disabled')) {
-                                                    createVertexCheckbox.removeAttr('checked');
-                                                    createVertexCheckbox.parent().toggleSlide();
-                                                }
-                                                anyTrue = true;
-                                                break;
-                                            case 'toggle-allow-resizing-checkbox':
-                                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
-                                                if (selectedOptions['toggle-aspect-ratio-checkbox']) {
-                                                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                                }
-                                                if (!createVertexCheckbox.parent().hasClass('disabled')) {
-                                                    createVertexCheckbox.removeAttr('checked');
-                                                    createVertexCheckbox.parent().toggleSlide();
-                                                }
-                                                anyTrue = true;
-                                                break;
-                                            case 'toggle-allow-dragging-checkbox':
-                                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
-                                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                                if (!createVertexCheckbox.parent().hasClass('disabled')) {
-                                                    createVertexCheckbox.removeAttr('checked');
-                                                    createVertexCheckbox.parent().toggleSlide();
-                                                }
-                                                anyTrue = true;
-                                                break;
-                                        }
-                                    } else {
-                                        switch (v) {
-                                            case 'toggle-allow-resizing-checkbox':
-                                                if (!$('#toggle-aspect-ratio-checkbox').parent().hasClass('disabled')) {
-                                                    $('#toggle-aspect-ratio-checkbox').removeAttr('checked');
-                                                    $('#toggle-aspect-ratio-checkbox').parent().toggleSlide();
-                                                }
-                                        }
-                                    }
-                                })
+                                break;
                             }
-                            
-                            if (anyTrue) {
-                                LOG.debug('Found at least one modify option toggled true. Activating modify control.')
-                                modifyControl.activate();
-                                $(editLayer.features).each(function(i,f) {
-                                    modifyControl.selectFeature(f);
-                                })
-                            } else {
-                                LOG.debug('Did not find at least one modify option toggled true. Modify Control remains deactivated.')
-                                $(editLayer.features).each(function(i,f) {
-                                    modifyControl.unselectFeature(f);
-                                })
+                            case 'toggle-allow-rotation-checkbox': {
+                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
+                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                break;
+                            }
+                            case 'toggle-allow-dragging-checkbox': {
+                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
+                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                break;
+                            }
+                            case 'toggle-allow-resizing-checkbox': {
+                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                                if ($('.baseline-edit-toggle#toggle-aspect-ratio-checkbox').toggleButtons('status')) {
+                                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                }
+                                break
+                            }
+                            case 'toggle-aspect-ratio-checkbox': {
+                                if ($('.baseline-edit-toggle#toggle-allow-resizing-checkbox').toggleButtons('status')) {
+                                    modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                }
+                                break;
                             }
                         }
-                    },
-                    text: {
-                        enabled: false, 
-                        disabled: false
-                    },
-                    //                    style: {
-                    //                        enabled: 'success',
-                    //                        disabled : 'danger'
-                    //                    },
-                    layerName : layerName,
-                    layerTitle : layerTitle
-                    
-                })
-                
+                        LOG.debug('Found at least one modify option toggled true. Activating modify control.')
+                        modifyControl.activate();
+                        $(editLayer.features).each(function(i,f) {
+                            modifyControl.selectFeature(f);
+                        })
+                    }
+                }
             })
         },
         initializeUploader : function(args) {
@@ -243,37 +189,67 @@ var UI = function() {
                 callbacks: {
                     onComplete: function(id, fileName, responseJSON) {
                         if (responseJSON.success != 'true') {
-                            // TODO - Notify the user
-                            LOG.info('File failed to complete upload')
+                            LOG.warn('File failed to complete upload')
                         } else {
                             LOG.info("UI.js::initializeUploader: Upload complete: File token returned: :" + responseJSON['file-token']);
                             
-                            var importName = CONFIG.tempSession.getCurrentSessionKey() + '_' + responseJSON['file-name'].split('.')[0] + '_' + context;
+                            var importName = responseJSON['file-name'].split('.')[0] + '_' + context;
                             
                             CONFIG.ows.importFile({
                                 'file-token' : responseJSON['file-token'],
                                 importName : importName, 
-                                workspace : 'ch-input',
-                                callbacks : [function(data) {
+                                workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                                callbacks : [
+                                function(data) {
                                     if (data.success === 'true') {
                                         LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
                                         CONFIG.ows.getWMSCapabilities({
+                                            namespace : CONFIG.tempSession.getCurrentSessionKey(),
                                             callbacks : {
                                                 success : [
-                                                function (data) {
-                                                    CONFIG.tempSession.updateLayersFromWMS(data);
+                                                function (args) {
+                                                    CONFIG.ui.showAlert({
+                                                        message : 'Upload Successful',
+                                                        caller : caller,
+                                                        displayTime : 3000,
+                                                        style: {
+                                                            classes : ['alert-success']
+                                                        }
+                                                    })
+                                                    CONFIG.tempSession.updateLayersFromWMS(args);
                                                     CONFIG.ui.populateFeaturesList({
-                                                        caps : data,
                                                         caller : caller
                                                     });
+                                                    $('a[href="#' + caller.stage + '-view-tab"]').tab('show');
                                                 }
                                                 ],
-                                                error : []
+                                                error : [
+                                                function(args) {
+                                                    LOG.info('UI.js::Uploader Error Callback: Import incomplete.');
+                                                    CONFIG.ui.showAlert({
+                                                        message : 'Import incomplete',
+                                                        caller : caller,
+                                                        displayTime : 3000,
+                                                        style: {
+                                                            classes : ['alert-error']
+                                                        }
+                                                    })
+                                                }
+                                                ]
                                             }
                                         })
                                     } else {
-                                        // TODO - Notify the user
                                         LOG.warn(data.error);
+                                        LOG.info('UI.js::Uploader Error Callback: Import incomplete.');
+                                        CONFIG.ui.showAlert({
+                                            message : 'Import incomplete',
+                                            caller : caller,
+                                            displayTime : 3000,
+                                            style: {
+                                                classes : ['alert-error']
+                                            }
+                                        })
+                                                
                                     }
                                 }]
                             });
@@ -285,55 +261,63 @@ var UI = function() {
             return uploader;
         },
         populateFeaturesList : function(args) {
-            var caps = args.caps;
+            var wmsCapabilities = CONFIG.ows.wmsCapabilities;
             var caller = args.caller;
             var suffixes = caller.suffixes || [];
             var stage = caller.stage;
             
-            LOG.info('UI.js::populateFeatureList:: Populating feature list for ' + stage);
+            LOG.info('UI.js::populateFeaturesList:: Populating feature list for ' + stage);
             $('#'+stage+'-list').children().remove();
         
             // Add a blank spot at the top of the select list
-            if (stage == Baseline.stage|| stage == Transects.stage||stage == Intersections.stage) {
+            if (stage == Baseline.stage
+                || stage == Transects.stage
+                ||stage == Intersections.stage 
+                || stage == Results.stage) {
                 $('#'+stage+'-list')
                 .append($("<option />")
                     .attr("value",'')
                     .text(''));
             }
         
-            $(caps.capability.layers).each(function(i, layer) { 
-                var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
-                var title = layer.title;
+            wmsCapabilities.keys().each(function(layerNS) {
+                var cap = wmsCapabilities[layerNS];
+                var layers = cap.capability.layers;
+                var sessionLayerClass = 'session-layer';
+                var publishedLayerClass = 'published-layer';
+                
+                for (var lIndex = 0;lIndex < layers.length;lIndex++) {
+                    var layer = layers[lIndex];
+                    var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
+                    var title = layer.title;
             
-                // Add the option to the list only if it's from the sample namespace or
-                // if it's from the input namespace and in the current session
-                if (layer.prefix === 'sample' || (layer.prefix === 'ch-input' && title.has(currentSessionKey) )) {
+                    // Add the option to the list only if it's from the sample namespace or
+                    // if it's from the input namespace and in the current session
+                    if (layerNS == 'sample' || layerNS == currentSessionKey) {
+                        var type = title.substr(title.lastIndexOf('_'));
+                        if (suffixes.length == 0 || suffixes.find(type.toLowerCase())) {
+                            LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title)
+                            var stageConfig = CONFIG.tempSession.getStageConfig({
+                                stage : stage,
+                                name : layerNS + ':' + layer.name
+                            })
                         
-                    var shortenedTitle = title.has(currentSessionKey) ?  
-                    title.remove(currentSessionKey + '_') : 
-                    title;
-                    
-                    var type = title.substr(title.lastIndexOf('_'));
-                    if (suffixes.length == 0 || suffixes.find(type.toLowerCase())) {
-                        LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title)
-                        
-                        var stageConfig = CONFIG.tempSession.getStageConfig({
-                            stage : stage,
-                            name : layer.name
-                        })
-                        
-                        $('#'+stage+'-list')
-                        .append($("<option />")
-                            .attr("value",layer.name)
-                            .text(shortenedTitle));
+                            var option = $("<option />")
+                            .attr({
+                                "value" : layerNS + ':' + layer.name
+                            })
+                            .addClass(layerNS == 'sample' ? publishedLayerClass : sessionLayerClass)
+                            .text(layer.name)
                             
-                        
-                        CONFIG.tempSession.setStageConfig({
-                            stage : stage,
-                            config : stageConfig
-                        })
-                    } 
-                }
+                            $('#'+stage+'-list')
+                            .append(option);
+                            CONFIG.tempSession.setStageConfig({
+                                stage : stage,
+                                config : stageConfig
+                            })
+                        } 
+                    }
+                } 
             })
             
             LOG.debug('UI.js::populateFeaturesList: Re-binding select list');
@@ -366,13 +350,14 @@ var UI = function() {
                     v.click();
                 }) 
                 
-                var layerName = event.features[0].gml.featureNSPrefix + ':' + event.features[0].fid.split('.')[0];
+                var layerTitle = event.features[0].fid.split('.')[0]
+                var layerName = event.features[0].gml.featureNSPrefix + ':' + layerTitle;
                 var shorelineIdContainer = $('<div />').attr('id', layerName + '-id-container').addClass('shoreline-id-container');
                 var shorelineIdTable = $('<table />').attr('id', layerName + '-id-table').addClass('shoreline-id-table table table-striped table-condensed');
                 var thead = $('<thead />');
                 var theadTr = $('<tr />');
                 var tbody = $('<tbody />');
-                thead.append($('<caption />').append($('<h3 />').append(layerName)))
+                thead.append($('<caption />').append($('<h3 />').append(layerTitle)))
                 
                 $(Object.keys(event.features[0].attributes)).each(function(i,v) {
                     theadTr.append($('<th />').append(v))
@@ -451,7 +436,102 @@ var UI = function() {
                         
             } else {
                 LOG.debug('UI.js::showShorelineInfo: No features were found at point of mouse click');
+                CONFIG.ui.showAlert({
+                    message : 'No shorelines found',
+                    caller : Shorelines,
+                    displayTime : 2000,
+                    style: {
+                        classes : ['alert-info']
+                    }
+                })
             }
+        },
+        showAlert : function(args) {
+            var caller = args.caller || {
+                stage : 'application'
+            };
+            var message = args.message || '';
+            var style = args.style || {
+                classes : []
+            }
+            var alertContainer = $('#' + caller.stage + '-alert-container');
+            var alertDom = $('<div />').attr('id', caller.stage + '-alert');
+            var close = args.close || true;
+            var displayTime = args.displayTime || 0;
+            
+            CONFIG.alertQueue[caller.stage].unshift({
+                message : message,
+                style : style,
+                displayTime : displayTime,
+                close : close
+            })
+            
+            var createAlert = function(args) {
+                var nextMessageObj = CONFIG.alertQueue[args.caller.stage].pop();
+                if (nextMessageObj.hasOwnProperty('message')) {
+                    var alertContainer = args.alertContainer;
+                    var alertDom = $('<div />');
+                    var style = nextMessageObj.style;
+                    var close = nextMessageObj.close;
+                    var message = nextMessageObj.message;
+                    var displayTime = nextMessageObj.displayTime;
+                    var createAlertFn = args.createAlertFn
+                    var queueLength = CONFIG.alertQueue[args.caller.stage].length;
+                    
+                    alertDom.addClass('alert fade in');
+                    if (style.classes) {
+                        alertDom.addClass(style.classes.join(' '));
+                    }
+            
+                    if (close) {
+                        alertDom.append($('<button />')
+                            .attr({
+                                'type' : 'button',
+                                'data-dismiss' : 'alert',
+                                'href' : '#'
+                            })
+                            .addClass('close')
+                            .html('&times;'))
+                    }
+                    
+                    if (queueLength) {
+                        alertDom.append($('<div />').addClass('alert-queue-notifier').html(queueLength + ' more'))
+                    }
+            
+                    alertDom.append($('<div />').html(message));
+                    alertContainer.append(alertDom);
+                
+                    alertDom.on('closed', function() {
+                        if (CONFIG.alertQueue[args.caller.stage].length) {
+                            createAlertFn({
+                                alertDom : alertDom,
+                                alertContainer : alertContainer,
+                                createAlertFn : createAlertFn,
+                                caller : args.caller
+                            })
+                        }
+                    })
+                
+                    alertDom.alert()
+                
+                    if (displayTime) {
+                        setTimeout(function() {
+                            alertDom.alert('close');
+                        },displayTime)
+                    }
+                }
+            }
+            
+            // The container is empty so go ahead and fire the alert
+            if (alertContainer.children().length == 0) {
+                createAlert({
+                    alertDom : alertDom,
+                    alertContainer : alertContainer,
+                    createAlertFn : createAlert,
+                    caller : caller
+                })
+            }
+            
         }
     });
 }

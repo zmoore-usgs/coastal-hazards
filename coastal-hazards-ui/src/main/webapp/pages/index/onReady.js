@@ -7,6 +7,16 @@ $(document).ready(function() {
     
     // Math.seedrandom('Look @ http://davidbau.com/encode/seedrandom.js')
     
+    // Contains the pemanent session object which holds one or more sessions
+    CONFIG.permSession = new Session('coastal-hazards', true);
+    // Contains the non-permanent single-session object
+    CONFIG.tempSession = new Session('coastal-hazards', false);
+    var currentSessionKey = CONFIG.permSession.getCurrentSessionKey();
+    LOG.info('OnReady.js:: Sessions created. User session list has ' + Object.keys(CONFIG.permSession.session.sessions).length + ' sessions.')
+    LOG.info('OnReady.js:: Current session key: ' + currentSessionKey);
+    
+    CONFIG.tempSession.setCurrentSession(currentSessionKey, CONFIG.permSession);
+    
     // Utility class for the user interface
     CONFIG.ui = new UI();
     
@@ -16,31 +26,40 @@ $(document).ready(function() {
     // Primarily a utility class
     CONFIG.ows = new OWS();
     
-    // Contains the pemanent session object which holds one or more sessions
-    CONFIG.permSession = new Session('coastal-hazards', true);
-    // Contains the non-permanent single-session object
-    CONFIG.tempSession = new Session('coastal-hazards', false);
-    
-    LOG.info('OnReady.js:: Sessions created. User session list has ' + Object.keys(CONFIG.permSession.session.sessions).length + ' sessions.')
-    LOG.info('OnReady.js:: Current session key: ' + CONFIG.permSession.getCurrentSessionKey());
-    
-    CONFIG.tempSession.setCurrentSession(CONFIG.permSession.getCurrentSessionKey(), CONFIG.permSession);
-    
     LOG.info('OnReady.js:: Preparing call to OWS GetCapabilities')
     CONFIG.ows.getWMSCapabilities({
+        namespace : 'sample',
         callbacks : {
             success : [
-            CONFIG.tempSession.updateLayersFromWMS,
-            Shorelines.initializeUploader,
-            Baseline.initializeUploader,
-            Transects.initializeUploader,
-            Shorelines.populateFeaturesList,
-            Baseline.populateFeaturesList,
-            Transects.populateFeatureList,
-            Intersections.populateFeatureList,
-            Results.populateFeatureList,
-            ],
-            error : []
+            function() {
+                CONFIG.ows.getWMSCapabilities({
+                    namespace : currentSessionKey,
+                    callbacks : {
+                        success : [
+                        CONFIG.tempSession.updateLayersFromWMS,
+                        Shorelines.initializeUploader,
+                        Baseline.initializeUploader,
+                        Transects.initializeUploader,
+                        Shorelines.populateFeaturesList,
+                        Baseline.populateFeaturesList,
+                        Transects.populateFeaturesList,
+                        Intersections.populateFeaturesList,
+                        Results.populateFeaturesList
+                        ],
+                        error : [
+                        Shorelines.initializeUploader,
+                        Baseline.initializeUploader,
+                        Transects.initializeUploader,
+                        Shorelines.populateFeaturesList,
+                        Baseline.populateFeaturesList,
+                        Transects.populateFeaturesList,
+                        Intersections.populateFeaturesList,
+                        Results.populateFeaturesList
+                        ]
+                    }
+                })
+            }
+            ]
         }
     })
 })
