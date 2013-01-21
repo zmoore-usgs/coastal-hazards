@@ -9,6 +9,19 @@
     color: #000000;
 }
 
+/* Left Nav Bar Image Sizing */
+.nav-stacked li a img {
+    width : 70%;
+}
+
+.nav-stacked li.active a img {
+    width : 100%;
+}
+
+.nav-pills.nav-stacked > li > a {
+    text-align: center;
+}
+
 /* For now, turn off qqUploader completed lists */
 .qq-upload-list {
     display: none;
@@ -95,16 +108,4 @@ li.alert-error {
 
 .alert-error .qq-upload-failed-text {
     display: inline;
-}
-
-.nav-stacked li a img {
-    width : 70%;
-}
-
-.nav-stacked li.active a img {
-    width : 100%;
-}
-
-.nav-pills.nav-stacked > li > a {
-    text-align: center;
 }
