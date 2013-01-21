@@ -39,15 +39,14 @@
         </jsp:include>
     </head>
     <body>
-        <div id="application-overlay" style="height : 100%; width : 100%; position : absolute; background-color: #FFFFFF; z-index: 2000;">
+        <div id="application-overlay">
             <div id="application-overlay-content">
-                <h4><u>Coastal Hazards</u></h4>
+                <h1><div>Coastal Hazards</div></h1>
+                <img id="application-overlay-banner" src="images/banner/banner.jpg"/>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 <br /><br />
-                Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
-                <br /><br />
-                At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
-                <div style="float:right;"><img src="images/spinner/spinner3.gif" /></div>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <div style="text-align:center;"><img src="images/spinner/spinner3.gif" /></div>
             </div>
 
         </div>
@@ -287,19 +286,29 @@
                                 <div class="span4"><h3>Results</h3></div>
                                 <div class="span8" id="results-alert-container"></div>
                             </div>
-                            <div class="row-fluid span12">
-                                <div class="well" id="results-well">
+                            <ul class="nav nav-tabs" id="action-result-tablist">
+                                <li class="active"><a  data-toggle="tab" href="#results-view-tab">View</a></li>
+                                <li><a data-toggle="tab" href="#results-manage-tab">Manage</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="results-view-tab">
                                     <select id="results-list" style="width: 100%;"></select>
+                                    <div class="row-fluid">
+                                        <div class="tabbable">
+                                            <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
+                                            <div class="tab-content" id="results-tabcontent"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="results-manage-tab">
+                                    <button class="btn btn-success" id="create-results-btn">
+                                        <i class="icon-pencil icon-white"></i>
+                                        &nbsp;Calculate Results
+                                    </button>
                                 </div>
                             </div>
 
-                            <div class="row-fluid span12">
-                                <div class="tabbable">
-                                    <ul class="nav nav-tabs" id="results-table-navtabs">
-                                    </ul>
-                                    <div class="tab-content" id="results-tabcontent"></div>
-                                </div>
-                            </div>
+
                         </div> <!-- /Results -->
 
                     </div>
@@ -441,9 +450,6 @@
     <!-- TODO - Modularize -->
     <link type="text/css" rel="stylesheet" href="css/jquery-bootstrap-toggle/bootstrap-toggle-buttons.css" />
     <script type="text/javascript" src="js/jquery-bootstrap-toggle/jquery.toggle.buttons.js"></script>
-    <!-- TODO - Modularize -->
-    <link type="text/css" rel="stylesheet" href="css/normalize/normalize.css" />
     <link type="text/css" rel="stylesheet" href="css/custom.css" />
-
     <script type="text/javascript" src="js/onReady.js"></script>
 </html>

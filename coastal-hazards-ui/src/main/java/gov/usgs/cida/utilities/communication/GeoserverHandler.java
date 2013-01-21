@@ -5,6 +5,8 @@ import gov.usgs.cida.utilities.xml.XMLUtils;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
+import it.geosolutions.geoserver.rest.decoder.RESTDataStore;
+import it.geosolutions.geoserver.rest.decoder.RESTLayer;
 import it.geosolutions.geoserver.rest.encoder.datastore.GSShapefileDatastoreEncoder;
 import it.geosolutions.geoserver.rest.manager.GeoServerRESTDatastoreManager;
 import java.io.ByteArrayOutputStream;
@@ -13,7 +15,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -709,5 +710,16 @@ public class GeoserverHandler {
         prjFileOutputStream.close();
 
         return shpFile;
+    }
+
+    public boolean removeLayer(String geoserverDataDir, String workspace, String store, String layer) throws IllegalArgumentException, MalformedURLException {
+        GeoServerRESTManager gsrm = new GeoServerRESTManager(new URL(this.url), this.user, this.password);
+        GeoServerRESTPublisher publisher = gsrm.getPublisher();
+        boolean success =  publisher.unpublishFeatureType(workspace, store, layer);
+        boolean storeReloaded  = false;
+        if (success) {
+            storeReloaded = publisher.reloadStore(workspace, store, GeoServerRESTPublisher.StoreType.DATASTORES);
+        }
+        return success;
     }
 }
