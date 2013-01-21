@@ -107,85 +107,86 @@
                                         <select id="baseline-list" style="width: 100%;"></select>
                                     </div>
                                     <div class="tab-pane" id="baseline-manage-tab">
+
                                         <div id="baseline-button-row" class="row-fluid">
-                                            <div id="baseline-uploader"></div>
-                                            <button id="baseline-draw-btn" class="btn btn-success" data-toggle="button">
-                                                <i class="icon-pencil icon-white"></i>
-                                                &nbsp;Draw Baseline
-                                            </button>
-                                            <button data-toggle="button" class="btn btn-success" disabled id="baseline-edit-form-toggle">
-                                                <i class="icon-pencil icon-white"></i>
-                                                &nbsp;Edit Baseline
-                                            </button>
-                                            <button class="btn btn-success" disabled id="baseline-clone-btn">
-                                                <i class="icon-pencil icon-white"></i>
-                                                &nbsp;Clone Baseline
-                                            </button>
+                                            <div class="row-fluid">
+                                                <div id="baseline-uploader"></div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <button id="baseline-draw-btn" class="btn btn-success" data-toggle="button">
+                                                    <i class="icon-pencil icon-white"></i>
+                                                    &nbsp;Draw Baseline
+                                                </button>
+                                                <button data-toggle="button" class="btn btn-success" disabled id="baseline-edit-form-toggle">
+                                                    <i class="icon-pencil icon-white"></i>
+                                                    &nbsp;Edit Baseline
+                                                </button>
+                                                <button class="btn btn-success" disabled id="baseline-clone-btn">
+                                                    <i class="icon-pencil icon-white"></i>
+                                                    &nbsp;Clone Baseline
+                                                </button>
+                                            </div>
                                         </div>
 
-                                        <div class="row-fluid span12">
-                                            <!-- Baseline Drawing -->
-                                            <div class="row-fluid span12">
-                                                <div id="draw-panel-well" class="well hidden">
-                                                    <div id="draw-panel-container" class="container-fluid">
-                                                        <div class="row-fluid span12">
-                                                            <label class="control-label" for="baseline-draw-form-name">Baseline Name</label>
-                                                            <input class="input-large span5" name="baseline-draw-form-name" id="baseline-draw-form-name">
-                                                        </div>
-                                                        <div class="row-fluid span12">
-                                                            <button class="btn btn-success span2" id="baseline-draw-form-save">Save</button>
-                                                            <button class="btn btn-success span2" id="baseline-draw-form-clear">Clear</button>
-                                                        </div>
+                                        <!-- Baseline Drawing -->
+                                        <div class="row-fluid">
+                                            <div id="draw-panel-well" class="well hidden">
+                                                <div id="draw-panel-container" class="container-fluid">
+                                                    <div class="row-fluid">
+                                                        <label class="control-label" for="baseline-draw-form-name">Baseline Name</label>
+                                                        <input class="input-large span5" name="baseline-draw-form-name" id="baseline-draw-form-name">
+                                                    </div>
+                                                    <div class="row-fluid">
+                                                        <button class="btn btn-success span2" id="baseline-draw-form-save">Save</button>
+                                                        <button class="btn btn-success span2" id="baseline-draw-form-clear">Clear</button>
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <!-- Baseline Editing -->
-                                            <div class="row-fluid">
-                                                <div id="baseline-edit-container" class="container-fluid">
-                                                    <div id="baseline-edit-panel-well" class="well hidden">
-                                                        <div class="row-fluid">
-                                                            <div class="span2">Create Vertex</div>
-                                                            <div class="span4">
-                                                                <div class="baseline-edit-toggle" id="toggle-create-vertex-checkbox">
-                                                                    <input type="checkbox">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row-fluid">
-                                                            <div class="span2">Allow Rotation</div>
-                                                            <div class="span4">
-                                                                <div class="baseline-edit-toggle" id="toggle-allow-rotation-checkbox">
-                                                                    <input type="checkbox">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row-fluid">
-                                                            <div class="span2">Allow Resizing</div>
-                                                            <div class="span4">
-                                                                <div class="baseline-edit-toggle" id="toggle-allow-resizing-checkbox">
-                                                                    <input type="checkbox">
-                                                                </div>
-                                                            </div>
-                                                            <div class="span2">Maintain Aspect Ratio</div>
-                                                            <div class="span4">
-                                                                <div class="baseline-edit-toggle" id="toggle-aspect-ratio-checkbox">
-                                                                    <input type="checkbox">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row-fluid span12">
-                                                            <div class="span2">Allow Dragging</div>
-                                                            <div class="span4">
-                                                                <div class="baseline-edit-toggle" id="toggle-allow-dragging-checkbox">
-                                                                    <input type="checkbox">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row-fluid span12">
-                                                            <button class="span3 btn btn-success" id="baseline-edit-save-button" title="Update Modified Baseline">Update Baseline</button>
+                                        <!-- Baseline Editing -->
+                                        <div class="row-fluid">
+                                            <div id="baseline-edit-container" class="container-fluid hidden">
+                                                <div class="row-fluid">
+                                                    <div class="span3">
+                                                        <label for="toggle-create-vertex-checkbox">Create Vertex</label>
+                                                        <div class="baseline-edit-toggle" id="toggle-create-vertex-checkbox">
+                                                            <input type="checkbox">
                                                         </div>
                                                     </div>
+                                                </div>
+                                                <div class="row-fluid">
+                                                    <div class="span6">
+                                                        <label for="toggle-allow-rotation-checkbox">Rotate</label>
+                                                        <div class="baseline-edit-toggle" id="toggle-allow-rotation-checkbox">
+                                                            <input type="checkbox">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row-fluid">
+                                                    <div class="span6">
+                                                        <label for="toggle-allow-resizing-checkbox">Resize</label>
+                                                        <div class="baseline-edit-toggle" id="toggle-allow-resizing-checkbox">
+                                                            <input type="checkbox">
+                                                        </div>
+                                                    </div>
+                                                    <div class="span6">
+                                                        <label for="toggle-aspect-ratio-checkbox">Maintain Aspect Ratio</label>
+                                                        <div class="baseline-edit-toggle" id="toggle-aspect-ratio-checkbox">
+                                                            <input type="checkbox">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row-fluid">
+                                                    <div class="span6">
+                                                        <label for="toggle-allow-dragging-checkbox">Drag</label>
+                                                        <div class="baseline-edit-toggle" id="toggle-allow-dragging-checkbox">
+                                                            <input type="checkbox">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row-fluid">
+                                                    <button class="btn btn-success" id="baseline-edit-save-button" title="Update Modified Baseline">Update Baseline</button>
                                                 </div>
                                             </div>
                                         </div>

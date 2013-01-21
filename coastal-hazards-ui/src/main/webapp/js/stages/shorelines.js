@@ -203,76 +203,72 @@ var Shorelines = {
             '</StyledLayerDescriptor>';
         } else if (!isNaN(Date.parse(colorDatePairings[0][1]))) { 
             LOG.debug('Shorelines.js::?: Grouping will be done by year')
-//            var featureDescription = CONFIG.ows.featureTypeDescription[layer.prefix][layer.name];
-            
-//            var dateType = featureDescription[0].attributes[groupColumn];
             
             var createRuleSets;
-//            if (dateType.type === 'xsd:string') {
-                LOG.debug('Shorelines.js::?: Geoserver date column is actually a string');
-                createRuleSets = function(colorLimitPairs) {
-                    var html = '';
-                    for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
-                        var date = colorLimitPairs[lpIndex][1];
+            LOG.debug('Shorelines.js::?: Geoserver date column is actually a string');
+            createRuleSets = function(colorLimitPairs) {
+                var html = '';
+                for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
+                    var date = colorLimitPairs[lpIndex][1];
                         
-                        if (sessionLayer.view["dates-disabled"].indexOf(date) == -1) {
-                            html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>';
-                            html += groupColumn.trim();
-                            html += '</ogc:PropertyName>';
-                            html += '<ogc:Literal>';
-                            html += colorLimitPairs[lpIndex][1];
-                            html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">';
-                            html += colorLimitPairs[lpIndex][0];
-                            html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>';
-                        }
+                    if (sessionLayer.view["dates-disabled"].indexOf(date) == -1) {
+                        html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>';
+                        html += groupColumn.trim();
+                        html += '</ogc:PropertyName>';
+                        html += '<ogc:Literal>';
+                        html += colorLimitPairs[lpIndex][1];
+                        html += '</ogc:Literal></ogc:PropertyIsLike></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">';
+                        html += colorLimitPairs[lpIndex][0];
+                        html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>';
                     }
-                                    
-                    // default rule 
-                    html += '<Rule><ElseFilter />'
-                    html += '<LineSymbolizer>' 
-                    html += '<Stroke>'
-                    html += '<CssParameter name="stroke-opacity">0</CssParameter>'
-                    html += '</Stroke>'
-                    html+= '</LineSymbolizer>'
-                    html += '</Rule>'
-                                    
-                    return html;
                 }
-//            } else {
-//                LOG.debug('Shorelines.js::?: Geoserver date column is a date type');
-//                createRuleSets = function(colorLimitPairs) {
-//                    var html = '';
-//                            
-//                    for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
-//                        var lowerBoundary = '';
-//                        var upperBoundary = '';
-//                        if (lpIndex == 0) {
-//                            lowerBoundary = colorLimitPairs[0][1];
-//                            if (colorLimitPairs.length == lpIndex) {
-//                                upperBoundary = colorLimitPairs[0][1]; // This means there's only one group'
-//                            } else {
-//                                upperBoundary = colorLimitPairs[lpIndex + 1][1];
-//                            }
-//                        } else {
-//                            upperBoundary = colorLimitPairs[lpIndex][1]
-//                            lowerBoundary = colorLimitPairs[lpIndex - 1][1]
-//                        }
-//                                
-//                        html += '<Rule><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>'
-//                        html += groupColumn.trim();
-//                        html += ' </ogc:PropertyName><ogc:LowerBoundary>'
-//                        html += ' <ogc:Literal>'
-//                        html += lowerBoundary
-//                        html += '</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary>'
-//                        html += '<ogc:Literal>'
-//                        html += upperBoundary
-//                        html += '</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
-//                        html += colorLimitPairs[lpIndex][0]
-//                        html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
-//                    }
-//                    return html;
-//                }
-//            }
+                                    
+                // default rule 
+                html += '<Rule><ElseFilter />'
+                html += '<LineSymbolizer>' 
+                html += '<Stroke>'
+                html += '<CssParameter name="stroke-opacity">0</CssParameter>'
+                html += '</Stroke>'
+                html+= '</LineSymbolizer>'
+                html += '</Rule>'
+                                    
+                return html;
+            }
+            //            } else {
+            //                LOG.debug('Shorelines.js::?: Geoserver date column is a date type');
+            //                createRuleSets = function(colorLimitPairs) {
+            //                    var html = '';
+            //                            
+            //                    for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
+            //                        var lowerBoundary = '';
+            //                        var upperBoundary = '';
+            //                        if (lpIndex == 0) {
+            //                            lowerBoundary = colorLimitPairs[0][1];
+            //                            if (colorLimitPairs.length == lpIndex) {
+            //                                upperBoundary = colorLimitPairs[0][1]; // This means there's only one group'
+            //                            } else {
+            //                                upperBoundary = colorLimitPairs[lpIndex + 1][1];
+            //                            }
+            //                        } else {
+            //                            upperBoundary = colorLimitPairs[lpIndex][1]
+            //                            lowerBoundary = colorLimitPairs[lpIndex - 1][1]
+            //                        }
+            //                                
+            //                        html += '<Rule><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>'
+            //                        html += groupColumn.trim();
+            //                        html += ' </ogc:PropertyName><ogc:LowerBoundary>'
+            //                        html += ' <ogc:Literal>'
+            //                        html += lowerBoundary
+            //                        html += '</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary>'
+            //                        html += '<ogc:Literal>'
+            //                        html += upperBoundary
+            //                        html += '</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
+            //                        html += colorLimitPairs[lpIndex][0]
+            //                        html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
+            //                    }
+            //                    return html;
+            //                }
+            //            }
                         
             sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>'+
             '<StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'+
@@ -300,7 +296,7 @@ var Shorelines = {
                 bounds.extend(new OpenLayers.Bounds(CONFIG.ows.getLayerByName({
                     layerNS : layerNS,
                     layerName : layerName
-                }).bbox["EPSG:900913"].bbox));
+                    }).bbox["EPSG:900913"].bbox));
                 
                 if (layer.events.listeners.loadend.length) {
                     layer.events.unregister('loadend', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);

@@ -87,24 +87,17 @@ var UI = function() {
         initializeBaselineEditForm : function() {
             LOG.info('UI.js::initializeBaselineEditForm: Initializing Display')
             
-            LOG.debug(CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.length)
-            
             var layerName = $("#baseline-list option:selected")[0].value;
             LOG.debug('UI.js::initializeBaselineEditForm: Layer to be edited: ' + layerName);
-            
-            LOG.debug(CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.length)
             
             LOG.debug('UI.js::initializeBaselineEditForm: Re-binding edit layer save button click event');
             $('#baseline-edit-save-button').unbind('click', Baseline.saveEditedLayer);
             $('#baseline-edit-save-button').on('click', Baseline.saveEditedLayer);
             
-            LOG.debug(CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.length)
-            
-            $('.baseline-edit-toggle').find('input').removeAttr('checked')
-            
-            LOG.debug(CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.length)
-            
-            $('.baseline-edit-toggle').toggleButtons({
+            // Searching for toggles that do NOT have the toggle-button class means 
+            // we won't re-intialize a toggle button (which causes all sorts of issues)
+            $('.baseline-edit-toggle:not(.toggle-button)').removeAttr('checked')
+            $('.baseline-edit-toggle:not(.toggle-button)').toggleButtons({
                 onChange : function ($el, status, e) {
                     
                     var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];

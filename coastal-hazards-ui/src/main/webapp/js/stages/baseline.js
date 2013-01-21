@@ -171,15 +171,18 @@ var Baseline = {
             LOG.debug('Baseline.js::editButtonToggled: Adding clone control to map');
             CONFIG.map.getMap().addControl(editControl);
             
+            $("#baseline-edit-container").removeClass('hidden');
+            
             CONFIG.ui.initializeBaselineEditForm();
         } else {
             // remove edit layer, remove edit control
             CONFIG.map.removeLayerByName('baseline-edit-layer');
             CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0])
             $('#baseline-draw-btn').removeAttr('disabled')
+            $("#baseline-edit-container").addClass('hidden');
         }
                 
-        $("#baseline-edit-panel-well").toggleClass('hidden');
+        
             
     },
     enableCloneButton : function() {
@@ -222,7 +225,7 @@ var Baseline = {
         $('#baseline-draw-btn').removeAttr('disabled');
     },
     disableEditButton : function() {
-        if (!$('#baseline-edit-panel-well').hasClass('hidden')) {
+        if (!$('#baseline-edit-container').hasClass('hidden')) {
             LOG.debug('UI.js::?: Edit form was found to be active. Deactivating edit form');
             $('#baseline-edit-form-toggle').click();
         }
