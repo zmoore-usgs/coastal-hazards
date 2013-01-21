@@ -286,19 +286,29 @@
                                 <div class="span4"><h3>Results</h3></div>
                                 <div class="span8" id="results-alert-container"></div>
                             </div>
-                            <div class="row-fluid span12">
-                                <div class="well" id="results-well">
+                            <ul class="nav nav-tabs" id="action-result-tablist">
+                                <li class="active"><a  data-toggle="tab" href="#results-view-tab">View</a></li>
+                                <li><a data-toggle="tab" href="#results-manage-tab">Manage</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="results-view-tab">
                                     <select id="results-list" style="width: 100%;"></select>
+                                    <div class="row-fluid">
+                                        <div class="tabbable">
+                                            <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
+                                            <div class="tab-content" id="results-tabcontent"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="results-manage-tab">
+                                    <button class="btn btn-success" id="create-results-btn">
+                                        <i class="icon-pencil icon-white"></i>
+                                        &nbsp;Calculate Results
+                                    </button>
                                 </div>
                             </div>
 
-                            <div class="row-fluid span12">
-                                <div class="tabbable">
-                                    <ul class="nav nav-tabs" id="results-table-navtabs">
-                                    </ul>
-                                    <div class="tab-content" id="results-tabcontent"></div>
-                                </div>
-                            </div>
+
                         </div> <!-- /Results -->
 
                     </div>
