@@ -125,11 +125,11 @@ var Baseline = {
             var clonedLayer = new OpenLayers.Layer.Vector('baseline-edit-layer',{
                 strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
                 protocol: new OpenLayers.Protocol.WFS({
-                    url:  "geoserver/ows",
+                    url:  "geoserver/"+originalLayer.name.split(':')[0]+"/wfs",
                     featureType: originalLayer.name.split(':')[1],
                     featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
                     geometryName: "the_geom",
-                    schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&;typename=" + originalLayer.name
+                    schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&typename=" + originalLayer.name
                 }),
                 cloneOf : originalLayer.name
             })
@@ -137,19 +137,19 @@ var Baseline = {
             clonedLayer.addFeatures(originalLayer.features);
                     
             // For debugging purposes
-            //            var report = function(event) {
-            //                LOG.debug(event.type, event.feature ? event.feature.id : event.components);
-            //            }
-            //                    
-            //            clonedLayer.events.on({
-            //                "beforefeaturemodified": report,
-            //                "featuremodified": report,
-            //                "afterfeaturemodified": report,
-            //                "vertexmodified": report,
-            //                "sketchmodified": report,
-            //                "sketchstarted": report,
-            //                "sketchcomplete": report
-            //            });
+                        var report = function(event) {
+                            LOG.debug(event.type, event.feature ? event.feature.id : event.components);
+                        }
+                                
+                        clonedLayer.events.on({
+                            "beforefeaturemodified": report,
+                            "featuremodified": report,
+                            "afterfeaturemodified": report,
+                            "vertexmodified": report,
+                            "sketchmodified": report,
+                            "sketchstarted": report,
+                            "sketchcomplete": report
+                        });
                     
             var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, 
             {
@@ -162,7 +162,7 @@ var Baseline = {
             
             LOG.debug('Baseline.js::editButtonToggled: Adding cloned layer to map');
             CONFIG.map.getMap().addLayer(clonedLayer);
-                    
+            
             LOG.debug('Baseline.js::editButtonToggled: Removing previous cloned layer from map, if any');
             CONFIG.map.removeControl({
                 id : 'baseline-edit-control'
@@ -170,7 +170,7 @@ var Baseline = {
             
             LOG.debug('Baseline.js::editButtonToggled: Adding clone control to map');
             CONFIG.map.getMap().addControl(editControl);
-                    
+            
             CONFIG.ui.initializeBaselineEditForm();
         } else {
             // remove edit layer, remove edit control

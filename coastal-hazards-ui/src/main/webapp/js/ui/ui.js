@@ -87,147 +87,83 @@ var UI = function() {
         initializeBaselineEditForm : function() {
             LOG.info('UI.js::initializeBaselineEditForm: Initializing Display')
             
+            LOG.debug(CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.length)
+            
             var layerName = $("#baseline-list option:selected")[0].value;
-            var layerTitle = $("#baseline-list option:selected")[0].text;
             LOG.debug('UI.js::initializeBaselineEditForm: Layer to be edited: ' + layerName);
+            
+            LOG.debug(CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.length)
             
             LOG.debug('UI.js::initializeBaselineEditForm: Re-binding edit layer save button click event');
             $('#baseline-edit-save-button').unbind('click', Baseline.saveEditedLayer);
             $('#baseline-edit-save-button').on('click', Baseline.saveEditedLayer);
             
-            $('.baseline-edit-toggle').each(function(i,toggle) {
-                
-                LOG.debug('UI.js::initializeBaselineEditForm: Turning all toggles to DISABLED');
-                if ($(toggle).find('input').attr('checked')) {
-                    $(toggle).find('input').removeAttr('checked');
-                    $(toggle).toggleSlide();
-                }
-                
-                LOG.debug('UI.js::initializeBaselineEditForm: Attaching toggle event to all toggles');
-                $(toggle).toggleSlide({
-                    onClick: function (event, status) {
-                        // Sometimes the click event comes twice if clicking on the toggle graphic instead of 
-                        // the toggle text. When this happens, check for event.timeStamp being 0. When that happens,
-                        // we've already handled the onclick 
-                        LOG.trace('UI.js::initializeBaselineEditForm: Event timestamp:' + event.timeStamp);
-                        if (event.timeStamp) {
-                            var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
-                            var editLayer = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0];
+            LOG.debug(CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.length)
+            
+            $('.baseline-edit-toggle').find('input').removeAttr('checked')
+            
+            LOG.debug(CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.length)
+            
+            $('.baseline-edit-toggle').toggleButtons({
+                onChange : function ($el, status, e) {
+                    if (status) {
+                        var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+                        var editLayer = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0];
+                        var id = $el.parent().attr('id');
                         
-                            var selectedOptions = {};    
-                            var anyTrue = false;
-                            
-                            LOG.debug('UI.js::initializeBaselineEditForm: Edit control is being deactivated. Will get reactivated after initialization');
+                        
+                        LOG.debug('UI.js::initializeBaselineEditForm: Edit control is being deactivated. Will get reactivated after initialization');
+                        
+                        if (modifyControl.active) {
                             modifyControl.deactivate();
-                                                
-                            LOG.trace('UI.js::initializeBaselineEditForm: Checking which toggles are active and which are not');
-                            $('.baseline-edit-toggle>input').each(function(i,cb) {
-                                selectedOptions[cb.id] = $(cb).attr('checked') ? true : false;
-                                
-                                // If we are reading the current target's boolean state, we need to 
-                                // flip it because this event happens before the checkbox gets a check in it
-                                if ($(event.currentTarget).children()[0].id === $(cb).attr('id')) {
-                                    selectedOptions[cb.id] = !selectedOptions[cb.id];
-                                }
-                            })
+                        }
+                    
+                        $('.baseline-edit-toggle:not(#'+id+')').toggleButtons('setState', false);
                             
-                            modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+                        modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
                             
-                            if ($(event.currentTarget).children()[0].id === 'toggle-create-vertex-checkbox' &&
-                                selectedOptions['toggle-create-vertex-checkbox']) {
+                        switch(id) {
+                            case 'toggle-create-vertex-checkbox': {
                                 modifyControl.mode.createVertices = true;
-                                if (!$('#toggle-allow-rotation-checkbox').parent().hasClass('disabled')) {
-                                    $('#toggle-allow-rotation-checkbox').removeAttr('checked');
-                                    $('#toggle-allow-rotation-checkbox').parent().toggleSlide();
-                                }
-                                if (!$('#toggle-allow-resizing-checkbox').parent().hasClass('disabled')) {
-                                    $('#toggle-allow-resizing-checkbox').removeAttr('checked');
-                                    $('#toggle-allow-resizing-checkbox').parent().toggleSlide();
-                                }
-                                if (!$('#toggle-allow-dragging-checkbox').parent().hasClass('disabled')) {
-                                    $('#toggle-allow-dragging-checkbox').removeAttr('checked');
-                                    $('#toggle-allow-dragging-checkbox').parent().toggleSlide();
-                                }
-                                if (!$('#toggle-aspect-ratio-checkbox').parent().hasClass('disabled')) {
-                                    $('#toggle-allow-dragging-checkbox').removeAttr('checked');
-                                    $('#toggle-allow-dragging-checkbox').parent().toggleSlide();
-                                }
-                                            
-                                anyTrue = true;
-                            } else {
-                                $(Object.keys(selectedOptions)).each(function(i,v){
-                                    var createVertexCheckbox = $('#toggle-create-vertex-checkbox')
-                                    if (selectedOptions[v]) {
-                                        switch (v) {
-                                            case 'toggle-allow-rotation-checkbox':
-                                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
-                                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                                if (!createVertexCheckbox.parent().hasClass('disabled')) {
-                                                    createVertexCheckbox.removeAttr('checked');
-                                                    createVertexCheckbox.parent().toggleSlide();
-                                                }
-                                                anyTrue = true;
-                                                break;
-                                            case 'toggle-allow-resizing-checkbox':
-                                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
-                                                if (selectedOptions['toggle-aspect-ratio-checkbox']) {
-                                                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                                }
-                                                if (!createVertexCheckbox.parent().hasClass('disabled')) {
-                                                    createVertexCheckbox.removeAttr('checked');
-                                                    createVertexCheckbox.parent().toggleSlide();
-                                                }
-                                                anyTrue = true;
-                                                break;
-                                            case 'toggle-allow-dragging-checkbox':
-                                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
-                                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                                if (!createVertexCheckbox.parent().hasClass('disabled')) {
-                                                    createVertexCheckbox.removeAttr('checked');
-                                                    createVertexCheckbox.parent().toggleSlide();
-                                                }
-                                                anyTrue = true;
-                                                break;
-                                        }
-                                    } else {
-                                        switch (v) {
-                                            case 'toggle-allow-resizing-checkbox':
-                                                if (!$('#toggle-aspect-ratio-checkbox').parent().hasClass('disabled')) {
-                                                    $('#toggle-aspect-ratio-checkbox').removeAttr('checked');
-                                                    $('#toggle-aspect-ratio-checkbox').parent().toggleSlide();
-                                                }
-                                        }
-                                    }
-                                })
+                                break;
                             }
-                            
-                            if (anyTrue) {
-                                LOG.debug('Found at least one modify option toggled true. Activating modify control.')
-                                modifyControl.activate();
-                                $(editLayer.features).each(function(i,f) {
-                                    modifyControl.selectFeature(f);
-                                })
-                            } else {
-                                LOG.debug('Did not find at least one modify option toggled true. Modify Control remains deactivated.')
-                                $(editLayer.features).each(function(i,f) {
-                                    modifyControl.unselectFeature(f);
-                                })
+                            case 'toggle-allow-rotation-checkbox': {
+                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
+                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                break;
+                            }
+                            case 'toggle-allow-resizing-checkbox': {
+                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                                if ($('#toggle-aspect-ratio-checkbox').toggleButtons('status')) {
+                                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                }
+                                break;
+                            }
+                            case 'toggle-allow-dragging-checkbox': {
+                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
+                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                break;
+                            }
+                            case 'toggle-allow-resizing-checkbox': {
+                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                break
                             }
                         }
-                    },
-                    text: {
-                        enabled: false, 
-                        disabled: false
-                    },
-                    //                    style: {
-                    //                        enabled: 'success',
-                    //                        disabled : 'danger'
-                    //                    },
-                    layerName : layerName,
-                    layerTitle : layerTitle
-                    
-                })
-                
+                            
+                        //                            if ($('.baseline-edit-toggle input:checked').length) {
+                        LOG.debug('Found at least one modify option toggled true. Activating modify control.')
+                        modifyControl.activate();
+                        $(editLayer.features).each(function(i,f) {
+                            modifyControl.selectFeature(f);
+                        })
+                    //                            } else {
+                    //                                LOG.debug('Did not find at least one modify option toggled true. Modify Control remains deactivated.')
+                    //                                $(editLayer.features).each(function(i,f) {
+                    //                                    modifyControl.unselectFeature(f);
+                    //                                })
+                    //                            }
+                    }
+                }
             })
         },
         initializeUploader : function(args) {

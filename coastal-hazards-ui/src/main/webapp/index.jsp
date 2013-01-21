@@ -141,47 +141,44 @@
                                             </div>
 
                                             <!-- Baseline Editing -->
-                                            <div class="row-fluid span12">
-                                                <div id="baseline-edit-panel-well" class="well hidden">
-                                                    <div id="baseline-edit-container" class="container-fluid">
-                                                        <div class="row-fluid span12">
+                                            <div class="row-fluid">
+                                                <div id="baseline-edit-container" class="container-fluid">
+                                                    <div id="baseline-edit-panel-well" class="well hidden">
+                                                        <div class="row-fluid">
                                                             <div class="span2">Create Vertex</div>
                                                             <div class="span4">
-                                                                <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
-                                                                    <input type="checkbox" class="checkbox" name="toggle-create-vertex-checkbox" id="toggle-create-vertex-checkbox" value="1">
-                                                                    <label class="check" for="toggle-create-vertex-checkbox"></label>
+                                                                <div class="baseline-edit-toggle" id="toggle-create-vertex-checkbox">
+                                                                    <input type="checkbox">
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="row-fluid span12">
+                                                        <div class="row-fluid">
                                                             <div class="span2">Allow Rotation</div>
                                                             <div class="span4">
-                                                                <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
-                                                                    <input type="checkbox" class="checkbox" name="toggle-allow-rotation-checkbox" id="toggle-allow-rotation-checkbox" value="1">
-                                                                    <label class="check" for="toggle-allow-rotation-checkbox"></label>
+                                                                <div class="baseline-edit-toggle" id="toggle-allow-rotation-checkbox">
+                                                                    <input type="checkbox">
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="row-fluid span12">
+                                                        <div class="row-fluid">
                                                             <div class="span2">Allow Resizing</div>
                                                             <div class="span4">
-                                                                <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
-                                                                    <input type="checkbox" class="checkbox" name="toggle-allow-resizing-checkbox" id="toggle-allow-resizing-checkbox" value="1">
-                                                                    <label class="check" for="toggle-allow-resizing-checkbox"></label>
+                                                                <div class="baseline-edit-toggle" id="toggle-allow-resizing-checkbox">
+                                                                    <input type="checkbox">
                                                                 </div>
                                                             </div>
                                                             <div class="span2">Maintain Aspect Ratio</div>
-                                                            <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
-                                                                <input type="checkbox" class="checkbox" name="toggle-aspect-ratio-checkbox" id="toggle-aspect-ratio-checkbox" value="1">
-                                                                <label class="check" for="toggle-aspect-ratio-checkbox"></label>
+                                                            <div class="span4">
+                                                                <div class="baseline-edit-toggle" id="toggle-aspect-ratio-checkbox">
+                                                                    <input type="checkbox">
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <div class="row-fluid span12">
                                                             <div class="span2">Allow Dragging</div>
                                                             <div class="span4">
-                                                                <div class="toggle basic baseline-edit-toggle" data-enabled="ENABLED" data-disabled="DISABLED" data-toggle="toggle">
-                                                                    <input type="checkbox" class="checkbox" name="toggle-allow-dragging-checkbox" id="toggle-allow-dragging-checkbox" value="1">
-                                                                    <label class="check" for="toggle-allow-dragging-checkbox"></label>
+                                                                <div class="baseline-edit-toggle" id="toggle-allow-dragging-checkbox">
+                                                                    <input type="checkbox">
                                                                 </div>
                                                             </div>
                                                         </div>
