@@ -22,7 +22,7 @@ var Session = function(name, isPerm) {
                     LOG.info('Session.js::init: A workspace has been prepared on the OWS server with the name of ' + randID)
                     CONFIG.ui.showAlert({
                         message : 'No session could be found. A new session has been created',
-                        displayTime : 7500,
+                        displayTime : 5000,
                         style: {
                             classes : ['alert-info']
                         }

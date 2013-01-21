@@ -37,8 +37,6 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="true" />
         </jsp:include>
-        <!-- TODO - Modularize -->
-        <!--<link type="text/css" rel="stylesheet" href="css/normalize/normalize.css" />-->
     </head>
     <body>
         <div class="container-fluid">
@@ -49,7 +47,7 @@
                     <jsp:param name="site-title" value="USGS Coastal Change Hazards" />
                 </jsp:include>
             </div>
-            
+
             <div class="row-fluid">
                 <!-- NAV -->
                 <div class="span1" id='nav-list'>
@@ -306,7 +304,7 @@
             <div class="row-fluid">
                 <div id="application-alert-container" id="span11 offset1"></div>
             </div>
-                    
+
             <div class="row-fluid">
                 <jsp:include page="template/USGSFooter.jsp">
                     <jsp:param name="relPath" value="" />
@@ -371,10 +369,6 @@
     <!-- TODO - Modularize -->
     <script type="text/javascript" src="js/jquery-fineuploader/jquery.fineuploader-3.0.js"></script>
 
-    <!-- TODO - Modularize -->
-    <script type="text/javascript" src="js/bootstrap-toggle/bootstrap-toggle.js"></script>
-    <link type="text/css" rel="stylesheet" href="css/bootstrap-toggle/bootstrap-toggle-animated.css" />
-
     <script type="text/javascript">
         var CONFIG = {};
 			
@@ -431,11 +425,14 @@
     <script type="text/javascript" src="js/stages/intersections.js"></script>
     <script type="text/javascript" src="js/stages/results.js"></script>
     <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
-    <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
+
 
     <!-- TODO - Modularize -->
     <link type="text/css" rel="stylesheet" href="css/jquery-bootstrap-toggle/bootstrap-toggle-buttons.css" />
     <script type="text/javascript" src="js/jquery-bootstrap-toggle/jquery.toggle.buttons.js"></script>
-
+    <!-- TODO - Modularize -->
+    <link type="text/css" rel="stylesheet" href="css/normalize/normalize.css" />
+    <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
+    
     <script type="text/javascript" src="pages/index/onReady.js"></script>
 </html>

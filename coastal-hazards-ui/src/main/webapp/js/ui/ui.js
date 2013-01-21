@@ -459,6 +459,11 @@ var UI = function() {
             var close = args.close || true;
             var displayTime = args.displayTime || 0;
             
+            if (caller.stage == 'application') {
+                style.classes.push('span11');
+                style.classes.push('offset1');
+            }
+            
             CONFIG.alertQueue[caller.stage].unshift({
                 message : message,
                 style : style,
