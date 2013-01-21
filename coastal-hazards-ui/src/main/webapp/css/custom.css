@@ -23,6 +23,11 @@
     text-align: center;
 }
 
+#application-spinner {
+    text-align: center;
+    display: none;
+}
+
 .uploader {
     padding-bottom: 10px;
 }
@@ -51,6 +56,14 @@ img { max-width: none; }
 
 #site-title {
     line-height: 20px;
+}
+
+#application-overlay-content {
+    height: 50%;
+    padding-left: 25%;
+    position: relative;
+    top: 25%;
+    width: 50%;
 }
 
 #ccsa-area {
