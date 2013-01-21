@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>coastal-hazards</artifactId>
+        <groupId>gov.usgs.cida.coastalhazards</groupId>
+        <version>1.0.1-SNAPSHOT</version>
+    </parent>
+
+    <groupId>gov.usgs.cida.coastalhazards</groupId>
+    <artifactId>coastal-hazards-n52</artifactId>
+    <packaging>war</packaging>
+
+    <name>Coastal Hazards 52north WPS</name>
+    
+    <dependencies>
+        <dependency>
+            <groupId>gov.usgs.cida</groupId>
+            <artifactId></artifactId>
+            <version></version>
+        </dependency>
+    </dependencies>
+    <build>
+        <finalName>wps</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>patch-via-WEB-INF-classes</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>gov.usgs.cida.gdp</groupId>
+                                    <artifactId>gdp-52n-wps-patches</artifactId>
+                                    <version>${gdp.version}</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
