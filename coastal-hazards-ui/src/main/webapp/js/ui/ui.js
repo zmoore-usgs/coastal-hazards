@@ -177,11 +177,11 @@ var UI = function() {
                 text: {
                     uploadButton: '<i class="icon-upload icon-white"></i>Upload'
                 },
-                template: '<div class="qq-uploader span4">' +
-                '<pre class="qq-upload-drop-area span4 hidden"><span>{dragZoneText}</span></pre>' +
-                '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
-                '<ul class="qq-upload-list hidden" style="margin-top: 10px; text-align: center;"></ul>' +
-                '</div>',
+//                template: '<div class="qq-uploader span4">' +
+//                '<pre class="qq-upload-drop-area span4 hidden"><span>{dragZoneText}</span></pre>' +
+//                '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
+//                '<ul class="qq-upload-list hidden" style="margin-top: 10px; text-align: center;"></ul>' +
+//                '</div>',
                 classes: {
                     success: 'alert alert-success',
                     fail: 'alert alert-error'

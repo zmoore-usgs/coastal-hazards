@@ -18,7 +18,7 @@
     String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
 %>
 
-<html>
+<html lang="en">
     <head>
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -37,6 +37,8 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="true" />
         </jsp:include>
+        <!-- TODO - Modularize -->
+        <link type="text/css" rel="stylesheet" href="css/normalize/normalize.css" />
     </head>
     <body>
         <jsp:include page="template/USGSHeader.jsp">
@@ -328,9 +330,6 @@
         </div>
     </body>
 
-    <!-- TODO - Modularize -->
-    <link type="text/css" rel="stylesheet" href="css/yui-css-reset/css-reset-min.css" />
-
     <jsp:include page="js/dygraphs/dygraphs.jsp">
         <jsp:param name="debug-qualifier" value="true" />
     </jsp:include>
@@ -365,7 +364,6 @@
 
     <!-- TODO - Modularize -->
     <script type="text/javascript" src="js/jquery-fineuploader/jquery.fineuploader-3.0.js"></script>
-    <link type="text/css" rel="stylesheet" href="js/jquery-fineuploader/fineuploader.css" />
 
     <!-- TODO - Modularize -->
     <script type="text/javascript" src="js/bootstrap-toggle/bootstrap-toggle.js"></script>

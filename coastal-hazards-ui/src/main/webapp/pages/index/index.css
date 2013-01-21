@@ -9,6 +9,11 @@
     color: #000000;
 }
 
+/* For now, turn off qqUploader completed lists */
+.qq-upload-list {
+    display: none;
+}
+
 select option.published-layer{
     color : #661111; 
 }
@@ -90,14 +95,6 @@ li.alert-error {
 
 .alert-error .qq-upload-failed-text {
     display: inline;
-}
-
-.qq-uploader {
-    width: 50%;
-}
-
-.qq-upload-button {
-    background: none repeat scroll 0 0 #5BB75B;
 }
 
 .nav-stacked li a img {

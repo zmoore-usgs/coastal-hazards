@@ -44,7 +44,10 @@ $(document).ready(function() {
                         Baseline.populateFeaturesList,
                         Transects.populateFeaturesList,
                         Intersections.populateFeaturesList,
-                        Results.populateFeaturesList
+                        Results.populateFeaturesList,
+                        function() {
+                            $('.qq-upload-button').addClass('btn btn-success');
+                        }
                         ],
                         error : [
                         Shorelines.initializeUploader,
