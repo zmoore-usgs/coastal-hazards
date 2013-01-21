@@ -137,19 +137,19 @@ var Baseline = {
             clonedLayer.addFeatures(originalLayer.features);
                     
             // For debugging purposes
-                        var report = function(event) {
-                            LOG.debug(event.type, event.feature ? event.feature.id : event.components);
-                        }
-                                
-                        clonedLayer.events.on({
-                            "beforefeaturemodified": report,
-                            "featuremodified": report,
-                            "afterfeaturemodified": report,
-                            "vertexmodified": report,
-                            "sketchmodified": report,
-                            "sketchstarted": report,
-                            "sketchcomplete": report
-                        });
+//                        var report = function(event) {
+//                            LOG.debug(event.type, event.feature ? event.feature.id : event.components);
+//                        }
+//                                
+//                        clonedLayer.events.on({
+//                            "beforefeaturemodified": report,
+//                            "featuremodified": report,
+//                            "afterfeaturemodified": report,
+//                            "vertexmodified": report,
+//                            "sketchmodified": report,
+//                            "sketchstarted": report,
+//                            "sketchcomplete": report
+//                        });
                     
             var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, 
             {

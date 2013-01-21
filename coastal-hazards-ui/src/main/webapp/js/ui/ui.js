@@ -106,20 +106,22 @@ var UI = function() {
             
             $('.baseline-edit-toggle').toggleButtons({
                 onChange : function ($el, status, e) {
-                    if (status) {
-                        var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
-                        var editLayer = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0];
-                        var id = $el.parent().attr('id');
-                        
-                        
-                        LOG.debug('UI.js::initializeBaselineEditForm: Edit control is being deactivated. Will get reactivated after initialization');
-                        
-                        if (modifyControl.active) {
-                            modifyControl.deactivate();
-                        }
                     
-                        $('.baseline-edit-toggle:not(#'+id+')').toggleButtons('setState', false);
-                            
+                    var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+                    var editLayer = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0];
+                    var id = $el.parent().attr('id');
+                        
+                        
+                    LOG.debug('UI.js::initializeBaselineEditForm: Edit control is being deactivated. Will get reactivated after initialization');
+                        
+                    if (modifyControl.active) {
+                        modifyControl.deactivate();
+                    }
+                    if (status) {
+                        if (id != 'toggle-aspect-ratio-checkbox') {
+                            $('.baseline-edit-toggle:not(#'+id+')').toggleButtons('setState', false);
+                        }
+                        
                         modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
                             
                         switch(id) {
@@ -132,36 +134,31 @@ var UI = function() {
                                 modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
                                 break;
                             }
-                            case 'toggle-allow-resizing-checkbox': {
-                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
-                                if ($('#toggle-aspect-ratio-checkbox').toggleButtons('status')) {
-                                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                }
-                                break;
-                            }
                             case 'toggle-allow-dragging-checkbox': {
                                 modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
                                 modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
                                 break;
                             }
                             case 'toggle-allow-resizing-checkbox': {
-                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                                if ($('.baseline-edit-toggle#toggle-aspect-ratio-checkbox').toggleButtons('status')) {
+                                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                }
                                 break
                             }
+                            case 'toggle-aspect-ratio-checkbox': {
+                                if ($('.baseline-edit-toggle#toggle-allow-resizing-checkbox').toggleButtons('status')) {
+                                    modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                                }
+                                break;
+                            }
                         }
-                            
-                        //                            if ($('.baseline-edit-toggle input:checked').length) {
                         LOG.debug('Found at least one modify option toggled true. Activating modify control.')
                         modifyControl.activate();
                         $(editLayer.features).each(function(i,f) {
                             modifyControl.selectFeature(f);
                         })
-                    //                            } else {
-                    //                                LOG.debug('Did not find at least one modify option toggled true. Modify Control remains deactivated.')
-                    //                                $(editLayer.features).each(function(i,f) {
-                    //                                    modifyControl.unselectFeature(f);
-                    //                                })
-                    //                            }
                     }
                 }
             })
