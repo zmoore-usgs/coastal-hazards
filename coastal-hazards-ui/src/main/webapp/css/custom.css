@@ -23,6 +23,10 @@
     text-align: center;
 }
 
+.uploader {
+    padding-bottom: 10px;
+}
+
 /* For now, turn off qqUploader completed lists */
 .qq-upload-list {
     display: none;
@@ -67,10 +71,6 @@ img { max-width: none; }
 
 #toolbox-well {
     height: 39em;
-}
-
-#baseline-well {
-    height: 5em;
 }
 
 #transects-well {

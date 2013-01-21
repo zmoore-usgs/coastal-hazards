@@ -88,7 +88,7 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="shorelines-manage-tab">
-                                    <div id="shorelines-uploader"></div>
+                                    <div id="shorelines-uploader" class="uploader"></div>
                                 </div>
                             </div>
                         </div> <!-- /Shorelines -->
@@ -111,7 +111,7 @@
 
                                     <div id="baseline-button-row" class="row-fluid">
                                         <div class="row-fluid">
-                                            <div id="baseline-uploader"></div>
+                                            <div id="baseline-uploader" class="uploader"></div>
                                         </div>
                                         <div class="row-fluid">
                                             <button id="baseline-draw-btn" class="btn btn-success" data-toggle="button">
@@ -215,7 +215,7 @@
                                 </div>
                                 <div class="tab-pane" id="transects-manage-tab">
                                     <div class="row-fluid">
-                                        <div id="transects-uploader"></div>
+                                        <div id="transects-uploader" class="uploader"></div>
                                     </div>
                                     <div class="row-fluid">
                                         <button data-toggle="button" class="btn btn-success" disabled id="create-transects-toggle">
