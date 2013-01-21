@@ -19,13 +19,14 @@ var UI = function() {
     $("#create-intersections-btn").on("click", Intersections.calcIntersections);
     
     // Add tooltips to all the things
-    $('select').tooltip({
-        title : $('<div />')
+    $('select').popover({
+        title : 'Layer Selection',
+        content : $('<div />')
         .append($('<div />').css({
             'color': '#661111',
             'text-shadow' : '0px 0px 1px #ffffff',
             'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
-        }).html('Published'))
+        }).html('Published (read-only)'))
         .append($('<div />').css({
             'color' : '#116611',
             'text-shadow' : '0px 0px 1px #ffffff',
@@ -33,7 +34,8 @@ var UI = function() {
         }).html('Yours'))
         .html(),
         html : true,
-        placement : 'left'
+        placement : 'bottom',
+        trigger : 'hover'
     })
     
     $('.nav-stacked>li>a').each(function(indexInArray, valueOfElement) { 
@@ -457,18 +459,12 @@ var UI = function() {
             var close = args.close || true;
             var displayTime = args.displayTime || 0;
             
-            if (caller.stage == 'application') {
-                style.classes.push(['offset1']);
-                style.classes.push(['span11']);
-            }
-            
             CONFIG.alertQueue[caller.stage].unshift({
                 message : message,
                 style : style,
                 displayTime : displayTime,
                 close : close
             })
-            
             
             var createAlert = function(args) {
                 var nextMessageObj = CONFIG.alertQueue[args.caller.stage].pop();

@@ -407,7 +407,7 @@ var Shorelines = {
             $('<div />').addClass('tab-pane active').attr('id', this.name).append(
                 colorTableContainer));
                         
-        $('.feature-toggle').toggleButtons({
+        $('#' + layerName + ' .feature-toggle').toggleButtons({
             style: {
                 enabled: "primary"
             },

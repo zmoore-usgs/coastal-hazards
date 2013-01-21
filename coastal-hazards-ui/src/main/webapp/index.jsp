@@ -90,7 +90,7 @@
                                         <div id="shorelines-uploader"></div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> <!-- /Shorelines -->
 
                             <!-- Baseline -->
                             <div class="tab-pane container-fluid" id="baseline">
@@ -192,7 +192,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> <!-- /Baseline -->
 
                             <!-- Transects --> 
                             <div class="tab-pane container-fluid" id="transects">
@@ -242,7 +242,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> <!-- /Transects -->
 
                             <!-- Intersection -->
                             <div class="tab-pane  container-fluid" id="intersections">
@@ -265,7 +265,7 @@
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </div> <!-- /Intersections -->
 
                             <!-- Results -->
                             <div class="tab-pane container-fluid" id="results">
@@ -286,10 +286,9 @@
                                         <div class="tab-content" id="results-tabcontent"></div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> <!-- /Results -->
 
                         </div>
-
 
                     </div>
 
@@ -301,8 +300,7 @@
                     </div>
 
                 </div>
-                <div class="row-fluid" id="application-alert-container">
-                </div>
+                <div class="row-fluid span11 offset1" id="application-alert-container"></div>
             </div>
         </div>
 
