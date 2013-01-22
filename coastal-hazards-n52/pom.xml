@@ -16,37 +16,39 @@
     <dependencies>
         <dependency>
             <groupId>gov.usgs.cida</groupId>
-            <artifactId></artifactId>
-            <version></version>
+            <artifactId>wps-n52</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.wps</groupId>
+            <artifactId>52n-wps-io</artifactId>
+            <version>3.0</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-api</artifactId>
+            <version>8.5</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>8.5</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.wps</groupId>
+            <artifactId>52n-wps-io-impl</artifactId>
+            <version>3.0</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
     <build>
         <finalName>wps</finalName>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>patch-via-WEB-INF-classes</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>gov.usgs.cida.gdp</groupId>
-                                    <artifactId>gdp-52n-wps-patches</artifactId>
-                                    <version>${gdp.version}</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+          
         </plugins>
     </build>
 </project>
