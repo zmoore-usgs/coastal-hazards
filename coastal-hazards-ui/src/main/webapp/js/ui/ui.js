@@ -61,11 +61,11 @@ var UI = function() {
         trigger : 'hover'
     })
     
-//    $('#map').on('hover', function() {
-//        setTimeout(function() {
-//            $('#map-well').popover('hide');
-//        }, 3000);
-//    })  
+    //    $('#map').on('hover', function() {
+    //        setTimeout(function() {
+    //            $('#map-well').popover('hide');
+    //        }, 3000);
+    //    })  
         
     $('select').popover({
         title : 'Layer Selection',
@@ -106,19 +106,30 @@ var UI = function() {
                 })
                 unregister();
             }
-            var unregister = function() {
-                $("#modal-window").on('hidden', callbackFunction);
+            
+            var clickFunction = function(event) {
+                callbackFunction(event);
+                $("#modal-window").modal('hide');
             }
+            
+            var unregister = function() {
+                $('#modal-window-label').html('');
+                $('#modal-body-content').html('');
+                $('#modal-window-button-primary').html('');
+                $("#modal-window").off('hidden', '**', callbackFunction);
+                $('#modal-window-button-primary').off('click', '**', clickFunction)
+            }
+            
             $('#modal-window-label').html(headerHtml);
             $('#modal-body-content').html(bodyHtml);
+            
             $('#modal-window-button-primary')
             .html(primaryButtonText)
-            .click(function(event) {
-                $("#modal-window").on('hidden', callbackFunction)
-                $("#modal-window").modal('toggle');
-            })
+            .on('click', clickFunction)
             
-            $("#modal-window").modal();
+            $("#modal-window").on('hidden', callbackFunction);
+            
+            $("#modal-window").modal('show');
         },
         switchImage : function (stage) {
             LOG.info('UI.js::switchImage: Changing application context to ' + me.work_stages[stage])
