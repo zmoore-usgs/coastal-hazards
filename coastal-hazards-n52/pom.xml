@@ -29,7 +29,13 @@
             <groupId>org.n52.wps</groupId>
             <artifactId>52n-wps-io</artifactId>
             <version>3.0</version>
-            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.n52.wps</groupId>
+            <artifactId>52n-wps-r</artifactId>
+            <version>3.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
@@ -39,19 +45,30 @@
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
             <version>8.5</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>woodstox-core-lgpl</artifactId>
             <version>4.1.2</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
     <build>
         <finalName>wps</finalName>
         <plugins>
-          
+          <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<overlays>
+						<overlay>
+							<groupId>gov.usgs.cida</groupId>
+							<artifactId>wps-n52</artifactId>
+						</overlay>
+					</overlays>
+					<warSourceExcludes>WEB-INF/web.xml</warSourceExcludes>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
 </project>

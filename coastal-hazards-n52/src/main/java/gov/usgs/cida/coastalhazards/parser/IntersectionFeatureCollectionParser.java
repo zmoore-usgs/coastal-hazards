@@ -23,6 +23,7 @@ import org.opengis.feature.simple.SimpleFeature;
 public class IntersectionFeatureCollectionParser extends AbstractParser {
     
     public IntersectionFeatureCollectionParser() {
+        super();
         supportedIDataTypes.add(PlainStringBinding.class);
     }
 
