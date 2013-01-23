@@ -39,6 +39,17 @@
         </jsp:include>
     </head>
     <body>
+        <div id="application-overlay">
+            <div id="application-overlay-content">
+                <h1><div>Coastal Hazards</div></h1>
+                <img id="application-overlay-banner" src="images/banner/banner.jpg"/>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <br /><br />
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <div style="text-align:center;"><img src="images/spinner/spinner3.gif" /></div>
+            </div>
+
+        </div>
         <div class="container-fluid">
             <div class="row-fluid">
                 <jsp:include page="template/USGSHeader.jsp">
@@ -61,6 +72,7 @@
                         <li><button class="btn btn-success" id="clear-sessions-btn">Clear Sessions</button>
                             <% }%>
                     </ul>
+                    <div id="application-spinner"><img src="images/spinner/spinner3.gif" /></div>
                 </div>
 
                 <!-- Toolbox -->
@@ -88,7 +100,7 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="shorelines-manage-tab">
-                                    <div id="shorelines-uploader"></div>
+                                    <div id="shorelines-uploader" class="uploader"></div>
                                 </div>
                             </div>
                         </div> <!-- /Shorelines -->
@@ -111,7 +123,7 @@
 
                                     <div id="baseline-button-row" class="row-fluid">
                                         <div class="row-fluid">
-                                            <div id="baseline-uploader"></div>
+                                            <div id="baseline-uploader" class="uploader"></div>
                                         </div>
                                         <div class="row-fluid">
                                             <button id="baseline-draw-btn" class="btn btn-success" data-toggle="button">
@@ -215,7 +227,7 @@
                                 </div>
                                 <div class="tab-pane" id="transects-manage-tab">
                                     <div class="row-fluid">
-                                        <div id="transects-uploader"></div>
+                                        <div id="transects-uploader" class="uploader"></div>
                                     </div>
                                     <div class="row-fluid">
                                         <button data-toggle="button" class="btn btn-success" disabled id="create-transects-toggle">
@@ -274,19 +286,29 @@
                                 <div class="span4"><h3>Results</h3></div>
                                 <div class="span8" id="results-alert-container"></div>
                             </div>
-                            <div class="row-fluid span12">
-                                <div class="well" id="results-well">
+                            <ul class="nav nav-tabs" id="action-result-tablist">
+                                <li class="active"><a  data-toggle="tab" href="#results-view-tab">View</a></li>
+                                <li><a data-toggle="tab" href="#results-manage-tab">Manage</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="results-view-tab">
                                     <select id="results-list" style="width: 100%;"></select>
+                                    <div class="row-fluid">
+                                        <div class="tabbable">
+                                            <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
+                                            <div class="tab-content" id="results-tabcontent"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="results-manage-tab">
+                                    <button class="btn btn-success" id="create-results-btn">
+                                        <i class="icon-pencil icon-white"></i>
+                                        &nbsp;Calculate Results
+                                    </button>
                                 </div>
                             </div>
 
-                            <div class="row-fluid span12">
-                                <div class="tabbable">
-                                    <ul class="nav nav-tabs" id="results-table-navtabs">
-                                    </ul>
-                                    <div class="tab-content" id="results-tabcontent"></div>
-                                </div>
-                            </div>
+
                         </div> <!-- /Results -->
 
                     </div>
@@ -424,15 +446,10 @@
     <script type="text/javascript" src="js/stages/transects.js"></script>
     <script type="text/javascript" src="js/stages/intersections.js"></script>
     <script type="text/javascript" src="js/stages/results.js"></script>
-    <script type="text/javascript" src="pages/index/shoreline-colors.js"></script>
-
 
     <!-- TODO - Modularize -->
     <link type="text/css" rel="stylesheet" href="css/jquery-bootstrap-toggle/bootstrap-toggle-buttons.css" />
     <script type="text/javascript" src="js/jquery-bootstrap-toggle/jquery.toggle.buttons.js"></script>
-    <!-- TODO - Modularize -->
-    <link type="text/css" rel="stylesheet" href="css/normalize/normalize.css" />
-    <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
-    
-    <script type="text/javascript" src="pages/index/onReady.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/custom.css" />
+    <script type="text/javascript" src="js/onReady.js"></script>
 </html>

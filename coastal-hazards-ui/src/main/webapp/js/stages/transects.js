@@ -126,49 +126,80 @@ var Transects = {
             spacing : spacing,
             layer : layerName + '_transects'
         })
-        CONFIG.ows.executeWPSProcess({
-            processIdentifier : 'gs:GenerateTransects',
-            request : request,
-            context : this,
-            callbacks : [
-            // TODO- Error Checking for WPS process response!
-            function(data, textStatus, jqXHR, context) {
-                if (typeof data == 'string') {
-                    CONFIG.ows.getWMSCapabilities({
-                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
-                        callbacks : {
-                            success : [
-                            Transects.populateFeaturesList,
-                            function() {
-                                CONFIG.ui.showAlert({
-                                    message : 'Transect calculation succeeded.',
-                                    displayTime : 7500,
-                                    caller : Transects,
-                                    style: {
-                                        classes : ['alert-success']
-                                    }
-                                })
-                                $('#transects-list').val(data);
-                                $('#transects-list').trigger('change');
-                                $('a[href="#' + Transects.stage + '-view-tab"]').tab('show');
-                            }                        
-                            ]
-                        }
-                    })
-                } else {
-                    LOG.error($(data).find('ows\\:ExceptionText').first().text());
-                    CONFIG.ui.showAlert({
-                        message : 'Transect calculation failed. Check logs.',
-                        displayTime : 7500,
-                        caller : Transects,
-                        style: {
-                            classes : ['alert-error']
-                        }
-                    })
+        
+        var wpsProc = function() {
+            CONFIG.ows.executeWPSProcess({
+                processIdentifier : 'gs:GenerateTransects',
+                request : request,
+                context : this,
+                callbacks : [
+                // TODO- Error Checking for WPS process response!
+                function(data, textStatus, jqXHR, context) {
+                    if (typeof data == 'string') {
+                        CONFIG.ows.getWMSCapabilities({
+                            namespace : CONFIG.tempSession.getCurrentSessionKey(),
+                            callbacks : {
+                                success : [
+                                Transects.populateFeaturesList,
+                                function() {
+                                    CONFIG.ui.showAlert({
+                                        message : 'Transect calculation succeeded.',
+                                        displayTime : 7500,
+                                        caller : Transects,
+                                        style: {
+                                            classes : ['alert-success']
+                                        }
+                                    })
+                                    $('#transects-list').val(data);
+                                    $('#transects-list').trigger('change');
+                                    $('a[href="#' + Transects.stage + '-view-tab"]').tab('show');
+                                }                        
+                                ]
+                            }
+                        })
+                    } else {
+                        LOG.error($(data).find('ows\\:ExceptionText').first().text());
+                        CONFIG.ui.showAlert({
+                            message : 'Transect calculation failed. Check logs.',
+                            displayTime : 7500,
+                            caller : Transects,
+                            style: {
+                                classes : ['alert-error']
+                            }
+                        })
+                    }
                 }
-            }
-            ]
-        })
+                ]
+            })
+        }
+        
+        // Check if transects already exists in the select list
+        if ($('#transects-list option[value="'+ CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_transects"]').length) {
+            CONFIG.ui.createModalWindow({
+                context : {
+                    scope : this
+                },
+                headerHtml : 'Resource Exists',
+                bodyHtml : 'A resource already exists with the name ' + layerName + ' in your session. Would you like to overwrite this resource?',
+                primaryButtonText : 'Overwrite',
+                callbacks : [
+                function(event, context) {
+                    $.get('service/session', {
+                        action : 'remove-layer',
+                        workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                        store : 'ch-input',
+                        layer : layerName + '_transects'
+                    },
+                    function(data, textStatus, jqXHR) {
+                        wpsProc();
+                    }, 'json')
+                }]
+            })
+        } else {
+            wpsProc();
+        }
+        
+        
     },
     createWPSGenerateTransectsRequest : function(args) {
         var shorelines = args.shorelines;

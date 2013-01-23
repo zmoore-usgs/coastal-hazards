@@ -5,6 +5,15 @@ $(document).ready(function() {
         LOG4JS_LOG_THRESHOLD : CONFIG.development ? 'debug' : 'info'
     });
     
+    $(document).ajaxStart(function() {
+        LOG.debug('start');
+        $("#application-spinner").fadeIn();
+    });
+    $(document).ajaxStop(function() {
+        LOG.debug('end');
+        $("#application-spinner").fadeOut();
+    });
+    
     // Math.seedrandom('Look @ http://davidbau.com/encode/seedrandom.js')
     
     // Contains the pemanent session object which holds one or more sessions
@@ -47,7 +56,9 @@ $(document).ready(function() {
                         Results.populateFeaturesList,
                         function() {
                             $('.qq-upload-button').addClass('btn btn-success');
+                            $('#application-overlay').fadeOut()
                         }
+                        
                         ],
                         error : [
                         Shorelines.initializeUploader,
@@ -57,7 +68,10 @@ $(document).ready(function() {
                         Baseline.populateFeaturesList,
                         Transects.populateFeaturesList,
                         Intersections.populateFeaturesList,
-                        Results.populateFeaturesList
+                        Results.populateFeaturesList,
+                        function() {
+                            $('#application-overlay').fadeOut()
+                        }
                         ]
                     }
                 })
