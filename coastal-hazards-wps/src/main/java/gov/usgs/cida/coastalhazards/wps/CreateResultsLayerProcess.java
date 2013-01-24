@@ -47,9 +47,13 @@
 package gov.usgs.cida.coastalhazards.wps;
 
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
+import java.util.List;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
@@ -89,7 +93,7 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
         private FeatureCollection<SimpleFeatureType, SimpleFeature> transects;
         private String workspace;
         private String store;
-        private String layer;               
+        private String layer;
         
         private Process(String results,
                 FeatureCollection<SimpleFeatureType, SimpleFeature> transects,
@@ -104,8 +108,20 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
         }
         
         private String execute() {
-            
-            return null;
+            importer.checkIfLayerExists(workspace, layer);
+            List<SimpleFeature> resultFeatures = getFeaturesFromResults(results);
+            List<SimpleFeature> joinedFeatures = joinResultsToTransects(resultFeatures, transects);
+            SimpleFeatureCollection collection = DataUtilities.collection(joinedFeatures);
+            String imported = importer.importLayer(collection, workspace, store, layer, null, ProjectionPolicy.REPROJECT_TO_DECLARED);
+            return imported;
+        }
+
+        private List<SimpleFeature> getFeaturesFromResults(String results) {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+        private List<SimpleFeature> joinResultsToTransects(List<SimpleFeature> resultFeatures, FeatureCollection<SimpleFeatureType, SimpleFeature> transects) {
+            throw new UnsupportedOperationException("Not yet implemented");
         }
     }
 }
