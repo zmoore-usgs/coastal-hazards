@@ -61,12 +61,6 @@ var UI = function() {
         trigger : 'hover'
     })
     
-    //    $('#map').on('hover', function() {
-    //        setTimeout(function() {
-    //            $('#map-well').popover('hide');
-    //        }, 3000);
-    //    })  
-        
     $('select').popover({
         title : 'Layer Selection',
         content : $('<div />')
@@ -96,38 +90,34 @@ var UI = function() {
         createModalWindow : function(args) {
             var headerHtml = args.headerHtml || '';
             var bodyHtml = args.bodyHtml || '';
-            var primaryButtonText = args.primaryButtonText || '';
-            var context = args.context || this;
-            var callbacks = args.callbacks || [];
-            
-            var callbackFunction = function(event) {
-                callbacks.each(function(callback) {
-                    callback(event, context);
-                })
-                unregister();
-            }
-            
-            var clickFunction = function(event) {
-                callbackFunction(event);
-                $("#modal-window").modal('hide');
-            }
-            
-            var unregister = function() {
-                $('#modal-window-label').html('');
-                $('#modal-body-content').html('');
-                $('#modal-window-button-primary').html('');
-                $("#modal-window").off('hidden', '**', callbackFunction);
-                $('#modal-window-button-primary').off('click', '**', clickFunction)
-            }
+            var buttons = args.buttons || [];
             
             $('#modal-window-label').html(headerHtml);
             $('#modal-body-content').html(bodyHtml);
+            $('#modal-window>.modal-footer').html('');
+
+            buttons.each(function(button) {
+                var text = button.text;
+                var callback = button.callback;
+                var modalButton = $('<button />')
+                .addClass('btn')
+                .html(text)
+                .on('click', callback)
+                .on('click', function() {
+                    $("#modal-window").modal('hide');
+                })
+                $('#modal-window>.modal-footer').append(modalButton)
+            })
             
-            $('#modal-window-button-primary')
-            .html(primaryButtonText)
-            .on('click', clickFunction)
+            $('#modal-window>.modal-footer').append(
+                $('<button />')
+                .addClass('btn')
+                .attr({
+                    'data-dismiss' : 'modal',
+                    'aria-hidden' : 'true'
+                })
+                .html('Cancel'))
             
-            $("#modal-window").on('hidden', callbackFunction);
             
             $("#modal-window").modal('show');
         },

@@ -381,15 +381,16 @@ var Baseline = {
                     },
                     headerHtml : 'Resource Exists',
                     bodyHtml : 'A resource already exists with the name ' + importName + '. Would you like to overwrite this resource?',
-                    primaryButtonText : 'Overwrite',
-                    callbacks : [
-                    function(event, context) {
-                        CONFIG.ows.clearFeaturesOnServer({
-                            layer : existingLayer.val(),
-                            callbacks : [
-                            Baseline.saveDrawnFeatures
-                            ]
-                        })
+                    buttons : [{
+                        text : 'Overwrite',
+                        callback : function(event, context) {
+                            CONFIG.ows.clearFeaturesOnServer({
+                                layer : existingLayer.val(),
+                                callbacks : [
+                                Baseline.saveDrawnFeatures
+                                ]
+                            })
+                        }
                     }]
                 })
             } else {
