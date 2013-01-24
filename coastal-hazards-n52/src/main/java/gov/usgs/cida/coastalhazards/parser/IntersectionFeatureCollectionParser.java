@@ -82,7 +82,8 @@ public class IntersectionFeatureCollectionParser extends AbstractParser {
                     buf.newLine();
                 }
             }
-            
+            buf.flush();
+            IOUtils.closeQuietly(buf);
             return new GenericFileDataBinding(new GenericFileData(outfile, "text/tsv"));
         }
         catch (IOException e) {
@@ -95,7 +96,7 @@ public class IntersectionFeatureCollectionParser extends AbstractParser {
             throw new RuntimeException("Unable to parse feature collection", e);
         }
         finally {
-            IOUtils.closeQuietly(buf);
+            IOUtils.closeQuietly(buf); // just in case
         }
     }
 
