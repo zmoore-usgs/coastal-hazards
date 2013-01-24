@@ -546,7 +546,7 @@ var Shorelines = {
         var derivedName = '';
         var getSeries = function(series) {
             var skey = CONFIG.tempSession.getCurrentSessionKey();
-            var startPoint = series.contains(skey) ? skey.length : 0;
+            var startPoint = series.has(skey) ? skey.length : 0;
             return series.substr(startPoint, series.lastIndexOf('_') - startPoint)
         }
         if (currentlySelectedShorelines.length == 0) {
