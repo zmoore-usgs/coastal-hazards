@@ -1,8 +1,8 @@
 # wps.des: test, test, test;
 # wps.in: input, xml, input, test;
 
-text <- input
-
+file <- file(input)
+text <- readLines(file)
 output <- "out.txt"
 write(text, output)
 
