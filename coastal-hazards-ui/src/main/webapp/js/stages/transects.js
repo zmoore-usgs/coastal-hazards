@@ -181,19 +181,22 @@ var Transects = {
                 },
                 headerHtml : 'Resource Exists',
                 bodyHtml : 'A resource already exists with the name ' + layerName + ' in your session. Would you like to overwrite this resource?',
-                primaryButtonText : 'Overwrite',
-                callbacks : [
-                function(event, context) {
-                    $.get('service/session', {
-                        action : 'remove-layer',
-                        workspace : CONFIG.tempSession.getCurrentSessionKey(),
-                        store : 'ch-input',
-                        layer : layerName + '_transects'
-                    },
-                    function(data, textStatus, jqXHR) {
-                        wpsProc();
-                    }, 'json')
-                }]
+                buttons : [
+                {
+                    text : 'Overwrite',
+                    callback : function(event) {
+                        $.get('service/session', {
+                            action : 'remove-layer',
+                            workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                            store : 'ch-input',
+                            layer : layerName + '_transects'
+                        },
+                        function(data, textStatus, jqXHR) {
+                            wpsProc();
+                        }, 'json')
+                    }           
+                }
+                ]
             })
         } else {
             wpsProc();
