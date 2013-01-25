@@ -1,15 +1,23 @@
 <!-- Sets logging and script types that are loaded --> 
 <Environment name="coastal-hazards.development" type="java.lang.String" value="true" />
+
 <!-- The maximum file size that is allowed to the server - Set to 0 to disable size checking -->
 <Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="15728640" />
+
 <!-- The parameter that the application uses to get the name of the incoming file - qqfile is used by default -->
 <Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="qqfile" />
+
 <!-- The base directory for the project's file structure - the default will be a "coastal-hazards" directory in the system's temp dir-->
 <Environment name="coastal-hazards.files.directory.base" type="java.lang.String" value="/tmp/coastal-hazards" />
+
 <!-- Work Directory. Typically where files are temporarily stored after uploading, unzipping, etc. Default will be /work - sits in coastal-hazards.files.directory.base -->
 <Environment name="coastal-hazards.files.directory.work" type="java.lang.String" value="/work" />
+
 <!-- Directory in which uploads are held -->
 <Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="/upload" />
+
+<!-- gov.usgs.cida.n52.wps.config.location which is path to wps_config.xml file. Rserve connection won't work without -->
+<Environment name="gov.usgs.cida.n52.wps.config.location" type="java.lang.String" value="/opt/tomcat/instance/default/data/coastal-hazards/n52/wps_config.xml" />
 
 <!-- GeoServer Config -->
 <!-- 
