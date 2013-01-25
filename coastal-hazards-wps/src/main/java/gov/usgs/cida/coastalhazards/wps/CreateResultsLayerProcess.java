@@ -117,10 +117,22 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
         }
 
         private List<SimpleFeature> getFeaturesFromResults(String results) {
+            String[] lines = results.split("\n");
+            // first line should be header, parse to get feature type
+            
+            // then go through the rest of the rows and add features to list
+            
+            // return simple feature list
             throw new UnsupportedOperationException("Not yet implemented");
         }
 
         private List<SimpleFeature> joinResultsToTransects(List<SimpleFeature> resultFeatures, FeatureCollection<SimpleFeatureType, SimpleFeature> transects) {
+            
+            // make new feature type combining features of results and transects
+            
+            // for each result feature match it up with transect to do join
+            
+            // return the list of joined features
             throw new UnsupportedOperationException("Not yet implemented");
         }
     }
