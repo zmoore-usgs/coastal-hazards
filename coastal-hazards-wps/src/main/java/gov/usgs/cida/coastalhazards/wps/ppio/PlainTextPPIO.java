@@ -58,28 +58,28 @@ import org.geoserver.wps.ppio.ComplexPPIO;
  */
 public class PlainTextPPIO extends ComplexPPIO {
     
-    public PlainTextPPIO(Class externalType, Class internalType) {
-        super(externalType, internalType, "text/plain");
+    public PlainTextPPIO() {
+        super(StringBuffer.class, StringBuffer.class, "text/plain");
     }
 
     @Override
-    public String decode(InputStream input) throws Exception {
+    public StringBuffer decode(InputStream input) throws Exception {
         StringWriter writer = new StringWriter();
         IOUtils.copy(input, writer);
-        String inputString = writer.toString();
+        StringBuffer buffer = writer.getBuffer();
         IOUtils.closeQuietly(writer);
-        return inputString;
+        return buffer;
     }
 
     @Override
     public void encode(Object value, OutputStream os) throws Exception {
-        String data = (String)value; // should be able to cast this no problem
-        os.write(data.getBytes());
+        StringBuffer data = (StringBuffer)value; // should be able to cast this no problem
+        os.write(data.toString().getBytes());
     }
 
     @Override
     public String getFileExtension() {
-        return ".tsv";
+        return ".csv";
     }
 
 }
