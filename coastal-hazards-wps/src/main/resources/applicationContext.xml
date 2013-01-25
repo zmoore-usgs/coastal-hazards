@@ -9,4 +9,8 @@
         <constructor-arg index="0" ref="importProcess"/>
         <constructor-arg index="1" ref="catalog"/>
     </bean>
+    <bean id="addResults" class="gov.usgs.cida.coastalhazards.wps.CreateResultsLayerProcess">
+        <constructor-arg index="0" ref="importProcess"/>
+        <constructor-arg index="1" ref="catalog"/>
+    </bean>
 </beans>
