@@ -1,10 +1,10 @@
-# wps.des: id=DSAS_stats, title=Digital Shoreline Analysis System Stats, abstract=stats available - LRR, WLR, SCE, NSM;
+# wps.des: id=DSAS_stats, title=Digital Shoreline Analysis System Stats, abstract=stats available - LRR WLR SCE NSM;
 # wps.in: input, xml, block intersection text, text input from intersections layer with time elements and uncertainty;
 
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-input <- "testOut.txt"
+#input <- "testOut.txt"
 
 
 #WLR_dsas <- function (intersections,confLevel)
@@ -66,7 +66,7 @@ WLR_CI_2_5 <- vector(length=numBlck)
 WLR_CI_97_5<- vector(length=numBlck)
 transect_ID<- blckNm
 
-statsout <-data.frame(tramsect_ID,LRR_rates,LRR_CI_2_5,LRR_CI_97_5,WLR_rates,WLR_CI_2_5,WLR_CI_97_5)
+statsout <-data.frame(transect_ID,LRR_rates,LRR_CI_2_5,LRR_CI_97_5,WLR_rates,WLR_CI_2_5,WLR_CI_97_5)
 colnames(statsout)<-c('transect_ID','LRR','LCI_2.5','LCI_97.5','WLR','WCI_2.5','WCI_97.5')
 
 netSM  = vector(length=numBlck) # not implemented yet...
