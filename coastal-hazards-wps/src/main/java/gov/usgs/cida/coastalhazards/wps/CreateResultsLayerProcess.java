@@ -47,6 +47,7 @@
 package gov.usgs.cida.coastalhazards.wps;
 
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
+import gov.usgs.cida.coastalhazards.wps.ppio.PlainTextPPIO;
 import java.util.List;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ProjectionPolicy;
