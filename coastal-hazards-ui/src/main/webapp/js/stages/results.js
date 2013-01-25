@@ -9,6 +9,58 @@ var Results = {
             caller : Results
         });
     },
+    calcResults : function() {
+        LOG.info('Results.js::calcResults');
+        var transects = $('#transects-list :selected')[0].value;
+        var intersects = $('#intersections-list :selected')[0].value;
+        var request = Results.createWPSCalculateResultsRequest({
+            transects : transects,
+            intersects : intersects
+        })
+        
+        CONFIG.ows.executeWPSProcess({
+            processIdentifier : 'gs:CreateResultsLayer',
+            request : request,
+            context : this,
+            callbacks : [
+            function(data, textStatus, jqXHR, context) {
+                if (typeof data == 'string') {
+                    CONFIG.ows.getWMSCapabilities({
+                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
+                        callbacks : {
+                            success : [
+                            Results.populateFeaturesList,
+                            function() {
+                                $('#intersections-list').val(data);
+                                Results.listboxChanged();
+                                $('a[href="#' + Results.stage + '-view-tab"]').tab('show');
+                                CONFIG.ui.showAlert({
+                                    message : 'Results were created successfully.',
+                                    displayTime : 7500,
+                                    caller : Intersections,
+                                    style: {
+                                        classes : ['alert-success']
+                                    }
+                                })
+                            }      
+                            ]
+                        }
+                    })
+                } else {
+                    LOG.error($(data).find('ows\\:ExceptionText').first().text());
+                    CONFIG.ui.showAlert({
+                        message : 'Results creation failed. Check logs.',
+                        displayTime : 7500,
+                        caller : Intersections,
+                        style: {
+                            classes : ['alert-error']
+                        }
+                    })
+                }
+            }
+            ]
+        })
+    },
     listboxChanged : function() {
         LOG.info('Results.js::listboxChanged: A result was selected from the select list');
 
@@ -185,5 +237,84 @@ var Results = {
         tabContent.append(tabContentTableDiv);
                         
         $("table.tablesorter").tablesorter();
+    },
+    createWPSCalculateResultsRequest : function(args) {
+        var transects = args.transects;
+        var intersects = args.intersects;
+        var wps = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
+        '<ows:Identifier>gs:CreateResultsLayer</ows:Identifier>' + 
+        '<wps:DataInputs>'+
+        
+        '<wps:Input>' + 
+        '<ows:Identifier>results</ows:Identifier>' +         
+        '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="'+CONFIG.n52Endpoint+'" method="POST">' + 
+        //        '<wps:Body><![CDATA[<?xml version="1.0" encoding="UTF-8"?>' + 
+        '<wps:Body>' + 
+        '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
+        '<ows:Identifier>org.n52.wps.server.r.DSAS_stats</ows:Identifier>' + 
+        '<wps:DataInputs>' +
+        '<wps:Input>' + 
+        '<ows:Identifier>input</ows:Identifier>' + 
+        '<wps:Reference xlink:href="'+CONFIG.geoServerEndpoint + '/'+  CONFIG.tempSession.getCurrentSessionKey() + '/wfs">' + 
+        '<wps:Body>' + 
+        '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2" >' + 
+        '<wfs:Query typeName="'+intersects+'" />' + 
+        '</wfs:GetFeature>' + 
+        '</wps:Body>' + 
+        '</wps:Reference>' + 
+        '</wps:Input>' + 
+        '</wps:DataInputs>' + 
+        '<wps:ResponseForm>' + 
+        '<wps:RawDataOutput>' + 
+        '<ows:Identifier>output</ows:Identifier>' + 
+        '</wps:RawDataOutput>' + 
+        '</wps:ResponseForm>' + 
+        '</wps:Execute></wps:Body>' + 
+        //        '</wps:Execute>]]></wps:Body>' + 
+        '</wps:Reference>' +         
+        '</wps:Input>'+
+        
+        '<wps:Input>' + 
+        '<ows:Identifier>transects</ows:Identifier>' + 
+        '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
+        '<wps:Body>' + 
+        '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+transects.split(':')[0]+'="gov.usgs.cida.ch.'+transects.split(':')[0]+'">' + 
+        '<wfs:Query typeName="'+transects+'" srsName="EPSG:4326" />' + 
+        '</wfs:GetFeature>' + 
+        '</wps:Body>' + 
+        '</wps:Reference>' + 
+        '</wps:Input>' + 
+        
+        '<wps:Input>' + 
+        '<ows:Identifier>workspace</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+CONFIG.tempSession.getCurrentSessionKey()+'</wps:LiteralData>' + 
+        '</wps:Data>' + 
+        '</wps:Input>' +     
+        
+        '<wps:Input>' + 
+        '<ows:Identifier>store</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>ch-output</wps:LiteralData>' + 
+        '</wps:Data>' + 
+        '</wps:Input>' +      
+        
+        '<wps:Input>' + 
+        '<ows:Identifier>layer</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+transects.split(':')[1] + Results.suffixes[0] +'</wps:LiteralData>' + 
+        '</wps:Data>' + 
+        '</wps:Input>' +    
+        
+        '</wps:DataInputs>' + 
+        '<wps:ResponseForm>' + 
+        '<wps:RawDataOutput>' + 
+        '<ows:Identifier>intersections</ows:Identifier>' + 
+        '</wps:RawDataOutput>' + 
+        '</wps:ResponseForm>' + 
+        '</wps:Execute>';
+
+        return wps;
+        
     }
 }

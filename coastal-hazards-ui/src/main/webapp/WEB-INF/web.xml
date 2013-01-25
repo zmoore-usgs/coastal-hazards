@@ -22,6 +22,7 @@
     </filter-mapping>
     
     <!-- SERVLET -->
+    <!-- AlternateProxy -->
     <servlet>
         <servlet-name>GeoServerServlet</servlet-name>
         <servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
@@ -34,6 +35,20 @@
             <param-value>300000</param-value>
         </init-param>
     </servlet>
+    <servlet>
+        <servlet-name>52n-Servlet</servlet-name>
+        <servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+        <init-param>
+            <param-name>forward-url-param</param-name>
+            <param-value>coastal-hazards.52nr.endpoint</param-value>
+        </init-param>
+        <init-param>
+            <param-name>readTimeout</param-name>
+            <param-value>300000</param-value>
+        </init-param>
+    </servlet>
+    <!-- /AlternateProxy -->
+    
     <servlet>
         <servlet-name>ImportService</servlet-name>
         <servlet-class>gov.usgs.cida.coastalhazards.service.ImportService</servlet-class>
@@ -51,6 +66,10 @@
     <servlet-mapping>
         <servlet-name>GeoServerServlet</servlet-name>
         <url-pattern>/geoserver/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>52n-Servlet</servlet-name>
+        <url-pattern>/52n/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SessionService</servlet-name>

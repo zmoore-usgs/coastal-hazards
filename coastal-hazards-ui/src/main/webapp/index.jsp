@@ -16,6 +16,7 @@
     }
     boolean development = Boolean.parseBoolean(props.getProperty("coastal-hazards.development"));
     String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
+    String n52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
 %>
 
 <html lang="en">
@@ -340,17 +341,12 @@
         <div id="modal-window" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-window-label" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="modal-window-label"> </h3>
+                <h3 id="modal-window-label"></h3>
             </div>
             <div class="modal-body">
-                <div id="modal-body-content">
-
-                </div>
+                <div id="modal-body-content"></div>
             </div>
-            <div class="modal-footer">
-<!--                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                <button class="btn btn-primary" id="modal-window-button-primary"> </button>-->
-            </div>
+            <div class="modal-footer"></div>
         </div>
 
 
@@ -396,6 +392,7 @@
 			
         CONFIG.development = <%= development%>;
         CONFIG.geoServerEndpoint = '<%=geoserverEndpoint%>';
+        CONFIG.n52Endpoint = '<%=n52Endpoint%>';
         CONFIG.namespace = Object.extended();
         CONFIG.namespace.sample = 'gov.usgs.cida.ch.sample';
         CONFIG.namespace.input = 'gov.usgs.cida.ch.input';

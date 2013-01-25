@@ -18,6 +18,7 @@ var UI = function() {
     $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
     $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
     $("#create-intersections-btn").on("click", Intersections.calcIntersections);
+    $("#create-results-btn").on("click", Results.calcResults);
     
     me.work_stages_objects.each(function(stage) {
         $('#nav-list a[href="#'+stage.stage+'"]').popover({
