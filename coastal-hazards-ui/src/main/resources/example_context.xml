@@ -28,6 +28,9 @@ be set in Geoserver's bin/setenv.sh as GEOSERVER_DATA_DIR
 Example: JAVA_OPTS="$JAVA_OPTS -DGEOSERVER_DATA_DIR=/path/to/your/data/dir"
 -->
 <Environment name="coastal-hazards.geoserver.datadir" type="java.lang.String" value="/Users/isuftin/Source/CIDA/coastal-hazards/coastal-hazards-geoserver/target/geoserver/data" />
-<Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/coastal-hazards-geoserver" />
 <Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="admin" />
 <Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="supply.your.own" />
+
+<!-- URL Forwarding Configuration -->
+<Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/coastal-hazards-geoserver" />
+<Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="http://localhost:8080/coastal-hazards-n52" />
