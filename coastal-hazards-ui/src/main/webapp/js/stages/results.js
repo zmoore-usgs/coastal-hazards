@@ -23,42 +23,42 @@ var Results = {
             request : request,
             context : this,
             callbacks : [
-        //            function(data, textStatus, jqXHR, context) {
-        //                if (typeof data == 'string') {
-        //                    CONFIG.ows.getWMSCapabilities({
-        //                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
-        //                        callbacks : {
-        //                            success : [
-        //                            Intersections.populateFeaturesList,
-        //                            function() {
-        //                                $('#intersections-list').val(data);
-        //                                Intersections.listboxChanged();
-        //                                $('a[href="#' + Intersections.stage + '-view-tab"]').tab('show');
-        //                                CONFIG.ui.showAlert({
-        //                                    message : 'Intersection creation succeeded.',
-        //                                    displayTime : 7500,
-        //                                    caller : Intersections,
-        //                                    style: {
-        //                                        classes : ['alert-success']
-        //                                    }
-        //                                })
-        //                            }      
-        //                            ]
-        //                        }
-        //                    })
-        //                } else {
-        //                    LOG.error($(data).find('ows\\:ExceptionText').first().text());
-        //                    CONFIG.ui.showAlert({
-        //                        message : 'Intersection creation failed. Check logs.',
-        //                        displayTime : 7500,
-        //                        caller : Intersections,
-        //                        style: {
-        //                            classes : ['alert-error']
-        //                        }
-        //                    })
-        //                }
-        //            }
-        ]
+            function(data, textStatus, jqXHR, context) {
+                if (typeof data == 'string') {
+                    CONFIG.ows.getWMSCapabilities({
+                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
+                        callbacks : {
+                            success : [
+                            Results.populateFeaturesList,
+                            function() {
+                                $('#intersections-list').val(data);
+                                Results.listboxChanged();
+                                $('a[href="#' + Results.stage + '-view-tab"]').tab('show');
+                                CONFIG.ui.showAlert({
+                                    message : 'Results were created successfully.',
+                                    displayTime : 7500,
+                                    caller : Intersections,
+                                    style: {
+                                        classes : ['alert-success']
+                                    }
+                                })
+                            }      
+                            ]
+                        }
+                    })
+                } else {
+                    LOG.error($(data).find('ows\\:ExceptionText').first().text());
+                    CONFIG.ui.showAlert({
+                        message : 'Results creation failed. Check logs.',
+                        displayTime : 7500,
+                        caller : Intersections,
+                        style: {
+                            classes : ['alert-error']
+                        }
+                    })
+                }
+            }
+            ]
         })
     },
     listboxChanged : function() {
@@ -248,7 +248,7 @@ var Results = {
         '<wps:Input>' + 
         '<ows:Identifier>results</ows:Identifier>' +         
         '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="'+CONFIG.n52Endpoint+'" method="POST">' + 
-//        '<wps:Body><![CDATA[<?xml version="1.0" encoding="UTF-8"?>' + 
+        //        '<wps:Body><![CDATA[<?xml version="1.0" encoding="UTF-8"?>' + 
         '<wps:Body>' + 
         '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
         '<ows:Identifier>org.n52.wps.server.r.DSAS_stats</ows:Identifier>' + 
@@ -270,7 +270,7 @@ var Results = {
         '</wps:RawDataOutput>' + 
         '</wps:ResponseForm>' + 
         '</wps:Execute></wps:Body>' + 
-//        '</wps:Execute>]]></wps:Body>' + 
+        //        '</wps:Execute>]]></wps:Body>' + 
         '</wps:Reference>' +         
         '</wps:Input>'+
         
