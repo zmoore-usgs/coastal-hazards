@@ -17,7 +17,7 @@
 <Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="/upload" />
 
 <!-- gov.usgs.cida.n52.wps.config.location which is path to wps_config.xml file. Rserve connection won't work without -->
-<Environment name="gov.usgs.cida.n52.wps.config.location" type="java.lang.String" value="/opt/tomcat/instance/default/data/coastal-hazards/n52/wps_config.xml" />
+<Environment name="gov.usgs.cida.n52.wps.config.location" type="java.lang.String" value="/Users/isuftin/Server/8080/7.0.35/data/coastal-hazards/n52/wps_config.xml" />
 
 <!-- GeoServer Config -->
 <!-- 

@@ -8,7 +8,6 @@ var Intersections = {
             return v.value
         })
         var transects = $('#transects-list :selected')[0].value;
-        var layerName = $('#transects-list :selected')[0].text.split('_')[0] + '_intersects' 
         
         var request = Intersections.createWPSCalculateIntersectionsRequest({
             shorelines : visibleShorelines,
