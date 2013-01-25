@@ -79,7 +79,7 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
     }
     
     @DescribeResult(name = "resultLayer", description = "Layer containing results of shoreline statistics")
-    public String execute(@DescribeParameter(name = "results", description = "Block of text with TransectID and stats results", min = 1, max = 1) String results,
+    public String execute(@DescribeParameter(name = "results", description = "Block of text with TransectID and stats results", min = 1, max = 1) StringBuffer results,
             @DescribeParameter(name = "transects", description = "Feature collection of transects to clone", min = 1, max = 1) FeatureCollection<SimpleFeatureType, SimpleFeature> transects,
             @DescribeParameter(name = "workspace", description = "Workspace in which to put results layer", min = 1, max = 1) String workspace,
             @DescribeParameter(name = "store", description = "Store in which to put results", min = 1, max = 1) String store,
@@ -96,12 +96,12 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
         private String store;
         private String layer;
         
-        private Process(String results,
+        private Process(StringBuffer results,
                 FeatureCollection<SimpleFeatureType, SimpleFeature> transects,
                 String workspace,
                 String store,
                 String layer) {
-            this.results = results;
+            this.results = results.toString();
             this.transects = transects;
             this.workspace = workspace;
             this.store = store;
