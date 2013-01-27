@@ -151,9 +151,11 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                     int j = 0;
                     for (int i=0; i<columns.length; i++) {
                         if (i == transectColumn) {
-                            transectId = Long.parseLong(columns[i]);
+                            String id = columns[i].replaceAll("\"", "");
+                            transectId = Long.parseLong(id);
                         }
                         else {
+                            // may need to remove " here too
                             values[j] = Double.parseDouble(columns[i]);
                             j++;
                         }
