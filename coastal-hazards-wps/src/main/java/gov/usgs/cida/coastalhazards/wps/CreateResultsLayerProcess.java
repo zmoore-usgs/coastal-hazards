@@ -46,9 +46,14 @@
 
 package gov.usgs.cida.coastalhazards.wps;
 
+import gov.usgs.cida.coastalhazards.util.Constants;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
-import gov.usgs.cida.coastalhazards.wps.ppio.PlainTextPPIO;
+import gov.usgs.cida.coastalhazards.wps.exceptions.InputFileFormatException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wps.gs.GeoServerProcess;
@@ -56,11 +61,15 @@ import org.geoserver.wps.gs.ImportProcess;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 
 /**
  *
@@ -88,7 +97,8 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
         return new Process(results, transects, workspace, store, layer).execute();
     }
     
-    private class Process {
+    protected class Process {
+        public static final String TRANSECT_ID = "transect_ID";
         
         private String results;
         private FeatureCollection<SimpleFeatureType, SimpleFeature> transects;
@@ -96,7 +106,7 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
         private String store;
         private String layer;
         
-        private Process(StringBuffer results,
+        protected Process(StringBuffer results,
                 FeatureCollection<SimpleFeatureType, SimpleFeature> transects,
                 String workspace,
                 String store,
@@ -108,33 +118,97 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
             this.layer = layer;
         }
         
-        private String execute() {
+        protected String execute() {
             importer.checkIfLayerExists(workspace, layer);
-            List<SimpleFeature> resultFeatures = getFeaturesFromResults(results);
-            List<SimpleFeature> joinedFeatures = joinResultsToTransects(resultFeatures, transects);
+            String[] columnHeaders = getColumnHeaders(results);
+            Map<Long, Double[]> resultMap = parseTextToMap(results);
+            List<SimpleFeature> joinedFeatures = joinResultsToTransects(columnHeaders, resultMap, transects);
             SimpleFeatureCollection collection = DataUtilities.collection(joinedFeatures);
             String imported = importer.importLayer(collection, workspace, store, layer, null, ProjectionPolicy.REPROJECT_TO_DECLARED);
             return imported;
         }
 
-        private List<SimpleFeature> getFeaturesFromResults(String results) {
+        protected Map<Long, Double[]> parseTextToMap(String results) {
             String[] lines = results.split("\n");
-            // first line should be header, parse to get feature type
-            
-            // then go through the rest of the rows and add features to list
-            
-            // return simple feature list
-            throw new UnsupportedOperationException("Not yet implemented");
+            Map<Long, Double[]> resultMap = new HashMap<Long, Double[]>();
+            int transectColumn = -1;
+            for (String line : lines) {
+                String[] columns = line.split("\t");
+                if (transectColumn < 0) {
+                    for (int i=0; i<columns.length; i++) {
+                        if (columns[i].equals(TRANSECT_ID)) {
+                            transectColumn = i;
+                        }
+                        else {
+                            
+                        }
+                    }
+                    if (transectColumn < 0) {
+                        throw new InputFileFormatException("Stats did not contain column named " + TRANSECT_ID);
+                    }
+                }
+                else {
+                    Long transectId = null;
+                    Double[] values = new Double[columns.length-1];
+                    int j = 0;
+                    for (int i=0; i<columns.length; i++) {
+                        if (i == transectColumn) {
+                            transectId = Long.parseLong(columns[i]);
+                        }
+                        else {
+                            values[j] = Double.parseDouble(columns[i]);
+                            j++;
+                        }
+                    }
+                    resultMap.put(transectId, values);
+                }
+            }
+            return resultMap;
         }
 
-        private List<SimpleFeature> joinResultsToTransects(List<SimpleFeature> resultFeatures, FeatureCollection<SimpleFeatureType, SimpleFeature> transects) {
+        protected List<SimpleFeature> joinResultsToTransects(String[] columnHeaders, Map<Long, Double[]> resultMap, FeatureCollection<SimpleFeatureType, SimpleFeature> transects) {
+            List<SimpleFeature> sfList = new LinkedList<SimpleFeature>();
             
-            // make new feature type combining features of results and transects
-            
-            // for each result feature match it up with transect to do join
-            
-            // return the list of joined features
-            throw new UnsupportedOperationException("Not yet implemented");
+            SimpleFeatureType transectFeatureType = transects.getSchema();
+            List<AttributeDescriptor> descriptors = transectFeatureType.getAttributeDescriptors();
+            SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+            builder.setName("Results");
+            builder.addAll(descriptors);
+            for (String header: columnHeaders) {
+                if (!header.equals(TRANSECT_ID)) {
+                    builder.add(header, Double.class);
+                }
+            }
+            SimpleFeatureType newFeatureType = builder.buildFeatureType();
+            FeatureIterator<SimpleFeature> features = transects.features();
+            while (features.hasNext()) {
+                SimpleFeature next = features.next();
+                Object transectId = next.getAttribute(Constants.TRANSECT_ID_ATTR);
+                long id = -1;
+                if (transectId instanceof Integer) {
+                    id = new Long(((Integer)transectId).longValue());
+                }
+                else if (transectId instanceof Long) {
+                    id = (Long)transectId;
+                }
+                Double[] values = resultMap.get(id);
+                Object[] joinedAttrs = new Object[next.getAttributeCount() + values.length];
+                List<Object> oldAttributes = next.getAttributes();
+                oldAttributes.addAll(Arrays.asList(values));
+                
+                oldAttributes.toArray(joinedAttrs);
+                SimpleFeature feature = SimpleFeatureBuilder.build(newFeatureType, joinedAttrs, null);
+                sfList.add(feature);
+            }
+            return sfList;
+        }
+
+        private String[] getColumnHeaders(String results) {
+            String[] lines = results.split("\n");
+            if (lines.length <= 1) {
+                throw new InputFileFormatException("Results must have at least 2 rows");
+            }
+            return lines[0].split("\t");
         }
     }
 }
