@@ -102,6 +102,7 @@
                                 </div>
                                 <div class="tab-pane" id="shorelines-manage-tab">
                                     <div id="shorelines-uploader" class="uploader"></div>
+                                    <button class="btn btn-success" id="shorelines-triggerbutton"><i class="icon-arrow-up icon-white"></i>Upload</button>
                                 </div>
                             </div>
                         </div> <!-- /Shorelines -->
@@ -125,19 +126,18 @@
                                     <div id="baseline-button-row" class="row-fluid">
                                         <div class="row-fluid">
                                             <div id="baseline-uploader" class="uploader"></div>
-                                        </div>
-                                        <div class="row-fluid">
+                                            <button class="btn btn-success" id="baseline-triggerbutton"><i class="icon-arrow-up icon-white"></i>Upload</button>
                                             <button id="baseline-draw-btn" class="btn btn-success" data-toggle="button">
                                                 <i class="icon-pencil icon-white"></i>
-                                                &nbsp;Draw Baseline
+                                                &nbsp;Draw
                                             </button>
                                             <button data-toggle="button" class="btn btn-success" disabled id="baseline-edit-form-toggle">
-                                                <i class="icon-pencil icon-white"></i>
-                                                &nbsp;Edit Baseline
+                                                <i class="icon-edit icon-white"></i>
+                                                &nbsp;Edit
                                             </button>
                                             <button class="btn btn-success" disabled id="baseline-clone-btn">
-                                                <i class="icon-pencil icon-white"></i>
-                                                &nbsp;Clone Baseline
+                                                <i class="icon-plus icon-white"></i>
+                                                &nbsp;Clone
                                             </button>
                                         </div>
                                     </div>
@@ -229,11 +229,10 @@
                                 <div class="tab-pane" id="transects-manage-tab">
                                     <div class="row-fluid">
                                         <div id="transects-uploader" class="uploader"></div>
-                                    </div>
-                                    <div class="row-fluid">
+                                        <button class="btn btn-success" id="transects-triggerbutton"><i class="icon-arrow-up icon-white"></i>Upload</button>
                                         <button data-toggle="button" class="btn btn-success" disabled id="create-transects-toggle">
-                                            <i class="icon-pencil icon-white"></i>
-                                            &nbsp;Create Transects
+                                            <i class="icon-tasks icon-white"></i>
+                                            &nbsp;Create
                                         </button>
                                     </div>
                                     <div class="row-fluid">
@@ -247,7 +246,9 @@
                                                         <input type="text" id="create-transects-input-name">
 
                                                         <div class="control-group">
-                                                            <button type="button" class="btn btn-success" id="create-transects-input-button">Calculate</button>
+                                                            <button type="button" class="btn btn-success" id="create-transects-input-button">
+                                                                <i class="icon-tasks icon-white"></i>
+                                                                &nbsp;Calculate</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -274,8 +275,8 @@
                                 </div>
                                 <div class="tab-pane" id="intersections-manage-tab">
                                     <button class="btn btn-success" id="create-intersections-btn">
-                                        <i class="icon-pencil icon-white"></i>
-                                        &nbsp;Calculate Intersections
+                                        <i class="icon-tasks icon-white"></i>
+                                        &nbsp;Calculate</button>
                                     </button>
                                 </div>
                             </div>
@@ -303,8 +304,8 @@
                                 </div>
                                 <div class="tab-pane" id="results-manage-tab">
                                     <button class="btn btn-success" id="create-results-btn">
-                                        <i class="icon-pencil icon-white"></i>
-                                        &nbsp;Calculate Results
+                                        <i class="icon-tasks icon-white"></i>
+                                        &nbsp;Calculate</button>
                                     </button>
                                 </div>
                             </div>

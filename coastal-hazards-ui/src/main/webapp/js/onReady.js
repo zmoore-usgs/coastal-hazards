@@ -26,7 +26,9 @@ $(document).ready(function() {
         LOG.info('OnReady.js:: Current session key: ' + currentSessionKey);
         CONFIG.tempSession.setCurrentSession(currentSessionKey, CONFIG.permSession);
     } catch (e) {
+        LOG.error('OnReady.js:: Session could not be read correctly')
         LOG.error(e);
+        // This could probably be hardcoded into index but... here it is
         var modal = $('<div />')
         .addClass('modal hide fade')
         .attr('id', 'session-reset-modal')    

@@ -307,7 +307,9 @@ var UI = function() {
                     }
                 }
             })
-            
+            $('#'+context+'-triggerbutton').on('click', function() {
+                $('#'+context+'-uploader input').fineUploader().trigger('click')
+            })
             return uploader;
         },
         populateFeaturesList : function(args) {
