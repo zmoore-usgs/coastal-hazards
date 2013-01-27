@@ -121,26 +121,24 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
         protected String execute() {
             importer.checkIfLayerExists(workspace, layer);
             String[] columnHeaders = getColumnHeaders(results);
-            Map<Long, Double[]> resultMap = parseTextToMap(results);
+            Map<Long, Double[]> resultMap = parseTextToMap(results, columnHeaders);
             List<SimpleFeature> joinedFeatures = joinResultsToTransects(columnHeaders, resultMap, transects);
             SimpleFeatureCollection collection = DataUtilities.collection(joinedFeatures);
             String imported = importer.importLayer(collection, workspace, store, layer, null, ProjectionPolicy.REPROJECT_TO_DECLARED);
             return imported;
         }
 
-        protected Map<Long, Double[]> parseTextToMap(String results) {
+        protected Map<Long, Double[]> parseTextToMap(String results, String[] headers) {
             String[] lines = results.split("\n");
             Map<Long, Double[]> resultMap = new HashMap<Long, Double[]>();
             int transectColumn = -1;
             for (String line : lines) {
                 String[] columns = line.split("\t");
                 if (transectColumn < 0) {
-                    for (int i=0; i<columns.length; i++) {
-                        if (columns[i].equals(TRANSECT_ID)) {
+                    // ignore the first line
+                    for (int i=0; i<headers.length; i++) {
+                        if (headers[i].equals(TRANSECT_ID)) {
                             transectColumn = i;
-                        }
-                        else {
-                            
                         }
                     }
                     if (transectColumn < 0) {
@@ -208,7 +206,11 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
             if (lines.length <= 1) {
                 throw new InputFileFormatException("Results must have at least 2 rows");
             }
-            return lines[0].split("\t");
+            String[] header = lines[0].split("\t");
+            for (int i=0; i<header.length; i++) {
+                header[i] = header[i].replaceAll("\"", "");
+            }
+            return header;
         }
     }
 }
