@@ -1,6 +1,6 @@
 var Results = {
     stage : 'results',
-    viewableResultsColumns : ['LRR','LR2','LSE','LCI90'],
+    viewableResultsColumns : ['LRR','LR2','LSE','LCI90',"LCI_2.5",'LCI_97.5','WCI_2.5','WCI_97.5','WLR'],
     suffixes : ['_rates','_results','_clip','_lt'],
     reservedColor: '#0061A3',
     description : 'Et harum quidem rerum facilis est et expedita distinctio.',
@@ -117,7 +117,7 @@ var Results = {
         
         CONFIG.ows.getFilteredFeature({ 
             layer : result,
-            propertyArray : resultsColumns,
+            propertyArray : [],
             scope : result,
             callbacks : {
                 success : [
@@ -148,13 +148,16 @@ var Results = {
         var layer = args.layer;
         var plotDiv = $('#results-' + layer.title + '-plot').get()[0]
         var labels = ['x', 'LRR'];
-        var data = features.sortBy(function(n) {
-            return n.data['StartX']
-        }).map(function(n){
+        var data = features.map(function(n){
             return [ 
             parseFloat(n.data['StartX']), 
-            [parseFloat(n.data['LRR']), parseFloat(n.data['LCI90'])] 
+            [
+            parseFloat(n.data['LRR']), 
+            parseFloat(Math.abs(n.data['WLR']))
+            ] 
             ]
+        }).sortBy(function(n) {
+            return n[0]
         });
         new Dygraph(
             plotDiv,
@@ -185,7 +188,9 @@ var Results = {
         var tbody = $('<tbody />');
         
         columns.each(function(c) {
-            theadRow.append($('<td />').html(c));
+            if (features[0].attributes[c]) {
+                theadRow.append($('<td />').html(c));
+            }
         })
         thead.append(theadRow);
         table.append(thead);
@@ -194,8 +199,10 @@ var Results = {
         features.each(function(feature) {
             var tbodyRow = $('<tr />');
             columns.each(function(c) {
-                var tbodyData = $('<td />').html(feature.data[c]);
-                tbodyRow.append(tbodyData);
+                if (feature.attributes[c]) {
+                    var tbodyData = $('<td />').html(feature.data[c]);
+                    tbodyRow.append(tbodyData);
+                }
             })
             tbody.append(tbodyRow);
         })
@@ -249,8 +256,7 @@ var Results = {
         '<wps:Input>' + 
         '<ows:Identifier>results</ows:Identifier>' +         
         '<wps:Reference mimeType="text/xml" xlink:href="'+CONFIG.n52Endpoint+'/WebProcessingService" method="POST">' + 
-                '<wps:Body><![CDATA[<?xml version="1.0" encoding="UTF-8"?>' + 
-//        '<wps:Body>' + 
+        '<wps:Body><![CDATA[<?xml version="1.0" encoding="UTF-8"?>' + 
         '<wps:Execute xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" service="WPS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">' + 
         '<ows:Identifier>org.n52.wps.server.r.DSAS_stats</ows:Identifier>' + 
         '<wps:DataInputs>' +
@@ -270,8 +276,7 @@ var Results = {
         '<ows:Identifier>output</ows:Identifier>' + 
         '</wps:RawDataOutput>' + 
         '</wps:ResponseForm>' + 
-//        '</wps:Execute></wps:Body>' + 
-                '</wps:Execute>]]></wps:Body>' + 
+        '</wps:Execute>]]></wps:Body>' + 
         '</wps:Reference>' +         
         '</wps:Input>'+
         
