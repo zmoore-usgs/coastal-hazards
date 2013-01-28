@@ -31,13 +31,13 @@ var Results = {
                             success : [
                             Results.populateFeaturesList,
                             function() {
-                                $('#intersections-list').val(data);
+                                $('#results-list').val(data);
                                 Results.listboxChanged();
                                 $('a[href="#' + Results.stage + '-view-tab"]').tab('show');
                                 CONFIG.ui.showAlert({
                                     message : 'Results were created successfully.',
                                     displayTime : 7500,
-                                    caller : Intersections,
+                                    caller : Results,
                                     style: {
                                         classes : ['alert-success']
                                     }
@@ -51,7 +51,7 @@ var Results = {
                     CONFIG.ui.showAlert({
                         message : 'Results creation failed. Check logs.',
                         displayTime : 7500,
-                        caller : Intersections,
+                        caller : Results,
                         style: {
                             classes : ['alert-error']
                         }
