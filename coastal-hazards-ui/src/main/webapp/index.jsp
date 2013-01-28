@@ -232,7 +232,7 @@
                                         <button class="btn btn-success" id="transects-triggerbutton"><i class="icon-arrow-up icon-white"></i>Upload</button>
                                         <button data-toggle="button" class="btn btn-success" disabled id="create-transects-toggle">
                                             <i class="icon-tasks icon-white"></i>
-                                            &nbsp;Create
+                                            &nbsp;Calculate
                                         </button>
                                     </div>
                                     <div class="row-fluid">
