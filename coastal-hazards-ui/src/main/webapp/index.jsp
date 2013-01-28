@@ -274,10 +274,20 @@
                                     <select id="intersections-list" style="width: 100%;"></select>
                                 </div>
                                 <div class="tab-pane" id="intersections-manage-tab">
-                                    <button class="btn btn-success" id="create-intersections-btn">
-                                        <i class="icon-tasks icon-white"></i>
-                                        &nbsp;Calculate</button>
-                                    </button>
+                                    <!-- Intersection Calculation -->
+                                    <div class="row-fluid">
+                                        <div id="intersection-calculation-panel-well" class="well span6">
+                                            <label for="create-intersections-nearestfarthest-list">Take Nearest/Farthest Intersection</label>
+                                            <select id="create-intersections-nearestfarthest-list" style="width: 100%;">
+                                                <option selected="selected" value="false">Nearest</option>
+                                                <option value="true">Farthest</option>
+                                            </select>
+                                            <button class="btn btn-success" id="create-intersections-btn">
+                                                <i class="icon-tasks icon-white"></i>
+                                                &nbsp;Calculate</button>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div> <!-- /Intersections -->
