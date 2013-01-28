@@ -29,7 +29,7 @@
 }
 
 .uploader {
-    padding-bottom: 10px;
+    display: none;
 }
 
 /* For now, turn off qqUploader completed lists */
