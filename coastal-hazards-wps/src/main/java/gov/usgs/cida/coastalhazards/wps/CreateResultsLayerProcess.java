@@ -179,8 +179,10 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                     builder.add(header, Double.class);
                 }
             }
+            builder.add("StartX", Integer.class);
             SimpleFeatureType newFeatureType = builder.buildFeatureType();
             FeatureIterator<SimpleFeature> features = transects.features();
+            int startx = 0;
             while (features.hasNext()) {
                 SimpleFeature next = features.next();
                 Object transectId = next.getAttribute(Constants.TRANSECT_ID_ATTR);
@@ -195,7 +197,7 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                 Object[] joinedAttrs = new Object[next.getAttributeCount() + values.length];
                 List<Object> oldAttributes = next.getAttributes();
                 oldAttributes.addAll(Arrays.asList(values));
-                
+                oldAttributes.add(new Integer(startx++));
                 oldAttributes.toArray(joinedAttrs);
                 SimpleFeature feature = SimpleFeatureBuilder.build(newFeatureType, joinedAttrs, null);
                 sfList.add(feature);
