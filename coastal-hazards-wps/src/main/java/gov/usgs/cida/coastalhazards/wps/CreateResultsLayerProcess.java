@@ -194,7 +194,7 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                     id = (Long)transectId;
                 }
                 Double[] values = resultMap.get(id);
-                Object[] joinedAttrs = new Object[next.getAttributeCount() + values.length];
+                Object[] joinedAttrs = new Object[next.getAttributeCount() + values.length + 1];
                 List<Object> oldAttributes = next.getAttributes();
                 oldAttributes.addAll(Arrays.asList(values));
                 oldAttributes.add(new Integer(startx++));
