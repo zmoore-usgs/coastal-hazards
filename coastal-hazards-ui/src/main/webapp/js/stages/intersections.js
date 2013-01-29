@@ -252,7 +252,7 @@ var Intersections = {
         '<wps:Input>' + 
         '<ows:Identifier>layer</ows:Identifier>' + 
         '<wps:Data>' + 
-        '<wps:LiteralData>'+transects.split(':')[1] + Intersections.suffixes[0] +'</wps:LiteralData>' + 
+        '<wps:LiteralData>'+transects.split(':')[1].replace('_transects', '') + Intersections.suffixes[0] +'</wps:LiteralData>' + 
         '</wps:Data>' + 
         '</wps:Input>' +    
         '</wps:DataInputs>' + 

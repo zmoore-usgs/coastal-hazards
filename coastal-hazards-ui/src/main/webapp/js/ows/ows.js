@@ -137,6 +137,7 @@ var OWS = function(endpoint) {
         },
         getLayerPropertiesFromWFSDescribeFeatureType : function(args) {
             LOG.info('OWS.js::getLayerPropertiesFromWFSDescribeFeatureType');
+            
             LOG.debug('OWS.js::getLayerPropertiesFromWFSDescribeFeatureType: Parsing WFS describe feature type response for properties');
             
             var describeFeatureType = args.describeFeatureType;
