@@ -17,7 +17,7 @@ var UI = function() {
     $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
     $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
     $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
-    $("#create-intersections-btn").on("click", Intersections.calcIntersections);
+    $("#create-intersections-btn").on("click", Intersections.createIntersectionSubmit);
     $("#create-results-btn").on("click", Results.calcResults);
     
     me.work_stages_objects.each(function(stage) {
