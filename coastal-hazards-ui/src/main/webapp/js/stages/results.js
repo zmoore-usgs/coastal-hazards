@@ -95,6 +95,10 @@ var Results = {
                 stage : Results.stage,
                 config : layerConfig
             });
+            
+            Results.addLayerToMap({
+                layer : layer
+            })
              
             Results.displayResult({
                 result : layer
@@ -107,6 +111,68 @@ var Results = {
         }
         
     },
+    
+    /**
+     * Uses a OWS DescribeFeatureType response to add a layer to a map
+     */
+    addLayerToMap : function(args) {
+        LOG.info('Shorelines.js::addLayerToMap');
+        var layer = args.layer;
+        var results = new OpenLayers.Layer.Vector(layer.name, {
+            strategies: [new OpenLayers.Strategy.BBOX()],
+            protocol: new OpenLayers.Protocol.WFS({
+                version: '1.1.0',
+                url:  "geoserver/"+layer.prefix+"/wfs",
+                featureType: layer.name, 
+                featureNS: CONFIG.namespace[layer.prefix],
+                geometryName: "the_geom",
+                srsName: CONFIG.map.getMap().getProjection()
+            }),
+            styleMap: new OpenLayers.StyleMap({
+                "default": new OpenLayers.Style({
+                    strokeColor: Transects.reservedColor,
+                    strokeWidth: 2
+                })
+            }),
+            type : 'results'
+        });
+	
+        var featureHighlighting = function(event) {
+            var xValue = event.feature.attributes.StartX;
+            var xPlotIdx = CONFIG.graph.rawData_.findIndex(function(o){
+                return o[0] == xValue
+            })
+            CONFIG.graph.setSelection(xPlotIdx)   
+        }
+        
+        LOG.info('Shorelines.js::addLayerToMap: (re?)-adding vector selector control for new results set');
+        CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0])
+        var selectFeatureControl = new OpenLayers.Control.SelectFeature(results, {
+            hover: true,
+            highlightOnly: true,
+            renderIntent: "temporary",
+            eventListeners: {
+                beforefeaturehighlighted: featureHighlighting,
+                featurehighlighted: featureHighlighting,
+                featureunhighlighted: featureHighlighting
+            }
+        });
+            
+        CONFIG.map.getMap().addLayer(results);
+        CONFIG.map.getMap().addControl(selectFeatureControl);
+        selectFeatureControl.activate()
+        
+        var stageConfig = CONFIG.tempSession.getStageConfig({
+            stage : Transects.stage,
+            name : args.name
+        })
+        stageConfig.view.isSelected = false;
+        CONFIG.tempSession.setStageConfig({
+            stage : Transects.stage,
+            config : stageConfig
+        })
+    },
+    
     displayResult : function(args) {
         var result = args.result;
         var resultsColumns = this.viewableResultsColumns.clone();
@@ -165,7 +231,7 @@ var Results = {
             return n[0]
         });
         
-        new Dygraph(
+        CONFIG.graph = new Dygraph(
             plotDiv,
             data,
             {
@@ -178,6 +244,14 @@ var Results = {
                     if (w != dygraph.width || h != dygraph.height) {
                         dygraph.resize(w, h);
                     }
+                },
+                highlightCallback: function(e, x, pts, row) {
+                    var selectionControl = CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0];
+                    selectionControl.unselectAll()
+                    var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'results')[0].features.find(function(f){
+                        return f.attributes.StartX == x
+                    })
+                    selectionControl.select(hlFeature);
                 }
             }
             );
