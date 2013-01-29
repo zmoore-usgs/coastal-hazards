@@ -3,8 +3,8 @@ var OWS = function(endpoint) {
     
     me.importEndpoint = 'service/import'
     me.geoserverEndpoint = endpoint ? endpoint : CONFIG.geoServerEndpoint;
-    me.wfsGetCapsUrl = 'geoserver/ows?service=wfs&version=1.1.0&request=GetCapabilities'
-    me.wfsGetFeature = 'geoserver/ows?service=wfs&version=1.1.0&request=GetFeature'
+    me.wfsGetCapsUrl = 'geoserver/ows?service=wfs&version=1.0.0&request=GetCapabilities'
+    me.wfsGetFeature = 'geoserver/ows?service=wfs&version=1.0.0&request=GetFeature'
     //    me.wfsDescribeFeatureTypeEndpoint = 'geoserver/ows?service=wfs&version=2.0.0&request=DescribeFeatureType'
     me.wfsCapabilities = Object.extended();
     me.wfsCapabilitiesXML = null;
@@ -193,7 +193,7 @@ var OWS = function(endpoint) {
             LOG.info('OWS.js::getFilteredFeature');
             LOG.info('OWS.js::getFilteredFeature: Building request for WFS GetFeature (filtered)');
             var layer = args.layer;
-            var url = 'geoserver/'+layer.prefix+'/wfs?service=wfs&version=1.1.0&request=GetFeature&typeName=' + layer.name + '&propertyName=';
+            var url = 'geoserver/'+layer.prefix+'/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=' + layer.name + '&propertyName=';
             url += (args.propertyArray || []).join(',');
             
             $.ajax(url, {

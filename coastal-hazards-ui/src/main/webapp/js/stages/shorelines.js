@@ -5,6 +5,7 @@ var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
     description : 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    
     /**
      * Calls DescribeFeatureType against OWS service and tries to add the layer(s) to the map 
      */
@@ -35,8 +36,6 @@ var Shorelines = {
         LOG.info('Shorelines.js::addLayerToMap');
         var layer = args.layer;
         
-        LOG.info('Shorelines.js::addLayerToMap: Adding shoreline layer ' + layer.title + 'to map'); 
-        
         LOG.debug('Shorelines.js::addLayerToMap: Adding shoreline layer ' + layer.title + 'to map'); 
         var properties = CONFIG.ows.getLayerPropertiesFromWFSDescribeFeatureType({
             describeFeatureType : args.describeFeaturetypeRespone,
@@ -61,9 +60,9 @@ var Shorelines = {
             callbacks : {
                 success : [
                 function (features, scope) {
-                    LOG.info('Shorelines.js::?: WFS GetFileterdFeature returned successfully');
+                    LOG.info('Shorelines.js::addLayerToMap: WFS GetFileterdFeature returned successfully');
                     if (CONFIG.map.getMap().getLayersByName(layer.title).length == 0) {
-                        LOG.info('Shorelines.js::?: Layer does not yet exist on the map. Loading layer: ' + layer.title);
+                        LOG.info('Shorelines.js::addLayerToMap: Layer does not yet exist on the map. Loading layer: ' + layer.title);
                     
                         var sessionLayer = CONFIG.tempSession.getStageConfig({
                             stage : Shorelines.stage,
@@ -73,9 +72,9 @@ var Shorelines = {
                         var groupingColumn = Object.keys(features[0].attributes).find(function(n) {
                             return n.toLowerCase() === sessionLayer.groupingColumn.toLowerCase()
                         });
-                        LOG.trace('Shorelines.js::?: Found correct grouping column capitalization for ' + layer.title + ', it is: ' + groupingColumn);
+                        LOG.trace('Shorelines.js::addLayerToMap: Found correct grouping column capitalization for ' + layer.title + ', it is: ' + groupingColumn);
                         
-                        LOG.trace('Shorelines.js::?: Saving grouping column to session');
+                        LOG.trace('Shorelines.js::addLayerToMap: Saving grouping column to session');
                         sessionLayer.groupingColumn = groupingColumn;
                         
                         sessionLayer.dateFormat = Util.getLayerDateFormatFromFeaturesArray({
@@ -234,41 +233,6 @@ var Shorelines = {
                                     
                 return html;
             }
-            //            } else {
-            //                LOG.debug('Shorelines.js::?: Geoserver date column is a date type');
-            //                createRuleSets = function(colorLimitPairs) {
-            //                    var html = '';
-            //                            
-            //                    for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
-            //                        var lowerBoundary = '';
-            //                        var upperBoundary = '';
-            //                        if (lpIndex == 0) {
-            //                            lowerBoundary = colorLimitPairs[0][1];
-            //                            if (colorLimitPairs.length == lpIndex) {
-            //                                upperBoundary = colorLimitPairs[0][1]; // This means there's only one group'
-            //                            } else {
-            //                                upperBoundary = colorLimitPairs[lpIndex + 1][1];
-            //                            }
-            //                        } else {
-            //                            upperBoundary = colorLimitPairs[lpIndex][1]
-            //                            lowerBoundary = colorLimitPairs[lpIndex - 1][1]
-            //                        }
-            //                                
-            //                        html += '<Rule><ogc:Filter><ogc:PropertyIsBetween><ogc:PropertyName>'
-            //                        html += groupColumn.trim();
-            //                        html += ' </ogc:PropertyName><ogc:LowerBoundary>'
-            //                        html += ' <ogc:Literal>'
-            //                        html += lowerBoundary
-            //                        html += '</ogc:Literal></ogc:LowerBoundary><ogc:UpperBoundary>'
-            //                        html += '<ogc:Literal>'
-            //                        html += upperBoundary
-            //                        html += '</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween></ogc:Filter><LineSymbolizer><Stroke><CssParameter name="stroke">'
-            //                        html += colorLimitPairs[lpIndex][0]
-            //                        html += '</CssParameter><CssParameter name="stroke-opacity">1</CssParameter></Stroke></LineSymbolizer></Rule>'
-            //                    }
-            //                    return html;
-            //                }
-            //            }
                         
             sldBody = '<?xml version="1.0" encoding="ISO-8859-1"?>'+
             '<StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'+
@@ -491,7 +455,7 @@ var Shorelines = {
     listboxChanged : function() {
         LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
         
-        // First remove all shorelines from the map that were not selected
+        LOG.debug('Shorelines.js::listboxChanged: Removing all shorelines from map that were not selected');
         $("#shorelines-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
             
@@ -506,11 +470,11 @@ var Shorelines = {
             });
             
             if (layers.length) {
-                $(layers).each(function(i,l) {
-                    CONFIG.map.getMap().removeLayer(l);
+                $(layers).each(function(i,layer) {
+                    CONFIG.map.getMap().removeLayer(layer);
                     
                     var idControl = CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control')[0];
-                    var controlLayerIndex = idControl.layers.indexOf(l);
+                    var controlLayerIndex = idControl.layers.indexOf(layer);
                     if (controlLayerIndex != -1) {
                         idControl.layers = idControl.layers.removeAt(controlLayerIndex);
                     }

@@ -150,15 +150,21 @@ var Results = {
         var labels = ['x', 'LRR'];
         var data = features.map(function(n){
             return [ 
+            // X axis values
             parseFloat(n.data['StartX']), 
             [
+            // Error bar top
+            parseFloat(Math.abs(n.data['LCI_2.5'])),
+            // Value
             parseFloat(n.data['LRR']), 
-            parseFloat(Math.abs(n.data['WLR']))
+            // Error bar bottom
+            parseFloat(Math.abs(n.data['LCI_97.5']))
             ] 
             ]
         }).sortBy(function(n) {
             return n[0]
         });
+        
         new Dygraph(
             plotDiv,
             data,
@@ -308,7 +314,7 @@ var Results = {
         '<wps:Input>' + 
         '<ows:Identifier>layer</ows:Identifier>' + 
         '<wps:Data>' + 
-        '<wps:LiteralData>'+transects.split(':')[1] + Results.suffixes[0] +'</wps:LiteralData>' + 
+        '<wps:LiteralData>'+transects.split(':')[1].replace('_transects', '') + Results.suffixes[0] +'</wps:LiteralData>' + 
         '</wps:Data>' + 
         '</wps:Input>' +    
         
