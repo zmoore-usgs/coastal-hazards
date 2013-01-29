@@ -46,6 +46,7 @@
 
 package gov.usgs.cida.coastalhazards.util;
 
+import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -59,5 +60,43 @@ public class Constants {
     public static final String BASELINE_ORIENTATION_ATTR = "Orient";
     public static final String TRANSECT_ID_ATTR = "TransectID";
     public static final String DISTANCE_ATTR = "Distance";
+    public static final String SHOREWARD = "shoreward";
+    public static final String SEAWARD = "seaward";
 
+    public static enum Orientation {
+        SHOREWARD("shoreward", 1),
+        SEAWARD("seaward", -1),
+        UNKNOWN("unknown", 0);
+        
+        private final String orientation;
+        private final int sign;
+        
+        Orientation(String value, int sign) {
+            this.orientation = value;
+            this.sign = sign;
+        }
+        
+        public String getValue() {
+            return orientation;
+        }
+        
+        public int getSign() {
+            if (sign == 0) {
+                throw new PoorlyDefinedBaselineException("Baseline must define orientation");
+            }
+            return sign;
+        }
+        
+        public static Orientation fromAttr(String value) {
+            if ("shoreward".equalsIgnoreCase(value)) {
+                return SHOREWARD;
+            }
+            else if ("seaward".equalsIgnoreCase(value)) {
+                return SEAWARD;
+            }
+            else {
+                return UNKNOWN;
+            }
+        }
+    }
 }

@@ -15,26 +15,14 @@ import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
 import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.wps.gs.ImportProcess;
-import org.geotools.data.shapefile.ShapefileDataStore;
-import org.geotools.data.shapefile.ShapefileDataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.process.ProcessException;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  *

@@ -79,7 +79,7 @@ public class CalculateIntersectionsProcessTest {
         
         ImportProcess dummyImport = new DummyImportProcess();
         CalculateIntersectionsProcess process = new CalculateIntersectionsProcess(dummyImport, dummyCat);
-        process.execute(shorelinefc, baselinefc, Boolean.TRUE, null, null, null);
+        process.execute(shorelinefc, baselinefc, null, null, null, null);
     }
     
        /**
@@ -100,6 +100,6 @@ public class CalculateIntersectionsProcessTest {
         
         ImportProcess dummyImport = new DummyImportProcess(shpfile);
         CalculateIntersectionsProcess process = new CalculateIntersectionsProcess(dummyImport, dummyCat);
-        process.execute(shorelinefc, baselinefc, Boolean.TRUE, null, null, null);
+        process.execute(shorelinefc, baselinefc, null, null, null, null);
     }
 }

@@ -47,12 +47,15 @@
 package gov.usgs.cida.coastalhazards.wps.geom;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.index.strtree.STRtree;
+import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+import org.geotools.geometry.jts.Geometries;
 
 /**
  *
@@ -65,10 +68,28 @@ public class ShorelineSTRTreeBuilder {
     private boolean built;
     
     public ShorelineSTRTreeBuilder(MultiLineString shorelines) {
-        this.strTree = new STRtree(shorelines.getNumGeometries());
-        this.factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
-        this.built = false;
-        this.fillTree(shorelines);
+        this((Geometry)shorelines); // this is really ugly, think of a better way
+    }
+    
+    public ShorelineSTRTreeBuilder(Geometry shorelines) {
+        Geometries geoms = Geometries.get(shorelines);
+        switch (geoms) {
+            case MULTIPOLYGON:
+            case POLYGON:
+            case MULTIPOINT:
+            case POINT:
+            case LINESTRING:
+                throw new UnsupportedFeatureTypeException("Only MultiLineString supported here");
+            case MULTILINESTRING:
+                MultiLineString mls = (MultiLineString)shorelines;
+                this.strTree = new STRtree(shorelines.getNumPoints());
+                this.factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
+                this.built = false;
+                this.fillTree(mls);
+                break;
+            default:
+                throw new UnsupportedFeatureTypeException("Unknown feature not supported");
+        }
     }
         
     /* May also want to take FeatureCollection */
