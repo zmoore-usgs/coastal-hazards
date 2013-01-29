@@ -139,10 +139,21 @@ var Results = {
 	
         var featureHighlighting = function(event) {
             var xValue = event.feature.attributes.StartX;
+            
+            // Plotter Highlighting
             var xPlotIdx = CONFIG.graph.rawData_.findIndex(function(o){
                 return o[0] == xValue
             })
             CONFIG.graph.setSelection(xPlotIdx)   
+            
+            // Table highlighting
+            $('#results-table tbody>tr').removeClass('warning');
+            var tableRow = $('#results-table tbody>tr').toArray().find(function(tr){
+                return $(tr).data().startx == xValue
+                });
+            tableRow.scrollIntoView();
+            $(tableRow).addClass('warning');
+            
         }
         
         LOG.info('Shorelines.js::addLayerToMap: (re?)-adding vector selector control for new results set');
@@ -205,21 +216,21 @@ var Results = {
                     })
                     
                     $('#results-table tbody>tr').hover( 
-                        function() {
+                        function(event) {
                             var startx = $(this).data().startx
                             var selectionControl = CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0];
                             var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'results')[0].features.find(function(f){
                                 return f.attributes.StartX == startx
                             })
                             selectionControl.select(hlFeature);
-                            $(this).find('td').addClass('highlight')
+                            $(this).addClass('warning')
+                            event.stopImmediatePropagation();
                             
                         },
                         function() {
-                            var startx = $(this).data().startx
                             var selectionControl = CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0];
                             selectionControl.unselectAll()
-                            $(this).find('td').removeClass('highlight')
+                            $(this).removeClass('warning')
                         })
                 }
                 ],
