@@ -16,7 +16,6 @@ import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
-import gov.usgs.cida.coastalhazards.wps.exceptions.LayerAlreadyExistsException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineSTRTreeBuilder;
@@ -24,10 +23,7 @@ import gov.usgs.cida.coastalhazards.wps.geom.TransectVector;
 import java.util.LinkedList;
 import java.util.List;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
 import org.geotools.data.DataUtilities;
@@ -130,7 +126,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             builder.setName("Transects");
             builder.add("geom", LineString.class, utmCrs);
             builder.add(TRANSECT_ID_ATTR, Integer.class);
-            builder.add(BASELINE_ORIENTATION_ATTR, Integer.class);
+            builder.add(BASELINE_ORIENTATION_ATTR, String.class);
             this.simpleFeatureType = builder.buildFeatureType();
             
             MultiLineString shorelineGeometry = CRSUtils.getLinesFromFeatureCollection(shorelineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
@@ -204,9 +200,9 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         }
         
         // Thought these would be longer, but I'll leave them here
-        protected SimpleFeature createFeatureInUTMZone(LineString line, int orientation) {
+        protected SimpleFeature createFeatureInUTMZone(LineString line, Orientation orientation) {
             SimpleFeature feature = SimpleFeatureBuilder.build(this.simpleFeatureType,
-                    new Object[]{line, new Integer(transectId), new Integer(orientation)}, null);
+                    new Object[]{line, new Integer(transectId), orientation.getValue()}, null);
             transectId++;
             return feature;
         }

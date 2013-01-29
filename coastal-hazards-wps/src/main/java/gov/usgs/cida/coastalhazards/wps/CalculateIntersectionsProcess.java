@@ -145,7 +145,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
             }
             SimpleFeatureIterator transectIterator = transectCollection.features();
             long[] transectIds = new long[transectCollection.size()];
-            int[] orientations = new int[transectCollection.size()];
+            Orientation[] orientations = new Orientation[transectCollection.size()];
             int idIndex = 0;
 
             // TODO this loop can be inside of the shoreline loop
@@ -165,8 +165,8 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 }
                 transectIds[idIndex] = id;
 
-                int orient = (Integer) feature.getAttribute(BASELINE_ORIENTATION_ATTR);
-                orientations[idIndex] = orient;
+                String orient = (String) feature.getAttribute(BASELINE_ORIENTATION_ATTR);
+                orientations[idIndex] = Orientation.fromAttr(orient);
                 idIndex++;
 
                 Geometry transectGeom = (Geometry) feature.getDefaultGeometry();
@@ -183,7 +183,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 STRtree tree = new ShorelineSTRTreeBuilder(transformedGeom).build();
                 for (int i = 0; i < transectCollection.size(); i++) {
                     long transectId = transectIds[i];
-                    int orientation = orientations[i];
+                    Orientation orientation = orientations[i];
                     Geometry transectGeom = transectMap.get(transectId);
                     List<LineString> lines = tree.query(transectGeom.getEnvelopeInternal());
                     //Geometry intersection = transformedGeom.intersection(transectGeom); // optimized
@@ -202,7 +202,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
             return importer.importLayer(intersectionCollection, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED);
         }
 
-        private double calculateDistanceFromReference(Geometry transect, Point intersection, int orientation) {
+        private double calculateDistanceFromReference(Geometry transect, Point intersection, Orientation orientation) {
             LineString line = null;
             switch (Geometries.get(transect)) {
                 case MULTILINESTRING:
@@ -219,9 +219,9 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
             Point referencePoint = line.getStartPoint();
 
             // distance should be calculated from coordinates, not points
-            double distance = orientation
-                    * referencePoint.getCoordinate().distance(
-                    intersection.getCoordinate());
+            double distance = orientation.getSign()
+                    * referencePoint.getCoordinate()
+                    .distance(intersection.getCoordinate());
 
             return distance;
         }
@@ -264,53 +264,52 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
         }
 
         /* Commenting this out for now, should delete once testing verifies this rocks
-        private Point getPointFromIntersection(Geometry pointGeom, Geometry transect) {
-            Geometries geomType = Geometries.get(pointGeom);
-            Point point = null;
-            switch (geomType) {
-                case POLYGON:
-                case MULTIPOLYGON:
-                    throw new UnsupportedFeatureTypeException("Polygons should not occur in this geometry");
-                case LINESTRING:
-                case MULTILINESTRING:
-                    throw new UnsupportedFeatureTypeException("Lines should not occur in this geometry");
-                case POINT:
-                    point = (Point) pointGeom;
-                    break;
-                case MULTIPOINT:
-                    MultiPoint allPoints = (MultiPoint) pointGeom;
-                    LineString transectLine = getSingleLineStringFromMultiLineString(transect);
-                    Point start = transectLine.getStartPoint();
-                    Point maxPoint = null;
-                    double maxDistance = 0.0d;
-                    Point minPoint = null;
-                    double minDistance = Double.MAX_VALUE;
-                    for (int i = 0; i < allPoints.getNumGeometries(); i++) {
-                        Point thisPoint = (Point) allPoints.getGeometryN(i);
-                        double distance = start.distance(thisPoint);
-                        if (this.useFarthest) {
-                            if (distance > maxDistance) {
-                                maxDistance = distance;
-                                maxPoint = thisPoint;
-                            }
-                        } else {
-                            if (distance < minDistance) {
-                                minDistance = distance;
-                                minPoint = thisPoint;
-                            }
-                        }
-                    }
-                    point = (useFarthest) ? maxPoint : minPoint;
-                    // need to decide which point
-                    break;
-                default:
-                    // Probably empty, don't add this
-                    point = null;
-            }
-            return point;
-        }
-        */
-
+         private Point getPointFromIntersection(Geometry pointGeom, Geometry transect) {
+         Geometries geomType = Geometries.get(pointGeom);
+         Point point = null;
+         switch (geomType) {
+         case POLYGON:
+         case MULTIPOLYGON:
+         throw new UnsupportedFeatureTypeException("Polygons should not occur in this geometry");
+         case LINESTRING:
+         case MULTILINESTRING:
+         throw new UnsupportedFeatureTypeException("Lines should not occur in this geometry");
+         case POINT:
+         point = (Point) pointGeom;
+         break;
+         case MULTIPOINT:
+         MultiPoint allPoints = (MultiPoint) pointGeom;
+         LineString transectLine = getSingleLineStringFromMultiLineString(transect);
+         Point start = transectLine.getStartPoint();
+         Point maxPoint = null;
+         double maxDistance = 0.0d;
+         Point minPoint = null;
+         double minDistance = Double.MAX_VALUE;
+         for (int i = 0; i < allPoints.getNumGeometries(); i++) {
+         Point thisPoint = (Point) allPoints.getGeometryN(i);
+         double distance = start.distance(thisPoint);
+         if (this.useFarthest) {
+         if (distance > maxDistance) {
+         maxDistance = distance;
+         maxPoint = thisPoint;
+         }
+         } else {
+         if (distance < minDistance) {
+         minDistance = distance;
+         minPoint = thisPoint;
+         }
+         }
+         }
+         point = (useFarthest) ? maxPoint : minPoint;
+         // need to decide which point
+         break;
+         default:
+         // Probably empty, don't add this
+         point = null;
+         }
+         return point;
+         }
+         */
         private Point getTransectLineIntersection(List<LineString> lines, Geometry transect) {
             Point point = null;
             LineString transectLine = getSingleLineStringFromMultiLineString(transect);

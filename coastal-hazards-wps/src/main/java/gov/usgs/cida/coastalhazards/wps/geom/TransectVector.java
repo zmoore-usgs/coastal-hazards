@@ -52,6 +52,8 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import gov.usgs.cida.coastalhazards.util.Constants.Orientation;
+import static gov.usgs.cida.coastalhazards.util.Constants.Orientation.*;
 
 /**
  * TransectVector.
@@ -65,34 +67,42 @@ import com.vividsolutions.jts.geom.PrecisionModel;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class TransectVector {
-    
-    public static final int BASELINE_ORIENTATION_SHOREWARD = 1;
-    public static final int BASELINE_ORIENTATION_SEAWARD = -1;
 
     private Coordinate cartesianCoord;
     private double angle; // radians
-    private int orientation; // is transect built off of seaward or shoreward baseline
+    private Orientation orientation; // is transect built off of seaward or shoreward baseline
     private static final GeometryFactory gf;
 
     static {
         gf = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
     }
     
+    /**
+     * This constructor should be removed once we start enforcing baselines with SEAWARD/SHOREWARD
+     * @param coord
+     * @param angle 
+     */
     public TransectVector(Coordinate coord, double angle) {
-        this(coord, angle, BASELINE_ORIENTATION_SEAWARD);
+        this(coord, angle, SEAWARD);
     }
 
+    /**
+     * This one should be removed as well
+     * @param x
+     * @param y
+     * @param angle 
+     */
     public TransectVector(double x, double y, double angle) {
-        this(new Coordinate(x, y), angle, BASELINE_ORIENTATION_SEAWARD);
+        this(new Coordinate(x, y), angle, SEAWARD);
     }
     
-    public TransectVector(Coordinate coord, double angle, int orientation) {
+    public TransectVector(Coordinate coord, double angle, Orientation orientation) {
         this.cartesianCoord = coord;
         this.angle = angle;
         this.orientation = orientation;
     }
     
-    public TransectVector(double x, double y, double angle, int orientation) {
+    public TransectVector(double x, double y, double angle, Orientation orientation) {
         this(new Coordinate(x, y), angle, orientation);
     }
 
@@ -120,7 +130,7 @@ public class TransectVector {
         return angle;
     }
     
-    public int getOrientation() {
+    public Orientation getOrientation() {
         return orientation;
     }
 
