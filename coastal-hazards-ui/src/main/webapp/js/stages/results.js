@@ -203,6 +203,24 @@ var Results = {
                         features : features,
                         layer : result
                     })
+                    
+                    $('#results-table tbody>tr').hover( 
+                        function() {
+                            var startx = $(this).data().startx
+                            var selectionControl = CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0];
+                            var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'results')[0].features.find(function(f){
+                                return f.attributes.StartX == startx
+                            })
+                            selectionControl.select(hlFeature);
+                            $(this).find('td').addClass('highlight')
+                            
+                        },
+                        function() {
+                            var startx = $(this).data().startx
+                            var selectionControl = CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0];
+                            selectionControl.unselectAll()
+                            $(this).find('td').removeClass('highlight')
+                        })
                 }
                 ],
                 error : []
@@ -261,8 +279,8 @@ var Results = {
         LOG.debug('Results.js::createResultsTable:: Creating results table header');
         var columns = this.viewableResultsColumns;
         var features = args.features;
-        var tableDiv = $('<div />').attr('id','results-table-container');
-        var table = $('<table />').addClass('table table-bordered table-condensed tablesorter results-table');
+        var tableDiv = $('<div />').attr('id','results-table-container')
+        var table = $('<table />').addClass('table table-bordered table-condensed tablesorter results-table').attr('id','results-table');
         var thead = $('<thead />');
         var theadRow = $('<tr />');
         var tbody = $('<tbody />');
@@ -277,7 +295,10 @@ var Results = {
         
         LOG.debug('Results.js::createResultsTable:: Creating results table body');
         features.each(function(feature) {
-            var tbodyRow = $('<tr />');
+            var tbodyRow = $('<tr />')
+            .data({
+                startx : feature.attributes.StartX
+            });
             columns.each(function(c) {
                 if (feature.attributes[c]) {
                     var tbodyData = $('<td />').html(feature.data[c]);
@@ -289,6 +310,7 @@ var Results = {
         table.append(tbody);
         tableDiv.append(table);
         LOG.debug('Results.js::createResultsTable:: Results table created');
+        
         return tableDiv;
     },
     createResultsTabs : function(args) {
