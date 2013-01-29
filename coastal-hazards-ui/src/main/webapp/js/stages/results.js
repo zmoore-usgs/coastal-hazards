@@ -137,7 +137,7 @@ var Results = {
             type : 'results'
         });
 	
-        var report = function(event) {
+        var featureHighlighting = function(event) {
             var xValue = event.feature.attributes.StartX;
             var xPlotIdx = CONFIG.graph.rawData_.findIndex(function(o){
                 return o[0] == xValue
@@ -152,9 +152,9 @@ var Results = {
             highlightOnly: true,
             renderIntent: "temporary",
             eventListeners: {
-                beforefeaturehighlighted: report,
-                featurehighlighted: report,
-                featureunhighlighted: report
+                beforefeaturehighlighted: featureHighlighting,
+                featurehighlighted: featureHighlighting,
+                featureunhighlighted: featureHighlighting
             }
         });
             
@@ -244,6 +244,14 @@ var Results = {
                     if (w != dygraph.width || h != dygraph.height) {
                         dygraph.resize(w, h);
                     }
+                },
+                highlightCallback: function(e, x, pts, row) {
+                    var selectionControl = CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0];
+                    selectionControl.unselectAll()
+                    var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'results')[0].features.find(function(f){
+                        return f.attributes.StartX == x
+                    })
+                    selectionControl.select(hlFeature);
                 }
             }
             );
