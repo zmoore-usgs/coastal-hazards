@@ -9,7 +9,7 @@ var Transects = {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
                 version: '1.1.0',
-                url:  "geoserver/ows",
+                url:  "geoserver/"+args.name.split(':')[0]+"/wfs",
                 featureType: args.name.split(':')[1], 
                 featureNS: CONFIG.namespace[args.name.split(':')[0]],
                 geometryName: "the_geom",
