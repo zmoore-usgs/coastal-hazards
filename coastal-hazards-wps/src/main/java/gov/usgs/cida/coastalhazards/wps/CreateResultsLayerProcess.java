@@ -48,12 +48,16 @@ package gov.usgs.cida.coastalhazards.wps;
 
 import gov.usgs.cida.coastalhazards.util.Constants;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
+import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.exceptions.InputFileFormatException;
+import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wps.gs.GeoServerProcess;
@@ -70,6 +74,9 @@ import org.geotools.process.factory.DescribeResult;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  *
@@ -123,8 +130,16 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
             String[] columnHeaders = getColumnHeaders(results);
             Map<Long, Double[]> resultMap = parseTextToMap(results, columnHeaders);
             List<SimpleFeature> joinedFeatures = joinResultsToTransects(columnHeaders, resultMap, transects);
+            CoordinateReferenceSystem utmZone = null;
+            try {
+                utmZone = UTMFinder.findUTMZoneForFeatureCollection((SimpleFeatureCollection)transects);
+            } catch (NoSuchAuthorityCodeException ex) {
+                throw new UnsupportedCoordinateReferenceSystemException("Could not find utm zone");
+            } catch (FactoryException ex) {
+                throw new UnsupportedCoordinateReferenceSystemException("Could not find utm zone");
+            }
             SimpleFeatureCollection collection = DataUtilities.collection(joinedFeatures);
-            String imported = importer.importLayer(collection, workspace, store, layer, null, ProjectionPolicy.REPROJECT_TO_DECLARED);
+            String imported = importer.importLayer(collection, workspace, store, layer, utmZone, ProjectionPolicy.REPROJECT_TO_DECLARED);
             return imported;
         }
 
