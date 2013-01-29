@@ -152,8 +152,9 @@ var Results = {
             return [ 
             parseFloat(n.data['StartX']), 
             [
+            parseFloat(Math.abs(n.data['LCI_2.5'])),
             parseFloat(n.data['LRR']), 
-            parseFloat(Math.abs(n.data['WLR']))
+            parseFloat(Math.abs(n.data['LCI_97.5']))
             ] 
             ]
         }).sortBy(function(n) {
