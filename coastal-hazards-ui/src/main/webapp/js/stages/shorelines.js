@@ -4,6 +4,7 @@
 var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
+    // Dictates what will be displaed in the stage popover
     description : 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     
     /**
@@ -59,7 +60,7 @@ var Shorelines = {
             scope : this,
             callbacks : {
                 success : [
-                function (features, scope) {
+                function (features) {
                     LOG.info('Shorelines.js::addLayerToMap: WFS GetFileterdFeature returned successfully');
                     if (CONFIG.map.getMap().getLayersByName(layer.title).length == 0) {
                         LOG.info('Shorelines.js::addLayerToMap: Layer does not yet exist on the map. Loading layer: ' + layer.title);
@@ -148,7 +149,11 @@ var Shorelines = {
                     }
                 }
                 ],
-                error : []
+                error : [
+                function () {
+                    LOG.warn('Shorelines.js::addLayerToMap: Failed to retrieve a successful WFS GetFileterdFeature response');
+                }
+                ]
             }
         })
     },
