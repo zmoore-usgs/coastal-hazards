@@ -193,7 +193,7 @@ var OWS = function(endpoint) {
             LOG.info('OWS.js::getFilteredFeature');
             LOG.info('OWS.js::getFilteredFeature: Building request for WFS GetFeature (filtered)');
             var layer = args.layer;
-            var url = 'geoserver/'+layer.prefix+'/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=' + layer.name + '&propertyName=';
+            var url = 'geoserver/'+layer.prefix+'/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=' + layer.prefix + ':' + layer.name + '&propertyName=';
             url += (args.propertyArray || []).join(',');
             
             $.ajax(url, {
