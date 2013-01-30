@@ -3,14 +3,15 @@ var OWS = function(endpoint) {
     
     me.importEndpoint = 'service/import'
     me.geoserverEndpoint = endpoint ? endpoint : CONFIG.geoServerEndpoint;
-    me.wfsGetCapsUrl = 'geoserver/ows?service=wfs&version=1.0.0&request=GetCapabilities'
-    me.wfsGetFeature = 'geoserver/ows?service=wfs&version=1.0.0&request=GetFeature'
+    me.geoserverProxyEndpoint = 'geoserver/';
+    me.wfsGetCapsUrl = me.geoserverProxyEndpoint + 'ows?service=wfs&version=1.0.0&request=GetCapabilities'
+    me.wfsGetFeature = me.geoserverProxyEndpoint + 'ows?service=wfs&version=1.0.0&request=GetFeature'
     //    me.wfsDescribeFeatureTypeEndpoint = 'geoserver/ows?service=wfs&version=2.0.0&request=DescribeFeatureType'
     me.wfsCapabilities = Object.extended();
-    me.wfsCapabilitiesXML = null;
     me.wmsCapabilities = Object.extended();
     me.wmsCapabilitiesXML = Object.extended();
-    me.wpsExecuteRequestPostUrl = 'geoserver/ows?service=wps&version=1.0.0&request=execute'
+    me.wfsCapabilitiesXML = null;
+    me.wpsExecuteRequestPostUrl = me.geoserverProxyEndpoint + 'ows?service=wps&version=1.0.0&request=execute'
     
     // An object to hold the return from WFS DescribeFeatureType
     me.featureTypeDescription = Object.extended();
@@ -43,7 +44,7 @@ var OWS = function(endpoint) {
         getWMSCapabilities : function(args) {
             LOG.info('OWS.js::getWMSCapabilities');
             var namespace = args.namespace || 'ows'
-            var url = 'geoserver/' + namespace + '/wms?service=wms&version=1.3.0&request=GetCapabilities'
+            var url = me.geoserverProxyEndpoint + namespace + '/wms?service=wms&version=1.3.0&request=GetCapabilities'
             var callbacks = args.callbacks || {}
             var sucessCallbacks = callbacks.success || [];
             var errorCallbacks = callbacks.error || [];
@@ -169,7 +170,7 @@ var OWS = function(endpoint) {
             LOG.info('OWS.js::getDescribeFeatureType: WFS featureType requested for feature ' + args.layerName);
             var layerNS = args.layerNS;
             var layerName = args.layerName;
-            var url = 'geoserver/' + layerNS+ '/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType&typeName=' + layerName;
+            var url = me.geoserverProxyEndpoint + layerNS + '/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType&typeName=' + layerName;
             $.ajax(url, {
                 context : args.scope || this,
                 success : function(data, textStatus, jqXHR) {
@@ -191,31 +192,37 @@ var OWS = function(endpoint) {
         },
         getFilteredFeature : function(args) {
             LOG.info('OWS.js::getFilteredFeature');
-            LOG.info('OWS.js::getFilteredFeature: Building request for WFS GetFeature (filtered)');
-            var layer = args.layer;
-            var url = 'geoserver/'+layer.prefix+'/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=' + layer.prefix + ':' + layer.name + '&propertyName=';
-            url += (args.propertyArray || []).join(',');
+            LOG.debug('OWS.js::getFilteredFeature: Building request for WFS GetFeature (filtered)');
+            
+            var layerPrefix = args.layerPrefix;
+            var layerName = args.layerName;
+            var scope = args.scope;
+            var propertyArray = args.propertyAraay;
+            var callbacks = args.callbacks;
+            
+            var url = me.geoserverProxyEndpoint + layerPrefix + '/wfs?service=wfs&version=1.1.0&request=GetFeature&typeName=' + layerName + '&propertyName=';
+            url += (propertyArray || []).join(',');
             
             $.ajax(url, {
-                context : args.scope || this,
+                context : scope || this,
                 success : function(data, textStatus, jqXHR) {
                     LOG.trace('OWS.js::getFilteredFeature: Successfully received WFS GetFeature response.');
                     var gmlReader = new OpenLayers.Format.GML.v3();
                     var getFeatureResponse = gmlReader.read(data); 
                     LOG.debug('OWS.js::getFilteredFeature: WFS GetFeature parsed .');
-                    if (!me.featureTypeDescription[args.layer.prefix]) {
-                        me.featureTypeDescription[args.layer.prefix] = Object.extended();
+                    if (!me.featureTypeDescription[layerPrefix]) {
+                        me.featureTypeDescription[layerPrefix] = Object.extended();
                     }
-                    me.featureTypeDescription[args.layer.prefix][args.layer.name] = getFeatureResponse;
+                    me.featureTypeDescription[layerPrefix][layerName] = getFeatureResponse;
                     
-                    LOG.trace('OWS.js::getFilteredFeature: Executing '+args.callbacks.success+'callbacks');
-                    $(args.callbacks.success || []).each(function(index, callback, allCallbacks) {
+                    LOG.trace('OWS.js::getFilteredFeature: Executing '+callbacks.success+'callbacks');
+                    $(callbacks.success || []).each(function(index, callback, allCallbacks) {
                         LOG.trace('OWS.js::getFilteredFeature: Executing callback ' + index);
                         callback(getFeatureResponse, this);
                     })
                 },
                 error : function(data, textStatus, jqXHR) {
-                    $(args.callbacks.error || []).each(function(index, callback, allCallbacks) {
+                    $(callbacks.error || []).each(function(index, callback, allCallbacks) {
                         callback(data, this);
                     })
                 }
@@ -240,7 +247,7 @@ var OWS = function(endpoint) {
             '</wfs:Transaction>';
 
             $.ajax({
-                url: 'geoserver/ows/',
+                url: me.geoserverProxyEndpoint + 'ows/',
                 type: 'POST',
                 contentType: 'application/xml',
                 data: updateTransaction,
@@ -281,7 +288,7 @@ var OWS = function(endpoint) {
             var callbacks = args.callbacks || [];
             var errorCallbacks = args.errorCallbacks || [];
             if (args.layer.split(':')[0] == CONFIG.tempSession.getCurrentSessionKey()) {
-                var url = 'geoserver/'+CONFIG.tempSession.getCurrentSessionKey()+'/wfs';
+                var url = me.geoserverProxyEndpoint + CONFIG.tempSession.getCurrentSessionKey() + '/wfs';
                 var wfst = '<wfs:Transaction service="WFS" version="1.1.0" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">' + 
                 '<wfs:Delete typeName="feature:'+layerName+'">' + 
                 '<ogc:Filter>' + 

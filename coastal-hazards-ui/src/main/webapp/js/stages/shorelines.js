@@ -55,7 +55,8 @@ var Shorelines = {
         });
         
         CONFIG.ows.getFilteredFeature({ 
-            layer : layer,
+            layerPrefix : layer.prefix,
+            layerName : layer.name,
             propertyArray : properties[layer.name], 
             scope : this,
             callbacks : {
