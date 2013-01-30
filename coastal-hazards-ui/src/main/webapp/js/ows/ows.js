@@ -325,7 +325,7 @@ var OWS = function(endpoint) {
             '<ows:Identifier>features</ows:Identifier>' + 
             '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
             '<wps:Body>' + 
-            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2">' + 
+            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:sample="gov.usgs.cida.ch.sample">' + 
             '<wfs:Query typeName="'+originalLayer+'"/>' + 
             '</wfs:GetFeature>' + 
             '</wps:Body>' + 
