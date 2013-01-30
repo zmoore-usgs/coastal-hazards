@@ -13,53 +13,84 @@ var Results = {
         LOG.info('Results.js::calcResults');
         var transects = $('#transects-list :selected')[0].value;
         var intersects = $('#intersections-list :selected')[0].value;
+        var resultsLayerName = transects.replace('_transects', Results.suffixes[0]); 
         var request = Results.createWPSCalculateResultsRequest({
             transects : transects,
             intersects : intersects
         })
         
-        CONFIG.ows.executeWPSProcess({
-            processIdentifier : 'gs:CreateResultsLayer',
-            request : request,
-            context : this,
-            callbacks : [
-            function(data, textStatus, jqXHR, context) {
-                if (typeof data == 'string') {
-                    CONFIG.ows.getWMSCapabilities({
-                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
-                        callbacks : {
-                            success : [
-                            Results.populateFeaturesList,
-                            function() {
-                                $('#results-list').val(data);
-                                Results.listboxChanged();
-                                $('a[href="#' + Results.stage + '-view-tab"]').tab('show');
-                                CONFIG.ui.showAlert({
-                                    message : 'Results were created successfully.',
-                                    displayTime : 7500,
-                                    caller : Results,
-                                    style: {
-                                        classes : ['alert-success']
-                                    }
-                                })
-                            }      
-                            ]
-                        }
-                    })
-                } else {
-                    LOG.error($(data).find('ows\\:ExceptionText').first().text());
-                    CONFIG.ui.showAlert({
-                        message : 'Results creation failed. Check logs.',
-                        displayTime : 7500,
-                        caller : Results,
-                        style: {
-                            classes : ['alert-error']
-                        }
-                    })
+        var wpsProc = function() {
+            CONFIG.ows.executeWPSProcess({
+                processIdentifier : 'gs:CreateResultsLayer',
+                request : request,
+                context : this,
+                callbacks : [
+                function(data, textStatus, jqXHR, context) {
+                    if (typeof data == 'string') {
+                        CONFIG.ows.getWMSCapabilities({
+                            namespace : CONFIG.tempSession.getCurrentSessionKey(),
+                            callbacks : {
+                                success : [
+                                Results.populateFeaturesList,
+                                function() {
+                                    $('#results-list').val(data);
+                                    Results.listboxChanged();
+                                    $('a[href="#' + Results.stage + '-view-tab"]').tab('show');
+                                    CONFIG.ui.showAlert({
+                                        message : 'Results were created successfully.',
+                                        displayTime : 7500,
+                                        caller : Results,
+                                        style: {
+                                            classes : ['alert-success']
+                                        }
+                                    })
+                                }      
+                                ]
+                            }
+                        })
+                    } else {
+                        LOG.error($(data).find('ows\\:ExceptionText').first().text());
+                        CONFIG.ui.showAlert({
+                            message : 'Results creation failed. Check logs.',
+                            displayTime : 7500,
+                            caller : Results,
+                            style: {
+                                classes : ['alert-error']
+                            }
+                        })
+                    }
                 }
-            }
-            ]
-        })
+                ]
+            })
+        }
+        
+        if ($('#results-list option[value="'+ resultsLayerName + '"]').length) {
+            CONFIG.ui.createModalWindow({
+                context : {
+                    scope : this
+                },
+                headerHtml : 'Resource Exists',
+                bodyHtml : 'A resource already exists with the name ' + resultsLayerName + ' in your session. Would you like to overwrite this resource?',
+                buttons : [
+                {
+                    text : 'Overwrite',
+                    callback : function(event) {
+                        $.get('service/session', {
+                            action : 'remove-layer',
+                            workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                            store : 'ch-output',
+                            layer : resultsLayerName.split(':')[1]
+                        },
+                        function(data, textStatus, jqXHR) {
+                            wpsProc();
+                        }, 'json')
+                    }           
+                }
+                ]
+            })
+        } else {
+            wpsProc();
+        }
     },
     listboxChanged : function() {
         LOG.info('Results.js::listboxChanged: A result was selected from the select list');
@@ -139,10 +170,21 @@ var Results = {
 	
         var featureHighlighting = function(event) {
             var xValue = event.feature.attributes.StartX;
+            
+            // Plotter Highlighting
             var xPlotIdx = CONFIG.graph.rawData_.findIndex(function(o){
                 return o[0] == xValue
             })
             CONFIG.graph.setSelection(xPlotIdx)   
+            
+            // Table highlighting
+            $('#results-table tbody>tr').removeClass('warning');
+            var tableRow = $('#results-table tbody>tr').toArray().find(function(tr){
+                return $(tr).data().startx == xValue
+                });
+            tableRow.scrollIntoView();
+            $(tableRow).addClass('warning');
+            
         }
         
         LOG.info('Shorelines.js::addLayerToMap: (re?)-adding vector selector control for new results set');
@@ -205,21 +247,21 @@ var Results = {
                     })
                     
                     $('#results-table tbody>tr').hover( 
-                        function() {
+                        function(event) {
                             var startx = $(this).data().startx
                             var selectionControl = CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0];
                             var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'results')[0].features.find(function(f){
                                 return f.attributes.StartX == startx
                             })
                             selectionControl.select(hlFeature);
-                            $(this).find('td').addClass('highlight')
+                            $(this).addClass('warning')
+                            event.stopImmediatePropagation();
                             
                         },
                         function() {
-                            var startx = $(this).data().startx
                             var selectionControl = CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0];
                             selectionControl.unselectAll()
-                            $(this).find('td').removeClass('highlight')
+                            $(this).removeClass('warning')
                         })
                 }
                 ],
