@@ -55,10 +55,10 @@ var UI = function() {
     $('#map-well').popover({
         title : 'Map',
         content : $('<div />')
-        .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. '))
+        .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium'))
         .html(),
         html : true,
-        placement : 'bottom',
+        placement : 'left',
         trigger : 'hover'
     })
     
