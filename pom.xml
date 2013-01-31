@@ -9,9 +9,9 @@
   
     <modules>
         <module>coastal-hazards-ui</module>
+        <module>coastal-hazards-n52</module>
         <module>coastal-hazards-wps</module>
         <module>coastal-hazards-geoserver</module>
-        <module>coastal-hazards-n52</module>
     </modules>
   
     <issueManagement>
@@ -146,8 +146,37 @@
                 <artifactId>geoserver-manager</artifactId>
                 <version>1.5</version>
             </dependency>
-        
-            
+            <dependency>
+                <groupId>gov.usgs.cida</groupId>
+                <artifactId>wps-n52</artifactId>
+                <version>1.0.0</version>
+                <type>war</type>
+            </dependency>
+            <dependency>
+                <groupId>org.n52.wps</groupId>
+                <artifactId>52n-wps-io</artifactId>
+                <version>3.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.n52.wps</groupId>
+                <artifactId>52n-wps-r</artifactId>
+                <version>3.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.geotools</groupId>
+                <artifactId>gt-main</artifactId>
+                <version>8.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>woodstox-core-lgpl</artifactId>
+                <version>4.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.4</version>
+            </dependency>
             <dependency>
                 <groupId>gov.usgs.cida</groupId>
                 <artifactId>dynamicProperties</artifactId>
@@ -263,11 +292,6 @@
                 <artifactId>dygraphs-core</artifactId>
                 <version>20121127-1</version>
                 <type>war</type>
-            </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>2.3</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
