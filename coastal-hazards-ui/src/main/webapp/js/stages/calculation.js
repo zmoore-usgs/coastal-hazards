@@ -1,5 +1,5 @@
-var Intersections = {
-    stage : 'intersections',
+var Calculation = {
+    stage : 'calculation',
     reservedColor : '#7570B3',
     suffixes : ['_intersects'],
     description : 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.',
@@ -8,8 +8,8 @@ var Intersections = {
             return v.value
         })
         var transects = $('#transects-list :selected')[0].value;
-        var intersectionLayerName = transects.replace('_transects',  Intersections.suffixes[0]);
-        var request = Intersections.createWPSCalculateIntersectionsRequest({
+        var intersectionLayerName = transects.replace('_transects',  Calculation.suffixes[0]);
+        var request = Calculation.createWPSCalculateIntersectionsRequest({
             shorelines : visibleShorelines,
             transects : transects
         })
@@ -26,15 +26,15 @@ var Intersections = {
                             namespace : CONFIG.tempSession.getCurrentSessionKey(),
                             callbacks : {
                                 success : [
-                                Intersections.populateFeaturesList,
+                                Calculation.populateFeaturesList,
                                 function() {
                                     $('#intersections-list').val(data);
-                                    Intersections.listboxChanged();
-                                    $('a[href="#' + Intersections.stage + '-view-tab"]').tab('show');
+                                    Calculation.listboxChanged();
+                                    $('a[href="#' + Calculation.stage + '-view-tab"]').tab('show');
                                     CONFIG.ui.showAlert({
                                         message : 'Intersection creation succeeded.',
                                         displayTime : 7500,
-                                        caller : Intersections,
+                                        caller : Calculation,
                                         style: {
                                             classes : ['alert-success']
                                         }
@@ -48,7 +48,7 @@ var Intersections = {
                         CONFIG.ui.showAlert({
                             message : 'Intersection creation failed. Check logs.',
                             displayTime : 7500,
-                            caller : Intersections,
+                            caller : Calculation,
                             style: {
                                 classes : ['alert-error']
                             }
@@ -90,23 +90,23 @@ var Intersections = {
     },
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
-            caller : Intersections
+            caller : Calculation
         });
     },
     listboxChanged : function() {
-        LOG.info('Intersections.js::listboxChanged: Intersections listbox changed');
+        LOG.info('Calculation.js::listboxChanged: Intersections listbox changed');
         $("#intersections-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
             if (layers.length) {
                 $(layers).each(function(i,l) {
                     CONFIG.map.getMap().removeLayer(l, false);
                     var stageConfig = CONFIG.tempSession.getStageConfig({
-                        stage : Intersections.stage,
+                        stage : Calculation.stage,
                         name : l.name
                     })
                     stageConfig.view.isSelected = false;
                     CONFIG.tempSession.setStageConfig({
-                        stage : Intersections.stage,
+                        stage : Calculation.stage,
                         config : stageConfig
                     })
                 })
@@ -114,16 +114,16 @@ var Intersections = {
         });
         if ($("#intersections-list option:selected")[0].value) {
             var name = $("#intersections-list option:selected")[0].value; 
-            Intersections.addIntersections({
+            Calculation.addIntersections({
                 name : name
             })
             var stageConfig = CONFIG.tempSession.getStageConfig({
-                stage : Intersections.stage,
+                stage : Calculation.stage,
                 name : name
             })
             stageConfig.view.isSelected = true;
             CONFIG.tempSession.setStageConfig({
-                stage : Intersections.stage,
+                stage : Calculation.stage,
                 config : stageConfig
             })
         }
@@ -135,7 +135,7 @@ var Intersections = {
             {
                 layers : args.name,
                 transparent : true,
-                sld_body : Intersections.createSLDBody({
+                sld_body : Calculation.createSLDBody({
                     layerName : args.name
                 })
             },
@@ -154,12 +154,12 @@ var Intersections = {
         CONFIG.map.getMap().addLayer(intersections);
         
         var stageConfig = CONFIG.tempSession.getStageConfig({
-            stage : Intersections.stage,
+            stage : Calculation.stage,
             name : args.name
         })
         stageConfig.view.isSelected = false;
         CONFIG.tempSession.setStageConfig({
-            stage : Intersections.stage,
+            stage : Calculation.stage,
             config : stageConfig
         })
     },
@@ -178,7 +178,7 @@ var Intersections = {
         '<Mark>' + 
         '<WellKnownName>circle</WellKnownName>' + 
         '<Fill>' + 
-        '<CssParameter name="fill">' + Intersections.reservedColor + '</CssParameter>' + 
+        '<CssParameter name="fill">' + Calculation.reservedColor + '</CssParameter>' + 
         '</Fill>' + 
         '<Stroke>' + 
         '<CssParameter name="stroke">#000000</CssParameter>' + 
@@ -282,7 +282,7 @@ var Intersections = {
         '<wps:Input>' + 
         '<ows:Identifier>layer</ows:Identifier>' + 
         '<wps:Data>' + 
-        '<wps:LiteralData>'+transects.split(':')[1].replace('_transects', '') + Intersections.suffixes[0] +'</wps:LiteralData>' + 
+        '<wps:LiteralData>'+transects.split(':')[1].replace('_transects', '') + Calculation.suffixes[0] +'</wps:LiteralData>' + 
         '</wps:Data>' + 
         '</wps:Input>' +    
         '</wps:DataInputs>' + 

@@ -130,7 +130,7 @@ var Baseline = {
                     featureType: originalLayer.name.split(':')[1],
                     featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
                     geometryName: "the_geom",
-                    schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&typename=" + originalLayer.name
+                    schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + originalLayer.name
                 }),
                 cloneOf : originalLayer.name
             })

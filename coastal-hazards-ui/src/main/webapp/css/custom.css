@@ -91,6 +91,10 @@ img { max-width: none; }
     height: auto !important;
 }
 
+.feature-list {
+    width: 100%;
+}
+
 #shorelines-list {
     height: 7.25em;
 }

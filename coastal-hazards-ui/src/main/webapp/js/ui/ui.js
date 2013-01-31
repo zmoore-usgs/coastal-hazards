@@ -3,8 +3,8 @@ var UI = function() {
     LOG.info('UI.js::init: UI class is initializing.')
     var me = (this === window) ? {} : this;
     
-    me.work_stages = ['shorelines', 'baseline', 'transects', 'intersections', 'results'];
-    me.work_stages_objects = [Shorelines, Baseline, Transects, Results, Intersections];
+    me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
+    me.work_stages_objects = [Shorelines, Baseline, Transects, Results, Calculation];
     
     $('#clear-sessions-btn').on("click", function(){
         localStorage.clear();
@@ -17,7 +17,7 @@ var UI = function() {
     $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
     $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
     $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
-    $("#create-intersections-btn").on("click", Intersections.createIntersectionSubmit);
+    $("#create-intersections-btn").on("click", Calculation.createIntersectionSubmit);
     $("#create-results-btn").on("click", Results.calcResults);
     
     me.work_stages_objects.each(function(stage) {
@@ -62,7 +62,7 @@ var UI = function() {
         trigger : 'hover'
     })
     
-    $('select').popover({
+    $('.feature-list').popover({
         title : 'Layer Selection',
         content : $('<div />')
         .append($('<div />').css({
@@ -88,6 +88,9 @@ var UI = function() {
     })
     
     return $.extend(me, {
+        displayStage : function(caller) {
+          $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click')  
+        },
         createModalWindow : function(args) {
             var headerHtml = args.headerHtml || '';
             var bodyHtml = args.bodyHtml || '';
@@ -319,7 +322,7 @@ var UI = function() {
             // Add a blank spot at the top of the select list
             if (stage == Baseline.stage
                 || stage == Transects.stage
-                ||stage == Intersections.stage 
+                ||stage == Calculation.stage 
                 || stage == Results.stage) {
                 $('#'+stage+'-list')
                 .append($("<option />")

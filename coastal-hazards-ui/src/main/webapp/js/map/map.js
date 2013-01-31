@@ -15,7 +15,7 @@ var Map = function() {
             maxExtent: me.map.getExtent(),
             featureType: "featureType",
             geometryName: "the_geom",
-            schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&typename=" + CONFIG.tempSession.getCurrentSessionKey() + ":featureType"
+            schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + CONFIG.tempSession.getCurrentSessionKey() + ":featureType"
         })
     });
 

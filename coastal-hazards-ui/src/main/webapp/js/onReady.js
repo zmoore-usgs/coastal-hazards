@@ -9,6 +9,7 @@ $(document).ready(function() {
         LOG.debug('start');
         $("#application-spinner").fadeIn();
     });
+    
     $(document).ajaxStop(function() {
         LOG.debug('end');
         $("#application-spinner").fadeOut();
@@ -91,7 +92,7 @@ $(document).ready(function() {
                         Shorelines.populateFeaturesList,
                         Baseline.populateFeaturesList,
                         Transects.populateFeaturesList,
-                        Intersections.populateFeaturesList,
+                        Calculation.populateFeaturesList,
                         Results.populateFeaturesList,
                         function() {
                             $('.qq-upload-button').addClass('btn btn-success');
@@ -106,7 +107,7 @@ $(document).ready(function() {
                         Shorelines.populateFeaturesList,
                         Baseline.populateFeaturesList,
                         Transects.populateFeaturesList,
-                        Intersections.populateFeaturesList,
+                        Calculation.populateFeaturesList,
                         Results.populateFeaturesList,
                         function() {
                             $('#application-overlay').fadeOut()
@@ -118,4 +119,5 @@ $(document).ready(function() {
             ]
         }
     })
+    
 })

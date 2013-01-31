@@ -63,11 +63,11 @@
             <div class="row-fluid">
                 <!-- NAV -->
                 <div class="span1" id='nav-list'>
-                    <ul class="nav nav-pills nav-stacked">
+                    <ul id="stage-select-tablist" class="nav nav-pills nav-stacked">
                         <li class="active"><a href="#shorelines" data-toggle="tab"><img id="shorelines_img" src="images/workflow_figures/shorelines.png" title="Display Shorelines"/></a></li>
                         <li><a href="#baseline" data-toggle="tab"><img id="baseline_img" src="images/workflow_figures/baseline_future.png" title="Display Baseline"/></a></li>
                         <li><a href="#transects" data-toggle="tab"><img id="transects_img" src="images/workflow_figures/transects_future.png" title="Calculate Transects"/></a></li>
-                        <li><a href="#intersections" data-toggle="tab"><img id="intersections_img" src="images/workflow_figures/intersections_future.png" title="Show Intersections"/></a></li>
+                        <li><a href="#calculation" data-toggle="tab"><img id="calculation_img" src="images/workflow_figures/calculation_future.png" title="Show Calculation"/></a></li>
                         <li><a href="#results" data-toggle="tab"><img id="results_img" src="images/workflow_figures/results_future.png" title="Display Results"/></a></li>
                                 <% if (development) {%>
                         <li><button class="btn btn-success" id="clear-sessions-btn">Clear Sessions</button>
@@ -92,7 +92,7 @@
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="shorelines-view-tab">
-                                    <select id="shorelines-list" multiple="multiple" style="width: 100%;"></select>
+                                    <select id="shorelines-list" class="feature-list" multiple="multiple"></select>
                                     <div class="tabbable">
                                         <ul class="nav nav-tabs" id="shoreline-table-navtabs">
                                         </ul>
@@ -119,7 +119,7 @@
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="baseline-view-tab">
-                                    <select id="baseline-list" style="width: 100%;"></select>
+                                    <select id="baseline-list" class="feature-list"></select>
                                 </div>
                                 <div class="tab-pane" id="baseline-manage-tab">
 
@@ -224,7 +224,7 @@
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="transects-view-tab">
-                                    <select id="transects-list" style="width: 100%;"></select>
+                                    <select id="transects-list" class="feature-list"></select>
                                 </div>
                                 <div class="tab-pane" id="transects-manage-tab">
                                     <div class="row-fluid">
@@ -259,10 +259,10 @@
                             </div>
                         </div> <!-- /Transects -->
 
-                        <!-- Intersection -->
-                        <div class="tab-pane  container-fluid" id="intersections">
+                        <!-- Calculation -->
+                        <div class="tab-pane  container-fluid" id="calculation">
                             <div class="row-fluid">
-                                <div class="span4"><h3>Intersections</h3></div>
+                                <div class="span4"><h3>Calculation</h3></div>
                                 <div class="span8" id="intersections-alert-container"></div>
                             </div>
                             <ul class="nav nav-tabs" id="action-intersections-tablist">
@@ -271,7 +271,7 @@
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="intersections-view-tab">
-                                    <select id="intersections-list" style="width: 100%;"></select>
+                                    <select id="intersections-list" class="feature-list"></select>
                                 </div>
                                 <div class="tab-pane" id="intersections-manage-tab">
                                     <!-- Intersection Calculation -->
@@ -284,7 +284,13 @@
                                             </select>
                                             <button class="btn btn-success" id="create-intersections-btn">
                                                 <i class="icon-tasks icon-white"></i>
-                                                &nbsp;Calculate</button>
+                                                &nbsp;Calculate Intersections</button>
+                                            </button>
+                                        </div>
+                                        <div id="results-calculation-panel-well" class="well span6">
+                                            <button class="btn btn-success" id="create-results-btn">
+                                                <i class="icon-tasks icon-white"></i>
+                                                &nbsp;Calculate Results</button>
                                             </button>
                                         </div>
                                     </div>
@@ -300,11 +306,10 @@
                             </div>
                             <ul class="nav nav-tabs" id="action-result-tablist">
                                 <li class="active"><a  data-toggle="tab" href="#results-view-tab">View</a></li>
-                                <li><a data-toggle="tab" href="#results-manage-tab">Manage</a></li>
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="results-view-tab">
-                                    <select id="results-list" style="width: 100%;"></select>
+                                    <select id="results-list" class="feature-list"></select>
                                     <div class="row-fluid">
                                         <div class="tabbable">
                                             <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
@@ -312,15 +317,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane" id="results-manage-tab">
-                                    <button class="btn btn-success" id="create-results-btn">
-                                        <i class="icon-tasks icon-white"></i>
-                                        &nbsp;Calculate</button>
-                                    </button>
-                                </div>
                             </div>
-
-
                         </div> <!-- /Results -->
 
                     </div>
@@ -417,7 +414,7 @@
             shorelines : [],
             baseline : [],
             transects : [],
-            intersections : [],
+            calculation : [],
             results : []
         }
             
@@ -452,7 +449,7 @@
     <script type="text/javascript" src="js/stages/shorelines.js"></script>
     <script type="text/javascript" src="js/stages/baseline.js"></script>
     <script type="text/javascript" src="js/stages/transects.js"></script>
-    <script type="text/javascript" src="js/stages/intersections.js"></script>
+    <script type="text/javascript" src="js/stages/calculation.js"></script>
     <script type="text/javascript" src="js/stages/results.js"></script>
 
     <!-- TODO - Modularize -->
