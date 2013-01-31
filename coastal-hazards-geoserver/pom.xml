@@ -50,17 +50,11 @@
                             <artifactId>geoserver</artifactId>
                         </overlay>
                     </overlays>
-<!--                    <webResources>
-                        <resource>
-                            <directory>geoserver/src/main/webapp/data/workspaces</directory>
-                            <excludes>
-                                <exclude>**/upload/</exclude>
-                                <exclude>**/draw/</exclude>
-                            </excludes>
-                        </resource>
-                    </webResources>-->
                     <warSourceExcludes>WEB-INF/web.xml</warSourceExcludes>
-                    <packagingExcludes>geoserver/src/main/webapp/data/workspaces/upload,geoserver/src/main/webapp/data/workspaces/draw</packagingExcludes>
+                    <packagingExcludes>
+                        src/main/webapp/data/workspaces/upload,
+                        src/main/webapp/data/workspaces/draw
+                    </packagingExcludes>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
