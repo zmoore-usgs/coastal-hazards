@@ -152,7 +152,7 @@ var Results = {
         var results = new OpenLayers.Layer.Vector(layer.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
-                version: '1.0.0',
+                version: '1.1.0',
                 url:  "geoserver/"+layer.prefix+"/wfs",
                 featureType: layer.name, 
                 featureNS: CONFIG.namespace[layer.prefix],
@@ -224,7 +224,8 @@ var Results = {
         resultsColumns.push('StartX');
         
         CONFIG.ows.getFilteredFeature({ 
-            layer : result,
+            layerPrefix : result.prefix,
+            layerName : result.name,
             propertyArray : [],
             scope : result,
             callbacks : {
