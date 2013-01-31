@@ -224,7 +224,8 @@ var Results = {
         resultsColumns.push('StartX');
         
         CONFIG.ows.getFilteredFeature({ 
-            layer : result,
+            layerPrefix : result.prefix,
+            layerName : result.name,
             propertyArray : [],
             scope : result,
             callbacks : {
