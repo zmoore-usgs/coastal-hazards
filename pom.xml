@@ -9,8 +9,8 @@
   
     <modules>
         <module>coastal-hazards-ui</module>
-        <module>coastal-hazards-geoserver</module>
         <module>coastal-hazards-wps</module>
+        <module>coastal-hazards-geoserver</module>
         <module>coastal-hazards-n52</module>
     </modules>
   
