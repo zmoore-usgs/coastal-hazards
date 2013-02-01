@@ -385,6 +385,7 @@ var Baseline = {
                     workspace : CONFIG.tempSession.getCurrentSessionKey(),
                     store : 'ch-input',
                     context : drawLayer,
+                    extraColumn : 'C|Orient|9', // See ImportService.java to see the format for this
                     callbacks : [
                     function(data, context) {
                         if (data.success === 'true') {
