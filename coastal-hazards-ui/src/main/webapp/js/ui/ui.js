@@ -13,6 +13,7 @@ var UI = function() {
         location.reload();
     })
     $('#baseline-draw-form-name').val(Util.getRandomLorem());
+    $('#results-form-name').val(Util.getRandomLorem());
     $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
     $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
     $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);

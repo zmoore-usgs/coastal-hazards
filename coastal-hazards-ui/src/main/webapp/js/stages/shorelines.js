@@ -537,6 +537,7 @@ var Shorelines = {
         
         $('#baseline-draw-form-name').val(derivedName);
         $('#create-transects-input-name').val(derivedName);
+        $('#results-form-name').val(derivedName);
             
         if (layerInfos.length) {
             Shorelines.addShorelines(layerInfos);

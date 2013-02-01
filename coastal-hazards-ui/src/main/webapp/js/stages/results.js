@@ -15,10 +15,19 @@ var Results = {
         });
     },
     calcResults : function() {
+        if (!$('#transects-list :selected').length  
+            || !$('#intersections-list :selected').length) {
+            CONFIG.ui.showAlert({
+                message : 'Missing transects or intersections.',
+                displayTime : 7500,
+                caller : Results
+            })
+            return;
+        }
         LOG.info('Results.js::calcResults');
         var transects = $('#transects-list :selected')[0].value;
         var intersects = $('#intersections-list :selected')[0].value;
-        var resultsLayerName = transects.replace('_transects', Results.suffixes[0]); 
+        var resultsLayerName = $('#results-form-name').val() ? $('#results-form-name').val() + '_rates' : transects.replace('_transects', Results.suffixes[0]); 
         var request = Results.createWPSCalculateResultsRequest({
             transects : transects,
             intersects : intersects
@@ -186,7 +195,7 @@ var Results = {
             $('#results-table tbody>tr').removeClass('warning');
             var tableRow = $('#results-table tbody>tr').toArray().find(function(tr){
                 return $(tr).data().startx == xValue
-                });
+            });
             tableRow.scrollIntoView();
             $(tableRow).addClass('warning');
             

@@ -32,6 +32,7 @@ var Session = function(name, isPerm) {
     }
     defaultSession.baseline = defaultSession['default'];
     defaultSession.transects = defaultSession['default'];
+    defaultSession.intersections = defaultSession['default'];
     defaultSession.calculation = defaultSession['default'];
     defaultSession.results = defaultSession['default'];
             
@@ -81,6 +82,7 @@ var Session = function(name, isPerm) {
             newSession.shorelines = defaultSession.shorelines;
             newSession.baseline = defaultSession.baseline;            
             newSession.transects = defaultSession.transects;
+            newSession.intersections = defaultSession.intersections;
             newSession.calculation = defaultSession.calculation;
             newSession.results = defaultSession.results;
             
@@ -100,6 +102,10 @@ var Session = function(name, isPerm) {
                 
                 if (!me.session["current-session"].session.transects) {
                     me.session["current-session"].session.transects = defaultSession.transects;
+                }
+                
+                if (!me.session["current-session"].session.intersections) {
+                    me.session["current-session"].session.intersections = defaultSession.intersections;
                 }
                 
                 if (!me.session["current-session"].session.calculation) {

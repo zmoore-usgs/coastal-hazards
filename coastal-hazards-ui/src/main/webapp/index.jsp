@@ -288,9 +288,11 @@
                                             </button>
                                         </div>
                                         <div id="results-calculation-panel-well" class="well span6">
+                                            <label class="control-label" for="results-form-name">Baseline Name</label>
+                                            <input class="input-large" name="results-form-name" id="results-form-name"  style="width: 100%;" />
                                             <button class="btn btn-success" id="create-results-btn">
                                                 <i class="icon-tasks icon-white"></i>
-                                                &nbsp;Calculate Results</button>
+                                                &nbsp;Calculate Results
                                             </button>
                                         </div>
                                     </div>
