@@ -150,6 +150,12 @@ var Transects = {
                                             classes : ['alert-success']
                                         }
                                     })
+                                    
+                                    // Remove previous transects layers
+                                    if (CONFIG.map.getMap().getLayersBy('type', 'transects').length) {
+                                        CONFIG.map.getMap().removeLayer(CONFIG.map.getMap().getLayersBy('type', 'transects')[0])
+                                    }
+                                    
                                     $('#transects-list').val(data);
                                     $('#transects-list').trigger('change');
                                     $('a[href="#' + Transects.stage + '-view-tab"]').tab('show');
