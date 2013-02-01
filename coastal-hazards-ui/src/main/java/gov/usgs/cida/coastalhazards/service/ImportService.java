@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.service;
 
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
+import gov.usgs.cida.utilities.communication.GeoserverHandler.DBaseColumn.ColumnType;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.file.FileHelper;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
@@ -13,7 +14,9 @@ import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -82,9 +85,71 @@ public class ImportService extends HttpServlet {
         String featureName = request.getParameter("feature-name");
         String workspace = request.getParameter("workspace");
         String store = request.getParameter("store");
+        String[] extraColumns = request.getParameterValues("extra-column");
+
         File shapeFile;
         String name;
         Map<String, String> responseMap = new HashMap<String, String>();
+
+        List<GeoserverHandler.DBaseColumn> dbcList = new ArrayList<GeoserverHandler.DBaseColumn>();
+
+        if (extraColumns != null) {
+            for (String extraColumn : extraColumns) {
+                String[] columnParams = extraColumn.trim().split("\\|");
+                
+                if (columnParams.length < 3 || columnParams.length > 4) {
+                    responseMap.put("error", "Extra columns parameter has too few or too many parameters");
+                    RequestResponseHelper.sendErrorResponse(response, responseMap);
+                    return;
+                }
+                
+                char columnTypeChar = Character.toUpperCase(columnParams[0].charAt(0));
+                ColumnType ct;
+                String columnName = columnParams[1];
+                int fieldLength;
+                int decimalCount = columnParams.length == 3 ? 0 : Integer.getInteger(columnParams[3]);
+                
+                switch (columnTypeChar) {
+                    case 'C': {
+                        ct = ColumnType.STRING;
+                        fieldLength = Integer.getInteger(columnParams[2], 254);
+                        break;
+                    }
+                    case 'N': {
+                        ct = ColumnType.NUMERIC;
+                        fieldLength = Integer.getInteger(columnParams[2], 18);
+                        break;
+                    }
+                    case 'F': {
+                        ct = ColumnType.FLOATING;
+                        fieldLength = Integer.getInteger(columnParams[2], 20);
+                        break;
+                    }
+                    case 'L': {
+                        ct = ColumnType.LOGICAL;
+                        fieldLength = Integer.getInteger(columnParams[2], 1);
+                        break;
+                    }
+                    case 'D': {
+                        ct = ColumnType.DATE;
+                        fieldLength = Integer.getInteger(columnParams[2], 8);
+                        break;
+                    }
+                    case '@': {
+                        ct = ColumnType.TIMESTAMP;
+                        fieldLength = Integer.getInteger(columnParams[2], 8);
+                        break;
+                    }
+                    default: {
+                        responseMap.put("error", "Column Type must be 'C' (Character), 'N' (Numeric), 'F' (Floating), 'L' (Logical (Boolean)), 'D' (Date) or '@' (Timestamp)");
+                        RequestResponseHelper.sendErrorResponse(response, responseMap);
+                        return;
+                    }
+                }
+                GeoserverHandler.DBaseColumn dbc = new GeoserverHandler.DBaseColumn(ct, columnName, fieldLength, decimalCount);
+                dbcList.add(dbc);
+            }
+        }
 
         File fileDirectoryHandle;
         if (StringUtils.isBlank(fileToken)) {
@@ -93,7 +158,7 @@ public class ImportService extends HttpServlet {
             String fileName = UUID.randomUUID().toString();
             File subdir = new File(uploadDirectory + File.separator + fileToken);
             FileUtils.forceMkdir(subdir);
-            File emptyShapeFile = geoserverHandler.createEmptyShapefile(subdir.getPath(), fileName);
+            File emptyShapeFile = geoserverHandler.createEmptyShapefile(subdir.getPath(), fileName, dbcList);
             FileHelper.zipFile(emptyShapeFile.getParentFile(), null, null);
             fileDirectoryHandle = new File(new File(uploadDirectory), fileToken);
         } else {
@@ -154,7 +219,6 @@ public class ImportService extends HttpServlet {
             RequestResponseHelper.sendErrorResponse(response, responseMap);
         }
     }
-
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

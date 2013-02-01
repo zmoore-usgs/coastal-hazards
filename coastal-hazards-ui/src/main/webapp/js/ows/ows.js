@@ -31,7 +31,8 @@ var OWS = function(endpoint) {
                     'file-token': args['file-token'],
                     'feature-name' : args.importName,
                     'workspace' : args.workspace,
-                    'store' : args.store || 'ch-input'
+                    'store' : args.store || 'ch-input',
+                    'extra-column' : args.extraColumn
                 },
                 success : function(data, textStatus, jqXHR) {
                     var scope = this;

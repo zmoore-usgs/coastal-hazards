@@ -653,7 +653,59 @@ public class GeoserverHandler {
         }
     }
 
-    public File createEmptyShapefile(String path, String name) throws IOException {
+   public static class DBaseColumn {
+
+        private ColumnType colType;
+        private String columnName;
+        private int fieldLength;
+        private int inDecimalCount;
+
+        public DBaseColumn(ColumnType colType, String columnName, int fieldLength, int inDecimalCount) {
+            this.colType = colType;
+            this.columnName = columnName;
+            this.fieldLength = fieldLength;
+            this.inDecimalCount = inDecimalCount;
+        }
+
+        public DBaseColumn() {
+        }
+
+        public ColumnType getColType() {
+            return colType;
+        }
+
+        public String getColumnName() {
+            return columnName;
+        }
+
+        public int getFieldLength() {
+            return fieldLength;
+        }
+        
+        public int getInDecimalCount() {
+            return inDecimalCount;
+        }
+        
+        public enum ColumnType {
+            STRING('C'),
+            NUMERIC('N'),
+            FLOATING('F'),
+            LOGICAL('L'),
+            DATE('D'),
+            TIMESTAMP('@');
+            private final char type;
+
+            ColumnType(char type) {
+                this.type = type;
+            }
+            
+            public char getType() {
+                return this.type;
+            }
+        }
+    }
+
+    public File createEmptyShapefile(String path, String name, List<DBaseColumn> extraColumns) throws IOException {
         File shpFile = new File(path, name + ".shp");
         File shxFile = new File(path, name + ".shx");
         File dbfFile = new File(path, name + ".dbf");
@@ -688,7 +740,16 @@ public class GeoserverHandler {
 
         // Write dbf file with single column, values will be added over WFS-T
         DbaseFileHeader header = new DbaseFileHeader();
+        
         header.addColumn("ID", 'N', 4, 0);
+        
+        if (extraColumns != null) {
+            for (DBaseColumn dbc : extraColumns) {
+                header.addColumn(dbc.getColumnName(), dbc.getColType().getType(), dbc.getFieldLength(), dbc.getInDecimalCount());
+            }
+        }
+        
+        
         header.setNumRecords(0);
 
 
@@ -715,8 +776,8 @@ public class GeoserverHandler {
     public boolean removeLayer(String geoserverDataDir, String workspace, String store, String layer) throws IllegalArgumentException, MalformedURLException {
         GeoServerRESTManager gsrm = new GeoServerRESTManager(new URL(this.url), this.user, this.password);
         GeoServerRESTPublisher publisher = gsrm.getPublisher();
-        boolean success =  publisher.unpublishFeatureType(workspace, store, layer);
-        boolean storeReloaded  = false;
+        boolean success = publisher.unpublishFeatureType(workspace, store, layer);
+        boolean storeReloaded = false;
         if (success) {
             storeReloaded = publisher.reloadStore(workspace, store, GeoServerRESTPublisher.StoreType.DATASTORES);
         }

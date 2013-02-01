@@ -16,7 +16,10 @@ var Map = function() {
             featureType: "featureType",
             geometryName: "the_geom",
             schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + CONFIG.tempSession.getCurrentSessionKey() + ":featureType"
-        })
+        }),
+        onFeatureInsert : function(feature) {
+            feature.attributes['Orient'] = 'seaward';
+        }
     });
 
     var baselineDrawControl = new OpenLayers.Control.DrawFeature(
