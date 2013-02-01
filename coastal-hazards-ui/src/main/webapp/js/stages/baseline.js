@@ -3,6 +3,8 @@ var Baseline = {
     suffixes :  ['_baseline'],
     baselineDrawButton : $('#baseline-draw-btn'),
     reservedColor : '#1B9E77',
+    shorewardColor : '#76C5AD',
+    
     description : 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
     addBaselineToMap : function(args) {
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
@@ -14,12 +16,19 @@ var Baseline = {
                 featureType: args.name.split(':')[1],
                 geometryName: "the_geom"
             }),
-            styleMap: new OpenLayers.StyleMap({
-                "default": new OpenLayers.Style({
-                    strokeColor: Baseline.reservedColor,
-                    strokeWidth: 2
-                })
-            })
+            preFeatureInsert : function(feature) {
+                if (feature.attributes.orient == 'shoreward') {
+                    feature.style = new OpenLayers.Style({
+                        strokeColor: Baseline.shorewardColor,
+                        strokeWidth: 2
+                    })
+                } else {
+                    feature.style = new OpenLayers.Style({
+                        strokeColor: Baseline.reservedColor,
+                        strokeWidth: 2
+                    })
+                }
+            }
         });
         
         CONFIG.map.removeLayerByName(baselineLayer.name);
