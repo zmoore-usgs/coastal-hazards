@@ -200,7 +200,7 @@ var OWS = function(endpoint) {
             var propertyArray = args.propertyAraay;
             var callbacks = args.callbacks;
             
-            var url = me.geoserverProxyEndpoint + layerPrefix + '/wfs?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&typeName=' + layerName + '&propertyName=';
+            var url = me.geoserverProxyEndpoint + layerPrefix + '/wfs?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&typeName=' + layerPrefix + ':' + layerName + '&propertyName=';
             url += (propertyArray || []).join(',');
             
             $.ajax(url, {

@@ -1,9 +1,14 @@
 var Results = {
     stage : 'results',
+    
     viewableResultsColumns : ['LRR','LR2','LSE','LCI90',"LCI_2.5",'LCI_97.5','WCI_2.5','WCI_97.5','WLR'],
+    
     suffixes : ['_rates','_results','_clip','_lt'],
+    
     reservedColor: '#0061A3',
+    
     description : 'Et harum quidem rerum facilis est et expedita distinctio.',
+    
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
             caller : Results
@@ -222,6 +227,10 @@ var Results = {
         // StartX is needed for plotting but not for the table view so let's get the column
         // from the server i one call
         resultsColumns.push('StartX');
+        
+        // The calculate results button is not on the same stage as the results view so switch to 
+        // results view
+        CONFIG.ui.displayStage(Results);
         
         CONFIG.ows.getFilteredFeature({ 
             layerPrefix : result.prefix,

@@ -6,7 +6,38 @@ var Session = function(name, isPerm) {
     me.sessionObject = isPerm ? localStorage : sessionStorage;
     me.session =  isPerm ? $.parseJSON(me.sessionObject.getItem(me.name)) : new Object();
     
+    var defaultSession = Object.extended();
+    defaultSession['default'] = {
+        'default' : {
+            view : {
+                isSelected : false
+            }
+        }
+    }
+        
+    defaultSession.shorelines = {
+        view : {
+            selectedLayers : []
+        },
+        'default' : {
+            colorsParamPairs : [],
+            groupingColumn : 'date_',
+            describeFeatureTypeResponse : null,
+            view : {
+                'years-disabled' : [],
+                'dates-disabled' : [],
+                isSelected : false
+            }
+        }
+    }
+    defaultSession.baseline = defaultSession['default'];
+    defaultSession.transects = defaultSession['default'];
+    defaultSession.calculation = defaultSession['default'];
+    defaultSession.results = defaultSession['default'];
+            
+    
     if (isPerm) {
+        
         if (!me.session) {
             // - A session has not yet been created for perm storage. Probably the first
             // run of the application or a new browser with no imported session
@@ -47,54 +78,38 @@ var Session = function(name, isPerm) {
 
             newSession[randID] = Object.extended(); 
             newSession.layers = [];
-            newSession.shorelines = {
-                view : {
-                    selectedLayers : []
-                },
-                'default' : {
-                    colorsParamPairs : [],
-                    groupingColumn : 'date_',
-                    describeFeatureTypeResponse : null,
-                    view : {
-                        'years-disabled' : [],
-                        'dates-disabled' : [],
-                        isSelected : false
-                    }
-                }
-            }
-            newSession.baseline = {
-                'default' : {
-                    view : {
-                        isSelected : false
-                    }
-                }
-            }
-            newSession.results = {
-                'default' : {
-                    view : {
-                        isSelected : false
-                    }
-                }
-            }
-            newSession.transects = {
-                'default' : {
-                    view : {
-                        isSelected : false
-                    }
-                }
-            }
-            newSession.intersections = {
-                'default' : {
-                    view : {
-                        isSelected : false
-                    }
-                }
-            }
+            newSession.shorelines = defaultSession.shorelines;
+            newSession.baseline = defaultSession.baseline;            
+            newSession.transects = defaultSession.transects;
+            newSession.calculation = defaultSession.calculation;
+            newSession.results = defaultSession.results;
             
             me.session['sessions'][randID] = newSession;
             me.session['current-session'] = Object.extended();
             me.session['current-session']['key'] = randID;
             me.session['current-session']['session'] = me.session['sessions'][randID];
+        } else {
+            if (me.session["current-session"].session) {
+                if (!me.session["current-session"].session.shorelines) {
+                    me.session["current-session"].session.shorelines = defaultSession.shorelines;
+                }
+                
+                if (!me.session["current-session"].session.baseline) {
+                    me.session["current-session"].session.baseline = defaultSession.baseline;
+                }
+                
+                if (!me.session["current-session"].session.transects) {
+                    me.session["current-session"].session.transects = defaultSession.transects;
+                }
+                
+                if (!me.session["current-session"].session.calculation) {
+                    me.session["current-session"].session.calculation = defaultSession.calculation;
+                }
+                
+                if (!me.session["current-session"].session.results) {
+                    me.session["current-session"].session.results = defaultSession.results;
+                }
+            }
         }
     } else {
         LOG.info('Session.js::constructor:Creating new temp session object');
@@ -122,6 +137,10 @@ var Session = function(name, isPerm) {
             
             if (!stage) {
                 return null;
+            }
+            
+            if (!me.session[stage]) {
+                me.session[stage] = defaultSession[stage];
             }
             
             if (!me.session[stage][name]) {
