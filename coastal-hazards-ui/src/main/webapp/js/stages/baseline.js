@@ -12,6 +12,36 @@ var Baseline = {
         var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
         renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
         
+        var style = new OpenLayers.Style({
+            strokeColor: '#FFFFFF',
+            strokeWidth: 2
+        },{
+            rules : [
+            new OpenLayers.Rule({
+                filter: new OpenLayers.Filter.Comparison({
+                    type: OpenLayers.Filter.Comparison.EQUAL_TO, 
+                    property: 'Orient', 
+                    value: 'shoreward'
+                }),
+                symbolizer: {
+                    strokeColor: Baseline.shorewardColor,
+                    strokeWidth: 2
+                }
+            }),
+            new OpenLayers.Rule({
+                filter: new OpenLayers.Filter.Comparison({
+                    type: OpenLayers.Filter.Comparison.EQUAL_TO, 
+                    property: 'Orient', 
+                    value: 'seaward'
+                }),
+                symbolizer : {
+                    strokeColor: Baseline.reservedColor,
+                    strokeWidth: 2
+                }
+            })
+            ]
+        })
+        
         var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
@@ -20,37 +50,7 @@ var Baseline = {
                 geometryName: "the_geom"
             }),
             renderers: renderer,
-            styleMap: new OpenLayers.StyleMap({
-                // We should never see this color because all features will either be 
-                // 'shoreward' or 'seaward'
-                strokeColor: '#FF0000', 
-                strokeWidth: 2
-            },{
-                "default": new OpenLayers.Style({
-                    rules : [
-                    new OpenLayers.Rule({
-                        filter: new OpenLayers.Filter.Comparison({
-                            type: OpenLayers.Filter.Comparison.LIKE, 
-                            property: 'Orient', 
-                            value: 'shore*'
-                        }),
-                        symbolizer: {
-                            strokeColor: Baseline.shorewardColor
-                        }
-                    }),
-                    new OpenLayers.Rule({
-                        filter: new OpenLayers.Filter.Comparison({
-                            type: OpenLayers.Filter.Comparison.LIKE, 
-                            property: 'Orient', 
-                            value: 'sea*'
-                        }),
-                        symbolizer : {
-                            strokeColor: Baseline.reservedColor
-                        }
-                    })
-                    ]
-                })
-            })
+            styleMap: new OpenLayers.StyleMap(style)
         });
         
         CONFIG.map.removeLayerByName(baselineLayer.name);
