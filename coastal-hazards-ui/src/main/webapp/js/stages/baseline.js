@@ -9,6 +9,9 @@ var Baseline = {
     addBaselineToMap : function(args) {
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
         
+        var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
+        renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
+        
         var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
@@ -16,19 +19,38 @@ var Baseline = {
                 featureType: args.name.split(':')[1],
                 geometryName: "the_geom"
             }),
-            preFeatureInsert : function(feature) {
-                if (feature.attributes.orient == 'shoreward') {
-                    feature.style = new OpenLayers.Style({
-                        strokeColor: Baseline.shorewardColor,
-                        strokeWidth: 2
+            renderers: renderer,
+            styleMap: new OpenLayers.StyleMap({
+                // We should never see this color because all features will either be 
+                // 'shoreward' or 'seaward'
+                strokeColor: '#FF0000', 
+                strokeWidth: 2
+            },{
+                "default": new OpenLayers.Style({
+                    rules : [
+                    new OpenLayers.Rule({
+                        filter: new OpenLayers.Filter.Comparison({
+                            type: OpenLayers.Filter.Comparison.LIKE, 
+                            property: 'Orient', 
+                            value: 'shore*'
+                        }),
+                        symbolizer: {
+                            strokeColor: Baseline.shorewardColor
+                        }
+                    }),
+                    new OpenLayers.Rule({
+                        filter: new OpenLayers.Filter.Comparison({
+                            type: OpenLayers.Filter.Comparison.LIKE, 
+                            property: 'Orient', 
+                            value: 'sea*'
+                        }),
+                        symbolizer : {
+                            strokeColor: Baseline.reservedColor
+                        }
                     })
-                } else {
-                    feature.style = new OpenLayers.Style({
-                        strokeColor: Baseline.reservedColor,
-                        strokeWidth: 2
-                    })
-                }
-            }
+                    ]
+                })
+            })
         });
         
         CONFIG.map.removeLayerByName(baselineLayer.name);
