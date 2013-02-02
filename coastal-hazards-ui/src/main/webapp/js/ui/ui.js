@@ -2,6 +2,7 @@
 var UI = function() {
     LOG.info('UI.js::init: UI class is initializing.')
     var me = (this === window) ? {} : this;
+    var popupHoverDelay = 500;
     
     me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
     me.work_stages_objects = [Shorelines, Baseline, Transects, Results, Calculation];
@@ -38,7 +39,10 @@ var UI = function() {
                 .html(),
                 html : true,
                 placement : 'right',
-                trigger : 'hover'
+                trigger : 'hover',
+                delay : {
+                    show : popupHoverDelay
+                }
             })
         
             $('#'+stage.stage+' [href="#'+stage.stage+'-view-tab"]').popover({
@@ -48,7 +52,10 @@ var UI = function() {
                 .html(),
                 html : true,
                 placement : 'top',
-                trigger : 'hover'
+                trigger : 'hover',
+                delay : {
+                    show : popupHoverDelay
+                }
             })
         
             $('#'+stage.stage+' [href="#'+stage.stage+'-manage-tab"]').popover({
@@ -58,7 +65,10 @@ var UI = function() {
                 .html(),
                 html : true,
                 placement : 'top',
-                trigger : 'hover'
+                trigger : 'hover',
+                delay : {
+                    show : popupHoverDelay
+                }
             })
         })
     
@@ -69,7 +79,10 @@ var UI = function() {
             .html(),
             html : true,
             placement : 'left',
-            trigger : 'hover'
+            trigger : 'hover',
+                delay : {
+                    show : popupHoverDelay
+                }
         })
     
         $('.feature-list').popover({
@@ -88,7 +101,10 @@ var UI = function() {
             .html(),
             html : true,
             placement : 'bottom',
-            trigger : 'hover'
+            trigger : 'hover',
+                delay : {
+                    show : popupHoverDelay
+                }
         })
     }
     
