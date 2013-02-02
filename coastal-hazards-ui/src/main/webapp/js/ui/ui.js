@@ -20,67 +20,77 @@ var UI = function() {
     $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
     $("#create-intersections-btn").on("click", Calculation.createIntersectionSubmit);
     $("#create-results-btn").on("click", Results.calcResults);
+    var config = CONFIG.tempSession.getStageConfig();
     
-    me.work_stages_objects.each(function(stage) {
-        $('#nav-list a[href="#'+stage.stage+'"]').popover({
-            title : stage.stage.capitalize(),
-            content : $('<div />')
-            .append($('<div />').html(stage.description))
-            .html(),
-            html : true,
-            placement : 'right',
-            trigger : 'hover'
-        })
+    // We only want the popups to occur on the first load of the application but not afterwards
+    if (config.view.popup != false) {
+        config.view.popup = false;
         
-        $('#'+stage.stage+' [href="#'+stage.stage+'-view-tab"]').popover({
-            title : stage.stage.capitalize() + ' View',
-            content : $('<div />')
-            .append($('<div />').html(stage.description))
-            .html(),
-            html : true,
-            placement : 'top',
-            trigger : 'hover'
-        })
+        CONFIG.tempSession.setStageConfig({
+            config : config
+        });
         
-        $('#'+stage.stage+' [href="#'+stage.stage+'-manage-tab"]').popover({
-            title : stage.stage.capitalize() + ' Manage',
+        me.work_stages_objects.each(function(stage) {
+            $('#nav-list a[href="#'+stage.stage+'"]').popover({
+                title : stage.stage.capitalize(),
+                content : $('<div />')
+                .append($('<div />').html(stage.description))
+                .html(),
+                html : true,
+                placement : 'right',
+                trigger : 'hover'
+            })
+        
+            $('#'+stage.stage+' [href="#'+stage.stage+'-view-tab"]').popover({
+                title : stage.stage.capitalize() + ' View',
+                content : $('<div />')
+                .append($('<div />').html(stage.description))
+                .html(),
+                html : true,
+                placement : 'top',
+                trigger : 'hover'
+            })
+        
+            $('#'+stage.stage+' [href="#'+stage.stage+'-manage-tab"]').popover({
+                title : stage.stage.capitalize() + ' Manage',
+                content : $('<div />')
+                .append($('<div />').html(stage.description))
+                .html(),
+                html : true,
+                placement : 'top',
+                trigger : 'hover'
+            })
+        })
+    
+        $('#map-well').popover({
+            title : 'Map',
             content : $('<div />')
-            .append($('<div />').html(stage.description))
+            .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium'))
             .html(),
             html : true,
-            placement : 'top',
+            placement : 'left',
             trigger : 'hover'
         })
-    })
     
-    $('#map-well').popover({
-        title : 'Map',
-        content : $('<div />')
-        .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium'))
-        .html(),
-        html : true,
-        placement : 'left',
-        trigger : 'hover'
-    })
-    
-    $('.feature-list').popover({
-        title : 'Layer Selection',
-        content : $('<div />')
-        .append($('<div />').css({
-            'color': '#661111',
-            'text-shadow' : '0px 0px 1px #ffffff',
-            'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
-        }).html('Published (read-only)'))
-        .append($('<div />').css({
-            'color' : '#116611',
-            'text-shadow' : '0px 0px 1px #ffffff',
-            'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
-        }).html('Yours'))
-        .html(),
-        html : true,
-        placement : 'bottom',
-        trigger : 'hover'
-    })
+        $('.feature-list').popover({
+            title : 'Layer Selection',
+            content : $('<div />')
+            .append($('<div />').css({
+                'color': '#661111',
+                'text-shadow' : '0px 0px 1px #ffffff',
+                'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
+            }).html('Published (read-only)'))
+            .append($('<div />').css({
+                'color' : '#116611',
+                'text-shadow' : '0px 0px 1px #ffffff',
+                'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
+            }).html('Yours'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover'
+        })
+    }
     
     $('.nav-stacked>li>a').each(function(indexInArray, valueOfElement) { 
         $(valueOfElement).on('click', function() {
@@ -90,7 +100,7 @@ var UI = function() {
     
     return $.extend(me, {
         displayStage : function(caller) {
-          $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click')  
+            $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click')  
         },
         createModalWindow : function(args) {
             var headerHtml = args.headerHtml || '';
