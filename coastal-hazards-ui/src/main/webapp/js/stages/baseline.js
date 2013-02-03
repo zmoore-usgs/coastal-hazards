@@ -38,6 +38,20 @@ var Baseline = {
                     strokeColor: Baseline.reservedColor,
                     strokeWidth: 2
                 }
+            }),
+            new OpenLayers.Rule({
+                filter: new OpenLayers.Filter.Comparison({
+                    type: OpenLayers.Filter.Comparison.EQUAL_TO, 
+                    property: 'Orient', 
+                    value: 'seaward'
+                }),
+                symbolizer : {
+                    strokeColor: Baseline.reservedColor,
+                    strokeWidth: 2
+                }
+            }),
+            new OpenLayers.Rule({
+                elseFilter: true
             })
             ]
         })
