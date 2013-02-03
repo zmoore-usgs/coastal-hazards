@@ -13,10 +13,6 @@
     
     <name>Coastal Hazards WPS Processes</name>
 	
-    <properties>
-        <netbeans.hint.license>usgs</netbeans.hint.license>
-    </properties>
-	
     <dependencies>
         <dependency>
             <groupId>org.geotools</groupId>
