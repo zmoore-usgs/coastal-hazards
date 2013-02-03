@@ -200,6 +200,14 @@
                                                 </div>
                                             </div>
                                             <div class="row-fluid">
+                                                <div class="span12">
+                                                    <label for="toggle-direction-checkbox">Direction</label>
+                                                    <div id="toggle-direction-checkbox">
+                                                        <input type="checkbox">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
                                                 <button class="btn btn-success" id="baseline-edit-save-button" title="Update Modified Baseline">Update Baseline</button>
                                             </div>
                                         </div>
