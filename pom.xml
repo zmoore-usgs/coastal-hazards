@@ -5,7 +5,7 @@
     <artifactId>coastal-hazards</artifactId>
     <version>1.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>coastal-hazards</name>
+    <name>Coastal Hazards</name>
   
     <modules>
         <module>coastal-hazards-ui</module>
