@@ -2,38 +2,71 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <parent>
+    <!--<parent>-->
         <groupId>gov.usgs.cida.coastalhazards</groupId>
-        <artifactId>coastal-hazards</artifactId>
+        <!--<artifactId>coastal-hazards</artifactId>-->
         <version>1.0.2-SNAPSHOT</version>
-    </parent>
+    <!--</parent>-->
     
     <artifactId>coastal-hazards-wps</artifactId>
     <packaging>jar</packaging>
     
     <name>Coastal Hazards WPS Processes</name>
+
+    <repositories>
+        <repository>
+            <id>cida-thirdparty</id>
+            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-thirdparty</url>
+        </repository>
+        <repository>
+            <id>cida-releases</id>
+            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-releases</url>
+        </repository>
+        <repository>
+            <id>osgeo</id>
+            <url>http://download.osgeo.org/webdav/geotools/</url>
+        </repository>
+        <repository>
+            <id>geoserver</id>
+            <url>http://repo.opengeo.org/</url>
+        </repository>
+	</repositories>
 	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.geoserver</groupId>
+				<artifactId>geoserver</artifactId>
+				<version>2.2.2</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.geotools</groupId>
+				<artifactId>geotools</artifactId>
+				<version>8.4</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-api</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.geoserver.extension</groupId>
             <artifactId>wps-core</artifactId>
-            <scope>provided</scope>
+			<version>2.2.2</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
+			<version>2.1</version>
         </dependency>
 
-        <!-- LOGGING -->
-        <dependency>
-            <artifactId>slf4j-api</artifactId>
-            <groupId>org.slf4j</groupId>
-        </dependency>
         <!-- TESTING -->
         <dependency>
             <groupId>junit</groupId>
