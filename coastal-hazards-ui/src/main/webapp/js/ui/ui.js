@@ -246,7 +246,9 @@ var UI = function() {
                     width: 200,
                     onChange : function($el, status, e) {
                         var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
-                        var selectedFeature = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.find(function(n){ return n.id == selectControl.layer.selectedFeatures[0].id })
+                        var selectedFeature = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.find(function(n){
+                            return n.id == selectControl.layer.selectedFeatures[0].id
+                        })
                         if (status) {
                             selectedFeature.attributes.Orient = 'seaward';
                             selectedFeature.state = OpenLayers.State.UPDATE;
@@ -300,6 +302,7 @@ var UI = function() {
                                         LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
                                         CONFIG.ows.getWMSCapabilities({
                                             namespace : CONFIG.tempSession.getCurrentSessionKey(),
+                                            layerName : data,
                                             callbacks : {
                                                 success : [
                                                 function (args) {
@@ -316,6 +319,10 @@ var UI = function() {
                                                         caller : caller
                                                     });
                                                     $('a[href="#' + caller.stage + '-view-tab"]').tab('show');
+                                                    $('#' + caller.stage + '-list')
+                                                    .val(args.context.layerName.feature)
+                                                    .trigger('change');
+                                                    
                                                 }
                                                 ],
                                                 error : [
