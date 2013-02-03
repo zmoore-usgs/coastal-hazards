@@ -2,6 +2,7 @@
 var UI = function() {
     LOG.info('UI.js::init: UI class is initializing.')
     var me = (this === window) ? {} : this;
+    var popupHoverDelay = 500;
     
     me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
     me.work_stages_objects = [Shorelines, Baseline, Transects, Results, Calculation];
@@ -20,67 +21,92 @@ var UI = function() {
     $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
     $("#create-intersections-btn").on("click", Calculation.createIntersectionSubmit);
     $("#create-results-btn").on("click", Results.calcResults);
+    var config = CONFIG.tempSession.getStageConfig();
     
-    me.work_stages_objects.each(function(stage) {
-        $('#nav-list a[href="#'+stage.stage+'"]').popover({
-            title : stage.stage.capitalize(),
-            content : $('<div />')
-            .append($('<div />').html(stage.description))
-            .html(),
-            html : true,
-            placement : 'right',
-            trigger : 'hover'
-        })
+    // We only want the popups to occur on the first load of the application but not afterwards
+    if (config.view.popup != false) {
+        config.view.popup = false;
         
-        $('#'+stage.stage+' [href="#'+stage.stage+'-view-tab"]').popover({
-            title : stage.stage.capitalize() + ' View',
-            content : $('<div />')
-            .append($('<div />').html(stage.description))
-            .html(),
-            html : true,
-            placement : 'top',
-            trigger : 'hover'
-        })
+        CONFIG.tempSession.setStageConfig({
+            config : config
+        });
         
-        $('#'+stage.stage+' [href="#'+stage.stage+'-manage-tab"]').popover({
-            title : stage.stage.capitalize() + ' Manage',
+        me.work_stages_objects.each(function(stage) {
+            $('#nav-list a[href="#'+stage.stage+'"]').popover({
+                title : stage.stage.capitalize(),
+                content : $('<div />')
+                .append($('<div />').html(stage.description))
+                .html(),
+                html : true,
+                placement : 'right',
+                trigger : 'hover',
+                delay : {
+                    show : popupHoverDelay
+                }
+            })
+        
+            $('#'+stage.stage+' [href="#'+stage.stage+'-view-tab"]').popover({
+                title : stage.stage.capitalize() + ' View',
+                content : $('<div />')
+                .append($('<div />').html(stage.description))
+                .html(),
+                html : true,
+                placement : 'top',
+                trigger : 'hover',
+                delay : {
+                    show : popupHoverDelay
+                }
+            })
+        
+            $('#'+stage.stage+' [href="#'+stage.stage+'-manage-tab"]').popover({
+                title : stage.stage.capitalize() + ' Manage',
+                content : $('<div />')
+                .append($('<div />').html(stage.description))
+                .html(),
+                html : true,
+                placement : 'top',
+                trigger : 'hover',
+                delay : {
+                    show : popupHoverDelay
+                }
+            })
+        })
+    
+        $('#map-well').popover({
+            title : 'Map',
             content : $('<div />')
-            .append($('<div />').html(stage.description))
+            .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium'))
             .html(),
             html : true,
-            placement : 'top',
-            trigger : 'hover'
+            placement : 'left',
+            trigger : 'hover',
+            delay : {
+                show : popupHoverDelay
+            }
         })
-    })
     
-    $('#map-well').popover({
-        title : 'Map',
-        content : $('<div />')
-        .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium'))
-        .html(),
-        html : true,
-        placement : 'left',
-        trigger : 'hover'
-    })
-    
-    $('.feature-list').popover({
-        title : 'Layer Selection',
-        content : $('<div />')
-        .append($('<div />').css({
-            'color': '#661111',
-            'text-shadow' : '0px 0px 1px #ffffff',
-            'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
-        }).html('Published (read-only)'))
-        .append($('<div />').css({
-            'color' : '#116611',
-            'text-shadow' : '0px 0px 1px #ffffff',
-            'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
-        }).html('Yours'))
-        .html(),
-        html : true,
-        placement : 'bottom',
-        trigger : 'hover'
-    })
+        $('.feature-list').popover({
+            title : 'Layer Selection',
+            content : $('<div />')
+            .append($('<div />').css({
+                'color': '#661111',
+                'text-shadow' : '0px 0px 1px #ffffff',
+                'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
+            }).html('Published (read-only)'))
+            .append($('<div />').css({
+                'color' : '#116611',
+                'text-shadow' : '0px 0px 1px #ffffff',
+                'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
+            }).html('Yours'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : popupHoverDelay
+            }
+        })
+    }
     
     $('.nav-stacked>li>a').each(function(indexInArray, valueOfElement) { 
         $(valueOfElement).on('click', function() {
@@ -90,7 +116,7 @@ var UI = function() {
     
     return $.extend(me, {
         displayStage : function(caller) {
-          $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click')  
+            $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click')  
         },
         createModalWindow : function(args) {
             var headerHtml = args.headerHtml || '';
@@ -140,6 +166,60 @@ var UI = function() {
                 }
             }
         },
+        baselineEditFormButtonToggle : function($el, status, e) {
+            var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+            var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
+            var id = $el.parent().attr('id');
+                        
+            LOG.debug('UI.js::initializeBaselineEditForm: Edit control is being deactivated. Will get reactivated after initialization');
+                        
+            if (modifyControl.active) {
+                modifyControl.deactivate();
+            }
+            if (status) {
+                if (id != 'toggle-aspect-ratio-checkbox') {
+                    $('.baseline-edit-toggle:not(#'+id+')').toggleButtons('setState', false);
+                }
+                        
+                modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+                            
+                switch(id) {
+                    case 'toggle-create-vertex-checkbox': {
+                        modifyControl.mode.createVertices = true;
+                        break;
+                    }
+                    case 'toggle-allow-rotation-checkbox': {
+                        modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
+                        modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                        break;
+                    }
+                    case 'toggle-allow-dragging-checkbox': {
+                        modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
+                        modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                        break;
+                    }
+                    case 'toggle-allow-resizing-checkbox': {
+                        modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                        if ($('.baseline-edit-toggle#toggle-aspect-ratio-checkbox').toggleButtons('status')) {
+                            modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                        }
+                        break
+                    }
+                    case 'toggle-aspect-ratio-checkbox': {
+                        if ($('.baseline-edit-toggle#toggle-allow-resizing-checkbox').toggleButtons('status')) {
+                            modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                            modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                        }
+                        break;
+                    }
+                }
+                LOG.debug('Found at least one modify option toggled true. Activating modify control.')
+                modifyControl.activate();
+                if (selectControl.layer.selectedFeatures[0]) {
+                    modifyControl.selectFeature(selectControl.layer.selectedFeatures[0]);
+                }
+            }
+        },
         initializeBaselineEditForm : function() {
             LOG.info('UI.js::initializeBaselineEditForm: Initializing Display')
             
@@ -154,62 +234,7 @@ var UI = function() {
             // we won't re-intialize a toggle button (which causes all sorts of issues)
             $('.baseline-edit-toggle:not(.toggle-button)').removeAttr('checked')
             $('.baseline-edit-toggle:not(.toggle-button)').toggleButtons({
-                onChange : function ($el, status, e) {
-                    
-                    var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
-                    var editLayer = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0];
-                    var id = $el.parent().attr('id');
-                        
-                        
-                    LOG.debug('UI.js::initializeBaselineEditForm: Edit control is being deactivated. Will get reactivated after initialization');
-                        
-                    if (modifyControl.active) {
-                        modifyControl.deactivate();
-                    }
-                    if (status) {
-                        if (id != 'toggle-aspect-ratio-checkbox') {
-                            $('.baseline-edit-toggle:not(#'+id+')').toggleButtons('setState', false);
-                        }
-                        
-                        modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
-                            
-                        switch(id) {
-                            case 'toggle-create-vertex-checkbox': {
-                                modifyControl.mode.createVertices = true;
-                                break;
-                            }
-                            case 'toggle-allow-rotation-checkbox': {
-                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
-                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                break;
-                            }
-                            case 'toggle-allow-dragging-checkbox': {
-                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
-                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                break;
-                            }
-                            case 'toggle-allow-resizing-checkbox': {
-                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
-                                if ($('.baseline-edit-toggle#toggle-aspect-ratio-checkbox').toggleButtons('status')) {
-                                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                }
-                                break
-                            }
-                            case 'toggle-aspect-ratio-checkbox': {
-                                if ($('.baseline-edit-toggle#toggle-allow-resizing-checkbox').toggleButtons('status')) {
-                                    modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
-                                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                }
-                                break;
-                            }
-                        }
-                        LOG.debug('Found at least one modify option toggled true. Activating modify control.')
-                        modifyControl.activate();
-                        $(editLayer.features).each(function(i,f) {
-                            modifyControl.selectFeature(f);
-                        })
-                    }
-                }
+                onChange : CONFIG.ui.baselineEditFormButtonToggle
             })
         },
         initializeUploader : function(args) {

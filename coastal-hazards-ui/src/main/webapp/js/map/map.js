@@ -43,6 +43,11 @@ var Map = function() {
         }
     })
     
+    var selectBaselineFeatureControl = new OpenLayers.Control.SelectFeature([], {
+        title : 'baseline-select-control',
+        autoActivate : false
+    })
+    
     wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
             
     me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
@@ -56,6 +61,7 @@ var Map = function() {
     
     me.map.addLayer(drawLayer);
     me.map.addControl(baselineDrawControl);
+    me.map.addControl(selectBaselineFeatureControl);
     me.map.addControl(wmsGetFeatureInfoControl);
     me.map.addControl(new OpenLayers.Control.MousePosition());
     me.map.addControl(new OpenLayers.Control.ScaleLine({

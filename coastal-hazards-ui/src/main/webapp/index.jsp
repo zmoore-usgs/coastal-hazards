@@ -160,7 +160,7 @@
 
                                     <!-- Baseline Editing -->
                                     <div class="row-fluid">
-                                        <div id="baseline-edit-container" class="container-fluid hidden">
+                                        <div id="baseline-edit-container" class="well well-small hidden">
                                             <div class="row-fluid">
                                                 <div class="span3">
                                                     <label for="toggle-create-vertex-checkbox">Create Vertex</label>

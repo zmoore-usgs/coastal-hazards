@@ -115,6 +115,11 @@ var Session = function(name, isPerm) {
                 if (!me.session["current-session"].session.results) {
                     me.session["current-session"].session.results = defaultSession.results;
                 }
+                
+                if (!!me.session["current-session"].session.view) {
+                    me.session["current-session"].session.view = {};
+                    me.session["current-session"].session.view.popups = false;
+                }
             }
         }
     } else {
@@ -138,12 +143,11 @@ var Session = function(name, isPerm) {
         }
         
         me.getStageConfig = function(args) {
-            var name = args.name || 'default';
-            var stage = args.stage;
-            
-            if (!stage) {
-                return null;
+            if (!args) {
+                args = Object.extended();
             }
+            var name = args.name || 'default';
+            var stage = args.stage || 'default';
             
             if (!me.session[stage]) {
                 me.session[stage] = defaultSession[stage];
@@ -158,8 +162,11 @@ var Session = function(name, isPerm) {
         }
         
         me.setStageConfig = function(args) {
-            var config = args.config;
-            var stage = args.stage;
+            if (!args) {
+                args = Object.extended();
+            }
+            var config = args.config || 'default';
+            var stage = args.stage || 'default';
             me.session[stage][config.name] = config;
             me.persistCurrentSession();
             return me.session[stage][config.name];
