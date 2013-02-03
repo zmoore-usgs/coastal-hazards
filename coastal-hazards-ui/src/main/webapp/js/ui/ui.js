@@ -236,6 +236,27 @@ var UI = function() {
             $('.baseline-edit-toggle:not(.toggle-button)').toggleButtons({
                 onChange : CONFIG.ui.baselineEditFormButtonToggle
             })
+            
+            if (!$('#toggle-direction-checkbox').hasClass('toggle-button')) {
+                $('#toggle-direction-checkbox').toggleButtons({
+                    label: {
+                        enabled: "SEAWARD",
+                        disabled: "SHOREWARD"
+                    },
+                    width: 200,
+                    onChange : function($el, status, e) {
+                        var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
+                        var selectedFeature = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.find(function(n){ return n.id == selectControl.layer.selectedFeatures[0].id })
+                        if (status) {
+                            selectedFeature.attributes.Orient = 'seaward';
+                            selectedFeature.state = OpenLayers.State.UPDATE;
+                        } else {
+                            selectedFeature.attributes.Orient = 'shoreward';
+                            selectedFeature.state = OpenLayers.State.UPDATE;
+                        }
+                    }
+                })
+            }
         },
         initializeUploader : function(args) {
             LOG.info('UI.js::initializeUploader: Initializing uploader for the '  + context + ' context');

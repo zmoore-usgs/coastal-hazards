@@ -201,13 +201,18 @@ var Baseline = {
                 modifyControl.selectFeature(feature);
                 modifyControl.activate();
                 modifyControl.deactivate();
-               
+                if (feature.attributes.Orient == 'seaward') {
+                    $('#toggle-direction-checkbox').toggleButtons('setState', true, true);
+                } else {
+                    $('#toggle-direction-checkbox').toggleButtons('setState', false, true);
+                }
             }
             selectControl.onUnselect = function(feature) {
                 CONFIG.ui.initializeBaselineEditForm();
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
                 modifyControl.unselectFeature(feature);
                 $('.baseline-edit-toggle').toggleButtons('setState', false);
+                $('#toggle-direction-checkbox').toggleButtons('setState', false, true);
             }
             selectControl.setLayer(clonedLayer);
             selectControl.activate();
