@@ -124,7 +124,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
 //            }
             SimpleFeatureCollection shorelineCollection = (SimpleFeatureCollection) shorelines;
             SimpleFeatureCollection transectCollection = (SimpleFeatureCollection) transects;
-            this.utmCrs = UTMFinder.findUTMZoneForFeatureCollection(shorelineCollection);
+            this.utmCrs = UTMFinder.findUTMZoneCRSForCentroid(shorelineCollection);
             if (this.utmCrs == null) {
                 throw new IllegalStateException("Must have usable UTM zone to continue");
             }

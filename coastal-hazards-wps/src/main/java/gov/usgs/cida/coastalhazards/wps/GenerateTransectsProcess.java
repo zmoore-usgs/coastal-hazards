@@ -117,7 +117,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             if (!CRS.equalsIgnoreMetadata(baselineCrs, REQUIRED_CRS_WGS84)) {
                 throw new UnsupportedCoordinateReferenceSystemException("Baseline is not in accepted projection");
             }
-            this.utmCrs = UTMFinder.findUTMZoneForFeatureCollection((SimpleFeatureCollection)shorelineFeatureCollection);
+            this.utmCrs = UTMFinder.findUTMZoneCRSForCentroid((SimpleFeatureCollection)shorelineFeatureCollection);
             if (this.utmCrs == null) {
                 throw new IllegalStateException("Must have usable UTM zone to continue");
             }
