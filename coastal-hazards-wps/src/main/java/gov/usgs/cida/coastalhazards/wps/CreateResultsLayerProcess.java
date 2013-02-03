@@ -77,6 +77,7 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 
 /**
  *
@@ -132,11 +133,13 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
             List<SimpleFeature> joinedFeatures = joinResultsToTransects(columnHeaders, resultMap, transects);
             CoordinateReferenceSystem utmZone = null;
             try {
-                utmZone = UTMFinder.findUTMZoneForFeatureCollection((SimpleFeatureCollection)transects);
+                utmZone = UTMFinder.findUTMZoneCRSForCentroid((SimpleFeatureCollection)transects);
             } catch (NoSuchAuthorityCodeException ex) {
-                throw new UnsupportedCoordinateReferenceSystemException("Could not find utm zone");
+                throw new UnsupportedCoordinateReferenceSystemException("Could not find utm zone", ex);
             } catch (FactoryException ex) {
-                throw new UnsupportedCoordinateReferenceSystemException("Could not find utm zone");
+                throw new UnsupportedCoordinateReferenceSystemException("Could not find utm zone", ex);
+            } catch (TransformException ex) {
+                throw new UnsupportedCoordinateReferenceSystemException("Could not find utm zone", ex);
             }
             SimpleFeatureCollection collection = DataUtilities.collection(joinedFeatures);
             String imported = importer.importLayer(collection, workspace, store, layer, utmZone, ProjectionPolicy.REPROJECT_TO_DECLARED);
