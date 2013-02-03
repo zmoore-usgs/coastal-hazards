@@ -145,6 +145,7 @@ var Baseline = {
         var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
                 
         if (toggledOn) {
+            
             LOG.debug('Baseline.js::editButtonToggled: Edit form to be displayed');
             
             Baseline.disableDrawButton();
@@ -153,6 +154,7 @@ var Baseline = {
             renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
                     
             LOG.debug('Baseline.js::editButtonToggled: Attempting to clone current active baseline layer into an edit layer');
+            
             var originalLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0].clone();
             var clonedLayer = new OpenLayers.Layer.Vector('baseline-edit-layer',{
                 strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
@@ -165,15 +167,14 @@ var Baseline = {
                 }),
                 cloneOf : originalLayer.name
             })
-            
             clonedLayer.addFeatures(originalLayer.features);
-                    
             var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, 
             {
                 id : 'baseline-edit-control',
-                deleteCodes : [8, 46, 48]
+                deleteCodes : [8, 46, 48],
+                standalone : true
             })
-                    
+            
             LOG.debug('Baseline.js::editButtonToggled: Removing previous cloned layer from map, if any');
             CONFIG.map.removeLayerByName('baseline-edit-layer');
             
@@ -191,6 +192,25 @@ var Baseline = {
             $("#baseline-edit-container").removeClass('hidden');
             
             CONFIG.ui.initializeBaselineEditForm();
+            
+            var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
+            selectControl.deactivate();
+            selectControl.onSelect = function(feature) {
+                $('.baseline-edit-toggle').toggleButtons('setState', false);
+                var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+                modifyControl.selectFeature(feature);
+                modifyControl.activate();
+                modifyControl.deactivate();
+               
+            }
+            selectControl.onUnselect = function(feature) {
+                CONFIG.ui.initializeBaselineEditForm();
+                var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+                modifyControl.unselectFeature(feature);
+                $('.baseline-edit-toggle').toggleButtons('setState', false);
+            }
+            selectControl.setLayer(clonedLayer);
+            selectControl.activate();
         } else {
             // remove edit layer, remove edit control
             CONFIG.map.removeLayerByName('baseline-edit-layer');

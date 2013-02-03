@@ -80,9 +80,9 @@ var UI = function() {
             html : true,
             placement : 'left',
             trigger : 'hover',
-                delay : {
-                    show : popupHoverDelay
-                }
+            delay : {
+                show : popupHoverDelay
+            }
         })
     
         $('.feature-list').popover({
@@ -102,9 +102,9 @@ var UI = function() {
             html : true,
             placement : 'bottom',
             trigger : 'hover',
-                delay : {
-                    show : popupHoverDelay
-                }
+            delay : {
+                show : popupHoverDelay
+            }
         })
     }
     
@@ -166,6 +166,60 @@ var UI = function() {
                 }
             }
         },
+        baselineEditFormButtonToggle : function($el, status, e) {
+            var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+            var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
+            var id = $el.parent().attr('id');
+                        
+            LOG.debug('UI.js::initializeBaselineEditForm: Edit control is being deactivated. Will get reactivated after initialization');
+                        
+            if (modifyControl.active) {
+                modifyControl.deactivate();
+            }
+            if (status) {
+                if (id != 'toggle-aspect-ratio-checkbox') {
+                    $('.baseline-edit-toggle:not(#'+id+')').toggleButtons('setState', false);
+                }
+                        
+                modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+                            
+                switch(id) {
+                    case 'toggle-create-vertex-checkbox': {
+                        modifyControl.mode.createVertices = true;
+                        break;
+                    }
+                    case 'toggle-allow-rotation-checkbox': {
+                        modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
+                        modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                        break;
+                    }
+                    case 'toggle-allow-dragging-checkbox': {
+                        modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
+                        modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                        break;
+                    }
+                    case 'toggle-allow-resizing-checkbox': {
+                        modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                        if ($('.baseline-edit-toggle#toggle-aspect-ratio-checkbox').toggleButtons('status')) {
+                            modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                        }
+                        break
+                    }
+                    case 'toggle-aspect-ratio-checkbox': {
+                        if ($('.baseline-edit-toggle#toggle-allow-resizing-checkbox').toggleButtons('status')) {
+                            modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                            modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                        }
+                        break;
+                    }
+                }
+                LOG.debug('Found at least one modify option toggled true. Activating modify control.')
+                modifyControl.activate();
+                if (selectControl.layer.selectedFeatures[0]) {
+                    modifyControl.selectFeature(selectControl.layer.selectedFeatures[0]);
+                }
+            }
+        },
         initializeBaselineEditForm : function() {
             LOG.info('UI.js::initializeBaselineEditForm: Initializing Display')
             
@@ -180,62 +234,7 @@ var UI = function() {
             // we won't re-intialize a toggle button (which causes all sorts of issues)
             $('.baseline-edit-toggle:not(.toggle-button)').removeAttr('checked')
             $('.baseline-edit-toggle:not(.toggle-button)').toggleButtons({
-                onChange : function ($el, status, e) {
-                    
-                    var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
-                    var editLayer = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0];
-                    var id = $el.parent().attr('id');
-                        
-                        
-                    LOG.debug('UI.js::initializeBaselineEditForm: Edit control is being deactivated. Will get reactivated after initialization');
-                        
-                    if (modifyControl.active) {
-                        modifyControl.deactivate();
-                    }
-                    if (status) {
-                        if (id != 'toggle-aspect-ratio-checkbox') {
-                            $('.baseline-edit-toggle:not(#'+id+')').toggleButtons('setState', false);
-                        }
-                        
-                        modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
-                            
-                        switch(id) {
-                            case 'toggle-create-vertex-checkbox': {
-                                modifyControl.mode.createVertices = true;
-                                break;
-                            }
-                            case 'toggle-allow-rotation-checkbox': {
-                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
-                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                break;
-                            }
-                            case 'toggle-allow-dragging-checkbox': {
-                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
-                                modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                break;
-                            }
-                            case 'toggle-allow-resizing-checkbox': {
-                                modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
-                                if ($('.baseline-edit-toggle#toggle-aspect-ratio-checkbox').toggleButtons('status')) {
-                                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                }
-                                break
-                            }
-                            case 'toggle-aspect-ratio-checkbox': {
-                                if ($('.baseline-edit-toggle#toggle-allow-resizing-checkbox').toggleButtons('status')) {
-                                    modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
-                                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
-                                }
-                                break;
-                            }
-                        }
-                        LOG.debug('Found at least one modify option toggled true. Activating modify control.')
-                        modifyControl.activate();
-                        $(editLayer.features).each(function(i,f) {
-                            modifyControl.selectFeature(f);
-                        })
-                    }
-                }
+                onChange : CONFIG.ui.baselineEditFormButtonToggle
             })
         },
         initializeUploader : function(args) {
