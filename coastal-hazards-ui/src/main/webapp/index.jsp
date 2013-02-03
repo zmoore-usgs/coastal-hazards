@@ -44,9 +44,13 @@
             <div id="application-overlay-content">
                 <h1><div>Coastal Hazards</div></h1>
                 <img id="application-overlay-banner" src="images/banner/banner.jpg"/>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                The Digital Shoreline Analysis System (DSAS) version 4.3 is a software 
+                extension to ESRI ArcGIS v.10 that enables a user to calculate shoreline 
+                rate-of-change statistics from multiple historic shoreline positions. 
                 <br /><br />
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                A user-friendly interface of simple buttons and menus guides the user through the major steps of shoreline change analysis.
+                <br /><br />
+                The Coastal Hazards portal is a convenient, web-based translation of the DSAS analysis tool.
                 <div style="text-align:center;"><img src="images/spinner/spinner3.gif" /></div>
             </div>
 
