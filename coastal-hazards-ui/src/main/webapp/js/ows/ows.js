@@ -66,7 +66,8 @@ var OWS = function(endpoint) {
                             wmsCapabilities : getCapsResponse,
                             data : data, 
                             textStatus : textStatus,
-                            jqXHR : jqXHR
+                            jqXHR : jqXHR,
+                            context : args
                         });
                     })
                 },
