@@ -206,14 +206,18 @@ public class ResultsRasterProcess implements GeoServerProcess {
             }
         }
 
-        private void setBounds(SimpleFeatureCollection features, Envelope requestBounds) throws TransformException {
+        private void setBounds(SimpleFeatureCollection features, ReferencedEnvelope requestBounds) throws TransformException {
 
             ReferencedEnvelope featureBounds = features.getBounds();
+            if (featureBounds.getCoordinateReferenceSystem() == null) {
+                // bug in GeoTools where ReprojectFeatureStore.getBounds() doesn't include CRS
+                featureBounds = new ReferencedEnvelope(featureBounds, features.getSchema().getCoordinateReferenceSystem());
+            }
             if (requestBounds == null) {
                 requestBounds = featureBounds;
             }
             
-            extent = new ReferencedEnvelope(requestBounds);
+            extent = requestBounds;
 
             CoordinateReferenceSystem featuresCRS = featureBounds.getCoordinateReferenceSystem();
             CoordinateReferenceSystem requestCRS = requestBounds.getCoordinateReferenceSystem();
@@ -282,7 +286,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
                     graphics.fillRect(coordGridX[0], coordGridY[0], 1, 1);
                     break;
                 default:
-                // TODO:  Log!
+                    // nothing to do...
             }
         }
 
