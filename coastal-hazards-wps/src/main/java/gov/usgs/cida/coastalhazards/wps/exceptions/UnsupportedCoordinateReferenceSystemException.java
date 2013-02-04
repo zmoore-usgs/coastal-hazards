@@ -6,12 +6,12 @@ package gov.usgs.cida.coastalhazards.wps.exceptions;
  */
 public class UnsupportedCoordinateReferenceSystemException extends RuntimeException {
 
-    public UnsupportedCoordinateReferenceSystemException() {
-        super();
-    }
-
     public UnsupportedCoordinateReferenceSystemException(String message) {
         super(message);
+    }
+
+    public UnsupportedCoordinateReferenceSystemException(String message, Throwable cause) {
+        super(message, cause);
     }
     
 }

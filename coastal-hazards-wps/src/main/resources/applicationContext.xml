@@ -13,5 +13,7 @@
         <constructor-arg index="0" ref="importProcess"/>
         <constructor-arg index="1" ref="catalog"/>
     </bean>
+    <bean id="utmZoneCount" class="gov.usgs.cida.coastalhazards.wps.UTMZoneCountProcess" />
+    <bean id="resultsRaster" class="gov.usgs.cida.coastalhazards.wps.ResultsRasterProcess" />
     <bean id="plainTextPPIO" class="gov.usgs.cida.coastalhazards.wps.ppio.PlainTextPPIO" />
 </beans>

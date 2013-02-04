@@ -19,7 +19,11 @@
             <groupId>it.geosolutions</groupId>
             <artifactId>geoserver-manager</artifactId>
         </dependency>
-        
+
+		<dependency>
+			<groupId>gov.usgs.cida</groupId>
+			<artifactId>tomcat-filters</artifactId>
+		</dependency>
         <dependency>
             <artifactId>proxy-utils</artifactId>
             <groupId>gov.usgs.cida</groupId>
