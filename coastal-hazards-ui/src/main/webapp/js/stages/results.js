@@ -1,7 +1,7 @@
 var Results = {
     stage : 'results',
     
-    viewableResultsColumns : ['LRR','LR2','LSE','LCI90',"LCI_2.5",'LCI_97.5','WCI_2.5','WCI_97.5','WLR'],
+    viewableResultsColumns : ['LRR','LR2','LSE','LCI90',"LCI_2.5",'LCI_97.5','WCI_2.5','WCI_97.5','WLR','NSC','EPR'],
     
     suffixes : ['_rates','_results','_clip','_lt'],
     
