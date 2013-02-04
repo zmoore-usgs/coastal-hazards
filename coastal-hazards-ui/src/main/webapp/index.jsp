@@ -44,9 +44,13 @@
             <div id="application-overlay-content">
                 <h1><div>Coastal Hazards</div></h1>
                 <img id="application-overlay-banner" src="images/banner/banner.jpg"/>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                This web-based Digital Shoreline Analysis System (DSASweb) is a software application that enables a user to calculate shoreline rate-of-change statistics from multiple historical shoreline positions.
                 <br /><br />
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                A user-friendly interface of simple buttons and menus guides the user through the major steps of shoreline change analysis.
+                <br /><br />
+                You can use our current database of shorelines, or upload your own.
+                <br /><br />
+                DSASweb is a convenient, web-based version of the original USGS DSAS analysis tool.
                 <div style="text-align:center;"><img src="images/spinner/spinner3.gif" /></div>
             </div>
 
