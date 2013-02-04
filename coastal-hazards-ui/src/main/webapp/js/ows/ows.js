@@ -42,6 +42,47 @@ var OWS = function(endpoint) {
                 }
             });
         },
+        getUTMZoneCount : function(args) {
+            var layerPrefix = args.layerPrefix;
+            var layerName = args.layerName;
+            var layerFullName = layerPrefix + ':' + layerName;
+            var callbacks = args.callbacks || [];
+            var context = args.context || this;
+            var identifier = 'gs:UTMZoneCount';
+            if (!layerPrefix || !layerName) {
+                return;
+            }
+            
+            var request = '<?xml version="1.0" encoding="UTF-8"?>' +
+            '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' +
+            '<ows:Identifier>'+identifier+'</ows:Identifier>' + 
+            '<wps:DataInputs>' + 
+            '<wps:Input>' + 
+            '<ows:Identifier>features</ows:Identifier>' + 
+            '<wps:Reference mimeType="text/xml" xlink:href="http://geoserver/wfs" method="POST">' + 
+            '<wps:Body>' + 
+            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+layerPrefix+'="gov.usgs.cida.ch.'+layerPrefix+'">' + 
+            '<wfs:Query typeName="' + layerFullName + '"/>' + 
+            '</wfs:GetFeature>' + 
+            '</wps:Body>' +
+            '</wps:Reference>' + 
+            '</wps:Input>' + 
+            '</wps:DataInputs>' + 
+            '<wps:ResponseForm>' + 
+            '<wps:RawDataOutput>' + 
+            '<ows:Identifier>count</ows:Identifier>' + 
+            '</wps:RawDataOutput>' + 
+            '</wps:ResponseForm>' + 
+            '</wps:Execute>';
+        
+            CONFIG.ows.executeWPSProcess({
+                processIdentifier : identifier,
+                request : request,
+                callbacks : callbacks,
+                context : context
+            })
+          
+        },
         getWMSCapabilities : function(args) {
             LOG.info('OWS.js::getWMSCapabilities');
             var namespace = args.namespace || 'ows'
@@ -264,6 +305,8 @@ var OWS = function(endpoint) {
             var processUrl = this.wpsExecuteRequestPostUrl + '&' + processIdentifier;
             var request = args.request;
             var callbacks = args.callbacks || [];
+            var successCallbacks = args.callbacks.success ? args.callbacks.success : callbacks;
+            var errorCallbacks = args.callbacks.error ? args.callbacks.error : callbcaks;
             var context = args.context || this;
             
             $.ajax({
@@ -273,12 +316,12 @@ var OWS = function(endpoint) {
                 data: request,
                 context : context || this,
                 success: function(data, textStatus, jqXHR) {
-                    callbacks.each(function(callback) {
+                    successCallbacks.each(function(callback) {
                         callback(data, textStatus, jqXHR, this);
                     })
                 },
                 error: function(data, textStatus, jqXHR) {
-                    callbacks.each(function(callback) {
+                    errorCallbacks.each(function(callback) {
                         callback(data, textStatus, jqXHR, this);
                     })
                 }

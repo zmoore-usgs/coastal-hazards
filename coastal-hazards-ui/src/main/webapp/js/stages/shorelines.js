@@ -15,18 +15,50 @@ var Shorelines = {
         LOG.info('Shorelines.js::addShorelines: Adding ' + layers.length + ' shoreline layers to map'); 
         $(layers).each(function(index,layer) {
             LOG.info('Shorelines.js::addShorelines: Attempting to add shoreline layer ' + layer.title + ' to the map'); 
-            CONFIG.ows.getDescribeFeatureType({
-                layerNS : layer.prefix,
+            var addToMap = function(data, textStatus, jqXHR) {
+                CONFIG.ows.getDescribeFeatureType({
+                    layerNS : layer.prefix,
+                    layerName : layer.name,
+                    callbacks : [
+                    function(describeFeaturetypeRespone) {
+                        Shorelines.addLayerToMap({
+                            layer : layer,
+                            describeFeaturetypeRespone : describeFeaturetypeRespone
+                        })
+                    }
+                    ]
+                })
+            }
+            
+            // TODO - persist UTM count for the layer we call instead of calling 
+            // this function every time
+            CONFIG.ows.getUTMZoneCount({
+                layerPrefix : layer.prefix,
                 layerName : layer.name,
-                callbacks : [
-                function(describeFeaturetypeRespone) {
-                    Shorelines.addLayerToMap({
-                        layer : layer,
-                        describeFeaturetypeRespone : describeFeaturetypeRespone
-                    })
+                callbacks : {
+                    success : [
+                    function(data) {
+                        LOG.debug('UTM Count:' + data);
+                        if (data > 1) {
+                            CONFIG.ui.showAlert({
+                                message : 'Shoreline spans ' + data + ' UTM zones',
+                                caller : Shorelines,
+                                displayTime : 5000
+                            })
+                        }
+                    },
+                    addToMap
+                    ],
+                    error : [
+                    function(data) {
+                        LOG.warn('Could not retrieve UTM count for this resource');
+                    },
+                    addToMap
+                    ]
                 }
-                ]
+                
             })
+           
         })
     },
     
