@@ -13,6 +13,11 @@
     
     <name>Coastal Hazards WPS Processes</name>
 
+	<properties>
+		<gs.version>2.2.3</gs.version>
+		<gt.version>8.5</gt.version>
+	</properties>
+
     <repositories>
         <repository>
             <id>cida-thirdparty</id>
@@ -37,14 +42,14 @@
 			<dependency>
 				<groupId>org.geoserver</groupId>
 				<artifactId>geoserver</artifactId>
-				<version>2.2.2</version>
+				<version>${gs.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>geotools</artifactId>
-				<version>8.4</version>
+				<version>${gt.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -59,7 +64,7 @@
         <dependency>
             <groupId>org.geoserver.extension</groupId>
             <artifactId>wps-core</artifactId>
-			<version>2.2.2</version>
+			<version>${gs.version}</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
