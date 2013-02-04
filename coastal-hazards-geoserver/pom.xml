@@ -12,6 +12,11 @@
 
     <name>Coastal Hazards Geoserver</name>
 
+	<properties>
+		<gs.version>2.2.3</gs.version>
+		<gt.version>8.5</gt.version>
+	</properties>
+
     <repositories>
         <repository>
             <id>cida-thirdparty</id>
@@ -36,7 +41,14 @@
 			<dependency>
 				<groupId>org.geoserver</groupId>
 				<artifactId>geoserver</artifactId>
-				<version>2.2.2</version>
+				<version>${gs.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.geotools</groupId>
+				<artifactId>geotools</artifactId>
+				<version>${gt.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -56,7 +68,7 @@
         <dependency>
             <groupId>gov.usgs.cida.geoserver</groupId>
             <artifactId>geoserver</artifactId>
-            <version>2.2.2-1</version>
+            <version>${gs.version}-1</version>
             <type>war</type>
         </dependency>
     </dependencies>
