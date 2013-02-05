@@ -160,6 +160,7 @@ var Baseline = {
                 
         if (toggledOn) {
             
+            
             LOG.debug('Baseline.js::editButtonToggled: Edit form to be displayed');
             
             Baseline.disableDrawButton();
@@ -339,10 +340,41 @@ var Baseline = {
         LOG.debug('Baseline.js::drawButtonToggled: User wishes to ' + beginDrawing ? 'begin' : 'stop' + 'drawing');
         
         if (beginDrawing) {
+            var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
+                strategies : [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
+                projection: new OpenLayers.Projection('EPSG:900913'),
+                protocol: new OpenLayers.Protocol.WFS({
+                    version: "1.1.0",
+                    url: "geoserver/ows",
+                    featureNS :  CONFIG.tempSession.getCurrentSessionKey(),
+                    maxExtent: me.map.getExtent(),
+                    featureType: "featureType",
+                    geometryName: "the_geom",
+                    schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + CONFIG.tempSession.getCurrentSessionKey() + ":featureType"
+                }),
+                onFeatureInsert : function(feature) {
+                    feature.attributes['Orient'] = 'seaward';
+                }
+            });
+
+            var baselineDrawControl = new OpenLayers.Control.DrawFeature(
+                drawLayer,
+                OpenLayers.Handler.Path,
+                {
+                    id: 'baseline-draw-control',
+                    multi: true
+                });
+            CONFIG.map.getMap().addLayer(drawLayer);
+            CONFIG.map.getMap().map.addControl(baselineDrawControl);
             Baseline.getDrawControl().activate();
             Baseline.disableEditButton();
             Baseline.beginDrawing();
         } else {
+            CONFIG.map.removeControl({
+                id : 'baseline-draw-control'
+            });
+            
+            CONFIG.map.removeLayerByName('baseline-draw-layer');
             Baseline.getDrawControl().deactivate();
             Baseline.enableEditButton();
             Baseline.stopDrawing();

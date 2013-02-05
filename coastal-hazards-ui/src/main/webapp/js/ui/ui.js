@@ -17,6 +17,7 @@ var UI = function() {
     $('#results-form-name').val(Util.getRandomLorem());
     $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
     $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
+    $('#transect-edit-form-toggle').on('click', Transects.editButtonToggled);
     $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
     $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
     $("#create-intersections-btn").on("click", Calculation.createIntersectionSubmit);
