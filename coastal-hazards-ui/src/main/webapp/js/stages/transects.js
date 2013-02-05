@@ -51,12 +51,15 @@ var Transects = {
             
             var clonedLayer = new OpenLayers.Layer.Vector('transects-edit-layer',{
                 strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
+                projection: new OpenLayers.Projection('EPSG:900913'),
                 protocol: new OpenLayers.Protocol.WFS({
+                    version: "1.1.0",
                     url:  "geoserver/"+originalLayer.name.split(':')[0]+"/wfs",
                     featureType: originalLayer.name.split(':')[1],
                     featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
                     geometryName: "the_geom",
-                    schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + originalLayer.name
+                    schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + originalLayer.name,
+                     srsName: CONFIG.map.getMap().getProjection()
                 }),
                 cloneOf : originalLayer.name,
                 renderers: CONFIG.map.getRenderer()
