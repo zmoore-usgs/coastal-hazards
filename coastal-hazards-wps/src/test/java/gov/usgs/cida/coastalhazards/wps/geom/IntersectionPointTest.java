@@ -62,5 +62,9 @@ public class IntersectionPointTest {
     public void testConvertToYYYYMMDD() throws ParseException {
         String converted = IntersectionPoint.convertToYYYYMMDD("04/10/1999");
         assertEquals(converted, "1999-04-10");
+        converted = IntersectionPoint.convertToYYYYMMDD("10/03/1856");
+        assertEquals(converted, "1856-10-03");
+        converted = IntersectionPoint.convertToYYYYMMDD("07/01/1839");
+        assertEquals(converted, "1839-07-01");
     }
 }

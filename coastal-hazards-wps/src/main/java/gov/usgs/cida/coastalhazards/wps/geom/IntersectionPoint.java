@@ -77,8 +77,8 @@ public class IntersectionPoint {
      * Helper function to convert from mm/dd/yyy to yyyy-mm-dd
      */
     protected static String convertToYYYYMMDD(String t) throws ParseException {
-        DateTime dateObj = new DateTime(new SimpleDateFormat("mm/dd/yyyy").parse(t));
-        String outDate = dateObj.toString("yyyy-mm-dd");
+        DateTime dateObj = new DateTime(new SimpleDateFormat("MM/dd/yyyy").parse(t));
+        String outDate = dateObj.toString("yyyy-MM-dd");
         return outDate;
     }
 
