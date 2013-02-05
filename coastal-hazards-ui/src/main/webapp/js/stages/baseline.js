@@ -56,8 +56,7 @@ var Baseline = {
     addBaselineToMap : function(args) {
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
         
-        var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
-        renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
+        
         
         var style = new OpenLayers.Style({
             strokeColor: '#FFFFFF',
@@ -110,7 +109,7 @@ var Baseline = {
                 featureType: args.name.split(':')[1],
                 geometryName: "the_geom"
             }),
-            renderers: renderer,
+            renderers: CONFIG.map.getRenderer(),
             styleMap: new OpenLayers.StyleMap(style)
         });
         

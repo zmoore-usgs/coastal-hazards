@@ -67,6 +67,11 @@ var Map = function() {
             }
             
             return clonedLayer;
+        },
+        getRenderer : function() {
+            var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
+            renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
+            return renderer;
         }
     });
 }

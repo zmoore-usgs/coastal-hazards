@@ -8,22 +8,90 @@ var Transects = {
         $('#transect-edit-form-toggle').on('click', Transects.editButtonToggled);
         $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
         $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
+        
         Transects.initializeUploader();  
         
-        CONFIG.map.getMap().addControl(new OpenLayers.Control.SelectFeature([], {
+        CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
             title : 'transects-select-control',
-            autoActivate : false
+            autoActivate : false,
+            onSelect : function(feature) {
+                LOG.debug('Transects.js::SelectFeature.onSelect(): A feature was selected');
+                var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
+                modifyControl.selectFeature(feature);
+            },
+            onUnselect : function(feature) {
+                LOG.debug('Transects.js::SelectFeature.onSelect(): A feature was unselected');
+                CONFIG.ui.initializeBaselineEditForm();
+                var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
+                modifyControl.unselectFeature(feature);
+            }
         }));
         
     },
     
     leaveStage : function() {
-        
+        if ($('#transect-edit-form-toggle').hasClass('active')) {
+            $('#transect-edit-form-toggle').trigger('click');
+        }
     },
     enterStage : function() {
         
     },
     
+    editButtonToggled : function(event) {
+        LOG.info('Transects.js::editButtonToggled');
+        
+        var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
+        if (toggledOn) {
+            LOG.debug('Transects.js::editButtonToggled: Edit form to be displayed');
+            
+            LOG.debug('Transects.js::editButtonToggled: Attempting to clone current active transects layer into an edit layer');
+            
+            var originalLayer = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0].clone();
+            
+            var clonedLayer = new OpenLayers.Layer.Vector('transects-edit-layer',{
+                strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
+                protocol: new OpenLayers.Protocol.WFS({
+                    url:  "geoserver/"+originalLayer.name.split(':')[0]+"/wfs",
+                    featureType: originalLayer.name.split(':')[1],
+                    featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
+                    geometryName: "the_geom",
+                    schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + originalLayer.name
+                }),
+                cloneOf : originalLayer.name,
+                renderers: CONFIG.map.getRenderer()
+            })
+            clonedLayer.addFeatures(originalLayer.features);
+            
+            LOG.debug('Transects.js::editButtonToggled: Adding cloned layer to map');
+            CONFIG.map.getMap().addLayer(clonedLayer);
+            
+            LOG.debug('Transects.js::editButtonToggled: Adding clone control to map');
+            CONFIG.map.getMap().addControl(
+                new OpenLayers.Control.ModifyFeature(
+                    clonedLayer, 
+                    {
+                        id : 'transects-edit-control',
+                        deleteCodes : [8, 46, 48],
+                        standalone : true
+                    })
+                );
+            
+            var selectControl = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
+            
+            selectControl.activate();
+            selectControl.setLayer([clonedLayer]);
+            
+            $("#transects-edit-container").removeClass('hidden');
+        } else {
+            $("#transects-edit-container").addClass('hidden');
+            CONFIG.map.removeLayerByName('transects-edit-layer');
+            CONFIG.map.removeControl({
+                id : 'transects-edit-control'
+            });
+            CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
+        }
+    },   
     addTransects : function(args) {
         var transects = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
@@ -236,8 +304,6 @@ var Transects = {
         } else {
             wpsProc();
         }
-        
-        
     },
     createWPSGenerateTransectsRequest : function(args) {
         var shorelines = args.shorelines;
@@ -339,76 +405,7 @@ var Transects = {
         '</wps:Execute>';
         return request;
     },
-    editButtonToggled : function(event) {
-        LOG.debug('Transects.js::editButtonToggled');
-        
-        var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
-        if (toggledOn) {
-            LOG.debug('Transects.js::editButtonToggled: Edit form to be displayed');
-            
-            var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
-            renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
-                    
-            LOG.debug('Transects.js::editButtonToggled: Attempting to clone current active transects layer into an edit layer');
-            var originalLayer = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0].clone();
-            var clonedLayer = new OpenLayers.Layer.Vector('transects-edit-layer',{
-                strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
-                protocol: new OpenLayers.Protocol.WFS({
-                    url:  "geoserver/"+originalLayer.name.split(':')[0]+"/wfs",
-                    featureType: originalLayer.name.split(':')[1],
-                    featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
-                    geometryName: "the_geom",
-                    schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + originalLayer.name
-                }),
-                cloneOf : originalLayer.name
-            })
-            clonedLayer.addFeatures(originalLayer.features);
-            var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, 
-            {
-                id : 'transects-edit-control',
-                deleteCodes : [8, 46, 48],
-                standalone : true
-            })
-            
-            LOG.debug('Transects.js::editButtonToggled: Adding cloned layer to map');
-            CONFIG.map.getMap().addLayer(clonedLayer);
-            
-            LOG.debug('Transects.js::editButtonToggled: Adding clone control to map');
-            CONFIG.map.getMap().addControl(editControl);
-            
-            $("#transects-edit-container").removeClass('hidden');
-            
-            var selectControl = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
-            selectControl.deactivate();
-            selectControl.onSelect = function(feature) {
-                var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
-                modifyControl.selectFeature(feature);
-                modifyControl.activate();
-                modifyControl.deactivate();
-            }
-            selectControl.onUnselect = function(feature) {
-                CONFIG.ui.initializeBaselineEditForm();
-                var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
-                modifyControl.unselectFeature(feature);
-            }
-            selectControl.activate();
-            selectControl.setLayer([clonedLayer]);
-        } else {
-            // remove edit layer, remove edit control
-            CONFIG.map.removeControl({
-                id : 'transects-edit-control'
-            });
-            
-            CONFIG.map.removeControl({
-                id : 'transects-select-control'
-            });
-            
-            CONFIG.map.removeLayerByName('transects-edit-layer');
-            
-            CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0])
-            $("#transects-edit-container").addClass('hidden');
-        }
-    },
+    
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({
             caller : Transects
