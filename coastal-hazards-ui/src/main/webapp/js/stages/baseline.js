@@ -10,6 +10,7 @@ var Baseline = {
         $('#baseline-draw-form-name').val(Util.getRandomLorem());
         $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
         $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
+        $('#baseline-draw-form-name').val(Util.getRandomLorem());
         Baseline.initializeUploader();
         
         var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
@@ -29,14 +30,20 @@ var Baseline = {
             }
         });
 
-        CONFIG.map.getMap().addLayer(drawLayer);
-        CONFIG.map.getMap().addControl(new OpenLayers.Control.DrawFeature(
+        CONFIG.map.addLayer(drawLayer);
+        CONFIG.map.addControl(new OpenLayers.Control.DrawFeature(
             drawLayer,
             OpenLayers.Handler.Path,
             {
                 id: 'baseline-draw-control',
                 multi: true
             }));
+            
+        CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
+            title : 'baseline-select-control',
+            autoActivate : false
+        }));
+        
     },
     addBaselineToMap : function(args) {
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')

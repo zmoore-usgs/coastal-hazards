@@ -7,6 +7,28 @@ var Shorelines = {
     // Dictates what will be displaed in the stage popover
     description : 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     
+    appInit : function() {
+        Shorelines.initializeUploader();
+        
+        var wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
+            title: 'shoreline-identify-control',
+            layers: [],
+            queryVisible: true,
+            output : 'features',
+            drillDown : true,
+            maxFeatures : 1000,
+            infoFormat : 'application/vnd.ogc.gml',
+            vendorParams : {
+                radius : 3
+            }
+        })
+    
+    
+        wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
+        CONFIG.map.addControl(wmsGetFeatureInfoControl);
+        wmsGetFeatureInfoControl.activate();
+    },
+    
     /**
      * Calls DescribeFeatureType against OWS service and tries to add the layer(s) to the map 
      */

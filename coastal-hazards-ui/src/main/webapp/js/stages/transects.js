@@ -4,6 +4,18 @@ var Transects = {
     reservedColor : '#FF0033',
     defaultSpacing : 500,
     description : 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
+    appInit : function() {
+        $('#transect-edit-form-toggle').on('click', Transects.editButtonToggled);
+        $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
+        $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
+        Transects.initializeUploader();  
+        
+        CONFIG.map.getMap().addControl(new OpenLayers.Control.SelectFeature([], {
+            title : 'transects-select-control',
+            autoActivate : false
+        }));
+        
+    },
     addTransects : function(args) {
         var transects = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],

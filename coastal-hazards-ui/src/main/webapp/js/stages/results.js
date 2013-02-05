@@ -9,6 +9,11 @@ var Results = {
     
     description : 'Et harum quidem rerum facilis est et expedita distinctio.',
     
+    appInit : function() {
+        $('#results-form-name').val(Util.getRandomLorem());
+        $("#create-results-btn").on("click", Results.calcResults);
+    },
+    
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
             caller : Results
@@ -239,7 +244,7 @@ var Results = {
         });
             
         CONFIG.map.getMap().addLayer(results);
-//        CONFIG.map.getMap().addLayer(resultsWMS);
+        //        CONFIG.map.getMap().addLayer(resultsWMS);
         CONFIG.map.getMap().addControl(selectFeatureControl);
         selectFeatureControl.activate()
         

@@ -5,31 +5,6 @@ var Map = function() {
         projection : "EPSG:900913"
     });
             
-    var wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
-        title: 'shoreline-identify-control',
-        layers: [],
-        queryVisible: true,
-        output : 'features',
-        drillDown : true,
-        maxFeatures : 1000,
-        infoFormat : 'application/vnd.ogc.gml',
-        vendorParams : {
-            radius : 3
-        }
-    })
-    
-    var selectBaselineFeatureControl = new OpenLayers.Control.SelectFeature([], {
-        title : 'baseline-select-control',
-        autoActivate : false
-    })
-    
-    var selectTransectsFeatureControl = new OpenLayers.Control.SelectFeature([], {
-        title : 'transects-select-control',
-        autoActivate : false
-    })
-    
-    wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
-            
     me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
         "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
         {
@@ -39,21 +14,22 @@ var Map = function() {
         }
         ));
     
-    me.map.addControl(selectBaselineFeatureControl);
-    me.map.addControl(selectTransectsFeatureControl);
-    me.map.addControl(wmsGetFeatureInfoControl);
     me.map.addControl(new OpenLayers.Control.MousePosition());
     me.map.addControl(new OpenLayers.Control.ScaleLine({
         geodesic : true
     }));
-    
-    wmsGetFeatureInfoControl.activate();
     
     me.map.zoomToMaxExtent();
     
     return $.extend(me, {
         getMap : function() {
             return me.map;
+        },
+        addControl : function(control) {
+            me.map.addControl(control);
+        },
+        addLayer : function(layer) {
+            me.map.addLayer(layer);
         },
         removeControl : function(args) {
             LOG.info('Map.js::removeControl: Trying to remove a control from map');
