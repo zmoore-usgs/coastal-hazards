@@ -306,7 +306,7 @@ var OWS = function(endpoint) {
             var request = args.request;
             var callbacks = args.callbacks || [];
             var successCallbacks = args.callbacks.success ? args.callbacks.success : callbacks;
-            var errorCallbacks = args.callbacks.error ? args.callbacks.error : callbcaks;
+            var errorCallbacks = args.callbacks.error ? args.callbacks.error : callbacks;
             var context = args.context || this;
             
             $.ajax({
@@ -421,6 +421,68 @@ var OWS = function(endpoint) {
                 callbacks : args.callbacks || [],
                 context : args.context || this
             })
+        },
+        createResultsRasterSLD : function(args) {
+            var argss = args || {};
+            var attribute = argss.attribute || 'LRR';
+            var layerName = argss.layerName || 'ResultsRaster';
+            var colorMapEntries = argss.colorMapEntries || [];
+            
+            var sld = '<?xml version="1.0" encoding="ISO-8859-1"?>' + 
+            '<StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' + 
+            '<NamedLayer>' + 
+            '<Name>#[layer]</Name>' + 
+            '<UserStyle>' +
+            '<FeatureTypeStyle>' + 
+            '<Transformation>' + 
+            '<ogc:Function name="gs:ResultsRaster">' + 
+            
+            '<ogc:Function name="parameter">' + 
+            '<ogc:Literal>features</ogc:Literal>' +
+            '</ogc:Function>' + 
+            
+            '<ogc:Function name="parameter">' + 
+            '<ogc:Literal>attribute</ogc:Literal>' + 
+            '<ogc:Literal>'+attribute+'</ogc:Literal>' + 
+            '</ogc:Function>' + 
+            
+            '<ogc:Function name="parameter">' + 
+            '<ogc:Literal>bbox</ogc:Literal>' + 
+            '<ogc:Function name="env">' + 
+            '<ogc:Literal>wms_bbox</ogc:Literal>' + 
+            '</ogc:Function>' + 
+            '</ogc:Function>' + 
+            
+            '<ogc:Function name="parameter">' + 
+            '<ogc:Literal>width</ogc:Literal>' + 
+            '<ogc:Function name="env">' + 
+            '<ogc:Literal>wms_width</ogc:Literal>' + 
+            '</ogc:Function>' + 
+            '</ogc:Function>' + 
+            
+            '<ogc:Function name="parameter">' + 
+            '<ogc:Literal>height</ogc:Literal>' + 
+            '<ogc:Function name="env">' + 
+            '<ogc:Literal>wms_height</ogc:Literal>' + 
+            '</ogc:Function>' + 
+            '</ogc:Function>' + 
+            
+            '</ogc:Function>' + 
+            
+            '</Transformation>' + 
+            '<Rule>' + 
+            '<RasterSymbolizer>' + 
+            '<Geometry>' + 
+            '<ogc:PropertyName>the_geom</ogc:PropertyName>' + 
+            '</Geometry>' + 
+            '<Opacity>1</Opacity>' + 
+            '</RasterSymbolizer>' + 
+            '</Rule>' + 
+            '</FeatureTypeStyle>' + 
+            '</UserStyle>' + 
+            '</NamedLayer>' + 
+            '</StyledLayerDescriptor>';
+            return sld.replace('#[layer]', layerName)
         }
     });
 }

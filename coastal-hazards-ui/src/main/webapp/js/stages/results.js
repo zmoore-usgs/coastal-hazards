@@ -163,6 +163,30 @@ var Results = {
     addLayerToMap : function(args) {
         LOG.info('Shorelines.js::addLayerToMap');
         var layer = args.layer;
+        var sldBody = CONFIG.ows.createResultsRasterSLD({
+            layerName : layer.prefix + ':' + layer.name
+        })
+        var resultsWMS = new OpenLayers.Layer.WMS(layer.name,
+            'geoserver/'+layer.prefix+'/wms',
+            {
+                layers : layer.name,
+                transparent : true,
+                sld_body : sldBody
+            },
+            {
+                prefix : layer.prefix,
+                zoomToWhenAdded : true, // Include this layer when performing an aggregated zoom
+                isBaseLayer : false,
+                unsupportedBrowsers: [],
+                tileOptions: {
+                    // http://www.faqs.org/rfcs/rfc2616.html
+                    // This will cause any request larger than this many characters to be a POST
+                    maxGetUrlLength: 2048
+                },
+                ratio: 1,
+                singleTile : true
+            })
+        
         var results = new OpenLayers.Layer.Vector(layer.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
@@ -175,7 +199,7 @@ var Results = {
             }),
             styleMap: new OpenLayers.StyleMap({
                 "default": new OpenLayers.Style({
-                    strokeColor: Transects.reservedColor,
+                    strokeColor: Results.reservedColor,
                     strokeWidth: 2
                 })
             }),
@@ -215,6 +239,7 @@ var Results = {
         });
             
         CONFIG.map.getMap().addLayer(results);
+//        CONFIG.map.getMap().addLayer(resultsWMS);
         CONFIG.map.getMap().addControl(selectFeatureControl);
         selectFeatureControl.activate()
         
