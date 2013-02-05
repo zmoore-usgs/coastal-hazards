@@ -14,6 +14,13 @@ var Results = {
         $("#create-results-btn").on("click", Results.calcResults);
     },
     
+    leaveStage : function() {
+        
+    },
+    enterStage : function() {
+        
+    },
+    
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
             caller : Results

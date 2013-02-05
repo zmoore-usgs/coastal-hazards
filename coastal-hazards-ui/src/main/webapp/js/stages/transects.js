@@ -16,6 +16,14 @@ var Transects = {
         }));
         
     },
+    
+    leaveStage : function() {
+        
+    },
+    enterStage : function() {
+        
+    },
+    
     addTransects : function(args) {
         var transects = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],

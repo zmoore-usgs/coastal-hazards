@@ -26,7 +26,14 @@ var Shorelines = {
     
         wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
         CONFIG.map.addControl(wmsGetFeatureInfoControl);
-        wmsGetFeatureInfoControl.activate();
+        Shorelines.enterStage();
+    },
+    
+    leaveStage : function() {
+        CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control')[0].deactivate();
+    },
+    enterStage : function() {
+        CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control')[0].activate();
     },
     
     /**

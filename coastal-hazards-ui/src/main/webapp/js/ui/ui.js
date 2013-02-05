@@ -111,15 +111,15 @@ var UI = function() {
         })
     }
     
-    $('.nav-stacked>li>a').each(function(indexInArray, valueOfElement) { 
-        $(valueOfElement).on('click', function() {
-            me.switchImage(indexInArray);
+    $('.nav-stacked>li>a').each(function(index, ele) { 
+        $(ele).on('click', function() {
+            me.switchStage(index);
         })
     })
     
     return $.extend(me, {
         displayStage : function(caller) {
-            $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click')  
+            $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click');
         },
         createModalWindow : function(args) {
             var headerHtml = args.headerHtml || '';
@@ -155,8 +155,18 @@ var UI = function() {
             
             $("#modal-window").modal('show');
         },
-        switchImage : function (stage) {
+        switchStage : function (stage) {
             LOG.info('UI.js::switchImage: Changing application context to ' + me.work_stages[stage])
+            
+            var caller = me.work_stages_objects[stage]
+            me.work_stages_objects.filter(function(stage) {
+                return stage != caller
+            }).each(function(stage) {
+                stage.leaveStage();
+            })
+            
+            caller.enterStage();
+            
             for (var stageIndex = 0;stageIndex < me.work_stages.length;stageIndex++) {
                 var workStage = me.work_stages[stageIndex];
                 var imgId = '#' + workStage + '_img';

@@ -45,6 +45,14 @@ var Baseline = {
         }));
         
     },
+    
+    leaveStage : function() {
+        
+    },
+    enterStage : function() {
+        
+    },
+    
     addBaselineToMap : function(args) {
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
         

@@ -8,6 +8,13 @@ var Calculation = {
         $("#create-intersections-btn").on("click", Calculation.createIntersectionSubmit);
     },
     
+    leaveStage : function() {
+        
+    },
+    enterStage : function() {
+        
+    },
+    
     createIntersectionSubmit : function() {
         var visibleShorelines = $('#shorelines-list :selected').map(function(i,v){
             return v.value
