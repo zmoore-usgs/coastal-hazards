@@ -6,6 +6,38 @@ var Baseline = {
     shorewardColor : '#76C5AD',
     
     description : 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
+    appInit : function() {
+        $('#baseline-draw-form-name').val(Util.getRandomLorem());
+        $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
+        $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
+        Baseline.initializeUploader();
+        
+        var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
+            strategies : [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
+            projection: new OpenLayers.Projection('EPSG:900913'),
+            protocol: new OpenLayers.Protocol.WFS({
+                version: "1.1.0",
+                url: "geoserver/ows",
+                featureNS :  CONFIG.tempSession.getCurrentSessionKey(),
+                maxExtent: CONFIG.map.getMap().getExtent(),
+                featureType: "featureType",
+                geometryName: "the_geom",
+                schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + CONFIG.tempSession.getCurrentSessionKey() + ":featureType"
+            }),
+            onFeatureInsert : function(feature) {
+                feature.attributes['Orient'] = 'seaward';
+            }
+        });
+
+        CONFIG.map.getMap().addLayer(drawLayer);
+        CONFIG.map.getMap().addControl(new OpenLayers.Control.DrawFeature(
+            drawLayer,
+            OpenLayers.Handler.Path,
+            {
+                id: 'baseline-draw-control',
+                multi: true
+            }));
+    },
     addBaselineToMap : function(args) {
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
         
@@ -340,48 +372,14 @@ var Baseline = {
         LOG.debug('Baseline.js::drawButtonToggled: User wishes to ' + beginDrawing ? 'begin' : 'stop' + 'drawing');
         
         if (beginDrawing) {
-            var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
-                strategies : [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
-                projection: new OpenLayers.Projection('EPSG:900913'),
-                protocol: new OpenLayers.Protocol.WFS({
-                    version: "1.1.0",
-                    url: "geoserver/ows",
-                    featureNS :  CONFIG.tempSession.getCurrentSessionKey(),
-                    maxExtent: me.map.getExtent(),
-                    featureType: "featureType",
-                    geometryName: "the_geom",
-                    schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + CONFIG.tempSession.getCurrentSessionKey() + ":featureType"
-                }),
-                onFeatureInsert : function(feature) {
-                    feature.attributes['Orient'] = 'seaward';
-                }
-            });
-
-            var baselineDrawControl = new OpenLayers.Control.DrawFeature(
-                drawLayer,
-                OpenLayers.Handler.Path,
-                {
-                    id: 'baseline-draw-control',
-                    multi: true
-                });
-            CONFIG.map.getMap().addLayer(drawLayer);
-            CONFIG.map.getMap().map.addControl(baselineDrawControl);
-            Baseline.getDrawControl().activate();
-            Baseline.disableEditButton();
             Baseline.beginDrawing();
         } else {
-            CONFIG.map.removeControl({
-                id : 'baseline-draw-control'
-            });
-            
-            CONFIG.map.removeLayerByName('baseline-draw-layer');
-            Baseline.getDrawControl().deactivate();
-            Baseline.enableEditButton();
             Baseline.stopDrawing();
         }
     },
     beginDrawing : function() {
         LOG.debug('Baseline.js::beginDrawing: Initializing baseline draw panel');
+        Baseline.disableEditButton();
         
         LOG.debug('Baseline.js::beginDrawing: Removing currently drawn features, if any');
         Baseline.clearDrawFeatures();
@@ -405,8 +403,9 @@ var Baseline = {
     stopDrawing : function() {
         LOG.debug('Baseline.js::stopDrawing: Removing (uninitializing) draw panel.');
 
-        LOG.debug('Baseline.js::stopDrawing: Deactivating draw control');
+        LOG.debug('Baseline.js::stopDrawing: Removing draw control');
         Baseline.getDrawControl().deactivate();
+        Baseline.enableEditButton();
         
         LOG.debug('Baseline.js::stopDrawing: Removing currently drawn features, if any');
         Baseline.clearDrawFeatures();

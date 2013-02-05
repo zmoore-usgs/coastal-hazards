@@ -86,11 +86,11 @@ $(document).ready(function() {
                     callbacks : {
                         success : [
                         CONFIG.tempSession.updateLayersFromWMS,
+                        Baseline.appInit,
+                        Baseline.populateFeaturesList,
                         Shorelines.initializeUploader,
-                        Baseline.initializeUploader,
                         Transects.initializeUploader,
                         Shorelines.populateFeaturesList,
-                        Baseline.populateFeaturesList,
                         Transects.populateFeaturesList,
                         Calculation.populateFeaturesList,
                         Results.populateFeaturesList,
@@ -103,9 +103,9 @@ $(document).ready(function() {
                         error : [
                         Shorelines.initializeUploader,
                         Baseline.initializeUploader,
+                        Baseline.populateFeaturesList,
                         Transects.initializeUploader,
                         Shorelines.populateFeaturesList,
-                        Baseline.populateFeaturesList,
                         Transects.populateFeaturesList,
                         Calculation.populateFeaturesList,
                         Results.populateFeaturesList,
