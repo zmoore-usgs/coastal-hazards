@@ -4,31 +4,6 @@ var Map = function() {
     me.map = new OpenLayers.Map('map', {
         projection : "EPSG:900913"
     });
-    
-    var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
-        strategies : [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
-        projection: new OpenLayers.Projection('EPSG:900913'),
-        protocol: new OpenLayers.Protocol.WFS({
-            version: "1.1.0",
-            url: "geoserver/ows",
-            featureNS :  CONFIG.tempSession.getCurrentSessionKey(),
-            maxExtent: me.map.getExtent(),
-            featureType: "featureType",
-            geometryName: "the_geom",
-            schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + CONFIG.tempSession.getCurrentSessionKey() + ":featureType"
-        }),
-        onFeatureInsert : function(feature) {
-            feature.attributes['Orient'] = 'seaward';
-        }
-    });
-
-    var baselineDrawControl = new OpenLayers.Control.DrawFeature(
-        drawLayer,
-        OpenLayers.Handler.Path,
-        {
-            id: 'baseline-draw-control',
-            multi: true
-        });
             
     var wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
         title: 'shoreline-identify-control',
@@ -48,6 +23,11 @@ var Map = function() {
         autoActivate : false
     })
     
+    var selectTransectsFeatureControl = new OpenLayers.Control.SelectFeature([], {
+        title : 'transects-select-control',
+        autoActivate : false
+    })
+    
     wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
             
     me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
@@ -59,9 +39,8 @@ var Map = function() {
         }
         ));
     
-    me.map.addLayer(drawLayer);
-    me.map.addControl(baselineDrawControl);
     me.map.addControl(selectBaselineFeatureControl);
+    me.map.addControl(selectTransectsFeatureControl);
     me.map.addControl(wmsGetFeatureInfoControl);
     me.map.addControl(new OpenLayers.Control.MousePosition());
     me.map.addControl(new OpenLayers.Control.ScaleLine({

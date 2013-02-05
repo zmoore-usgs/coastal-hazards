@@ -306,7 +306,7 @@ var OWS = function(endpoint) {
             var request = args.request;
             var callbacks = args.callbacks || [];
             var successCallbacks = args.callbacks.success ? args.callbacks.success : callbacks;
-            var errorCallbacks = args.callbacks.error ? args.callbacks.error : callbcaks;
+            var errorCallbacks = args.callbacks.error ? args.callbacks.error : callbacks;
             var context = args.context || this;
             
             $.ajax({

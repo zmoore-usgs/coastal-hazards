@@ -246,6 +246,10 @@
                                             <i class="icon-tasks icon-white"></i>
                                             &nbsp;Calculate
                                         </button>
+                                        <button data-toggle="button" class="btn btn-success" disabled id="transect-edit-form-toggle">
+                                            <i class="icon-edit icon-white"></i>
+                                            &nbsp;Edit
+                                        </button>
                                     </div>
                                     <div class="row-fluid">
                                         <div id="create-transects-panel-well" class="well hidden">
@@ -264,6 +268,11 @@
                                                         </div>
                                                     </form>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div id="transects-edit-container" class="well well-small hidden">
+                                            <div class="row-fluid">
+                                                <button class="btn btn-success" id="baseline-edit-save-button" title="Update Modified Transect">Update Transect</button>
                                             </div>
                                         </div>
                                     </div>
