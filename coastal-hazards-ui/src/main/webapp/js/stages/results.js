@@ -15,7 +15,7 @@ var Results = {
     },
     
     leaveStage : function() {
-        
+        CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id','results-select-control')[0])
     },
     enterStage : function() {
         
@@ -170,23 +170,26 @@ var Results = {
     },
     
     /**
-     * Uses a OWS DescribeFeatureType response to add a layer to a map
+     * Uses a OWS DescribeFeatureType response to add a layer to a map,
+     * pop up a plotter and table and sets highlighting rules on the layer
+     * that ties into the table and plotter
      */
     addLayerToMap : function(args) {
-        LOG.info('Shorelines.js::addLayerToMap');
+        LOG.info('Results.js::addLayerToMap');
         var layer = args.layer;
-//        var sldBody = CONFIG.ows.createResultsRasterSLD({
-//            layerName : layer.prefix + ':' + layer.name
-//        })
-        var resultsWMS = new OpenLayers.Layer.WMS(layer.name,
-            'geoserver/'+layer.prefix+'/wms',
+        var layerName = layer.name;
+        var layerPrefix = layer.prefix;
+        
+        LOG.trace('Results.js::addLayerToMap: Creating WMS layer that will hold the heatmap style');
+        var resultsWMS = new OpenLayers.Layer.WMS(layerName,
+            'geoserver/'+layerPrefix+'/wms',
             {
-                layers : layer.name,
+                layers : layerName,
                 transparent : true,
                 styles : 'ResultsRaster'
             },
             {
-                prefix : layer.prefix,
+                prefix : layerPrefix,
                 zoomToWhenAdded : true, // Include this layer when performing an aggregated zoom
                 isBaseLayer : false,
                 unsupportedBrowsers: [],
@@ -198,14 +201,15 @@ var Results = {
                 ratio: 1,
                 singleTile : true
             })
-        
-        var resultsVector = new OpenLayers.Layer.Vector(layer.name, {
+            
+        LOG.trace('Results.js::addLayerToMap: Creating Vector layer that will be used for highlighting');
+        var resultsVector = new OpenLayers.Layer.Vector(layerName, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
                 version: '1.1.0',
-                url:  "geoserver/"+layer.prefix+"/wfs",
-                featureType: layer.name, 
-                featureNS: CONFIG.namespace[layer.prefix],
+                url:  "geoserver/"+layerPrefix+"/wfs",
+                featureType: layerName, 
+                featureNS: CONFIG.namespace[layerPrefix],
                 geometryName: "the_geom",
                 srsName: CONFIG.map.getMap().getProjection()
             }),
@@ -220,7 +224,7 @@ var Results = {
                     strokeOpacity: 1,
                     strokeWidth: 2,
                     fillColor: Results.reservedColor,
-                    fillOpacity: .3,
+                    fillOpacity: 1,
                     cursor: "pointer"
                 })
             }),
@@ -228,25 +232,28 @@ var Results = {
         });
 	
         var featureHighlighted = function(event) {
+            LOG.trace('Results.js::addLayerToMap: A results feature is being highlighted');
             var xValue = event.feature.attributes.StartX;
             
-            // Plotter Highlighting
+            LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the plot');
             var xPlotIdx = CONFIG.graph.rawData_.findIndex(function(o){
                 return o[0] == xValue
             })
             CONFIG.graph.setSelection(xPlotIdx)   
             
-            // Table highlighting
+            LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the table');
             $('#results-table tbody>tr').removeClass('warning');
             var tableRow = $('#results-table tbody>tr').toArray().find(function(tr){
                 return $(tr).data().startx == xValue
             });
+            
+            LOG.trace('Results.js::addLayerToMap: Scrolling the table into view and highlighting the correct row');
             tableRow.scrollIntoView();
-            $(tableRow).addClass('warning');
+            $(tableRow).addClass('warning'); // Highlight in yellow
         }
         
-        LOG.info('Shorelines.js::addLayerToMap: (re?)-adding vector selector control for new results set');
-        CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0])
+        LOG.debug('Shorelines.js::addLayerToMap: (re?)-adding vector selector control for new results set');
+        CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id','results-select-control')[0])
         var selectFeatureControl = new OpenLayers.Control.SelectFeature(resultsVector, {
             id : 'results-select-control',
             hover: true,
@@ -258,20 +265,13 @@ var Results = {
             }
         });
             
+        LOG.debug('Shorelines.js::addLayerToMap: Adding results WMS layer to the map');
         CONFIG.map.getMap().addLayer(resultsWMS);
+        LOG.debug('Shorelines.js::addLayerToMap: Adding results Vector layer to the map');
         CONFIG.map.getMap().addLayer(resultsVector);
+        LOG.debug('Shorelines.js::addLayerToMap: Adding select feature control to map and activating');
         CONFIG.map.getMap().addControl(selectFeatureControl);
-        selectFeatureControl.activate()
-        
-        var stageConfig = CONFIG.tempSession.getStageConfig({
-            stage : Transects.stage,
-            name : args.name
-        })
-        stageConfig.view.isSelected = false;
-        CONFIG.tempSession.setStageConfig({
-            stage : Transects.stage,
-            config : stageConfig
-        })
+        selectFeatureControl.activate();
     },
     
     displayResult : function(args) {
