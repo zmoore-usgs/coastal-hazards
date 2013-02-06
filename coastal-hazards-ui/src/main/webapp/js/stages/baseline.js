@@ -2,7 +2,7 @@ var Baseline = {
     stage : 'baseline',
     suffixes :  ['_baseline'],
     baselineDrawButton : $('#baseline-draw-btn'),
-    reservedColor : '#1B9E77',
+    reservedColor : '#7570B3',
     shorewardColor : '#76C5AD',
     description : {
         'stage' : 'Select an existing published baseline, upload your own, or draw a new baseline. A baseline provides a reference polyline to determine the orientation of erosion and deposition of coastlines.',

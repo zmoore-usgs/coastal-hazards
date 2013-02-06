@@ -1,7 +1,7 @@
 var Transects = {
     stage : 'transects',
     suffixes : ['_lt','_st','_transects'],
-    reservedColor : '#FF0033',
+    reservedColor : '#D95F02',
     defaultSpacing : 500,
     description : {
         'stage' : 'Select existing transects, or generate new transects from the workspace baseline. Transects are rays that are projected from the baseline, and the intersections between shorelines and transects are used to calculate rates of erosion and deposition.',
