@@ -4,8 +4,14 @@
 var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
+    
     // Dictates what will be displaed in the stage popover
-    description : 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    description : {
+        'stage' : 'View and select existing published shorelines, or upload your own. Shorelines represent snap-shots of the coastline at various points in time.',
+        'view-tab' : 'Select a published collection of shorelines to add to the workspace.',
+        'manage-tab' : ' Upload a zipped shapefile to add it to the workspace.',
+        'upload-button' : 'Upload a zipped shapefile which includes shoreline polyline features.'
+    },
     
     appInit : function() {
         Shorelines.initializeUploader();
@@ -30,10 +36,16 @@ var Shorelines = {
     },
     
     leaveStage : function() {
-        CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control')[0].deactivate();
+        var shorelineId = CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control');
+        if (shorelineId.length) {
+            shorelineId[0].deactivate();
+        }
     },
     enterStage : function() {
-        CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control')[0].activate();
+        var shorelineId = CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control');
+        if (shorelineId.length) {
+            shorelineId[0].activate();
+        }
     },
     
     /**
