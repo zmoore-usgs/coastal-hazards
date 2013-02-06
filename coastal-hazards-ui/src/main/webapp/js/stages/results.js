@@ -183,7 +183,7 @@ var Results = {
             {
                 layers : layer.name,
                 transparent : true,
-                sld_body : sldBody
+                styles : 'ResultsRaster'
             },
             {
                 prefix : layer.prefix,
@@ -199,7 +199,7 @@ var Results = {
                 singleTile : true
             })
         
-        var results = new OpenLayers.Layer.Vector(layer.name, {
+        var resultsVector = new OpenLayers.Layer.Vector(layer.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
                 version: '1.1.0',
@@ -212,7 +212,8 @@ var Results = {
             styleMap: new OpenLayers.StyleMap({
                 "default": new OpenLayers.Style({
                     strokeColor: Results.reservedColor,
-                    strokeWidth: 2
+                    strokeWidth: 1,
+                    strokeOpacity: 0
                 })
             }),
             type : 'results'
@@ -234,12 +235,11 @@ var Results = {
             });
             tableRow.scrollIntoView();
             $(tableRow).addClass('warning');
-            
         }
         
         LOG.info('Shorelines.js::addLayerToMap: (re?)-adding vector selector control for new results set');
         CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0])
-        var selectFeatureControl = new OpenLayers.Control.SelectFeature(results, {
+        var selectFeatureControl = new OpenLayers.Control.SelectFeature(resultsVector, {
             hover: true,
             highlightOnly: true,
             renderIntent: "temporary",
@@ -250,8 +250,8 @@ var Results = {
             }
         });
             
-        CONFIG.map.getMap().addLayer(results);
-        //        CONFIG.map.getMap().addLayer(resultsWMS);
+        CONFIG.map.getMap().addLayer(resultsWMS);
+        CONFIG.map.getMap().addLayer(resultsVector);
         CONFIG.map.getMap().addControl(selectFeatureControl);
         selectFeatureControl.activate()
         
