@@ -39,7 +39,10 @@ var Transects = {
         if ($('#transect-edit-form-toggle').hasClass('active')) {
             $('#transect-edit-form-toggle').trigger('click');
         }
-        CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
+        var controls = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
+        if (controls.length) {
+            controls[0].deactivate();
+        }
     },
     enterStage : function() {
         

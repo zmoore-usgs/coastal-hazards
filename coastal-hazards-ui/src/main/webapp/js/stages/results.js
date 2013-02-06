@@ -16,10 +16,14 @@ var Results = {
     
     appInit : function() {
         $('#results-form-name').val(Util.getRandomLorem());
-        $("#create-results-btn").on("click", Results.calcResults);
+        $("#create-results-btn").on("click", function() {
+            CONFIG.ui.displayStage(Results);
+            Results.calcResults();
+        })
     },
     
     leaveStage : function() {
+        LOG.info('Results.js::leaveStage:Leaving results stage');
         CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id','results-select-control')[0])
     },
     enterStage : function() {
@@ -286,10 +290,6 @@ var Results = {
         // StartX is needed for plotting but not for the table view so let's get the column
         // from the server i one call
         resultsColumns.push('StartX');
-        
-        // The calculate results button is not on the same stage as the results view so switch to 
-        // results view
-        CONFIG.ui.displayStage(Results);
         
         CONFIG.ows.getFilteredFeature({ 
             layerPrefix : result.prefix,
