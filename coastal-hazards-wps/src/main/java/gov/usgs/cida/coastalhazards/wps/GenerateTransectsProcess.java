@@ -83,8 +83,10 @@ public class GenerateTransectsProcess implements GeoServerProcess {
         
         private CoordinateReferenceSystem utmCrs;
         
-        private final GeometryFactory geometryFactory;
+        private STRtree strTree;
         private SimpleFeatureType simpleFeatureType;
+        private PreparedGeometry preparedShorelines;
+        
         private double guessTransectLength;
         private int transectId;
         
@@ -101,9 +103,13 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             this.store = store;
             this.layer = layer;
             
-            this.geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
             this.guessTransectLength = 500.0d; // start guess at .5km
             this.transectId = 0; // start ids at 0
+            
+            // Leave these null to start, they get populated after error checks occur (somewhat expensive)
+            this.strTree = null;
+            this.simpleFeatureType = null;
+            this.preparedShorelines = null;
         }
         
         protected String execute() throws Exception {
@@ -129,11 +135,17 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             builder.add(BASELINE_ORIENTATION_ATTR, String.class);
             this.simpleFeatureType = builder.buildFeatureType();
             
-            MultiLineString shorelineGeometry = CRSUtils.getLinesFromFeatureCollection(shorelineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
+            SimpleFeatureCollection transformedShorelines = CRSUtils.transformFeatureCollection(shorelineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
             
             // TODO Will need to be able to pull seaward vs. shoreward from attrs (maybe Map<Integer, LineString>)
             // for now assume seaward
-            MultiLineString baselineGeometry = CRSUtils.getLinesFromFeatureCollection(baselineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
+            SimpleFeatureCollection transformedBaselines = CRSUtils.transformFeatureCollection(baselineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
+            MultiLineString shorelineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedShorelines);
+            MultiLineString baselineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedBaselines);
+            this.strTree = new ShorelineSTRTreeBuilder(transformedShorelines).build();
+            
+            this.preparedShorelines = PreparedGeometryFactory.prepare(shorelineGeometry);
+            
             TransectVector[] vectsOnBaseline = getEvenlySpacedOrthoVectorsAlongBaseline(baselineGeometry, shorelineGeometry, spacing);
             
             SimpleFeatureCollection resultingTransects = trimTransectsToFeatureCollection(vectsOnBaseline, shorelineGeometry);
@@ -146,9 +158,9 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             
             for (int i=0; i < baseline.getNumGeometries(); i++) {
                 LineString line = (LineString)baseline.getGeometryN(i);
-                int direction = shorelineDirection(line, shorelines);
                 updateTransectLengthGuess(shorelines, line);
-                vectList.addAll(handleLineString(line, spacing, direction));
+                int direction = shorelineDirection(line, shorelines);
+                vectList.addAll(handleLineString(line, spacing, Orientation.SEAWARD, direction)); // rather than SEAWARD, get from baseline feature
             }
             TransectVector[] vectArr = new TransectVector[vectList.size()];
             return vectList.toArray(vectArr);
@@ -167,9 +179,6 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             } 
             List<SimpleFeature> sfList = new LinkedList<SimpleFeature>();
             
-            PreparedGeometry preparedShorelines = PreparedGeometryFactory.prepare(shorelines);
-            STRtree tree = new ShorelineSTRTreeBuilder(shorelines).build();
-            
             // add an extra 1k for good measure
             guessTransectLength += 1000.0d;
             
@@ -178,7 +187,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
                 if (!preparedShorelines.intersects(testLine)) {
                     continue; // don't draw if it doesn't cross
                 }
-                List<LineString> lines = tree.query(testLine.getEnvelopeInternal());
+                List<LineString> lines = strTree.query(testLine.getEnvelopeInternal());
                 double maxDistance = MIN_TRANSECT_LENGTH;
                 for (LineString line : lines) {
                     if (line.intersects(testLine)) {
@@ -213,7 +222,7 @@ public class GenerateTransectsProcess implements GeoServerProcess {
          * @param spacing how often to create vectors along line
          * @return List of fancy vectors I concocted
          */
-        protected List<TransectVector> handleLineString(LineString lineString, double spacing, int orthoDirection) {
+        protected List<TransectVector> handleLineString(LineString lineString, double spacing, Orientation orientation, int orthoDirection) {
             Coordinate currentCoord = null;
             List<TransectVector> transectVectors = new LinkedList<TransectVector>();
             double accumulatedDistance = 0.0d;
@@ -277,20 +286,20 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             int[] counts = new int[] { 0, 0 };
             TransectVector vector =
                     TransectVector.generatePerpendicularVector(coordinates[0], a, Angle.CLOCKWISE);
-            counts[0] += countIntersections(vector, shorelines);
+            counts[0] += countIntersections(vector);
             vector.rotate180Deg();
-            counts[1] += countIntersections(vector, shorelines);
+            counts[1] += countIntersections(vector);
             
             vector = TransectVector.generatePerpendicularVector(coordinates[n-1], b, Angle.COUNTERCLOCKWISE);
-            counts[0] += countIntersections(vector, shorelines);
+            counts[0] += countIntersections(vector);
             vector.rotate180Deg();
-            counts[1] += countIntersections(vector, shorelines);
+            counts[1] += countIntersections(vector);
             
             if (m != null) {
                 vector = TransectVector.generatePerpendicularVector(coordinates[(int)n/2], m, Angle.CLOCKWISE);
-                counts[0] += countIntersections(vector, shorelines);
+                counts[0] += countIntersections(vector);
                 vector.rotate180Deg();
-                counts[1] += countIntersections(vector, shorelines);
+                counts[1] += countIntersections(vector);
             }
             
             if (counts[0] > counts[1]) {
@@ -302,10 +311,16 @@ public class GenerateTransectsProcess implements GeoServerProcess {
             throw new PoorlyDefinedBaselineException("Baseline is ambiguous, transect direction cannot be determined");
         }
         
-        private int countIntersections(TransectVector vector, Geometry shorelines) {
-            LineString line = vector.getLineOfLength(EARTH_RADIUS);
-            Geometry intersection = line.intersection(shorelines);
-            return intersection.getNumGeometries();
+        private int countIntersections(TransectVector vector) {
+            LineString line = vector.getLineOfLength(guessTransectLength);
+            int count = 0;
+            List<LineString> possibleIntersections = strTree.query(line.getEnvelopeInternal());
+            for (LineString shoreline : possibleIntersections) {
+                if (shoreline.intersects(line)) {
+                    count++;
+                }
+            }
+            return count;
         }
         
         protected void updateTransectLengthGuess(MultiLineString shorelines, LineString baseline) {

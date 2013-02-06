@@ -9,6 +9,8 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
 import java.util.LinkedList;
 import java.util.List;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.Geometries;
@@ -42,13 +44,27 @@ public class CRSUtils {
          * @param featureCollection
          * @return 
          */
-        public static MultiLineString getLinesFromFeatureCollection(
+        public static MultiLineString transformAndGetLinesFromFeatureCollection(
                 FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
                 CoordinateReferenceSystem sourceCrs,
                 CoordinateReferenceSystem targetCrs) {
-            List<LineString> lines = new LinkedList<LineString>();
+            SimpleFeatureCollection transformed = transformFeatureCollection(featureCollection, sourceCrs, targetCrs);
+            return getLinesFromFeatureCollection(transformed);
+            
+        }
+        
+        /**
+         * Returns a SimpleFeatureCollection with transformed default geometry
+         * @param featureCollection source feature collection (features may be modified)
+         * @param sourceCrs original coordinate reference system
+         * @param targetCrs new coordinate reference system
+         * @return new SimpleFeatureCollection
+         */
+        public static SimpleFeatureCollection transformFeatureCollection(FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
+                CoordinateReferenceSystem sourceCrs,
+                CoordinateReferenceSystem targetCrs) {
+            List<SimpleFeature> sfList = new LinkedList<SimpleFeature>();
             MathTransform transform = null;
-            GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
             try {
                 transform = CRS.findMathTransform(sourceCrs, targetCrs, true);
             }
@@ -68,8 +84,23 @@ public class CRSUtils {
                 catch (TransformException ex) {
                     // TODO handle exceptions
                 }
+                feature.setDefaultGeometry(utmGeometry);
+                sfList.add(feature);
+            }
+            
+            return DataUtilities.collection(sfList);
+        }
+        
+        public static MultiLineString getLinesFromFeatureCollection(SimpleFeatureCollection collection) {
+            List<LineString> lines = new LinkedList<LineString>();
+            GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
+            FeatureIterator<SimpleFeature> features = collection.features();
+            SimpleFeature feature = null;
+            while (features.hasNext()) {
+                feature = features.next();
+                Geometry geometry = (Geometry)feature.getDefaultGeometry();
                 
-                Geometries geomType = Geometries.get(utmGeometry);
+                Geometries geomType = Geometries.get(geometry);
                 LineString lineString = null;
                 Coordinate[] coords = null;
                 switch (geomType) {
@@ -77,11 +108,11 @@ public class CRSUtils {
                     case MULTIPOLYGON:
                         throw new UnsupportedFeatureTypeException("Polygons not supported in baseline");
                     case LINESTRING:
-                        lineString = (LineString)utmGeometry;
+                        lineString = (LineString)geometry;
                         lines.add(lineString);
                         break;
                     case MULTILINESTRING:
-                        MultiLineString multiLineString = (MultiLineString)utmGeometry;
+                        MultiLineString multiLineString = (MultiLineString)geometry;
                         for (int i=0; i < multiLineString.getNumGeometries(); i++) {
                             lineString = (LineString)multiLineString.getGeometryN(i);
                             lines.add(lineString);

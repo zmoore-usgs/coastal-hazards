@@ -74,6 +74,8 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
         // if it is a lidar dataset, need to get weighted average
         // retain identifiers of intersects or some sort
         // return Coordinate feature collection
+        
+        // Lots of this stuff will be moved to transects, become super algorithm
 
         private FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines;
         private FeatureCollection<SimpleFeatureType, SimpleFeature> transects;
@@ -133,6 +135,8 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
 
             this.shorelineTransform = CRS.findMathTransform(shorelinesCrs, utmCrs, true);
             this.transectTransform = CRS.findMathTransform(transectsCrs, utmCrs, true);
+            
+            
 
             SimpleFeatureType schema = transectCollection.getSchema();
             if (null == schema.getType(TRANSECT_ID_ATTR) || null == schema.getType(BASELINE_ORIENTATION_ATTR)) {
@@ -180,7 +184,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 SimpleFeature feature = shoreIterator.next();
                 Geometry shoreGeom = (Geometry) feature.getDefaultGeometry();
                 Geometry transformedGeom = JTS.transform(shoreGeom, shorelineTransform);
-                STRtree tree = new ShorelineSTRTreeBuilder(transformedGeom).build();
+                STRtree tree = new ShorelineSTRTreeBuilder(transformedGeom, feature).build();
                 for (int i = 0; i < transectCollection.size(); i++) {
                     long transectId = transectIds[i];
                     Orientation orientation = orientations[i];

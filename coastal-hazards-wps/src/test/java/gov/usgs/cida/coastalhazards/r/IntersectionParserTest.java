@@ -86,6 +86,7 @@ public class IntersectionParserTest {
         shapefile = IntersectionParserTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_intersections.shp");
         outfile = File.createTempFile("testOut", ".csv");
+        outfile.deleteOnExit();
         buf = new BufferedWriter(new FileWriter(outfile));
     }
     
