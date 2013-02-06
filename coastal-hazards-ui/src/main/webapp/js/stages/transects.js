@@ -59,10 +59,9 @@ var Transects = {
             control[0].deactivate();
         }
         
-        control = CONFIG.map.getMap().getControlsBy('title', 'transects-draw-control')[0];
-        if (control.length) {
-            control[0].deactivate();
-        }
+        CONFIG.map.removeControl({
+            id : 'transects-draw-control'
+        });
     },
     enterStage : function() {
         
@@ -159,8 +158,13 @@ var Transects = {
             CONFIG.map.removeControl({
                 id : 'transects-edit-control'
             });
+            CONFIG.map.getMap().getControlsBy('id', 'snap-control')[0].destroy();
             CONFIG.map.removeControl({
                 id : 'snap-control'
+            });
+            
+            CONFIG.map.removeControl({
+                id : 'transects-draw-control'
             });
             CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
         }
@@ -177,7 +181,6 @@ var Transects = {
             })
         CONFIG.map.addControl(drawControl);
         drawControl.activate();
-            
     },
     saveEditedLayer : function() {
         LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
@@ -197,6 +200,11 @@ var Transects = {
             Transects.refreshFeatureList({
                 selectLayer : layer.cloneOf
             })
+            CONFIG.map.getMap().getControlsBy('id', 'transects-draw-control')[0].destroy();
+            CONFIG.map.removeControl({
+                id : 'transects-draw-control'
+            });
+            
             $('#transect-edit-form-toggle').trigger('click'); 
         });
                 
