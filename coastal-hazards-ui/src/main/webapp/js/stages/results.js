@@ -175,9 +175,9 @@ var Results = {
     addLayerToMap : function(args) {
         LOG.info('Shorelines.js::addLayerToMap');
         var layer = args.layer;
-        var sldBody = CONFIG.ows.createResultsRasterSLD({
-            layerName : layer.prefix + ':' + layer.name
-        })
+//        var sldBody = CONFIG.ows.createResultsRasterSLD({
+//            layerName : layer.prefix + ':' + layer.name
+//        })
         var resultsWMS = new OpenLayers.Layer.WMS(layer.name,
             'geoserver/'+layer.prefix+'/wms',
             {
@@ -212,14 +212,22 @@ var Results = {
             styleMap: new OpenLayers.StyleMap({
                 "default": new OpenLayers.Style({
                     strokeColor: Results.reservedColor,
-                    strokeWidth: 1,
+                    strokeWidth: 2,
                     strokeOpacity: 0
+                }),
+                "temporary": new OpenLayers.Style({
+                    strokeColor: Results.reservedColor,
+                    strokeOpacity: 1,
+                    strokeWidth: 2,
+                    fillColor: Results.reservedColor,
+                    fillOpacity: .3,
+                    cursor: "pointer"
                 })
             }),
             type : 'results'
         });
 	
-        var featureHighlighting = function(event) {
+        var featureHighlighted = function(event) {
             var xValue = event.feature.attributes.StartX;
             
             // Plotter Highlighting
@@ -240,13 +248,13 @@ var Results = {
         LOG.info('Shorelines.js::addLayerToMap: (re?)-adding vector selector control for new results set');
         CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0])
         var selectFeatureControl = new OpenLayers.Control.SelectFeature(resultsVector, {
+            id : 'results-select-control',
             hover: true,
             highlightOnly: true,
             renderIntent: "temporary",
             eventListeners: {
-                beforefeaturehighlighted: featureHighlighting,
-                featurehighlighted: featureHighlighting,
-                featureunhighlighted: featureHighlighting
+                featurehighlighted: featureHighlighted,
+                featureunhighlighted: featureHighlighted
             }
         });
             
@@ -305,7 +313,7 @@ var Results = {
                     $('#results-table tbody>tr').hover( 
                         function(event) {
                             var startx = $(this).data().startx
-                            var selectionControl = CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0];
+                            var selectionControl = CONFIG.map.getMap().getControlsBy('id','results-select-control')[0];
                             var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'results')[0].features.find(function(f){
                                 return f.attributes.StartX == startx
                             })
@@ -315,7 +323,7 @@ var Results = {
                             
                         },
                         function() {
-                            var selectionControl = CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0];
+                            var selectionControl = CONFIG.map.getMap().getControlsBy('id','results-select-control')[0];
                             selectionControl.unselectAll()
                             $(this).removeClass('warning')
                         })
@@ -362,7 +370,7 @@ var Results = {
                     }
                 },
                 highlightCallback: function(e, x, pts, row) {
-                    var selectionControl = CONFIG.map.getMap().getControlsBy('CLASS_NAME',"OpenLayers.Control.SelectFeature")[0];
+                    var selectionControl = CONFIG.map.getMap().getControlsBy('id','results-select-control')[0];
                     selectionControl.unselectAll()
                     var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'results')[0].features.find(function(f){
                         return f.attributes.StartX == x
