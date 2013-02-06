@@ -14,6 +14,7 @@ var Transects = {
         CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
             title : 'transects-select-control',
             autoActivate : false,
+            box : true,
             onSelect : function(feature) {
                 LOG.debug('Transects.js::SelectFeature.onSelect(): A feature was selected');
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];

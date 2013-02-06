@@ -41,7 +41,8 @@ var Baseline = {
             
         CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
             title : 'baseline-select-control',
-            autoActivate : false
+            autoActivate : false,
+            box : true
         }));
         
     },
