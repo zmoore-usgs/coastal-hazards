@@ -52,11 +52,16 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.util.Constants.Orientation;
-import static gov.usgs.cida.coastalhazards.util.Constants.Orientation.*;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
- * TransectVector.
+ * Transect.
  * 
  * Creating this class because I'm having a hard time wrapping my head around
  * polar vs. cartesian arithmetic. Holding a cartesian coord with a polar angle
@@ -66,47 +71,39 @@ import static gov.usgs.cida.coastalhazards.util.Constants.Orientation.*;
  * 
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class TransectVector {
+public class Transect {
 
     private Coordinate cartesianCoord;
     private double angle; // radians
+    private double length; // meters
     private Orientation orientation; // is transect built off of seaward or shoreward baseline
+    private String baselineId;
     private static final GeometryFactory gf;
 
     static {
         gf = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
     }
     
-    /**
-     * This constructor should be removed once we start enforcing baselines with SEAWARD/SHOREWARD
-     * @param coord
-     * @param angle 
-     */
-    public TransectVector(Coordinate coord, double angle) {
-        this(coord, angle, SEAWARD);
-    }
-
-    /**
-     * This one should be removed as well
-     * @param x
-     * @param y
-     * @param angle 
-     */
-    public TransectVector(double x, double y, double angle) {
-        this(new Coordinate(x, y), angle, SEAWARD);
-    }
-    
-    public TransectVector(Coordinate coord, double angle, Orientation orientation) {
+    public Transect(Coordinate coord, double angle, Orientation orientation) {
         this.cartesianCoord = coord;
         this.angle = angle;
         this.orientation = orientation;
+        this.baselineId = "0"; // use dumb id unless set explicitly
     }
     
-    public TransectVector(double x, double y, double angle, Orientation orientation) {
+    public Transect(double x, double y, double angle, Orientation orientation) {
         this(new Coordinate(x, y), angle, orientation);
     }
 
-    public LineString getLineOfLength(double length) {
+    public void setLength(double length) {
+        this.length = length;
+    }
+    
+    public void setBaselineId(String id) {
+        this.baselineId = id;
+    }
+    
+    public LineString getLineString() {
         double rise = length * Math.sin(angle);
         double run = length * Math.cos(angle);
         Coordinate endpoint = new Coordinate(cartesianCoord.x + run, cartesianCoord.y + rise);
@@ -138,7 +135,7 @@ public class TransectVector {
         angle += Math.PI;
     }
     
-    public static TransectVector generatePerpendicularVector(Coordinate origin, LineSegment segment, int direction) {
+    public static Transect generatePerpendicularVector(Coordinate origin, LineSegment segment, Orientation orientation, int direction) {
         double angle;
         switch (direction) {
             case Angle.CLOCKWISE:
@@ -150,15 +147,34 @@ public class TransectVector {
             default:
                 throw new IllegalStateException("Must be either clockwise or counterclockwise");
         }
-        return new TransectVector(origin, angle);
+        return new Transect(origin, angle, orientation);
     }
     
-    public boolean equals(TransectVector b) {
-        if (this.cartesianCoord.equals2D(b.getOriginCoord()) && this.angle == b.angle) {
+    public boolean equals(Transect b) {
+        if (this.cartesianCoord.equals2D(b.getOriginCoord()) 
+                && this.angle == b.angle
+                && this.length == b.length) {
             return true;
         }
         else {
             return false;
         }
+    }
+    
+    public static SimpleFeatureType buildFeatureType(CoordinateReferenceSystem crs) {
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("Transects");
+        builder.add("geom", LineString.class, crs);
+        builder.add(TRANSECT_ID_ATTR, Integer.class);
+        builder.add(BASELINE_ORIENTATION_ATTR, String.class);
+        builder.add(BASELINE_ID_ATTR, String.class);
+        return builder.buildFeatureType();
+    }
+    
+    public SimpleFeature createFeature(SimpleFeatureType type, int id) {
+        LineString line = this.getLineString();
+        SimpleFeature feature = SimpleFeatureBuilder.build(type,
+                new Object[]{line, new Integer(id), orientation.getValue()}, null);
+        return feature;
     }
 }

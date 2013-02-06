@@ -45,9 +45,18 @@
  */
 package gov.usgs.cida.coastalhazards.wps.geom;
 
+import com.vividsolutions.jts.geom.Point;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.joda.time.DateTime;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeType;
+import org.opengis.feature.type.GeometryType;
+import static gov.usgs.cida.coastalhazards.util.Constants.*;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  *
@@ -80,6 +89,25 @@ public class IntersectionPoint {
         DateTime dateObj = new DateTime(new SimpleDateFormat("MM/dd/yyyy").parse(t));
         String outDate = dateObj.toString("yyyy-MM-dd");
         return outDate;
+    }
+    
+    public static SimpleFeatureType buildSimpleFeatureType(SimpleFeatureCollection simpleFeatures, CoordinateReferenceSystem crs) {
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        SimpleFeatureType schema = simpleFeatures.getSchema();
+        List<AttributeType> types = schema.getTypes();
+
+        builder.setName("Intersections");
+        builder.add("geom", Point.class, crs);
+        builder.add(TRANSECT_ID_ATTR, Integer.class);
+        builder.add(DISTANCE_ATTR, Double.class);
+        for (AttributeType type : types) {
+            if (type instanceof GeometryType) {
+                // ignore the geom type of intersecting data
+            } else {
+                builder.add(type.getName().getLocalPart(), type.getBinding());
+            }
+        }
+        return builder.buildFeatureType();
     }
 
     @Override

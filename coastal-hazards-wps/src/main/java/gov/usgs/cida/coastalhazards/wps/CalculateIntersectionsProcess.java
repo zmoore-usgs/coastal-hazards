@@ -32,6 +32,7 @@ import org.geotools.referencing.CRS;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import gov.usgs.cida.coastalhazards.wps.exceptions.LayerAlreadyExistsException;
+import gov.usgs.cida.coastalhazards.wps.geom.IntersectionPoint;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineSTRTreeBuilder;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
@@ -131,13 +132,11 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 throw new IllegalStateException("Must have usable UTM zone to continue");
             }
 
-            this.outputFeatureType = buildSimpleFeatureType(shorelineCollection);
+            this.outputFeatureType = IntersectionPoint.buildSimpleFeatureType(shorelineCollection, utmCrs);
 
             this.shorelineTransform = CRS.findMathTransform(shorelinesCrs, utmCrs, true);
             this.transectTransform = CRS.findMathTransform(transectsCrs, utmCrs, true);
             
-            
-
             SimpleFeatureType schema = transectCollection.getSchema();
             if (null == schema.getType(TRANSECT_ID_ATTR) || null == schema.getType(BASELINE_ORIENTATION_ATTR)) {
                 StringBuilder build = new StringBuilder();
@@ -147,6 +146,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                         .append(BASELINE_ORIENTATION_ATTR);
                 throw new UnsupportedFeatureTypeException(build.toString());
             }
+            
             SimpleFeatureIterator transectIterator = transectCollection.features();
             long[] transectIds = new long[transectCollection.size()];
             Orientation[] orientations = new Orientation[transectCollection.size()];
@@ -228,25 +228,6 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                     .distance(intersection.getCoordinate());
 
             return distance;
-        }
-
-        private SimpleFeatureType buildSimpleFeatureType(SimpleFeatureCollection simpleFeatures) {
-            SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-            SimpleFeatureType schema = simpleFeatures.getSchema();
-            List<AttributeType> types = schema.getTypes();
-
-            builder.setName("Intersections");
-            builder.add("geom", Point.class, utmCrs);
-            builder.add(TRANSECT_ID_ATTR, Integer.class);
-            builder.add(DISTANCE_ATTR, Double.class);
-            for (AttributeType type : types) {
-                if (type instanceof GeometryType) {
-                    // ignore the geom type of intersecting data
-                } else {
-                    builder.add(type.getName().getLocalPart(), type.getBinding());
-                }
-            }
-            return builder.buildFeatureType();
         }
 
         private SimpleFeature buildPointFeature(Point point, long transectId, double distance, SimpleFeature sourceFeature) {
