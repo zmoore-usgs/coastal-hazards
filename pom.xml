@@ -167,7 +167,7 @@
             <dependency>
                 <groupId>gov.usgs.cida</groupId>
                 <artifactId>wps-n52</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
                 <type>war</type>
             </dependency>
             <dependency>
