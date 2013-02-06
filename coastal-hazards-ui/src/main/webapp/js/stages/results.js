@@ -173,11 +173,12 @@ var Results = {
      * Uses a OWS DescribeFeatureType response to add a layer to a map
      */
     addLayerToMap : function(args) {
-        LOG.info('Shorelines.js::addLayerToMap');
+        LOG.info('Results.js::addLayerToMap');
         var layer = args.layer;
 //        var sldBody = CONFIG.ows.createResultsRasterSLD({
 //            layerName : layer.prefix + ':' + layer.name
 //        })
+        LOG.trace('Results.js::addLayerToMap: Creating WMS layer that will hold the heatmap style');
         var resultsWMS = new OpenLayers.Layer.WMS(layer.name,
             'geoserver/'+layer.prefix+'/wms',
             {
@@ -198,7 +199,8 @@ var Results = {
                 ratio: 1,
                 singleTile : true
             })
-        
+            
+        LOG.trace('Results.js::addLayerToMap: Creating Vector layer that will be used for highlighting');
         var resultsVector = new OpenLayers.Layer.Vector(layer.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
@@ -220,7 +222,7 @@ var Results = {
                     strokeOpacity: 1,
                     strokeWidth: 2,
                     fillColor: Results.reservedColor,
-                    fillOpacity: .3,
+                    fillOpacity: 1,
                     cursor: "pointer"
                 })
             }),
