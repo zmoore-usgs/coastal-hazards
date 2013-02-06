@@ -342,7 +342,7 @@ var Results = {
         var features = args.features;
         var layer = args.layer;
         var plotDiv = $('#results-' + layer.title + '-plot').get()[0]
-        var labels = ['x', 'LRR'];
+        var labels = ['Distance (m)', 'Coastal change (m/decade)'];
         var data = features.map(function(n){
             return [ 
             // X axis values
