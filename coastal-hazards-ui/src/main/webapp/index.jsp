@@ -244,7 +244,7 @@
                                         <button class="btn btn-success" id="transects-triggerbutton"><i class="icon-arrow-up icon-white"></i>Upload</button>
                                         <button data-toggle="button" class="btn btn-success" disabled id="create-transects-toggle">
                                             <i class="icon-tasks icon-white"></i>
-                                            &nbsp;Calculate
+                                            &nbsp;Generate
                                         </button>
                                         <button data-toggle="button" class="btn btn-success" disabled id="transect-edit-form-toggle">
                                             <i class="icon-edit icon-white"></i>
@@ -264,7 +264,7 @@
                                                         <div class="control-group">
                                                             <button type="button" class="btn btn-success" id="create-transects-input-button">
                                                                 <i class="icon-tasks icon-white"></i>
-                                                                &nbsp;Calculate</button>
+                                                                &nbsp;Generate</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -424,6 +424,7 @@
         CONFIG.development = <%= development%>;
         CONFIG.geoServerEndpoint = '<%=geoserverEndpoint%>';
         CONFIG.n52Endpoint = '<%=n52Endpoint%>';
+        CONFIG.popupHoverDelay = 1500;
         CONFIG.namespace = Object.extended();
         CONFIG.namespace.sample = 'gov.usgs.cida.ch.sample';
         CONFIG.namespace.input = 'gov.usgs.cida.ch.input';

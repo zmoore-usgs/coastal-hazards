@@ -4,8 +4,12 @@ var Baseline = {
     baselineDrawButton : $('#baseline-draw-btn'),
     reservedColor : '#1B9E77',
     shorewardColor : '#76C5AD',
-    
-    description : 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
+    description : {
+        'stage' : 'Select an existing published baseline, upload your own, or draw a new baseline. A baseline provides a reference polyline to determine the orientation of erosion and deposition of coastlines.',
+        'view-tab' : 'Select a published collection of shorelines to add to the workspace.',
+        'manage-tab' : 'Add a new baseline to the workspace, or clone and edit an existing baseline.',
+        'upload-button' : 'Upload a zipped shapefile containing a baseline polyline.'
+    },
     appInit : function() {
         $('#baseline-draw-form-name').val(Util.getRandomLorem());
         $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);

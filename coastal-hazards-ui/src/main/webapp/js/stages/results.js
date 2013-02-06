@@ -7,7 +7,12 @@ var Results = {
     
     reservedColor: '#0061A3',
     
-    description : 'Et harum quidem rerum facilis est et expedita distinctio.',
+    description : {
+        'stage' : 'View results from the workspace calculations or view published results from other studies.',
+        'view-tab' : '',
+        'manage-tab' : '',
+        'upload-button' : ''
+    },
     
     appInit : function() {
         $('#results-form-name').val(Util.getRandomLorem());

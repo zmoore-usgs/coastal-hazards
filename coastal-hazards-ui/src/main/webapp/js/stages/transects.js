@@ -3,7 +3,12 @@ var Transects = {
     suffixes : ['_lt','_st','_transects'],
     reservedColor : '#FF0033',
     defaultSpacing : 500,
-    description : 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
+    description : {
+        'stage' : 'Select existing transects, or generate new transects from the workspace baseline. Transects are rays that are projected from the baseline, and the intersections between shorelines and transects are used to calculate rates of erosion and deposition.',
+        'view-tab' : 'Select a published collection of shorelines to add to the workspace.',
+        'manage-tab' : 'Upload a new collection of transects to the workspace, generate new transects, or edit existing transects.',
+        'upload-button' : 'Upload a zipped shapefile which contains a collection of transects.'
+    },
     appInit : function() {
         $('#transect-edit-form-toggle').on('click', Transects.editButtonToggled);
         $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
@@ -45,24 +50,29 @@ var Transects = {
         
         var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
         if (toggledOn) {
-            LOG.debug('Transects.js::editButtonToggled: Edit form to be displayed');
+            LOG.debug('Transects.js::editButtonToggled: Edit form was toggled on');
             
-            LOG.debug('Transects.js::editButtonToggled: Attempting to clone current active transects layer into an edit layer');
+            if ($('#create-transects-toggle').hasClass('active')) {
+                $('#create-transects-toggle').trigger('click');
+            }
             
+            LOG.trace('Transects.js::editButtonToggled: Attempting to clone current active transects layer into an edit layer');
             var originalLayer = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0].clone();
+            var oLayerPrefix = originalLayer.name.split(':')[0];
+            var oLayerTitle = originalLayer.name.split(':')[1];
+            var oLayerName = originalLayer.name;
             var clonedLayer = new OpenLayers.Layer.Vector('transects-edit-layer',{
                 strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
-                projection: new OpenLayers.Projection('EPSG:900913'),
                 protocol: new OpenLayers.Protocol.WFS({
                     version: "1.1.0",
-                    url:  "geoserver/"+originalLayer.name.split(':')[0]+"/wfs",
-                    featureType: originalLayer.name.split(':')[1],
-                    featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
+                    url:  "geoserver/"+oLayerPrefix+"/wfs",
+                    featureType: oLayerTitle,
+                    featureNS: CONFIG.namespace[oLayerPrefix],
                     geometryName: "the_geom",
-                    schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + originalLayer.name,
+                    schema: "geoserver/"+oLayerPrefix+"/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + oLayerName,
                     srsName: CONFIG.map.getMap().getProjection()
                 }),
-                cloneOf : originalLayer.name,
+                cloneOf : oLayerName,
                 renderers: CONFIG.map.getRenderer()
             })
             clonedLayer.addFeatures(originalLayer.features);
@@ -100,6 +110,7 @@ var Transects = {
             $('#transects-edit-save-button').unbind('click', Transects.saveEditedLayer);
             $('#transects-edit-save-button').on('click', Transects.saveEditedLayer);
         } else {
+            LOG.debug('Transects.js::editButtonToggled: Edit form was toggled off');
             $("#transects-edit-container").addClass('hidden');
             CONFIG.map.removeLayerByName('transects-edit-layer');
             CONFIG.map.removeControl({
