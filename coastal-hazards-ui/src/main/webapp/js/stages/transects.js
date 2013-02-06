@@ -34,6 +34,7 @@ var Transects = {
         if ($('#transect-edit-form-toggle').hasClass('active')) {
             $('#transect-edit-form-toggle').trigger('click');
         }
+        CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
     },
     enterStage : function() {
         
