@@ -4,6 +4,164 @@ var Transects = {
     reservedColor : '#FF0033',
     defaultSpacing : 500,
     description : 'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
+    appInit : function() {
+        $('#transect-edit-form-toggle').on('click', Transects.editButtonToggled);
+        $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
+        $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
+        
+        Transects.initializeUploader();  
+        
+        CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
+            title : 'transects-select-control',
+            autoActivate : false,
+            box : true,
+            onSelect : function(feature) {
+                LOG.debug('Transects.js::SelectFeature.onSelect(): A feature was selected');
+                var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
+                modifyControl.selectFeature(feature);
+            },
+            onUnselect : function(feature) {
+                LOG.debug('Transects.js::SelectFeature.onSelect(): A feature was unselected');
+                CONFIG.ui.initializeBaselineEditForm();
+                var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
+                modifyControl.unselectFeature(feature);
+            }
+        }));
+        
+    },
+    
+    leaveStage : function() {
+        if ($('#transect-edit-form-toggle').hasClass('active')) {
+            $('#transect-edit-form-toggle').trigger('click');
+        }
+    },
+    enterStage : function() {
+        
+    },
+    
+    editButtonToggled : function(event) {
+        LOG.info('Transects.js::editButtonToggled');
+        
+        var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
+        if (toggledOn) {
+            LOG.debug('Transects.js::editButtonToggled: Edit form to be displayed');
+            
+            LOG.debug('Transects.js::editButtonToggled: Attempting to clone current active transects layer into an edit layer');
+            
+            var originalLayer = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0].clone();
+            var clonedLayer = new OpenLayers.Layer.Vector('transects-edit-layer',{
+                strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
+                projection: new OpenLayers.Projection('EPSG:900913'),
+                protocol: new OpenLayers.Protocol.WFS({
+                    version: "1.1.0",
+                    url:  "geoserver/"+originalLayer.name.split(':')[0]+"/wfs",
+                    featureType: originalLayer.name.split(':')[1],
+                    featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
+                    geometryName: "the_geom",
+                    schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + originalLayer.name,
+                    srsName: CONFIG.map.getMap().getProjection()
+                }),
+                cloneOf : originalLayer.name,
+                renderers: CONFIG.map.getRenderer()
+            })
+            clonedLayer.addFeatures(originalLayer.features);
+            
+            var baselineLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
+            var snap = new OpenLayers.Control.Snapping({
+                id: 'snap-control',
+                layer: clonedLayer,
+                targets: [baselineLayer],
+                greedy: true
+            });
+            snap.activate();
+            CONFIG.map.getMap().addControl(snap);
+             
+            LOG.debug('Transects.js::editButtonToggled: Adding cloned layer to map');
+            CONFIG.map.getMap().addLayer(clonedLayer);
+            
+            LOG.debug('Transects.js::editButtonToggled: Adding clone control to map');
+            CONFIG.map.getMap().addControl(
+                new OpenLayers.Control.ModifyFeature(
+                    clonedLayer, 
+                    {
+                        id : 'transects-edit-control',
+                        deleteCodes : [8, 46, 48],
+                        standalone : true,
+                        createVertices : false
+                    })
+                );
+            var selectControl = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
+            
+            selectControl.activate();
+            selectControl.setLayer([clonedLayer]);
+            
+            $("#transects-edit-container").removeClass('hidden');
+            $('#transects-edit-save-button').unbind('click', Transects.saveEditedLayer);
+            $('#transects-edit-save-button').on('click', Transects.saveEditedLayer);
+        } else {
+            $("#transects-edit-container").addClass('hidden');
+            CONFIG.map.removeLayerByName('transects-edit-layer');
+            CONFIG.map.removeControl({
+                id : 'transects-edit-control'
+            });
+            CONFIG.map.removeControl({
+                id : 'snap-control'
+            });
+            CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
+        }
+    },   
+    saveEditedLayer : function() {
+        LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
+                
+        var layer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
+        
+        var saveStrategy = layer.strategies.find(function(n) {
+            return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
+        });
+                        
+        saveStrategy.events.remove('success');
+
+        saveStrategy.events.register('success', null, function() {
+            LOG.debug('Baseline.js::saveEditedLayer: Layer was updated on OWS server. Refreshing layer list');
+                    
+            CONFIG.map.removeLayerByName(layer.cloneOf);
+            Transects.refreshFeatureList({
+                selectLayer : layer.cloneOf
+            })
+            $('#transect-edit-form-toggle').trigger('click'); 
+        });
+                
+        saveStrategy.save();  
+    },
+    refreshFeatureList : function(args) {
+        LOG.info('Transects.js::refreshFeatureList: Will cause WMS GetCapabilities call to refresh current feature list')
+        var selectLayer = args.selectLayer; 
+        var namespace = selectLayer.split(':')[0];
+        CONFIG.ows.getWMSCapabilities({
+            namespace : namespace,
+            callbacks : {
+                success : [
+                CONFIG.tempSession.updateLayersFromWMS,
+                function(caps, context) {
+                    LOG.info('Transects.js::refreshFeatureList: WMS GetCapabilities response parsed')
+                    Transects.populateFeaturesList(caps);
+                
+                    if (selectLayer) {
+                        LOG.info('Transects.js::refreshFeatureList: Auto-selecting layer ' + selectLayer)
+                        $('#transects-list').children().each(function(i,v) {
+                            if (v.value === selectLayer) {
+                                LOG.debug('Triggering "select" on featurelist option');
+                                $('#transects-list').val(v.value);
+                                $('#transects-list').trigger('change');
+                            }
+                        })
+                    }
+                }
+                ],
+                error: []
+            }
+        })
+    },
     addTransects : function(args) {
         var transects = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
@@ -57,6 +215,8 @@ var Transects = {
     } ,       
     listboxChanged : function() {
         LOG.info('Transects.js::listboxChanged: Transect listbox changed');
+        Transects.disableEditButton();
+        
         $("#transects-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
             if (layers.length) {
@@ -88,7 +248,14 @@ var Transects = {
                 stage : Transects.stage,
                 config : stageConfig
             })
+            Transects.enableEditButton();
         }
+    },
+    enableEditButton : function() {
+        $('#transect-edit-form-toggle').removeAttr('disabled');
+    },
+    disableEditButton : function() {
+        $('#transect-edit-form-toggle').attr('disabled', 'disabled');
     },
     enableCreateTransectsButton : function() {
         LOG.info('Transects.js::enableCreateTransectsButton: Baseline has been added to the map. Enabling create transect button');
@@ -207,8 +374,6 @@ var Transects = {
         } else {
             wpsProc();
         }
-        
-        
     },
     createWPSGenerateTransectsRequest : function(args) {
         var shorelines = args.shorelines;
@@ -310,6 +475,7 @@ var Transects = {
         '</wps:Execute>';
         return request;
     },
+    
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({
             caller : Transects
