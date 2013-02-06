@@ -2,7 +2,6 @@ package gov.usgs.cida.coastalhazards.wps;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
@@ -29,7 +28,6 @@ import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.geometry.Envelope;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -291,9 +289,17 @@ public class ResultsRasterProcess implements GeoServerProcess {
         }
 
         private Color valueToColor(Number value) {
-            int valueAsInt = (int)((value.doubleValue() - attributeRange.min) / attributeRange.extent * 255d);
-            if (valueAsInt > -1 && valueAsInt < 256) {
-            return new Color(valueAsInt, valueAsInt, valueAsInt, 255);
+            double coef = ((value.doubleValue() - attributeRange.min) / attributeRange.extent);
+            if (coef > 0 && coef < 1) {
+                coef *= 4d;
+                float r = (float)Math.min(coef - 1.5, -coef + 4.5);
+                float g = (float)Math.min(coef - 0.5, -coef + 3.5);
+                float b = (float)Math.min(coef + 0.5, -coef + 2.5);
+                r = r > 1 ? 1 : r < 0 ? 0 : r;
+                return new Color(
+                    r > 1 ? 1 : r < 0 ? 0 : r,
+                    g > 1 ? 1 : g < 0 ? 0 : g,
+                    b > 1 ? 1 : b < 0 ? 0 : b);
             } else {
                 return Color.white;
             }
