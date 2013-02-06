@@ -272,7 +272,7 @@
                                         </div>
                                         <div id="transects-edit-container" class="well well-small hidden">
                                             <div class="row-fluid">
-                                                <button class="btn btn-success" id="baseline-edit-save-button" title="Update Modified Transect">Update Transect</button>
+                                                <button class="btn btn-success" id="transects-edit-save-button" title="Update Modified Transect">Update Transect</button>
                                             </div>
                                         </div>
                                     </div>

@@ -434,7 +434,7 @@ var Baseline = {
     getDrawLayer : function() {
         return CONFIG.map.getMap().getControlsBy('id','baseline-draw-control')[0].layer;
     },
-    saveEditedLayer : function(event) {
+    saveEditedLayer : function() {
         LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
                 
         var layer = CONFIG.map.getMap().getLayersByName('baseline-edit-layer')[0];

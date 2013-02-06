@@ -48,7 +48,6 @@ var Transects = {
             LOG.debug('Transects.js::editButtonToggled: Attempting to clone current active transects layer into an edit layer');
             
             var originalLayer = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0].clone();
-            var baselineLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
             var clonedLayer = new OpenLayers.Layer.Vector('transects-edit-layer',{
                 strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
                 projection: new OpenLayers.Projection('EPSG:900913'),
@@ -66,11 +65,12 @@ var Transects = {
             })
             clonedLayer.addFeatures(originalLayer.features);
             
+            var baselineLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
             var snap = new OpenLayers.Control.Snapping({
                 id: 'snap-control',
                 layer: clonedLayer,
                 targets: [baselineLayer],
-                greedy: false
+                greedy: true
             });
             snap.activate();
             CONFIG.map.getMap().addControl(snap);
@@ -89,15 +89,14 @@ var Transects = {
                         createVertices : false
                     })
                 );
-            
-            
-            
             var selectControl = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
             
             selectControl.activate();
             selectControl.setLayer([clonedLayer]);
             
             $("#transects-edit-container").removeClass('hidden');
+            $('#transects-edit-save-button').unbind('click', Transects.saveEditedLayer);
+            $('#transects-edit-save-button').on('click', Transects.saveEditedLayer);
         } else {
             $("#transects-edit-container").addClass('hidden');
             CONFIG.map.removeLayerByName('transects-edit-layer');
@@ -110,6 +109,58 @@ var Transects = {
             CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
         }
     },   
+    saveEditedLayer : function() {
+        LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
+                
+        var layer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
+        
+        var saveStrategy = layer.strategies.find(function(n) {
+            return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
+        });
+                        
+        saveStrategy.events.remove('success');
+
+        saveStrategy.events.register('success', null, function() {
+            LOG.debug('Baseline.js::saveEditedLayer: Layer was updated on OWS server. Refreshing layer list');
+                    
+            CONFIG.map.removeLayerByName(layer.cloneOf);
+            Transects.refreshFeatureList({
+                selectLayer : layer.cloneOf
+            })
+            $('#transect-edit-form-toggle').trigger('click'); 
+        });
+                
+        saveStrategy.save();  
+    },
+    refreshFeatureList : function(args) {
+        LOG.info('Transects.js::refreshFeatureList: Will cause WMS GetCapabilities call to refresh current feature list')
+        var selectLayer = args.selectLayer; 
+        var namespace = selectLayer.split(':')[0];
+        CONFIG.ows.getWMSCapabilities({
+            namespace : namespace,
+            callbacks : {
+                success : [
+                CONFIG.tempSession.updateLayersFromWMS,
+                function(caps, context) {
+                    LOG.info('Transects.js::refreshFeatureList: WMS GetCapabilities response parsed')
+                    Transects.populateFeaturesList(caps);
+                
+                    if (selectLayer) {
+                        LOG.info('Transects.js::refreshFeatureList: Auto-selecting layer ' + selectLayer)
+                        $('#transects-list').children().each(function(i,v) {
+                            if (v.value === selectLayer) {
+                                LOG.debug('Triggering "select" on featurelist option');
+                                $('#transects-list').val(v.value);
+                                $('#transects-list').trigger('change');
+                            }
+                        })
+                    }
+                }
+                ],
+                error: []
+            }
+        })
+    },
     addTransects : function(args) {
         var transects = new OpenLayers.Layer.Vector(args.name, {
             strategies: [new OpenLayers.Strategy.BBOX()],
