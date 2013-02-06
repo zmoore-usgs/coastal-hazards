@@ -4,51 +4,6 @@ var Map = function() {
     me.map = new OpenLayers.Map('map', {
         projection : "EPSG:900913"
     });
-    
-    var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
-        strategies : [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
-        projection: new OpenLayers.Projection('EPSG:900913'),
-        protocol: new OpenLayers.Protocol.WFS({
-            version: "1.1.0",
-            url: "geoserver/ows",
-            featureNS :  CONFIG.tempSession.getCurrentSessionKey(),
-            maxExtent: me.map.getExtent(),
-            featureType: "featureType",
-            geometryName: "the_geom",
-            schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + CONFIG.tempSession.getCurrentSessionKey() + ":featureType"
-        }),
-        onFeatureInsert : function(feature) {
-            feature.attributes['Orient'] = 'seaward';
-        }
-    });
-
-    var baselineDrawControl = new OpenLayers.Control.DrawFeature(
-        drawLayer,
-        OpenLayers.Handler.Path,
-        {
-            id: 'baseline-draw-control',
-            multi: true
-        });
-            
-    var wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
-        title: 'shoreline-identify-control',
-        layers: [],
-        queryVisible: true,
-        output : 'features',
-        drillDown : true,
-        maxFeatures : 1000,
-        infoFormat : 'application/vnd.ogc.gml',
-        vendorParams : {
-            radius : 3
-        }
-    })
-    
-    var selectBaselineFeatureControl = new OpenLayers.Control.SelectFeature([], {
-        title : 'baseline-select-control',
-        autoActivate : false
-    })
-    
-    wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
             
     me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
         "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
@@ -59,22 +14,23 @@ var Map = function() {
         }
         ));
     
-    me.map.addLayer(drawLayer);
-    me.map.addControl(baselineDrawControl);
-    me.map.addControl(selectBaselineFeatureControl);
-    me.map.addControl(wmsGetFeatureInfoControl);
     me.map.addControl(new OpenLayers.Control.MousePosition());
     me.map.addControl(new OpenLayers.Control.ScaleLine({
         geodesic : true
     }));
     
-    wmsGetFeatureInfoControl.activate();
     
     me.map.zoomToMaxExtent();
     
     return $.extend(me, {
         getMap : function() {
             return me.map;
+        },
+        addControl : function(control) {
+            me.map.addControl(control);
+        },
+        addLayer : function(layer) {
+            me.map.addLayer(layer);
         },
         removeControl : function(args) {
             LOG.info('Map.js::removeControl: Trying to remove a control from map');
@@ -112,6 +68,11 @@ var Map = function() {
             }
             
             return clonedLayer;
+        },
+        getRenderer : function() {
+            var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
+            renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
+            return renderer;
         }
     });
 }

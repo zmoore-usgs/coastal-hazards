@@ -1,41 +1,45 @@
-
 var UI = function() {
-    LOG.info('UI.js::init: UI class is initializing.')
+    LOG.info('UI.js::init: UI class is initializing.');
     var me = (this === window) ? {} : this;
-    var popupHoverDelay = 500;
     
+    LOG.debug('UI.js::init: Setting popup hover delay to ' + popupHoverDelay);
+    var popupHoverDelay = CONFIG.popupHoverDelay;
+    
+    var config = CONFIG.tempSession.getStageConfig();
     me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
     me.work_stages_objects = [Shorelines, Baseline, Transects, Results, Calculation];
     
     $('#clear-sessions-btn').on("click", function(){
         localStorage.clear();
         sessionStorage.clear();
-        LOG.debug('UI.js::Cleared sessions. Reloading application.')
+        LOG.warn('UI.js::Cleared sessions. Reloading application.');
         location.reload();
     })
-    $('#baseline-draw-form-name').val(Util.getRandomLorem());
-    $('#results-form-name').val(Util.getRandomLorem());
-    $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
-    $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
-    $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
-    $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
-    $("#create-intersections-btn").on("click", Calculation.createIntersectionSubmit);
-    $("#create-results-btn").on("click", Results.calcResults);
-    var config = CONFIG.tempSession.getStageConfig();
+        
+    LOG.debug('UI.js::init: Initializing AJAX start/stop hooks');
+    $(document).ajaxStart(function() {
+        LOG.debug('AJAX Call Started');
+        $("#application-spinner").fadeIn();
+    });
+    $(document).ajaxStop(function() {
+        LOG.debug('AJAX Call Stopped');
+        $("#application-spinner").fadeOut();
+    });
     
-    // We only want the popups to occur on the first load of the application but not afterwards
-    if (config.view.popup != false) {
-        config.view.popup = false;
+    LOG.info('UI.js::init: This is the first load of this session. Popups will be shown on this load only');
+    config.view.popup = false;
         
-        CONFIG.tempSession.setStageConfig({
-            config : config
-        });
+    CONFIG.tempSession.setStageConfig({
+        config : config
+    });
         
-        me.work_stages_objects.each(function(stage) {
+    me.work_stages_objects.each(function(stage) {
+            
+        if (stage.description.stage) {
             $('#nav-list a[href="#'+stage.stage+'"]').popover({
                 title : stage.stage.capitalize(),
                 content : $('<div />')
-                .append($('<div />').html(stage.description))
+                .append($('<div />').html(stage.description.stage))
                 .html(),
                 html : true,
                 placement : 'right',
@@ -44,11 +48,13 @@ var UI = function() {
                     show : popupHoverDelay
                 }
             })
+        }
         
+        if (stage.description['view-tab']) {
             $('#'+stage.stage+' [href="#'+stage.stage+'-view-tab"]').popover({
                 title : stage.stage.capitalize() + ' View',
                 content : $('<div />')
-                .append($('<div />').html(stage.description))
+                .append($('<div />').html(stage.description['view-tab']))
                 .html(),
                 html : true,
                 placement : 'top',
@@ -57,11 +63,13 @@ var UI = function() {
                     show : popupHoverDelay
                 }
             })
-        
+        }
+            
+        if (stage.description['manage-tab']) {
             $('#'+stage.stage+' [href="#'+stage.stage+'-manage-tab"]').popover({
                 title : stage.stage.capitalize() + ' Manage',
                 content : $('<div />')
-                .append($('<div />').html(stage.description))
+                .append($('<div />').html(stage.description['manage-tab']))
                 .html(),
                 html : true,
                 placement : 'top',
@@ -70,20 +78,75 @@ var UI = function() {
                     show : popupHoverDelay
                 }
             })
-        })
-    
-        $('#map-well').popover({
-            title : 'Map',
+        }
+            
+        if (stage.description['upload-button']) {
+            $('#'+stage.stage+'-triggerbutton').popover({
+                title : stage.stage.capitalize() + ' Resource Upload',
+                content : $('<div />')
+                .append($('<div />').html(stage.description['upload-button']))
+                .html(),
+                html : true,
+                placement : 'bottom',
+                trigger : 'hover',
+                delay : {
+                    show : popupHoverDelay
+                }
+            })
+        }
+            
+        $('#create-transects-toggle').popover({
+            title : stage.stage.capitalize() + ' Generate',
             content : $('<div />')
-            .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium'))
+            .append($('<div />').html('Choose transect spacing and generate a new transects layer from the workspace baseline.'))
             .html(),
             html : true,
-            placement : 'left',
+            placement : 'bottom',
             trigger : 'hover',
             delay : {
                 show : popupHoverDelay
             }
         })
+            
+        $('#baseline-draw-btn').popover({
+            title : stage.stage.capitalize() + ' Draw',
+            content : $('<div />')
+            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : popupHoverDelay
+            }
+        })
+            
+        $('#baseline-edit-btn').popover({
+            title : stage.stage.capitalize() + ' Edit',
+            content : $('<div />')
+            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : popupHoverDelay
+            }
+        })
+            
+    
+        //        $('#map-well').popover({
+        //            title : 'Map',
+        //            content : $('<div />')
+        //            .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium'))
+        //            .html(),
+        //            html : true,
+        //            placement : 'left',
+        //            trigger : 'hover',
+        //            delay : {
+        //                show : popupHoverDelay
+        //            }
+        //        })
     
         $('.feature-list').popover({
             title : 'Layer Selection',
@@ -106,17 +169,17 @@ var UI = function() {
                 show : popupHoverDelay
             }
         })
-    }
+    })
     
-    $('.nav-stacked>li>a').each(function(indexInArray, valueOfElement) { 
-        $(valueOfElement).on('click', function() {
-            me.switchImage(indexInArray);
+    $('.nav-stacked>li>a').each(function(index, ele) { 
+        $(ele).on('click', function() {
+            me.switchStage(index);
         })
     })
     
     return $.extend(me, {
         displayStage : function(caller) {
-            $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click')  
+            $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click');
         },
         createModalWindow : function(args) {
             var headerHtml = args.headerHtml || '';
@@ -152,8 +215,18 @@ var UI = function() {
             
             $("#modal-window").modal('show');
         },
-        switchImage : function (stage) {
+        switchStage : function (stage) {
             LOG.info('UI.js::switchImage: Changing application context to ' + me.work_stages[stage])
+            
+            var caller = me.work_stages_objects[stage]
+            me.work_stages_objects.filter(function(stage) {
+                return stage != caller
+            }).each(function(stage) {
+                stage.leaveStage();
+            })
+            
+            caller.enterStage();
+            
             for (var stageIndex = 0;stageIndex < me.work_stages.length;stageIndex++) {
                 var workStage = me.work_stages[stageIndex];
                 var imgId = '#' + workStage + '_img';
@@ -640,11 +713,7 @@ var UI = function() {
                     caller : caller
                 })
             }
-            
         }
     });
 }
-
-
-
-
+    

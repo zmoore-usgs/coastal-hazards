@@ -1,18 +1,7 @@
-// TODO - Add current user session to temp session and use temp session as the work session and persist temp session to permSession at intervals
-var sld;
 $(document).ready(function() {
+    
     initializeLogging({
         LOG4JS_LOG_THRESHOLD : CONFIG.development ? 'debug' : 'info'
-    });
-    
-    $(document).ajaxStart(function() {
-        LOG.debug('start');
-        $("#application-spinner").fadeIn();
-    });
-    
-    $(document).ajaxStop(function() {
-        LOG.debug('end');
-        $("#application-spinner").fadeOut();
     });
     
     // Math.seedrandom('Look @ http://davidbau.com/encode/seedrandom.js')
@@ -85,16 +74,15 @@ $(document).ready(function() {
                     namespace : currentSessionKey,
                     callbacks : {
                         success : [
+                            
                         CONFIG.tempSession.updateLayersFromWMS,
-                        Shorelines.initializeUploader,
-                        Baseline.initializeUploader,
-                        Transects.initializeUploader,
-                        Shorelines.populateFeaturesList,
-                        Baseline.populateFeaturesList,
-                        Transects.populateFeaturesList,
-                        Calculation.populateFeaturesList,
-                        Results.populateFeaturesList,
-                        function() {
+                        
+                        function(data, textStatus, jqXHR) {
+                            CONFIG.ui.work_stages_objects.each(function(stage) {
+                                stage.appInit();
+                                stage.populateFeaturesList(data, textStatus, jqXHR)
+                            })
+                            
                             $('.qq-upload-button').addClass('btn btn-success');
                             $('#application-overlay').fadeOut()
                         }
@@ -103,9 +91,9 @@ $(document).ready(function() {
                         error : [
                         Shorelines.initializeUploader,
                         Baseline.initializeUploader,
+                        Baseline.populateFeaturesList,
                         Transects.initializeUploader,
                         Shorelines.populateFeaturesList,
-                        Baseline.populateFeaturesList,
                         Transects.populateFeaturesList,
                         Calculation.populateFeaturesList,
                         Results.populateFeaturesList,

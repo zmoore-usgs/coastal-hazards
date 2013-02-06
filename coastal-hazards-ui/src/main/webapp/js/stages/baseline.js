@@ -4,14 +4,62 @@ var Baseline = {
     baselineDrawButton : $('#baseline-draw-btn'),
     reservedColor : '#1B9E77',
     shorewardColor : '#76C5AD',
+    description : {
+        'stage' : 'Select an existing published baseline, upload your own, or draw a new baseline. A baseline provides a reference polyline to determine the orientation of erosion and deposition of coastlines.',
+        'view-tab' : 'Select a published collection of shorelines to add to the workspace.',
+        'manage-tab' : 'Add a new baseline to the workspace, or clone and edit an existing baseline.',
+        'upload-button' : 'Upload a zipped shapefile containing a baseline polyline.'
+    },
+    appInit : function() {
+        $('#baseline-draw-form-name').val(Util.getRandomLorem());
+        $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
+        $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
+        $('#baseline-draw-form-name').val(Util.getRandomLorem());
+        Baseline.initializeUploader();
+        
+        var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
+            strategies : [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
+            projection: new OpenLayers.Projection('EPSG:900913'),
+            protocol: new OpenLayers.Protocol.WFS({
+                version: "1.1.0",
+                url: "geoserver/ows",
+                featureNS :  CONFIG.tempSession.getCurrentSessionKey(),
+                maxExtent: CONFIG.map.getMap().getExtent(),
+                featureType: "featureType",
+                geometryName: "the_geom",
+                schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + CONFIG.tempSession.getCurrentSessionKey() + ":featureType"
+            }),
+            onFeatureInsert : function(feature) {
+                feature.attributes['Orient'] = 'seaward';
+            }
+        });
+
+        CONFIG.map.addLayer(drawLayer);
+        CONFIG.map.addControl(new OpenLayers.Control.DrawFeature(
+            drawLayer,
+            OpenLayers.Handler.Path,
+            {
+                id: 'baseline-draw-control',
+                multi: true
+            }));
+            
+        CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
+            title : 'baseline-select-control',
+            autoActivate : false,
+            box : true
+        }));
+        
+    },
     
-    description : 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
+    leaveStage : function() {
+        
+    },
+    enterStage : function() {
+        
+    },
+    
     addBaselineToMap : function(args) {
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
-        
-        var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
-        renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
-        
         var style = new OpenLayers.Style({
             strokeColor: '#FFFFFF',
             strokeWidth: 2
@@ -63,7 +111,7 @@ var Baseline = {
                 featureType: args.name.split(':')[1],
                 geometryName: "the_geom"
             }),
-            renderers: renderer,
+            renderers: CONFIG.map.getRenderer(),
             styleMap: new OpenLayers.StyleMap(style)
         });
         
@@ -159,6 +207,7 @@ var Baseline = {
         var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
                 
         if (toggledOn) {
+            
             
             LOG.debug('Baseline.js::editButtonToggled: Edit form to be displayed');
             
@@ -339,17 +388,14 @@ var Baseline = {
         LOG.debug('Baseline.js::drawButtonToggled: User wishes to ' + beginDrawing ? 'begin' : 'stop' + 'drawing');
         
         if (beginDrawing) {
-            Baseline.getDrawControl().activate();
-            Baseline.disableEditButton();
             Baseline.beginDrawing();
         } else {
-            Baseline.getDrawControl().deactivate();
-            Baseline.enableEditButton();
             Baseline.stopDrawing();
         }
     },
     beginDrawing : function() {
         LOG.debug('Baseline.js::beginDrawing: Initializing baseline draw panel');
+        Baseline.disableEditButton();
         
         LOG.debug('Baseline.js::beginDrawing: Removing currently drawn features, if any');
         Baseline.clearDrawFeatures();
@@ -373,8 +419,9 @@ var Baseline = {
     stopDrawing : function() {
         LOG.debug('Baseline.js::stopDrawing: Removing (uninitializing) draw panel.');
 
-        LOG.debug('Baseline.js::stopDrawing: Deactivating draw control');
+        LOG.debug('Baseline.js::stopDrawing: Removing draw control');
         Baseline.getDrawControl().deactivate();
+        Baseline.enableEditButton();
         
         LOG.debug('Baseline.js::stopDrawing: Removing currently drawn features, if any');
         Baseline.clearDrawFeatures();
@@ -392,7 +439,7 @@ var Baseline = {
     getDrawLayer : function() {
         return CONFIG.map.getMap().getControlsBy('id','baseline-draw-control')[0].layer;
     },
-    saveEditedLayer : function(event) {
+    saveEditedLayer : function() {
         LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
                 
         var layer = CONFIG.map.getMap().getLayersByName('baseline-edit-layer')[0];

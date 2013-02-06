@@ -4,8 +4,49 @@
 var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
+    
     // Dictates what will be displaed in the stage popover
-    description : 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    description : {
+        'stage' : 'View and select existing published shorelines, or upload your own. Shorelines represent snap-shots of the coastline at various points in time.',
+        'view-tab' : 'Select a published collection of shorelines to add to the workspace.',
+        'manage-tab' : ' Upload a zipped shapefile to add it to the workspace.',
+        'upload-button' : 'Upload a zipped shapefile which includes shoreline polyline features.'
+    },
+    
+    appInit : function() {
+        Shorelines.initializeUploader();
+        
+        var wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
+            title: 'shoreline-identify-control',
+            layers: [],
+            queryVisible: true,
+            output : 'features',
+            drillDown : true,
+            maxFeatures : 1000,
+            infoFormat : 'application/vnd.ogc.gml',
+            vendorParams : {
+                radius : 3
+            }
+        })
+    
+    
+        wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
+        CONFIG.map.addControl(wmsGetFeatureInfoControl);
+        Shorelines.enterStage();
+    },
+    
+    leaveStage : function() {
+        var shorelineId = CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control');
+        if (shorelineId.length) {
+            shorelineId[0].deactivate();
+        }
+    },
+    enterStage : function() {
+        var shorelineId = CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control');
+        if (shorelineId.length) {
+            shorelineId[0].activate();
+        }
+    },
     
     /**
      * Calls DescribeFeatureType against OWS service and tries to add the layer(s) to the map 
