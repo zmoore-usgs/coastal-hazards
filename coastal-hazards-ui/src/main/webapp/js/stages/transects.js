@@ -7,12 +7,26 @@ var Transects = {
         'stage' : 'Select existing transects, or generate new transects from the workspace baseline. Transects are rays that are projected from the baseline, and the intersections between shorelines and transects are used to calculate rates of erosion and deposition.',
         'view-tab' : 'Select a published collection of shorelines to add to the workspace.',
         'manage-tab' : 'Upload a new collection of transects to the workspace, generate new transects, or edit existing transects.',
-        'upload-button' : 'Upload a zipped shapefile which contains a collection of transects.'
+        'upload-button' : 'Upload a zipped shapefile which contains a collection of transects.',
+        'calculate-button' : 'Choose transect spacing and generate a new transects layer from the workspace baseline.'
     },
     appInit : function() {
         $('#transect-edit-form-toggle').on('click', Transects.editButtonToggled);
         $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
         $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
+        
+        $('#create-transects-button').popover({
+                title : Transects.stage.capitalize() + ' Generate',
+                content : $('<div />')
+                .append($('<div />').html(Transects.description['calculate-button']))
+                .html(),
+                html : true,
+                placement : 'bottom',
+                trigger : 'hover',
+                delay : {
+                    show : CONFIG.popupHoverDelay
+                }
+            })
         
         Transects.initializeUploader();  
         

@@ -15,6 +15,72 @@ var Baseline = {
         $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
         $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
         $('#baseline-draw-form-name').val(Util.getRandomLorem());
+        
+        $('#baseline-draw-btn').popover({
+            title : Baseline.stage.capitalize() + ' Draw',
+            content : $('<div />')
+            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        })
+            
+        $('#baseline-edit-btn').popover({
+            title : Baseline.stage.capitalize() + ' Edit',
+            content : $('<div />')
+            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        })
+        
+        $('#baseline-draw-btn').popover({
+            title : Baseline.stage.capitalize() + ' Draw',
+            content : $('<div />')
+            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        })
+        
+        $('#baseline-edit-btn').popover({
+            title : Baseline.stage.capitalize() + ' Edit',
+            content : $('<div />')
+            .append($('<div />').html('Expand the editing pallet and modify the selected baseline. '))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        })
+        
+        $('#baseline-clone-btn').popover({
+            title : Baseline.stage.capitalize() + ' Clone',
+            content : $('<div />')
+            .append($('<div />').html('Clone an existing baseline layer so that it can be modified if desired.'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        })
+        
         Baseline.initializeUploader();
         
         var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
