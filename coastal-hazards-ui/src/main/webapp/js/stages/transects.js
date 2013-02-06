@@ -48,7 +48,7 @@ var Transects = {
             LOG.debug('Transects.js::editButtonToggled: Attempting to clone current active transects layer into an edit layer');
             
             var originalLayer = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0].clone();
-            
+            var baselineLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
             var clonedLayer = new OpenLayers.Layer.Vector('transects-edit-layer',{
                 strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
                 projection: new OpenLayers.Projection('EPSG:900913'),
@@ -59,13 +59,22 @@ var Transects = {
                     featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
                     geometryName: "the_geom",
                     schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + originalLayer.name,
-                     srsName: CONFIG.map.getMap().getProjection()
+                    srsName: CONFIG.map.getMap().getProjection()
                 }),
                 cloneOf : originalLayer.name,
                 renderers: CONFIG.map.getRenderer()
             })
             clonedLayer.addFeatures(originalLayer.features);
             
+            var snap = new OpenLayers.Control.Snapping({
+                id: 'snap-control',
+                layer: clonedLayer,
+                targets: [baselineLayer],
+                greedy: false
+            });
+            snap.activate();
+            CONFIG.map.getMap().addControl(snap);
+             
             LOG.debug('Transects.js::editButtonToggled: Adding cloned layer to map');
             CONFIG.map.getMap().addLayer(clonedLayer);
             
@@ -76,9 +85,12 @@ var Transects = {
                     {
                         id : 'transects-edit-control',
                         deleteCodes : [8, 46, 48],
-                        standalone : true
+                        standalone : true,
+                        createVertices : false
                     })
                 );
+            
+            
             
             var selectControl = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
             
@@ -91,6 +103,9 @@ var Transects = {
             CONFIG.map.removeLayerByName('transects-edit-layer');
             CONFIG.map.removeControl({
                 id : 'transects-edit-control'
+            });
+            CONFIG.map.removeControl({
+                id : 'snap-control'
             });
             CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
         }

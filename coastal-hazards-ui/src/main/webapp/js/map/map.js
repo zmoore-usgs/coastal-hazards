@@ -19,6 +19,7 @@ var Map = function() {
         geodesic : true
     }));
     
+    
     me.map.zoomToMaxExtent();
     
     return $.extend(me, {

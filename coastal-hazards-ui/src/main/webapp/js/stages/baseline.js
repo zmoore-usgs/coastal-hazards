@@ -55,9 +55,6 @@ var Baseline = {
     
     addBaselineToMap : function(args) {
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
-        
-        
-        
         var style = new OpenLayers.Style({
             strokeColor: '#FFFFFF',
             strokeWidth: 2
