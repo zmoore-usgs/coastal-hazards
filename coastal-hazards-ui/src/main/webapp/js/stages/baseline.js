@@ -294,7 +294,8 @@ var Baseline = {
                     geometryName: "the_geom",
                     schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + originalLayer.name
                 }),
-                cloneOf : originalLayer.name
+                cloneOf : originalLayer.name,
+                renderers: CONFIG.map.getRenderer()
             })
             clonedLayer.addFeatures(originalLayer.features);
             var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, 

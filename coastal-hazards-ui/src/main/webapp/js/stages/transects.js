@@ -16,17 +16,17 @@ var Transects = {
         $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
         
         $('#create-transects-button').popover({
-                title : Transects.stage.capitalize() + ' Generate',
-                content : $('<div />')
-                .append($('<div />').html(Transects.description['calculate-button']))
-                .html(),
-                html : true,
-                placement : 'bottom',
-                trigger : 'hover',
-                delay : {
-                    show : CONFIG.popupHoverDelay
-                }
-            })
+            title : Transects.stage.capitalize() + ' Generate',
+            content : $('<div />')
+            .append($('<div />').html(Transects.description['calculate-button']))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        })
         
         Transects.initializeUploader();  
         
@@ -105,23 +105,43 @@ var Transects = {
             CONFIG.map.getMap().addControl(snap);
              
             LOG.debug('Transects.js::editButtonToggled: Adding cloned layer to map');
+            
             CONFIG.map.getMap().addLayer(clonedLayer);
             
             LOG.debug('Transects.js::editButtonToggled: Adding clone control to map');
-            CONFIG.map.getMap().addControl(
-                new OpenLayers.Control.ModifyFeature(
-                    clonedLayer, 
-                    {
-                        id : 'transects-edit-control',
-                        deleteCodes : [8, 46, 48],
-                        standalone : true,
-                        createVertices : false
-                    })
-                );
+            var mfControl = new OpenLayers.Control.ModifyFeature(
+                clonedLayer, 
+                {
+                    id : 'transects-edit-control',
+                    deleteCodes : [8, 46, 48, 68],
+                    standalone : true,
+                    createVertices : false,
+                    handleKeypress : function(evt) {
+                        var code = evt.keyCode;
+                        if(this.feature && OpenLayers.Util.indexOf(this.deleteCodes, code) != -1) {
+                            var fid = this.feature.fid
+                            var originalLayer = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0];
+                            var cloneLayer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
+                            var originalFeature = originalLayer.getFeatureBy('fid', fid)
+                            var cloneFeature = cloneLayer.getFeatureBy('fid', fid);
+                            cloneFeature.state = OpenLayers.State.DELETE;
+                            cloneFeature.style = {
+                                strokeOpacity : 0
+                            }
+                            originalFeature.style = {
+                                strokeOpacity : 0
+                            }
+                            Transects.saveEditedLayer();
+                        }
+                    }
+                })
+            CONFIG.map.getMap().addControl(mfControl);
+            mfControl.activate();
+            mfControl.handlers.keyboard.activate();
             var selectControl = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
             
-            selectControl.activate();
             selectControl.setLayer([clonedLayer]);
+            selectControl.activate();
             
             $("#transects-edit-container").removeClass('hidden');
             $('#transects-edit-save-button').unbind('click', Transects.saveEditedLayer);
