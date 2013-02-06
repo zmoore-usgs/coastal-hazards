@@ -94,59 +94,6 @@ var UI = function() {
                 }
             })
         }
-            
-        $('#create-transects-toggle').popover({
-            title : stage.stage.capitalize() + ' Generate',
-            content : $('<div />')
-            .append($('<div />').html('Choose transect spacing and generate a new transects layer from the workspace baseline.'))
-            .html(),
-            html : true,
-            placement : 'bottom',
-            trigger : 'hover',
-            delay : {
-                show : popupHoverDelay
-            }
-        })
-            
-        $('#baseline-draw-btn').popover({
-            title : stage.stage.capitalize() + ' Draw',
-            content : $('<div />')
-            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
-            .html(),
-            html : true,
-            placement : 'bottom',
-            trigger : 'hover',
-            delay : {
-                show : popupHoverDelay
-            }
-        })
-            
-        $('#baseline-edit-btn').popover({
-            title : stage.stage.capitalize() + ' Edit',
-            content : $('<div />')
-            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
-            .html(),
-            html : true,
-            placement : 'bottom',
-            trigger : 'hover',
-            delay : {
-                show : popupHoverDelay
-            }
-        })
-            
-    
-        //        $('#map-well').popover({
-        //            title : 'Map',
-        //            content : $('<div />')
-        //            .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium'))
-        //            .html(),
-        //            html : true,
-        //            placement : 'left',
-        //            trigger : 'hover',
-        //            delay : {
-        //                show : popupHoverDelay
-        //            }
-        //        })
     
         $('.feature-list').popover({
             title : 'Layer Selection',
@@ -169,6 +116,19 @@ var UI = function() {
                 show : popupHoverDelay
             }
         })
+    })
+    
+    $('#map-well').popover({
+        title : 'Map',
+        content : $('<div />')
+        .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium'))
+        .html(),
+        html : true,
+        placement : 'left',
+        trigger : 'hover',
+        delay : {
+            show : popupHoverDelay
+        }
     })
     
     $('.nav-stacked>li>a').each(function(index, ele) { 

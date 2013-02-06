@@ -2,7 +2,7 @@ var Baseline = {
     stage : 'baseline',
     suffixes :  ['_baseline'],
     baselineDrawButton : $('#baseline-draw-btn'),
-    reservedColor : '#1B9E77',
+    reservedColor : '#7570B3',
     shorewardColor : '#76C5AD',
     description : {
         'stage' : 'Select an existing published baseline, upload your own, or draw a new baseline. A baseline provides a reference polyline to determine the orientation of erosion and deposition of coastlines.',
@@ -15,6 +15,72 @@ var Baseline = {
         $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
         $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
         $('#baseline-draw-form-name').val(Util.getRandomLorem());
+        
+        $('#baseline-draw-btn').popover({
+            title : Baseline.stage.capitalize() + ' Draw',
+            content : $('<div />')
+            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        })
+            
+        $('#baseline-edit-btn').popover({
+            title : Baseline.stage.capitalize() + ' Edit',
+            content : $('<div />')
+            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        })
+        
+        $('#baseline-draw-btn').popover({
+            title : Baseline.stage.capitalize() + ' Draw',
+            content : $('<div />')
+            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        })
+        
+        $('#baseline-edit-btn').popover({
+            title : Baseline.stage.capitalize() + ' Edit',
+            content : $('<div />')
+            .append($('<div />').html('Expand the editing pallet and modify the selected baseline. '))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        })
+        
+        $('#baseline-clone-btn').popover({
+            title : Baseline.stage.capitalize() + ' Clone',
+            content : $('<div />')
+            .append($('<div />').html('Clone an existing baseline layer so that it can be modified if desired.'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        })
+        
         Baseline.initializeUploader();
         
         var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
@@ -207,8 +273,6 @@ var Baseline = {
         var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
                 
         if (toggledOn) {
-            
-            
             LOG.debug('Baseline.js::editButtonToggled: Edit form to be displayed');
             
             Baseline.disableDrawButton();
@@ -228,7 +292,8 @@ var Baseline = {
                     geometryName: "the_geom",
                     schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + originalLayer.name
                 }),
-                cloneOf : originalLayer.name
+                cloneOf : originalLayer.name,
+                renderers: CONFIG.map.getRenderer()
             })
             clonedLayer.addFeatures(originalLayer.features);
             var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, 
@@ -282,8 +347,9 @@ var Baseline = {
         } else {
             // remove edit layer, remove edit control
             CONFIG.map.removeLayerByName('baseline-edit-layer');
-            CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0])
-            $('#baseline-draw-btn').removeAttr('disabled')
+            CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0]);
+            CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0].deactivate();
+            $('#baseline-draw-btn').removeAttr('disabled');
             $("#baseline-edit-container").addClass('hidden');
         }
                 
