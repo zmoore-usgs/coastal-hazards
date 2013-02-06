@@ -273,8 +273,6 @@ var Baseline = {
         var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
                 
         if (toggledOn) {
-            
-            
             LOG.debug('Baseline.js::editButtonToggled: Edit form to be displayed');
             
             Baseline.disableDrawButton();
@@ -349,8 +347,9 @@ var Baseline = {
         } else {
             // remove edit layer, remove edit control
             CONFIG.map.removeLayerByName('baseline-edit-layer');
-            CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0])
-            $('#baseline-draw-btn').removeAttr('disabled')
+            CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0]);
+            CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0].deactivate();
+            $('#baseline-draw-btn').removeAttr('disabled');
             $("#baseline-edit-container").addClass('hidden');
         }
                 

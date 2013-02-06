@@ -14,6 +14,7 @@ var Transects = {
         $('#transect-edit-form-toggle').on('click', Transects.editButtonToggled);
         $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
         $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
+        $('#transects-edit-add-button').on('click', Transects.addTransect);
         
         $('#create-transects-button').popover({
             title : Transects.stage.capitalize() + ' Generate',
@@ -53,9 +54,14 @@ var Transects = {
         if ($('#transect-edit-form-toggle').hasClass('active')) {
             $('#transect-edit-form-toggle').trigger('click');
         }
-        var controls = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
-        if (controls.length) {
-            controls[0].deactivate();
+        var control = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
+        if (control.length) {
+            control[0].deactivate();
+        }
+        
+        control = CONFIG.map.getMap().getControlsBy('title', 'transects-draw-control')[0];
+        if (control.length) {
+            control[0].deactivate();
         }
     },
     enterStage : function() {
@@ -159,6 +165,20 @@ var Transects = {
             CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
         }
     },   
+    addTransect : function() {
+        var cloneLayer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
+        CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
+        var drawControl = new OpenLayers.Control.DrawFeature(
+            cloneLayer,
+            OpenLayers.Handler.Path,
+            {
+                id: 'transects-draw-control',
+                multi: true
+            })
+        CONFIG.map.addControl(drawControl);
+        drawControl.activate();
+            
+    },
     saveEditedLayer : function() {
         LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
                 
