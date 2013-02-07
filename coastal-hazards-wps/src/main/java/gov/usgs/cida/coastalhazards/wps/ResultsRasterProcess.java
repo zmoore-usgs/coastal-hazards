@@ -10,6 +10,8 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.coverage.grid.GridCoordinates2D;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -26,6 +28,7 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.geometry.MismatchedDimensionException;
@@ -43,20 +46,11 @@ import org.opengis.referencing.operation.TransformException;
         version = "1.0.0")
 public class ResultsRasterProcess implements GeoServerProcess {
     
-    public static class AttributeRange {
-        public final double min;
-        public final double max;
-        public final double extent;
-        public AttributeRange(double min, double max) {
-            this.min = min;
-            this.max = max;
-            this.extent = max - min;
-        }
-    }
-    
-    Map<String, Map<String, AttributeRange>> featureAttributeRangeMap = new WeakHashMap<String, Map<String, AttributeRange>>();
+    private final static Logger LOGGER = Logging.getLogger(ResultsRasterProcess.class);
 
-    private static final int COORD_GRID_CHUNK_SIZE = 256;
+    private final static int COORD_GRID_CHUNK_SIZE = 256;
+    
+    private Map<String, Map<String, AttributeRange>> featureAttributeRangeMap = new WeakHashMap<String, Map<String, AttributeRange>>();
 
     @DescribeResult(name = "coverage", description = "coverage")
     public GridCoverage2D execute(
@@ -87,7 +81,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
         private BufferedImage image;
         private Graphics2D graphics;
 
-        private AttributeRange attributeRange;
+        private ColorMap<Number> colorMap;
         
         private Process(SimpleFeatureCollection featureCollection,
                 String className,
@@ -142,15 +136,20 @@ public class ResultsRasterProcess implements GeoServerProcess {
 
             gridGeometry = new GridGeometry2D(new GridEnvelope2D(0, 0, coverageWidth, coverageHeight), extent);
             
-            String id = featureCollection.getID().intern();
-            synchronized (id) {
-                Map<String, AttributeRange> attributeRangeMap = featureAttributeRangeMap.get(id);
+            // NOTE!  intern() is important, using instance as synchrnization lock, need equality by reference
+            String featureCollectionId = featureCollection.getSchema().getName().getURI().intern();
+            
+            LOGGER.log(Level.INFO, "Using identifier {} for attribute value range map lookup", featureCollectionId);
+            synchronized (featureCollectionId) {
+                Map<String, AttributeRange> attributeRangeMap = featureAttributeRangeMap.get(featureCollectionId);
                 if (attributeRangeMap == null) {
                     attributeRangeMap = new WeakHashMap<String, AttributeRange>();
-                    featureAttributeRangeMap.put(id, attributeRangeMap);
+                    featureAttributeRangeMap.put(featureCollectionId, attributeRangeMap);
+                    LOGGER.log(Level.INFO, "Created attribute value range map for {}", featureCollectionId);
                 }
-                attributeRange = attributeRangeMap.get(attributeName);
+                AttributeRange attributeRange = attributeRangeMap.get(attributeName);
                 if (attributeRange == null) {
+                    LOGGER.log(Level.INFO, "Calculating attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
                     SimpleFeatureIterator iterator = featureCollection.features();
                     if (iterator.hasNext()) {
                         double value = ((Number)iterator.next().getAttribute(attributeName)).doubleValue();
@@ -167,8 +166,15 @@ public class ResultsRasterProcess implements GeoServerProcess {
                         }
                         attributeRange = new AttributeRange(minimum, maximum);
                         attributeRangeMap.put(attributeName, attributeRange);
+                        LOGGER.log(Level.INFO, "Caching attribute value range for {}:{} {}",
+                                new Object[] {
+                                    featureCollectionId, attributeName, attributeRange
+                                });
                     }
+                } else {
+                    LOGGER.log(Level.INFO, "Using cached attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
                 }
+                colorMap = new JetColorMap(attributeRange);
             }
         }
 
@@ -181,7 +187,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
             }
 
             if (extent.intersects(feature.getBounds().toBounds(extent.getCoordinateReferenceSystem()))) {
-                graphics.setColor(valueToColor(((Number)attributeValue)));
+                graphics.setColor(colorMap.valueToColor(((Number)attributeValue)));
                 Geometries geomType = Geometries.get(geometry);
                 switch (geomType) {
                     case MULTIPOLYGON:
@@ -287,15 +293,45 @@ public class ResultsRasterProcess implements GeoServerProcess {
                     // nothing to do...
             }
         }
-
-        private Color valueToColor(Number value) {
-            double coef = ((value.doubleValue() - attributeRange.min) / attributeRange.extent);
+    }
+    
+    public static class AttributeRange {
+        public final double min;
+        public final double max;
+        public final double extent;
+        public AttributeRange(double min, double max) {
+            this.min = min;
+            this.max = max;
+            this.extent = max - min;
+        }
+        @Override
+        public String toString() {
+            return new StringBuilder("range=[").append(min).append(':').append(max).append(']').toString();
+        }
+    }
+    
+    public static interface ColorMap<T> {
+        Color valueToColor(T value);
+    }
+    
+    public static class JetColorMap implements ColorMap<Number> {
+        public final AttributeRange range;
+        
+        public JetColorMap(AttributeRange range) {
+            double absOfMax = range.max < 0 ? 0 - range.max : range.max;
+            double absOfMin = range.min < 0 ? 0 - range.min : range.min;
+            double maxAbs = absOfMax > absOfMin ? absOfMax : absOfMin;
+            this.range = new AttributeRange(0 - maxAbs, maxAbs);
+        }
+        
+        @Override
+        public Color valueToColor(Number value) {
+            double coef = ((value.doubleValue() - range.min) / range.extent);
             if (coef > 0 && coef < 1) {
                 coef *= 4d;
                 float r = (float)Math.min(coef - 1.5, -coef + 4.5);
                 float g = (float)Math.min(coef - 0.5, -coef + 3.5);
                 float b = (float)Math.min(coef + 0.5, -coef + 2.5);
-                r = r > 1 ? 1 : r < 0 ? 0 : r;
                 return new Color(
                     r > 1 ? 1 : r < 0 ? 0 : r,
                     g > 1 ? 1 : g < 0 ? 0 : g,
