@@ -252,7 +252,9 @@
                                         </button>
                                     </div>
                                     <div class="row-fluid">
-                                        <div id="create-transects-panel-well" class="well hidden">
+                                        <!-- Transects -->
+                                        <div id="create-transects-panel-well" class="well span6 hidden">
+                                            Transects
                                             <div id="create-transects-panel-container" class="container-fluid">
                                                 <div class="row-fluid span12">
                                                     <form>
@@ -260,16 +262,28 @@
                                                         <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
                                                         <label for="create-transects-input-spacing">Name</label>
                                                         <input type="text" id="create-transects-input-name">
-
-                                                        <div class="control-group">
-                                                            <button type="button" class="btn btn-success" id="create-transects-input-button">
-                                                                <i class="icon-tasks icon-white"></i>
-                                                                &nbsp;Generate</button>
-                                                        </div>
                                                     </form>
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <!-- Intersections -->
+                                        <div id="intersection-calculation-panel-well" class="well hidden span6">
+                                            Intersections
+                                            <label for="create-intersections-nearestfarthest-list">Take Nearest/Farthest Intersection</label>
+                                            <select id="create-intersections-nearestfarthest-list" style="width: 100%;">
+                                                <option selected="selected" value="false">Nearest</option>
+                                                <option value="true">Farthest</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="control-group">
+                                            <button type="button" class="btn btn-success span12 hidden" id="create-transects-input-button">
+                                                <i class="icon-tasks icon-white"></i>
+                                                &nbsp;Generate
+                                            </button>
+                                        </div>
+
                                         <div id="transects-edit-container" class="well well-small hidden">
                                             <div class="row-fluid">
                                                 <button class="btn btn-success" id="transects-edit-save-button" title="Update Modified Transect">Update Transect</button>
@@ -298,19 +312,19 @@
                                 <div class="tab-pane" id="intersections-manage-tab">
                                     <!-- Intersection Calculation -->
                                     <div class="row-fluid">
-                                        <div id="intersection-calculation-panel-well" class="well span6">
-                                            <label for="create-intersections-nearestfarthest-list">Take Nearest/Farthest Intersection</label>
-                                            <select id="create-intersections-nearestfarthest-list" style="width: 100%;">
-                                                <option selected="selected" value="false">Nearest</option>
-                                                <option value="true">Farthest</option>
-                                            </select>
-                                            <button class="btn btn-success" id="create-intersections-btn">
-                                                <i class="icon-tasks icon-white"></i>
-                                                &nbsp;Calculate Intersections</button>
-                                            </button>
-                                        </div>
+                                        <!--                                        <div id="intersection-calculation-panel-well" class="well span6">
+                                                                                    <label for="create-intersections-nearestfarthest-list">Take Nearest/Farthest Intersection</label>
+                                                                                    <select id="create-intersections-nearestfarthest-list" style="width: 100%;">
+                                                                                        <option selected="selected" value="false">Nearest</option>
+                                                                                        <option value="true">Farthest</option>
+                                                                                    </select>
+                                                                                    <button class="btn btn-success" id="create-intersections-btn">
+                                                                                        <i class="icon-tasks icon-white"></i>
+                                                                                        &nbsp;Calculate Intersections</button>
+                                                                                    </button>
+                                                                                </div>-->
                                         <div id="results-calculation-panel-well" class="well span6">
-                                            <label class="control-label" for="results-form-name">Baseline Name</label>
+                                            <label class="control-label" for="results-form-name">Results Name</label>
                                             <input class="input-large" name="results-form-name" id="results-form-name"  style="width: 100%;" />
                                             <button class="btn btn-success" id="create-results-btn">
                                                 <i class="icon-tasks icon-white"></i>

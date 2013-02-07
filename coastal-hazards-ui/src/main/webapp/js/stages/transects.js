@@ -186,7 +186,7 @@ var Transects = {
                     var features = editLayer.features
                     var sortedFeatures = features.sort(function(f){
                         return f.attributes.TransectID
-                        })
+                    })
                     var blTouchFeature = baseline.features.filter(
                         function(baselineFeature){ 
                             return baselineFeature.geometry.distanceTo(f.geometry) == 0
@@ -381,35 +381,45 @@ var Transects = {
         // Hide transect layer if needed
         }
         $('#create-transects-panel-well').toggleClass('hidden');
+        $('#intersection-calculation-panel-well').toggleClass('hidden');
+        $('#create-transects-input-button').toggleClass('hidden');
     },
     createTransectSubmit : function(event) {
         var visibleShorelines = $('#shorelines-list :selected').map(function(i,v){
             return v.value
         })
-        var visibleBaseline = $('#baseline-list :selected')[0].value;
+        var baseline = $('#baseline-list :selected')[0].value;
         var spacing = $('#create-transects-input-spacing').val() || 0;
         var layerName = $('#create-transects-input-name').val();
-        var request = Transects.createWPSGenerateTransectsRequest({
+        var farthest = $('#create-intersections-nearestfarthest-list').val();
+        var request = Transects.createWPScreateTransectsAndIntersectionsRequest({
             shorelines : visibleShorelines,
-            baseline : visibleBaseline,
+            baseline : baseline,
             spacing : spacing,
-            layer : layerName + '_transects'
+            farthest : farthest,
+            workspace : CONFIG.tempSession.getCurrentSessionKey(),
+            store : 'ch-input',
+            transectLayer : layerName + '_transects',
+            intersectionLayer : layerName + '_intersects'
         })
         
         var wpsProc = function() {
             CONFIG.ows.executeWPSProcess({
-                processIdentifier : 'gs:GenerateTransects',
+                processIdentifier : 'gs:CreateTransectsAndIntersections',
                 request : request,
                 context : this,
                 callbacks : [
                 // TODO- Error Checking for WPS process response!
                 function(data, textStatus, jqXHR, context) {
                     if (typeof data == 'string') {
+                        var transectLayer = data.split(',')[0];
+                        var intersectionLayer = data.split(',')[1];
                         CONFIG.ows.getWMSCapabilities({
                             namespace : CONFIG.tempSession.getCurrentSessionKey(),
                             callbacks : {
                                 success : [
                                 Transects.populateFeaturesList,
+                                Calculation.populateFeaturesList,
                                 function() {
                                     CONFIG.ui.showAlert({
                                         message : 'Transect calculation succeeded.',
@@ -428,7 +438,26 @@ var Transects = {
                                     $('#transects-list').val(data);
                                     $('#transects-list').trigger('change');
                                     $('a[href="#' + Transects.stage + '-view-tab"]').tab('show');
-                                }                        
+                                },
+                                function() {
+                                    CONFIG.ui.showAlert({
+                                        message : 'Intersection calculation succeeded.',
+                                        displayTime : 7500,
+                                        caller : Calculation,
+                                        style: {
+                                            classes : ['alert-success']
+                                        }
+                                    })
+                                    
+                                    // Remove previous transects layers
+                                    if (CONFIG.map.getMap().getLayersBy('type', 'intersects').length) {
+                                        CONFIG.map.getMap().removeLayer(CONFIG.map.getMap().getLayersBy('type', 'intersects')[0])
+                                    }
+                                    
+                                    $('#intersects-list').val(data);
+                                    $('#intersects-list').trigger('change');
+                                    $('a[href="#' + Calculation.stage + '-view-tab"]').tab('show');
+                                }  
                                 ]
                             }
                         })
@@ -477,16 +506,21 @@ var Transects = {
             wpsProc();
         }
     },
-    createWPSGenerateTransectsRequest : function(args) {
+    createWPScreateTransectsAndIntersectionsRequest : function(args) {
         var shorelines = args.shorelines;
         var baseline = args.baseline;
         var spacing = args.spacing ? args.spacing : Transects.defaultSpacing;
         var layer = args.layer;
+        var farthest = args.fathest;
+        var workspace = args.workspace;
+        var transectLayer = args.transectLayer;
+        var intersectionLayer = args.intersectionLayer;
+        var store = args.store;
         
-        var request = '<?xml version="1.0" encoding="UTF-8"?>' +
-        '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
-        '<ows:Identifier>gs:GenerateTransects</ows:Identifier>' + 
+        var request = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
+        '<ows:Identifier>gs:CreateTransectsAndIntersections</ows:Identifier>' + 
         '<wps:DataInputs>';
+
         shorelines.each(function(i, shoreline) {
             var sessionLayer = CONFIG.tempSession.getStageConfig({
                 name : shoreline,
@@ -534,6 +568,7 @@ var Transects = {
             '</wps:Reference>' + 
             '</wps:Input>';
         })
+        
         request += '<wps:Input>' + 
         '<ows:Identifier>baseline</ows:Identifier>' + 
         '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
@@ -547,34 +582,47 @@ var Transects = {
         '<wps:Input>' + 
         '<ows:Identifier>spacing</ows:Identifier>' + 
         '<wps:Data>' + 
-        '<wps:LiteralData>'+ spacing +'</wps:LiteralData>' + 
+        '<wps:LiteralData>'+spacing+'</wps:LiteralData>' +
+        '</wps:Data>' + 
+        '</wps:Input>' + 
+        '<wps:Input>' + 
+        '<ows:Identifier>farthest</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+farthest+'</wps:LiteralData>' + 
         '</wps:Data>' + 
         '</wps:Input>' + 
         '<wps:Input>' + 
         '<ows:Identifier>workspace</ows:Identifier>' + 
         '<wps:Data>' + 
-        '<wps:LiteralData>'+CONFIG.tempSession.getCurrentSessionKey()+'</wps:LiteralData>' + 
-        '</wps:Data>' + 
-        '</wps:Input>' +     
-        '<wps:Input>' + 
-        '<ows:Identifier>store</ows:Identifier>' + 
-        '<wps:Data>' + 
-        '<wps:LiteralData>ch-input</wps:LiteralData>' + 
+        '<wps:LiteralData>'+workspace+'</wps:LiteralData>' + 
         '</wps:Data>' + 
         '</wps:Input>' + 
         '<wps:Input>' + 
-        '<ows:Identifier>layer</ows:Identifier>' + 
+        '<ows:Identifier>store</ows:Identifier>' + 
         '<wps:Data>' + 
-        '<wps:LiteralData>'+layer+'</wps:LiteralData>' + 
+        '<wps:LiteralData>'+store+'</wps:LiteralData>' + 
         '</wps:Data>' + 
-        '</wps:Input>' +     
+        '</wps:Input>' + 
+        '<wps:Input>' + 
+        '<ows:Identifier>transectLayer</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+transectLayer+'</wps:LiteralData>' +
+        '</wps:Data>' + 
+        '</wps:Input>' + 
+        '<wps:Input>' + 
+        '<ows:Identifier>intersectionLayer</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+intersectionLayer+'</wps:LiteralData>' + 
+        '</wps:Data>' + 
+        '</wps:Input>' + 
         '</wps:DataInputs>' + 
-        '<wps:ResponseForm>' +
+        '<wps:ResponseForm>' + 
         '<wps:RawDataOutput>' + 
-        '<ows:Identifier>result</ows:Identifier>' + 
+        '<ows:Identifier>transects</ows:Identifier>' + 
         '</wps:RawDataOutput>' + 
         '</wps:ResponseForm>' + 
         '</wps:Execute>';
+        
         return request;
     },
     
