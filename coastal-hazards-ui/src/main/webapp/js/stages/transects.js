@@ -177,7 +177,32 @@ var Transects = {
             OpenLayers.Handler.Path,
             {
                 id: 'transects-draw-control',
-                multi: true
+                multi: true,
+                featureAdded : function(feature) {
+                    // Find the baseline segment we touch
+                    var f = feature;
+                    var baseline =  CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
+                    var editLayer = CONFIG.map.getMap().getLayersBy('name', "transects-edit-layer")[0]
+                    var features = editLayer.features
+                    var sortedFeatures = features.sort(function(f){
+                        return f.attributes.TransectID
+                        })
+                    var blTouchFeature = baseline.features.filter(
+                        function(baselineFeature){ 
+                            return baselineFeature.geometry.distanceTo(f.geometry) == 0
+                        }
+                        )
+                    
+                    // Apply the baseline orient to the new feature
+                    if (blTouchFeature.length) {
+                        feature.attributes.Orient = blTouchFeature[0].attributes.Orient
+                    } else {
+                        feature.attributes.Orient = 'seaward';
+                    }
+                    
+                    // Add one to the largest sorted feature
+                    feature.attributes.TransectID =  parseInt(sortedFeatures[sortedFeatures.length - 1].attributes.TransectID) + 1;
+                }
             })
         CONFIG.map.addControl(drawControl);
         drawControl.activate();
