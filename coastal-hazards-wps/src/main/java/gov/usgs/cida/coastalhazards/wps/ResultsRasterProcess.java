@@ -47,25 +47,10 @@ import org.opengis.referencing.operation.TransformException;
 public class ResultsRasterProcess implements GeoServerProcess {
     
     private final static Logger LOGGER = Logging.getLogger(ResultsRasterProcess.class);
-    
-    public static class AttributeRange {
-        public final double min;
-        public final double max;
-        public final double extent;
-        public AttributeRange(double min, double max) {
-            this.min = min;
-            this.max = max;
-            this.extent = max - min;
-        }
-        @Override
-        public String toString() {
-            return new StringBuilder("range=[").append(min).append(':').append(max).append(']').toString();
-        }
-    }
-    
-    Map<String, Map<String, AttributeRange>> featureAttributeRangeMap = new WeakHashMap<String, Map<String, AttributeRange>>();
 
-    private static final int COORD_GRID_CHUNK_SIZE = 256;
+    private final static int COORD_GRID_CHUNK_SIZE = 256;
+    
+    private Map<String, Map<String, AttributeRange>> featureAttributeRangeMap = new WeakHashMap<String, Map<String, AttributeRange>>();
 
     @DescribeResult(name = "coverage", description = "coverage")
     public GridCoverage2D execute(
@@ -322,6 +307,21 @@ public class ResultsRasterProcess implements GeoServerProcess {
             } else {
                 return Color.white;
             }
+        }
+    }
+    
+    public static class AttributeRange {
+        public final double min;
+        public final double max;
+        public final double extent;
+        public AttributeRange(double min, double max) {
+            this.min = min;
+            this.max = max;
+            this.extent = max - min;
+        }
+        @Override
+        public String toString() {
+            return new StringBuilder("range=[").append(min).append(':').append(max).append(']').toString();
         }
     }
 }
