@@ -58,6 +58,7 @@ public class TestFailingHawaiiTransects {
     }
     
     @Test
+    @Ignore
     public void testExecute() throws Exception {
         URL baselineShapefile = TestFailingHawaiiTransects.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/hawaii/KauaiE_baseline.shp");
@@ -75,6 +76,7 @@ public class TestFailingHawaiiTransects {
      * Ignoring this because it is really just to get the shp for testing
      */
     @Test
+    @Ignore
     public void testExecuteAndWriteToFile() throws Exception {
         File shpfile = File.createTempFile("test", ".shp");
         URL baselineShapefile = TestFailingHawaiiTransects.class.getClassLoader()
