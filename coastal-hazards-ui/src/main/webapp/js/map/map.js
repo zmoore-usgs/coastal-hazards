@@ -26,11 +26,15 @@ var Map = function() {
         getMap : function() {
             return me.map;
         },
+        getControlBy : function(by, name) {
+           var controlArray = CONFIG.map.getMap().getControlsBy(by, name);  
+           if (controlArray.length) {
+               return controlArray[0];
+           }
+           return null;
+        },
         addControl : function(control) {
             me.map.addControl(control);
-        },
-        addLayer : function(layer) {
-            me.map.addLayer(layer);
         },
         removeControl : function(args) {
             LOG.info('Map.js::removeControl: Trying to remove a control from map');
@@ -40,6 +44,9 @@ var Map = function() {
                 me.map.removeControl(control);
             }
             return control;
+        },
+        addLayer : function(layer) {
+            me.map.addLayer(layer);
         },
         removeLayerByName : function(featureName) {
             LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + featureName);
