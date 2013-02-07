@@ -1,10 +1,25 @@
-# wps.des: id=DSAS_stats, title=Digital Shoreline Analysis System Stats, abstract=stats available - LRR, WLR, SCE, NSM;
+# wps.des: id=DSAS_stats, title=Digital Shoreline Analysis System Stats, abstract=stats available - LRR WLR SCE NSM;
 # wps.in: input, xml, block intersection text, text input from intersections layer with time elements and uncertainty;
 
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-input <- "testOut.txt"
+#input <- "testOut.txt"
+
+
+#WLR_dsas <- function (intersections,confLevel)
+
+
+#{ distance <- intersections$distance
+#   weights <- 1/(intersections$uncy^2)
+#    rate <- intersections$dates
+#    mdl <- lm(formula=distance~rate, weights=weights)
+#    coef <- coefficients(mdl)
+#    CI   <- confint(mdl,"rate",level=confLevel)
+#    rate <- coef["rate"]
+#    WLR <- data.frame(rate,CI)
+    
+#}
 
 
 
@@ -43,19 +58,19 @@ blockI = blockI[!rmvI]
 blckNm = blckNm[!rmvI]
 numBlck= length(blockI)
 
-LRR_rates   <- vector(length=numBlck)
-LCI         <- vector(length=numBlck)
-WLR_rates   <- vector(length=numBlck)
-WCI			<- vector(length=numBlck)
-SCE_rates   <- vector(length=numBlck)
-NSM_rates   <- vector(length=numBlck)
-EPR_rates   <- vector(length=numBlck)
+LRR_rates  <- vector(length=numBlck)
+LRR_CI_2_5 <- vector(length=numBlck)
+LRR_CI_97_5<- vector(length=numBlck)
+WLR_rates  <- vector(length=numBlck)
+WLR_CI_2_5 <- vector(length=numBlck)
+WLR_CI_97_5<- vector(length=numBlck)
+transect_ID<- blckNm
 
-transect_ID <- blckNm
+statsout <-data.frame(transect_ID,LRR_rates,LRR_CI_2_5,LRR_CI_97_5,WLR_rates,WLR_CI_2_5,WLR_CI_97_5)
+colnames(statsout)<-c('transect_ID','LRR','LCI_2.5','LCI_97.5','WLR','WCI_2.5','WCI_97.5')
 
-statsout <-data.frame(transect_ID,LRR_rates,LCI,WLR_rates,WCI,SCE_rates,NSM_rates,EPR_rates)
-colnames(statsout)<-c('transect_ID','LRR','LCI','WLR','WCI','SCE','NSM','EPR')
-
+netSM  = vector(length=numBlck) # not implemented yet...
+shorCE = vector(length=numBlck) # not implemented yet...
 
 for (b in 1:numBlck){
     if (b==numBlck) enI = nRead-1
@@ -84,10 +99,11 @@ for (b in 1:numBlck){
             mdl <- lm(formula=distance~rate)
             coef <- coefficients(mdl)
             CI   <- confint(mdl,"rate",level=conLevel)
-            rate <- coef["rate"]	# is m/day
+            rate <- coef["rate"]
         
-        statsout[b,2] <- rate*365.25
-        statsout[b,3] <- (CI[2]-CI[1])/2 # LCI
+        statsout[b,2] <- rate
+        statsout[b,3] <- CI[1]
+        statsout[b,4] <- CI[2]
         
         weights <- 1/(uncy^2)
         rate <- dates
@@ -95,21 +111,15 @@ for (b in 1:numBlck){
         coef <- coefficients(mdl)
         CI   <- confint(mdl,"rate",level=conLevel)
         rate <- coef["rate"]
-        statsout[b,4] <- rate*365.25
-        statsout[b,5] <- (CI[2]-CI[1])/2 # WCI
-		
-		SCE <- max(distance)-min(distance)
-		NSM <- 0 # should be which.max...
-		EPR <- 0 # should be NSM/(max(dates)-min(dates))
-		statsout[b,6] <- SCE
-		statsout[b,7] <- NSM
-		statsout[b,8] <- EPR
-		
+        statsout[b,5] <- rate
+        statsout[b,6] <- CI[1]
+        statsout[b,7] <- CI[2]
         
     }
+    print(paste("done with block",blckNm[b]))
     
 }
 # output is an identifier and R variable (WPS identifier). The ouput is the name of the text file
 # wps.out: output, text, output title, tabular output data to append to shapefile;
 output = "output.txt"
-write.table(statsout,file="output.txt",col.names=TRUE, quote=FALSE, row.names=FALSE, sep="\t")
+write.table(statsout,file="output.txt",col.names=TRUE, row.names=FALSE, sep="\t")
