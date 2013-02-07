@@ -32,7 +32,7 @@ import org.geotools.referencing.CRS;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import gov.usgs.cida.coastalhazards.wps.exceptions.LayerAlreadyExistsException;
-import gov.usgs.cida.coastalhazards.wps.geom.IntersectionPoint;
+import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineSTRTreeBuilder;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
@@ -77,6 +77,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
         // return Coordinate feature collection
         
         // Lots of this stuff will be moved to transects, become super algorithm
+        // I tore this apart, needs rework
 
         private FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines;
         private FeatureCollection<SimpleFeatureType, SimpleFeature> transects;
@@ -132,7 +133,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 throw new IllegalStateException("Must have usable UTM zone to continue");
             }
 
-            this.outputFeatureType = IntersectionPoint.buildSimpleFeatureType(shorelineCollection, utmCrs);
+            this.outputFeatureType = Intersection.buildSimpleFeatureType(shorelineCollection, utmCrs);
 
             this.shorelineTransform = CRS.findMathTransform(shorelinesCrs, utmCrs, true);
             this.transectTransform = CRS.findMathTransform(transectsCrs, utmCrs, true);
@@ -177,7 +178,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 Geometry transformedGeom = JTS.transform(transectGeom, transectTransform);
                 this.transectMap.put(id, transformedGeom);
             }
-
+/*
             SimpleFeatureIterator shoreIterator = shorelineCollection.features();
             List<SimpleFeature> sfList = new LinkedList<SimpleFeature>();
             while (shoreIterator.hasNext()) {
@@ -202,8 +203,9 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 }
             }
             SimpleFeatureCollection intersectionCollection = DataUtilities.collection(sfList);
-
-            return importer.importLayer(intersectionCollection, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED);
+*/
+    //        return importer.importLayer(intersectionCollection, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED);
+            return null;
         }
 
         private double calculateDistanceFromReference(Geometry transect, Point intersection, Orientation orientation) {

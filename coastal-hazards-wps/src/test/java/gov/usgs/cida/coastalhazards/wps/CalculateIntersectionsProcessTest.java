@@ -68,9 +68,9 @@ public class CalculateIntersectionsProcessTest {
     @Test
     @Ignore
     public void testExecute() throws Exception {
-        URL transectShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+        URL transectShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_transects.shp");
-        URL shorelineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+        URL shorelineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_shorelines.shp");
         SimpleFeatureCollection baselinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.featureCollectionFromShp(transectShapefile);
@@ -89,9 +89,9 @@ public class CalculateIntersectionsProcessTest {
     @Ignore
     public void testExecuteAndOutputShp() throws Exception {
         File shpfile = File.createTempFile("test", ".shp");
-        URL transectShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+        URL transectShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_transects.shp");
-        URL shorelineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+        URL shorelineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_shorelines.shp");
         SimpleFeatureCollection baselinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.featureCollectionFromShp(transectShapefile);

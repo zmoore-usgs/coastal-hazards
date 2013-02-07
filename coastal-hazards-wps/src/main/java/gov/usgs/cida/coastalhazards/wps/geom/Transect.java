@@ -78,29 +78,28 @@ public class Transect {
     private double length; // meters
     private Orientation orientation; // is transect built off of seaward or shoreward baseline
     private String baselineId;
+    private int transectId;
     private static final GeometryFactory gf;
 
     static {
         gf = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
     }
     
-    public Transect(Coordinate coord, double angle, Orientation orientation) {
+    public Transect(Coordinate coord, double angle, Orientation orientation, int transectId, String baselineId) {
         this.cartesianCoord = coord;
         this.angle = angle;
+        this.length = 1.0;
         this.orientation = orientation;
-        this.baselineId = "0"; // use dumb id unless set explicitly
+        this.transectId = transectId;
+        this.baselineId = baselineId;
     }
     
-    public Transect(double x, double y, double angle, Orientation orientation) {
-        this(new Coordinate(x, y), angle, orientation);
+    public Transect(double x, double y, double angle, Orientation orientation, int transectId, String baselineId) {
+        this(new Coordinate(x, y), angle, orientation, transectId, baselineId);
     }
 
     public void setLength(double length) {
         this.length = length;
-    }
-    
-    public void setBaselineId(String id) {
-        this.baselineId = id;
     }
     
     public LineString getLineString() {
@@ -130,12 +129,21 @@ public class Transect {
     public Orientation getOrientation() {
         return orientation;
     }
+    
+    public int getId() {
+        return transectId;
+    }
 
     public void rotate180Deg() {
         angle += Math.PI;
     }
     
-    public static Transect generatePerpendicularVector(Coordinate origin, LineSegment segment, Orientation orientation, int direction) {
+    public static Transect generatePerpendicularVector(Coordinate origin,
+            LineSegment segment,
+            Orientation orientation,
+            int transectId,
+            String baselineId,
+            int direction) {
         double angle;
         switch (direction) {
             case Angle.CLOCKWISE:
@@ -147,7 +155,7 @@ public class Transect {
             default:
                 throw new IllegalStateException("Must be either clockwise or counterclockwise");
         }
-        return new Transect(origin, angle, orientation);
+        return new Transect(origin, angle, orientation, transectId, baselineId);
     }
     
     public boolean equals(Transect b) {
@@ -171,10 +179,10 @@ public class Transect {
         return builder.buildFeatureType();
     }
     
-    public SimpleFeature createFeature(SimpleFeatureType type, int id) {
+    public SimpleFeature createFeature(SimpleFeatureType type) {
         LineString line = this.getLineString();
         SimpleFeature feature = SimpleFeatureBuilder.build(type,
-                new Object[]{line, new Integer(id), orientation.getValue()}, null);
+                new Object[]{line, new Integer(transectId), orientation.getValue(), baselineId}, null);
         return feature;
     }
 }
