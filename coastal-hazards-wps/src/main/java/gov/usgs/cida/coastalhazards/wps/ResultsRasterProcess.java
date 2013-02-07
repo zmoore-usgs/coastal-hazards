@@ -81,7 +81,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
         private BufferedImage image;
         private Graphics2D graphics;
 
-        private AttributeRange attributeRange;
+        private ColorMap<Number> colorMap;
         
         private Process(SimpleFeatureCollection featureCollection,
                 String className,
@@ -147,7 +147,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
                     featureAttributeRangeMap.put(featureCollectionId, attributeRangeMap);
                     LOGGER.log(Level.INFO, "Created attribute value range map for {}", featureCollectionId);
                 }
-                attributeRange = attributeRangeMap.get(attributeName);
+                AttributeRange attributeRange = attributeRangeMap.get(attributeName);
                 if (attributeRange == null) {
                     LOGGER.log(Level.INFO, "Calculating attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
                     SimpleFeatureIterator iterator = featureCollection.features();
@@ -174,6 +174,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 } else {
                     LOGGER.log(Level.INFO, "Using cached attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
                 }
+                colorMap = new JetColorMap(attributeRange);
             }
         }
 
@@ -186,7 +187,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
             }
 
             if (extent.intersects(feature.getBounds().toBounds(extent.getCoordinateReferenceSystem()))) {
-                graphics.setColor(valueToColor(((Number)attributeValue)));
+                graphics.setColor(colorMap.valueToColor(((Number)attributeValue)));
                 Geometries geomType = Geometries.get(geometry);
                 switch (geomType) {
                     case MULTIPOLYGON:
@@ -292,22 +293,6 @@ public class ResultsRasterProcess implements GeoServerProcess {
                     // nothing to do...
             }
         }
-
-        private Color valueToColor(Number value) {
-            double coef = ((value.doubleValue() - attributeRange.min) / attributeRange.extent);
-            if (coef > 0 && coef < 1) {
-                coef *= 4d;
-                float r = (float)Math.min(coef - 1.5, -coef + 4.5);
-                float g = (float)Math.min(coef - 0.5, -coef + 3.5);
-                float b = (float)Math.min(coef + 0.5, -coef + 2.5);
-                return new Color(
-                    r > 1 ? 1 : r < 0 ? 0 : r,
-                    g > 1 ? 1 : g < 0 ? 0 : g,
-                    b > 1 ? 1 : b < 0 ? 0 : b);
-            } else {
-                return Color.white;
-            }
-        }
     }
     
     public static class AttributeRange {
@@ -322,6 +307,38 @@ public class ResultsRasterProcess implements GeoServerProcess {
         @Override
         public String toString() {
             return new StringBuilder("range=[").append(min).append(':').append(max).append(']').toString();
+        }
+    }
+    
+    public static interface ColorMap<T> {
+        Color valueToColor(T value);
+    }
+    
+    public static class JetColorMap implements ColorMap<Number> {
+        public final AttributeRange range;
+        
+        public JetColorMap(AttributeRange range) {
+            double absOfMax = range.max < 0 ? 0 - range.max : range.max;
+            double absOfMin = range.min < 0 ? 0 - range.min : range.min;
+            double maxAbs = absOfMax > absOfMin ? absOfMax : absOfMin;
+            this.range = new AttributeRange(0 - maxAbs, maxAbs);
+        }
+        
+        @Override
+        public Color valueToColor(Number value) {
+            double coef = ((value.doubleValue() - range.min) / range.extent);
+            if (coef > 0 && coef < 1) {
+                coef *= 4d;
+                float r = (float)Math.min(coef - 1.5, -coef + 4.5);
+                float g = (float)Math.min(coef - 0.5, -coef + 3.5);
+                float b = (float)Math.min(coef + 0.5, -coef + 2.5);
+                return new Color(
+                    r > 1 ? 1 : r < 0 ? 0 : r,
+                    g > 1 ? 1 : g < 0 ? 0 : g,
+                    b > 1 ? 1 : b < 0 ? 0 : b);
+            } else {
+                return Color.white;
+            }
         }
     }
 }
