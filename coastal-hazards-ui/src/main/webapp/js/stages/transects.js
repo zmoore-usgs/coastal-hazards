@@ -421,25 +421,21 @@ var Transects = {
                                 Transects.populateFeaturesList,
                                 Calculation.populateFeaturesList,
                                 function() {
-                                    CONFIG.ui.showAlert({
-                                        message : 'Transect calculation succeeded.',
-                                        displayTime : 7500,
-                                        caller : Transects,
-                                        style: {
-                                            classes : ['alert-success']
-                                        }
-                                    })
-                                    
-                                    // Remove previous transects layers
+                                    // Remove previous transects and intersection layers
                                     if (CONFIG.map.getMap().getLayersBy('type', 'transects').length) {
                                         CONFIG.map.getMap().removeLayer(CONFIG.map.getMap().getLayersBy('type', 'transects')[0])
                                     }
+                                    if (CONFIG.map.getMap().getLayersBy('type', 'intersects').length) {
+                                        CONFIG.map.getMap().removeLayer(CONFIG.map.getMap().getLayersBy('type', 'intersects')[0])
+                                    }
                                     
-                                    $('#transects-list').val(data);
+                                    $('#transects-list').val(transectLayer);
+                                    $('#intersections-list').val(intersectionLayer);
                                     $('#transects-list').trigger('change');
-                                    $('a[href="#' + Transects.stage + '-view-tab"]').tab('show');
-                                },
-                                function() {
+                                    $('#intersections-list').trigger('change');
+                                    $('#stage-select-tablist a[href="#calculation"]').trigger('click');
+                                    $('a[href="#' + Calculation.stage + '-view-tab"]').tab('show');
+                                    
                                     CONFIG.ui.showAlert({
                                         message : 'Intersection calculation succeeded.',
                                         displayTime : 7500,
@@ -448,16 +444,7 @@ var Transects = {
                                             classes : ['alert-success']
                                         }
                                     })
-                                    
-                                    // Remove previous transects layers
-                                    if (CONFIG.map.getMap().getLayersBy('type', 'intersects').length) {
-                                        CONFIG.map.getMap().removeLayer(CONFIG.map.getMap().getLayersBy('type', 'intersects')[0])
-                                    }
-                                    
-                                    $('#intersects-list').val(data);
-                                    $('#intersects-list').trigger('change');
-                                    $('a[href="#' + Calculation.stage + '-view-tab"]').tab('show');
-                                }  
+                                }
                                 ]
                             }
                         })

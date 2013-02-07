@@ -253,16 +253,14 @@
                                     </div>
                                     <div class="row-fluid">
                                         <!-- Transects -->
-                                        <div id="create-transects-panel-well" class="well span6 hidden">
+                                        <div id="create-transects-panel-well" class="well hidden span6">
                                             Transects
-                                            <div id="create-transects-panel-container" class="container-fluid">
-                                                <div class="row-fluid span12">
-                                                    <form>
+                                            <div id="create-transects-panel-container">
+                                                <div class="row-fluid">
                                                         <label for="create-transects-input-spacing">Spacing</label>
                                                         <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
-                                                        <label for="create-transects-input-spacing">Name</label>
-                                                        <input type="text" id="create-transects-input-name">
-                                                    </form>
+                                                        <label for="create-transects-input-name">Name</label>
+                                                        <input type="text" id="create-transects-input-name" style="width: 100%;">
                                                 </div>
                                             </div>
                                         </div>
@@ -312,17 +310,6 @@
                                 <div class="tab-pane" id="intersections-manage-tab">
                                     <!-- Intersection Calculation -->
                                     <div class="row-fluid">
-                                        <!--                                        <div id="intersection-calculation-panel-well" class="well span6">
-                                                                                    <label for="create-intersections-nearestfarthest-list">Take Nearest/Farthest Intersection</label>
-                                                                                    <select id="create-intersections-nearestfarthest-list" style="width: 100%;">
-                                                                                        <option selected="selected" value="false">Nearest</option>
-                                                                                        <option value="true">Farthest</option>
-                                                                                    </select>
-                                                                                    <button class="btn btn-success" id="create-intersections-btn">
-                                                                                        <i class="icon-tasks icon-white"></i>
-                                                                                        &nbsp;Calculate Intersections</button>
-                                                                                    </button>
-                                                                                </div>-->
                                         <div id="results-calculation-panel-well" class="well span6">
                                             <label class="control-label" for="results-form-name">Results Name</label>
                                             <input class="input-large" name="results-form-name" id="results-form-name"  style="width: 100%;" />
