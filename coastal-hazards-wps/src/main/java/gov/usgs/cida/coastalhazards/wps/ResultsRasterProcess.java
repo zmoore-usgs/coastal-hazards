@@ -295,7 +295,6 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 float r = (float)Math.min(coef - 1.5, -coef + 4.5);
                 float g = (float)Math.min(coef - 0.5, -coef + 3.5);
                 float b = (float)Math.min(coef + 0.5, -coef + 2.5);
-                r = r > 1 ? 1 : r < 0 ? 0 : r;
                 return new Color(
                     r > 1 ? 1 : r < 0 ? 0 : r,
                     g > 1 ? 1 : g < 0 ? 0 : g,
