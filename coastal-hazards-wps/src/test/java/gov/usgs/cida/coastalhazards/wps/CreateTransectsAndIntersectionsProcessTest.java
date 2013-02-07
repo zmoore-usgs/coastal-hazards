@@ -28,10 +28,10 @@ import org.opengis.feature.simple.SimpleFeatureType;
  *
  * @author jiwalker
  */
-public class GenerateTransectsProcessTest {
+public class CreateTransectsAndIntersectionsProcessTest {
     
     /**
-     * Test of execute method, of class GenerateTransectsProcess.
+     * Test of execute method, of class CreateTransectsAndIntersectionsProcess.
      */
     @Test
     public void testRotateSegment() throws Exception {
@@ -61,35 +61,36 @@ public class GenerateTransectsProcessTest {
     }
     
     @Test
+    @Ignore
     public void testExecute() throws Exception {
-        URL baselineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+        URL baselineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_baseline.shp");
-        URL shorelineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+        URL shorelineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_shorelines.shp");
         FeatureCollection<SimpleFeatureType, SimpleFeature> baselinefc =
                 FeatureCollectionFromShp.featureCollectionFromShp(baselineShapefile);
         FeatureCollection<SimpleFeatureType, SimpleFeature> shorelinefc =
                 FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
-        GenerateTransectsProcess generate = new GenerateTransectsProcess(new DummyImportProcess(), new DummyCatalog());
-        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, null, null, null);
+        CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(), new DummyCatalog());
+        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, Boolean.FALSE, null, null, null, null);
     }
     
     /*
      * Ignoring this because it is really just to get the shp for testing
      */
     @Test
-    @Ignore
+    //@Ignore
     public void testExecuteAndWriteToFile() throws Exception {
         File shpfile = File.createTempFile("test", ".shp");
-        URL baselineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+        URL baselineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_baseline.shp");
-        URL shorelineShapefile = GenerateTransectsProcessTest.class.getClassLoader()
+        URL shorelineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_shorelines.shp");
         SimpleFeatureCollection baselinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.featureCollectionFromShp(baselineShapefile);
         SimpleFeatureCollection shorelinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
-        GenerateTransectsProcess generate = new GenerateTransectsProcess(new DummyImportProcess(shpfile), new DummyCatalog());
-        generate.execute(shorelinefc, baselinefc, 50.0d, null, null, null);
+        CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(shpfile), new DummyCatalog());
+        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, Boolean.FALSE, null, null, null, null);
     }
 }

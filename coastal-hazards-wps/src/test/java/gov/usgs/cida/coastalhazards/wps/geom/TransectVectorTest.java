@@ -51,6 +51,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import gov.usgs.cida.coastalhazards.util.Constants.Orientation;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -65,14 +66,14 @@ public class TransectVectorTest {
     @Test
     public void testAngles() {
         Coordinate a = new Coordinate(0.0, 0.0);
-        TransectVector east = new TransectVector(a, 0.0);
-        TransectVector north = new TransectVector(a, Angle.PI_OVER_2);
-        TransectVector west = new TransectVector(a, Math.PI);
-        TransectVector south = new TransectVector(a, 3 * Angle.PI_OVER_2);
-        assertEquals(east.getLineOfLength(1.0).getEndPoint().getX(), 1.0, 0.00001);
-        assertEquals(north.getLineOfLength(1.0).getEndPoint().getY(), 1.0, 0.00001);
-        assertEquals(west.getLineOfLength(1.0).getEndPoint().getX(), -1.0, 0.00001);
-        assertEquals(south.getLineOfLength(1.0).getEndPoint().getY(), -1.0, 0.00001);
+        Transect east = new Transect(a, 0.0, Orientation.UNKNOWN, 0, "0");
+        Transect north = new Transect(a, Angle.PI_OVER_2, Orientation.UNKNOWN, 0, "0");
+        Transect west = new Transect(a, Math.PI, Orientation.UNKNOWN, 0, "0");
+        Transect south = new Transect(a, 3 * Angle.PI_OVER_2, Orientation.UNKNOWN, 0, "0");
+        assertEquals(east.getLineString().getEndPoint().getX(), 1.0, 0.00001);
+        assertEquals(north.getLineString().getEndPoint().getY(), 1.0, 0.00001);
+        assertEquals(west.getLineString().getEndPoint().getX(), -1.0, 0.00001);
+        assertEquals(south.getLineString().getEndPoint().getY(), -1.0, 0.00001);
     }   
     
     /**
@@ -82,9 +83,9 @@ public class TransectVectorTest {
     public void testGetLineOfLength() {
         Coordinate a = new Coordinate(0.0, 0.0);
         Coordinate b = new Coordinate(0.0, 1.0);
-        TransectVector instance = new TransectVector(a, Angle.PI_OVER_2);
+        Transect instance = new Transect(a, Angle.PI_OVER_2, Orientation.UNKNOWN, 0, "0");
         LineString expResult = factory.createLineString(new Coordinate[] {a, b});
-        LineString result = instance.getLineOfLength(1.0);
+        LineString result = instance.getLineString();
         assertEquals(expResult.getCoordinateN(0).x, result.getCoordinateN(0).x, 0.00001);
         assertEquals(expResult.getCoordinateN(0).y, result.getCoordinateN(0).y, 0.00001);
         assertEquals(expResult.getCoordinateN(1).x, result.getCoordinateN(1).x, 0.00001);
@@ -97,7 +98,7 @@ public class TransectVectorTest {
     @Test
     public void testGetOriginPoint() {
         Coordinate a = new Coordinate(0.0, 0.0);
-        TransectVector instance = new TransectVector(a, Angle.PI_OVER_2);
+        Transect instance = new Transect(a, Angle.PI_OVER_2, Orientation.UNKNOWN, 0, "0");
         Point result = instance.getOriginPoint();
         Point expResult = factory.createPoint(a);
         assertEquals(expResult.getX(), result.getX(), 0.00001);
@@ -111,10 +112,10 @@ public class TransectVectorTest {
     public void testRotate180Deg() {
         Coordinate a = new Coordinate(0.0, 0.0);
         Coordinate b = new Coordinate(0.0, -1.0);
-        TransectVector instance = new TransectVector(a, Angle.PI_OVER_2);
+        Transect instance = new Transect(a, Angle.PI_OVER_2, Orientation.UNKNOWN, 0, "0");
         instance.rotate180Deg();
         LineString expResult = factory.createLineString(new Coordinate[] {a, b});
-        LineString result = instance.getLineOfLength(1.0);
+        LineString result = instance.getLineString();
         assertEquals(expResult.getCoordinateN(0).x, result.getCoordinateN(0).x, 0.00001);
         assertEquals(expResult.getCoordinateN(0).y, result.getCoordinateN(0).y, 0.00001);
         assertEquals(expResult.getCoordinateN(1).x, result.getCoordinateN(1).x, 0.00001);
@@ -129,8 +130,8 @@ public class TransectVectorTest {
         Coordinate origin = new Coordinate(0.0, 0.0);
         Coordinate b = new Coordinate(1.0, 0.0);
         LineSegment segment = new LineSegment(origin, b);
-        TransectVector expResult = new TransectVector(origin, Angle.PI_OVER_2);
-        TransectVector result = TransectVector.generatePerpendicularVector(origin, segment, Angle.COUNTERCLOCKWISE);
+        Transect expResult = new Transect(origin, Angle.PI_OVER_2, Orientation.UNKNOWN, 0, "0");
+        Transect result = Transect.generatePerpendicularVector(origin, segment, Orientation.UNKNOWN, 0, "0", Angle.COUNTERCLOCKWISE);
         assertEquals(expResult.getOriginCoord().x, result.getOriginCoord().x, 0.00001);
         assertEquals(expResult.getOriginCoord().y, result.getOriginCoord().y, 0.00001);
         assertEquals(expResult.getAngle(), result.getAngle(), 0.00001);

@@ -32,6 +32,7 @@ import org.geotools.referencing.CRS;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import gov.usgs.cida.coastalhazards.wps.exceptions.LayerAlreadyExistsException;
+import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineSTRTreeBuilder;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
@@ -74,6 +75,9 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
         // if it is a lidar dataset, need to get weighted average
         // retain identifiers of intersects or some sort
         // return Coordinate feature collection
+        
+        // Lots of this stuff will be moved to transects, become super algorithm
+        // I tore this apart, needs rework
 
         private FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines;
         private FeatureCollection<SimpleFeatureType, SimpleFeature> transects;
@@ -129,11 +133,11 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 throw new IllegalStateException("Must have usable UTM zone to continue");
             }
 
-            this.outputFeatureType = buildSimpleFeatureType(shorelineCollection);
+            this.outputFeatureType = Intersection.buildSimpleFeatureType(shorelineCollection, utmCrs);
 
             this.shorelineTransform = CRS.findMathTransform(shorelinesCrs, utmCrs, true);
             this.transectTransform = CRS.findMathTransform(transectsCrs, utmCrs, true);
-
+            
             SimpleFeatureType schema = transectCollection.getSchema();
             if (null == schema.getType(TRANSECT_ID_ATTR) || null == schema.getType(BASELINE_ORIENTATION_ATTR)) {
                 StringBuilder build = new StringBuilder();
@@ -143,6 +147,7 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                         .append(BASELINE_ORIENTATION_ATTR);
                 throw new UnsupportedFeatureTypeException(build.toString());
             }
+            
             SimpleFeatureIterator transectIterator = transectCollection.features();
             long[] transectIds = new long[transectCollection.size()];
             Orientation[] orientations = new Orientation[transectCollection.size()];
@@ -173,14 +178,14 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 Geometry transformedGeom = JTS.transform(transectGeom, transectTransform);
                 this.transectMap.put(id, transformedGeom);
             }
-
+/*
             SimpleFeatureIterator shoreIterator = shorelineCollection.features();
             List<SimpleFeature> sfList = new LinkedList<SimpleFeature>();
             while (shoreIterator.hasNext()) {
                 SimpleFeature feature = shoreIterator.next();
                 Geometry shoreGeom = (Geometry) feature.getDefaultGeometry();
                 Geometry transformedGeom = JTS.transform(shoreGeom, shorelineTransform);
-                STRtree tree = new ShorelineSTRTreeBuilder(transformedGeom).build();
+                STRtree tree = new ShorelineSTRTreeBuilder(transformedGeom, feature).build();
                 for (int i = 0; i < transectCollection.size(); i++) {
                     long transectId = transectIds[i];
                     Orientation orientation = orientations[i];
@@ -198,8 +203,9 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                 }
             }
             SimpleFeatureCollection intersectionCollection = DataUtilities.collection(sfList);
-
-            return importer.importLayer(intersectionCollection, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED);
+*/
+    //        return importer.importLayer(intersectionCollection, workspace, store, layer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED);
+            return null;
         }
 
         private double calculateDistanceFromReference(Geometry transect, Point intersection, Orientation orientation) {
@@ -224,25 +230,6 @@ public class CalculateIntersectionsProcess implements GeoServerProcess {
                     .distance(intersection.getCoordinate());
 
             return distance;
-        }
-
-        private SimpleFeatureType buildSimpleFeatureType(SimpleFeatureCollection simpleFeatures) {
-            SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-            SimpleFeatureType schema = simpleFeatures.getSchema();
-            List<AttributeType> types = schema.getTypes();
-
-            builder.setName("Intersections");
-            builder.add("geom", Point.class, utmCrs);
-            builder.add(TRANSECT_ID_ATTR, Integer.class);
-            builder.add(DISTANCE_ATTR, Double.class);
-            for (AttributeType type : types) {
-                if (type instanceof GeometryType) {
-                    // ignore the geom type of intersecting data
-                } else {
-                    builder.add(type.getName().getLocalPart(), type.getBinding());
-                }
-            }
-            return builder.buildFeatureType();
         }
 
         private SimpleFeature buildPointFeature(Point point, long transectId, double distance, SimpleFeature sourceFeature) {

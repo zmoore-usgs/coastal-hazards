@@ -47,7 +47,7 @@
 package gov.usgs.cida.coastalhazards.r;
 
 import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
-import gov.usgs.cida.coastalhazards.wps.geom.IntersectionPoint;
+import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -70,7 +70,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.FilterFactory;
 
 /**
- *
+ *  Fix this later
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class IntersectionParserTest {
@@ -86,6 +86,7 @@ public class IntersectionParserTest {
         shapefile = IntersectionParserTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_intersections.shp");
         outfile = File.createTempFile("testOut", ".csv");
+        outfile.deleteOnExit();
         buf = new BufferedWriter(new FileWriter(outfile));
     }
     
@@ -98,10 +99,9 @@ public class IntersectionParserTest {
     //@Ignore
     public void csvFromFeatureCollection() throws IOException, ParseException {
         //ShapefileDataStore dataStore = (ShapefileDataStore)new ShapefileDataStoreFactory().createDataStore(shapefile);
-        Map<Integer, List<IntersectionPoint>> map = new TreeMap<Integer, List<IntersectionPoint>>();
+        Map<Integer, List<Intersection>> map = new TreeMap<Integer, List<Intersection>>();
         FeatureCollection<SimpleFeatureType, SimpleFeature> fc =
             FeatureCollectionFromShp.featureCollectionFromShp(shapefile);
-        
 //        FeatureSource source = dataStore.getFeatureSource();
 //        Query query = new Query();
 //        SortBy transectSort = filterFactory.sort("TransectID", SortOrder.DESCENDING);
@@ -123,26 +123,23 @@ public class IntersectionParserTest {
             SimpleFeature feature = features.next();
             int transectId = (Integer)feature.getAttribute("TransectID");
 
-            IntersectionPoint intersection = new IntersectionPoint(
-                    (Double)feature.getAttribute("Distance"),
-                    (String)feature.getAttribute("Date_"),
-                    (Double)feature.getAttribute("Uncy"));
+            Intersection intersection = new Intersection(feature);
 
             if (map.containsKey(transectId)) {
                 map.get(transectId).add(intersection);
             }
             else {
-                List<IntersectionPoint> pointList = new LinkedList<IntersectionPoint>();
+                List<Intersection> pointList = new LinkedList<Intersection>();
                 pointList.add(intersection);
                 map.put(transectId, pointList);
             }
         }
         
         for (int key : map.keySet()) {
-            List<IntersectionPoint> points = map.get(key);
+            List<Intersection> points = map.get(key);
             buf.write("# " + key);
             buf.newLine();
-            for (IntersectionPoint p : points) {
+            for (Intersection p : points) {
                 buf.write(p.toString());
                 buf.newLine();
             }
