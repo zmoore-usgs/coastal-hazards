@@ -1,7 +1,7 @@
 package gov.usgs.cida.coastalhazards.parser;
 
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
-import gov.usgs.cida.coastalhazards.wps.geom.IntersectionPoint;
+import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,12 +9,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -52,32 +50,27 @@ public class IntersectionFeatureCollectionParser extends AbstractParser {
                     type.getDescriptor("Uncy") == null) { // Allow user to specify?
                 throw new UnsupportedFeatureTypeException("Feature must have 'TransectID', 'Distance', 'Date_', and 'Uncy'");
             }
-            Map<Integer, List<IntersectionPoint>> map = new TreeMap<Integer, List<IntersectionPoint>>();
+            Map<Integer, List<Intersection>> map = new TreeMap<Integer, List<Intersection>>();
             FeatureIterator<SimpleFeature> features = collection.features();
             while (features.hasNext()) {
                 SimpleFeature feature = features.next();
                 
-                int transectId = (Integer) feature.getAttribute("TransectID");
-
-                IntersectionPoint intersection = new IntersectionPoint(
-                        (Double) feature.getAttribute("Distance"),
-                        (String) feature.getAttribute("Date_"),
-                        (Double) feature.getAttribute("Uncy"));
-
+                Intersection intersection = new Intersection(feature);
+                int transectId = intersection.getTransectId();
                 if (map.containsKey(transectId)) {
                     map.get(transectId).add(intersection);
                 } else {
-                    List<IntersectionPoint> pointList = new LinkedList<IntersectionPoint>();
+                    List<Intersection> pointList = new LinkedList<Intersection>();
                     pointList.add(intersection);
                     map.put(transectId, pointList);
                 }
             }
 
             for (int key : map.keySet()) {
-                List<IntersectionPoint> points = map.get(key);
+                List<Intersection> points = map.get(key);
                 buf.write("# " + key);
                 buf.newLine();
-                for (IntersectionPoint p : points) {
+                for (Intersection p : points) {
                     buf.write(p.toString());
                     buf.newLine();
                 }
@@ -88,9 +81,6 @@ public class IntersectionFeatureCollectionParser extends AbstractParser {
         }
         catch (IOException e) {
             throw new RuntimeException("Error creating temporary file", e);
-        }
-        catch (ParseException e) {
-            throw new RuntimeException("Unable to parse feature collection", e);
         }
         catch (Exception e) {
             throw new RuntimeException("Unable to parse feature collection", e);
