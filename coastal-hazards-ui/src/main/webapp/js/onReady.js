@@ -64,45 +64,47 @@ $(document).ready(function() {
     // Primarily a utility class
     CONFIG.ows = new OWS();
     
-    LOG.info('OnReady.js:: Preparing call to OWS GetCapabilities')
+    LOG.info('OnReady.js:: Preparing call to OWS GetCapabilities');
     CONFIG.ows.getWMSCapabilities({
         namespace : 'sample',
         callbacks : {
             success : [
             function() {
+                LOG.debug('OnReady.js:: WMS Capabilities retrieved for sample workspace');
+                var loadApp = function(data, textStatus, jqXHR) {
+                    CONFIG.ui.work_stages_objects.each(function(stage) {
+                        stage.appInit();
+                        stage.populateFeaturesList(data, textStatus, jqXHR)
+                    })
+                            
+                    $('.qq-upload-button').addClass('btn btn-success');
+                    $('#application-overlay').fadeOut();
+                }
+                
                 CONFIG.ows.getWMSCapabilities({
                     namespace : currentSessionKey,
                     callbacks : {
                         success : [
-                            
                         CONFIG.tempSession.updateLayersFromWMS,
-                        
-                        function(data, textStatus, jqXHR) {
-                            CONFIG.ui.work_stages_objects.each(function(stage) {
-                                stage.appInit();
-                                stage.populateFeaturesList(data, textStatus, jqXHR)
-                            })
-                            
-                            $('.qq-upload-button').addClass('btn btn-success');
-                            $('#application-overlay').fadeOut()
+                        loadApp,
+                        function() {
+                            LOG.debug('OnReady.js:: WMS Capabilities retrieved for your session');
                         }
-                        
                         ],
                         error : [
-                        Shorelines.initializeUploader,
-                        Baseline.initializeUploader,
-                        Baseline.populateFeaturesList,
-                        Transects.initializeUploader,
-                        Shorelines.populateFeaturesList,
-                        Transects.populateFeaturesList,
-                        Calculation.populateFeaturesList,
-                        Results.populateFeaturesList,
+                        loadApp,
                         function() {
-                            $('#application-overlay').fadeOut()
+                            LOG.warn('OnReady.js:: There was an error in retrieving the WMS capabilities for your session. This could be due to a new session.');
                         }
                         ]
                     }
                 })
+                
+            }
+            ],
+            error : [
+            function() {
+            //TODO - What do we do when we can't pull in the WMS capabilities for Sample workspace?
             }
             ]
         }

@@ -4,7 +4,6 @@
 var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
-    
     // Dictates what will be displaed in the stage popover
     description : {
         'stage' : 'View and select existing published shorelines, or upload your own. Shorelines represent snap-shots of the coastline at various points in time.',
@@ -14,8 +13,6 @@ var Shorelines = {
     },
     
     appInit : function() {
-        Shorelines.initializeUploader();
-        
         var wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
             title: 'shoreline-identify-control',
             layers: [],
@@ -28,23 +25,32 @@ var Shorelines = {
                 radius : 3
             }
         })
-    
-    
+        Shorelines.initializeUploader();
         wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
         CONFIG.map.addControl(wmsGetFeatureInfoControl);
         Shorelines.enterStage();
     },
     
     leaveStage : function() {
-        var shorelineId = CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control');
-        if (shorelineId.length) {
-            shorelineId[0].deactivate();
+        LOG.debug('Shorelines.js::leaveStage');
+        
+        var idControl = Shorelines.getShorelineIdControl();
+        if (idControl) {
+            LOG.debug('Shorelines.js::enterStage: Shoreline identify control found in the map, deactivating.');
+            idControl.deactivate();
         }
     },
     enterStage : function() {
-        var shorelineId = CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control');
-        if (shorelineId.length) {
-            shorelineId[0].activate();
+        LOG.debug('Shorelines.js::enterStage');
+        
+        var idControl = Shorelines.getShorelineIdControl();
+        if (idControl) {
+            LOG.debug('Shorelines.js::enterStage: Shoreline identify control found in the map, activating.');
+            idControl.activate();
+        } else {
+            LOG.warn('Shorelines.js::enterStage: Shoreline identify control not found. Creating one, adding to map and activating it.');
+            Shorelines.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
+            CONFIG.map.addControl(Shorelines.wmsGetFeatureInfoControl);
         }
     },
     
@@ -53,13 +59,18 @@ var Shorelines = {
      */
     addShorelines : function(layers) {
         LOG.info('Shorelines.js::addShorelines');
-        LOG.info('Shorelines.js::addShorelines: Adding ' + layers.length + ' shoreline layers to map'); 
+        
+        LOG.debug('Shorelines.js::addShorelines: Adding ' + layers.length + ' shoreline layers to map'); 
         $(layers).each(function(index,layer) {
-            LOG.info('Shorelines.js::addShorelines: Attempting to add shoreline layer ' + layer.title + ' to the map'); 
+            var layerTitle = layer.title;
+            var layerPrefix = layer.prefix;
+            var layerName = layer.name;
+            
             var addToMap = function(data, textStatus, jqXHR) {
+                LOG.trace('Shorelines.js::addShorelines: Attempting to add shoreline layer ' + layerTitle + ' to the map'); 
                 CONFIG.ows.getDescribeFeatureType({
-                    layerNS : layer.prefix,
-                    layerName : layer.name,
+                    layerNS : layerPrefix,
+                    layerName : layerName,
                     callbacks : [
                     function(describeFeaturetypeRespone) {
                         Shorelines.addLayerToMap({
@@ -78,8 +89,8 @@ var Shorelines = {
                 layerName : layer.name,
                 callbacks : {
                     success : [
-                    function(data) {
-                        LOG.debug('UTM Count:' + data);
+                    function(data, textStatus, jqXHR) {
+                        LOG.trace('Shorelines.js::addShorelines: UTM Zone Count Returned. ' + data + ' UTM zones found'); 
                         if (data > 1) {
                             CONFIG.ui.showAlert({
                                 message : 'Shoreline spans ' + data + ' UTM zones',
@@ -87,19 +98,17 @@ var Shorelines = {
                                 displayTime : 5000
                             })
                         }
+                        addToMap(data, textStatus, jqXHR);
                     },
-                    addToMap
                     ],
                     error : [
-                    function(data) {
+                    function(data, textStatus, jqXHR) {
                         LOG.warn('Could not retrieve UTM count for this resource');
+                        addToMap(data, textStatus, jqXHR);
                     },
-                    addToMap
                     ]
                 }
-                
             })
-           
         })
     },
     
@@ -216,7 +225,7 @@ var Shorelines = {
                                 groups : groups
                             });
                             
-                        CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control')[0].layers.push(wmsLayer)
+                        Shorelines.getShorelineIdControl().layers.push(wmsLayer)
                         wmsLayer.events.register("loadend", wmsLayer, Shorelines.createFeatureTable);
                         wmsLayer.events.register("loadend", wmsLayer, Shorelines.zoomToLayer);
                         CONFIG.map.getMap().addLayer(wmsLayer);
@@ -552,7 +561,7 @@ var Shorelines = {
                 $(layers).each(function(i,layer) {
                     CONFIG.map.getMap().removeLayer(layer);
                     
-                    var idControl = CONFIG.map.getMap().getControlsBy('title', 'shoreline-identify-control')[0];
+                    var idControl = Shorelines.getShorelineIdControl();
                     var controlLayerIndex = idControl.layers.indexOf(layer);
                     if (controlLayerIndex != -1) {
                         idControl.layers = idControl.layers.removeAt(controlLayerIndex);
@@ -630,5 +639,8 @@ var Shorelines = {
         CONFIG.ui.initializeUploader($.extend({
             caller : Shorelines
         }, args))
+    },
+    getShorelineIdControl : function() {
+        return CONFIG.map.getControlBy('title', 'shoreline-identify-control');
     }
 }

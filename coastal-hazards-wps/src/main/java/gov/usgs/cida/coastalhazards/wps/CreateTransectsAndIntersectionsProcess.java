@@ -159,7 +159,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             // for now assume seaward
             SimpleFeatureCollection transformedBaselines = CRSUtils.transformFeatureCollection(baselineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
             MultiLineString shorelineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedShorelines);
-            MultiLineString baselineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedBaselines);
+            //MultiLineString baselineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedBaselines);
             this.strTree = new ShorelineSTRTreeBuilder(transformedShorelines).build();
             
             this.transectFeatureType = Transect.buildFeatureType(utmCrs);
@@ -223,39 +223,13 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                 if (!preparedShorelines.intersects(testLine)) {
                     continue; // don't draw if it doesn't cross
                 }
-                Map<DateTime, Intersection> allIntersections = new HashMap<DateTime, Intersection>();
-                List<ShorelineFeature> possibleIntersects = strTree.query(testLine.getEnvelopeInternal());
-                double maxDistance = MIN_TRANSECT_LENGTH;
-                for (ShorelineFeature shoreline : possibleIntersects) {
-                    LineString segment = shoreline.segment;
-                    if (segment.intersects(testLine)) {
-                        // must be a point
-                        Point crossPoint = (Point)segment.intersection(testLine);
-                        Orientation orientation = transect.getOrientation();
-                        double distance = orientation.getSign() * 
-                                transect.getOriginCoord()
-                                .distance(crossPoint.getCoordinate());
-                        if (distance > maxDistance) {
-                            maxDistance = distance;
-                        }
-                        Intersection intersection = 
-                                new Intersection(crossPoint, distance, shoreline.feature, transect.getId());
-                        DateTime date = intersection.getDate();
-                        if (allIntersections.containsKey(date)) {  // use closest/farthest intersection
-                            Intersection thatIntersection = allIntersections.get(date);
-                            Intersection closest = Intersection.compare(intersection, thatIntersection, !useFarthest);
-                            allIntersections.remove(date);
-                            allIntersections.put(date, closest);
-                        }
-                        else {
-                            allIntersections.put(date, intersection);
-                        }
-                    }
-                }
-                transect.setLength(maxDistance + TRANSECT_PADDING);
-                SimpleFeature feature = transect.createFeature(transectFeatureType);
                 
+                Map<DateTime, Intersection> allIntersections = Intersection.calculateIntersections(transect, strTree, useFarthest);
+                double transectLength = Intersection.absoluteFarthest(MIN_TRANSECT_LENGTH, allIntersections.values());
+                transect.setLength(transectLength + TRANSECT_PADDING);
+                SimpleFeature feature = transect.createFeature(transectFeatureType);
                 transectFeatures.add(feature);
+                
                 for (Intersection intersection : allIntersections.values()) {
                     // do I need to worry about order?
                     intersectionFeatures.add(intersection.createFeature(intersectionFeatureType));

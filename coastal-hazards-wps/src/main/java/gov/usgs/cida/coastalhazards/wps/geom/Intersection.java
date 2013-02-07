@@ -45,12 +45,17 @@
  */
 package gov.usgs.cida.coastalhazards.wps.geom;
 
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.index.strtree.STRtree;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -68,41 +73,39 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class Intersection {
-    
+
     private Point point;
     private double distance;
     private SimpleFeature feature;
     private int transectId;
-    
     private static DateTimeFormatter inputFormat;
     private static DateTimeFormatter outputFormat;
-    
+
     static {
         try {
             inputFormat = new DateTimeFormatterBuilder()
-                .appendMonthOfYear(2)
-                .appendLiteral('/')
-                .appendDayOfMonth(2)
-                .appendLiteral('/')
-                .appendYear(4, 4)
-                .toFormatter();
-            
+                    .appendMonthOfYear(2)
+                    .appendLiteral('/')
+                    .appendDayOfMonth(2)
+                    .appendLiteral('/')
+                    .appendYear(4, 4)
+                    .toFormatter();
+
             outputFormat = new DateTimeFormatterBuilder()
-                .appendYear(4, 4)
-                .appendLiteral('-')
-                .appendMonthOfYear(2)
-                .appendLiteral('-')
-                .appendDayOfMonth(2)
-                .toFormatter();
-        }
-        catch (Exception ex) {
+                    .appendYear(4, 4)
+                    .appendLiteral('-')
+                    .appendMonthOfYear(2)
+                    .appendLiteral('-')
+                    .appendDayOfMonth(2)
+                    .toFormatter();
+        } catch (Exception ex) {
             // log severe
         }
     }
 
     /**
      * Stores Intersections from feature for delivery to R
-     * 
+     *
      * @param dist distance from reference (negative for seaward baselines)
      * @param t Assumed to be in format mm/dd/yyyy
      * @param uncy Uncertainty measurement
@@ -114,21 +117,21 @@ public class Intersection {
         this.feature = shoreline;
         this.transectId = transectId;
     }
-    
+
     /**
      * Get an intersection object from Intersection Feature Type
-     * 
-     * @param intersectionFeature 
+     *
+     * @param intersectionFeature
      */
     public Intersection(SimpleFeature intersectionFeature) {
-        this.point = (Point)intersectionFeature.getDefaultGeometry();
-        this.transectId = (Integer)intersectionFeature.getAttribute(TRANSECT_ID_ATTR);
-        this.distance = (Double)intersectionFeature.getAttribute(DISTANCE_ATTR);
+        this.point = (Point) intersectionFeature.getDefaultGeometry();
+        this.transectId = (Integer) intersectionFeature.getAttribute(TRANSECT_ID_ATTR);
+        this.distance = (Double) intersectionFeature.getAttribute(DISTANCE_ATTR);
         this.feature = intersectionFeature;
         //this.            (String) intersectionFeature.getAttribute(DATE_ATTR),
         //                (Double) intersectionFeature.getAttribute(UNCY_ATTR)
     }
-    
+
     /**
      * Helper function to convert from mm/dd/yyy to yyyy-mm-dd
      */
@@ -137,7 +140,6 @@ public class Intersection {
 //        String outDate = dateObj.toString("yyyy-MM-dd");
 //        return outDate;
 //    }
-    
     public static SimpleFeatureType buildSimpleFeatureType(SimpleFeatureCollection collection, CoordinateReferenceSystem crs) {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         SimpleFeatureType schema = collection.getSchema();
@@ -156,7 +158,7 @@ public class Intersection {
         }
         return builder.buildFeatureType();
     }
-    
+
     public SimpleFeature createFeature(SimpleFeatureType type) {
         List<AttributeType> types = type.getTypes();
         Object[] featureObjectArr = new Object[types.size()];
@@ -174,39 +176,37 @@ public class Intersection {
         }
         return SimpleFeatureBuilder.build(type, featureObjectArr, null);
     }
-    
+
     public DateTime getDate() {
         Object date = feature.getAttribute(DATE_ATTR);
         if (date instanceof Date) {
-            return new DateTime((Date)date);
-        }
-        else if (date instanceof String) {
-            DateTime datetime = inputFormat.parseDateTime((String)date);
+            return new DateTime((Date) date);
+        } else if (date instanceof String) {
+            DateTime datetime = inputFormat.parseDateTime((String) date);
             return datetime;
-        }
-        else {
+        } else {
             throw new UnsupportedFeatureTypeException("Not sure what to do with date");
         }
     }
-    
+
     public double getUncertainty() {
         Object uncy = feature.getAttribute(UNCY_ATTR);
         if (uncy instanceof Double) {
-            return (Double)uncy;
-        }
-        else {
+            return (Double) uncy;
+        } else {
             throw new UnsupportedFeatureTypeException("Uncertainty should be a double");
         }
     }
-    
+
     public int getTransectId() {
         return transectId;
     }
-    
+
     /**
      * Returns the desired intersection
+     *
      * @param a first intersection
-     * @param b second intersection 
+     * @param b second intersection
      * @param closest return the closest intersection (false for farthest)
      * @return Intersection
      */
@@ -214,10 +214,49 @@ public class Intersection {
         boolean aFarther = ((Math.abs(a.distance) - Math.abs(b.distance)) > 0);
         if (closest) {
             return (aFarther) ? b : a;
-        }
-        else {
+        } else {
             return (aFarther) ? a : b;
         }
+    }
+
+    public static double absoluteFarthest(double min, Collection<Intersection> intersections) {
+        double maxVal = min;
+        for (Intersection intersection : intersections) {
+            double absDist = Math.abs(intersection.distance);
+            if (absDist > maxVal) {
+                maxVal = absDist;
+            }
+        }
+        return maxVal;
+    }
+
+    public static Map<DateTime, Intersection> calculateIntersections(Transect transect, STRtree strTree, boolean useFarthest) {
+        Map<DateTime, Intersection> allIntersections = new HashMap<DateTime, Intersection>();
+        LineString line = transect.getLineString();
+        List<ShorelineFeature> possibleIntersects = strTree.query(line.getEnvelopeInternal());
+        for (ShorelineFeature shoreline : possibleIntersects) {
+            LineString segment = shoreline.segment;
+            if (segment.intersects(line)) {
+                // must be a point
+                Point crossPoint = (Point) segment.intersection(line);
+                Orientation orientation = transect.getOrientation();
+                double distance = orientation.getSign()
+                        * transect.getOriginCoord()
+                        .distance(crossPoint.getCoordinate());
+                Intersection intersection =
+                        new Intersection(crossPoint, distance, shoreline.feature, transect.getId());
+                DateTime date = intersection.getDate();
+                if (allIntersections.containsKey(date)) {  // use closest/farthest intersection
+                    Intersection thatIntersection = allIntersections.get(date);
+                    Intersection closest = Intersection.compare(intersection, thatIntersection, !useFarthest);
+                    allIntersections.remove(date);
+                    allIntersections.put(date, closest);
+                } else {
+                    allIntersections.put(date, intersection);
+                }
+            }
+        }
+        return allIntersections;
     }
 
     @Override
