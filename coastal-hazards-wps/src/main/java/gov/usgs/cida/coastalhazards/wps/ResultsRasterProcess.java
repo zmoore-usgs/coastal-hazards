@@ -10,6 +10,8 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.coverage.grid.GridCoordinates2D;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -26,6 +28,7 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.geometry.MismatchedDimensionException;
@@ -43,6 +46,8 @@ import org.opengis.referencing.operation.TransformException;
         version = "1.0.0")
 public class ResultsRasterProcess implements GeoServerProcess {
     
+    private final static Logger LOGGER = Logging.getLogger(ResultsRasterProcess.class);
+    
     public static class AttributeRange {
         public final double min;
         public final double max;
@@ -51,6 +56,10 @@ public class ResultsRasterProcess implements GeoServerProcess {
             this.min = min;
             this.max = max;
             this.extent = max - min;
+        }
+        @Override
+        public String toString() {
+            return new StringBuilder("range=[").append(min).append(':').append(max).append(']').toString();
         }
     }
     
@@ -142,15 +151,20 @@ public class ResultsRasterProcess implements GeoServerProcess {
 
             gridGeometry = new GridGeometry2D(new GridEnvelope2D(0, 0, coverageWidth, coverageHeight), extent);
             
-            String id = featureCollection.getID().intern();
-            synchronized (id) {
-                Map<String, AttributeRange> attributeRangeMap = featureAttributeRangeMap.get(id);
+            // NOTE!  intern() is important, using instance as synchrnization lock, need equality by reference
+            String featureCollectionId = featureCollection.getSchema().getName().getURI().intern();
+            
+            LOGGER.log(Level.INFO, "Using identifier {} for attribute value range map lookup", featureCollectionId);
+            synchronized (featureCollectionId) {
+                Map<String, AttributeRange> attributeRangeMap = featureAttributeRangeMap.get(featureCollectionId);
                 if (attributeRangeMap == null) {
                     attributeRangeMap = new WeakHashMap<String, AttributeRange>();
-                    featureAttributeRangeMap.put(id, attributeRangeMap);
+                    featureAttributeRangeMap.put(featureCollectionId, attributeRangeMap);
+                    LOGGER.log(Level.INFO, "Created attribute value range map for {}", featureCollectionId);
                 }
                 attributeRange = attributeRangeMap.get(attributeName);
                 if (attributeRange == null) {
+                    LOGGER.log(Level.INFO, "Calculating attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
                     SimpleFeatureIterator iterator = featureCollection.features();
                     if (iterator.hasNext()) {
                         double value = ((Number)iterator.next().getAttribute(attributeName)).doubleValue();
@@ -167,7 +181,13 @@ public class ResultsRasterProcess implements GeoServerProcess {
                         }
                         attributeRange = new AttributeRange(minimum, maximum);
                         attributeRangeMap.put(attributeName, attributeRange);
+                        LOGGER.log(Level.INFO, "Caching attribute value range for {}:{} {}",
+                                new Object[] {
+                                    featureCollectionId, attributeName, attributeRange
+                                });
                     }
+                } else {
+                    LOGGER.log(Level.INFO, "Using cached attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
                 }
             }
         }
