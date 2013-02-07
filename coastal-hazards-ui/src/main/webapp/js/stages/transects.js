@@ -1,18 +1,33 @@
 var Transects = {
     stage : 'transects',
     suffixes : ['_lt','_st','_transects'],
-    reservedColor : '#FF0033',
+    reservedColor : '#D95F02',
     defaultSpacing : 500,
     description : {
         'stage' : 'Select existing transects, or generate new transects from the workspace baseline. Transects are rays that are projected from the baseline, and the intersections between shorelines and transects are used to calculate rates of erosion and deposition.',
         'view-tab' : 'Select a published collection of shorelines to add to the workspace.',
         'manage-tab' : 'Upload a new collection of transects to the workspace, generate new transects, or edit existing transects.',
-        'upload-button' : 'Upload a zipped shapefile which contains a collection of transects.'
+        'upload-button' : 'Upload a zipped shapefile which contains a collection of transects.',
+        'calculate-button' : 'Choose transect spacing and generate a new transects layer from the workspace baseline.'
     },
     appInit : function() {
         $('#transect-edit-form-toggle').on('click', Transects.editButtonToggled);
         $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
         $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
+        $('#transects-edit-add-button').on('click', Transects.addTransect);
+        
+        $('#create-transects-button').popover({
+            title : Transects.stage.capitalize() + ' Generate',
+            content : $('<div />')
+            .append($('<div />').html(Transects.description['calculate-button']))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        })
         
         Transects.initializeUploader();  
         
@@ -39,10 +54,14 @@ var Transects = {
         if ($('#transect-edit-form-toggle').hasClass('active')) {
             $('#transect-edit-form-toggle').trigger('click');
         }
-        var controls = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
-        if (controls.length) {
-            controls[0].deactivate();
+        var control = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
+        if (control.length) {
+            control[0].deactivate();
         }
+        
+        CONFIG.map.removeControl({
+            id : 'transects-draw-control'
+        });
     },
     enterStage : function() {
         
@@ -91,23 +110,43 @@ var Transects = {
             CONFIG.map.getMap().addControl(snap);
              
             LOG.debug('Transects.js::editButtonToggled: Adding cloned layer to map');
+            
             CONFIG.map.getMap().addLayer(clonedLayer);
             
             LOG.debug('Transects.js::editButtonToggled: Adding clone control to map');
-            CONFIG.map.getMap().addControl(
-                new OpenLayers.Control.ModifyFeature(
-                    clonedLayer, 
-                    {
-                        id : 'transects-edit-control',
-                        deleteCodes : [8, 46, 48],
-                        standalone : true,
-                        createVertices : false
-                    })
-                );
+            var mfControl = new OpenLayers.Control.ModifyFeature(
+                clonedLayer, 
+                {
+                    id : 'transects-edit-control',
+                    deleteCodes : [8, 46, 48, 68],
+                    standalone : true,
+                    createVertices : false,
+                    handleKeypress : function(evt) {
+                        var code = evt.keyCode;
+                        if(this.feature && OpenLayers.Util.indexOf(this.deleteCodes, code) != -1) {
+                            var fid = this.feature.fid
+                            var originalLayer = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0];
+                            var cloneLayer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
+                            var originalFeature = originalLayer.getFeatureBy('fid', fid)
+                            var cloneFeature = cloneLayer.getFeatureBy('fid', fid);
+                            cloneFeature.state = OpenLayers.State.DELETE;
+                            cloneFeature.style = {
+                                strokeOpacity : 0
+                            }
+                            originalFeature.style = {
+                                strokeOpacity : 0
+                            }
+                            Transects.saveEditedLayer();
+                        }
+                    }
+                })
+            CONFIG.map.getMap().addControl(mfControl);
+            mfControl.activate();
+            mfControl.handlers.keyboard.activate();
             var selectControl = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
             
-            selectControl.activate();
             selectControl.setLayer([clonedLayer]);
+            selectControl.activate();
             
             $("#transects-edit-container").removeClass('hidden');
             $('#transects-edit-save-button').unbind('click', Transects.saveEditedLayer);
@@ -119,12 +158,30 @@ var Transects = {
             CONFIG.map.removeControl({
                 id : 'transects-edit-control'
             });
+            CONFIG.map.getMap().getControlsBy('id', 'snap-control')[0].destroy();
             CONFIG.map.removeControl({
                 id : 'snap-control'
+            });
+            
+            CONFIG.map.removeControl({
+                id : 'transects-draw-control'
             });
             CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
         }
     },   
+    addTransect : function() {
+        var cloneLayer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
+        CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
+        var drawControl = new OpenLayers.Control.DrawFeature(
+            cloneLayer,
+            OpenLayers.Handler.Path,
+            {
+                id: 'transects-draw-control',
+                multi: true
+            })
+        CONFIG.map.addControl(drawControl);
+        drawControl.activate();
+    },
     saveEditedLayer : function() {
         LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
                 
@@ -143,6 +200,11 @@ var Transects = {
             Transects.refreshFeatureList({
                 selectLayer : layer.cloneOf
             })
+            CONFIG.map.getMap().getControlsBy('id', 'transects-draw-control')[0].destroy();
+            CONFIG.map.removeControl({
+                id : 'transects-draw-control'
+            });
+            
             $('#transect-edit-form-toggle').trigger('click'); 
         });
                 

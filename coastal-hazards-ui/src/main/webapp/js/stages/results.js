@@ -342,19 +342,19 @@ var Results = {
         var features = args.features;
         var layer = args.layer;
         var plotDiv = $('#results-' + layer.title + '-plot').get()[0]
-        var labels = ['x', 'LRR'];
+        var labels = ['Distance (m)', 'Coastal change (m/decade)'];
         var data = features.map(function(n){
+            var startX = parseFloat(n.data['StartX']);
+            var lrr = parseFloat(Math.abs(n.data['LRR']));
+            var lci = parseFloat(Math.abs(n.data['LCI']));
+            var lci25 = parseFloat(Math.abs(n.data['LCI_2.5']));
+            var lci975 = parseFloat(Math.abs(n.data['LCI_97.5']));
+            
             return [ 
             // X axis values
-            parseFloat(n.data['StartX']), 
-            [
-            // Error bar top
-            parseFloat(Math.abs(n.data['LCI_2.5'])),
-            // Value
-            parseFloat(n.data['LRR']), 
-            // Error bar bottom
-            parseFloat(Math.abs(n.data['LCI_97.5']))
-            ] 
+            startX, 
+            // [Error bar top, Value, Error bar bottom]
+            [lrr - lci,lrr, lrr + lci] 
             ]
         }).sortBy(function(n) {
             return n[0]
