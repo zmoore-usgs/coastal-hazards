@@ -166,6 +166,10 @@ var Calculation = {
             
         return  $('#'+stage+'-list');
     },
+    clear : function() {
+        $("#intersections-list").val('');
+        Calculation.listboxChanged();
+    },
     listboxChanged : function() {
         LOG.info('Calculation.js::listboxChanged: Intersections listbox changed');
         $("#intersections-list option:not(:selected)").each(function (index, option) {
@@ -203,7 +207,7 @@ var Calculation = {
     },
     addIntersections : function(args) {
         var intersections = new OpenLayers.Layer.WMS(
-            args.title, 
+            args.name, 
             'geoserver/ows',
             {
                 layers : args.name,

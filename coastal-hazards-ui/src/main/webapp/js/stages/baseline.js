@@ -222,6 +222,10 @@ var Baseline = {
             }
         })
     },
+    clear : function() {
+        $("#baseline-list").val('');
+        Baseline.listboxChanged();
+    },
     listboxChanged : function() {
         LOG.debug('Baseline.js::baselineSelected: A baseline was selected from the dropdown list');
         

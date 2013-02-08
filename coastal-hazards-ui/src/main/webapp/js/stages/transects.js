@@ -314,7 +314,11 @@ var Transects = {
         CONFIG.ui.populateFeaturesList({
             caller : Transects
         });
-    } ,       
+    } ,     
+    clear : function() {
+        $("#transects-list").val('');
+        Transects.listboxChanged();
+    },
     listboxChanged : function() {
         LOG.info('Transects.js::listboxChanged: Transect listbox changed');
         Transects.disableEditButton();
