@@ -266,7 +266,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                     LineSegment segment = new LineSegment(currentCoord, nextCoord);
                     
                     Transect transect = 
-                            Transect.generatePerpendicularVector(currentCoord, segment, orientation, transectId, baselineId, orthoDirection);
+                            Transect.generatePerpendicularVector(currentCoord, segment, orientation, transectId, baselineId, Double.NaN, orthoDirection);
                     transectId++;
                     transectVectors.add(transect);
                     continue;
@@ -280,7 +280,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                     Coordinate pointAlong = segment.pointAlong(fraction);
                     
                     Transect transect = 
-                            Transect.generatePerpendicularVector(currentCoord, segment, orientation, transectId, baselineId, orthoDirection);
+                            Transect.generatePerpendicularVector(currentCoord, segment, orientation, transectId, baselineId, Double.NaN, orthoDirection);
                     transectId++;
                     transectVectors.add(transect);
                     
@@ -316,18 +316,18 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             }
             int[] counts = new int[] { 0, 0 };
             Transect vector =
-                    Transect.generatePerpendicularVector(coordinates[0], a, Orientation.UNKNOWN, 0, "0", Angle.CLOCKWISE);
+                    Transect.generatePerpendicularVector(coordinates[0], a, Orientation.UNKNOWN, 0, "0", Double.NaN, Angle.CLOCKWISE);
             counts[0] += countIntersections(vector);
             vector.rotate180Deg();
             counts[1] += countIntersections(vector);
             
-            vector = Transect.generatePerpendicularVector(coordinates[n-1], b, Orientation.UNKNOWN, 0, "0", Angle.COUNTERCLOCKWISE);
+            vector = Transect.generatePerpendicularVector(coordinates[n-1], b, Orientation.UNKNOWN, 0, "0", Double.NaN, Angle.COUNTERCLOCKWISE);
             counts[0] += countIntersections(vector);
             vector.rotate180Deg();
             counts[1] += countIntersections(vector);
             
             if (m != null) {
-                vector = Transect.generatePerpendicularVector(coordinates[(int)n/2], m, Orientation.UNKNOWN, 0, "0", Angle.CLOCKWISE);
+                vector = Transect.generatePerpendicularVector(coordinates[(int)n/2], m, Orientation.UNKNOWN, 0, "0", Double.NaN, Angle.CLOCKWISE);
                 counts[0] += countIntersections(vector);
                 vector.rotate180Deg();
                 counts[1] += countIntersections(vector);

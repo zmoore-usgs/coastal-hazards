@@ -77,25 +77,27 @@ public class Transect {
     private double angle; // radians
     private double length; // meters
     private Orientation orientation; // is transect built off of seaward or shoreward baseline
-    private String baselineId;
     private int transectId;
+    private String baselineId;
+    private double baselineDistance;
     private static final GeometryFactory gf;
 
     static {
         gf = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
     }
     
-    public Transect(Coordinate coord, double angle, Orientation orientation, int transectId, String baselineId) {
+    Transect(Coordinate coord, double angle, Orientation orientation, int transectId, String baselineId, double baselineDistance) {
         this.cartesianCoord = coord;
         this.angle = angle;
         this.length = 1.0;
         this.orientation = orientation;
         this.transectId = transectId;
         this.baselineId = baselineId;
+        this.baselineDistance = baselineDistance;
     }
     
-    public Transect(double x, double y, double angle, Orientation orientation, int transectId, String baselineId) {
-        this(new Coordinate(x, y), angle, orientation, transectId, baselineId);
+    Transect(double x, double y, double angle, Orientation orientation, int transectId, String baselineId, double baselineDistance) {
+        this(new Coordinate(x, y), angle, orientation, transectId, baselineId, baselineDistance);
     }
 
     public void setLength(double length) {
@@ -133,6 +135,10 @@ public class Transect {
     public int getId() {
         return transectId;
     }
+    
+    public double getBaselineDistance() {
+        return baselineDistance;
+    }
 
     public void rotate180Deg() {
         angle += Math.PI;
@@ -143,6 +149,7 @@ public class Transect {
             Orientation orientation,
             int transectId,
             String baselineId,
+            double baselineDistance,
             int direction) {
         double angle;
         switch (direction) {
@@ -155,7 +162,7 @@ public class Transect {
             default:
                 throw new IllegalStateException("Must be either clockwise or counterclockwise");
         }
-        return new Transect(origin, angle, orientation, transectId, baselineId);
+        return new Transect(origin, angle, orientation, transectId, baselineId, baselineDistance);
     }
     
     public boolean equals(Transect b) {
@@ -176,6 +183,7 @@ public class Transect {
         builder.add(TRANSECT_ID_ATTR, Integer.class);
         builder.add(BASELINE_ORIENTATION_ATTR, String.class);
         builder.add(BASELINE_ID_ATTR, String.class);
+        builder.add(BASELINE_DIST_ATTR, Double.class);
         return builder.buildFeatureType();
     }
     
