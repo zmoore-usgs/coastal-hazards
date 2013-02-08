@@ -4,7 +4,7 @@ var Session = function(name, isPerm) {
     me.isPerm = isPerm;
     me.name = name;
     me.sessionObject = isPerm ? localStorage : sessionStorage;
-    me.session =  isPerm ? $.parseJSON(me.sessionObject.getItem(me.name)) : new Object();
+    me.session =  isPerm ? $.parseJSON(me.sessionObject.getItem(me.name)) : Object.extended();
     
     var defaultSession = Object.extended();
     defaultSession['default'] = {

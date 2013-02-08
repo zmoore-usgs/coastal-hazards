@@ -26,9 +26,6 @@ var UI = function() {
         $("#application-spinner").fadeOut();
     });
     
-    LOG.info('UI.js::init: This is the first load of this session. Popups will be shown on this load only');
-    config.view.popup = false;
-        
     CONFIG.tempSession.setStageConfig({
         config : config
     });
