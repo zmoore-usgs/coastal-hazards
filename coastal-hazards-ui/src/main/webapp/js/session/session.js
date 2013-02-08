@@ -142,23 +142,41 @@ var Session = function(name, isPerm) {
             me.save();
         }
         
-        me.getStageConfig = function(args) {
+        me.getStage = function(args) {
             if (!args) {
                 args = Object.extended();
             }
-            var name = args.name || 'default';
             var stage = args.stage || 'default';
             
             if (!me.session[stage]) {
                 me.session[stage] = defaultSession[stage];
             }
             
-            if (!me.session[stage][name]) {
-                me.session[stage][name] = me.session[stage]['default'];
-                me.session[stage][name].name = name;
+            return me.session[stage];
+        }
+        
+        me.setStage = function(args) {
+            if (!args) {
+                return;
+            }
+            var stage = args.stage || 'default';
+            me.session[stage] = args.obj
+        }
+        
+        me.getStageConfig = function(args) {
+            if (!args) {
+                args = Object.extended();
+            }
+            var name = args.name || 'default';
+            var stage = args.stage || 'default';
+            var sessionStage = me.getStage(stage);
+            
+            if (!sessionStage[name]) {
+                sessionStage[name] = sessionStage['default'];
+                sessionStage[name].name = name;
             }
             
-            return Object.clone(this.session[stage][name])
+            return this.session[stage][name];
         }
         
         me.setStageConfig = function(args) {
@@ -240,7 +258,25 @@ var Session = function(name, isPerm) {
                     me.persistCurrentSession();
                 }
             } else {
-                LOG.debug('Session.js::updateLayersFromWMS: Capabilities could not be parsed for the given namespace. Error: ' + data.status + ': '+ jqXHR);
+                LOG.debug('Session.js::updateLayersFromWMS: Could not find any layers for this session. Removing any existing layers in sesion object');
+                CONFIG.ui.work_stages.each(function(stage) {
+                    var sessionStage = CONFIG.tempSession.getStage({
+                        stage : stage
+                    })
+                    delete sessionStage['default'];
+                    Object.keys(sessionStage, function(key) {
+                        if (key.has(me.getCurrentSessionKey())) {
+                            if (delete sessionStage[key]) {
+                                LOG.debug('Session.js::updateLayersFromWMS: Deleted ' + key + ' from session stage ' + stage);
+                            }
+                        }
+                    })
+                    me.setStage({
+                        stage : stage,
+                        obj : sessionStage
+                    })
+                })
+                me.persistCurrentSession();
             }
         }
         
@@ -288,6 +324,28 @@ var Session = function(name, isPerm) {
         },
         getCurrentSession : function() {
             return me.session['current-session'];
+        },
+        removeResource : function(args) {
+            var store = args.store;
+            var layer = args.layer;
+            var callbacks = args.callbacks || [];
+            var workspace = args.session || CONFIG.tempSession.getCurrentSessionKey();
+            
+            if (workspace.toLowerCase() == CONFIG.name.published) {
+                throw 'Workspace cannot be read-only (Ex.: '+CONFIG.name.published+')';
+            }
+            
+            $.get('service/session', {
+                action : 'remove-layer',
+                workspace : workspace,
+                store : store,
+                layer : layer
+            },
+            function(data, textStatus, jqXHR) {
+                callbacks.each(function(callback) {
+                    callback(data, textStatus, jqXHR);
+                })
+            }, 'json')
         }
     });
 }

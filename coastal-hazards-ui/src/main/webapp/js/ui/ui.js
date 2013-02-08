@@ -673,6 +673,15 @@ var UI = function() {
                     caller : caller
                 })
             }
+        },
+        switchTab : function(args) {
+            var caller = args.caller;
+            var tab = args.tab;
+            if (tab == 'view') {
+                $('#action-'+caller.stage+'-tablist a[href="#'+caller.stage+'-view-tab"]').trigger('click');
+            } else if (tab == 'manage') {
+                $('#action-'+caller.stage+'-tablist a[href="#'+caller.stage+'-manage-tab"]').trigger('click');
+            }
         }
     });
 }
