@@ -4,7 +4,8 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-#input <- "testOut.txt"
+# comment this out for WPS!!!
+input <- "testOutShort.tsv"
 
 
 
@@ -80,18 +81,16 @@ for (b in 1:numBlck){
         
         #intersections = data.frame(dates,distance,uncy,stringsAsFactors = FALSE)
         # call LRR
-            rate <- dates
-            mdl <- lm(formula=distance~rate)
-            coef <- coefficients(mdl)
-            CI   <- confint(mdl,"rate",level=conLevel)
-            rate <- coef["rate"]	# is m/day
+        mdl <- lm(formula=distance~dates)
+        coef <- coefficients(mdl)
+        CI   <- confint(mdl,"rate",level=conLevel)
+        rate <- coef["rate"]	# is m/day
         
         statsout[b,2] <- rate*365.25
         statsout[b,3] <- (CI[2]-CI[1])/2 # LCI
         
         weights <- 1/(uncy^2)
-        rate <- dates
-        mdl <- lm(formula=distance~rate, weights=weights)
+        mdl <- lm(formula=distance~dates, weights=weights)
         coef <- coefficients(mdl)
         CI   <- confint(mdl,"rate",level=conLevel)
         rate <- coef["rate"]
