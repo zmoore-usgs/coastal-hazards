@@ -1,17 +1,19 @@
-# wps.des: id=DSAS_stats, title=Digital Shoreline Analysis System Stats, abstract=stats available - LRR WLR SCE NSM;
+# wps.des: id=DSAS_stats, title=Digital Shoreline Analysis System Stats, abstract=stats available - LRR LCI WLR WCI SCE NSM EPR;
 # wps.in: input, xml, block intersection text, text input from intersections layer with time elements and uncertainty;
 
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-#input <- "testOut.txt"
+# comment this out for WPS!!!
+#input <- "testOut.tsv"
 
 
 
-fileN = input # will have input as a string (long string read in)
-reader = c("character","numeric","numeric")
-conLevel = 0.95
-zRepV  = 0.01 #replace value for when the uncertainty is zero
+fileN    <- input # will have input as a string (long string read in)
+reader   <- c("character","numeric","numeric")
+conLevel <- 0.95
+zRepV    <- 0.01 #replace value for when the uncertainty is zero
+rateConv <- 365.25
 
 hNum = 2 # number of header lines in each block ** should be 1 now **
 ignoreStr = c("dist","uncy") # kill for JW....
@@ -80,13 +82,13 @@ for (b in 1:numBlck){
         
         #intersections = data.frame(dates,distance,uncy,stringsAsFactors = FALSE)
         # call LRR
-            rate <- dates
-            mdl <- lm(formula=distance~rate)
-            coef <- coefficients(mdl)
-            CI   <- confint(mdl,"rate",level=conLevel)
-            rate <- coef["rate"]	# is m/day
+        rate <- dates
+        mdl <- lm(formula=distance~rate)
+        coef <- coefficients(mdl)
+        CI   <- confint(mdl,"rate",level=conLevel)
+        rate <- coef["rate"]  # is m/day
         
-        statsout[b,2] <- rate*365.25
+        statsout[b,2] <- rate*rateConv 
         statsout[b,3] <- (CI[2]-CI[1])/2 # LCI
         
         weights <- 1/(uncy^2)
@@ -95,12 +97,15 @@ for (b in 1:numBlck){
         coef <- coefficients(mdl)
         CI   <- confint(mdl,"rate",level=conLevel)
         rate <- coef["rate"]
-        statsout[b,4] <- rate*365.25
+        statsout[b,4] <- rate*rateConv 
         statsout[b,5] <- (CI[2]-CI[1])/2 # WCI
 		
 		SCE <- max(distance)-min(distance)
-		NSM <- 0 # should be which.max...
-		EPR <- 0 # should be NSM/(max(dates)-min(dates))
+    firstDateIdx <- which.min(dates)
+    lastDateIdx  <- which.max(dates)
+		NSM <- distance[firstDateIdx]-distance[lastDateIdx]
+        dateDiff <- dates[lastDateIdx]-dates[firstDateIdx]
+		EPR <- NSM/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
 		statsout[b,6] <- SCE
 		statsout[b,7] <- NSM
 		statsout[b,8] <- EPR
