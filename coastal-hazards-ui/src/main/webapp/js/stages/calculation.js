@@ -93,7 +93,7 @@ var Calculation = {
                             layer : intersectionLayerName.split(':')[1]
                         },
                         function(data, textStatus, jqXHR) {
-                            wpsProc();
+                                wpsProc();
                         }, 'json')
                     }           
                 }

@@ -103,7 +103,7 @@ var Results = {
             })
         }
         
-        if ($('#results-list option[value="'+ resultsLayerName + '"]').length) {
+        if ($('#results-list option[value="'+ CONFIG.tempSession.getCurrentSessionKey() + ':' + resultsLayerName + '"]').length) {
             CONFIG.ui.createModalWindow({
                 context : {
                     scope : this
@@ -118,7 +118,7 @@ var Results = {
                             action : 'remove-layer',
                             workspace : CONFIG.tempSession.getCurrentSessionKey(),
                             store : 'ch-output',
-                            layer : resultsLayerName.split(':')[1]
+                            layer : resultsLayerName
                         },
                         function(data, textStatus, jqXHR) {
                             wpsProc();
@@ -143,6 +143,7 @@ var Results = {
         CONFIG.map.removeControl({
             id : 'results-select-control'
         });
+        
 
         $("#results-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
