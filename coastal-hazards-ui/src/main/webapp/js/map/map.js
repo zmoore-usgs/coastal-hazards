@@ -50,11 +50,10 @@ var Map = function() {
         },
         removeLayerByName : function(featureName) {
             LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + featureName);
-            var layer = me.map.getLayersByName(featureName) || [];
-            if (layer.length) {
-                me.map.removeLayer(layer[0]);
-            }
-            return layer;
+            var layers = me.map.getLayersByName(featureName) || [];
+            layers.each(function(layer){
+                me.map.removeLayer(layer);
+            })
         },
         removeLayersByName : function(featureNames) {
             $(featureNames).each(function(index, fn) {

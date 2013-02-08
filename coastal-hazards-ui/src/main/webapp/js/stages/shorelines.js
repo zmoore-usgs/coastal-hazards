@@ -540,6 +540,10 @@ var Shorelines = {
             }
         });
     },
+    clear : function() {
+        $("#shorelines-list").val('');
+        Shorelines.listboxChanged();
+    },
     listboxChanged : function() {
         LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
         

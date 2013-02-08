@@ -68,6 +68,10 @@ var Results = {
                                 success : [
                                 Results.populateFeaturesList,
                                 function() {
+                                    Shorelines.clear();
+                                    Baseline.clear();
+                                    Transects.clear();
+                                    Calculation.clear();
                                     $('#results-list').val(data);
                                     Results.listboxChanged();
                                     $('a[href="#' + Results.stage + '-view-tab"]').tab('show');
@@ -99,7 +103,7 @@ var Results = {
             })
         }
         
-        if ($('#results-list option[value="'+ resultsLayerName + '"]').length) {
+        if ($('#results-list option[value="'+ CONFIG.tempSession.getCurrentSessionKey() + ':' + resultsLayerName + '"]').length) {
             CONFIG.ui.createModalWindow({
                 context : {
                     scope : this
@@ -114,7 +118,7 @@ var Results = {
                             action : 'remove-layer',
                             workspace : CONFIG.tempSession.getCurrentSessionKey(),
                             store : 'ch-output',
-                            layer : resultsLayerName.split(':')[1]
+                            layer : resultsLayerName
                         },
                         function(data, textStatus, jqXHR) {
                             wpsProc();
@@ -127,10 +131,36 @@ var Results = {
             wpsProc();
         }
     },
+    clear : function() {
+        $("#transects-list").val('');
+        Results.listboxChanged();
+    },
     listboxChanged : function() {
         LOG.info('Results.js::listboxChanged: A result was selected from the select list');
 
+        $('#results-table-navtabs').children().remove();
+        $('#results-tabcontent').children().remove();
+        CONFIG.map.removeControl({
+            id : 'results-select-control'
+        });
+        
+
         $("#results-list option:not(:selected)").each(function (index, option) {
+            var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
+            if (layers.length) {
+                $(layers).each(function(i,l) {
+                    CONFIG.map.getMap().removeLayer(l, false);
+                    var stageConfig = CONFIG.tempSession.getStageConfig({
+                        stage : Transects.stage,
+                        name : l.name
+                    })
+                    stageConfig.view.isSelected = false;
+                    CONFIG.tempSession.setStageConfig({
+                        stage : Transects.stage,
+                        config : stageConfig
+                    })
+                })
+            }
             var layerConfig = CONFIG.tempSession.getStageConfig({
                 stage : Results.stage,
                 name : option.value
@@ -170,11 +200,7 @@ var Results = {
                 result : layer
             })
             
-        } else {
-            LOG.debug('Results.js::listboxChanged: All results in results list are deselected.');
-            $('#results-table-navtabs').children().remove();
-            $('#results-table-tabcontent').children().remove();
-        }
+        } 
         
     },
     
@@ -190,7 +216,7 @@ var Results = {
         var layerPrefix = layer.prefix;
         
         LOG.trace('Results.js::addLayerToMap: Creating WMS layer that will hold the heatmap style');
-        var resultsWMS = new OpenLayers.Layer.WMS(layerName,
+        var resultsWMS = new OpenLayers.Layer.WMS(layerPrefix + ':' + layerName,
             'geoserver/'+layerPrefix+'/wms',
             {
                 layers : layerName,
@@ -212,7 +238,7 @@ var Results = {
             })
             
         LOG.trace('Results.js::addLayerToMap: Creating Vector layer that will be used for highlighting');
-        var resultsVector = new OpenLayers.Layer.Vector(layerName, {
+        var resultsVector = new OpenLayers.Layer.Vector(layerPrefix + ':' + layerName, {
             strategies: [new OpenLayers.Strategy.BBOX()],
             protocol: new OpenLayers.Protocol.WFS({
                 version: '1.1.0',

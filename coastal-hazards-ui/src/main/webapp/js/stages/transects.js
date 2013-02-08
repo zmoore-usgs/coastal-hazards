@@ -314,7 +314,11 @@ var Transects = {
         CONFIG.ui.populateFeaturesList({
             caller : Transects
         });
-    } ,       
+    } ,     
+    clear : function() {
+        $("#transects-list").val('');
+        Transects.listboxChanged();
+    },
     listboxChanged : function() {
         LOG.info('Transects.js::listboxChanged: Transect listbox changed');
         Transects.disableEditButton();
@@ -465,7 +469,8 @@ var Transects = {
         }
         
         // Check if transects already exists in the select list
-        if ($('#transects-list option[value="'+ CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_transects"]').length) {
+        if ($('#transects-list option[value="'+ CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_transects"]').length ||
+        $('#intersections-list option[value="'+ CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_intersects"]').length) {
             CONFIG.ui.createModalWindow({
                 context : {
                     scope : this
@@ -482,8 +487,16 @@ var Transects = {
                             store : 'ch-input',
                             layer : layerName + '_transects'
                         },
-                        function(data, textStatus, jqXHR) {
-                            wpsProc();
+                        function() {
+                            $.get('service/session', {
+                                action : 'remove-layer',
+                                workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                                store : 'ch-input',
+                                layer : layerName + '_intersects'
+                            },
+                            function(data, textStatus, jqXHR) {
+                                wpsProc();
+                            }, 'json')
                         }, 'json')
                     }           
                 }
