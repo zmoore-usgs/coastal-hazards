@@ -5,7 +5,7 @@
 # xml is for WPS side of things, tells WPS how input should be formatted
 
 # comment this out for WPS!!!
-input <- "testOutShort.tsv"
+#input <- "testOut.tsv"
 
 
 
