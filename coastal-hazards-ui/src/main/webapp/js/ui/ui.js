@@ -9,12 +9,7 @@ var UI = function() {
     me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
     me.work_stages_objects = [Shorelines, Baseline, Transects, Results, Calculation];
     
-    $('#clear-sessions-btn').on("click", function(){
-        localStorage.clear();
-        sessionStorage.clear();
-        LOG.warn('UI.js::Cleared sessions. Reloading application.');
-        location.reload();
-    })
+    $('#clear-sessions-btn').on("click", CONFIG.tempSession.clearSessions)
         
     LOG.debug('UI.js::init: Initializing AJAX start/stop hooks');
     $(document).ajaxStart(function() {

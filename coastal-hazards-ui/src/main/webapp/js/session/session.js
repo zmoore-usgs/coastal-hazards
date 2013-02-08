@@ -325,6 +325,21 @@ var Session = function(name, isPerm) {
         getCurrentSession : function() {
             return me.session['current-session'];
         },
+        clearSessions : function(type) {
+            type = type || '';
+            switch (type) {
+                case 'perm' :
+                    localStorage.removeItem('coastal-hazards');
+                case  'temp' :
+                    sessionStorage.removeItem('coastal-hazards');
+                    break;
+                default :
+                    localStorage.removeItem('coastal-hazards');
+                    sessionStorage.removeItem('coastal-hazards');
+            }
+            LOG.warn('UI.js::Cleared '+type+' session. Reloading application.');
+            location.reload(true);
+        },
         removeResource : function(args) {
             var store = args.store;
             var layer = args.layer;
