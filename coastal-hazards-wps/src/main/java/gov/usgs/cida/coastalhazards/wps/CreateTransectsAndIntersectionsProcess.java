@@ -13,6 +13,7 @@ import com.vividsolutions.jts.index.strtree.STRtree;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.util.Constants.Orientation;
+import gov.usgs.cida.coastalhazards.util.GeomAsserts;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
@@ -159,13 +160,14 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             // for now assume seaward
             SimpleFeatureCollection transformedBaselines = CRSUtils.transformFeatureCollection(baselineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
             MultiLineString shorelineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedShorelines);
-            //MultiLineString baselineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedBaselines);
+            MultiLineString baselineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedBaselines);
             this.strTree = new ShorelineSTRTreeBuilder(transformedShorelines).build();
             
             this.transectFeatureType = Transect.buildFeatureType(utmCrs);
             this.intersectionFeatureType = Intersection.buildSimpleFeatureType(transformedShorelines, utmCrs);
             
             this.preparedShorelines = PreparedGeometryFactory.prepare(shorelineGeometry);
+            GeomAsserts.assertBaselinesDoNotCrossShorelines(preparedShorelines, baselineGeometry);
             
             Transect[] vectsOnBaseline = getEvenlySpacedOrthoVectorsAlongBaseline(transformedBaselines, shorelineGeometry, spacing);
             
