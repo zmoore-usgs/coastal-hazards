@@ -1,13 +1,11 @@
 var UI = function() {
     LOG.info('UI.js::init: UI class is initializing.');
     var me = (this === window) ? {} : this;
+    me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
+    me.work_stages_objects = [Shorelines, Baseline, Transects, Results, Calculation];
     
     LOG.debug('UI.js::init: Setting popup hover delay to ' + popupHoverDelay);
     var popupHoverDelay = CONFIG.popupHoverDelay;
-    
-    var config = CONFIG.tempSession.getStageConfig();
-    me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
-    me.work_stages_objects = [Shorelines, Baseline, Transects, Results, Calculation];
     
     $('#clear-sessions-btn').on("click", CONFIG.tempSession.clearSessions)
         
@@ -17,16 +15,11 @@ var UI = function() {
         $("#application-spinner").fadeIn();
     });
     $(document).ajaxStop(function() {
-        LOG.debug('AJAX Call Stopped');
+        LOG.debug('AJAX Call Finished');
         $("#application-spinner").fadeOut();
     });
     
-    CONFIG.tempSession.setStageConfig({
-        config : config
-    });
-        
     me.work_stages_objects.each(function(stage) {
-            
         if (stage.description.stage) {
             $('#nav-list a[href="#'+stage.stage+'"]').popover({
                 title : stage.stage.capitalize(),
@@ -426,7 +419,7 @@ var UI = function() {
                         var type = title.substr(title.lastIndexOf('_'));
                         if (suffixes.length == 0 || suffixes.find(type.toLowerCase())) {
                             LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title)
-                            var stageConfig = CONFIG.tempSession.getStageConfig({
+                            var stageConfig = CONFIG.tempSession.getConfig({
                                 stage : stage,
                                 name : layerNS + ':' + layer.name
                             })
@@ -440,7 +433,7 @@ var UI = function() {
                             
                             $('#'+stage+'-list')
                             .append(option);
-                            CONFIG.tempSession.setStageConfig({
+                            CONFIG.tempSession.setConfig({
                                 stage : stage,
                                 config : stageConfig
                             })
@@ -464,7 +457,7 @@ var UI = function() {
                 LOG.debug('UI.js::showShorelineInfo: Features were returned from the OWS resource. Parsing and creating table to display');
                 
                 LOG.debug('UI.js::showShorelineInfo: Creating table for ' + event.features.length + ' features');
-                var groupingColumn = CONFIG.tempSession.getStageConfig({
+                var groupingColumn = CONFIG.tempSession.getConfig({
                     stage : Shorelines.stage, 
                     name : event.features[0].gml.featureNSPrefix + ':' + event.features[0].gml.featureType
                 }).groupingColumn
@@ -502,7 +495,7 @@ var UI = function() {
                         tbodyTr.append($('<td />').append(aVal))
                     })
                     
-                    var layer =  CONFIG.tempSession.getStageConfig({
+                    var layer =  CONFIG.tempSession.getConfig({
                         name : layerName,
                         stage : Shorelines.stage
                     })

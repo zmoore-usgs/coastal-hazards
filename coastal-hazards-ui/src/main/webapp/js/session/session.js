@@ -30,11 +30,11 @@ var Session = function(name, isPerm) {
             }
         }
     }
-    defaultSession.baseline = defaultSession['default'];
-    defaultSession.transects = defaultSession['default'];
-    defaultSession.intersections = defaultSession['default'];
-    defaultSession.calculation = defaultSession['default'];
-    defaultSession.results = defaultSession['default'];
+    defaultSession.baseline = Object.clone(defaultSession['default']);
+    defaultSession.transects = Object.clone(defaultSession['default'])
+    defaultSession.intersections = Object.clone(defaultSession['default'])
+    defaultSession.calculation = Object.clone(defaultSession['default'])
+    defaultSession.results = Object.clone(defaultSession['default'])
             
     
     if (isPerm) {
@@ -163,7 +163,7 @@ var Session = function(name, isPerm) {
             me.session[stage] = args.obj
         }
         
-        me.getStageConfig = function(args) {
+        me.getConfig = function(args) {
             if (!args) {
                 args = Object.extended();
             }
@@ -179,7 +179,7 @@ var Session = function(name, isPerm) {
             return this.session[stage][name];
         }
         
-        me.setStageConfig = function(args) {
+        me.setConfig = function(args) {
             if (!args) {
                 args = Object.extended();
             }

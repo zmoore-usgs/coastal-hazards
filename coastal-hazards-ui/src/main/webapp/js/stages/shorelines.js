@@ -125,13 +125,13 @@ var Shorelines = {
             includeGeom : false
         });
         
-        var sessionLayer = CONFIG.tempSession.getStageConfig({
+        var sessionLayer = CONFIG.tempSession.getConfig({
             name : layer.name,
             stage : Shorelines.stage
         });
         
         sessionLayer.nameSpace = args.describeFeaturetypeRespone.targetNamespace;
-        CONFIG.tempSession.setStageConfig({ 
+        CONFIG.tempSession.setConfig({ 
             stage :Shorelines.stage,
             config : sessionLayer
         });
@@ -148,7 +148,7 @@ var Shorelines = {
                     if (CONFIG.map.getMap().getLayersByName(layer.title).length == 0) {
                         LOG.info('Shorelines.js::addLayerToMap: Layer does not yet exist on the map. Loading layer: ' + layer.title);
                     
-                        var sessionLayer = CONFIG.tempSession.getStageConfig({
+                        var sessionLayer = CONFIG.tempSession.getConfig({
                             stage : Shorelines.stage,
                             name : layer.prefix + ':' + layer.name
                         });
@@ -166,7 +166,7 @@ var Shorelines = {
                             groupingColumn : groupingColumn
                         });
                     
-                        CONFIG.tempSession.setStageConfig({ 
+                        CONFIG.tempSession.setConfig({ 
                             stage :Shorelines.stage,
                             config : sessionLayer
                         });
@@ -246,7 +246,7 @@ var Shorelines = {
         var groupColumn = args.groupColumn;
         var layer = args.layer;
         var layerName = args.layerName || layer.prefix + ':' + layer.name;
-        var sessionLayer = CONFIG.tempSession.getStageConfig({
+        var sessionLayer = CONFIG.tempSession.getConfig({
             name : layerName,
             stage : Shorelines.stage
         });
@@ -390,7 +390,7 @@ var Shorelines = {
     			
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table body');
         
-        var sessionLayer = CONFIG.tempSession.getStageConfig({
+        var sessionLayer = CONFIG.tempSession.getConfig({
             name : event.object.prefix + ':' + layerName,
             stage : Shorelines.stage
         });
@@ -471,7 +471,7 @@ var Shorelines = {
             onChange : function($element, status, event) {
                 var layerName = this.attachedLayer;
                 var date = $element.parent().data('date');
-                var sessionLayer = CONFIG.tempSession.getStageConfig({
+                var sessionLayer = CONFIG.tempSession.getConfig({
                     name : layerName,
                     stage : Shorelines.stage
                 });
@@ -498,7 +498,7 @@ var Shorelines = {
                 }
                         
                 // Persist the session
-                CONFIG.tempSession.setStageConfig({ 
+                CONFIG.tempSession.setConfig({ 
                     stage :Shorelines.stage,
                     config : sessionLayer
                 });
@@ -551,12 +551,12 @@ var Shorelines = {
         $("#shorelines-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
             
-            var layerConfig = CONFIG.tempSession.getStageConfig({
+            var layerConfig = CONFIG.tempSession.getConfig({
                 name : option.value,
                 stage : Shorelines.stage
             });
             layerConfig.view.isSelected = false;
-            CONFIG.tempSession.setStageConfig({ 
+            CONFIG.tempSession.setConfig({ 
                 stage :Shorelines.stage,
                 config : layerConfig
             });
@@ -586,12 +586,12 @@ var Shorelines = {
             
             CONFIG.tempSession.session[Shorelines.stage].view.activeLayers.push(option.value);
             
-            var layerConfig = CONFIG.tempSession.getStageConfig({
+            var layerConfig = CONFIG.tempSession.getConfig({
                 name : option.value,
                 stage : Shorelines.stage
             });
             layerConfig.view.isSelected = true;
-            CONFIG.tempSession.setStageConfig({ 
+            CONFIG.tempSession.setConfig({ 
                 stage :Shorelines.stage,
                 config : layerConfig
             });

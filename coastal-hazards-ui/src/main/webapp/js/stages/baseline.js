@@ -246,12 +246,12 @@ var Baseline = {
             CONFIG.map.removeLayer(layer);
             
             CONFIG.map.getMap().removeLayer(layer, false);
-            var stageConfig = CONFIG.tempSession.getStageConfig({
+            var stageConfig = CONFIG.tempSession.getConfig({
                 stage : Baseline.stage,
                 name : layer.name
             })
             stageConfig.view.isSelected = false;
-            CONFIG.tempSession.setStageConfig({
+            CONFIG.tempSession.setConfig({
                 stage : Baseline.stage,
                 config : stageConfig
             })

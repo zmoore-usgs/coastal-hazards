@@ -150,23 +150,23 @@ var Results = {
             if (layers.length) {
                 $(layers).each(function(i,l) {
                     CONFIG.map.getMap().removeLayer(l, false);
-                    var stageConfig = CONFIG.tempSession.getStageConfig({
+                    var stageConfig = CONFIG.tempSession.getConfig({
                         stage : Transects.stage,
                         name : l.name
                     })
                     stageConfig.view.isSelected = false;
-                    CONFIG.tempSession.setStageConfig({
+                    CONFIG.tempSession.setConfig({
                         stage : Transects.stage,
                         config : stageConfig
                     })
                 })
             }
-            var layerConfig = CONFIG.tempSession.getStageConfig({
+            var layerConfig = CONFIG.tempSession.getConfig({
                 stage : Results.stage,
                 name : option.value
             });
             layerConfig.view.isSelected = false;
-            CONFIG.tempSession.setStageConfig({
+            CONFIG.tempSession.setConfig({
                 stage : Results.stage,
                 config : layerConfig
             });
@@ -182,12 +182,12 @@ var Results = {
                 layerNS: selectedResultValue.split(':')[0],
                 layerName : selectedResultValue.split(':')[1]
             })
-            var layerConfig = CONFIG.tempSession.getStageConfig({
+            var layerConfig = CONFIG.tempSession.getConfig({
                 stage : Results.stage,
                 name : selectedResultValue
             });
             layerConfig.view.isSelected = true;
-            CONFIG.tempSession.setStageConfig({
+            CONFIG.tempSession.setConfig({
                 stage : Results.stage,
                 config : layerConfig
             });

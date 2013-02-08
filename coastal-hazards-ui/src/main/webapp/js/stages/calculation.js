@@ -135,7 +135,7 @@ var Calculation = {
                     var type = title.substr(title.lastIndexOf('_'));
                     if (suffixes.length == 0 || suffixes.find(type.toLowerCase())) {
                         LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title)
-                        var stageConfig = CONFIG.tempSession.getStageConfig({
+                        var stageConfig = CONFIG.tempSession.getConfig({
                             stage : stage,
                             name : layerNS + ':' + layer.name
                         })
@@ -149,7 +149,7 @@ var Calculation = {
                             
                         $('#'+stage+'-list')
                         .append(option);
-                        CONFIG.tempSession.setStageConfig({
+                        CONFIG.tempSession.setConfig({
                             stage : stage,
                             config : stageConfig
                         })
@@ -177,12 +177,12 @@ var Calculation = {
             if (layers.length) {
                 $(layers).each(function(i,l) {
                     CONFIG.map.getMap().removeLayer(l, false);
-                    var stageConfig = CONFIG.tempSession.getStageConfig({
+                    var stageConfig = CONFIG.tempSession.getConfig({
                         stage : Calculation.stage,
                         name : l.name
                     })
                     stageConfig.view.isSelected = false;
-                    CONFIG.tempSession.setStageConfig({
+                    CONFIG.tempSession.setConfig({
                         stage : Calculation.stage,
                         config : stageConfig
                     })
@@ -194,12 +194,12 @@ var Calculation = {
             Calculation.addIntersections({
                 name : name
             })
-            var stageConfig = CONFIG.tempSession.getStageConfig({
+            var stageConfig = CONFIG.tempSession.getConfig({
                 stage : Calculation.stage,
                 name : name
             })
             stageConfig.view.isSelected = true;
-            CONFIG.tempSession.setStageConfig({
+            CONFIG.tempSession.setConfig({
                 stage : Calculation.stage,
                 config : stageConfig
             })
@@ -230,12 +230,12 @@ var Calculation = {
 	
         CONFIG.map.getMap().addLayer(intersections);
         
-        var stageConfig = CONFIG.tempSession.getStageConfig({
+        var stageConfig = CONFIG.tempSession.getConfig({
             stage : Calculation.stage,
             name : args.name
         })
         stageConfig.view.isSelected = false;
-        CONFIG.tempSession.setStageConfig({
+        CONFIG.tempSession.setConfig({
             stage : Calculation.stage,
             config : stageConfig
         })
@@ -281,7 +281,7 @@ var Calculation = {
         '<wps:DataInputs>';
     
         shorelines.each(function(i, shoreline) {
-            var sessionLayer = CONFIG.tempSession.getStageConfig({
+            var sessionLayer = CONFIG.tempSession.getConfig({
                 name : shoreline,
                 stage : Shorelines.stage
             })

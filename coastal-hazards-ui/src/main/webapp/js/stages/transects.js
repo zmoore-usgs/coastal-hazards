@@ -286,12 +286,12 @@ var Transects = {
 	
         CONFIG.map.getMap().addLayer(transects);
         
-        var stageConfig = CONFIG.tempSession.getStageConfig({
+        var stageConfig = CONFIG.tempSession.getConfig({
             stage : Transects.stage,
             name : args.name
         })
         stageConfig.view.isSelected = false;
-        CONFIG.tempSession.setStageConfig({
+        CONFIG.tempSession.setConfig({
             stage : Transects.stage,
             config : stageConfig
         })
@@ -299,12 +299,12 @@ var Transects = {
     removeTransects : function() {
         CONFIG.map.getMap().getLayersBy('type', 'transects').each(function(layer) {
             CONFIG.map.getMap().removeLayer(layer, false);
-            var stageConfig = CONFIG.tempSession.getStageConfig({
+            var stageConfig = CONFIG.tempSession.getConfig({
                 stage : Transects.stage,
                 name : layer.name
             })
             stageConfig.view.isSelected = false;
-            CONFIG.tempSession.setStageConfig({
+            CONFIG.tempSession.setConfig({
                 stage : Transects.stage,
                 config : stageConfig
             })
@@ -328,12 +328,12 @@ var Transects = {
             if (layers.length) {
                 $(layers).each(function(i,l) {
                     CONFIG.map.getMap().removeLayer(l, false);
-                    var stageConfig = CONFIG.tempSession.getStageConfig({
+                    var stageConfig = CONFIG.tempSession.getConfig({
                         stage : Transects.stage,
                         name : l.name
                     })
                     stageConfig.view.isSelected = false;
-                    CONFIG.tempSession.setStageConfig({
+                    CONFIG.tempSession.setConfig({
                         stage : Transects.stage,
                         config : stageConfig
                     })
@@ -345,12 +345,12 @@ var Transects = {
             Transects.addTransects({
                 name : name
             })
-            var stageConfig = CONFIG.tempSession.getStageConfig({
+            var stageConfig = CONFIG.tempSession.getConfig({
                 stage : Transects.stage,
                 name : name
             })
             stageConfig.view.isSelected = true;
-            CONFIG.tempSession.setStageConfig({
+            CONFIG.tempSession.setConfig({
                 stage : Transects.stage,
                 config : stageConfig
             })
@@ -522,7 +522,7 @@ var Transects = {
         '<wps:DataInputs>';
 
         shorelines.each(function(i, shoreline) {
-            var sessionLayer = CONFIG.tempSession.getStageConfig({
+            var sessionLayer = CONFIG.tempSession.getConfig({
                 name : shoreline,
                 stage : Shorelines.stage
             })
