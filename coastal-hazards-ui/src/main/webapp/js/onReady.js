@@ -47,13 +47,11 @@ $(document).ready(function() {
                 location.reload()
             }))
             .append($('<a />').attr('href', '#').addClass('btn btn-primary').html('Reset Session').css('color', '#FFFFFF').on('click', function(){
-                localStorage.clear();
-                sessionStorage.clear();
-                location.reload();
+                localStorage.removeItem('coastal-hazards');
+                sessionStorage.removeItem('coastal-hazards');
+                location.reload(true);
             })))
-            
         $(body).append(modal);
-        
         modal.modal();
     }
     
