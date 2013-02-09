@@ -105,66 +105,10 @@ var Calculation = {
         
     },
     populateFeaturesList : function(args) {
-        var wmsCapabilities = CONFIG.ows.wmsCapabilities;
-        var suffixes = Calculation.suffixes || [];
-        var stage = 'intersections';
-            
-        LOG.info('UI.js::populateFeaturesList:: Populating feature list for ' + stage);
-        $('#'+stage+'-list').children().remove();
-        
-        // Add a blank spot at the top of the select list
-        $('#'+stage+'-list')
-        .append($("<option />")
-            .attr("value",'')
-            .text(''));
-        
-        wmsCapabilities.keys().each(function(layerNS) {
-            var cap = wmsCapabilities[layerNS];
-            var layers = cap.capability.layers;
-            var sessionLayerClass = 'session-layer';
-            var publishedLayerClass = 'published-layer';
-                
-            for (var lIndex = 0;lIndex < layers.length;lIndex++) {
-                var layer = layers[lIndex];
-                var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
-                var title = layer.title;
-            
-                // Add the option to the list only if it's from the sample namespace or
-                // if it's from the input namespace and in the current session
-                if (layerNS == 'sample' || layerNS == currentSessionKey) {
-                    var type = title.substr(title.lastIndexOf('_'));
-                    if (suffixes.length == 0 || suffixes.find(type.toLowerCase())) {
-                        LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title)
-                        var stageConfig = CONFIG.tempSession.getConfig({
-                            stage : stage,
-                            name : layerNS + ':' + layer.name
-                        })
-                        
-                        var option = $("<option />")
-                        .attr({
-                            "value" : layerNS + ':' + layer.name
-                        })
-                        .addClass(layerNS == 'sample' ? publishedLayerClass : sessionLayerClass)
-                        .text(layer.name)
-                            
-                        $('#'+stage+'-list')
-                        .append(option);
-                        CONFIG.tempSession.setConfig({
-                            stage : stage,
-                            config : stageConfig
-                        })
-                    } 
-                }
-            } 
-        })
-            
-        LOG.debug('UI.js::populateFeaturesList: Re-binding select list');
-        $('#'+stage+'-list').unbind('change');
-        $('#'+stage+'-list').change(function(index, option) {
-            Calculation.listboxChanged(index, option)
-        }) 
-            
-        return  $('#'+stage+'-list');
+        CONFIG.ui.populateFeaturesList({
+            caller : Calculation,
+            stage : 'intersections'
+        });
     },
     clear : function() {
         $("#intersections-list").val('');

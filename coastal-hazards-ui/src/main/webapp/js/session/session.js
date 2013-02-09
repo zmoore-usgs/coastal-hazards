@@ -6,39 +6,7 @@ var Session = function(name, isPerm) {
     me.sessionObject = isPerm ? localStorage : sessionStorage;
     me.session =  isPerm ? $.parseJSON(me.sessionObject.getItem(me.name)) : Object.extended();
     
-    var defaultSession = Object.extended();
-    defaultSession['default'] = {
-        'default' : {
-            view : {
-                isSelected : false
-            }
-        }
-    }
-        
-    defaultSession.shorelines = {
-        view : {
-            selectedLayers : []
-        },
-        'default' : {
-            colorsParamPairs : [],
-            groupingColumn : 'date_',
-            describeFeatureTypeResponse : null,
-            view : {
-                'years-disabled' : [],
-                'dates-disabled' : [],
-                isSelected : false
-            }
-        }
-    }
-    defaultSession.baseline = Object.clone(defaultSession['default']);
-    defaultSession.transects = Object.clone(defaultSession['default'])
-    defaultSession.intersections = Object.clone(defaultSession['default'])
-    defaultSession.calculation = Object.clone(defaultSession['default'])
-    defaultSession.results = Object.clone(defaultSession['default'])
-            
-    
     if (isPerm) {
-        
         if (!me.session) {
             // - A session has not yet been created for perm storage. Probably the first
             // run of the application or a new browser with no imported session
@@ -71,112 +39,100 @@ var Session = function(name, isPerm) {
                 }
             })
             
-            var newSession = new Object();
-        
-            me.session = {
-                sessions : {}
-            }
-
-            newSession[randID] = Object.extended(); 
-            newSession.layers = [];
-            newSession.shorelines = defaultSession.shorelines;
-            newSession.baseline = defaultSession.baseline;            
-            newSession.transects = defaultSession.transects;
-            newSession.intersections = defaultSession.intersections;
-            newSession.calculation = defaultSession.calculation;
-            newSession.results = defaultSession.results;
+            me.session = Object.extended();
+            me.session.sessions = [];
             
-            me.session['sessions'][randID] = newSession;
-            me.session['current-session'] = Object.extended();
-            me.session['current-session']['key'] = randID;
-            me.session['current-session']['session'] = me.session['sessions'][randID];
-        } else {
-            if (me.session["current-session"].session) {
-                if (!me.session["current-session"].session.shorelines) {
-                    me.session["current-session"].session.shorelines = defaultSession.shorelines;
-                }
-                
-                if (!me.session["current-session"].session.baseline) {
-                    me.session["current-session"].session.baseline = defaultSession.baseline;
-                }
-                
-                if (!me.session["current-session"].session.transects) {
-                    me.session["current-session"].session.transects = defaultSession.transects;
-                }
-                
-                if (!me.session["current-session"].session.intersections) {
-                    me.session["current-session"].session.intersections = defaultSession.intersections;
-                }
-                
-                if (!me.session["current-session"].session.calculation) {
-                    me.session["current-session"].session.calculation = defaultSession.calculation;
-                }
-                
-                if (!me.session["current-session"].session.results) {
-                    me.session["current-session"].session.results = defaultSession.results;
-                }
-                
-                if (!!me.session["current-session"].session.view) {
-                    me.session["current-session"].session.view = {};
-                    me.session["current-session"].session.view.popups = false;
-                }
-            }
+            // This will constitute a new session object
+            var session = Object.extended();
+            session.id = randID;
+            session.created = new Date().toString();
+            session.stage = Object.extended({
+                shorelines : Object.extended({
+                    layers : [],
+                    viewing : [],
+                    groupingColumn : 'date_',
+                    dateFormat : '',
+                    view : Object.extended({
+                        'years-disabled' : [],
+                        'dates-disabled' : [],
+                        isSelected : false
+                    })
+                }),
+                baseline : Object.extended({
+                    layers : [],
+                    viewing : ''
+                }),
+                transects : Object.extended({
+                    layers : [],
+                    viewing : ''
+                }),
+                intersections : Object.extended({
+                    layers : [],
+                    viewing : ''
+                }),
+                results : Object.extended({
+                    layers : [],
+                    viewing : ''
+                })
+            });
+            session.layers = [];
+            
+            me.session.sessions.push(session);
+            me.session.currentSession = randID;
         }
     } else {
-        LOG.info('Session.js::constructor:Creating new temp session object');
-        me.session = Object.extended();
-        
         LOG.info('Session.js::constructor:Removing previous temp session');
         me.sessionObject.removeItem('coastal-hazards');
         
         LOG.info('Session.js::constructor:Saving new temp session');
+        me.session = CONFIG.permSession.session.sessions.find(function(session) {
+            return session.id == CONFIG.permSession.session.currentSession
+        });
         me.sessionObject.setItem(me.name, JSON.stringify(me.session));
+        me.namespaces = Object.extended(); 
         
         /**
          * Persist the temp session to the appropriate location in the permanent session 
          */
-        me.persistCurrentSession = function() {
-            LOG.info('Session.js::persistCurrentSession: Persisting temp session to perm session');
-            CONFIG.permSession.session.sessions[this.key] = this.session;
-            CONFIG.permSession.save();
+        me.persistSession = function() {
+            LOG.info('Session.js::persistSession: Persisting temp session to perm session');
+            var permSession = CONFIG.permSession; 
+            var sessionIndex = permSession.session.sessions.findIndex(function(session){
+                return session.id == me.session.id
+            });
+                
+            permSession.session.currentSession = me.session.id;
+            if (sessionIndex == -1) {
+                permSession.session.sessions.push(me.session);
+            } else {
+                permSession.session.sessions[sessionIndex] = me.session;
+            }
+            
+            permSession.save();
             me.save();
         }
         
-        me.getStage = function(args) {
-            if (!args) {
-                args = Object.extended();
-            }
-            var stage = args.stage || 'default';
-            
-            if (!me.session[stage]) {
-                me.session[stage] = defaultSession[stage];
-            }
-            
-            return me.session[stage];
+        me.getStage = function(stage) {
+            return me.session.stage[stage];
         }
         
         me.setStage = function(args) {
             if (!args) {
-                return;
+                return null;
             }
-            var stage = args.stage || 'default';
+            var stage = args.stage;
             me.session[stage] = args.obj
         }
         
         me.getConfig = function(args) {
             if (!args) {
-                args = Object.extended();
+                return null;
             }
-            var name = args.name || 'default';
-            var stage = args.stage || 'default';
-            var sessionStage = me.getStage(stage);
+            var name = args.name;
+            var stage = args.stage;
+            var config = me.getStage(stage);
             
-            if (!sessionStage[name]) {
-                sessionStage[name] = sessionStage['default'];
-                sessionStage[name].name = name;
-            }
-            
-            return this.session[stage][name];
+            return config;
         }
         
         me.setConfig = function(args) {
@@ -186,7 +142,7 @@ var Session = function(name, isPerm) {
             var config = args.config || 'default';
             var stage = args.stage || 'default';
             me.session[stage][config.name] = config;
-            me.persistCurrentSession();
+            me.persistSession();
             return me.session[stage][config.name];
         }
         
@@ -196,6 +152,10 @@ var Session = function(name, isPerm) {
             var wmsCapabilities = args.wmsCapabilities;
             var data = args.data; 
             var jqXHR = args.jqXHR;
+            
+            if (jqXHR.status != 200) {
+                LOG.warn('Session.js::updateLayersFromWMS: Client was unable to attain WMS capabilities')
+            }
             
             if (wmsCapabilities && wmsCapabilities.capability.layers.length) {
                 LOG.info('Session.js::updateLayersFromWMS: Updating session layer list from WMS Capabilities');
@@ -255,50 +215,49 @@ var Session = function(name, isPerm) {
                             me.addLayerToSession(incomingLayer)
                         }
                     })
-                    me.persistCurrentSession();
+                    me.persistSession();
                 }
             } else {
-                LOG.debug('Session.js::updateLayersFromWMS: Could not find any layers for this session. Removing any existing layers in sesion object');
-                CONFIG.ui.work_stages.each(function(stage) {
-                    var sessionStage = CONFIG.tempSession.getStage({
-                        stage : stage
-                    })
-                    delete sessionStage['default'];
-                    Object.keys(sessionStage, function(key) {
-                        if (key.has(me.getCurrentSessionKey())) {
-                            if (delete sessionStage[key]) {
-                                LOG.debug('Session.js::updateLayersFromWMS: Deleted ' + key + ' from session stage ' + stage);
-                            }
-                        }
-                    })
-                    me.setStage({
-                        stage : stage,
-                        obj : sessionStage
-                    })
-                })
-                me.persistCurrentSession();
+                LOG.debug('Session.js::updateLayersFromWMS: Could not find any layers for this session. Removing any existing layers in session object');
+                
+                me.persistSession();
             }
         }
         
-        me.addLayerToSession = function(params) {
+        me.addLayerToSession = function(args) {
             LOG.debug('Session.js::addLayerToSession:Adding layer to session');
-            var layer = params.layer;
+            var layer = args.layer;
+            var sessionLayer = Object.extended({ 
+                name : args.name || layer.name,
+                title : args.title || layer.title,
+                prefix : args.prefix || layer.prefix,
+                bbox : args.bbox || layer.bbox,
+                keywords : args.keywords || layer.keywords
+            })
             
-            me.session.layers.push({ 
-                name : params.name || layer.name,
-                title : params.title || layer.title,
-                prefix : params.prefix || layer.prefix,
-                bbox : params.bbox || layer.bbox
-            });
+            var lIndex = me.session.layers.findIndex(function(l) {
+                return l.name == sessionLayer.name
+            })
+            
+            if (lIndex != -1) {
+                me.session.layers[lIndex] = sessionLayer;
+            } else {
+                me.session.layers.push(sessionLayer);
+            }
         }
         
         /**
          * Replace the current temp session with 
          */
-        me.setCurrentSession = function(key, pSession) {
+        me.setCurrentSession = function(key, session) {
             LOG.info('Replacing current session');
-            me.session = Object.clone(pSession.session.sessions[key], true);
-            me.key = key;
+            if (session) {
+                me.session = session;
+            } else {
+                me.session = CONFIG.permSession.session.sessions.find(function(session) {
+                    return session.id == CONFIG.permSession.session.currentSession
+                })
+            }
             me.save();
         }
         
@@ -317,9 +276,9 @@ var Session = function(name, isPerm) {
         
         getCurrentSessionKey : function() {
             if (me.isPerm) {
-                return me.session['current-session'].key;
+                return me.session.currentSession;
             } else {
-                return me.key;
+                return me.session.id;
             }
         },
         getCurrentSession : function() {

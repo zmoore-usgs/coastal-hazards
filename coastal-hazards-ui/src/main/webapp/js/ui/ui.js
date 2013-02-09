@@ -386,16 +386,13 @@ var UI = function() {
             var wmsCapabilities = CONFIG.ows.wmsCapabilities;
             var caller = args.caller;
             var suffixes = caller.suffixes || [];
-            var stage = caller.stage;
+            var stage = args.stage || caller.stage;
             
             LOG.info('UI.js::populateFeaturesList:: Populating feature list for ' + stage);
             $('#'+stage+'-list').children().remove();
         
             // Add a blank spot at the top of the select list
-            if (stage == Baseline.stage
-                || stage == Transects.stage
-                ||stage == Calculation.stage 
-                || stage == Results.stage) {
+            if (stage != Shorelines.stage) {
                 $('#'+stage+'-list')
                 .append($("<option />")
                     .attr("value",'')
@@ -408,22 +405,25 @@ var UI = function() {
                 var sessionLayerClass = 'session-layer';
                 var publishedLayerClass = 'published-layer';
                 
-                for (var lIndex = 0;lIndex < layers.length;lIndex++) {
-                    var layer = layers[lIndex];
+                layers.each(function(layer) {
                     var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
                     var title = layer.title;
             
                     // Add the option to the list only if it's from the sample namespace or
                     // if it's from the input namespace and in the current session
-                    if (layerNS == 'sample' || layerNS == currentSessionKey) {
+                    if (layerNS == CONFIG.name.published || layerNS == currentSessionKey) {
                         var type = title.substr(title.lastIndexOf('_'));
                         if (suffixes.length == 0 || suffixes.find(type.toLowerCase())) {
                             LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title)
-                            var stageConfig = CONFIG.tempSession.getConfig({
-                                stage : stage,
-                                name : layerNS + ':' + layer.name
+                            var layerFullName = layer.prefix + ':' + layer.name;
+                            var sessionStage = CONFIG.tempSession.getStage(stage);
+                            var lIdx = sessionStage.layers.findIndex(function(l) {
+                                return l == layerFullName;
                             })
-                        
+                            if (lIdx == -1) {
+                                sessionStage.layers.push(layerFullName);
+                            }
+                            CONFIG.tempSession.persistSession();
                             var option = $("<option />")
                             .attr({
                                 "value" : layerNS + ':' + layer.name
@@ -433,15 +433,12 @@ var UI = function() {
                             
                             $('#'+stage+'-list')
                             .append(option);
-                            CONFIG.tempSession.setConfig({
-                                stage : stage,
-                                config : stageConfig
-                            })
                         } 
                     }
-                } 
+                })
             })
             
+            CONFIG.tempSession.persistSession();
             LOG.debug('UI.js::populateFeaturesList: Re-binding select list');
             $('#'+stage+'-list').unbind('change');
             $('#'+stage+'-list').change(function(index, option) {
@@ -506,7 +503,8 @@ var UI = function() {
                     .addClass('btn btn-year-toggle')
                     .attr({
                         type : 'button',
-                        date : date
+                        date : date,
+                        layer : layerName
                     })
                     .html(isVisible ? 'Disable' : 'Enable');
                     
@@ -536,11 +534,9 @@ var UI = function() {
                         
                 $('.btn-year-toggle').click(function(event) {
                     var date = $(event.target).attr('date');
-                    var toggle = $('#shoreline-table-tabcontent>#KauaiE_shorelines .feature-toggle').filter(function() {
+                    var toggle = $('#shoreline-table-tabcontent>#'+$(event.target).attr('layer').split(':')[1]+' .feature-toggle').filter(function() {
                         return Date.parse($(this).data('date')) == Date.parse(date)
                     })
-                    
-                    
                     
                     var allButtonsOfSameYear = $('.btn-year-toggle[date="'+date+'"]');
                     if (toggle.toggleButtons('status')) {

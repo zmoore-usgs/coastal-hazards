@@ -102,6 +102,11 @@ var OWS = function(endpoint) {
                     })
                     me.wmsCapabilities[namespace] = getCapsResponse;
                     me.wmsCapabilitiesXML[namespace] = data;
+                    getCapsResponse.capability.layers.each(function(layer) {
+                        CONFIG.tempSession.addLayerToSession(layer);
+                    });
+                    CONFIG.tempSession.persistSession();
+                    
                     $(sucessCallbacks).each(function(index, callback, allCallbacks) {
                         callback({
                             wmsCapabilities : getCapsResponse,
@@ -222,11 +227,13 @@ var OWS = function(endpoint) {
                     var gmlReader = new OpenLayers.Format.WFSDescribeFeatureType();
                     var describeFeaturetypeRespone = gmlReader.read(data); 
                     var prefix = args.layerNS;//describeFeaturetypeRespone.featureTypes[0].targetPrefix;
-                    
+                    var namespace = describeFeaturetypeRespone.targetNamespace;
                     if (!me.featureTypeDescription[prefix]) {
                         me.featureTypeDescription[prefix] = Object.extended();
                     }
                     me.featureTypeDescription[prefix][describeFeaturetypeRespone.featureTypes[0].typeName] = describeFeaturetypeRespone;
+                    
+                    CONFIG.tempSession.namespaces[prefix] = namespace;
                     
                     $(args.callbacks || []).each(function(index, callback) {
                         callback(describeFeaturetypeRespone, this);
