@@ -93,7 +93,7 @@ var Calculation = {
                             layer : intersectionLayerName.split(':')[1]
                         },
                         function(data, textStatus, jqXHR) {
-                                wpsProc();
+                            wpsProc();
                         }, 'json')
                     }           
                 }
@@ -121,15 +121,8 @@ var Calculation = {
             if (layers.length) {
                 $(layers).each(function(i,l) {
                     CONFIG.map.getMap().removeLayer(l, false);
-                    var stageConfig = CONFIG.tempSession.getConfig({
-                        stage : Calculation.stage,
-                        name : l.name
-                    })
-                    stageConfig.view.isSelected = false;
-                    CONFIG.tempSession.setConfig({
-                        stage : Calculation.stage,
-                        config : stageConfig
-                    })
+                    CONFIG.tempSession.getStage('intersections').viewing = l.name;
+                    CONFIG.tempSession.persistSession();
                 })
             }
         });
@@ -138,15 +131,8 @@ var Calculation = {
             Calculation.addIntersections({
                 name : name
             })
-            var stageConfig = CONFIG.tempSession.getConfig({
-                stage : Calculation.stage,
-                name : name
-            })
-            stageConfig.view.isSelected = true;
-            CONFIG.tempSession.setConfig({
-                stage : Calculation.stage,
-                config : stageConfig
-            })
+            CONFIG.tempSession.getStage('intersections').viewing = name;
+            CONFIG.tempSession.persistSession();
         }
     },
     addIntersections : function(args) {
@@ -173,16 +159,8 @@ var Calculation = {
             });
 	
         CONFIG.map.getMap().addLayer(intersections);
-        
-        var stageConfig = CONFIG.tempSession.getConfig({
-            stage : Calculation.stage,
-            name : args.name
-        })
-        stageConfig.view.isSelected = false;
-        CONFIG.tempSession.setConfig({
-            stage : Calculation.stage,
-            config : stageConfig
-        })
+        CONFIG.tempSession.getStage('intersections').viewing = args.name;
+        CONFIG.tempSession.persistSession();
     },
     createSLDBody : function(args) {
         var sldBody = '';

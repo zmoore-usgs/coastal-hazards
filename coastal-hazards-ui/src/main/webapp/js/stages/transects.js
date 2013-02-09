@@ -225,7 +225,12 @@ var Transects = {
             Transects.refreshFeatureList({
                 selectLayer : layer.cloneOf
             })
-            CONFIG.map.getMap().getControlsBy('id', 'transects-draw-control')[0].destroy();
+            
+            var drawControlArr = CONFIG.map.getMap().getControlsBy('id', 'transects-draw-control');
+            if (drawControlArr.length) {
+                drawControlArr[0].destroy();
+            }
+            
             CONFIG.map.removeControl({
                 id : 'transects-draw-control'
             });
@@ -286,28 +291,14 @@ var Transects = {
 	
         CONFIG.map.getMap().addLayer(transects);
         
-        var stageConfig = CONFIG.tempSession.getConfig({
-            stage : Transects.stage,
-            name : args.name
-        })
-        stageConfig.view.isSelected = false;
-        CONFIG.tempSession.setConfig({
-            stage : Transects.stage,
-            config : stageConfig
-        })
+        CONFIG.tempSession.getStage(Transects.stage).viewing = args.name;
+        CONFIG.tempSession.persistSession();
     },
     removeTransects : function() {
         CONFIG.map.getMap().getLayersBy('type', 'transects').each(function(layer) {
             CONFIG.map.getMap().removeLayer(layer, false);
-            var stageConfig = CONFIG.tempSession.getConfig({
-                stage : Transects.stage,
-                name : layer.name
-            })
-            stageConfig.view.isSelected = false;
-            CONFIG.tempSession.setConfig({
-                stage : Transects.stage,
-                config : stageConfig
-            })
+            CONFIG.tempSession.getStage(Transects.stage).viewing = layer.name;
+            CONFIG.tempSession.persistSession();
         })
     },
     populateFeaturesList : function() {
@@ -328,15 +319,8 @@ var Transects = {
             if (layers.length) {
                 $(layers).each(function(i,l) {
                     CONFIG.map.getMap().removeLayer(l, false);
-                    var stageConfig = CONFIG.tempSession.getConfig({
-                        stage : Transects.stage,
-                        name : l.name
-                    })
-                    stageConfig.view.isSelected = false;
-                    CONFIG.tempSession.setConfig({
-                        stage : Transects.stage,
-                        config : stageConfig
-                    })
+                    CONFIG.tempSession.getStage(Transects.stage).viewing = l.name;
+                    CONFIG.tempSession.persistSession();
                 })
             }
         });
@@ -345,15 +329,8 @@ var Transects = {
             Transects.addTransects({
                 name : name
             })
-            var stageConfig = CONFIG.tempSession.getConfig({
-                stage : Transects.stage,
-                name : name
-            })
-            stageConfig.view.isSelected = true;
-            CONFIG.tempSession.setConfig({
-                stage : Transects.stage,
-                config : stageConfig
-            })
+            CONFIG.tempSession.getStage(Transects.stage).viewing = name;
+            CONFIG.tempSession.persistSession();
             Transects.enableEditButton();
         }
     },
@@ -470,7 +447,7 @@ var Transects = {
         
         // Check if transects already exists in the select list
         if ($('#transects-list option[value="'+ CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_transects"]').length ||
-        $('#intersections-list option[value="'+ CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_intersects"]').length) {
+            $('#intersections-list option[value="'+ CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_intersects"]').length) {
             CONFIG.ui.createModalWindow({
                 context : {
                     scope : this
@@ -522,12 +499,9 @@ var Transects = {
         '<wps:DataInputs>';
 
         shorelines.each(function(i, shoreline) {
-            var sessionLayer = CONFIG.tempSession.getConfig({
-                name : shoreline,
-                stage : Shorelines.stage
-            })
-            var excludedDates = sessionLayer.view['dates-disabled'];
-            var prefix = sessionLayer.name.split(':')[0];
+            var stageConfig = CONFIG.tempSession.getStage(Shorelines.stage);
+            var excludedDates = stageConfig.view['dates-disabled'];
+            var prefix = shoreline.split(':')[0];
             request += '<wps:Input>' + 
             '<ows:Identifier>shorelines</ows:Identifier>' + 
             '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
@@ -537,7 +511,7 @@ var Transects = {
             (function(args) {
                 var filter = '';
                 if (excludedDates) {
-                    var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + sessionLayer.groupingColumn;
+                    var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + stageConfig.groupingColumn;
                     
                     filter += '<wfs:Query typeName="'+shoreline+'" srsName="EPSG:4326">' +
                     '<ogc:Filter>' + 
