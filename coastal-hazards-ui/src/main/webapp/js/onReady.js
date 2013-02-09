@@ -52,6 +52,8 @@ $(document).ready(function() {
                 location.reload();
             })))
             
+        $(body).append(modal);
+        
         modal.modal();
     }
     
