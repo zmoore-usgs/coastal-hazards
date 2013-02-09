@@ -4,7 +4,7 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-localRun <- FALSE
+localRun <- TRUE
 # comment this out for WPS!!!
 if (localRun){
   input <- "testOut.tsv"
@@ -87,7 +87,7 @@ for (b in 1:numBlck){
     dates <- datesV[stI:enI]
     distance <- distancesV[stI:enI]
     uncy <- uncyV[stI:enI]
-    useI  <- which(!is.na(dates))
+    useI  <- which(!is.na(dates)) & which(!is.na(distance)) & which(!is.na(uncy))
     
     dates <- dates[useI]
 
@@ -119,7 +119,7 @@ for (b in 1:numBlck){
       lastDateIdx  <- which.max(dates)
 		  NSM_dist[b] <- distance[firstDateIdx]-distance[lastDateIdx]
       dateDiff <- dates[lastDateIdx]-dates[firstDateIdx]
-		  EPR_rates[b] <- NSM/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
+		  EPR_rates[b] <- NSM_dist[b]/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
     } 
 }
 statsout <-data.frame(transect_ID,LRR_rates,LCI,WLR_rates,WCI,SCE_dist,NSM_dist,EPR_rates)
