@@ -143,6 +143,10 @@
                                                 <i class="icon-plus icon-white"></i>
                                                 &nbsp;Clone
                                             </button>
+                                            <button id="baseline-remove-btn" disabled class="btn btn-success">
+                                                <i class="icon-remove icon-white"></i>
+                                                &nbsp;Remove
+                                            </button>
                                         </div>
                                     </div>
 
@@ -257,10 +261,10 @@
                                             Transects
                                             <div id="create-transects-panel-container">
                                                 <div class="row-fluid">
-                                                        <label for="create-transects-input-spacing">Spacing</label>
-                                                        <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
-                                                        <label for="create-transects-input-name">Name</label>
-                                                        <input type="text" id="create-transects-input-name" style="width: 100%;">
+                                                    <label for="create-transects-input-spacing">Spacing</label>
+                                                    <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
+                                                    <label for="create-transects-input-name">Name</label>
+                                                    <input type="text" id="create-transects-input-name" style="width: 100%;">
                                                 </div>
                                             </div>
                                         </div>
@@ -431,6 +435,8 @@
         CONFIG.namespace.sample = 'gov.usgs.cida.ch.sample';
         CONFIG.namespace.input = 'gov.usgs.cida.ch.input';
         CONFIG.namespace.output = 'gov.usgs.cida.ch.output';
+        CONFIG.name = {};
+        CONFIG.name.published = 'sample';
         CONFIG.dateFormat = {
             padded : '{MM}/{dd}/{yyyy}',
             nonPadded : '{M}/{d}/{yyyy}'

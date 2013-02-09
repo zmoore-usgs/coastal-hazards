@@ -144,32 +144,14 @@ var Results = {
             id : 'results-select-control'
         });
         
-
+        CONFIG.tempSession.getStage(Results.stage).viewing = '';
         $("#results-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
             if (layers.length) {
                 $(layers).each(function(i,l) {
                     CONFIG.map.getMap().removeLayer(l, false);
-                    var stageConfig = CONFIG.tempSession.getStageConfig({
-                        stage : Transects.stage,
-                        name : l.name
-                    })
-                    stageConfig.view.isSelected = false;
-                    CONFIG.tempSession.setStageConfig({
-                        stage : Transects.stage,
-                        config : stageConfig
-                    })
                 })
             }
-            var layerConfig = CONFIG.tempSession.getStageConfig({
-                stage : Results.stage,
-                name : option.value
-            });
-            layerConfig.view.isSelected = false;
-            CONFIG.tempSession.setStageConfig({
-                stage : Results.stage,
-                config : layerConfig
-            });
         });
         
         if ($("#results-list option:selected")[0].value) {
@@ -182,15 +164,7 @@ var Results = {
                 layerNS: selectedResultValue.split(':')[0],
                 layerName : selectedResultValue.split(':')[1]
             })
-            var layerConfig = CONFIG.tempSession.getStageConfig({
-                stage : Results.stage,
-                name : selectedResultValue
-            });
-            layerConfig.view.isSelected = true;
-            CONFIG.tempSession.setStageConfig({
-                stage : Results.stage,
-                config : layerConfig
-            });
+            CONFIG.tempSession.getStage(Transects.stage).viewing = selectedResultValue;
             
             Results.addLayerToMap({
                 layer : layer
@@ -200,8 +174,9 @@ var Results = {
                 result : layer
             })
             
+            CONFIG.map.getMap().getLayersBy('name', layer.prefix + ':' + layer.name)[0].redraw();
         } 
-        
+        CONFIG.tempSession.persistSession();
     },
     
     /**

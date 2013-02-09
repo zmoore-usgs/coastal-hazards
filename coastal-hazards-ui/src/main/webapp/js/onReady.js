@@ -14,7 +14,7 @@ $(document).ready(function() {
         var currentSessionKey = CONFIG.permSession.getCurrentSessionKey();
         LOG.info('OnReady.js:: Sessions created. User session list has ' + Object.keys(CONFIG.permSession.session.sessions).length + ' sessions.')
         LOG.info('OnReady.js:: Current session key: ' + currentSessionKey);
-        CONFIG.tempSession.setCurrentSession(currentSessionKey, CONFIG.permSession);
+        CONFIG.tempSession.persistSession();
     } catch (e) {
         LOG.error('OnReady.js:: Session could not be read correctly')
         LOG.error(e);
@@ -66,7 +66,7 @@ $(document).ready(function() {
     
     LOG.info('OnReady.js:: Preparing call to OWS GetCapabilities');
     CONFIG.ows.getWMSCapabilities({
-        namespace : 'sample',
+        namespace : CONFIG.name.published,
         callbacks : {
             success : [
             function() {
