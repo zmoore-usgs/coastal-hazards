@@ -145,3 +145,7 @@ li.alert-error {
 .alert-error .qq-upload-failed-text {
     display: inline;
 }
+
+.btn {
+    margin-top: .25em;
+}
