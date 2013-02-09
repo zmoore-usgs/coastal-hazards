@@ -53,8 +53,7 @@ var Session = function(name, isPerm) {
                     groupingColumn : 'date_',
                     dateFormat : '',
                     view : Object.extended({
-                        'dates-disabled' : [],
-                        isSelected : false
+                        'dates-disabled' : []
                     })
                 }),
                 baseline : Object.extended({

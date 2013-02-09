@@ -116,13 +116,13 @@ var Calculation = {
     },
     listboxChanged : function() {
         LOG.info('Calculation.js::listboxChanged: Intersections listbox changed');
+        CONFIG.tempSession.getStage('intersections').viewing = '';
+        CONFIG.tempSession.persistSession();
         $("#intersections-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
             if (layers.length) {
                 $(layers).each(function(i,l) {
                     CONFIG.map.getMap().removeLayer(l, false);
-                    CONFIG.tempSession.getStage('intersections').viewing = l.name;
-                    CONFIG.tempSession.persistSession();
                 })
             }
         });
@@ -138,7 +138,7 @@ var Calculation = {
     addIntersections : function(args) {
         var intersections = new OpenLayers.Layer.WMS(
             args.name, 
-            'geoserver/ows',
+            'geoserver/' + args.name.split(':')[0] + '/wms',
             {
                 layers : args.name,
                 transparent : true,
@@ -159,8 +159,7 @@ var Calculation = {
             });
 	
         CONFIG.map.getMap().addLayer(intersections);
-        CONFIG.tempSession.getStage('intersections').viewing = args.name;
-        CONFIG.tempSession.persistSession();
+        intersections.redraw(true);
     },
     createSLDBody : function(args) {
         var sldBody = '';
@@ -203,10 +202,7 @@ var Calculation = {
         '<wps:DataInputs>';
     
         shorelines.each(function(i, shoreline) {
-            var sessionLayer = CONFIG.tempSession.getConfig({
-                name : shoreline,
-                stage : Shorelines.stage
-            })
+            var sessionLayer = CONFIG.tempSession.getStage(Shorelines.stage);
             var excludedDates = sessionLayer.view['dates-disabled'];
             var prefix = sessionLayer.name.split(':')[0];
             

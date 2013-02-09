@@ -212,6 +212,7 @@ var Shorelines = {
                         wmsLayer.events.register("loadend", wmsLayer, Shorelines.createFeatureTable);
                         wmsLayer.events.register("loadend", wmsLayer, Shorelines.zoomToLayer);
                         CONFIG.map.getMap().addLayer(wmsLayer);
+                        wmsLayer.redraw(true);
                     }
                 }
                 ],
