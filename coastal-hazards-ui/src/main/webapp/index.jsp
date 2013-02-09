@@ -255,9 +255,14 @@
                                             &nbsp;Edit
                                         </button>
                                     </div>
-                                    <div class="row-fluid">
-                                        <!-- Transects -->
-                                        <div id="create-transects-panel-well" class="well hidden span6">
+                                    
+                                    <div  id="transects-edit-container" class="row-fluid hidden">
+                                        <button class="btn btn-success" id="transects-edit-save-button" title="Update Modified Transect">Update Transect</button>
+                                        <button class="btn btn-success" id="transects-edit-add-button" title="Add Transect">Add Transect</button>
+                                    </div>
+                                    
+                                    <div id="create-transects-panel-well" class="row-fluid  hidden">
+                                        <div class="well span6">
                                             Transects
                                             <div id="create-transects-panel-container">
                                                 <div class="row-fluid">
@@ -268,6 +273,12 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="control-group">
+                                            <button type="button" class="btn btn-success span12 hidden" id="create-transects-input-button">
+                                                <i class="icon-tasks icon-white"></i>
+                                                &nbsp;Generate
+                                            </button>
+                                        </div>
 
                                         <!-- Intersections -->
                                         <div id="intersection-calculation-panel-well" class="well hidden span6">
@@ -277,20 +288,6 @@
                                                 <option selected="selected" value="false">Nearest</option>
                                                 <option value="true">Farthest</option>
                                             </select>
-                                        </div>
-
-                                        <div class="control-group">
-                                            <button type="button" class="btn btn-success span12 hidden" id="create-transects-input-button">
-                                                <i class="icon-tasks icon-white"></i>
-                                                &nbsp;Generate
-                                            </button>
-                                        </div>
-
-                                        <div id="transects-edit-container" class="well well-small hidden">
-                                            <div class="row-fluid">
-                                                <button class="btn btn-success" id="transects-edit-save-button" title="Update Modified Transect">Update Transect</button>
-                                                <button class="btn btn-success" id="transects-edit-add-button" title="Add Transect">Add Transect</button>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

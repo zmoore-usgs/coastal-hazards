@@ -54,14 +54,11 @@ var Transects = {
         if ($('#transect-edit-form-toggle').hasClass('active')) {
             $('#transect-edit-form-toggle').trigger('click');
         }
-        var control = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
-        if (control.length) {
-            control[0].deactivate();
-        }
-        
-        CONFIG.map.removeControl({
-            id : 'transects-draw-control'
-        });
+        Transects.removeEditControl();
+        Transects.removeSnapControl();
+        Transects.removeDrawControl();
+        Transects.deactivateSelectControl();
+        CONFIG.map.removeLayerByName('transects-edit-layer');
     },
     enterStage : function() {
         
@@ -144,7 +141,6 @@ var Transects = {
             mfControl.activate();
             mfControl.handlers.keyboard.activate();
             var selectControl = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
-            
             selectControl.setLayer([clonedLayer]);
             selectControl.activate();
             
@@ -155,23 +151,15 @@ var Transects = {
             LOG.debug('Transects.js::editButtonToggled: Edit form was toggled off');
             $("#transects-edit-container").addClass('hidden');
             CONFIG.map.removeLayerByName('transects-edit-layer');
-            CONFIG.map.removeControl({
-                id : 'transects-edit-control'
-            });
-            CONFIG.map.getMap().getControlsBy('id', 'snap-control')[0].destroy();
-            CONFIG.map.removeControl({
-                id : 'snap-control'
-            });
-            
-            CONFIG.map.removeControl({
-                id : 'transects-draw-control'
-            });
-            CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
+            Transects.removeEditControl();
+            Transects.removeSnapControl();
+            Transects.removeDrawControl();
+            Transects.deactivateSelectControl();
         }
     },   
     addTransect : function() {
         var cloneLayer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
-        CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
+        Transects.deactivateSelectControl();
         var drawControl = new OpenLayers.Control.DrawFeature(
             cloneLayer,
             OpenLayers.Handler.Path,
@@ -225,16 +213,6 @@ var Transects = {
             Transects.refreshFeatureList({
                 selectLayer : layer.cloneOf
             })
-            
-            var drawControlArr = CONFIG.map.getMap().getControlsBy('id', 'transects-draw-control');
-            if (drawControlArr.length) {
-                drawControlArr[0].destroy();
-            }
-            
-            CONFIG.map.removeControl({
-                id : 'transects-draw-control'
-            });
-            
             $('#transect-edit-form-toggle').trigger('click'); 
         });
                 
@@ -265,7 +243,9 @@ var Transects = {
                     }
                 }
                 ],
-                error: []
+                error: [
+                LOG.warn('Transects.js::refreshFeatureList: WMS GetCapabilities could not be attained')
+                ]
             }
         })
     },
@@ -349,6 +329,39 @@ var Transects = {
         LOG.info('Transects.js::disableCreateTransectsButton: No valid baseline on the map. Disabling create transect button');
         $('#create-transects-toggle').attr('disabled', 'disabled');
          
+    },
+    deactivateSelectControl : function() {
+        var control = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control');
+        if (control.length) {
+            control[0].deactivate();
+        }
+    },
+    removeDrawControl : function() {
+        var controlArr = CONFIG.map.getMap().getControlsBy('id', 'transects-draw-control');
+        if (controlArr.length) {
+            controlArr[0].destroy();
+        }
+        CONFIG.map.removeControl({
+            id : 'transects-draw-control'
+        });
+    },
+    removeEditControl : function() {
+        var controlArr = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control');
+        if (controlArr.length) {
+            controlArr[0].destroy();
+        }
+        CONFIG.map.removeControl({
+            id : 'transects-edit-control'
+        });
+    },
+    removeSnapControl : function() {
+        var controlArr = CONFIG.map.getMap().getControlsBy('id', 'snap-control');
+        if (controlArr.length) {
+            controlArr[0].destroy();
+        }
+        CONFIG.map.removeControl({
+            id : 'snap-control'
+        });  
     },
     createTransectsButtonToggled : function(event) {
         LOG.info('Transects.js::createTransectsButtonToggled: Transect creation Button Clicked');
