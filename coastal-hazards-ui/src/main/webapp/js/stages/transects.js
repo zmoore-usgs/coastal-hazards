@@ -39,12 +39,30 @@ var Transects = {
                 LOG.debug('Transects.js::SelectFeature.onSelect(): A feature was selected');
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
                 modifyControl.selectFeature(feature);
+                var selectedFeature = modifyControl.feature.clone();
+                var angleGeometry1 = selectedFeature.clone().geometry.components[0].resize(100, selectedFeature.geometry.components[0].getCentroid(), 1);
+                var angleGeometry2 = selectedFeature.clone().geometry.components[0].resize(-100, selectedFeature.geometry.components[0].getCentroid(), 1);
+                var angleLayer =  new OpenLayers.Layer.Vector('transects-angle-layer',{
+                    renderers: CONFIG.map.getRenderer(),
+                    type : 'angle-guide',
+                    style : {
+                        strokeColor : '#A1A1A1',
+                        strokeOpacity : 0.25
+                    }
+                })
+                selectedFeature.geometry.addComponents([angleGeometry1,angleGeometry2])
+                angleLayer.addFeatures([selectedFeature]);
+                CONFIG.map.getMap().addLayer(angleLayer);
+                var snapControl = CONFIG.map.getMap().getControlsBy('id', 'snap-control')[0]
+                snapControl.addTargetLayer(angleLayer);
             },
             onUnselect : function(feature) {
                 LOG.debug('Transects.js::SelectFeature.onSelect(): A feature was unselected');
                 CONFIG.ui.initializeBaselineEditForm();
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
+                Transects.removeAngleLayer();
                 modifyControl.unselectFeature(feature);
+                
             }
         }));
         
@@ -58,6 +76,7 @@ var Transects = {
         Transects.removeSnapControl();
         Transects.removeDrawControl();
         Transects.deactivateSelectControl();
+        Transects.removeAngleLayer();
         CONFIG.map.removeLayerByName('transects-edit-layer');
     },
     enterStage : function() {
@@ -154,6 +173,7 @@ var Transects = {
             Transects.removeEditControl();
             Transects.removeSnapControl();
             Transects.removeDrawControl();
+            Transects.removeAngleLayer();
             Transects.deactivateSelectControl();
         }
     },   
@@ -362,6 +382,18 @@ var Transects = {
         CONFIG.map.removeControl({
             id : 'snap-control'
         });  
+    },
+    removeAngleLayer : function() {
+        var layerArr = CONFIG.map.getMap().getLayersBy('name', 'transects-angle-layer');
+        if (layerArr.length) {
+            var layer = layerArr[0];
+            var snapControlArr = CONFIG.map.getMap().getControlsBy('id', 'snap-control')
+            if (snapControlArr.length) {
+                var snapControl = snapControlArr[0]
+                snapControl.removeTargetLayer(layer);
+            }
+            CONFIG.map.removeLayerByName('transects-angle-layer');
+        }
     },
     createTransectsButtonToggled : function(event) {
         LOG.info('Transects.js::createTransectsButtonToggled: Transect creation Button Clicked');
