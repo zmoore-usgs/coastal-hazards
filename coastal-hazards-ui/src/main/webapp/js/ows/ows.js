@@ -96,7 +96,8 @@ var OWS = function(endpoint) {
                 context: args,
                 success : function(data, textStatus, jqXHR) {
                     var getCapsResponse = new OpenLayers.Format.WMSCapabilities.v1_3_0().read(data); 
-                    // Fix an issue with prefixes not being parsed correctly from response
+                    
+                    // Fixes an issue with prefixes not being parsed correctly from response
                     getCapsResponse.capability.layers.each(function(n, i) {
                         n.prefix = namespace
                     })
@@ -144,7 +145,7 @@ var OWS = function(endpoint) {
                                 })
                             },
                             error : function(data, textStatus, jqXHR) {
-                                LOG.error('Session.js::init: A workspace could not be created on the OWS server with the name of ' + randID)
+                                LOG.error('Session.js::init: A workspace could not be created on the OWS server')
                                 CONFIG.ui.showAlert({
                                     message : 'No session could be found. A new session could not be created on server. This application may not function correctly.',
                                     style: {
@@ -232,7 +233,6 @@ var OWS = function(endpoint) {
                         me.featureTypeDescription[prefix] = Object.extended();
                     }
                     me.featureTypeDescription[prefix][describeFeaturetypeRespone.featureTypes[0].typeName] = describeFeaturetypeRespone;
-                    
                     CONFIG.tempSession.namespaces[prefix] = namespace;
                     
                     $(args.callbacks || []).each(function(index, callback) {

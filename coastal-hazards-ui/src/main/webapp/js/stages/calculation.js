@@ -117,7 +117,6 @@ var Calculation = {
     listboxChanged : function() {
         LOG.info('Calculation.js::listboxChanged: Intersections listbox changed');
         CONFIG.tempSession.getStage('intersections').viewing = '';
-        CONFIG.tempSession.persistSession();
         $("#intersections-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
             if (layers.length) {
@@ -132,8 +131,8 @@ var Calculation = {
                 name : name
             })
             CONFIG.tempSession.getStage('intersections').viewing = name;
-            CONFIG.tempSession.persistSession();
         }
+        CONFIG.tempSession.persistSession();
     },
     addIntersections : function(args) {
         var intersections = new OpenLayers.Layer.WMS(

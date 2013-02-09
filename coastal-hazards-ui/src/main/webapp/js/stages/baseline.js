@@ -83,18 +83,18 @@ var Baseline = {
         })
         
         Baseline.initializeUploader();
-        
+        var sessionKey = CONFIG.tempSession.getCurrentSessionKey();
         var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
             strategies : [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
             projection: new OpenLayers.Projection('EPSG:900913'),
             protocol: new OpenLayers.Protocol.WFS({
                 version: "1.1.0",
                 url: "geoserver/ows",
-                featureNS :  CONFIG.tempSession.getCurrentSessionKey(),
+                featureNS :  sessionKey,
                 maxExtent: CONFIG.map.getMap().getExtent(),
                 featureType: "featureType",
                 geometryName: "the_geom",
-                schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + CONFIG.tempSession.getCurrentSessionKey() + ":featureType"
+                schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + sessionKey + ":featureType"
             }),
             onFeatureInsert : function(feature) {
                 feature.attributes['Orient'] = 'seaward';
@@ -126,6 +126,7 @@ var Baseline = {
     },
     
     addBaselineToMap : function(args) {
+        var orient = 'Orient';
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
         var style = new OpenLayers.Style({
             strokeColor: '#FFFFFF',
@@ -135,7 +136,7 @@ var Baseline = {
             new OpenLayers.Rule({
                 filter: new OpenLayers.Filter.Comparison({
                     type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                    property: 'Orient', 
+                    property: orient, 
                     value: 'shoreward'
                 }),
                 symbolizer: {
@@ -146,7 +147,7 @@ var Baseline = {
             new OpenLayers.Rule({
                 filter: new OpenLayers.Filter.Comparison({
                     type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                    property: 'Orient', 
+                    property: orient, 
                     value: 'seaward'
                 }),
                 symbolizer : {
@@ -157,7 +158,7 @@ var Baseline = {
             new OpenLayers.Rule({
                 filter: new OpenLayers.Filter.Comparison({
                     type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                    property: 'Orient', 
+                    property: orient, 
                     value: 'seaward'
                 }),
                 symbolizer : {
@@ -180,8 +181,7 @@ var Baseline = {
             }),
             renderers: CONFIG.map.getRenderer(),
             styleMap: new OpenLayers.StyleMap(style),
-            type : 'baseline'
-            
+            type : Baseline.stage
         });
         
         CONFIG.map.removeLayerByName(baselineLayer.name);
@@ -214,20 +214,24 @@ var Baseline = {
                 
                     if (selectLayer) {
                         LOG.info('Baseline.js::refreshFeatureList: Auto-selecting layer ' + selectLayer)
-                        $('#baseline-list').children().each(function(i,v) {
+                        $('#' + Baseline.stage + '-list').children().each(function(i,v) {
                             if (v.value === selectLayer) {
                                 LOG.debug('Triggering "select" on featurelist option');
-                                $('#baseline-list').val(v.value);
-                                $('#baseline-list').trigger('change');
+                                $('#' + Baseline.stage + '-list').val(v.value);
+                                $('#' + Baseline.stage + '-list').trigger('change');
                             }
                         })
                     } else {
-                        $('#baseline-list').val('');
+                        $('#' + Baseline.stage + '-list').val('');
                         Baseline.listboxChanged();
                     }
                 }
                 ],
-                error: []
+                error: [
+                function() {
+                    LOG.warn('Baseline.js::refreshFeatureList: Could not get WMS capabilities.')
+                }
+                ]
             }
         })
     },
