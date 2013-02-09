@@ -273,14 +273,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="control-group">
-                                            <button type="button" class="btn btn-success span12 hidden" id="create-transects-input-button">
-                                                <i class="icon-tasks icon-white"></i>
-                                                &nbsp;Generate
-                                            </button>
-                                        </div>
-
-                                        <!-- Intersections -->
                                         <div id="intersection-calculation-panel-well" class="well hidden span6">
                                             Intersections
                                             <label for="create-intersections-nearestfarthest-list">Take Nearest/Farthest Intersection</label>
@@ -289,6 +281,15 @@
                                                 <option value="true">Farthest</option>
                                             </select>
                                         </div>
+                                        <div class="control-group">
+                                            <button type="button" class="btn btn-success span12 hidden" id="create-transects-input-button">
+                                                <i class="icon-tasks icon-white"></i>
+                                                &nbsp;Generate
+                                            </button>
+                                        </div>
+
+                                        <!-- Intersections -->
+                                        
                                     </div>
                                 </div>
                             </div>
