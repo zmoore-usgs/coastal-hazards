@@ -226,7 +226,7 @@ var Shorelines = {
         var groupColumn = args.groupColumn;
         var layer = args.layer;
         var layerName = args.layerName || layer.prefix + ':' + layer.name;
-        var stage = CONFIG.tempSession.getStage(Shoreline.stage);
+        var stage = CONFIG.tempSession.getStage(Shorelines.stage);
         
         if (!isNaN(colorDatePairings[0][1])) {  
             LOG.info('Shorelines.js::?: Grouping will be done by number');
@@ -274,8 +274,8 @@ var Shorelines = {
                 var html = '';
                 for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
                     var date = colorLimitPairs[lpIndex][1];
-                        
-                    if (stage.view["dates-disabled"].indexOf(date) == -1) {
+                    var disabledDates = CONFIG.tempSession.getDisabledDatesForShoreline(layerName);    
+                    if (disabledDates.indexOf(date) == -1) {
                         html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>';
                         html += groupColumn.trim();
                         html += '</ogc:PropertyName>';
@@ -367,11 +367,9 @@ var Shorelines = {
     			
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table body');
         
-        var stage = CONFIG.tempSession.getStage(Shorelines.stage);
-        
         $(event.object.colorGroups).each(function(i,colorGroup) {
             var date = colorGroup[1];
-            var checked = stage.view["dates-disabled"].indexOf(date) == -1;
+            var checked = CONFIG.tempSession.getDisabledDatesForShoreline(event.object.prefix + ':' + event.object.name).indexOf(date) == -1;
             
             var tableRow = $('<tr />');
             var tableData = $('<td />');
@@ -445,21 +443,22 @@ var Shorelines = {
             onChange : function($element, status, event) {
                 var layerName = this.attachedLayer;
                 var date = $element.parent().data('date');
-                var stage = CONFIG.tempSession.getStage(Shorelines.stage);
+                var stageDatesDisabled = CONFIG.tempSession.getDisabledDatesForShoreline(layerName);
+                
                 LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for date ' + date + ' on layer ' + layerName);
                         
                 var idTableButtons = $('.btn-year-toggle[date="'+date+'"]');
                 if (!status) {
-                    if (stage.view["dates-disabled"].indexOf(date) == -1) {
-                        stage.view["dates-disabled"].push(date);
+                    if (stageDatesDisabled.indexOf(date) == -1) {
+                        stageDatesDisabled.push(date);
                     }
                     
                     idTableButtons.removeClass('btn-success');
                     idTableButtons.addClass('btn-danger');
                     idTableButtons.html('Enable');
                 } else {
-                    while (stage.view["dates-disabled"].indexOf(date) != -1) {
-                        stage.view["dates-disabled"].remove(date);
+                    while (stageDatesDisabled.indexOf(date) != -1) {
+                        stageDatesDisabled.remove(date);
                     }
                     
                     idTableButtons.removeClass('btn-danger');

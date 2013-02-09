@@ -500,7 +500,7 @@ var Transects = {
 
         shorelines.each(function(i, shoreline) {
             var stage = CONFIG.tempSession.getStage(Shorelines.stage);
-            var excludedDates = stage.view['dates-disabled'];
+            var excludedDates = CONFIG.tempSession.getDisabledDatesForShoreline(shoreline);
             var prefix = shoreline.split(':')[0];
             request += '<wps:Input>' + 
             '<ows:Identifier>shorelines</ows:Identifier>' + 
