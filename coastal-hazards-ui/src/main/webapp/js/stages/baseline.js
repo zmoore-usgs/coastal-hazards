@@ -186,6 +186,8 @@ var Baseline = {
         
         CONFIG.map.removeLayerByName(baselineLayer.name);
         CONFIG.map.getMap().addLayer(baselineLayer);
+        CONFIG.tempSession.getStage(Baseline.stage).viewing = args.name;
+        CONFIG.tempSession.persistSession();
     },
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
@@ -244,18 +246,6 @@ var Baseline = {
         mappedLayers.each(function(layer) {
             LOG.debug('Baseline.js::listboxChanged: Removing layer ' + layer.name + ' from map');
             CONFIG.map.removeLayer(layer);
-            
-            CONFIG.map.getMap().removeLayer(layer, false);
-            var stageConfig = CONFIG.tempSession.getConfig({
-                stage : Baseline.stage,
-                name : layer.name
-            })
-            stageConfig.view.isSelected = false;
-            CONFIG.tempSession.setConfig({
-                stage : Baseline.stage,
-                config : stageConfig
-            })
-            
         })
         
         var selectVal = $("#baseline-list option:selected")[0].value;
