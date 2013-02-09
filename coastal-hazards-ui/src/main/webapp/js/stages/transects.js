@@ -499,8 +499,8 @@ var Transects = {
         '<wps:DataInputs>';
 
         shorelines.each(function(i, shoreline) {
-            var stageConfig = CONFIG.tempSession.getStage(Shorelines.stage);
-            var excludedDates = stageConfig.view['dates-disabled'];
+            var stage = CONFIG.tempSession.getStage(Shorelines.stage);
+            var excludedDates = CONFIG.tempSession.getDisabledDatesForShoreline(shoreline);
             var prefix = shoreline.split(':')[0];
             request += '<wps:Input>' + 
             '<ows:Identifier>shorelines</ows:Identifier>' + 
@@ -511,7 +511,7 @@ var Transects = {
             (function(args) {
                 var filter = '';
                 if (excludedDates) {
-                    var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + stageConfig.groupingColumn;
+                    var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + stage.groupingColumn;
                     
                     filter += '<wfs:Query typeName="'+shoreline+'" srsName="EPSG:4326">' +
                     '<ogc:Filter>' + 

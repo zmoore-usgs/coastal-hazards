@@ -53,8 +53,9 @@ var Session = function(name, isPerm) {
                     groupingColumn : 'date_',
                     dateFormat : '',
                     view : Object.extended({
-                        'dates-disabled' : [],
-                        isSelected : false
+                        layer : Object.extended({
+                            'dates-disabled' : []
+                        })
                     })
                 }),
                 baseline : Object.extended({
@@ -258,6 +259,15 @@ var Session = function(name, isPerm) {
                 })
             }
             me.save();
+        }
+        
+        me.getDisabledDatesForShoreline = function(shoreline) {
+            if (!me.session.stage[Shorelines.stage][shoreline]) {
+                me.session.stage[Shorelines.stage][shoreline] = Object.extended({
+                    'dates-disabled' : []
+                })
+            }
+            return me.session.stage[Shorelines.stage][shoreline]['dates-disabled']
         }
         
     }

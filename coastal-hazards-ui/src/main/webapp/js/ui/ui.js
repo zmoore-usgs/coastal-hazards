@@ -454,10 +454,8 @@ var UI = function() {
                 LOG.debug('UI.js::showShorelineInfo: Features were returned from the OWS resource. Parsing and creating table to display');
                 
                 LOG.debug('UI.js::showShorelineInfo: Creating table for ' + event.features.length + ' features');
-                var groupingColumn = CONFIG.tempSession.getConfig({
-                    stage : Shorelines.stage, 
-                    name : event.features[0].gml.featureNSPrefix + ':' + event.features[0].gml.featureType
-                }).groupingColumn
+//                event.features[0].gml.featureNSPrefix + ':' + event.features[0].gml.featureType
+                var groupingColumn = CONFIG.tempSession.getStage(Shorelines.stage).groupingColumn
                 var uniqueFeatures = event.features.unique(function(feature) {
                     return feature.data[groupingColumn];
                 }).sortBy(function(feature) {
@@ -492,13 +490,9 @@ var UI = function() {
                         tbodyTr.append($('<td />').append(aVal))
                     })
                     
-                    var layer =  CONFIG.tempSession.getConfig({
-                        name : layerName,
-                        stage : Shorelines.stage
-                    })
-                    
-                    var date = new Date(feature.attributes[groupingColumn]).format(layer.dateFormat);
-                    var isVisible = layer.view["dates-disabled"].indexOf(date) == -1;
+                    var config =  CONFIG.tempSession.getStage(Shorelines.stage);
+                    var date = new Date(feature.attributes[groupingColumn]).format(config.dateFormat);
+                    var isVisible = CONFIG.tempSession.getDisabledDatesForShoreline(layerName).indexOf(date) == -1;
                     var  disableButton = $('<button />')
                     .addClass('btn btn-year-toggle')
                     .attr({
