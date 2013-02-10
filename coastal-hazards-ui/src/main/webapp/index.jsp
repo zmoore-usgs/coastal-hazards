@@ -38,12 +38,18 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="true" />
         </jsp:include>
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/favicon.ico" type="image/x-icon">
+        <jsp:include page="js/jquery/jquery.jsp">
+            <jsp:param name="relPath" value="" />
+            <jsp:param name="debug-qualifier" value="<%= development%>" />
+        </jsp:include>
     </head>
     <body>
-        <div id="application-overlay">
-            <div id="application-overlay-content">
-                <h1><div>Coastal Hazards</div></h1>
-                <img id="application-overlay-banner" src="images/banner/banner.jpg"/>
+        <div id="application-overlay" style="height : 100%;width : 100%;position : fixed;top : 0;left : 0;background-color: #FFFFFF;z-index: 9999;">
+            <div id="application-overlay-content" style='height: 50%;padding-left: 25%;position: relative;top: 25%;width: 50%;color: #333333;font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;font-size: 14px;line-height: 20px;'>
+                <h1 style="letter-spacing: 0.5em;font-size: 38.5px; line-height: 40px;color: inherit; font-family: inherit; font-weight: bold;text-rendering: optimizelegibility;"><div>Coastal Hazards</div></h1>
+                <img id="application-overlay-banner" src="images/banner/banner.jpg" style="width: 100%;max-width: none;border: 0 none;height: auto;vertical-align: middle;"/>
                 This web-based Digital Shoreline Analysis System (DSASweb) is a software application that enables a user to calculate shoreline rate-of-change statistics from multiple historical shoreline positions.
                 <br /><br />
                 A user-friendly interface of simple buttons and menus guides the user through the major steps of shoreline change analysis.
@@ -51,10 +57,21 @@
                 You can use our current database of shorelines, or upload your own.
                 <br /><br />
                 DSASweb is a convenient, web-based version of the original USGS DSAS analysis tool.
-                <div style="text-align:center;"><img src="images/spinner/spinner3.gif" /></div>
+                <br /><br />
+                <div style="text-align:center;">
+                    <div id="splash-status-update"></div>
+                    <img src="images/spinner/spinner3.gif" />
+                </div>
             </div>
-
         </div>
+
+        <script type="text/javascript">
+            var splashUpdate = function(message) {
+                $('#splash-status-update').html(message)
+            }
+            splashUpdate("Loading application...")
+        </script>
+
         <div class="container-fluid">
             <div class="row-fluid">
                 <jsp:include page="template/USGSHeader.jsp">
@@ -90,7 +107,7 @@
                                 <div class="span4"><h3>Shorelines</h3></div>
                                 <div class="span8" id="shorelines-alert-container"></div>
                             </div>
-                            <ul class="nav nav-tabs" id="action-shoreline-tablist">
+                            <ul class="nav nav-tabs" id="action-shorelines-tablist">
                                 <li class="active"><a  data-toggle="tab" href="#shorelines-view-tab">View</a></li>
                                 <li><a data-toggle="tab" href="#shorelines-manage-tab">Manage</a></li>
                             </ul>
@@ -107,6 +124,10 @@
                                 <div class="tab-pane" id="shorelines-manage-tab">
                                     <div id="shorelines-uploader" class="uploader"></div>
                                     <button class="btn btn-success" id="shorelines-triggerbutton"><i class="icon-arrow-up icon-white"></i>Upload</button>
+                                    <button id="shorelines-remove-btn" disabled class="btn btn-success">
+                                        <i class="icon-remove icon-white"></i>
+                                        &nbsp;Remove
+                                    </button>
                                 </div>
                             </div>
                         </div> <!-- /Shorelines -->
@@ -255,12 +276,12 @@
                                             &nbsp;Edit
                                         </button>
                                     </div>
-                                    
+
                                     <div  id="transects-edit-container" class="row-fluid hidden">
                                         <button class="btn btn-success" id="transects-edit-save-button" title="Update Modified Transect">Update Transect</button>
                                         <button class="btn btn-success" id="transects-edit-add-button" title="Add Transect">Add Transect</button>
                                     </div>
-                                    
+
                                     <div id="create-transects-panel-well" class="row-fluid  hidden">
                                         <div class="well span6">
                                             Transects
@@ -289,7 +310,7 @@
                                         </div>
 
                                         <!-- Intersections -->
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -386,43 +407,45 @@
 
 
     </body>
-
+    <script type="text/javascript">splashUpdate("Loading Graphing Utilities...")</script>
     <jsp:include page="js/dygraphs/dygraphs.jsp">
         <jsp:param name="debug-qualifier" value="true" />
     </jsp:include>
 
+    <script type="text/javascript">splashUpdate("Loading Logging...")</script>
     <jsp:include page="js/log4javascript/log4javascript.jsp">
         <jsp:param name="relPath" value="" />
     </jsp:include>
 
-    <jsp:include page="js/jquery/jquery.jsp">
-        <jsp:param name="relPath" value="" />
-        <jsp:param name="debug-qualifier" value="<%= development%>" />
-    </jsp:include>
-
+    <script type="text/javascript">splashUpdate("Loading Sorting Tables...")</script>
     <jsp:include page="js/jquery-tablesorter/package.jsp">
         <jsp:param name="relPath" value="" />
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
 
+    <script type="text/javascript">splashUpdate("Loading UI Framework...")</script>
     <jsp:include page="js/bootstrap/package.jsp">
         <jsp:param name="relPath" value="" />
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
 
+    <script type="text/javascript">splashUpdate("Loading Geospatial Framework...")</script>
     <jsp:include page="js/openlayers/openlayers.jsp">
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
 
+    <script type="text/javascript">splashUpdate("Loading JS Utilities...")</script>
     <jsp:include page="js/sugar/sugar.jsp">
         <jsp:param name="relPath" value="" />
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
 
     <!-- TODO - Modularize -->
+    <script type="text/javascript">splashUpdate("Loading Upload Management...")</script>
     <script type="text/javascript" src="js/jquery-fineuploader/jquery.fineuploader-3.0.js"></script>
 
     <script type="text/javascript">
+        splashUpdate("Setting configuration...")
         var CONFIG = {};
 			
         CONFIG.development = <%= development%>;
@@ -470,21 +493,37 @@
 
             
     </script>
-    <script type="text/javascript" src="js/util/seedrandom.js"></script>
+    <script type="text/javascript">splashUpdate("Loading UI module...")</script>
     <script type="text/javascript" src="js/ui/ui.js"></script>
+    <script type="text/javascript">splashUpdate("Loading Utilities module...")</script>
     <script type="text/javascript" src="js/util/util.js"></script>
+    <script type="text/javascript">splashUpdate("Loading Mapping module...")</script>
     <script type="text/javascript" src="js/map/map.js"></script>
+    <script type="text/javascript">splashUpdate("Loading Session Management module...")</script>
     <script type="text/javascript" src="js/session/session.js"></script>
+    <script type="text/javascript">splashUpdate("Loading OWS module...")</script>
     <script type="text/javascript" src="js/ows/ows.js"></script>
+    <script type="text/javascript">splashUpdate("Loading Shorelines module...")</script>
     <script type="text/javascript" src="js/stages/shorelines.js"></script>
+    <script type="text/javascript">splashUpdate("Loading Baseline module...")</script>
     <script type="text/javascript" src="js/stages/baseline.js"></script>
+    <script type="text/javascript">splashUpdate("Loading Transects module...")</script>
     <script type="text/javascript" src="js/stages/transects.js"></script>
+    <script type="text/javascript">splashUpdate("Loading Calculation module...")</script>
     <script type="text/javascript" src="js/stages/calculation.js"></script>
+    <script type="text/javascript">splashUpdate("Loading Results module...")</script>
     <script type="text/javascript" src="js/stages/results.js"></script>
 
     <!-- TODO - Modularize -->
+    <script type="text/javascript">splashUpdate("Loading Toggle plugin...")</script>
     <link type="text/css" rel="stylesheet" href="css/jquery-bootstrap-toggle/bootstrap-toggle-buttons.css" />
     <script type="text/javascript" src="js/jquery-bootstrap-toggle/jquery.toggle.buttons.js"></script>
+    <script type="text/javascript">splashUpdate("Loading Application-specific CSS...")</script>
     <link type="text/css" rel="stylesheet" href="css/custom.css" />
+    <script type="text/javascript">splashUpdate("Loading Main module...")</script>
     <script type="text/javascript" src="js/onReady.js"></script>
+    <script type="text/javascript">
+        splashUpdate("Starting Application...")
+        splashUpdate = undefined;
+    </script>
 </html>

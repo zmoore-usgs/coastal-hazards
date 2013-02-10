@@ -4,7 +4,6 @@
 var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
-    // Dictates what will be displaed in the stage popover
     description : {
         'stage' : 'View and select existing published shorelines, or upload your own. Shorelines represent snap-shots of the coastline at various points in time.',
         'view-tab' : 'Select a published collection of shorelines to add to the workspace.',
@@ -13,7 +12,7 @@ var Shorelines = {
     },
     
     appInit : function() {
-        var wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
+        var getShorelineIdControl = new OpenLayers.Control.WMSGetFeatureInfo({
             title: 'shoreline-identify-control',
             layers: [],
             queryVisible: true,
@@ -26,32 +25,26 @@ var Shorelines = {
             }
         })
         Shorelines.initializeUploader();
-        wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
-        CONFIG.map.addControl(wmsGetFeatureInfoControl);
+        getShorelineIdControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
+        CONFIG.map.addControl(getShorelineIdControl);
+        
+        $('#shorelines-remove-btn').on('click', Shorelines.removeResource)
+        
         Shorelines.enterStage();
     },
     
-    leaveStage : function() {
-        LOG.debug('Shorelines.js::leaveStage');
-        
-        var idControl = Shorelines.getShorelineIdControl();
-        if (idControl) {
-            LOG.debug('Shorelines.js::enterStage: Shoreline identify control found in the map, deactivating.');
-            idControl.deactivate();
-        }
-    },
     enterStage : function() {
         LOG.debug('Shorelines.js::enterStage');
-        
-        var idControl = Shorelines.getShorelineIdControl();
-        if (idControl) {
-            LOG.debug('Shorelines.js::enterStage: Shoreline identify control found in the map, activating.');
-            idControl.activate();
-        } else {
-            LOG.warn('Shorelines.js::enterStage: Shoreline identify control not found. Creating one, adding to map and activating it.');
-            Shorelines.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
-            CONFIG.map.addControl(Shorelines.wmsGetFeatureInfoControl);
-        }
+        Shorelines.activateShorelineIdControl();
+        CONFIG.ui.switchTab({
+            caller : Shorelines,
+            tab : 'view'
+        })
+    },
+    leaveStage : function() {
+        LOG.debug('Shorelines.js::leaveStage');
+        Shorelines.deactivateShorelineIdControl();
+        Shorelines.closeShorelineIdWindows();
     },
     
     /**
@@ -67,7 +60,7 @@ var Shorelines = {
             var layerName = layer.name;
             
             var addToMap = function(data, textStatus, jqXHR) {
-                LOG.trace('Shorelines.js::addShorelines: Attempting to add shoreline layer ' + layerTitle + ' to the map'); 
+                LOG.trace('Shorelines.js::addShorelines: Attempting to add shoreline layer ' + layerTitle + ' to the map.'); 
                 CONFIG.ows.getDescribeFeatureType({
                     layerNS : layerPrefix,
                     layerName : layerName,
@@ -82,8 +75,6 @@ var Shorelines = {
                 })
             }
             
-            // TODO - persist UTM count for the layer we call instead of calling 
-            // this function every time
             CONFIG.ows.getUTMZoneCount({
                 layerPrefix : layer.prefix,
                 layerName : layer.name,
@@ -103,7 +94,7 @@ var Shorelines = {
                     ],
                     error : [
                     function(data, textStatus, jqXHR) {
-                        LOG.warn('Could not retrieve UTM count for this resource');
+                        LOG.warn('Shorelines.js::addShorelines: Could not retrieve UTM count for this resource. It is unknown whether or not this shoreline resource crosses more than 1 UTM zone. This could cause problems later.');
                         addToMap(data, textStatus, jqXHR);
                     },
                     ]
@@ -510,7 +501,7 @@ var Shorelines = {
     listboxChanged : function() {
         LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
         
-        
+        Shorelines.disableRemoveButton();
         LOG.debug('Shorelines.js::listboxChanged: Removing all shorelines from map that were not selected');
         $("#shorelines-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
@@ -541,6 +532,9 @@ var Shorelines = {
             });
             layerInfos.push(layer);
             stage.viewing.push(layerFullName);
+            if (layerFullName.has(CONFIG.tempSession.getCurrentSessionKey())) {
+                Shorelines.enableRemoveButton();
+            }
         });
         CONFIG.tempSession.persistSession();
         
@@ -592,5 +586,68 @@ var Shorelines = {
     },
     getShorelineIdControl : function() {
         return CONFIG.map.getControlBy('title', 'shoreline-identify-control');
+    },
+    activateShorelineIdControl : function() {
+        var idControl = Shorelines.getShorelineIdControl();
+        if (idControl) {
+            LOG.debug('Shorelines.js::enterStage: Shoreline identify control found in the map. Activating.');
+            idControl.activate();
+        } else {
+            LOG.warn('Shorelines.js::enterStage: Shoreline identify control not found. Creating one, adding to map and activating it.');
+            Shorelines.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
+            CONFIG.map.addControl(Shorelines.wmsGetFeatureInfoControl);
+        }
+    },
+    deactivateShorelineIdControl : function() {
+        var idControl = Shorelines.getShorelineIdControl();
+        if (idControl) {
+            LOG.debug('Shorelines.js::enterStage: Shoreline identify control found in the map.  Deactivating.');
+            idControl.deactivate();
+        }
+    },
+    closeShorelineIdWindows : function() {
+        $('#FramedCloud_close').trigger('click');
+    },
+    disableRemoveButton : function() {
+        $('#shorelines-remove-btn').attr('disabled','disabled');
+    },
+    enableRemoveButton : function() {
+        $('#shorelines-remove-btn').removeAttr('disabled');
+    },
+    removeResource : function() {
+        try {
+            CONFIG.tempSession.removeResource({
+                store : 'ch-input',
+                layer : $('#shorelines-list option:selected')[0].text,
+                callbacks : [
+                function(data, textStatus, jqXHR) {
+                    CONFIG.ui.showAlert({
+                        message : 'Shorelines removed',
+                        caller : Shorelines,
+                        displayTime : 4000,
+                        style: {
+                            classes : ['alert-success']
+                        }
+                    })
+                    
+                    $('#shorelines-list').val('');
+                    CONFIG.ui.switchTab({
+                        caller : Shorelines,
+                        tab : 'view'
+                    })
+                    Shorelines.refreshFeatureList();
+                }
+                ]
+            })
+        } catch (ex) {
+            CONFIG.ui.showAlert({
+                message : 'Draw Failed - ' + ex,
+                caller : Shorelines,
+                displayTime : 4000,
+                style: {
+                    classes : ['alert-error']
+                }
+            })
+        }
     }
 }
