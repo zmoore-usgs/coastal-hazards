@@ -179,7 +179,10 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         protected Transect[] getEvenlySpacedOrthoVectorsAlongBaseline(SimpleFeatureCollection baseline, MultiLineString shorelines, double spacing) {
             List<Transect> vectList = new LinkedList<Transect>();
             SimpleFeatureIterator features = baseline.features();
-            double accumulatedBaselineLength;
+            
+            double accumulatedBaselineLength = 0;
+            LineSegment previousBaselineEnd = null;
+            
             while (features.hasNext()) {
                 SimpleFeature feature = features.next();
                 Orientation orientation = Orientation.fromAttr((String)feature.getAttribute(BASELINE_ORIENTATION_ATTR));
@@ -195,7 +198,14 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                     updateTransectLengthGuess(shorelines, line);
                     int direction = shorelineDirection(line, shorelines);
                     
-                    vectList.addAll(handleLineString(line, spacing, orientation, direction, baselineId)); // rather than SEAWARD, get from baseline feature
+                    if (previousBaselineEnd != null) {
+                        accumulatedBaselineLength += getMinimumProjectedDistance(previousBaselineEnd, getStartLineSegment(line));
+                    }
+                    
+                    vectList.addAll(handleLineString(line, spacing, orientation, direction, baselineId, accumulatedBaselineLength)); // rather than SEAWARD, get from baseline feature
+                
+                    accumulatedBaselineLength += line.getLength();
+                    previousBaselineEnd = getEndLineSegment(line);
                 }
             }
             Transect[] vectArr = new Transect[vectList.size()];
@@ -251,13 +261,15 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                 double spacing, 
                 Orientation orientation, 
                 int orthoDirection,
-                String baselineId) {
+                String baselineId,
+                double accumulatedBaselineLength) {
             List<LineSegment> intervals = findIntervals(lineString, spacing, true);
             List<Transect> transects = new ArrayList<Transect>(intervals.size());
             for (LineSegment interval : intervals) {
                 transects.add(
                     Transect.generatePerpendicularVector(
-                        interval.p0, interval, orientation, transectId++, baselineId, Double.NaN, orthoDirection));
+                        interval.p0, interval, orientation, transectId++, baselineId, accumulatedBaselineLength, orthoDirection));
+                accumulatedBaselineLength += spacing;
             }
             return transects;
         }
@@ -358,6 +370,23 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             segments.add(new LineSegment(line.getCoordinateN(cIndex -1), line.getCoordinateN(cIndex)));
         }
         return segments;
+    }
+    
+    public static LineSegment getStartLineSegment(LineString line) {
+        return new LineSegment(
+                line.getCoordinateN(0), line.getCoordinateN(1));
+    }
+    
+    public static LineSegment getEndLineSegment(LineString line) {
+        int lastIndex = line.getNumPoints() - 1;
+        return new LineSegment(
+                line.getCoordinateN(lastIndex - 1), line.getCoordinateN(lastIndex));
+    }
+    
+    public static double getMinimumProjectedDistance(LineSegment previousEnd, LineSegment nextStart) {
+        double startProjEnd = previousEnd.p1.distance(previousEnd.project(nextStart.p0));
+        double endProjStart = nextStart.p0.distance(nextStart.project(previousEnd.p1));
+        return startProjEnd < endProjStart ? startProjEnd : endProjStart;
     }
     
 }

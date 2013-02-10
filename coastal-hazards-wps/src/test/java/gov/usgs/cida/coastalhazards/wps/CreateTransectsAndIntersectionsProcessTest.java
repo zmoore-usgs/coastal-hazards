@@ -383,4 +383,91 @@ public class CreateTransectsAndIntersectionsProcessTest {
         assertEquals(8.5, lineSegments.get(2).getCoordinate(1).x, EPS);
         assertEquals(0, lineSegments.get(2).getCoordinate(1).y, EPS);   
     }
+    
+    @Test
+    public void Test_getStartLineSegment() {
+        LineString lineString = gf.createLineString(new Coordinate[] {
+            new Coordinate(0, 0),
+            new Coordinate(1, 0),
+            new Coordinate(2, 0),
+            new Coordinate(3, 0),
+            new Coordinate(4, 0),
+            new Coordinate(5, 0),
+            new Coordinate(6, 0),
+            new Coordinate(7, 0),
+            new Coordinate(8, 0),
+            new Coordinate(9, 0),
+        });
+        LineSegment start = CreateTransectsAndIntersectionsProcess.getStartLineSegment(lineString);
+        assertNotNull(start);
+        assertEquals(lineString.getCoordinateN(0), start.getCoordinate(0));
+        assertEquals(lineString.getCoordinateN(1), start.getCoordinate(1));
+    }
+    
+    @Test
+    public void Test_getEndLineSegment() {
+        LineString lineString = gf.createLineString(new Coordinate[] {
+            new Coordinate(0, 0),
+            new Coordinate(1, 0),
+            new Coordinate(2, 0),
+            new Coordinate(3, 0),
+            new Coordinate(4, 0),
+            new Coordinate(5, 0),
+            new Coordinate(6, 0),
+            new Coordinate(7, 0),
+            new Coordinate(8, 0),
+            new Coordinate(9, 0),
+        });
+        LineSegment end = CreateTransectsAndIntersectionsProcess.getEndLineSegment(lineString);
+        assertNotNull(end);
+        assertEquals(lineString.getCoordinateN(8), end.getCoordinate(0));
+        assertEquals(lineString.getCoordinateN(9), end.getCoordinate(1));
+    }
+    
+    @Test
+    public void Test_getMinimumProjectedDistance() {
+        LineSegment start;
+        LineSegment end;
+        double distance;
+        
+        end = new LineSegment(0, 0, 1, 0);
+        start = new LineSegment(1, 0, 2, 0);
+        distance = CreateTransectsAndIntersectionsProcess.getMinimumProjectedDistance(end, start);
+        assertEquals("abutting segments along same line", 0, distance, EPS);
+        
+        end = new LineSegment(0, 0, 1, 0);
+        start = new LineSegment(3, 0, 4, 0);
+        distance = CreateTransectsAndIntersectionsProcess.getMinimumProjectedDistance(end, start);
+        assertEquals("segments along same line (discontinuous)", 2, distance, EPS);
+        
+        end = new LineSegment(0, 1, 1, 1);
+        start = new LineSegment(1, 1, 2, 1);
+        distance = CreateTransectsAndIntersectionsProcess.getMinimumProjectedDistance(end, start);
+        assertEquals("segments parallel to same line (abutting along projection)", 0, distance, EPS);
+        
+        end = new LineSegment(0, 1, 1, 1);
+        start = new LineSegment(3, 1, 4, 1);
+        distance = CreateTransectsAndIntersectionsProcess.getMinimumProjectedDistance(end, start);
+        assertEquals("segments parallel to same line (discontinuous along projection)", 2, distance, EPS);
+        
+        end = new LineSegment(0, 0, 1, 0);
+        start = new LineSegment(1, 0, 1, 1);
+        distance = CreateTransectsAndIntersectionsProcess.getMinimumProjectedDistance(end, start);
+        assertEquals("segments perpendicular to each other (abutting at end)", 0, distance, EPS);
+        
+        end = new LineSegment(0, 0, 1, 0);
+        start = new LineSegment(1, 2, 1, 4);
+        distance = CreateTransectsAndIntersectionsProcess.getMinimumProjectedDistance(end, start);
+        assertEquals("segments perpendicular to each other (discontinuos at end)", 0, distance, EPS);
+        
+        end = new LineSegment(0, 0, 1, 0);
+        start = new LineSegment(2, 2, 2, 3);
+        distance = CreateTransectsAndIntersectionsProcess.getMinimumProjectedDistance(end, start);
+        assertEquals("segments perpendicular to each other (offset 1 in x, 2 in y)", 1, distance, EPS);
+        
+        end = new LineSegment(-1, 0, 0, 0);
+        start = new LineSegment(2, 2, 6, 4);
+        distance = CreateTransectsAndIntersectionsProcess.getMinimumProjectedDistance(end, start);
+        assertEquals("segments 45 to each other", 2, distance, EPS);
+    }
 }
