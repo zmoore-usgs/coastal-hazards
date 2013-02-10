@@ -522,8 +522,4 @@
     <link type="text/css" rel="stylesheet" href="css/custom.css" />
     <script type="text/javascript">splashUpdate("Loading Main module...")</script>
     <script type="text/javascript" src="js/onReady.js"></script>
-    <script type="text/javascript">
-    splashUpdate("Starting Application...")
-    splashUpdate = undefined;
-    </script>
 </html>

@@ -132,6 +132,7 @@ var UI = function() {
             var bodyHtml = args.bodyHtml || '';
             var buttons = args.buttons || [];
             
+            $('#application-overlay').fadeOut();
             $('#modal-window-label').html(headerHtml);
             $('#modal-body-content').html(bodyHtml);
             $('#modal-window>.modal-footer').html('');
