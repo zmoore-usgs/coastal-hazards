@@ -27,6 +27,9 @@ var Shorelines = {
         Shorelines.initializeUploader();
         getShorelineIdControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
         CONFIG.map.addControl(getShorelineIdControl);
+        
+        $('#shorelines-remove-btn').on('click', Shorelines.removeResource)
+        
         Shorelines.enterStage();
     },
     
@@ -494,7 +497,7 @@ var Shorelines = {
     listboxChanged : function() {
         LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
         
-        
+        Shorelines.disableRemoveButton();
         LOG.debug('Shorelines.js::listboxChanged: Removing all shorelines from map that were not selected');
         $("#shorelines-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
@@ -525,6 +528,9 @@ var Shorelines = {
             });
             layerInfos.push(layer);
             stage.viewing.push(layerFullName);
+            if (layerFullName.has(CONFIG.tempSession.getCurrentSessionKey())) {
+                Shorelines.enableRemoveButton();
+            }
         });
         CONFIG.tempSession.persistSession();
         
@@ -597,5 +603,47 @@ var Shorelines = {
     },
     closeShorelineIdWindows : function() {
         $('#FramedCloud_close').trigger('click');
+    },
+    disableRemoveButton : function() {
+        $('#shorelines-remove-btn').attr('disabled','disabled');
+    },
+    enableRemoveButton : function() {
+        $('#shorelines-remove-btn').removeAttr('disabled');
+    },
+    removeResource : function() {
+        try {
+            CONFIG.tempSession.removeResource({
+                store : 'ch-input',
+                layer : $('#shorelines-list option:selected')[0].text,
+                callbacks : [
+                function(data, textStatus, jqXHR) {
+                    CONFIG.ui.showAlert({
+                        message : 'Shorelines removed',
+                        caller : Shorelines,
+                        displayTime : 4000,
+                        style: {
+                            classes : ['alert-success']
+                        }
+                    })
+                    
+                    $('#shorelines-list').val('');
+                    CONFIG.ui.switchTab({
+                        caller : Shorelines,
+                        tab : 'view'
+                    })
+                    Shorelines.refreshFeatureList();
+                }
+                ]
+            })
+        } catch (ex) {
+            CONFIG.ui.showAlert({
+                message : 'Draw Failed - ' + ex,
+                caller : Shorelines,
+                displayTime : 4000,
+                style: {
+                    classes : ['alert-error']
+                }
+            })
+        }
     }
 }

@@ -124,6 +124,10 @@
                                 <div class="tab-pane" id="shorelines-manage-tab">
                                     <div id="shorelines-uploader" class="uploader"></div>
                                     <button class="btn btn-success" id="shorelines-triggerbutton"><i class="icon-arrow-up icon-white"></i>Upload</button>
+                                    <button id="shorelines-remove-btn" disabled class="btn btn-success">
+                                        <i class="icon-remove icon-white"></i>
+                                        &nbsp;Remove
+                                    </button>
                                 </div>
                             </div>
                         </div> <!-- /Shorelines -->

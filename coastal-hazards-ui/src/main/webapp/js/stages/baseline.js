@@ -119,10 +119,10 @@ var Baseline = {
     },
     
     leaveStage : function() {
-        
+        LOG.debug('Baseline.js::leaveStage');
     },
     enterStage : function() {
-        
+        LOG.debug('Baseline.js::enterStage');
     },
     
     addBaselineToMap : function(args) {
