@@ -1,10 +1,12 @@
 var Map = function() {
+    LOG.info('Map.js::constructor');
     var me = (this === window) ? {} : this;
     
+    LOG.debug('Map.js::constructor:Loading Map object');
     me.map = new OpenLayers.Map('map', {
         projection : "EPSG:900913"
     });
-            
+    LOG.debug('Map.js::constructor:Creating base layer');
     me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
         "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
         {
@@ -14,13 +16,16 @@ var Map = function() {
         }
         ));
     
+    LOG.debug('Map.js::constructor:Adding ontrols to map');
     me.map.addControl(new OpenLayers.Control.MousePosition());
     me.map.addControl(new OpenLayers.Control.ScaleLine({
         geodesic : true
     }));
     
+    var initialExtent = [-10684062.064102,-17180597.971211,17180597.971211,10684062.064102];
     
-    me.map.zoomToMaxExtent();
+    LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
+    me.map.zoomToExtent([-10684062.064102,-17180597.971211,17180597.971211,10684062.064102], true);
     
     return $.extend(me, {
         getMap : function() {
