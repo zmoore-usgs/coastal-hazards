@@ -6,7 +6,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 import com.vividsolutions.jts.index.strtree.STRtree;
@@ -22,7 +21,7 @@ import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineFeature;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineSTRTreeBuilder;
 import gov.usgs.cida.coastalhazards.wps.geom.Transect;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -180,6 +179,10 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         protected Transect[] getEvenlySpacedOrthoVectorsAlongBaseline(SimpleFeatureCollection baseline, MultiLineString shorelines, double spacing) {
             List<Transect> vectList = new LinkedList<Transect>();
             SimpleFeatureIterator features = baseline.features();
+            
+            double accumulatedBaselineLength = 0;
+            LineSegment previousBaselineEnd = null;
+            
             while (features.hasNext()) {
                 SimpleFeature feature = features.next();
                 Orientation orientation = Orientation.fromAttr((String)feature.getAttribute(BASELINE_ORIENTATION_ATTR));
@@ -195,7 +198,14 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                     updateTransectLengthGuess(shorelines, line);
                     int direction = shorelineDirection(line, shorelines);
                     
-                    vectList.addAll(handleLineString(line, spacing, orientation, direction, baselineId)); // rather than SEAWARD, get from baseline feature
+                    if (previousBaselineEnd != null) {
+                        accumulatedBaselineLength += getMinimumProjectedDistance(previousBaselineEnd, getStartLineSegment(line));
+                    }
+                    
+                    vectList.addAll(handleLineString(line, spacing, orientation, direction, baselineId, accumulatedBaselineLength)); // rather than SEAWARD, get from baseline feature
+                
+                    accumulatedBaselineLength += line.getLength();
+                    previousBaselineEnd = getEndLineSegment(line);
                 }
             }
             Transect[] vectArr = new Transect[vectList.size()];
@@ -251,50 +261,17 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                 double spacing, 
                 Orientation orientation, 
                 int orthoDirection,
-                String baselineId) {
-            Coordinate currentCoord = null;
-            List<Transect> transectVectors = new LinkedList<Transect>();
-            double accumulatedDistance = 0.0d;
-            for (int i=0; i<lineString.getNumPoints(); i++) {
-                Coordinate coord = lineString.getCoordinateN(i);
-                if (currentCoord == null) {
-                    currentCoord = coord;
-                    Coordinate nextCoord = lineString.getCoordinateN(i+1);
-                    if (nextCoord == null) {
-                        throw new IllegalStateException("Line must have at least two points");
-                    }
-                    LineSegment segment = new LineSegment(currentCoord, nextCoord);
-                    
-                    Transect transect = 
-                            Transect.generatePerpendicularVector(currentCoord, segment, orientation, transectId, baselineId, Double.NaN, orthoDirection);
-                    transectId++;
-                    transectVectors.add(transect);
-                    continue;
-                }
-                double distance = coord.distance(currentCoord);
-                if ((accumulatedDistance + distance) > spacing) {
-                    double distanceToNewPoint = spacing - accumulatedDistance;
-                    double fraction = distanceToNewPoint / distance;
-                    LineSegment segment = new LineSegment(currentCoord, coord);
-                    
-                    Coordinate pointAlong = segment.pointAlong(fraction);
-                    
-                    Transect transect = 
-                            Transect.generatePerpendicularVector(currentCoord, segment, orientation, transectId, baselineId, Double.NaN, orthoDirection);
-                    transectId++;
-                    transectVectors.add(transect);
-                    
-                    // this retries to next coordinate
-                    currentCoord = pointAlong;
-                    i--;
-                    accumulatedDistance = 0.0d;
-                }
-                else {
-                    accumulatedDistance += distance;
-                    currentCoord = coord;
-                }
+                String baselineId,
+                double accumulatedBaselineLength) {
+            List<LineSegment> intervals = findIntervals(lineString, spacing, true);
+            List<Transect> transects = new ArrayList<Transect>(intervals.size());
+            for (LineSegment interval : intervals) {
+                transects.add(
+                    Transect.generatePerpendicularVector(
+                        interval.p0, interval, orientation, transectId++, baselineId, accumulatedBaselineLength, orthoDirection));
+                accumulatedBaselineLength += spacing;
             }
-            return transectVectors;
+            return transects;
         }
         
         /**
@@ -362,4 +339,54 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             }
         }
     }
+    
+    // NOTE: For each segment p0 is interval coord, with p1 = p0 + direction of segment as unit vector.
+    public static List<LineSegment> findIntervals(LineString lineString, double interval, boolean includeOrigin) {
+        LinkedList<LineSegment> intervalList = new LinkedList<LineSegment>();
+        List<LineSegment> segmentList = toLineSegments(lineString);       
+        double processed = 0;
+        double next = includeOrigin ? 0 : interval;
+        for (LineSegment segment : segmentList) {
+            double segmentLength = segment.getLength();
+            if (processed + segmentLength >= next) {
+                double segmentAngle = segment.angle();
+                double segmentOffset;
+                for (segmentOffset = next - processed; segmentOffset <= segmentLength; segmentOffset += interval, next += interval) {
+                    Coordinate c = segment.pointAlong(segmentOffset / segmentLength);
+                    intervalList.add(new LineSegment(
+                            c.x, c.y, c.x + Math.cos(segmentAngle), c.y + Math.sin(segmentAngle)));
+                }
+            }
+            processed += segmentLength;
+        }
+        return intervalList;
+    }
+    
+    // Extracts consituent segments from line string
+    public static List<LineSegment> toLineSegments(LineString line) {
+        int cCount = line.getNumPoints();
+        List<LineSegment> segments = new ArrayList<LineSegment>(cCount -1);
+        for(int cIndex = 1; cIndex < cCount; ++cIndex) {
+            segments.add(new LineSegment(line.getCoordinateN(cIndex -1), line.getCoordinateN(cIndex)));
+        }
+        return segments;
+    }
+    
+    public static LineSegment getStartLineSegment(LineString line) {
+        return new LineSegment(
+                line.getCoordinateN(0), line.getCoordinateN(1));
+    }
+    
+    public static LineSegment getEndLineSegment(LineString line) {
+        int lastIndex = line.getNumPoints() - 1;
+        return new LineSegment(
+                line.getCoordinateN(lastIndex - 1), line.getCoordinateN(lastIndex));
+    }
+    
+    public static double getMinimumProjectedDistance(LineSegment previousEnd, LineSegment nextStart) {
+        double startProjEnd = previousEnd.p1.distance(previousEnd.project(nextStart.p0));
+        double endProjStart = nextStart.p0.distance(nextStart.project(previousEnd.p1));
+        return startProjEnd < endProjStart ? startProjEnd : endProjStart;
+    }
+    
 }

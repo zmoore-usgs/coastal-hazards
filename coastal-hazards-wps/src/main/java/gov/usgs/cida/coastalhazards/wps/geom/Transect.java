@@ -190,7 +190,7 @@ public class Transect {
     public SimpleFeature createFeature(SimpleFeatureType type) {
         LineString line = this.getLineString();
         SimpleFeature feature = SimpleFeatureBuilder.build(type,
-                new Object[]{line, new Integer(transectId), orientation.getValue(), baselineId}, null);
+                new Object[]{line, new Integer(transectId), orientation.getValue(), baselineId, baselineDistance}, null);
         return feature;
     }
 }
