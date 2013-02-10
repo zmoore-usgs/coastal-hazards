@@ -68,7 +68,15 @@ var Transects = {
         
     },
     
+    enterStage : function() {
+        LOG.debug('Transects.js::enterStage');
+        CONFIG.ui.switchTab({
+            stage : 'transects',
+            tab : 'view'
+        })
+    },
     leaveStage : function() {
+        LOG.debug('Transects.js::leaveStage');
         if ($('#transect-edit-form-toggle').hasClass('active')) {
             $('#transect-edit-form-toggle').trigger('click');
         }
@@ -78,9 +86,6 @@ var Transects = {
         Transects.deactivateSelectControl();
         Transects.removeAngleLayer();
         CONFIG.map.removeLayerByName('transects-edit-layer');
-    },
-    enterStage : function() {
-        
     },
     
     editButtonToggled : function(event) {

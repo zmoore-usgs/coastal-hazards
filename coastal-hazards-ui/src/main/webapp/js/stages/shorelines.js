@@ -36,6 +36,10 @@ var Shorelines = {
     enterStage : function() {
         LOG.debug('Shorelines.js::enterStage');
         Shorelines.activateShorelineIdControl();
+        CONFIG.ui.switchTab({
+            caller : Shorelines,
+            tab : 'view'
+        })
     },
     leaveStage : function() {
         LOG.debug('Shorelines.js::leaveStage');

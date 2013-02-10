@@ -118,11 +118,15 @@ var Baseline = {
         
     },
     
-    leaveStage : function() {
-        LOG.debug('Baseline.js::leaveStage');
-    },
     enterStage : function() {
         LOG.debug('Baseline.js::enterStage');
+        CONFIG.ui.switchTab({
+            caller : Baseline,
+            tab : 'view'
+        })
+    },
+    leaveStage : function() {
+        LOG.debug('Baseline.js::leaveStage');
     },
     
     addBaselineToMap : function(args) {

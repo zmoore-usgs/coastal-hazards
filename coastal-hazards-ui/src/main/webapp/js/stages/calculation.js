@@ -9,101 +9,18 @@ var Calculation = {
         'upload-button' : ''
     },
     appInit : function() {
-//        $("#create-intersections-btn").on("click", Calculation.createIntersectionSubmit);
     },
     
     leaveStage : function() {
-        
+        LOG.info('Calculation.js::leaveStage');
     },
     enterStage : function() {
-        
+        LOG.info('Calculation.js::enterStage');
+        CONFIG.ui.switchTab({
+            stage : 'intersections',
+            tab : 'view'
+        })
     },
-    
-//    createIntersectionSubmit : function() {
-//        var visibleShorelines = $('#shorelines-list :selected').map(function(i,v){
-//            return v.value
-//        })
-//        var transects = $('#transects-list :selected')[0].value;
-//        var intersectionLayerName = transects.replace('_transects',  Calculation.suffixes[0]);
-//        var request = Calculation.createWPSCalculateIntersectionsRequest({
-//            shorelines : visibleShorelines,
-//            transects : transects
-//        })
-//        
-//        var wpsProc = function() {
-//            CONFIG.ows.executeWPSProcess({
-//                processIdentifier : 'gs:CalculateIntersections',
-//                request : request,
-//                context : this,
-//                callbacks : [
-//                function(data, textStatus, jqXHR, context) {
-//                    if (typeof data == 'string') {
-//                        CONFIG.ows.getWMSCapabilities({
-//                            namespace : CONFIG.tempSession.getCurrentSessionKey(),
-//                            callbacks : {
-//                                success : [
-//                                Calculation.populateFeaturesList,
-//                                function() {
-//                                    $('#intersections-list').val(data);
-//                                    Calculation.listboxChanged();
-//                                    $('a[href="#' + Calculation.stage + '-view-tab"]').tab('show');
-//                                    CONFIG.ui.showAlert({
-//                                        message : 'Intersection creation succeeded.',
-//                                        displayTime : 7500,
-//                                        caller : Calculation,
-//                                        style: {
-//                                            classes : ['alert-success']
-//                                        }
-//                                    })
-//                                }      
-//                                ]
-//                            }
-//                        })
-//                    } else {
-//                        LOG.error($(data).find('ows\\:ExceptionText').first().text());
-//                        CONFIG.ui.showAlert({
-//                            message : 'Intersection creation failed. Check logs.',
-//                            displayTime : 7500,
-//                            caller : Calculation,
-//                            style: {
-//                                classes : ['alert-error']
-//                            }
-//                        })
-//                    }
-//                }
-//                ]
-//            })
-//        }
-//        
-//        if ($('#intersections-list option[value="'+ intersectionLayerName + '"]').length) {
-//            CONFIG.ui.createModalWindow({
-//                context : {
-//                    scope : this
-//                },
-//                headerHtml : 'Resource Exists',
-//                bodyHtml : 'A resource already exists with the name ' + intersectionLayerName + ' in your session. Would you like to overwrite this resource?',
-//                buttons : [
-//                {
-//                    text : 'Overwrite',
-//                    callback : function(event) {
-//                        $.get('service/session', {
-//                            action : 'remove-layer',
-//                            workspace : CONFIG.tempSession.getCurrentSessionKey(),
-//                            store : 'ch-input',
-//                            layer : intersectionLayerName.split(':')[1]
-//                        },
-//                        function(data, textStatus, jqXHR) {
-//                            wpsProc();
-//                        }, 'json')
-//                    }           
-//                }
-//                ]
-//            })
-//        } else {
-//            wpsProc();
-//        }
-//        
-//    },
     populateFeaturesList : function(args) {
         CONFIG.ui.populateFeaturesList({
             caller : Calculation,

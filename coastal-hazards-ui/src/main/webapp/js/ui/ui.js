@@ -2,7 +2,7 @@ var UI = function() {
     LOG.info('UI.js::constructor: UI class is initializing.');
     var me = (this === window) ? {} : this;
     me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
-    me.work_stages_objects = [Shorelines, Baseline, Transects, Results, Calculation];
+    me.work_stages_objects = [Shorelines, Baseline, Transects, Calculation, Results];
     
     LOG.debug('UI.js::constructor: Setting popup hover delay to ' + popupHoverDelay);
     var popupHoverDelay = CONFIG.popupHoverDelay;
@@ -652,11 +652,12 @@ var UI = function() {
         },
         switchTab : function(args) {
             var caller = args.caller;
+            var stage = caller ? caller.stage : args.stage || '';
             var tab = args.tab;
             if (tab == 'view') {
-                $('#action-'+caller.stage+'-tablist a[href="#'+caller.stage+'-view-tab"]').trigger('click');
+                $('#action-'+stage+'-tablist a[href="#'+stage+'-view-tab"]').trigger('click');
             } else if (tab == 'manage') {
-                $('#action-'+caller.stage+'-tablist a[href="#'+caller.stage+'-manage-tab"]').trigger('click');
+                $('#action-'+stage+'-tablist a[href="#'+stage+'-manage-tab"]').trigger('click');
             }
         }
     });

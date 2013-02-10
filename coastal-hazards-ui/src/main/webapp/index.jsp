@@ -107,7 +107,7 @@
                                 <div class="span4"><h3>Shorelines</h3></div>
                                 <div class="span8" id="shorelines-alert-container"></div>
                             </div>
-                            <ul class="nav nav-tabs" id="action-shoreline-tablist">
+                            <ul class="nav nav-tabs" id="action-shorelines-tablist">
                                 <li class="active"><a  data-toggle="tab" href="#shorelines-view-tab">View</a></li>
                                 <li><a data-toggle="tab" href="#shorelines-manage-tab">Manage</a></li>
                             </ul>

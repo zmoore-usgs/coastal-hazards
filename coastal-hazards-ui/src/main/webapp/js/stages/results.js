@@ -23,11 +23,15 @@ var Results = {
     },
     
     leaveStage : function() {
-        LOG.info('Results.js::leaveStage:Leaving results stage');
+        LOG.debug('Results.js::leaveStage');
         CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id','results-select-control')[0])
     },
     enterStage : function() {
-        
+        LOG.debug('Results.js::enterStage');
+        CONFIG.ui.switchTab({
+            caller : Results,
+            tab : 'view'
+        })
     },
     
     populateFeaturesList : function() {
