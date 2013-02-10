@@ -1,7 +1,7 @@
 var Results = {
     stage : 'results',
     
-    viewableResultsColumns : ['LRR', 'LCI', 'WLR', 'WCI', 'SCE', 'NSM', 'EPR'],
+    viewableResultsColumns : ['base_dist', 'LRR', 'LCI', 'WLR', 'WCI', 'SCE', 'NSM', 'EPR'],
     
     suffixes : ['_rates','_results','_clip','_lt'],
     
@@ -243,7 +243,7 @@ var Results = {
 	
         var featureHighlighted = function(event) {
             LOG.trace('Results.js::addLayerToMap: A results feature is being highlighted');
-            var xValue = event.feature.attributes.StartX;
+            var xValue = event.feature.attributes.base_dist;
             
             LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the plot');
             var xPlotIdx = CONFIG.graph.rawData_.findIndex(function(o){
@@ -254,7 +254,7 @@ var Results = {
             LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the table');
             $('#results-table tbody>tr').removeClass('warning');
             var tableRow = $('#results-table tbody>tr').toArray().find(function(tr){
-                return $(tr).data().startx == xValue
+                return $(tr).data().base_dist == xValue
             });
             
             LOG.trace('Results.js::addLayerToMap: Scrolling the table into view and highlighting the correct row');
@@ -288,10 +288,6 @@ var Results = {
         var result = args.result;
         var resultsColumns = this.viewableResultsColumns.clone();
         
-        // StartX is needed for plotting but not for the table view so let's get the column
-        // from the server i one call
-        resultsColumns.push('StartX');
-        
         CONFIG.ows.getFilteredFeature({ 
             layerPrefix : result.prefix,
             layerName : result.name,
@@ -318,10 +314,10 @@ var Results = {
                     
                     $('#results-table tbody>tr').hover( 
                         function(event) {
-                            var startx = $(this).data().startx
+                            var baseDist = $(this).data().base_dist
                             var selectionControl = CONFIG.map.getMap().getControlsBy('id','results-select-control')[0];
                             var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'results')[0].features.find(function(f){
-                                return f.attributes.StartX == startx
+                                return f.attributes.base_dist == baseDist
                             })
                             selectionControl.select(hlFeature);
                             $(this).addClass('warning')
@@ -345,7 +341,7 @@ var Results = {
         var plotDiv = $('#results-' + layer.title + '-plot').get()[0]
         var labels = ['Distance (m)', 'Coastal change (m/decade)'];
         var data = features.map(function(n){
-            var startX = parseFloat(n.data['StartX']);
+            var baseDist = parseFloat(n.data['base_dist']);
             var lrr = parseFloat(Math.abs(n.data['LRR']));
             var lci = parseFloat(Math.abs(n.data['LCI']));
             var lci25 = parseFloat(Math.abs(n.data['LCI_2.5']));
@@ -353,7 +349,7 @@ var Results = {
             
             return [ 
             // X axis values
-            startX, 
+            baseDist, 
             // [Error bar top, Value, Error bar bottom]
             [lrr - lci,lrr, lrr + lci] 
             ]
@@ -379,7 +375,7 @@ var Results = {
                     var selectionControl = CONFIG.map.getMap().getControlsBy('id','results-select-control')[0];
                     selectionControl.unselectAll()
                     var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'results')[0].features.find(function(f){
-                        return f.attributes.StartX == x
+                        return f.attributes.base_dist == x
                     })
                     selectionControl.select(hlFeature);
                 }
@@ -409,7 +405,7 @@ var Results = {
         features.each(function(feature) {
             var tbodyRow = $('<tr />')
             .data({
-                startx : feature.attributes.StartX
+                base_dist : feature.attributes.base_dist
             });
             columns.each(function(c) {
                 if (feature.attributes[c]) {
