@@ -1,5 +1,5 @@
 var Map = function() {
-    LOG.info('Map.js::constructor');
+    LOG.info('Map.js::constructor:Map class is initializing.');
     var me = (this === window) ? {} : this;
     
     LOG.debug('Map.js::constructor:Loading Map object');
@@ -27,6 +27,7 @@ var Map = function() {
     LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
     me.map.zoomToExtent([-10684062.064102,-17180597.971211,17180597.971211,10684062.064102], true);
     
+    LOG.debug('Map.js::constructor: Map class initialized.');
     return $.extend(me, {
         getMap : function() {
             return me.map;

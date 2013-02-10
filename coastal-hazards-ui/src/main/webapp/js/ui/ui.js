@@ -1,15 +1,15 @@
 var UI = function() {
-    LOG.info('UI.js::init: UI class is initializing.');
+    LOG.info('UI.js::constructor: UI class is initializing.');
     var me = (this === window) ? {} : this;
     me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
     me.work_stages_objects = [Shorelines, Baseline, Transects, Results, Calculation];
     
-    LOG.debug('UI.js::init: Setting popup hover delay to ' + popupHoverDelay);
+    LOG.debug('UI.js::constructor: Setting popup hover delay to ' + popupHoverDelay);
     var popupHoverDelay = CONFIG.popupHoverDelay;
     
     $('#clear-sessions-btn').on("click", CONFIG.tempSession.clearSessions)
         
-    LOG.debug('UI.js::init: Initializing AJAX start/stop hooks');
+    LOG.debug('UI.js::constructor: Initializing AJAX start/stop hooks');
     $(document).ajaxStart(function() {
         LOG.debug('AJAX Call Started');
         $("#application-spinner").fadeIn();
@@ -122,6 +122,7 @@ var UI = function() {
         })
     })
     
+    LOG.debug('UI.js::constructor: UI class initialized.');
     return $.extend(me, {
         displayStage : function(caller) {
             $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click');
@@ -454,7 +455,6 @@ var UI = function() {
                 LOG.debug('UI.js::showShorelineInfo: Features were returned from the OWS resource. Parsing and creating table to display');
                 
                 LOG.debug('UI.js::showShorelineInfo: Creating table for ' + event.features.length + ' features');
-//                event.features[0].gml.featureNSPrefix + ':' + event.features[0].gml.featureType
                 var groupingColumn = CONFIG.tempSession.getStage(Shorelines.stage).groupingColumn
                 var uniqueFeatures = event.features.unique(function(feature) {
                     return feature.data[groupingColumn];

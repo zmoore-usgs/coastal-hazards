@@ -5,6 +5,7 @@ $(document).ready(function() {
     });
     
     try {
+        LOG.info('OnReady.js:: Initializing session objects')
         // Contains the pemanent session object which holds one or more sessions
         CONFIG.permSession = new Session('coastal-hazards', true);
         // Contains the non-permanent single-session object
