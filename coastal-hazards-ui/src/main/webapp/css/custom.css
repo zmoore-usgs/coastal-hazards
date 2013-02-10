@@ -1,15 +1,24 @@
-/* put all your application wide styles here */
-/* Add a drop shadow effect to scale and mouse position
-    so they can be seen against a dark background */
-.olControlScaleLine {
-    text-shadow: #FFFFFF 0px 0px 2px;
-    color: #000000;
+/* ---------------------------------------------------------------------- UI */
+.btn {
+    margin-top: .25em;
 }
-.olControlMousePosition {
-    text-shadow: #FFFFFF 0px 0px 2px;
-    color: #000000;
+.feature-list {
+    width: 100%;
 }
-
+.hide {
+    height: auto !important;
+}
+#toolbox-well {
+    height: 39em;
+}
+#application-spinner {
+    text-align: center;
+    display: none;
+}
+/* Update bootstrap's buttons to have a bit of space on top */
+#site-title {
+    line-height: 20px;
+}
 /* Left Nav Bar Image Sizing */
 .nav-stacked li.active a img {
     height: 3.5em;
@@ -22,23 +31,11 @@
 .nav-pills.nav-stacked > li > a {
     text-align: center;
 }
-
-#application-spinner {
-    text-align: center;
-    display: none;
+/* Because of a conflict between twitter bootstrap and openlayers */
+img { 
+    max-width: none; 
 }
-
-.uploader {
-    display: none;
-}
-
-/* For now, turn off qqUploader completed lists */
-.qq-upload-list {
-    display: none;
-}
-
-/* Color differentiation for published and personal layers
-   in select views */
+/* Color differentiation for published and personal layers in select views */
 select option.published-layer{
     color : #661111; 
 }
@@ -46,69 +43,58 @@ select option.session-layer{
     color : #116611; 
 }
 
-/* Because of a conflict between twitter bootstrap and openlayers */
-img { max-width: none; }
-
+/* ---------------------------------------------------------------------- Map */
+/* Add a drop shadow effect to scale and mouse position so they can be seen against a dark background */
+.olControlScaleLine {
+    text-shadow: #FFFFFF 0px 0px 2px;
+    color: #000000;
+}
+.olControlMousePosition {
+    text-shadow: #FFFFFF 0px 0px 2px;
+    color: #000000;
+}
 #map {
     height: 100%;
     width: 100%;
 }
-
-#site-title {
-    line-height: 20px;
-}
-
-#ccsa-area {
-    font : 1em/0.5em Verdana,Arial,Helvetica,sans-serif;
-}
-
-.hide {
-    height: auto !important;
-}
-
-.feature-list {
-    width: 100%;
-}
-
-#shorelines-list {
-    height: 7.25em;
-}
-
 #map-well {
     height: 39em;
 }
 
-#toolbox-well {
-    height: 39em;
+/* ---------------------------------------------------------------------- Shorelines */
+#shoreline-table-container {
+    height: 16.25em;
+}
+.shoreline-table-selected-head-column {
+    width: 30%;
+}
+#shorelines-list {
+    height: 7.25em;
 }
 
+/* ---------------------------------------------------------------------- Transects */
 #transects-well {
     height: 5em;
 }
-
 #create-transects-input-spacing {
     width: 6em;
 }
 
-#shoreline-table-container {
-    height: 16.25em;
-}
-
-.shoreline-table-selected-head-column {
-    width: 30%;
-}
-
+/* ---------------------------------------------------------------------- Results */
 #results-table-container {
     height: 16.25em;
 }
 
-/* Fine Uploader
--------------------------------------------------- */
+/* ---------------------------------------------------------------------- Fine Uploader */
 .qq-upload-list {
     text-align: left;
+    display: none;
+}
+.uploader {
+    display: none;
 }
 
-/* Uploader */
+/* ---------------------------------------------------------------------- Alert system */
 li.alert-success {
     background-color: #DFF0D8;
 }
@@ -119,8 +105,4 @@ li.alert-error {
 
 .alert-error .qq-upload-failed-text {
     display: inline;
-}
-
-.btn {
-    margin-top: .25em;
 }
