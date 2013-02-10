@@ -1,6 +1,7 @@
 var Map = function() {
     LOG.info('Map.js::constructor:Map class is initializing.');
     var me = (this === window) ? {} : this;
+    var initialExtent = [-10684062.064102,-17180597.971211,17180597.971211,10684062.064102];
     
     LOG.debug('Map.js::constructor:Loading Map object');
     me.map = new OpenLayers.Map('map', {
@@ -21,8 +22,6 @@ var Map = function() {
     me.map.addControl(new OpenLayers.Control.ScaleLine({
         geodesic : true
     }));
-    
-    var initialExtent = [-10684062.064102,-17180597.971211,17180597.971211,10684062.064102];
     
     LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
     me.map.zoomToExtent([-10684062.064102,-17180597.971211,17180597.971211,10684062.064102], true);

@@ -192,7 +192,7 @@ var OWS = function(endpoint) {
             LOG.debug('OWS.js::getLayerPropertiesFromWFSDescribeFeatureType: Parsing WFS describe feature type response for properties');
             
             var describeFeatureType = args.describeFeatureType;
-            var includeGeom = args.includeGeom;
+            var includeGeom = args.includeGeom || false;
             var result = new Object.extended();
             
             LOG.debug('OWS.js::getLayerPropertiesFromWFSDescribeFeatureType: Will attempt to parse ' + describeFeatureType.featureTypes.length + ' layers');

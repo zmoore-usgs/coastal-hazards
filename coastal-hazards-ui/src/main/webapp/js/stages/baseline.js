@@ -1,7 +1,6 @@
 var Baseline = {
     stage : 'baseline',
     suffixes :  ['_baseline'],
-    baselineDrawButton : $('#baseline-draw-btn'),
     reservedColor : '#7570B3',
     shorewardColor : '#76C5AD',
     description : {
@@ -10,14 +9,15 @@ var Baseline = {
         'manage-tab' : 'Add a new baseline to the workspace, or clone and edit an existing baseline.',
         'upload-button' : 'Upload a zipped shapefile containing a baseline polyline.'
     },
+    baselineDrawButton : $('#baseline-draw-btn'),
     appInit : function() {
         $('#baseline-draw-form-name').val(Util.getRandomLorem());
         $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
-        $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
+        Baseline.baselineDrawButton.on("click", Baseline.drawButtonToggled);
         $('#baseline-draw-form-name').val(Util.getRandomLorem());
         $('#baseline-remove-btn').on('click', Baseline.removeResource)
         
-        $('#baseline-draw-btn').popover({
+        Baseline.baselineDrawButton.popover({
             title : Baseline.stage.capitalize() + ' Draw',
             content : $('<div />')
             .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
@@ -43,7 +43,7 @@ var Baseline = {
             }
         })
         
-        $('#baseline-draw-btn').popover({
+        Baseline.baselineDrawButton.popover({
             title : Baseline.stage.capitalize() + ' Draw',
             content : $('<div />')
             .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
@@ -363,7 +363,7 @@ var Baseline = {
             CONFIG.map.removeLayerByName('baseline-edit-layer');
             CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0]);
             CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0].deactivate();
-            $('#baseline-draw-btn').removeAttr('disabled');
+            Baseline.baselineDrawButton.removeAttr('disabled');
             $("#baseline-edit-container").addClass('hidden');
         }
                 
@@ -431,12 +431,12 @@ var Baseline = {
     disableDrawButton : function() {
         if (!$('#draw-panel-well').hasClass('hidden')) {
             LOG.debug('UI.js::?: Draw form was found to be active. Deactivating draw form');
-            $('#baseline-draw-btn').click();
+           Baseline.baselineDrawButton.click();
         }
-        $('#baseline-draw-btn').attr('disabled', 'disabled');
+        Baseline.baselineDrawButton.attr('disabled', 'disabled');
     },
     enableDrawButton : function() {
-        $('#baseline-draw-btn').removeAttr('disabled');
+        Baseline.baselineDrawButton.removeAttr('disabled');
     },
     disableEditButton : function() {
         if (!$('#baseline-edit-container').hasClass('hidden')) {
@@ -690,7 +690,7 @@ var Baseline = {
             $('a[href="#' + Baseline.stage + '-view-tab"]').tab('show');
                             
             LOG.info('Baseline.js::saveDrawnFeatures: Triggering click on baseline draw button')
-            $('#baseline-draw-btn').click();
+            Baseline.baselineDrawButton.click();
             Baseline.getDrawControl().deactivate();
         });
         
