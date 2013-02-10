@@ -19,7 +19,7 @@ $(document).ready(function() {
         LOG.error(e);
         // This could probably be hardcoded into index but... here it is
         var modal = $('<div />')
-        .addClass('modal hide fade')
+        .addClass('modal fade')
         .attr('id', 'session-reset-modal')    
         .append(
             $('<div />')
@@ -50,8 +50,10 @@ $(document).ready(function() {
                 sessionStorage.removeItem('coastal-hazards');
                 location.reload(true);
             })))
-        $(body).append(modal);
-        modal.modal();
+        $('body').append(modal);
+        $('#application-overlay').fadeOut();
+        $('#session-reset-modal').modal('show');
+        return;
     }
     
     // Utility class for the user interface

@@ -21,6 +21,8 @@
 
 <html lang="en">
     <head>
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/favicon.ico" type="image/x-icon">
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -38,8 +40,6 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="true" />
         </jsp:include>
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-        <link rel="icon" href="/favicon.ico" type="image/x-icon">
         <jsp:include page="js/jquery/jquery.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
@@ -471,25 +471,25 @@
             results : []
         }
             
-        JSON.stringify = JSON.stringify || function (obj) {
-            var t = typeof (obj);
-            if (t != "object" || obj === null) {
-                // simple data type
-                if (t == "string") obj = '"'+obj+'"';
-                return String(obj);
+    JSON.stringify = JSON.stringify || function (obj) {
+        var t = typeof (obj);
+        if (t != "object" || obj === null) {
+            // simple data type
+            if (t == "string") obj = '"'+obj+'"';
+            return String(obj);
+        }
+        else {
+            // recurse array or object
+            var n, v, json = [], arr = (obj && obj.constructor == Array);
+            for (n in obj) {
+                v = obj[n]; t = typeof(v);
+                if (t == "string") v = '"'+v+'"';
+                else if (t == "object" && v !== null) v = JSON.stringify(v);
+                json.push((arr ? "" : '"' + n + '":') + String(v));
             }
-            else {
-                // recurse array or object
-                var n, v, json = [], arr = (obj && obj.constructor == Array);
-                for (n in obj) {
-                    v = obj[n]; t = typeof(v);
-                    if (t == "string") v = '"'+v+'"';
-                    else if (t == "object" && v !== null) v = JSON.stringify(v);
-                    json.push((arr ? "" : '"' + n + '":') + String(v));
-                }
-                return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
-            }
-        };
+            return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+        }
+    };
 
             
     </script>
@@ -523,7 +523,7 @@
     <script type="text/javascript">splashUpdate("Loading Main module...")</script>
     <script type="text/javascript" src="js/onReady.js"></script>
     <script type="text/javascript">
-        splashUpdate("Starting Application...")
-        splashUpdate = undefined;
+    splashUpdate("Starting Application...")
+    splashUpdate = undefined;
     </script>
 </html>
