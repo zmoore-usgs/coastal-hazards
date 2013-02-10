@@ -489,8 +489,6 @@
 
             
     </script>
-    <script type="text/javascript">splashUpdate("Loading Random Seeding...")</script>
-    <script type="text/javascript" src="js/util/seedrandom.js"></script>
     <script type="text/javascript">splashUpdate("Loading UI module...")</script>
     <script type="text/javascript" src="js/ui/ui.js"></script>
     <script type="text/javascript">splashUpdate("Loading Utilities module...")</script>
