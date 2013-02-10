@@ -451,6 +451,7 @@ var UI = function() {
         showShorelineInfo : function(event) {
             LOG.info('UI.js::showShorelineInfo');
             LOG.debug('UI.js::showShorelineInfo: The map was clicked and a response from the OWS resource was received');
+            Shorelines.closeShorelineIdWindows();
             if (event.features.length) {
                 LOG.debug('UI.js::showShorelineInfo: Features were returned from the OWS resource. Parsing and creating table to display');
                 

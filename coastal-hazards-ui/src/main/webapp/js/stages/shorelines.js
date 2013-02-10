@@ -37,7 +37,7 @@ var Shorelines = {
     leaveStage : function() {
         LOG.debug('Shorelines.js::leaveStage');
         Shorelines.deactivateShorelineIdControl();
-        $('#FramedCloud_close').trigger('click');
+        Shorelines.closeShorelineIdWindows();
     },
     
     /**
@@ -594,5 +594,8 @@ var Shorelines = {
             LOG.debug('Shorelines.js::enterStage: Shoreline identify control found in the map.  Deactivating.');
             idControl.deactivate();
         }
+    },
+    closeShorelineIdWindows : function() {
+        $('#FramedCloud_close').trigger('click');
     }
 }
