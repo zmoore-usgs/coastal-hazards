@@ -38,6 +38,8 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="true" />
         </jsp:include>
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/favicon.ico" type="image/x-icon">
     </head>
     <body>
         <div id="application-overlay">
@@ -255,12 +257,12 @@
                                             &nbsp;Edit
                                         </button>
                                     </div>
-                                    
+
                                     <div  id="transects-edit-container" class="row-fluid hidden">
                                         <button class="btn btn-success" id="transects-edit-save-button" title="Update Modified Transect">Update Transect</button>
                                         <button class="btn btn-success" id="transects-edit-add-button" title="Add Transect">Add Transect</button>
                                     </div>
-                                    
+
                                     <div id="create-transects-panel-well" class="row-fluid  hidden">
                                         <div class="well span6">
                                             Transects
@@ -289,7 +291,7 @@
                                         </div>
 
                                         <!-- Intersections -->
-                                        
+
                                     </div>
                                 </div>
                             </div>
