@@ -15,6 +15,7 @@ var Baseline = {
         $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
         $('#baseline-draw-btn').on("click", Baseline.drawButtonToggled);
         $('#baseline-draw-form-name').val(Util.getRandomLorem());
+        $('#baseline-remove-btn').on('click', Baseline.removeResource)
         
         $('#baseline-draw-btn').popover({
             title : Baseline.stage.capitalize() + ' Draw',
@@ -82,18 +83,18 @@ var Baseline = {
         })
         
         Baseline.initializeUploader();
-        
+        var sessionKey = CONFIG.tempSession.getCurrentSessionKey();
         var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
             strategies : [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
             projection: new OpenLayers.Projection('EPSG:900913'),
             protocol: new OpenLayers.Protocol.WFS({
                 version: "1.1.0",
                 url: "geoserver/ows",
-                featureNS :  CONFIG.tempSession.getCurrentSessionKey(),
+                featureNS :  sessionKey,
                 maxExtent: CONFIG.map.getMap().getExtent(),
                 featureType: "featureType",
                 geometryName: "the_geom",
-                schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + CONFIG.tempSession.getCurrentSessionKey() + ":featureType"
+                schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + sessionKey + ":featureType"
             }),
             onFeatureInsert : function(feature) {
                 feature.attributes['Orient'] = 'seaward';
@@ -125,6 +126,7 @@ var Baseline = {
     },
     
     addBaselineToMap : function(args) {
+        var orient = 'Orient';
         LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
         var style = new OpenLayers.Style({
             strokeColor: '#FFFFFF',
@@ -134,7 +136,7 @@ var Baseline = {
             new OpenLayers.Rule({
                 filter: new OpenLayers.Filter.Comparison({
                     type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                    property: 'Orient', 
+                    property: orient, 
                     value: 'shoreward'
                 }),
                 symbolizer: {
@@ -145,7 +147,7 @@ var Baseline = {
             new OpenLayers.Rule({
                 filter: new OpenLayers.Filter.Comparison({
                     type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                    property: 'Orient', 
+                    property: orient, 
                     value: 'seaward'
                 }),
                 symbolizer : {
@@ -156,7 +158,7 @@ var Baseline = {
             new OpenLayers.Rule({
                 filter: new OpenLayers.Filter.Comparison({
                     type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                    property: 'Orient', 
+                    property: orient, 
                     value: 'seaward'
                 }),
                 symbolizer : {
@@ -178,11 +180,14 @@ var Baseline = {
                 geometryName: "the_geom"
             }),
             renderers: CONFIG.map.getRenderer(),
-            styleMap: new OpenLayers.StyleMap(style)
+            styleMap: new OpenLayers.StyleMap(style),
+            type : Baseline.stage
         });
         
         CONFIG.map.removeLayerByName(baselineLayer.name);
         CONFIG.map.getMap().addLayer(baselineLayer);
+        CONFIG.tempSession.getStage(Baseline.stage).viewing = args.name;
+        CONFIG.tempSession.persistSession();
     },
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
@@ -195,8 +200,9 @@ var Baseline = {
     },
     refreshFeatureList : function(args) {
         LOG.info('Baseline.js::refreshFeatureList: Will cause WMS GetCapabilities call to refresh current feature list')
-        var selectLayer = args.selectLayer; 
-        var namespace = selectLayer.split(':')[0];
+        var updatedArgs = args || {};
+        var selectLayer = updatedArgs.selectLayer || ''; 
+        var namespace = selectLayer ? selectLayer.split(':')[0] : CONFIG.tempSession.getCurrentSessionKey();
         CONFIG.ows.getWMSCapabilities({
             namespace : namespace,
             callbacks : {
@@ -208,17 +214,24 @@ var Baseline = {
                 
                     if (selectLayer) {
                         LOG.info('Baseline.js::refreshFeatureList: Auto-selecting layer ' + selectLayer)
-                        $('#baseline-list').children().each(function(i,v) {
+                        $('#' + Baseline.stage + '-list').children().each(function(i,v) {
                             if (v.value === selectLayer) {
                                 LOG.debug('Triggering "select" on featurelist option');
-                                $('#baseline-list').val(v.value);
-                                $('#baseline-list').trigger('change');
+                                $('#' + Baseline.stage + '-list').val(v.value);
+                                $('#' + Baseline.stage + '-list').trigger('change');
                             }
                         })
+                    } else {
+                        $('#' + Baseline.stage + '-list').val('');
+                        Baseline.listboxChanged();
                     }
                 }
                 ],
-                error: []
+                error: [
+                function() {
+                    LOG.warn('Baseline.js::refreshFeatureList: Could not get WMS capabilities.')
+                }
+                ]
             }
         })
     },
@@ -231,29 +244,26 @@ var Baseline = {
         
         Baseline.disableEditButton();
         Baseline.disableCloneButton();
+        Baseline.disableRemoveButton();
         
-        LOG.debug('Going through select listbox to remove layers on the map that are not selected');
-        $("#baseline-list option:not(:selected)").each(function (index, option) {
-            var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
-            if (layers.length) {
-                $(layers).each(function(i,l) {
-                    CONFIG.map.getMap().removeLayer(l);
-                })
-            }
-        });
+        var mappedLayers = CONFIG.map.getMap().getLayersBy('type', 'baseline');
+        mappedLayers.each(function(layer) {
+            LOG.debug('Baseline.js::listboxChanged: Removing layer ' + layer.name + ' from map');
+            CONFIG.map.removeLayer(layer);
+        })
         
         var selectVal = $("#baseline-list option:selected")[0].value;
         if (selectVal) {
-            var selectedBaseline = selectVal;
-            LOG.debug('Baseline.js::baselineSelected: Adding selected baseline ( ' + selectedBaseline + ' ) from list');
+            LOG.debug('Baseline.js::baselineSelected: Adding selected baseline ( ' + selectVal + ' ) from list');
             
             Baseline.addBaselineToMap({
-                name : selectedBaseline
+                name : selectVal
             })
             
-            if (selectedBaseline.startsWith(CONFIG.tempSession.getCurrentSessionKey())) {
+            if (selectVal.startsWith(CONFIG.tempSession.getCurrentSessionKey())) {
                 LOG.debug('Baseline.js::baselineSelected: Selected baseline is user-created and is writable. Displaying edit panel.');
                 Baseline.enableEditButton();
+                Baseline.enableRemoveButton();
             } else {
                 Baseline.enableCloneButton();
             }
@@ -597,6 +607,48 @@ var Baseline = {
             }
         } else {
             LOG.info('User has not drawn any features to save or did not name the new feature');
+        }
+    },
+    disableRemoveButton : function() {
+        $('#baseline-remove-btn').attr('disabled','disabled');
+    },
+    enableRemoveButton : function() {
+        $('#baseline-remove-btn').removeAttr('disabled');
+    },
+    removeResource : function() {
+        try {
+            CONFIG.tempSession.removeResource({
+                store : 'ch-input',
+                layer : $('#baseline-list option:selected')[0].text,
+                callbacks : [
+                function(data, textStatus, jqXHR) {
+                    CONFIG.ui.showAlert({
+                        message : 'Baseline removed',
+                        caller : Baseline,
+                        displayTime : 4000,
+                        style: {
+                            classes : ['alert-success']
+                        }
+                    })
+                    
+                    $('#baseline-list').val('');
+                    CONFIG.ui.switchTab({
+                        caller : Baseline,
+                        tab : 'view'
+                    })
+                    Baseline.refreshFeatureList();
+                }
+                ]
+            })
+        } catch (ex) {
+            CONFIG.ui.showAlert({
+                message : 'Draw Failed - ' + ex,
+                caller : Baseline,
+                displayTime : 4000,
+                style: {
+                    classes : ['alert-error']
+                }
+            })
         }
     },
     saveDrawnFeatures : function(args) {

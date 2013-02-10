@@ -1,20 +1,13 @@
 var UI = function() {
     LOG.info('UI.js::init: UI class is initializing.');
     var me = (this === window) ? {} : this;
+    me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
+    me.work_stages_objects = [Shorelines, Baseline, Transects, Results, Calculation];
     
     LOG.debug('UI.js::init: Setting popup hover delay to ' + popupHoverDelay);
     var popupHoverDelay = CONFIG.popupHoverDelay;
     
-    var config = CONFIG.tempSession.getStageConfig();
-    me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
-    me.work_stages_objects = [Shorelines, Baseline, Transects, Results, Calculation];
-    
-    $('#clear-sessions-btn').on("click", function(){
-        localStorage.clear();
-        sessionStorage.clear();
-        LOG.warn('UI.js::Cleared sessions. Reloading application.');
-        location.reload();
-    })
+    $('#clear-sessions-btn').on("click", CONFIG.tempSession.clearSessions)
         
     LOG.debug('UI.js::init: Initializing AJAX start/stop hooks');
     $(document).ajaxStart(function() {
@@ -22,19 +15,11 @@ var UI = function() {
         $("#application-spinner").fadeIn();
     });
     $(document).ajaxStop(function() {
-        LOG.debug('AJAX Call Stopped');
+        LOG.debug('AJAX Call Finished');
         $("#application-spinner").fadeOut();
     });
     
-    LOG.info('UI.js::init: This is the first load of this session. Popups will be shown on this load only');
-    config.view.popup = false;
-        
-    CONFIG.tempSession.setStageConfig({
-        config : config
-    });
-        
     me.work_stages_objects.each(function(stage) {
-            
         if (stage.description.stage) {
             $('#nav-list a[href="#'+stage.stage+'"]').popover({
                 title : stage.stage.capitalize(),
@@ -401,16 +386,13 @@ var UI = function() {
             var wmsCapabilities = CONFIG.ows.wmsCapabilities;
             var caller = args.caller;
             var suffixes = caller.suffixes || [];
-            var stage = caller.stage;
+            var stage = args.stage || caller.stage;
             
             LOG.info('UI.js::populateFeaturesList:: Populating feature list for ' + stage);
             $('#'+stage+'-list').children().remove();
         
             // Add a blank spot at the top of the select list
-            if (stage == Baseline.stage
-                || stage == Transects.stage
-                ||stage == Calculation.stage 
-                || stage == Results.stage) {
+            if (stage != Shorelines.stage) {
                 $('#'+stage+'-list')
                 .append($("<option />")
                     .attr("value",'')
@@ -423,22 +405,25 @@ var UI = function() {
                 var sessionLayerClass = 'session-layer';
                 var publishedLayerClass = 'published-layer';
                 
-                for (var lIndex = 0;lIndex < layers.length;lIndex++) {
-                    var layer = layers[lIndex];
+                layers.each(function(layer) {
                     var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
                     var title = layer.title;
             
                     // Add the option to the list only if it's from the sample namespace or
                     // if it's from the input namespace and in the current session
-                    if (layerNS == 'sample' || layerNS == currentSessionKey) {
+                    if (layerNS == CONFIG.name.published || layerNS == currentSessionKey) {
                         var type = title.substr(title.lastIndexOf('_'));
                         if (suffixes.length == 0 || suffixes.find(type.toLowerCase())) {
                             LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title)
-                            var stageConfig = CONFIG.tempSession.getStageConfig({
-                                stage : stage,
-                                name : layerNS + ':' + layer.name
+                            var layerFullName = layer.prefix + ':' + layer.name;
+                            var sessionStage = CONFIG.tempSession.getStage(stage);
+                            var lIdx = sessionStage.layers.findIndex(function(l) {
+                                return l == layerFullName;
                             })
-                        
+                            if (lIdx == -1) {
+                                sessionStage.layers.push(layerFullName);
+                            }
+                            CONFIG.tempSession.persistSession();
                             var option = $("<option />")
                             .attr({
                                 "value" : layerNS + ':' + layer.name
@@ -448,15 +433,12 @@ var UI = function() {
                             
                             $('#'+stage+'-list')
                             .append(option);
-                            CONFIG.tempSession.setStageConfig({
-                                stage : stage,
-                                config : stageConfig
-                            })
                         } 
                     }
-                } 
+                })
             })
             
+            CONFIG.tempSession.persistSession();
             LOG.debug('UI.js::populateFeaturesList: Re-binding select list');
             $('#'+stage+'-list').unbind('change');
             $('#'+stage+'-list').change(function(index, option) {
@@ -472,10 +454,8 @@ var UI = function() {
                 LOG.debug('UI.js::showShorelineInfo: Features were returned from the OWS resource. Parsing and creating table to display');
                 
                 LOG.debug('UI.js::showShorelineInfo: Creating table for ' + event.features.length + ' features');
-                var groupingColumn = CONFIG.tempSession.getStageConfig({
-                    stage : Shorelines.stage, 
-                    name : event.features[0].gml.featureNSPrefix + ':' + event.features[0].gml.featureType
-                }).groupingColumn
+//                event.features[0].gml.featureNSPrefix + ':' + event.features[0].gml.featureType
+                var groupingColumn = CONFIG.tempSession.getStage(Shorelines.stage).groupingColumn
                 var uniqueFeatures = event.features.unique(function(feature) {
                     return feature.data[groupingColumn];
                 }).sortBy(function(feature) {
@@ -510,18 +490,15 @@ var UI = function() {
                         tbodyTr.append($('<td />').append(aVal))
                     })
                     
-                    var layer =  CONFIG.tempSession.getStageConfig({
-                        name : layerName,
-                        stage : Shorelines.stage
-                    })
-                    
-                    var date = new Date(feature.attributes[groupingColumn]).format(layer.dateFormat);
-                    var isVisible = layer.view["dates-disabled"].indexOf(date) == -1;
+                    var config =  CONFIG.tempSession.getStage(Shorelines.stage);
+                    var date = new Date(feature.attributes[groupingColumn]).format(config.dateFormat);
+                    var isVisible = CONFIG.tempSession.getDisabledDatesForShoreline(layerName).indexOf(date) == -1;
                     var  disableButton = $('<button />')
                     .addClass('btn btn-year-toggle')
                     .attr({
                         type : 'button',
-                        date : date
+                        date : date,
+                        layer : layerName
                     })
                     .html(isVisible ? 'Disable' : 'Enable');
                     
@@ -551,11 +528,9 @@ var UI = function() {
                         
                 $('.btn-year-toggle').click(function(event) {
                     var date = $(event.target).attr('date');
-                    var toggle = $('#shoreline-table-tabcontent>#KauaiE_shorelines .feature-toggle').filter(function() {
+                    var toggle = $('#shoreline-table-tabcontent>#'+$(event.target).attr('layer').split(':')[1]+' .feature-toggle').filter(function() {
                         return Date.parse($(this).data('date')) == Date.parse(date)
                     })
-                    
-                    
                     
                     var allButtonsOfSameYear = $('.btn-year-toggle[date="'+date+'"]');
                     if (toggle.toggleButtons('status')) {
@@ -672,6 +647,15 @@ var UI = function() {
                     createAlertFn : createAlert,
                     caller : caller
                 })
+            }
+        },
+        switchTab : function(args) {
+            var caller = args.caller;
+            var tab = args.tab;
+            if (tab == 'view') {
+                $('#action-'+caller.stage+'-tablist a[href="#'+caller.stage+'-view-tab"]').trigger('click');
+            } else if (tab == 'manage') {
+                $('#action-'+caller.stage+'-tablist a[href="#'+caller.stage+'-manage-tab"]').trigger('click');
             }
         }
     });

@@ -143,6 +143,10 @@
                                                 <i class="icon-plus icon-white"></i>
                                                 &nbsp;Clone
                                             </button>
+                                            <button id="baseline-remove-btn" disabled class="btn btn-success">
+                                                <i class="icon-remove icon-white"></i>
+                                                &nbsp;Remove
+                                            </button>
                                         </div>
                                     </div>
 
@@ -251,18 +255,29 @@
                                             &nbsp;Edit
                                         </button>
                                     </div>
-                                    <div class="row-fluid">
-                                        <!-- Transects -->
-                                        <div id="create-transects-panel-well" class="well hidden span6">
+                                    
+                                    <div  id="transects-edit-container" class="row-fluid hidden">
+                                        <button class="btn btn-success" id="transects-edit-save-button" title="Update Modified Transect">Update Transect</button>
+                                        <button class="btn btn-success" id="transects-edit-add-button" title="Add Transect">Add Transect</button>
+                                    </div>
+                                    
+                                    <div id="create-transects-panel-well" class="row-fluid  hidden">
+                                        <div class="well span6">
                                             Transects
                                             <div id="create-transects-panel-container">
                                                 <div class="row-fluid">
-                                                        <label for="create-transects-input-spacing">Spacing</label>
-                                                        <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
-                                                        <label for="create-transects-input-name">Name</label>
-                                                        <input type="text" id="create-transects-input-name" style="width: 100%;">
+                                                    <label for="create-transects-input-spacing">Spacing</label>
+                                                    <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
+                                                    <label for="create-transects-input-name">Name</label>
+                                                    <input type="text" id="create-transects-input-name" style="width: 100%;">
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <button type="button" class="btn btn-success span12 hidden" id="create-transects-input-button">
+                                                <i class="icon-tasks icon-white"></i>
+                                                &nbsp;Generate
+                                            </button>
                                         </div>
 
                                         <!-- Intersections -->
@@ -273,20 +288,6 @@
                                                 <option selected="selected" value="false">Nearest</option>
                                                 <option value="true">Farthest</option>
                                             </select>
-                                        </div>
-
-                                        <div class="control-group">
-                                            <button type="button" class="btn btn-success span12 hidden" id="create-transects-input-button">
-                                                <i class="icon-tasks icon-white"></i>
-                                                &nbsp;Generate
-                                            </button>
-                                        </div>
-
-                                        <div id="transects-edit-container" class="well well-small hidden">
-                                            <div class="row-fluid">
-                                                <button class="btn btn-success" id="transects-edit-save-button" title="Update Modified Transect">Update Transect</button>
-                                                <button class="btn btn-success" id="transects-edit-add-button" title="Add Transect">Add Transect</button>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -431,6 +432,8 @@
         CONFIG.namespace.sample = 'gov.usgs.cida.ch.sample';
         CONFIG.namespace.input = 'gov.usgs.cida.ch.input';
         CONFIG.namespace.output = 'gov.usgs.cida.ch.output';
+        CONFIG.name = {};
+        CONFIG.name.published = 'sample';
         CONFIG.dateFormat = {
             padded : '{MM}/{dd}/{yyyy}',
             nonPadded : '{M}/{d}/{yyyy}'

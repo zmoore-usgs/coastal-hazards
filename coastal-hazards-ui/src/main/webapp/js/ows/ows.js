@@ -96,12 +96,18 @@ var OWS = function(endpoint) {
                 context: args,
                 success : function(data, textStatus, jqXHR) {
                     var getCapsResponse = new OpenLayers.Format.WMSCapabilities.v1_3_0().read(data); 
-                    // Fix an issue with prefixes not being parsed correctly from response
+                    
+                    // Fixes an issue with prefixes not being parsed correctly from response
                     getCapsResponse.capability.layers.each(function(n, i) {
                         n.prefix = namespace
                     })
                     me.wmsCapabilities[namespace] = getCapsResponse;
                     me.wmsCapabilitiesXML[namespace] = data;
+                    getCapsResponse.capability.layers.each(function(layer) {
+                        CONFIG.tempSession.addLayerToSession(layer);
+                    });
+                    CONFIG.tempSession.persistSession();
+                    
                     $(sucessCallbacks).each(function(index, callback, allCallbacks) {
                         callback({
                             wmsCapabilities : getCapsResponse,
@@ -115,7 +121,8 @@ var OWS = function(endpoint) {
                 error : function(data, textStatus, jqXHR) {
                     if (this.namespace == CONFIG.tempSession.getCurrentSessionKey() && jqXHR.toLowerCase() == 'not found') {
                         CONFIG.ui.showAlert({
-                            message : 'Current session was not found on server. Attempting to initialize session on server.'
+                            message : 'Current session was not found on server. Attempting to initialize session on server.',
+                            displayTime : 7500
                         })
                         
                         $.ajax('service/session?action=prepare&workspace=' + this.namespace, 
@@ -138,7 +145,7 @@ var OWS = function(endpoint) {
                                 })
                             },
                             error : function(data, textStatus, jqXHR) {
-                                LOG.error('Session.js::init: A workspace could not be created on the OWS server with the name of ' + randID)
+                                LOG.error('Session.js::init: A workspace could not be created on the OWS server')
                                 CONFIG.ui.showAlert({
                                     message : 'No session could be found. A new session could not be created on server. This application may not function correctly.',
                                     style: {
@@ -221,11 +228,12 @@ var OWS = function(endpoint) {
                     var gmlReader = new OpenLayers.Format.WFSDescribeFeatureType();
                     var describeFeaturetypeRespone = gmlReader.read(data); 
                     var prefix = args.layerNS;//describeFeaturetypeRespone.featureTypes[0].targetPrefix;
-                    
+                    var namespace = describeFeaturetypeRespone.targetNamespace;
                     if (!me.featureTypeDescription[prefix]) {
                         me.featureTypeDescription[prefix] = Object.extended();
                     }
                     me.featureTypeDescription[prefix][describeFeaturetypeRespone.featureTypes[0].typeName] = describeFeaturetypeRespone;
+                    CONFIG.tempSession.namespaces[prefix] = namespace;
                     
                     $(args.callbacks || []).each(function(index, callback) {
                         callback(describeFeaturetypeRespone, this);

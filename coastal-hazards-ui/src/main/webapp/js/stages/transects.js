@@ -39,12 +39,30 @@ var Transects = {
                 LOG.debug('Transects.js::SelectFeature.onSelect(): A feature was selected');
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
                 modifyControl.selectFeature(feature);
+                var selectedFeature = modifyControl.feature.clone();
+                var angleGeometry1 = selectedFeature.clone().geometry.components[0].resize(100, selectedFeature.geometry.components[0].getCentroid(), 1);
+                var angleGeometry2 = selectedFeature.clone().geometry.components[0].resize(-100, selectedFeature.geometry.components[0].getCentroid(), 1);
+                var angleLayer =  new OpenLayers.Layer.Vector('transects-angle-layer',{
+                    renderers: CONFIG.map.getRenderer(),
+                    type : 'angle-guide',
+                    style : {
+                        strokeColor : '#A1A1A1',
+                        strokeOpacity : 0.25
+                    }
+                })
+                selectedFeature.geometry.addComponents([angleGeometry1,angleGeometry2])
+                angleLayer.addFeatures([selectedFeature]);
+                CONFIG.map.getMap().addLayer(angleLayer);
+                var snapControl = CONFIG.map.getMap().getControlsBy('id', 'snap-control')[0]
+                snapControl.addTargetLayer(angleLayer);
             },
             onUnselect : function(feature) {
                 LOG.debug('Transects.js::SelectFeature.onSelect(): A feature was unselected');
                 CONFIG.ui.initializeBaselineEditForm();
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
+                Transects.removeAngleLayer();
                 modifyControl.unselectFeature(feature);
+                
             }
         }));
         
@@ -54,14 +72,12 @@ var Transects = {
         if ($('#transect-edit-form-toggle').hasClass('active')) {
             $('#transect-edit-form-toggle').trigger('click');
         }
-        var control = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
-        if (control.length) {
-            control[0].deactivate();
-        }
-        
-        CONFIG.map.removeControl({
-            id : 'transects-draw-control'
-        });
+        Transects.removeEditControl();
+        Transects.removeSnapControl();
+        Transects.removeDrawControl();
+        Transects.deactivateSelectControl();
+        Transects.removeAngleLayer();
+        CONFIG.map.removeLayerByName('transects-edit-layer');
     },
     enterStage : function() {
         
@@ -144,7 +160,6 @@ var Transects = {
             mfControl.activate();
             mfControl.handlers.keyboard.activate();
             var selectControl = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
-            
             selectControl.setLayer([clonedLayer]);
             selectControl.activate();
             
@@ -155,23 +170,16 @@ var Transects = {
             LOG.debug('Transects.js::editButtonToggled: Edit form was toggled off');
             $("#transects-edit-container").addClass('hidden');
             CONFIG.map.removeLayerByName('transects-edit-layer');
-            CONFIG.map.removeControl({
-                id : 'transects-edit-control'
-            });
-            CONFIG.map.getMap().getControlsBy('id', 'snap-control')[0].destroy();
-            CONFIG.map.removeControl({
-                id : 'snap-control'
-            });
-            
-            CONFIG.map.removeControl({
-                id : 'transects-draw-control'
-            });
-            CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
+            Transects.removeEditControl();
+            Transects.removeSnapControl();
+            Transects.removeDrawControl();
+            Transects.removeAngleLayer();
+            Transects.deactivateSelectControl();
         }
     },   
     addTransect : function() {
         var cloneLayer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
-        CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0].deactivate();
+        Transects.deactivateSelectControl();
         var drawControl = new OpenLayers.Control.DrawFeature(
             cloneLayer,
             OpenLayers.Handler.Path,
@@ -225,11 +233,6 @@ var Transects = {
             Transects.refreshFeatureList({
                 selectLayer : layer.cloneOf
             })
-            CONFIG.map.getMap().getControlsBy('id', 'transects-draw-control')[0].destroy();
-            CONFIG.map.removeControl({
-                id : 'transects-draw-control'
-            });
-            
             $('#transect-edit-form-toggle').trigger('click'); 
         });
                 
@@ -260,7 +263,9 @@ var Transects = {
                     }
                 }
                 ],
-                error: []
+                error: [
+                LOG.warn('Transects.js::refreshFeatureList: WMS GetCapabilities could not be attained')
+                ]
             }
         })
     },
@@ -286,28 +291,14 @@ var Transects = {
 	
         CONFIG.map.getMap().addLayer(transects);
         
-        var stageConfig = CONFIG.tempSession.getStageConfig({
-            stage : Transects.stage,
-            name : args.name
-        })
-        stageConfig.view.isSelected = false;
-        CONFIG.tempSession.setStageConfig({
-            stage : Transects.stage,
-            config : stageConfig
-        })
+        CONFIG.tempSession.getStage(Transects.stage).viewing = args.name;
+        CONFIG.tempSession.persistSession();
     },
     removeTransects : function() {
         CONFIG.map.getMap().getLayersBy('type', 'transects').each(function(layer) {
             CONFIG.map.getMap().removeLayer(layer, false);
-            var stageConfig = CONFIG.tempSession.getStageConfig({
-                stage : Transects.stage,
-                name : layer.name
-            })
-            stageConfig.view.isSelected = false;
-            CONFIG.tempSession.setStageConfig({
-                stage : Transects.stage,
-                config : stageConfig
-            })
+            CONFIG.tempSession.getStage(Transects.stage).viewing = layer.name;
+            CONFIG.tempSession.persistSession();
         })
     },
     populateFeaturesList : function() {
@@ -328,15 +319,8 @@ var Transects = {
             if (layers.length) {
                 $(layers).each(function(i,l) {
                     CONFIG.map.getMap().removeLayer(l, false);
-                    var stageConfig = CONFIG.tempSession.getStageConfig({
-                        stage : Transects.stage,
-                        name : l.name
-                    })
-                    stageConfig.view.isSelected = false;
-                    CONFIG.tempSession.setStageConfig({
-                        stage : Transects.stage,
-                        config : stageConfig
-                    })
+                    CONFIG.tempSession.getStage(Transects.stage).viewing = l.name;
+                    CONFIG.tempSession.persistSession();
                 })
             }
         });
@@ -345,15 +329,8 @@ var Transects = {
             Transects.addTransects({
                 name : name
             })
-            var stageConfig = CONFIG.tempSession.getStageConfig({
-                stage : Transects.stage,
-                name : name
-            })
-            stageConfig.view.isSelected = true;
-            CONFIG.tempSession.setStageConfig({
-                stage : Transects.stage,
-                config : stageConfig
-            })
+            CONFIG.tempSession.getStage(Transects.stage).viewing = name;
+            CONFIG.tempSession.persistSession();
             Transects.enableEditButton();
         }
     },
@@ -372,6 +349,51 @@ var Transects = {
         LOG.info('Transects.js::disableCreateTransectsButton: No valid baseline on the map. Disabling create transect button');
         $('#create-transects-toggle').attr('disabled', 'disabled');
          
+    },
+    deactivateSelectControl : function() {
+        var control = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control');
+        if (control.length) {
+            control[0].deactivate();
+        }
+    },
+    removeDrawControl : function() {
+        var controlArr = CONFIG.map.getMap().getControlsBy('id', 'transects-draw-control');
+        if (controlArr.length) {
+            controlArr[0].destroy();
+        }
+        CONFIG.map.removeControl({
+            id : 'transects-draw-control'
+        });
+    },
+    removeEditControl : function() {
+        var controlArr = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control');
+        if (controlArr.length) {
+            controlArr[0].destroy();
+        }
+        CONFIG.map.removeControl({
+            id : 'transects-edit-control'
+        });
+    },
+    removeSnapControl : function() {
+        var controlArr = CONFIG.map.getMap().getControlsBy('id', 'snap-control');
+        if (controlArr.length) {
+            controlArr[0].destroy();
+        }
+        CONFIG.map.removeControl({
+            id : 'snap-control'
+        });  
+    },
+    removeAngleLayer : function() {
+        var layerArr = CONFIG.map.getMap().getLayersBy('name', 'transects-angle-layer');
+        if (layerArr.length) {
+            var layer = layerArr[0];
+            var snapControlArr = CONFIG.map.getMap().getControlsBy('id', 'snap-control')
+            if (snapControlArr.length) {
+                var snapControl = snapControlArr[0]
+                snapControl.removeTargetLayer(layer);
+            }
+            CONFIG.map.removeLayerByName('transects-angle-layer');
+        }
     },
     createTransectsButtonToggled : function(event) {
         LOG.info('Transects.js::createTransectsButtonToggled: Transect creation Button Clicked');
@@ -470,7 +492,7 @@ var Transects = {
         
         // Check if transects already exists in the select list
         if ($('#transects-list option[value="'+ CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_transects"]').length ||
-        $('#intersections-list option[value="'+ CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_intersects"]').length) {
+            $('#intersections-list option[value="'+ CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName + '_intersects"]').length) {
             CONFIG.ui.createModalWindow({
                 context : {
                     scope : this
@@ -522,12 +544,9 @@ var Transects = {
         '<wps:DataInputs>';
 
         shorelines.each(function(i, shoreline) {
-            var sessionLayer = CONFIG.tempSession.getStageConfig({
-                name : shoreline,
-                stage : Shorelines.stage
-            })
-            var excludedDates = sessionLayer.view['dates-disabled'];
-            var prefix = sessionLayer.name.split(':')[0];
+            var stage = CONFIG.tempSession.getStage(Shorelines.stage);
+            var excludedDates = CONFIG.tempSession.getDisabledDatesForShoreline(shoreline);
+            var prefix = shoreline.split(':')[0];
             request += '<wps:Input>' + 
             '<ows:Identifier>shorelines</ows:Identifier>' + 
             '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
@@ -537,7 +556,7 @@ var Transects = {
             (function(args) {
                 var filter = '';
                 if (excludedDates) {
-                    var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + sessionLayer.groupingColumn;
+                    var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + stage.groupingColumn;
                     
                     filter += '<wfs:Query typeName="'+shoreline+'" srsName="EPSG:4326">' +
                     '<ogc:Filter>' + 

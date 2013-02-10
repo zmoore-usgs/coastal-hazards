@@ -118,22 +118,10 @@ var Shorelines = {
     addLayerToMap : function(args) {
         LOG.info('Shorelines.js::addLayerToMap');
         var layer = args.layer;
-        
         LOG.debug('Shorelines.js::addLayerToMap: Adding shoreline layer ' + layer.title + 'to map'); 
         var properties = CONFIG.ows.getLayerPropertiesFromWFSDescribeFeatureType({
             describeFeatureType : args.describeFeaturetypeRespone,
             includeGeom : false
-        });
-        
-        var sessionLayer = CONFIG.tempSession.getStageConfig({
-            name : layer.name,
-            stage : Shorelines.stage
-        });
-        
-        sessionLayer.nameSpace = args.describeFeaturetypeRespone.targetNamespace;
-        CONFIG.tempSession.setStageConfig({ 
-            stage :Shorelines.stage,
-            config : sessionLayer
         });
         
         CONFIG.ows.getFilteredFeature({ 
@@ -148,28 +136,19 @@ var Shorelines = {
                     if (CONFIG.map.getMap().getLayersByName(layer.title).length == 0) {
                         LOG.info('Shorelines.js::addLayerToMap: Layer does not yet exist on the map. Loading layer: ' + layer.title);
                     
-                        var sessionLayer = CONFIG.tempSession.getStageConfig({
-                            stage : Shorelines.stage,
-                            name : layer.prefix + ':' + layer.name
-                        });
-                        
+                        var stage = CONFIG.tempSession.getStage(Shorelines.stage)
                         var groupingColumn = Object.keys(features[0].attributes).find(function(n) {
-                            return n.toLowerCase() === sessionLayer.groupingColumn.toLowerCase()
+                            return n.toLowerCase() === stage.groupingColumn.toLowerCase()
                         });
                         LOG.trace('Shorelines.js::addLayerToMap: Found correct grouping column capitalization for ' + layer.title + ', it is: ' + groupingColumn);
                         
                         LOG.trace('Shorelines.js::addLayerToMap: Saving grouping column to session');
-                        sessionLayer.groupingColumn = groupingColumn;
-                        
-                        sessionLayer.dateFormat = Util.getLayerDateFormatFromFeaturesArray({
+                        stage.groupingColumn = groupingColumn;
+                        stage.dateFormat = Util.getLayerDateFormatFromFeaturesArray({
                             featureArray : features,
                             groupingColumn : groupingColumn
                         });
-                    
-                        CONFIG.tempSession.setStageConfig({ 
-                            stage :Shorelines.stage,
-                            config : sessionLayer
-                        });
+                        CONFIG.tempSession.persistSession();
                         
                         // Find the index of the desired column
                         var dateIndex = Object.keys(features[0].attributes).findIndex(function(n) {
@@ -187,7 +166,7 @@ var Shorelines = {
                         if (groups[0] instanceof Date) {
                             // If it's a date array Change the groups items back from Date item back into string
                             groups = groups.map(function(n) {
-                                return n.format(sessionLayer.dateFormat)
+                                return n.format(stage.dateFormat)
                             });
                         }
                     
@@ -229,6 +208,7 @@ var Shorelines = {
                         wmsLayer.events.register("loadend", wmsLayer, Shorelines.createFeatureTable);
                         wmsLayer.events.register("loadend", wmsLayer, Shorelines.zoomToLayer);
                         CONFIG.map.getMap().addLayer(wmsLayer);
+                        wmsLayer.redraw(true);
                     }
                 }
                 ],
@@ -246,10 +226,7 @@ var Shorelines = {
         var groupColumn = args.groupColumn;
         var layer = args.layer;
         var layerName = args.layerName || layer.prefix + ':' + layer.name;
-        var sessionLayer = CONFIG.tempSession.getStageConfig({
-            name : layerName,
-            stage : Shorelines.stage
-        });
+        var stage = CONFIG.tempSession.getStage(Shorelines.stage);
         
         if (!isNaN(colorDatePairings[0][1])) {  
             LOG.info('Shorelines.js::?: Grouping will be done by number');
@@ -297,8 +274,8 @@ var Shorelines = {
                 var html = '';
                 for (var lpIndex = 0;lpIndex < colorLimitPairs.length;lpIndex++) {
                     var date = colorLimitPairs[lpIndex][1];
-                        
-                    if (sessionLayer.view["dates-disabled"].indexOf(date) == -1) {
+                    var disabledDates = CONFIG.tempSession.getDisabledDatesForShoreline(layerName);    
+                    if (disabledDates.indexOf(date) == -1) {
                         html += '<Rule><ogc:Filter><ogc:PropertyIsLike escapeChar="!" singleChar="." wildCard="*"><ogc:PropertyName>';
                         html += groupColumn.trim();
                         html += '</ogc:PropertyName>';
@@ -376,7 +353,7 @@ var Shorelines = {
         event.object.events.unregister('loadend', event.object, Shorelines.createFeatureTable);
         
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table header');
-        var colorTableContainer = $('<div />').attr('id', 'shoreline-table-container');
+        var colorTableContainer = $('<div />');
         var colorTable = $('<table />').addClass('table table-bordered table-condensed tablesorter shoreline-table');
         var colorTableHead = $('<thead />');
         var colorTableHeadR = $('<tr />');
@@ -390,14 +367,9 @@ var Shorelines = {
     			
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table body');
         
-        var sessionLayer = CONFIG.tempSession.getStageConfig({
-            name : event.object.prefix + ':' + layerName,
-            stage : Shorelines.stage
-        });
-        
         $(event.object.colorGroups).each(function(i,colorGroup) {
             var date = colorGroup[1];
-            var checked = sessionLayer.view["dates-disabled"].indexOf(date) == -1;
+            var checked = CONFIG.tempSession.getDisabledDatesForShoreline(event.object.prefix + ':' + event.object.name).indexOf(date) == -1;
             
             var tableRow = $('<tr />');
             var tableData = $('<td />');
@@ -471,38 +443,29 @@ var Shorelines = {
             onChange : function($element, status, event) {
                 var layerName = this.attachedLayer;
                 var date = $element.parent().data('date');
-                var sessionLayer = CONFIG.tempSession.getStageConfig({
-                    name : layerName,
-                    stage : Shorelines.stage
-                });
-                    
+                var stageDatesDisabled = CONFIG.tempSession.getDisabledDatesForShoreline(layerName);
+                
                 LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for date ' + date + ' on layer ' + layerName);
                         
                 var idTableButtons = $('.btn-year-toggle[date="'+date+'"]');
                 if (!status) {
-                    if (sessionLayer.view["dates-disabled"].indexOf(date) == -1) {
-                        sessionLayer.view["dates-disabled"].push(date);
+                    if (stageDatesDisabled.indexOf(date) == -1) {
+                        stageDatesDisabled.push(date);
                     }
                     
                     idTableButtons.removeClass('btn-success');
                     idTableButtons.addClass('btn-danger');
                     idTableButtons.html('Enable');
                 } else {
-                    while (sessionLayer.view["dates-disabled"].indexOf(date) != -1) {
-                        sessionLayer.view["dates-disabled"].remove(date);
+                    while (stageDatesDisabled.indexOf(date) != -1) {
+                        stageDatesDisabled.remove(date);
                     }
                     
                     idTableButtons.removeClass('btn-danger');
                     idTableButtons.addClass('btn-success');
                     idTableButtons.html('Disable');
                 }
-                        
-                // Persist the session
-                CONFIG.tempSession.setStageConfig({ 
-                    stage :Shorelines.stage,
-                    config : sessionLayer
-                });
-                        
+                CONFIG.tempSession.persistSession();
                         
                 var layer  = CONFIG.map.getMap().getLayersByName(layerName.split(':')[1])[0];
                 var sldBody = Shorelines.createSLDBody({
@@ -547,20 +510,10 @@ var Shorelines = {
     listboxChanged : function() {
         LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
         
+        
         LOG.debug('Shorelines.js::listboxChanged: Removing all shorelines from map that were not selected');
         $("#shorelines-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.text);
-            
-            var layerConfig = CONFIG.tempSession.getStageConfig({
-                name : option.value,
-                stage : Shorelines.stage
-            });
-            layerConfig.view.isSelected = false;
-            CONFIG.tempSession.setStageConfig({ 
-                stage :Shorelines.stage,
-                config : layerConfig
-            });
-            
             if (layers.length) {
                 $(layers).each(function(i,layer) {
                     CONFIG.map.getMap().removeLayer(layer);
@@ -575,49 +528,43 @@ var Shorelines = {
         });
             
         var layerInfos = []
-        CONFIG.tempSession.session[Shorelines.stage].view.activeLayers = [];
+        var stage = CONFIG.tempSession.getStage(Shorelines.stage);
+        stage.viewing = [];
         $("#shorelines-list option:selected").each(function (index, option) {
             LOG.debug('Shorelines.js::shorelineSelected: A shoreline ('+option.text+') was selected from the select list');
+            var layerFullName = option.value;
+            var layerNamespace = layerFullName.split(':')[0];
+            var layerTitle = layerFullName.split(':')[1];
             var layer = CONFIG.ows.getLayerByName({
-                layerNS : option.value.split(':')[0],
-                layerName : option.value.split(':')[1]
+                layerNS : layerNamespace,
+                layerName : layerTitle
             });
             layerInfos.push(layer);
-            
-            CONFIG.tempSession.session[Shorelines.stage].view.activeLayers.push(option.value);
-            
-            var layerConfig = CONFIG.tempSession.getStageConfig({
-                name : option.value,
-                stage : Shorelines.stage
-            });
-            layerConfig.view.isSelected = true;
-            CONFIG.tempSession.setStageConfig({ 
-                stage :Shorelines.stage,
-                config : layerConfig
-            });
+            stage.viewing.push(layerFullName);
         });
+        CONFIG.tempSession.persistSession();
         
         // Provide default names for base layers and transects
-        var currentlySelectedShorelines = CONFIG.tempSession.session[Shorelines.stage].view.activeLayers;
         var derivedName = '';
+        var selectedLayers = stage.viewing;
         var getSeries = function(series) {
             var skey = CONFIG.tempSession.getCurrentSessionKey();
             var startPoint = series.has(skey) ? skey.length : 0;
             return series.substr(startPoint, series.lastIndexOf('_') - startPoint)
         }
-        if (currentlySelectedShorelines.length == 0) {
+        if (selectedLayers.length == 0) {
             derivedName += Util.getRandomLorem();
         }
         
-        if (currentlySelectedShorelines.length > 0) {
-            derivedName += getSeries(currentlySelectedShorelines[0].split(':')[1]);
+        if (selectedLayers.length > 0) {
+            derivedName += getSeries(selectedLayers[0].split(':')[1]);
         }
         
-        if (currentlySelectedShorelines.length > 1) {
-            derivedName += '_' + getSeries(currentlySelectedShorelines[1].split(':')[1]);
+        if (selectedLayers.length > 1) {
+            derivedName += '_' + getSeries(selectedLayers[1].split(':')[1]);
         } 
         
-        if (currentlySelectedShorelines.length > 2) {
+        if (selectedLayers.length > 2) {
             derivedName += '_etal';
         }
         
@@ -632,7 +579,6 @@ var Shorelines = {
             $('#shoreline-table-navtabs').children().remove();
             $('#shoreline-table-tabcontent').children().remove();
         }
-            
     },
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
