@@ -191,7 +191,7 @@ var UI = function() {
             var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
             var id = $el.parent().attr('id');
                         
-            LOG.debug('UI.js::initializeBaselineEditForm: Edit control is being deactivated. Will get reactivated after initialization');
+            LOG.debug('UI.js::baselineEditFormButtonToggle: Edit control is being deactivated. Will get reactivated after initialization');
                         
             if (modifyControl.active) {
                 modifyControl.deactivate();
@@ -233,7 +233,7 @@ var UI = function() {
                         break;
                     }
                 }
-                LOG.debug('Found at least one modify option toggled true. Activating modify control.')
+                LOG.debug('UI.js::baselineEditFormButtonToggle:Found at least one modify option toggled true. Activating modify control.')
                 modifyControl.activate();
                 if (selectControl.layer.selectedFeatures[0]) {
                     modifyControl.selectFeature(selectControl.layer.selectedFeatures[0]);
