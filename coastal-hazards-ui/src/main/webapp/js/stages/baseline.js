@@ -109,13 +109,17 @@ var Baseline = {
                 id: 'baseline-draw-control',
                 multi: true
             }));
-            
+        CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
+            title : 'baseline-highlight-control',
+            autoActivate : false,
+            hover : true,
+            highlightOnly : true
+        }));    
         CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
             title : 'baseline-select-control',
             autoActivate : false,
-            box : true
+            box : false
         }));
-        
     },
     
     enterStage : function() {
@@ -127,6 +131,10 @@ var Baseline = {
     },
     leaveStage : function() {
         LOG.debug('Baseline.js::leaveStage');
+        Baseline.disableHighlightControl();
+        if ($('#baseline-edit-form-toggle').hasClass('active')) {
+            $('#baseline-edit-form-toggle').trigger('click');
+        }
     },
     
     addBaselineToMap : function(args) {
@@ -249,6 +257,7 @@ var Baseline = {
         Baseline.disableEditButton();
         Baseline.disableCloneButton();
         Baseline.disableRemoveButton();
+        Baseline.disableHighlightControl();
         
         var mappedLayers = CONFIG.map.getMap().getLayersBy('type', 'baseline');
         mappedLayers.each(function(layer) {
@@ -340,7 +349,11 @@ var Baseline = {
             CONFIG.ui.initializeBaselineEditForm();
             
             var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
+            var highlightControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-highlight-control')[0];
+            
+            highlightControl.deactivate();
             selectControl.deactivate();
+            
             selectControl.onSelect = function(feature) {
                 $('.baseline-edit-toggle').toggleButtons('setState', false);
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
@@ -360,19 +373,21 @@ var Baseline = {
                 $('.baseline-edit-toggle').toggleButtons('setState', false);
                 $('#toggle-direction-checkbox').toggleButtons('setState', false, true);
             }
+            
             selectControl.setLayer(clonedLayer);
+            highlightControl.setLayer(clonedLayer);
+            
+            highlightControl.activate();
             selectControl.activate();
         } else {
             // remove edit layer, remove edit control
+            Baseline.disableHighlightControl();
             CONFIG.map.removeLayerByName('baseline-edit-layer');
             CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0]);
             CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0].deactivate();
             Baseline.baselineDrawButton.removeAttr('disabled');
             $("#baseline-edit-container").addClass('hidden');
         }
-                
-        
-            
     },
     enableCloneButton : function() {
         $('#baseline-clone-btn').removeAttr('disabled');
@@ -435,7 +450,7 @@ var Baseline = {
     disableDrawButton : function() {
         if (!$('#draw-panel-well').hasClass('hidden')) {
             LOG.debug('UI.js::?: Draw form was found to be active. Deactivating draw form');
-           Baseline.baselineDrawButton.click();
+            Baseline.baselineDrawButton.click();
         }
         Baseline.baselineDrawButton.attr('disabled', 'disabled');
     },
@@ -618,6 +633,18 @@ var Baseline = {
     },
     enableRemoveButton : function() {
         $('#baseline-remove-btn').removeAttr('disabled');
+    },
+    disableHighlightControl : function() {
+        var ca = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control');
+        if (ca.length) {
+            ca[0].deactivate();
+        }
+    },
+    enableHighlightControl : function() {
+        var ca = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control');
+        if (ca.length) {
+            ca[0].activate();
+        }
     },
     removeResource : function() {
         try {
