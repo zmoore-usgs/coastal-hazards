@@ -221,7 +221,7 @@ var OWS = function(endpoint) {
             LOG.info('OWS.js::getDescribeFeatureType: WFS featureType requested for feature ' + args.layerName);
             var layerNS = args.layerNS;
             var layerName = args.layerName;
-            var url = me.geoserverProxyEndpoint + layerNS + '/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType&typeName=' + layerName;
+            var url = me.geoserverProxyEndpoint + layerNS + '/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType&typeName=' + layerNS + ':' + layerName;
             $.ajax(url, {
                 context : args.scope || this,
                 success : function(data, textStatus, jqXHR) {
