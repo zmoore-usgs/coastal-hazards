@@ -1,4 +1,5 @@
 var OWS = function(endpoint) {
+    LOG.info('OWS.js::constructor: OWS class is initializing.');
     var me = (this === window) ? {} : this;
     
     me.importEndpoint = 'service/import'
@@ -6,7 +7,6 @@ var OWS = function(endpoint) {
     me.geoserverProxyEndpoint = 'geoserver/';
     me.wfsGetCapsUrl = me.geoserverProxyEndpoint + 'ows?service=wfs&version=1.0.0&request=GetCapabilities'
     me.wfsGetFeature = me.geoserverProxyEndpoint + 'ows?service=wfs&version=1.0.0&request=GetFeature'
-    //    me.wfsDescribeFeatureTypeEndpoint = 'geoserver/ows?service=wfs&version=2.0.0&request=DescribeFeatureType'
     me.wfsCapabilities = Object.extended();
     me.wmsCapabilities = Object.extended();
     me.wmsCapabilitiesXML = Object.extended();
@@ -19,6 +19,7 @@ var OWS = function(endpoint) {
     // An object to hold the return of a filtered WFS getFeature response
     me.filteredFeature = Object.extended();
     
+    LOG.debug('OWS.js::constructor: OWS class initialized.');
     return $.extend(me, {
         /**
          * Imports file into GeoServer from the upload area
@@ -191,7 +192,7 @@ var OWS = function(endpoint) {
             LOG.debug('OWS.js::getLayerPropertiesFromWFSDescribeFeatureType: Parsing WFS describe feature type response for properties');
             
             var describeFeatureType = args.describeFeatureType;
-            var includeGeom = args.includeGeom;
+            var includeGeom = args.includeGeom || false;
             var result = new Object.extended();
             
             LOG.debug('OWS.js::getLayerPropertiesFromWFSDescribeFeatureType: Will attempt to parse ' + describeFeatureType.featureTypes.length + ' layers');
@@ -220,7 +221,7 @@ var OWS = function(endpoint) {
             LOG.info('OWS.js::getDescribeFeatureType: WFS featureType requested for feature ' + args.layerName);
             var layerNS = args.layerNS;
             var layerName = args.layerName;
-            var url = me.geoserverProxyEndpoint + layerNS + '/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType&typeName=' + layerName;
+            var url = me.geoserverProxyEndpoint + layerNS + '/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType&typeName=' + layerNS + ':' + layerName;
             $.ajax(url, {
                 context : args.scope || this,
                 success : function(data, textStatus, jqXHR) {
