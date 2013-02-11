@@ -343,13 +343,11 @@ var Results = {
         var features = args.features;
         var layer = args.layer;
         var plotDiv = $('#results-' + layer.title + '-plot').get()[0]
-        var labels = ['Distance (m)', 'Coastal change (m/decade)'];
+        var labels = ['Distance (m)', 'Coastal Change (m/year)'];
         var data = features.map(function(n){
             var baseDist = parseFloat(n.data['base_dist']);
-            var lrr = parseFloat(Math.abs(n.data['LRR']));
+            var lrr = parseFloat(n.data['LRR']);
             var lci = parseFloat(Math.abs(n.data['LCI']));
-            var lci25 = parseFloat(Math.abs(n.data['LCI_2.5']));
-            var lci975 = parseFloat(Math.abs(n.data['LCI_97.5']));
             
             return [ 
             // X axis values
