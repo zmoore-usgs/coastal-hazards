@@ -32,9 +32,16 @@ var Transects = {
         Transects.initializeUploader();  
         
         CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
+            title : 'transects-highlight-control',
+            autoActivate : false,
+            hover : true,
+            highlightOnly : true
+        }));  
+        
+        CONFIG.map.addControl(new OpenLayers.Control.SelectFeature([], {
             title : 'transects-select-control',
             autoActivate : false,
-            box : true,
+            box : false,
             onSelect : function(feature) {
                 LOG.debug('Transects.js::SelectFeature.onSelect(): A feature was selected');
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
@@ -84,6 +91,7 @@ var Transects = {
         Transects.removeSnapControl();
         Transects.removeDrawControl();
         Transects.deactivateSelectControl();
+        Transects.deactivateHighlightControl();
         Transects.removeAngleLayer();
         CONFIG.map.removeLayerByName('transects-edit-layer');
     },
@@ -132,6 +140,7 @@ var Transects = {
              
             LOG.debug('Transects.js::editButtonToggled: Adding cloned layer to map');
             
+            
             CONFIG.map.getMap().addLayer(clonedLayer);
             
             LOG.debug('Transects.js::editButtonToggled: Adding clone control to map');
@@ -164,9 +173,13 @@ var Transects = {
             CONFIG.map.getMap().addControl(mfControl);
             mfControl.activate();
             mfControl.handlers.keyboard.activate();
-            var selectControl = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control')[0];
+            var selectControl = Transects.getHighlightControl();
+            var highlightControl = CONFIG.map.getMap().getControlsBy('title', 'transects-highlight-control')[0];
             selectControl.setLayer([clonedLayer]);
+            highlightControl.setLayer([clonedLayer]);
+            highlightControl.activate();
             selectControl.activate();
+            
             
             $("#transects-edit-container").removeClass('hidden');
             $('#transects-edit-save-button').unbind('click', Transects.saveEditedLayer);
@@ -180,6 +193,7 @@ var Transects = {
             Transects.removeDrawControl();
             Transects.removeAngleLayer();
             Transects.deactivateSelectControl();
+            Transects.deactivateHighlightControl();
         }
     },   
     addTransect : function() {
@@ -398,6 +412,26 @@ var Transects = {
                 snapControl.removeTargetLayer(layer);
             }
             CONFIG.map.removeLayerByName('transects-angle-layer');
+        }
+    },
+    getHighlightControl : function() {
+        var ca = CONFIG.map.getMap().getControlsBy('title', 'transects-select-control');
+        if (ca.length) {
+            return ca[0];
+        } else {
+            return null;
+        }
+    },
+    deactivateHighlightControl : function() {
+        var control = Transects.getHighlightControl();
+        if (control) {
+            control.deactivate();
+        }
+    },
+    activateHighlightControl : function() {
+        var control = Transects.getHighlightControl();
+        if (control) {
+            control.activate();
         }
     },
     createTransectsButtonToggled : function(event) {

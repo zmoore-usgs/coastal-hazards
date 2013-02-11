@@ -131,7 +131,7 @@ var Baseline = {
     },
     leaveStage : function() {
         LOG.debug('Baseline.js::leaveStage');
-        Baseline.disableHighlightControl();
+        Baseline.deactivateHighlightControl();
         if ($('#baseline-edit-form-toggle').hasClass('active')) {
             $('#baseline-edit-form-toggle').trigger('click');
         }
@@ -257,7 +257,7 @@ var Baseline = {
         Baseline.disableEditButton();
         Baseline.disableCloneButton();
         Baseline.disableRemoveButton();
-        Baseline.disableHighlightControl();
+        Baseline.deactivateHighlightControl();
         
         var mappedLayers = CONFIG.map.getMap().getLayersBy('type', 'baseline');
         mappedLayers.each(function(layer) {
@@ -349,7 +349,7 @@ var Baseline = {
             CONFIG.ui.initializeBaselineEditForm();
             
             var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
-            var highlightControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-highlight-control')[0];
+            var highlightControl = Baseline.getHighlightControl();
             
             highlightControl.deactivate();
             selectControl.deactivate();
@@ -381,7 +381,7 @@ var Baseline = {
             selectControl.activate();
         } else {
             // remove edit layer, remove edit control
-            Baseline.disableHighlightControl();
+            Baseline.deactivateHighlightControl();
             CONFIG.map.removeLayerByName('baseline-edit-layer');
             CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0]);
             CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0].deactivate();
@@ -634,14 +634,22 @@ var Baseline = {
     enableRemoveButton : function() {
         $('#baseline-remove-btn').removeAttr('disabled');
     },
-    disableHighlightControl : function() {
-        var ca = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control');
+    getHighlightControl : function() {
+        var ca = CONFIG.map.getMap().getControlsBy('title', 'baseline-highlight-control');
+        if (ca.length) {
+            return ca[0];
+        } else {
+            return null;
+        }
+    },
+    deactivateHighlightControl : function() {
+        var ca = Baseline.getHighlightControl();
         if (ca.length) {
             ca[0].deactivate();
         }
     },
-    enableHighlightControl : function() {
-        var ca = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control');
+    activateHighlightControl : function() {
+        var ca = Baseline.getHighlightControl();
         if (ca.length) {
             ca[0].activate();
         }
