@@ -18,6 +18,19 @@
 		<gt.version>8.5</gt.version>
 	</properties>
 
+    <distributionManagement>
+        <repository>
+            <id>cida-releases</id>
+            <name>CIDA Releases</name>
+            <url>${cida.maven.url}/content/repositories/cida-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>cida-snapshots</id>
+            <name>CIDA Snapshots</name>
+            <url>${cida.maven.url}/content/repositories/cida-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>cida-thirdparty</id>
