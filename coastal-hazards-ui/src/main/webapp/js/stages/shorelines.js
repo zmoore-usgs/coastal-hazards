@@ -362,9 +362,6 @@ var Shorelines = {
             var date = colorGroup[1];
             var checked = CONFIG.tempSession.getDisabledDatesForShoreline(event.object.prefix + ':' + event.object.name).indexOf(date) == -1;
             
-            var tableRow = $('<tr />');
-            var tableData = $('<td />');
-            var toggleDiv = $('<div />').addClass('feature-toggle').data('date', colorGroup[1]);
             var checkbox = $('<input />').attr({
                 type : 'checkbox'
             })
@@ -374,6 +371,9 @@ var Shorelines = {
                 checkbox.attr('checked', 'checked');
             }
             
+            var tableRow = $('<tr />');
+            var tableData = $('<td />');
+            var toggleDiv = $('<div />').addClass('switch', 'feature-toggle').data('date', colorGroup[1]);
             toggleDiv.append(checkbox);
             
             tableData.append(toggleDiv);
@@ -422,17 +422,11 @@ var Shorelines = {
             $('<div />').addClass('tab-pane active').attr('id', this.name).append(
                 colorTableContainer));
                         
-        $('#' + layerName + ' .feature-toggle').toggleButtons({
-            style: {
-                enabled: "primary"
-            },
-            label: {
-                enabled: "ON",
-                disabled: "OFF"
-            },
-            attachedLayer : event.object.prefix + ':' + layerName,
-            onChange : function($element, status, event) {
-                var layerName = this.attachedLayer;
+        $('#' + layerName + ' .switch').each(function(index, element){
+            var attachedLayer =  event.object.prefix + ':' + layerName;
+            $(element).on('switch-change', 
+            function($element, status, event) {
+                var layerName = attachedLayer;
                 var date = $element.parent().data('date');
                 var stageDatesDisabled = CONFIG.tempSession.getDisabledDatesForShoreline(layerName);
                 
@@ -468,10 +462,11 @@ var Shorelines = {
                 layer.params.SLD_BODY = sldBody;
                 layer.redraw();
                 $("table.tablesorter").trigger('update', false)
-            }
-        })
-        
+            });//end elt.on
+        });
+         
         Shorelines.setupTableSorting();
+        $('switch').bootstrapSwitch();
     },
     setupTableSorting : function() {
         $.tablesorter.addParser({ 
