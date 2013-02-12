@@ -359,6 +359,20 @@ var Results = {
             return n[0]
         });
         
+        // Find 
+        var fidBreaks = [];
+        features.each(function(feature, index, features) {
+            if (index != 0) {
+                var previousFid = features[index - 1].attributes.BaselineID;
+                if (previousFid != feature.attributes.BaselineID) {
+                    fidBreaks.push(index);
+                }
+            }
+        })
+        fidBreaks.each(function(i) {
+            data.insert([[null,[null, null, null]]], i)
+        })
+        
         CONFIG.graph = new Dygraph(
             plotDiv,
             data,
