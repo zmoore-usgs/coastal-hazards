@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
-    <!--<parent>-->
+    <parent>
         <groupId>gov.usgs.cida.coastalhazards</groupId>
-        <!--<artifactId>coastal-hazards</artifactId>-->
+        <artifactId>coastal-hazards</artifactId>
         <version>1.0.2-SNAPSHOT</version>
-    <!--</parent>-->
+    </parent>
     
     <artifactId>coastal-hazards-wps</artifactId>
     <packaging>jar</packaging>
@@ -17,19 +16,6 @@
 		<gs.version>2.2.3</gs.version>
 		<gt.version>8.5</gt.version>
 	</properties>
-
-    <distributionManagement>
-        <repository>
-            <id>cida-releases</id>
-            <name>CIDA Releases</name>
-            <url>${cida.maven.url}/content/repositories/cida-releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>cida-snapshots</id>
-            <name>CIDA Snapshots</name>
-            <url>${cida.maven.url}/content/repositories/cida-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <repositories>
         <repository>
