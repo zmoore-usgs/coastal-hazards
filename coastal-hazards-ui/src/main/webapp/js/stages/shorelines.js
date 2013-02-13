@@ -364,7 +364,11 @@ var Shorelines = {
             
             var tableRow = $('<tr />');
             var tableData = $('<td />');
-            var toggleDiv = $('<div />').addClass('feature-toggle').data('date', colorGroup[1]);
+            var toggleDiv = $('<div />')
+            
+            toggleDiv.addClass('switch').addClass('feature-toggle');
+            toggleDiv.data('date', date);//will be used by click handler
+
             var checkbox = $('<input />').attr({
                 type : 'checkbox'
             })
@@ -374,6 +378,7 @@ var Shorelines = {
                 checkbox.attr('checked', 'checked');
             }
             
+
             toggleDiv.append(checkbox);
             
             tableData.append(toggleDiv);
@@ -422,19 +427,15 @@ var Shorelines = {
             $('<div />').addClass('tab-pane active').attr('id', this.name).append(
                 colorTableContainer));
                         
-        $('#' + layerName + ' .feature-toggle').toggleButtons({
-            style: {
-                enabled: "primary"
-            },
-            label: {
-                enabled: "ON",
-                disabled: "OFF"
-            },
-            attachedLayer : event.object.prefix + ':' + layerName,
-            onChange : function($element, status, event) {
-                var layerName = this.attachedLayer;
-                var date = $element.parent().data('date');
-                var stageDatesDisabled = CONFIG.tempSession.getDisabledDatesForShoreline(layerName);
+        $('#' + layerName + ' .switch').each(function(index, element){
+            var attachedLayer =  event.object.prefix + ':' + layerName;
+            $(element).on('switch-change', 
+            function(event, data) {
+                var status = data.value,
+                    $element = data.el,
+                    layerName = attachedLayer,
+                    date = $element.parent().parent().data('date'),
+                    stageDatesDisabled = CONFIG.tempSession.getDisabledDatesForShoreline(layerName);
                 
                 LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for date ' + date + ' on layer ' + layerName);
                         
@@ -468,10 +469,11 @@ var Shorelines = {
                 layer.params.SLD_BODY = sldBody;
                 layer.redraw();
                 $("table.tablesorter").trigger('update', false)
-            }
-        })
-        
+            });//end elt.on
+        });
+         
         Shorelines.setupTableSorting();
+        $('#' + layerName + ' .switch').bootstrapSwitch();
     },
     setupTableSorting : function() {
         $.tablesorter.addParser({ 
@@ -479,8 +481,9 @@ var Shorelines = {
             is: function(s) { 
                 return false; 
             }, 
-            format: function(s, table, cell, cellIndex) { 
-                return $(cell).find('.feature-toggle').toggleButtons('status') ? 1 : 0
+            format: function(s, table, cell, cellIndex) {
+                var toggleButton = $(cell).find('.switch')[0];
+                return $(toggleButton).bootstrapSwitch('status') ? 1 : 0
             }, 
             // set type, either numeric or text 
             type: 'numeric' 

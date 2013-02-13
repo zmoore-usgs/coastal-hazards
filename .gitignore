@@ -2,3 +2,6 @@ target/
 /coastal-hazards-geoserver/src/main/webapp/META-INF/
 /coastal-hazards-n52/src/main/webapp/META-INF/
 nb-configuration.xml
+
+#vim swap files:
+.*sw[po]

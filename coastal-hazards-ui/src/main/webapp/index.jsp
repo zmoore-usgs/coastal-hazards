@@ -516,8 +516,8 @@
 
     <!-- TODO - Modularize -->
     <script type="text/javascript">splashUpdate("Loading Toggle plugin...")</script>
-    <link type="text/css" rel="stylesheet" href="css/jquery-bootstrap-toggle/bootstrap-toggle-buttons.css" />
-    <script type="text/javascript" src="js/jquery-bootstrap-toggle/jquery.toggle.buttons.js"></script>
+    <link type="text/css" rel="stylesheet" href="js/bootstrap-switch/static/stylesheets/bootstrapSwitch.css" />
+    <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
     <script type="text/javascript">splashUpdate("Loading Application-specific CSS...")</script>
     <link type="text/css" rel="stylesheet" href="css/custom.css" />
     <script type="text/javascript">splashUpdate("Loading Main module...")</script>
