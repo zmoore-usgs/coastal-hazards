@@ -3,22 +3,31 @@ package gov.usgs.cida.coastalhazards.wps;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.opengis.wfs20.impl.SimpleFeatureCollectionTypeImpl;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
 import org.geotools.data.AbstractDataStore;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.directory.DirectoryDataStore;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.AttributeTypeBuilder;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeImpl;
 import org.geotools.feature.type.FeatureTypeImpl;
 import org.geotools.process.ProcessException;
@@ -27,6 +36,7 @@ import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.util.DefaultProgressListener;
 import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
@@ -76,11 +86,9 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
         } catch (IOException ioe) {
             throw new ProcessException(ioe);
         }
-        
-        SimpleFeatureStore sstore = (SimpleFeatureStore) featureSource;
-        
+
         FeatureType ft = featureSource.getSchema();
-        List<PropertyDescriptor> propertyDescriptors = new ArrayList(ft.getDescriptors());
+        List<AttributeDescriptor> attributeList = new ArrayList(ft.getDescriptors());
 
         for (String column : columns) {
             String[] columnAttributes = column.split("\\|");
@@ -100,25 +108,35 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
                 atb.setBinding(String.class);
                 atb.setDefaultValue(defaultValue);
                 AttributeDescriptor descriptor = atb.buildDescriptor(description);
-                propertyDescriptors.add(descriptor);
+                attributeList.add(descriptor);
             }
         }
 
-        FeatureTypeImpl newFt = new FeatureTypeImpl(
+        SimpleFeatureType newFeatureType = new SimpleFeatureTypeImpl(
                 ft.getName(),
-                propertyDescriptors,
+                attributeList,
                 ft.getGeometryDescriptor(),
                 ft.isAbstract(),
                 ft.getRestrictions(),
                 ft.getSuper(),
                 ft.getDescription());
+
+        List<SimpleFeature> sfList = new ArrayList<SimpleFeature>();
         try {
-            DataAccess sds = featureSource.getDataStore();
-            sds.updateSchema(newFt.getName(), ft);
+            FeatureCollection fc = featureSource.getFeatures();
+            FeatureIterator<SimpleFeature> features = fc.features();
+            while (features.hasNext()) {
+                SimpleFeature feature = features.next();
+                List<Object> oldAttributes = feature.getAttributes();
+                SimpleFeature newFeature = SimpleFeatureBuilder.build(newFeatureType, oldAttributes, feature.getID());
+                sfList.add(newFeature);
+            }
         } catch (IOException ex) {
             throw new ProcessException(ex);
         }
 
-        return null;
+        SimpleFeatureCollection collection = DataUtilities.collection(sfList);
+        String imported = importer.importLayer(collection, workspace, store, sfc.getSchema().getTypeName() + "_new", sfc.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
+        return imported;
     }
 }
