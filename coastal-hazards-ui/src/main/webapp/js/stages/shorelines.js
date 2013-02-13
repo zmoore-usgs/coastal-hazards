@@ -362,6 +362,13 @@ var Shorelines = {
             var date = colorGroup[1];
             var checked = CONFIG.tempSession.getDisabledDatesForShoreline(event.object.prefix + ':' + event.object.name).indexOf(date) == -1;
             
+            var tableRow = $('<tr />');
+            var tableData = $('<td />');
+            var toggleDiv = $('<div />')
+            
+            toggleDiv.addClass('switch').addClass('feature-toggle');
+            toggleDiv.data('date', date);//will be used by click handler
+
             var checkbox = $('<input />').attr({
                 type : 'checkbox'
             })
@@ -371,11 +378,6 @@ var Shorelines = {
                 checkbox.attr('checked', 'checked');
             }
             
-            var tableRow = $('<tr />');
-            var tableData = $('<td />');
-            var toggleDiv = $('<div />')
-            toggleDiv.addClass('switch').addClass('feature-toggle');
-            toggleDiv.data('date', date);//will be used by click handler
 
             toggleDiv.append(checkbox);
             
@@ -471,7 +473,7 @@ var Shorelines = {
         });
          
         Shorelines.setupTableSorting();
-        $('.switch').bootstrapSwitch();
+        $('#' + layerName + ' .switch').bootstrapSwitch();
     },
     setupTableSorting : function() {
         $.tablesorter.addParser({ 
