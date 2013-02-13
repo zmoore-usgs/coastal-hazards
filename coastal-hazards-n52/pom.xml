@@ -2,16 +2,67 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>coastal-hazards</artifactId>
         <groupId>gov.usgs.cida.coastalhazards</groupId>
-        <version>1.0.2-SNAPSHOT</version>
+        <artifactId>coastal-hazards</artifactId>
+        <version>1.0.3-SNAPSHOT</version>
     </parent>
 
-    <groupId>gov.usgs.cida.coastalhazards</groupId>
     <artifactId>coastal-hazards-n52</artifactId>
     <packaging>war</packaging>
 
     <name>Coastal Hazards 52north WPS</name>
+    
+    <properties>
+        <n52.version>3.0</n52.version>
+        <gt.version>8.5</gt.version>
+        <slf4j.version>1.7.2</slf4j.version>
+    </properties>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>gov.usgs.cida</groupId>
+                <artifactId>wps-n52</artifactId>
+                <version>1.0.1</version>
+                <type>war</type>
+            </dependency>
+            <dependency>
+                <groupId>org.n52.wps</groupId>
+                <artifactId>52n-wps-io</artifactId>
+                <version>${n52.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.n52.wps</groupId>
+                <artifactId>52n-wps-r</artifactId>
+                <version>${n52.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.geotools</groupId>
+                <artifactId>gt-main</artifactId>
+                <version>${gt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>woodstox-core-lgpl</artifactId>
+                <version>4.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.4</version>
+            </dependency>
+            <dependency>
+                <artifactId>slf4j-api</artifactId>
+                <groupId>org.slf4j</groupId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.geotools</groupId>
+                <artifactId>gt-api</artifactId>
+                <version>${gt.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     
     <dependencies>
         <dependency>
