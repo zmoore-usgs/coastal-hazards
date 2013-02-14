@@ -1,18 +1,31 @@
 package gov.usgs.cida.coastalhazards.wps;
 
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.FileFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
 import org.geotools.data.DataUtilities;
@@ -67,14 +80,14 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
             throw new ProcessException("Could not find workspace " + workspace);
         }
 
-        DataStoreInfo storeInfo = catalog.getDataStoreByName(ws.getName(), store);
-        if (storeInfo == null) {
+        DataStoreInfo ds = catalog.getDataStoreByName(ws.getName(), store);
+        if (ds == null) {
             throw new ProcessException("Could not find store " + store + " in workspace " + workspace);
         }
 
         FeatureSource featureSource;
         try {
-            featureSource = storeInfo.getDataStore(new DefaultProgressListener()).getFeatureSource(new NameImpl(sfc.getSchema().getTypeName()));
+            featureSource = ds.getDataStore(new DefaultProgressListener()).getFeatureSource(new NameImpl(sfc.getSchema().getTypeName()));
         } catch (IOException ioe) {
             throw new ProcessException(ioe);
         }
@@ -145,7 +158,7 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
                     }
                     case 'l': {
                         atb.setBinding(Long.class);
-                         try {
+                        try {
                             defaultValue = Long.parseLong(defaultValueString);
                         } catch (NumberFormatException ex) {
                             // Ignore
@@ -154,7 +167,7 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
                     }
                     case 'd': {
                         atb.setBinding(Double.class);
-                         try {
+                        try {
                             defaultValue = Double.parseDouble(defaultValueString);
                         } catch (NumberFormatException ex) {
                             // Ignore
@@ -163,7 +176,7 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
                     }
                     case 'f': {
                         atb.setBinding(Float.class);
-                         try {
+                        try {
                             defaultValue = Float.parseFloat(defaultValueString);
                         } catch (NumberFormatException ex) {
                             // Ignore
@@ -175,7 +188,7 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
                         defaultValue = Boolean.parseBoolean(defaultValueString);
                         break;
                     }
-                    default : {
+                    default: {
                         throw new ProcessException("Invalid column type");
                     }
                 }
@@ -188,7 +201,7 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
                 AttributeType atType = atb.buildType();
                 atb.setDefaultValue(defaultValue);
                 AttributeDescriptor descriptor = atb.buildDescriptor(new NameImpl(name), atType);
-                
+
                 attributeList.add(descriptor);
             }
         }
@@ -222,11 +235,25 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
         }
 
         SimpleFeatureCollection collection = DataUtilities.collection(sfList);
-        String imported = importer.importLayer(collection, workspace, store, sfc.getSchema().getTypeName() + "_new", sfc.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
-        catalog.remove(catalog.getLayerByName(sfc.getSchema().getTypeName()));
-        LayerInfo newLayer = catalog.getLayerByName(imported);
-        newLayer.setName(sfc.getSchema().getTypeName());
-        catalog.save(newLayer);
-        return newLayer.getName();
+        CatalogFacade cf = catalog.getFacade();
+        LayerInfo layerByName = cf.getLayerByName(sfc.getSchema().getTypeName());
+        ResourceInfo layerResource = layerByName.getResource();
+        cf.detach(layerResource);
+        cf.remove(layerResource);
+        cf.save(ds);
+        cf.save(ws);
+
+        try {
+            File diskDirectory = new File(ds.getDataStore(new DefaultProgressListener()).getInfo().getSource());
+            Collection<File> listFiles = FileUtils.listFiles(diskDirectory, new PrefixFileFilter(layerByName.getName()), null);
+            for (File file : listFiles) {
+                FileUtils.deleteQuietly(file);
+            }
+        } catch (IOException ex) {
+            throw new ProcessException(ex);
+        }
+
+        String imported = importer.importLayer(collection, workspace, store, sfc.getSchema().getTypeName(), sfc.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
+        return imported;
     }
 }
