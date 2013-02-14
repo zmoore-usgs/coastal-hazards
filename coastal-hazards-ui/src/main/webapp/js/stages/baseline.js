@@ -355,23 +355,23 @@ var Baseline = {
             selectControl.deactivate();
             
             selectControl.onSelect = function(feature) {
-                $('.baseline-edit-toggle').toggleButtons('setState', false);
+                $('.baseline-edit-toggle').bootstrapSwitch('setState', false);
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
                 modifyControl.selectFeature(feature);
                 modifyControl.activate();
                 modifyControl.deactivate();
                 if (feature.attributes.Orient == 'seaward') {
-                    $('#toggle-direction-checkbox').toggleButtons('setState', true, true);
+                    $('#toggle-direction-checkbox').bootstrapSwitch('setState', true, true);
                 } else {
-                    $('#toggle-direction-checkbox').toggleButtons('setState', false, true);
+                    $('#toggle-direction-checkbox').bootstrapSwitch('setState', false, true);
                 }
             }
             selectControl.onUnselect = function(feature) {
                 CONFIG.ui.initializeBaselineEditForm();
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
                 modifyControl.unselectFeature(feature);
-                $('.baseline-edit-toggle').toggleButtons('setState', false);
-                $('#toggle-direction-checkbox').toggleButtons('setState', false, true);
+                $('.baseline-edit-toggle').bootstrapSwitch('setState', false);
+                $('#toggle-direction-checkbox').bootstrapSwitch('setState', false, true);
             }
             
             selectControl.setLayer(clonedLayer);
