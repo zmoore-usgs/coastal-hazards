@@ -418,11 +418,41 @@ var Baseline = {
                                 }
                             })
                             
-                            Baseline.refreshFeatureList({
-                                selectLayer : data
+                            CONFIG.ows.getDescribeFeatureType({
+                                layerNS : selectVal.split(':')[0],
+                                layerName : selectText,
+                                callbacks : [
+                                function(describeFeaturetypeRespone) {
+                                    var displayLayer = function() {
+                                        Baseline.refreshFeatureList({
+                                            selectLayer : data
+                                        })
+                                        $('a[href="#' + Baseline.stage + '-view-tab"]').tab('show');
+                                    }
+                                    var orientProp = describeFeaturetypeRespone.featureTypes[0].properties.find(function(p){
+                                        return p.name.toLowerCase() == 'orient';
+                                    })
+                                    if (!orientProp) {
+                                        CONFIG.ows.appendAttributesToLayer({
+                                            workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                                            store : 'ch-input',
+                                            layer : cloneName,
+                                            columns : ['Orient|s|Baseline Orientation|seaward'],
+                                            callbacks : [
+                                            displayLayer
+                                            ]
+                                            
+                                        })
+                                    } else {
+                                        displayLayer();
+                                    }
+                                    
+                                    
+                                }
+                                ]
                             })
                             
-                            $('a[href="#' + Baseline.stage + '-view-tab"]').tab('show');
+                            
                             
                         } else {
                             LOG.warn('Baseline.js::cloneButtonClicked: Error returned from server: ' + $(data).find('ows\\:ExceptionText').text());
