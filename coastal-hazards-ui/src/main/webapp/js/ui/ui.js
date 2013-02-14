@@ -256,8 +256,10 @@ var UI = function() {
             toggles.removeAttr('checked');
             toggles.bootstrapSwitch();
             toggles.on('switch-change', function(e, data){
+                //wrap call to toggle func in case it is called from elsewhere
                 var $el = $(data.el).parent();
                 var status = data.value;
+
                 CONFIG.ui.baselineEditFormButtonToggle($el, status, e);
                 });
             $.each(toggles, function(index, element){
@@ -268,7 +270,7 @@ var UI = function() {
                 $('#toggle-direction-checkbox').bootstrapSwitch({
                     width: 200,
                 });
-                 $('#toggle-direction-checkbox').on('switch-change', function($el, status, e) {
+                 $('#toggle-direction-checkbox').on('switch-change', function(e, data) {
                         var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
                         var selectedFeature = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.find(function(n){
                             return n.id == selectControl.layer.selectedFeatures[0].id
