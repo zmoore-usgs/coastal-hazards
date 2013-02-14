@@ -3,45 +3,36 @@ package gov.usgs.cida.coastalhazards.wps;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.opengis.wfs20.impl.SimpleFeatureCollectionTypeImpl;
+import java.util.Map;
+import java.util.Set;
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
-import org.geotools.data.AbstractDataStore;
-import org.geotools.data.DataAccess;
-import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.directory.DirectoryDataStore;
-import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeImpl;
-import org.geotools.feature.type.FeatureTypeImpl;
 import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.util.DefaultProgressListener;
-import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
 
 /**
  *
@@ -87,27 +78,116 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
             throw new ProcessException(ioe);
         }
 
-        FeatureType ft = featureSource.getSchema();
-        List<AttributeDescriptor> attributeList = new ArrayList(ft.getDescriptors());
-
+        Map<String, String[]> newColumns = new HashMap<String, String[]>();
         for (String column : columns) {
             String[] columnAttributes = column.split("\\|");
             if (columnAttributes.length != 4) {
                 throw new ProcessException("column input must have four attributes split by a pipe character: \"Column Name|Column Type|Column Description|Default Value\"");
             }
+
             String name = columnAttributes[0];
             String type = columnAttributes[1];
             String description = columnAttributes[2];
             String defaultValue = columnAttributes[3];
-            if (ft.getDescriptor(column) == null) {
-                AttributeTypeBuilder atb = new AttributeTypeBuilder();
+            newColumns.put(name, new String[]{type, description, defaultValue});
+        }
 
+        FeatureType ft = featureSource.getSchema();
+        List<AttributeDescriptor> attributeList = new ArrayList(ft.getDescriptors());
+        Set<String> colKeys = newColumns.keySet();
+
+        for (String columnKey : colKeys) {
+            String[] columnAttributes = newColumns.get(columnKey);
+            String name = columnKey;
+            if (ft.getDescriptor(name) == null) {
+                char typeChar = columnAttributes[0].toLowerCase().charAt(0);
+                String description = columnAttributes[1];
+                Object type;
+
+                /*
+                 * Available types:
+                 * <li>String</li>
+                 * <li>Object - will return empty string</li>
+                 * <li>Integer</li>
+                 * <li>Double</li>
+                 * <li>Long</li>
+                 * <li>Short</li>
+                 * <li>Float</li>
+                 * <li>BigDecimal</li>
+                 * <li>BigInteger</li>
+                 * <li>Character</li>
+                 * <li>Boolean</li> 
+                 * <li>UUID</li>
+                 * <li>Timestamp</li>
+                 * <li>java.sql.Date</li>
+                 * <li>java.sql.Time</li>
+                 * <li>java.util.Date</li> 
+                 * <li>JTS Geometries</li>
+                 */
+                AttributeTypeBuilder atb = new AttributeTypeBuilder();
+                Object defaultValue = null;
+                String defaultValueString = StringUtils.isBlank(columnAttributes[2]) ? "" : columnAttributes[2];
+                switch (typeChar) {
+                    case 's': {
+                        atb.setBinding(String.class);
+                        defaultValue = defaultValueString;
+                        break;
+                    }
+                    case 'i': {
+                        atb.setBinding(Integer.class);
+                        try {
+                            defaultValue = Integer.parseInt(defaultValueString);
+                        } catch (NumberFormatException ex) {
+                            // Ignore
+                        }
+                        break;
+                    }
+                    case 'l': {
+                        atb.setBinding(Long.class);
+                         try {
+                            defaultValue = Long.parseLong(defaultValueString);
+                        } catch (NumberFormatException ex) {
+                            // Ignore
+                        }
+                        break;
+                    }
+                    case 'd': {
+                        atb.setBinding(Double.class);
+                         try {
+                            defaultValue = Double.parseDouble(defaultValueString);
+                        } catch (NumberFormatException ex) {
+                            // Ignore
+                        }
+                        break;
+                    }
+                    case 'f': {
+                        atb.setBinding(Float.class);
+                         try {
+                            defaultValue = Float.parseFloat(defaultValueString);
+                        } catch (NumberFormatException ex) {
+                            // Ignore
+                        }
+                        break;
+                    }
+                    case 'b': {
+                        atb.setBinding(Boolean.class);
+                        defaultValue = Boolean.parseBoolean(defaultValueString);
+                        break;
+                    }
+                    default : {
+                        throw new ProcessException("Invalid column type");
+                    }
+                }
                 atb.setName(name);
+                atb.setDescription(description);
                 atb.setMinOccurs(0);
                 atb.setMaxOccurs(1);
-                atb.setBinding(String.class);
+                atb.setNillable(true);
+                atb.setIdentifiable(true);
+                AttributeType atType = atb.buildType();
                 atb.setDefaultValue(defaultValue);
-                AttributeDescriptor descriptor = atb.buildDescriptor(description);
+                AttributeDescriptor descriptor = atb.buildDescriptor(new NameImpl(name), atType);
+                
                 attributeList.add(descriptor);
             }
         }
@@ -120,15 +200,20 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
                 ft.getRestrictions(),
                 ft.getSuper(),
                 ft.getDescription());
-
+        SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(newFeatureType);
         List<SimpleFeature> sfList = new ArrayList<SimpleFeature>();
         try {
             FeatureCollection fc = featureSource.getFeatures();
             FeatureIterator<SimpleFeature> features = fc.features();
             while (features.hasNext()) {
                 SimpleFeature feature = features.next();
-                List<Object> oldAttributes = feature.getAttributes();
-                SimpleFeature newFeature = SimpleFeatureBuilder.build(newFeatureType, oldAttributes, feature.getID());
+                SimpleFeature newFeature = SimpleFeatureBuilder.retype(feature, sfb);
+                for (String columnKey : colKeys) {
+                    String name = columnKey;
+                    if (newFeature.getAttribute(new NameImpl(name)) == null) {
+                        newFeature.setAttribute(name, newFeature.getFeatureType().getDescriptor(name).getDefaultValue());
+                    }
+                }
                 sfList.add(newFeature);
             }
         } catch (IOException ex) {
