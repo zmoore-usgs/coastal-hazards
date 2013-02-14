@@ -9,16 +9,14 @@
     <bean id="appendColumnsToLayer" class="gov.usgs.cida.coastalhazards.wps.AppendColumnsToLayerProcess">
         <constructor-arg index="0" ref="importProcess"/>
         <constructor-arg index="1" ref="catalog"/>
+        <constructor-arg index="2" ref="geoServer"/>
     </bean>
     
-<!--    <bean id="calcIntersects" class="gov.usgs.cida.coastalhazards.wps.CalculateIntersectionsProcess">
-        <constructor-arg index="0" ref="importProcess"/>
-        <constructor-arg index="1" ref="catalog"/>
-    </bean>-->
     <bean id="addResults" class="gov.usgs.cida.coastalhazards.wps.CreateResultsLayerProcess">
         <constructor-arg index="0" ref="importProcess"/>
         <constructor-arg index="1" ref="catalog"/>
     </bean>
+    
     <bean id="utmZoneCount" class="gov.usgs.cida.coastalhazards.wps.UTMZoneCountProcess" />
     <bean id="resultsRaster" class="gov.usgs.cida.coastalhazards.wps.ResultsRasterProcess" />
     <bean id="plainTextPPIO" class="gov.usgs.cida.coastalhazards.wps.ppio.PlainTextPPIO" />
