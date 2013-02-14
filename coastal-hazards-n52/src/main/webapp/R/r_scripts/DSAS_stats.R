@@ -4,7 +4,7 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-localRun <- FALSE
+localRun <- TRUE
 # comment this out for WPS!!!
 if (localRun){
   input <- "testOut.tsv"
@@ -99,7 +99,7 @@ for (b in 1:numBlck){
       rate <- dates
       mdl <- lm(formula=distance~rate)
       coef <- coefficients(mdl)
-      CI   <- confint(mdl,"rate",level=conLevel)
+      CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
       rate <- coef["rate"]  # is m/day
         
       LRR_rates[b] <- rate*rateConv 
@@ -109,7 +109,7 @@ for (b in 1:numBlck){
       rate <- dates
       mdl <- lm(formula=distance~rate, weights=weights)
       coef <- coefficients(mdl)
-      CI   <- confint(mdl,"rate",level=conLevel)
+      CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
       rate <- coef["rate"]
       WLR_rates[b] <- rate*rateConv 
       WCI[b] <- (CI[2]-CI[1])/2 # WCI
