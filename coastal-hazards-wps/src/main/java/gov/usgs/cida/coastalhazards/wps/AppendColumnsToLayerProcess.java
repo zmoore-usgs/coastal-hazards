@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.lang.StringUtils;
@@ -19,6 +21,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
 import org.geotools.data.DataUtilities;
@@ -53,10 +56,12 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
 
     private Catalog catalog;
     private LayerImportUtil importer;
+    private GeoServer geoserver;
 
-    public AppendColumnsToLayerProcess(ImportProcess importer, Catalog catalog) {
+    public AppendColumnsToLayerProcess(ImportProcess importer, Catalog catalog, GeoServer geoserver) {
         this.catalog = catalog;
         this.importer = new LayerImportUtil(catalog, importer);
+        this.geoserver = geoserver;
     }
 
     @DescribeResult(name = "layerName", description = "Name of the new featuretype, with workspace")
@@ -233,20 +238,22 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
         ResourceInfo layerResource = layerByName.getResource();
         cf.detach(layerResource);
         cf.remove(layerResource);
-        cf.save(ds);
-        cf.save(ws);
-
+        cf.remove(layerByName);
         try {
             File diskDirectory = new File(ds.getDataStore(new DefaultProgressListener()).getInfo().getSource());
             Collection<File> listFiles = FileUtils.listFiles(diskDirectory, new PrefixFileFilter(layerByName.getName()), null);
             for (File file : listFiles) {
                 FileUtils.deleteQuietly(file);
             }
+//            FileUtils.deleteDirectory(new File(diskDirectory, layerByName.getName()));
         } catch (IOException ex) {
             throw new ProcessException(ex);
         }
-
-        String imported = importer.importLayer(collection, workspace, store, layer, fc.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
+        
+        cf.save(ds);
+        cf.save(ws);
+        
+        String imported = importer.importLayer(collection, workspace, store, layer, collection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
         return imported;
     }
 }
