@@ -194,7 +194,7 @@
                                                 <div class="span3">
                                                     <label for="toggle-create-vertex-checkbox">Create Vertex</label>
                                                     <div class="baseline-edit-toggle" id="toggle-create-vertex-checkbox">
-                                                        <input type="checkbox">
+                                                        <input type="checkbox"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -202,7 +202,7 @@
                                                 <div class="span6">
                                                     <label for="toggle-allow-rotation-checkbox">Rotate</label>
                                                     <div class="baseline-edit-toggle" id="toggle-allow-rotation-checkbox">
-                                                        <input type="checkbox">
+                                                        <input type="checkbox"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -210,13 +210,13 @@
                                                 <div class="span6">
                                                     <label for="toggle-allow-resizing-checkbox">Resize</label>
                                                     <div class="baseline-edit-toggle" id="toggle-allow-resizing-checkbox">
-                                                        <input type="checkbox">
+                                                        <input type="checkbox"/>
                                                     </div>
                                                 </div>
                                                 <div class="span6">
                                                     <label for="toggle-aspect-ratio-checkbox">Maintain Aspect Ratio</label>
                                                     <div class="baseline-edit-toggle" id="toggle-aspect-ratio-checkbox">
-                                                        <input type="checkbox">
+                                                        <input type="checkbox"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -224,15 +224,15 @@
                                                 <div class="span6">
                                                     <label for="toggle-allow-dragging-checkbox">Drag</label>
                                                     <div class="baseline-edit-toggle" id="toggle-allow-dragging-checkbox">
-                                                        <input type="checkbox">
+                                                        <input type="checkbox"/>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="row-fluid">
                                                 <div class="span12">
                                                     <label for="toggle-direction-checkbox">Direction</label>
-                                                    <div id="toggle-direction-checkbox">
-                                                        <input type="checkbox">
+                                                    <div id="toggle-direction-checkbox" data-on-label="SEAWARD" data-off-label="SHOREWARD" class="baseline-edit-toggle">
+                                                        <input type="checkbox"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -362,6 +362,8 @@
                                         <div class="tabbable">
                                             <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
                                             <div class="tab-content" id="results-tabcontent"></div>
+                                                <div><a id="initiateExport" href="#">Export Me</a></div>
+                                                <div><img id="exportedImage"/></div>
                                         </div>
                                     </div>
                                 </div>
@@ -520,6 +522,8 @@
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
     <script type="text/javascript">splashUpdate("Loading Application-specific CSS...")</script>
     <link type="text/css" rel="stylesheet" href="css/custom.css" />
+    <script type="text/javascript">splashUpdate("Loading Dygraph Export Plugin...")</script>
+    <script type="text/javascript" src="js/dygraph-extra/dygraph-extra.js"></script>
     <script type="text/javascript">splashUpdate("Loading Main module...")</script>
     <script type="text/javascript" src="js/onReady.js"></script>
 </html>
