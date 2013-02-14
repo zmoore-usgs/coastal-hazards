@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wps.gs.GeoServerProcess;
@@ -222,6 +223,10 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
 
         SimpleFeatureCollection collection = DataUtilities.collection(sfList);
         String imported = importer.importLayer(collection, workspace, store, sfc.getSchema().getTypeName() + "_new", sfc.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
-        return imported;
+        catalog.remove(catalog.getLayerByName(sfc.getSchema().getTypeName()));
+        LayerInfo newLayer = catalog.getLayerByName(imported);
+        newLayer.setName(sfc.getSchema().getTypeName());
+        catalog.save(newLayer);
+        return newLayer.getName();
     }
 }
