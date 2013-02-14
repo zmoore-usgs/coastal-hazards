@@ -5,6 +5,12 @@
         <constructor-arg index="0" ref="importProcess"/>
         <constructor-arg index="1" ref="catalog"/>
     </bean>
+    
+    <bean id="appendColumnsToLayer" class="gov.usgs.cida.coastalhazards.wps.AppendColumnsToLayerProcess">
+        <constructor-arg index="0" ref="importProcess"/>
+        <constructor-arg index="1" ref="catalog"/>
+    </bean>
+    
 <!--    <bean id="calcIntersects" class="gov.usgs.cida.coastalhazards.wps.CalculateIntersectionsProcess">
         <constructor-arg index="0" ref="importProcess"/>
         <constructor-arg index="1" ref="catalog"/>
