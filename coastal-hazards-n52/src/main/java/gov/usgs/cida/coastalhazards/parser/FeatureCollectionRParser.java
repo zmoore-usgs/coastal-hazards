@@ -1,6 +1,7 @@
 package gov.usgs.cida.coastalhazards.parser;
 
 import gov.usgs.cida.coastalhazards.util.AttributeGetter;
+import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
 import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
 import java.io.BufferedReader;
@@ -20,10 +21,8 @@ import org.geotools.feature.FeatureIterator;
 import org.n52.wps.io.data.GenericFileData;
 import org.n52.wps.io.data.binding.complex.GenericFileDataBinding;
 import org.n52.wps.io.datahandler.parser.AbstractParser;
-import org.omg.CORBA.TRANSACTION_MODE;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
-import static gov.usgs.cida.coastalhazards.util.Constants.*;
 
 /**
  *
