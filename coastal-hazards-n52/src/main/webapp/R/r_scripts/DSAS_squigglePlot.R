@@ -11,7 +11,16 @@ if (localRun){
   ptm <- proc.time() # for time of process
 }
 
-#numH     <- 1 # number of headers
+figW  <- 8
+figH  <- 3.5
+lM    <-.95
+bM    <-.95
+rM    <-.15
+tM    <-.15
+fRes  <- 200
+fontN <- 11
+
+
 fileN    <- input # will have input as a string (long string read in)
 delim    <- "\t"
 sdMult   <- 2.5 # multiplier for axis 
@@ -38,9 +47,12 @@ mxY <- mean(rwRT+rwCI)+sdMult*sd(rwRT+rwCI)
 mnY <- mean(rwRT-rwCI)-sdMult*sd(rwRT-rwCI)
 
 # resort values
-png("testf.png", width=8, height=4, units="in")
-plot(c(0,max(rwBD)*1.02),c(mnY,mxY),type="n",xlab="Distance alongshore (kilometers)",ylab="Rate of change (m yr^-1)")
-lines(c(0,max(rwBD)),c(0,0),col="gray",lwd=2,pch=1)
+png("output.png", width=figW, height=figH, units="in",res=fRes)
+par(mai=c(bM,lM,rM,tM))
+
+plot(c(0,max(rwBD)),c(mnY,mxY),type="n",xlab="Distance alongshore (kilometers)",ylab=expression('Rate of change (m yr'^-1 ~')'),
+     font=fontN,font.lab=fontN,tcl=-.2,xaxs="i",cex.lab=1.2,cex=1.3)
+lines(c(0,max(rwBD)),c(0,0),col="grey24",lwd=1.2,pch=1,lty=2)
 
 for (p in 1:numBase){
   indx_1 <- dropI[p]
@@ -50,13 +62,14 @@ for (p in 1:numBase){
   CI_up <- rate+rwCI[indx_1:indx_2]
   CI_dn <- rate-rwCI[indx_1:indx_2]
   
-  polygon(c(dist,rev(dist)),c(CI_up,rev(CI_dn)),col="gray",border=NA)
+  polygon(c(dist,rev(dist)),c(CI_up,rev(CI_dn)),col="grey",border=NA)
   
   lines(dist,rate,lwd=2.5)
 }
 
 if (localRun) proc.time() - ptm
+dev.off()
 # output is an identifier and R variable (WPS identifier). The ouput is the name of the text file
 # wps.out: output, text, output title, tabular output data to append to shapefile;
-#output = "output.txt"
+output = "output.png"
 #write.table(statsout,file="output.txt",col.names=TRUE, quote=FALSE, row.names=FALSE, sep="\t")
