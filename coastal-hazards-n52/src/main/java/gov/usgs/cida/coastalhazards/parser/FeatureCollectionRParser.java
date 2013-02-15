@@ -77,20 +77,28 @@ public class FeatureCollectionRParser extends AbstractParser {
                         buf.newLine();
                     }
                 }
-            } else if (getter.exists(BASELINE_DIST_ATTR)
+            } else if (getter.exists(TRANSECT_ID_ATTR)
+                    && getter.exists(BASELINE_DIST_ATTR)
                     && getter.exists(BASELINE_ID_ATTR)
                     && getter.exists(LRR_ATTR)
                     && getter.exists(LCI_ATTR)) {
                 FeatureIterator<SimpleFeature> features = collection.features();
+                Map<Integer, SimpleFeature> featureMap = new TreeMap<Integer, SimpleFeature>();
                 buf.write(BASELINE_DIST_ATTR + "\t" + BASELINE_ID_ATTR + "\t" + LRR_ATTR + "\t" + LCI_ATTR);
                 buf.newLine();
                 while (features.hasNext()) {
                     SimpleFeature feature = features.next();
+                    int transectId = (Integer)getter.getValue(TRANSECT_ID_ATTR, feature);
+                    featureMap.put(transectId, feature);   
+                }
+                for (Integer id : featureMap.keySet()) {
+                    SimpleFeature feature = featureMap.get(id);
                     double dist = (Double) getter.getValue(BASELINE_DIST_ATTR, feature);
-                    String id = (String) getter.getValue(BASELINE_ID_ATTR, feature);
+                    String featureId = (String) getter.getValue(BASELINE_ID_ATTR, feature);
+                    int baseId = Integer.parseInt(featureId.split("\\.")[1]);
                     double lrr = (Double) getter.getValue(LRR_ATTR, feature);
                     double lci = (Double) getter.getValue(LCI_ATTR, feature);
-                    buf.write(dist + "\t" + id + "\t" + lrr + "\t" + lci);
+                    buf.write(dist + "\t" + baseId + "\t" + lrr + "\t" + lci);
                     buf.newLine();
                 }
             } else {

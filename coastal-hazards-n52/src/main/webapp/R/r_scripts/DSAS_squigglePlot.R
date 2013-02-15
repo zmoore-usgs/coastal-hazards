@@ -4,7 +4,7 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-#localRun <- TRUE
+localRun <- FALSE
 # comment this out for WPS!!!
 if (localRun){
   input <- "squiggleOut.tsv"
@@ -35,7 +35,7 @@ rateVals <- read.table(fileN,header=TRUE)
 rwBD <- rateVals[,BD_i]/1000
 rwID <- rateVals[,ID_i]
 rwRT <- rateVals[,RT_i]
-rwCI <- rateVals[,CI_i]*365.25 # FIX WITH DSAS_stats fix ****
+rwCI <- rateVals[,CI_i]
 
 nLines <- length(rwBD)# total length excluding header
 baseL <- duplicated(rwID)
@@ -72,4 +72,3 @@ if (localRun) proc.time() - ptm
 dev.off()
 # output is an identifier and R variable (WPS identifier). The ouput is the name of the text file
 # wps.out: output, png, Squiggle Plot, png plot of shoreline rates;
-#write.table(statsout,file="output.txt",col.names=TRUE, quote=FALSE, row.names=FALSE, sep="\t")

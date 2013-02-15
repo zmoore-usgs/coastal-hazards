@@ -1,11 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.usgs.cida.coastalhazards.util;
 
-import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
 
@@ -21,9 +16,9 @@ public class AttributeGetter {
         this.type = type;
     }
     
-    public Object getValue(String guess, Feature feature) {
+    public Object getValue(String guess, SimpleFeature feature) {
         // get real name of attribute and return it
-        return feature.getProperty(guess);
+        return feature.getAttribute(guess);
     }
     
     public boolean exists(String guess) {
