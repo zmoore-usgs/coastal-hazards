@@ -87,10 +87,11 @@ public class FeatureCollectionRParser extends AbstractParser {
                 while (features.hasNext()) {
                     SimpleFeature feature = features.next();
                     double dist = (Double) getter.getValue(BASELINE_DIST_ATTR, feature);
-                    String id = (String) getter.getValue(BASELINE_ID_ATTR, feature);
+                    String featureId = (String) getter.getValue(BASELINE_ID_ATTR, feature);
+                    int baseId = Integer.parseInt(featureId.split("\\.")[1]);
                     double lrr = (Double) getter.getValue(LRR_ATTR, feature);
                     double lci = (Double) getter.getValue(LCI_ATTR, feature);
-                    buf.write(dist + "\t" + id + "\t" + lrr + "\t" + lci);
+                    buf.write(dist + "\t" + baseId + "\t" + lrr + "\t" + lci);
                     buf.newLine();
                 }
             } else {

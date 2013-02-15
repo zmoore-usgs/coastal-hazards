@@ -72,4 +72,3 @@ if (localRun) proc.time() - ptm
 dev.off()
 # output is an identifier and R variable (WPS identifier). The ouput is the name of the text file
 # wps.out: output, png, Squiggle Plot, png plot of shoreline rates;
-#write.table(statsout,file="output.txt",col.names=TRUE, quote=FALSE, row.names=FALSE, sep="\t")
