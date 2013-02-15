@@ -353,11 +353,25 @@ var Results = {
             // X axis values
             baseDist, 
             // [Error bar top, Value, Error bar bottom]
-            [lrr - lci,lrr, lrr + lci] 
+            [/*lci,*/lrr,lci] 
             ]
         }).sortBy(function(n) {
             return n[0]
         });
+        
+        // Find 
+        var fidBreaks = [];
+        features.each(function(feature, index, features) {
+            if (index != 0) {
+                var previousFid = features[index - 1].attributes.BaselineID;
+                if (previousFid != feature.attributes.BaselineID) {
+                    fidBreaks.push(index);
+                }
+            }
+        })
+        fidBreaks.each(function(i) {
+            data.insert([[null,[null, null/*, null*/]]], i)
+        })
         
         CONFIG.graph = new Dygraph(
             plotDiv,

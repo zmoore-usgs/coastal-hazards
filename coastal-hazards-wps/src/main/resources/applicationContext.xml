@@ -5,14 +5,22 @@
         <constructor-arg index="0" ref="importProcess"/>
         <constructor-arg index="1" ref="catalog"/>
     </bean>
-<!--    <bean id="calcIntersects" class="gov.usgs.cida.coastalhazards.wps.CalculateIntersectionsProcess">
+    
+    <bean id="appendColumnsToLayer" class="gov.usgs.cida.coastalhazards.wps.AppendColumnsToLayerProcess">
         <constructor-arg index="0" ref="importProcess"/>
         <constructor-arg index="1" ref="catalog"/>
-    </bean>-->
+    </bean>
+
+    <bean id="renameLayerColumns" class="gov.usgs.cida.coastalhazards.wps.RenameLayerColumnsProcess">
+        <constructor-arg index="0" ref="importProcess"/>
+        <constructor-arg index="1" ref="catalog"/>
+    </bean>
+    
     <bean id="addResults" class="gov.usgs.cida.coastalhazards.wps.CreateResultsLayerProcess">
         <constructor-arg index="0" ref="importProcess"/>
         <constructor-arg index="1" ref="catalog"/>
     </bean>
+    
     <bean id="utmZoneCount" class="gov.usgs.cida.coastalhazards.wps.UTMZoneCountProcess" />
     <bean id="resultsRaster" class="gov.usgs.cida.coastalhazards.wps.ResultsRasterProcess" />
     <bean id="plainTextPPIO" class="gov.usgs.cida.coastalhazards.wps.ppio.PlainTextPPIO" />

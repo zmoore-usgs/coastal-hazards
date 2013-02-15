@@ -87,7 +87,8 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-shapefile</artifactId>
-            <scope>test</scope>
+            <version>8.5</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 	
