@@ -353,7 +353,7 @@ var Results = {
             // X axis values
             baseDist, 
             // [Error bar top, Value, Error bar bottom]
-            [lrr - lci,lrr, lrr + lci] 
+            [/*lci,*/lrr,lci] 
             ]
         }).sortBy(function(n) {
             return n[0]
@@ -370,7 +370,7 @@ var Results = {
             }
         })
         fidBreaks.each(function(i) {
-            data.insert([[null,[null, null, null]]], i)
+            data.insert([[null,[null, null/*, null*/]]], i)
         })
         
         CONFIG.graph = new Dygraph(
