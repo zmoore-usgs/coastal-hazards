@@ -35,7 +35,7 @@ rateVals <- read.table(fileN,header=TRUE)
 rwBD <- rateVals[,BD_i]/1000
 rwID <- rateVals[,ID_i]
 rwRT <- rateVals[,RT_i]
-rwCI <- rateVals[,CI_i]*365.25 # FIX WITH DSAS_stats fix ****
+rwCI <- rateVals[,CI_i]
 
 nLines <- length(rwBD)# total length excluding header
 baseL <- duplicated(rwID)
