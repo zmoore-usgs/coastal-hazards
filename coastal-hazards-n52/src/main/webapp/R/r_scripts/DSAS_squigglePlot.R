@@ -4,7 +4,7 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-localRun <- TRUE
+#localRun <- TRUE
 # comment this out for WPS!!!
 if (localRun){
   input <- "squiggleOut.tsv"
@@ -47,7 +47,8 @@ mxY <- mean(rwRT+rwCI)+sdMult*sd(rwRT+rwCI)
 mnY <- mean(rwRT-rwCI)-sdMult*sd(rwRT-rwCI)
 
 # resort values
-png("output.png", width=figW, height=figH, units="in",res=fRes)
+output = "output.png"
+png(output, width=figW, height=figH, units="in",res=fRes)
 par(mai=c(bM,lM,rM,tM))
 
 plot(c(0,max(rwBD)),c(mnY,mxY),type="n",xlab="Distance alongshore (kilometers)",ylab=expression('Rate of change (m yr'^-1 ~')'),
@@ -70,6 +71,5 @@ for (p in 1:numBase){
 if (localRun) proc.time() - ptm
 dev.off()
 # output is an identifier and R variable (WPS identifier). The ouput is the name of the text file
-# wps.out: output, text, output title, tabular output data to append to shapefile;
-output = "output.png"
+# wps.out: output, png, Squiggle Plot, png plot of shoreline rates;
 #write.table(statsout,file="output.txt",col.names=TRUE, quote=FALSE, row.names=FALSE, sep="\t")
