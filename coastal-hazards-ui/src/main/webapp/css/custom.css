@@ -72,6 +72,11 @@ select option.session-layer{
     height: 7.25em;
 }
 
+/* ---------------------------------------------------------------------- Baselines */
+#toggle-direction-checkbox {
+    width: 210px;
+}
+
 /* ---------------------------------------------------------------------- Transects */
 #transects-well {
     height: 5em;

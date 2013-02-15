@@ -252,19 +252,25 @@ var UI = function() {
             
             // Searching for toggles that do NOT have the toggle-button class means 
             // we won't re-intialize a toggle button (which causes all sorts of issues)
-            $('.baseline-edit-toggle:not(.toggle-button)').removeAttr('checked')
-            $('.baseline-edit-toggle:not(.toggle-button)').bootstrapSwitch({
-                onChange : CONFIG.ui.baselineEditFormButtonToggle
-            })
-            
-            if (!$('#toggle-direction-checkbox').hasClass('toggle-button')) {
+            var toggles = $('.baseline-edit-toggle:not(.switch)');
+            toggles.removeAttr('checked');
+            toggles.bootstrapSwitch();
+            toggles.on('switch-change', function(e, data){
+                //wrap call to toggle func in case it is called from elsewhere
+                var $el = $(data.el).parent();
+                var status = data.value;
+
+                CONFIG.ui.baselineEditFormButtonToggle($el, status, e);
+                });
+            $.each(toggles, function(index, element){
+                $(element).addClass('switch');
+            });
+            if (!$('#toggle-direction-checkbox').hasClass('switch')) {
+
                 $('#toggle-direction-checkbox').bootstrapSwitch({
-                    label: {
-                        enabled: "SEAWARD",
-                        disabled: "SHOREWARD"
-                    },
                     width: 200,
-                    onChange : function($el, status, e) {
+                });
+                 $('#toggle-direction-checkbox').on('switch-change', function(e, data) {
                         var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
                         var selectedFeature = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.find(function(n){
                             return n.id == selectControl.layer.selectedFeatures[0].id
@@ -276,8 +282,7 @@ var UI = function() {
                             selectedFeature.attributes.Orient = 'shoreward';
                             selectedFeature.state = OpenLayers.State.UPDATE;
                         }
-                    }
-                })
+                    });
             }
         },
         initializeUploader : function(args) {

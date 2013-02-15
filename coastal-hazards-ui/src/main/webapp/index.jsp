@@ -231,7 +231,7 @@
                                             <div class="row-fluid">
                                                 <div class="span12">
                                                     <label for="toggle-direction-checkbox">Direction</label>
-                                                    <div id="toggle-direction-checkbox">
+                                                    <div id="toggle-direction-checkbox" data-on-label="SEAWARD" data-off-label="SHOREWARD" class="baseline-edit-toggle">
                                                         <input type="checkbox">
                                                     </div>
                                                 </div>
@@ -362,6 +362,8 @@
                                         <div class="tabbable">
                                             <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
                                             <div class="tab-content" id="results-tabcontent"></div>
+                                                <div><a id="initiateExport" href="#">Export Me</a></div>
+                                                <div><img id="exportedImage"/></div>
                                         </div>
                                     </div>
                                 </div>
@@ -520,6 +522,8 @@
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
     <script type="text/javascript">splashUpdate("Loading Application-specific CSS...")</script>
     <link type="text/css" rel="stylesheet" href="css/custom.css" />
+    <script type="text/javascript">splashUpdate("Loading Dygraph Export Plugin...")</script>
+    <script type="text/javascript" src="js/dygraph-extra/dygraph-extra.js"></script>
     <script type="text/javascript">splashUpdate("Loading Main module...")</script>
     <script type="text/javascript" src="js/onReady.js"></script>
 </html>
