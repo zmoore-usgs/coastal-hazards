@@ -82,6 +82,8 @@ public class FeatureCollectionRParser extends AbstractParser {
                     && getter.exists(LRR_ATTR)
                     && getter.exists(LCI_ATTR)) {
                 FeatureIterator<SimpleFeature> features = collection.features();
+                buf.write(BASELINE_DIST_ATTR + "\t" + BASELINE_ID_ATTR + "\t" + LRR_ATTR + "\t" + LCI_ATTR);
+                buf.newLine();
                 while (features.hasNext()) {
                     SimpleFeature feature = features.next();
                     double dist = (Double) getter.getValue(BASELINE_DIST_ATTR, feature);
