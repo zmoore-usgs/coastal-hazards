@@ -229,8 +229,8 @@ var Shorelines = {
                                             }
                                         });
                                     }
-                                    
-                                    $("#modal-window").on('shown', function() {
+                                    var showCallback = function() {
+                                        $("#modal-window").unbind('shown', showCallback)
                                         // Move stuff over if the layers are already mapped
                                         layerColumns.keys().each(function(key) {
                                             if (layerColumns[key]) {
@@ -240,7 +240,8 @@ var Shorelines = {
                                                 moveDraggable(draggable,droppable)
                                             }
                                         })
-                                    })
+                                    }
+                                    $("#modal-window").on('shown', showCallback)
                                     
                                     $("#modal-window").on('hidden', function() {
                                         $('#' + layerName + '-drag-drop-row').data('mapping', undefined);
