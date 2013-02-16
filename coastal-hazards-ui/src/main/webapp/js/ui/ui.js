@@ -131,6 +131,7 @@ var UI = function() {
             var headerHtml = args.headerHtml || '';
             var bodyHtml = args.bodyHtml || '';
             var buttons = args.buttons || [];
+            var callbacks = args.callbacks || [];
             
             $('#application-overlay').fadeOut();
             $('#modal-window-label').html(headerHtml);
@@ -140,8 +141,10 @@ var UI = function() {
             buttons.each(function(button) {
                 var text = button.text;
                 var callback = button.callback;
+                var type = button.type || '';
                 var modalButton = $('<button />')
                 .addClass('btn')
+                .addClass(button.type)
                 .html(text)
                 .on('click', callback)
                 .on('click', function() {
@@ -159,6 +162,9 @@ var UI = function() {
                 })
                 .html('Cancel'))
             
+            callbacks.each(function(callback) {
+                callback();
+            })
             
             $("#modal-window").modal('show');
         },

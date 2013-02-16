@@ -436,7 +436,7 @@
 
     <script type="text/javascript">splashUpdate("Loading Geospatial Framework...")</script>
     <jsp:include page="js/openlayers/openlayers.jsp">
-        <jsp:param name="debug-qualifier" value="<%= development%>" />
+        <jsp:param name="debug-qualifier" value="false" />
     </jsp:include>
 
     <script type="text/javascript">splashUpdate("Loading JS Utilities...")</script>
