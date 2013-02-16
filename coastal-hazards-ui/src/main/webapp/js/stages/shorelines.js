@@ -1,6 +1,4 @@
 // TODO - Onclick table rows to zoom to shoreline set
-// TODO - Back end and front-end verification for uploaded shapefiles
-// TODO - Deal with non-standard shapefiles
 var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
@@ -103,6 +101,12 @@ var Shorelines = {
                         if (layerPrefix != CONFIG.name.published && foundCt < Shorelines.mandatoryColumns.length) {
                             LOG.debug('Shorelines.js::addShorelines: Could not automatically map all layer attributes. Need help');
                             var container = $('<div />').addClass('container-fluid');
+                            
+                            var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
+                            var explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well');
+                            explanationWell.html('There is a attribute mismatch between the resource you are trying to view and what is considered a valid shoreline resource. <br /><br />We require "the_geom, Date_, uncy". Please drag attributes from the left to the right to properly map to the correct attributes. The resource will be updated server-side once complete.')
+                            container.append(explanationRow.append(explanationWell));
+                            
                             var containerRow = $('<div />').addClass('row-fluid').attr('id', layerName + '-drag-drop-row');
                         
                             // Create the draggable column
@@ -227,7 +231,7 @@ var Shorelines = {
                                             if (readyToUpdate) {
                                                 $('#modal-update-button').removeAttr('disabled');
                                             } else {
-                                                 $('#modal-update-button').attr('disabled', 'disabled');
+                                                $('#modal-update-button').attr('disabled', 'disabled');
                                             }
                                             
                                         }
@@ -316,8 +320,8 @@ var Shorelines = {
     },
     
     /**
-             * Uses a OWS DescribeFeatureType response to add a layer to a map
-             */
+    * Uses a OWS DescribeFeatureType response to add a layer to a map
+    */
     addLayerToMap : function(args) {
         LOG.info('Shorelines.js::addLayerToMap');
         var layer = args.layer;
