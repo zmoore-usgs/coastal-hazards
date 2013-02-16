@@ -33,6 +33,10 @@
                 <ogc:Literal>wms_height</ogc:Literal>
               </ogc:Function>
             </ogc:Function>
+            <ogc:Function name="parameter">
+              <ogc:Literal>invert</ogc:Literal>
+              <ogc:Literal>true</ogc:Literal>
+            </ogc:Function>
           </ogc:Function>
         </Transformation>
         <Rule>
