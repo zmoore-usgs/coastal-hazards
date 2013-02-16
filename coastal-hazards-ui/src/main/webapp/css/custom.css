@@ -62,8 +62,9 @@ select option.session-layer{
 }
 
 /* ---------------------------------------------------------------------- Shorelines */
-#shoreline-table-container {
+.shoreline-feature-table {
     height: 16.25em;
+    overflow : scroll;
 }
 .shoreline-table-selected-head-column {
     width: 30%;

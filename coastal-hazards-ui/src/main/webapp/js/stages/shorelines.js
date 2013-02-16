@@ -371,7 +371,7 @@ var Shorelines = {
         event.object.events.unregister('loadend', event.object, Shorelines.createFeatureTable);
         
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table header');
-        var colorTableContainer = $('<div />');
+        var colorTableContainer = $('<div />').addClass('shoreline-feature-table');
         var colorTable = $('<table />').addClass('table table-bordered table-condensed tablesorter shoreline-table');
         var colorTableHead = $('<thead />');
         var colorTableHeadR = $('<tr />');
