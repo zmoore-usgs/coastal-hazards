@@ -109,7 +109,7 @@ var OWS = function(endpoint) {
                     });
                     CONFIG.tempSession.persistSession();
                     
-                    $(sucessCallbacks).each(function(index, callback, allCallbacks) {
+                    sucessCallbacks.each(function(callback) {
                         callback({
                             wmsCapabilities : getCapsResponse,
                             data : data, 

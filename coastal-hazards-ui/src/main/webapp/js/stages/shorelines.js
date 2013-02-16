@@ -817,12 +817,23 @@ var Shorelines = {
                         }
                     })
                     
-                    $('#shorelines-list').val('');
-                    CONFIG.ui.switchTab({
-                        caller : Shorelines,
-                        tab : 'view'
+                    CONFIG.ows.getWMSCapabilities({
+                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
+                        callbacks : {
+                            success : [
+                            function() {
+                                $('#shorelines-list').val('');
+                                $('#shorelines-list').trigger('change');
+                                CONFIG.ui.switchTab({
+                                    caller : Shorelines,
+                                    tab : 'view'
+                                })
+                                Shorelines.populateFeaturesList();
+                            }
+                            ]
+                        }
                     })
-                    Shorelines.refreshFeatureList();
+                    
                 }
                 ]
             })
