@@ -161,6 +161,7 @@ var Shorelines = {
                                 headerHtml : 'Resource Attribute Mismatch Detected',
                                 bodyHtml : container.html(),
                                 buttons : [{
+                                    id : 'modal-update-button',
                                     text : 'Update',
                                     type : 'btn-success',
                                     callback : function(event, context) {
@@ -186,6 +187,7 @@ var Shorelines = {
                                 }],
                                 callbacks : [
                                 function() {
+                                    $('#modal-update-button').attr('disabled', 'disabled');
                                     $('#' + layerName + '-drag-drop-row').data('mapping', layerColumns);
                                     $('.'+layerName+'-drag-item').draggable({
                                         containment: '#' + layerName + '-drag-drop-row', 
@@ -214,6 +216,18 @@ var Shorelines = {
                                                 mapping[layerAttribute] = layerMappingAttribute;
                                             } else { // left column, remove from map
                                                 mapping[layerAttribute] = '';
+                                            }
+                                            
+                                            var readyToUpdate = true;
+                                            mapping.values().each(function(val) {
+                                                if (!val) {
+                                                    readyToUpdate = false;
+                                                }
+                                            })
+                                            if (readyToUpdate) {
+                                                $('#modal-update-button').removeAttr('disabled');
+                                            } else {
+                                                 $('#modal-update-button').attr('disabled', 'disabled');
                                             }
                                             
                                         }
