@@ -68,8 +68,21 @@ var Shorelines = {
                     function(describeFeaturetypeRespone) {
                         LOG.trace('Shorelines.js::addShorelines: Parsing layer attributes to check that they contain the attributes needed.'); 
                         var layerColumns = Object.extended();
+                        var attributes = describeFeaturetypeRespone.featureTypes[0].properties;
+                        if (attributes.length < Shorelines.mandatoryColumns.length) {
+                            LOG.warn('Shorelines.js::addShorelines: There are not enough attributes in the selected shapefile to constitute a valid shoreline. Will be deleted. Needed: '  + Shorelines.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
+                            Shorelines.removeResource();
+                            CONFIG.ui.showAlert({
+                                message : 'Not enough attributes in upload - Check Logs',
+                                caller : Shorelines,
+                                displayTime : 7000,
+                                style: {
+                                    classes : ['alert-error']
+                                }
+                            })
+                        }
                         
-                        describeFeaturetypeRespone.featureTypes[0].properties.map(function(property) {
+                        attributes.map(function(property) {
                             return property.name;
                         })
                         .each(function(property) {
