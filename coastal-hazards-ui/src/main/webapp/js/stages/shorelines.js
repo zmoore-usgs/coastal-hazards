@@ -1,6 +1,4 @@
 // TODO - Onclick table rows to zoom to shoreline set
-// TODO - Back end and front-end verification for uploaded shapefiles
-// TODO - Deal with non-standard shapefiles
 var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
@@ -68,8 +66,21 @@ var Shorelines = {
                     function(describeFeaturetypeRespone) {
                         LOG.trace('Shorelines.js::addShorelines: Parsing layer attributes to check that they contain the attributes needed.'); 
                         var layerColumns = Object.extended();
+                        var attributes = describeFeaturetypeRespone.featureTypes[0].properties;
+                        if (attributes.length < Shorelines.mandatoryColumns.length) {
+                            LOG.warn('Shorelines.js::addShorelines: There are not enough attributes in the selected shapefile to constitute a valid shoreline. Will be deleted. Needed: '  + Shorelines.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
+                            Shorelines.removeResource();
+                            CONFIG.ui.showAlert({
+                                message : 'Not enough attributes in upload - Check Logs',
+                                caller : Shorelines,
+                                displayTime : 7000,
+                                style: {
+                                    classes : ['alert-error']
+                                }
+                            })
+                        }
                         
-                        describeFeaturetypeRespone.featureTypes[0].properties.map(function(property) {
+                        attributes.map(function(property) {
                             return property.name;
                         })
                         .each(function(property) {
@@ -90,6 +101,12 @@ var Shorelines = {
                         if (layerPrefix != CONFIG.name.published && foundCt < Shorelines.mandatoryColumns.length) {
                             LOG.debug('Shorelines.js::addShorelines: Could not automatically map all layer attributes. Need help');
                             var container = $('<div />').addClass('container-fluid');
+                            
+                            var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
+                            var explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well');
+                            explanationWell.html('There is a attribute mismatch between the resource you are trying to view and what is considered a valid shoreline resource. <br /><br />We require "the_geom, Date_, uncy". Please drag attributes from the left to the right to properly map to the correct attributes. The resource will be updated server-side once complete.')
+                            container.append(explanationRow.append(explanationWell));
+                            
                             var containerRow = $('<div />').addClass('row-fluid').attr('id', layerName + '-drag-drop-row');
                         
                             // Create the draggable column
@@ -148,6 +165,7 @@ var Shorelines = {
                                 headerHtml : 'Resource Attribute Mismatch Detected',
                                 bodyHtml : container.html(),
                                 buttons : [{
+                                    id : 'modal-update-button',
                                     text : 'Update',
                                     type : 'btn-success',
                                     callback : function(event, context) {
@@ -173,6 +191,7 @@ var Shorelines = {
                                 }],
                                 callbacks : [
                                 function() {
+                                    $('#modal-update-button').attr('disabled', 'disabled');
                                     $('#' + layerName + '-drag-drop-row').data('mapping', layerColumns);
                                     $('.'+layerName+'-drag-item').draggable({
                                         containment: '#' + layerName + '-drag-drop-row', 
@@ -203,6 +222,18 @@ var Shorelines = {
                                                 mapping[layerAttribute] = '';
                                             }
                                             
+                                            var readyToUpdate = true;
+                                            mapping.values().each(function(val) {
+                                                if (!val) {
+                                                    readyToUpdate = false;
+                                                }
+                                            })
+                                            if (readyToUpdate) {
+                                                $('#modal-update-button').removeAttr('disabled');
+                                            } else {
+                                                $('#modal-update-button').attr('disabled', 'disabled');
+                                            }
+                                            
                                         }
                                     });
                                     
@@ -229,8 +260,8 @@ var Shorelines = {
                                             }
                                         });
                                     }
-                                    
-                                    $("#modal-window").on('shown', function() {
+                                    var showCallback = function() {
+                                        $("#modal-window").unbind('shown', showCallback)
                                         // Move stuff over if the layers are already mapped
                                         layerColumns.keys().each(function(key) {
                                             if (layerColumns[key]) {
@@ -240,7 +271,8 @@ var Shorelines = {
                                                 moveDraggable(draggable,droppable)
                                             }
                                         })
-                                    })
+                                    }
+                                    $("#modal-window").on('shown', showCallback)
                                     
                                     $("#modal-window").on('hidden', function() {
                                         $('#' + layerName + '-drag-drop-row').data('mapping', undefined);
@@ -288,8 +320,8 @@ var Shorelines = {
     },
     
     /**
-             * Uses a OWS DescribeFeatureType response to add a layer to a map
-             */
+    * Uses a OWS DescribeFeatureType response to add a layer to a map
+    */
     addLayerToMap : function(args) {
         LOG.info('Shorelines.js::addLayerToMap');
         var layer = args.layer;

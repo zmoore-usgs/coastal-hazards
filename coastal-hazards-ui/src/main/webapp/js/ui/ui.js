@@ -132,6 +132,7 @@ var UI = function() {
             var bodyHtml = args.bodyHtml || '';
             var buttons = args.buttons || [];
             var callbacks = args.callbacks || [];
+            var id = args.id || '';
             
             $('#application-overlay').fadeOut();
             $('#modal-window-label').html(headerHtml);
@@ -143,6 +144,7 @@ var UI = function() {
                 var callback = button.callback;
                 var type = button.type || '';
                 var modalButton = $('<button />')
+                .attr('id', button.id || '')
                 .addClass('btn')
                 .addClass(button.type)
                 .html(text)
@@ -274,7 +276,7 @@ var UI = function() {
             if (!$('#toggle-direction-checkbox').hasClass('switch')) {
 
                 $('#toggle-direction-checkbox').bootstrapSwitch({
-                    width: 200,
+                    width: 200
                 });
                  $('#toggle-direction-checkbox').on('switch-change', function(e, data) {
                         var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
