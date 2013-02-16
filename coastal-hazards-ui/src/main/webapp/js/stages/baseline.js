@@ -1,6 +1,7 @@
 var Baseline = {
     stage : 'baseline',
     suffixes :  ['_baseline'],
+    mandatoryColumns : ['the_geom', 'ID', 'Orient'],
     reservedColor : '#7570B3',
     shorewardColor : '#76C5AD',
     description : {
@@ -137,69 +138,109 @@ var Baseline = {
         }
     },
     
-    addBaselineToMap : function(args) {
-        var orient = 'Orient';
-        LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
-        var style = new OpenLayers.Style({
-            strokeColor: '#FFFFFF',
-            strokeWidth: 2
-        },{
-            rules : [
-            new OpenLayers.Rule({
-                filter: new OpenLayers.Filter.Comparison({
-                    type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                    property: orient, 
-                    value: 'shoreward'
-                }),
-                symbolizer: {
-                    strokeColor: Baseline.shorewardColor,
-                    strokeWidth: 2
+    addLayerToMap : function(args) {
+        var layerPrefix = args.name.split(':')[0];
+        var layerName = args.name.split(':')[1];
+        
+        CONFIG.ows.getDescribeFeatureType({
+            layerNS : layerPrefix,
+            layerName : layerName,
+            callbacks : [
+            function(describeFeaturetypeRespone) {
+                LOG.trace('Baseline.js::addLayerToMap: Parsing layer attributes to check that they contain the attributes needed.'); 
+                var attributes = describeFeaturetypeRespone.featureTypes[0].properties;
+                if (layerPrefix != CONFIG.name.published && attributes.length < Baseline.mandatoryColumns.length) {
+                    LOG.warn('Baseline.js::addLayerToMap: There are not enough attributes in the selected shapefile to constitute a valid baseline. Will be deleted. Needed: '  + Baseline.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
+                    Baseline.removeResource();
+                    CONFIG.ui.showAlert({
+                        message : 'Not enough attributes in upload - Check Logs',
+                        caller : Shorelines,
+                        displayTime : 7000,
+                        style: {
+                            classes : ['alert-error']
+                        }
+                    })
                 }
-            }),
-            new OpenLayers.Rule({
-                filter: new OpenLayers.Filter.Comparison({
-                    type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                    property: orient, 
-                    value: 'seaward'
-                }),
-                symbolizer : {
-                    strokeColor: Baseline.reservedColor,
-                    strokeWidth: 2
+                
+                var layerColumns = Util.createLayerUnionAttributeMap({
+                    caller : Baseline,
+                    attributes : attributes
+                })
+                var foundAll = layerColumns.values().findIndex('') == -1 ? true : false;
+                
+                if (layerPrefix != CONFIG.name.published && !foundAll) {
+                    CONFIG.ui.buildColumnMatchingModalWindow({
+                        layerName : layerName,
+                        columns : layerColumns,
+                        caller : Baseline
+                    })
+                } else {
+                    var orient = 'Orient';
+                    LOG.info('Baseline.js::addLayerToMap: Adding baseline layer to map')
+                    var style = new OpenLayers.Style({
+                        strokeColor: '#FFFFFF',
+                        strokeWidth: 2
+                    },{
+                        rules : [
+                        new OpenLayers.Rule({
+                            filter: new OpenLayers.Filter.Comparison({
+                                type: OpenLayers.Filter.Comparison.EQUAL_TO, 
+                                property: orient, 
+                                value: 'shoreward'
+                            }),
+                            symbolizer: {
+                                strokeColor: Baseline.shorewardColor,
+                                strokeWidth: 2
+                            }
+                        }),
+                        new OpenLayers.Rule({
+                            filter: new OpenLayers.Filter.Comparison({
+                                type: OpenLayers.Filter.Comparison.EQUAL_TO, 
+                                property: orient, 
+                                value: 'seaward'
+                            }),
+                            symbolizer : {
+                                strokeColor: Baseline.reservedColor,
+                                strokeWidth: 2
+                            }
+                        }),
+                        new OpenLayers.Rule({
+                            filter: new OpenLayers.Filter.Comparison({
+                                type: OpenLayers.Filter.Comparison.EQUAL_TO, 
+                                property: orient, 
+                                value: 'seaward'
+                            }),
+                            symbolizer : {
+                                strokeColor: Baseline.reservedColor,
+                                strokeWidth: 2
+                            }
+                        }),
+                        new OpenLayers.Rule({
+                            elseFilter: true
+                        })
+                        ]
+                    })
+        
+                    var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
+                        strategies: [new OpenLayers.Strategy.BBOX()],
+                        protocol: new OpenLayers.Protocol.WFS({
+                            url:  "geoserver/"+args.name.split(':')[0]+"/wfs",
+                            featureType: args.name.split(':')[1],
+                            geometryName: "the_geom"
+                        }),
+                        renderers: CONFIG.map.getRenderer(),
+                        styleMap: new OpenLayers.StyleMap(style),
+                        type : Baseline.stage
+                    });
+        
+                    CONFIG.map.removeLayerByName(baselineLayer.name);
+                    CONFIG.map.getMap().addLayer(baselineLayer);
+                    CONFIG.tempSession.getStage(Baseline.stage).viewing = args.name;
+                    CONFIG.tempSession.persistSession();
                 }
-            }),
-            new OpenLayers.Rule({
-                filter: new OpenLayers.Filter.Comparison({
-                    type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                    property: orient, 
-                    value: 'seaward'
-                }),
-                symbolizer : {
-                    strokeColor: Baseline.reservedColor,
-                    strokeWidth: 2
-                }
-            }),
-            new OpenLayers.Rule({
-                elseFilter: true
-            })
-            ]
+            }]
         })
         
-        var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
-            strategies: [new OpenLayers.Strategy.BBOX()],
-            protocol: new OpenLayers.Protocol.WFS({
-                url:  "geoserver/"+args.name.split(':')[0]+"/wfs",
-                featureType: args.name.split(':')[1],
-                geometryName: "the_geom"
-            }),
-            renderers: CONFIG.map.getRenderer(),
-            styleMap: new OpenLayers.StyleMap(style),
-            type : Baseline.stage
-        });
-        
-        CONFIG.map.removeLayerByName(baselineLayer.name);
-        CONFIG.map.getMap().addLayer(baselineLayer);
-        CONFIG.tempSession.getStage(Baseline.stage).viewing = args.name;
-        CONFIG.tempSession.persistSession();
     },
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
@@ -269,7 +310,7 @@ var Baseline = {
         if (selectVal) {
             LOG.debug('Baseline.js::baselineSelected: Adding selected baseline ( ' + selectVal + ' ) from list');
             
-            Baseline.addBaselineToMap({
+            Baseline.addLayerToMap({
                 name : selectVal
             })
             

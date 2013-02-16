@@ -269,7 +269,7 @@ var UI = function() {
                 var status = data.value;
 
                 CONFIG.ui.baselineEditFormButtonToggle($el, status, e);
-                });
+            });
             $.each(toggles, function(index, element){
                 $(element).addClass('switch');
             });
@@ -278,19 +278,19 @@ var UI = function() {
                 $('#toggle-direction-checkbox').bootstrapSwitch({
                     width: 200
                 });
-                 $('#toggle-direction-checkbox').on('switch-change', function(e, data) {
-                        var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
-                        var selectedFeature = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.find(function(n){
-                            return n.id == selectControl.layer.selectedFeatures[0].id
-                        })
-                        if (status) {
-                            selectedFeature.attributes.Orient = 'seaward';
-                            selectedFeature.state = OpenLayers.State.UPDATE;
-                        } else {
-                            selectedFeature.attributes.Orient = 'shoreward';
-                            selectedFeature.state = OpenLayers.State.UPDATE;
-                        }
-                    });
+                $('#toggle-direction-checkbox').on('switch-change', function(e, data) {
+                    var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
+                    var selectedFeature = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.find(function(n){
+                        return n.id == selectControl.layer.selectedFeatures[0].id
+                    })
+                    if (status) {
+                        selectedFeature.attributes.Orient = 'seaward';
+                        selectedFeature.state = OpenLayers.State.UPDATE;
+                    } else {
+                        selectedFeature.attributes.Orient = 'shoreward';
+                        selectedFeature.state = OpenLayers.State.UPDATE;
+                    }
+                });
             }
         },
         initializeUploader : function(args) {
@@ -673,6 +673,194 @@ var UI = function() {
             } else if (tab == 'manage') {
                 $('#action-'+stage+'-tablist a[href="#'+stage+'-manage-tab"]').trigger('click');
             }
+        },
+        buildColumnMatchingModalWindow : function(args) {
+            var layerName = args.layerName;
+            var columns = args.columns;
+            var caller = args.caller;
+            
+            LOG.debug('UI.js::buildColumnMatchingModalWindow: Could not automatically map all layer attributes. Need help');
+            var container = $('<div />').addClass('container-fluid');
+                            
+            var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
+            var explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well');
+            explanationWell.html('There is a attribute mismatch between the resource you are trying to view and what is considered a valid '+caller.stage+' resource. <br /><br />We require '+caller.mandatoryColumns.toString()+'. Please drag attributes from the left to the right to properly map to the correct attributes. The resource will be updated server-side once complete.')
+            container.append(explanationRow.append(explanationWell));
+                            
+            var containerRow = $('<div />').addClass('row-fluid').attr('id', layerName + '-drag-drop-row');
+                        
+            // Create the draggable column
+            var dragListContainer = $('<div />').
+            attr('id', layerName + '-drag-container').
+            addClass('well span5');
+            var dragList = $('<ul />').
+            attr('id', layerName + '-drag-list').
+            addClass('ui-helper-reset');
+            columns.keys().each(function(name) {
+                                
+                var li = $('<li />')
+                var dragHolder = $('<div />').
+                addClass(layerName + '-drop-holder left-drop-holder');
+                var dragItem = $('<div />').
+                addClass(layerName + '-drag-item ui-state-default ui-corner-all').
+                attr('id', name + '-drag-item').
+                html(name);
+                var iconSpan = $('<span />').
+                attr('style', 'float:left;').
+                addClass('ui-icon ui-icon-link').
+                html('&nbsp;');
+                            
+                dragItem.append(iconSpan);
+                dragHolder.append(dragItem);
+                li.append(dragHolder);
+                dragList.append(li);
+            })
+            dragListContainer.append(dragList);
+            containerRow.append(dragListContainer);
+            container.append(containerRow);
+                            
+            // Create the droppable column
+            var dropListContainer = $('<div />').
+            attr('id', layerName + '-drop-container').
+            addClass('well span5 offset2');
+            var dropList = $('<ul />').
+            attr('id', layerName + '-drop-list').
+            addClass('ui-helper-reset');
+            caller.mandatoryColumns.each(function(name) {
+                var listItem = $('<li />').
+                append(
+                    $('<div />').
+                    addClass(layerName + '-drop-holder right-drop-holder').
+                    attr('id', name + '-drop-item').
+                    html(name));
+                            
+                dropList.append(listItem);
+            })
+            dropListContainer.append(dropList);
+            containerRow.append(dropListContainer);
+                            
+            container.append(containerRow);
+                            
+            CONFIG.ui.createModalWindow({
+                headerHtml : 'Layer Attribute Mismatch Detected',
+                bodyHtml : container.html(),
+                buttons : [{
+                    id : 'modal-update-button',
+                    text : 'Update',
+                    type : 'btn-success',
+                    callback : function(event, context) {
+                        var mapping = $('#' + layerName + '-drag-drop-row').data('mapping');
+                        var columns = [];
+                        mapping.keys().each(function(key) {
+                            if (key != mapping[key]) {
+                                columns.push(key + '|' + mapping[key])
+                            }
+                        })
+                        CONFIG.ows.renameColumns({
+                            layer : layerName,
+                            workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                            store : 'ch-input',
+                            columns : columns,
+                            callbacks : [
+                            function() {
+                                $("#"+caller.stage+"-list").val(CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName)
+                                $("#"+caller.stage+"-list").trigger('change');    
+                            }
+                            ]
+                        })
+                    }
+                }],
+                callbacks : [
+                function() {
+                    $('#modal-update-button').attr('disabled', 'disabled');
+                    $('#' + layerName + '-drag-drop-row').data('mapping', columns);
+                    $('.'+layerName+'-drag-item').draggable({
+                        containment: '#' + layerName + '-drag-drop-row', 
+                        scroll: false,
+                        snap :  '.'+layerName+'-drop-holder',
+                        snapMode : 'inner',
+                        cursor: 'move',
+                        revert : 'invalid',
+                        stack : '.'+layerName+'-drag-item'
+                    });
+                    $('.'+layerName+'-drop-holder').droppable({
+                        greedy: true,
+                        activeClass: 'ui-state-highlight',
+                        hoverClass: 'drop-hover',
+                        tolerance : 'fit',
+                        drop: function(event,ui) {
+                            var draggable = ui.draggable;
+                            var dragId = draggable.attr('id');
+                            var dropId = this.id;
+                            var layerAttribute = dragId.substr(0, dragId.indexOf('-drag-item'));
+                            var layerMappingAttribute = dropId.substr(0, dropId.indexOf('-drop-item'))
+                            var mapping = $('#' + layerName + '-drag-drop-row').data('mapping');
+                                            
+                            // Figure out if we are in a drag or drop well
+                            if ($(this).closest('.well').attr('id').contains('drop-container')) {
+                                mapping[layerAttribute] = layerMappingAttribute;
+                            } else { // left column, remove from map
+                                mapping[layerAttribute] = '';
+                            }
+                                            
+                            var readyToUpdate = true;
+                            mapping.values().each(function(val) {
+                                if (!val) {
+                                    readyToUpdate = false;
+                                }
+                            })
+                            if (readyToUpdate) {
+                                $('#modal-update-button').removeAttr('disabled');
+                            } else {
+                                $('#modal-update-button').attr('disabled', 'disabled');
+                            }
+                                            
+                        }
+                    });
+                                    
+                    var moveDraggable = function(draggable, droppable) {
+                        var dragTop = draggable.position().top;
+                        var dragLeft = draggable.position().left;
+                        var dropTop = droppable.position().top;
+                        var dropLeft = droppable.position().left;
+                        var horizontalMove = dropLeft - dragLeft;
+                        var verticalMove = dropTop < dragTop ? dropTop - dragTop + 5 : dropTop + dragTop + 5 // 5 = margin-top
+                        draggable.animate({
+                            left: horizontalMove
+                        },{
+                            queue : 'fx',
+                            duration : 1000
+                        }).animate({
+                            top: verticalMove
+                        },
+                        {
+                            queue : 'fx',
+                            duration : 1000,
+                            complete : function() {
+                                this.style.zIndex = 9999;
+                            }
+                        });
+                    }
+                    var showCallback = function() {
+                        $("#modal-window").unbind('shown', showCallback)
+                        // Move stuff over if the layers are already mapped
+                        columns.keys().each(function(key) {
+                            if (columns[key]) {
+                                var draggable = $('#' + key + '-drag-item').draggable('widget');
+                                var droppable = $('#' + columns[key] + '-drop-item').droppable('widget');
+                                draggable.queue("fx");
+                                moveDraggable(draggable,droppable)
+                            }
+                        })
+                    }
+                    $("#modal-window").on('shown', showCallback)
+                                    
+                    $("#modal-window").on('hidden', function() {
+                        $('#' + layerName + '-drag-drop-row').data('mapping', undefined);
+                    })
+                                    
+                }]
+            })
         }
     });
 }
