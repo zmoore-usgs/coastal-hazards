@@ -424,6 +424,9 @@
         <jsp:param name="relPath" value="" />
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
+    
+    <script type="text/javascript">splashUpdate("Loading JQuery UI...")</script>
+    <script type="text/javascript" src="js/jquery-ui/jquery-ui-1.10.0.custom.min.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading UI Framework...")</script>
     <jsp:include page="js/bootstrap/package.jsp">
@@ -433,7 +436,7 @@
 
     <script type="text/javascript">splashUpdate("Loading Geospatial Framework...")</script>
     <jsp:include page="js/openlayers/openlayers.jsp">
-        <jsp:param name="debug-qualifier" value="<%= development%>" />
+        <jsp:param name="debug-qualifier" value="false" />
     </jsp:include>
 
     <script type="text/javascript">splashUpdate("Loading JS Utilities...")</script>
@@ -517,6 +520,8 @@
     <script type="text/javascript" src="js/stages/results.js"></script>
 
     <!-- TODO - Modularize -->
+    <script type="text/javascript">splashUpdate("Loading JQuery UI CSS...")</script>
+    <link type="text/css" rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
     <script type="text/javascript">splashUpdate("Loading Toggle plugin...")</script>
     <link type="text/css" rel="stylesheet" href="js/bootstrap-switch/static/stylesheets/bootstrapSwitch.css" />
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>

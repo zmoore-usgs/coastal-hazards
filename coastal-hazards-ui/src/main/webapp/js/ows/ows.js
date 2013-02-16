@@ -55,26 +55,26 @@ var OWS = function(endpoint) {
             }
             
             var request = '<?xml version="1.0" encoding="UTF-8"?>' +
-            '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' +
-            '<ows:Identifier>'+identifier+'</ows:Identifier>' + 
-            '<wps:DataInputs>' + 
-            '<wps:Input>' + 
-            '<ows:Identifier>features</ows:Identifier>' + 
-            '<wps:Reference mimeType="text/xml" xlink:href="http://geoserver/wfs" method="POST">' + 
-            '<wps:Body>' + 
-            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+layerPrefix+'="gov.usgs.cida.ch.'+layerPrefix+'">' + 
-            '<wfs:Query typeName="' + layerFullName + '"/>' + 
-            '</wfs:GetFeature>' + 
-            '</wps:Body>' +
-            '</wps:Reference>' + 
-            '</wps:Input>' + 
-            '</wps:DataInputs>' + 
-            '<wps:ResponseForm>' + 
-            '<wps:RawDataOutput>' + 
-            '<ows:Identifier>count</ows:Identifier>' + 
-            '</wps:RawDataOutput>' + 
-            '</wps:ResponseForm>' + 
-            '</wps:Execute>';
+                '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' +
+                '<ows:Identifier>'+identifier+'</ows:Identifier>' + 
+                '<wps:DataInputs>' + 
+                '<wps:Input>' + 
+                '<ows:Identifier>features</ows:Identifier>' + 
+                '<wps:Reference mimeType="text/xml" xlink:href="http://geoserver/wfs" method="POST">' + 
+                '<wps:Body>' + 
+                '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+layerPrefix+'="gov.usgs.cida.ch.'+layerPrefix+'">' + 
+                '<wfs:Query typeName="' + layerFullName + '"/>' + 
+                '</wfs:GetFeature>' + 
+                '</wps:Body>' +
+                '</wps:Reference>' + 
+                '</wps:Input>' + 
+                '</wps:DataInputs>' + 
+                '<wps:ResponseForm>' + 
+                '<wps:RawDataOutput>' + 
+                '<ows:Identifier>count</ows:Identifier>' + 
+                '</wps:RawDataOutput>' + 
+                '</wps:ResponseForm>' + 
+                '</wps:Execute>';
         
             CONFIG.ows.executeWPSProcess({
                 processIdentifier : identifier,
@@ -109,7 +109,7 @@ var OWS = function(endpoint) {
                     });
                     CONFIG.tempSession.persistSession();
                     
-                    $(sucessCallbacks).each(function(index, callback, allCallbacks) {
+                    sucessCallbacks.each(function(callback) {
                         callback({
                             wmsCapabilities : getCapsResponse,
                             data : data, 
@@ -283,20 +283,20 @@ var OWS = function(endpoint) {
         updateFeatureTypeAttribute : function(featureType, attribute, value, callback) {
 
             var updateTransaction =
-            '<?xml version="1.0"?>' +
-            '<wfs:Transaction xmlns:ogc="http://www.opengis.net/ogc" ' +
-            'xmlns:wfs="http://www.opengis.net/wfs" ' +
-            'xmlns:gml="http://www.opengis.net/gml" ' +
-            'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
-            'version="1.1.0" service="WFS" '+
-            'xsi:schemaLocation="http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd">' +
-            '<wfs:Update typeName="' + featureType + '">' +
-            '<wfs:Property>' +
-            '<wfs:Name>' + attribute + '</wfs:Name>' +
-            '<wfs:Value>' + value + '</wfs:Value>'+
-            '</wfs:Property>'+
-            '</wfs:Update>'+
-            '</wfs:Transaction>';
+                '<?xml version="1.0"?>' +
+                '<wfs:Transaction xmlns:ogc="http://www.opengis.net/ogc" ' +
+                'xmlns:wfs="http://www.opengis.net/wfs" ' +
+                'xmlns:gml="http://www.opengis.net/gml" ' +
+                'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
+                'version="1.1.0" service="WFS" '+
+                'xsi:schemaLocation="http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd">' +
+                '<wfs:Update typeName="' + featureType + '">' +
+                '<wfs:Property>' +
+                '<wfs:Name>' + attribute + '</wfs:Name>' +
+                '<wfs:Value>' + value + '</wfs:Value>'+
+                '</wfs:Property>'+
+                '</wfs:Update>'+
+                '</wfs:Transaction>';
 
             $.ajax({
                 url: me.geoserverProxyEndpoint + 'ows/',
@@ -344,18 +344,18 @@ var OWS = function(endpoint) {
             if (args.layer.split(':')[0] == CONFIG.tempSession.getCurrentSessionKey()) {
                 var url = me.geoserverProxyEndpoint + CONFIG.tempSession.getCurrentSessionKey() + '/wfs';
                 var wfst = '<wfs:Transaction service="WFS" version="1.1.0" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">' + 
-                '<wfs:Delete typeName="feature:'+layerName+'">' + 
-                '<ogc:Filter>' + 
-                '<ogc:BBOX>' + 
-                '<ogc:PropertyName>the_geom</ogc:PropertyName>' + 
-                '<gml:Envelope srsName="EPSG:900913" xmlns:gml="http://www.opengis.net/gml">' + 
-                '<gml:lowerCorner>-20037508.34 -20037508.34</gml:lowerCorner>' + 
-                '<gml:upperCorner>20037508.34 20037508.34</gml:upperCorner>' + 
-                '</gml:Envelope>' + 
-                '</ogc:BBOX>' + 
-                '</ogc:Filter>' + 
-                '</wfs:Delete>' + 
-                '</wfs:Transaction>';
+                    '<wfs:Delete typeName="feature:'+layerName+'">' + 
+                    '<ogc:Filter>' + 
+                    '<ogc:BBOX>' + 
+                    '<ogc:PropertyName>the_geom</ogc:PropertyName>' + 
+                    '<gml:Envelope srsName="EPSG:900913" xmlns:gml="http://www.opengis.net/gml">' + 
+                    '<gml:lowerCorner>-20037508.34 -20037508.34</gml:lowerCorner>' + 
+                    '<gml:upperCorner>20037508.34 20037508.34</gml:upperCorner>' + 
+                    '</gml:Envelope>' + 
+                    '</ogc:BBOX>' + 
+                    '</ogc:Filter>' + 
+                    '</wfs:Delete>' + 
+                    '</wfs:Transaction>';
                 $.ajax({
                     url: url,
                     type: 'POST',
@@ -380,49 +380,49 @@ var OWS = function(endpoint) {
             var newLayer = args.newLayer;
             
             var wps = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
-            '<ows:Identifier>gs:Import</ows:Identifier>' + 
-            '<wps:DataInputs>' + 
-            '<wps:Input>' + 
-            '<ows:Identifier>features</ows:Identifier>' + 
-            '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
-            '<wps:Body>' + 
-            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:sample="gov.usgs.cida.ch.sample">' + 
-            '<wfs:Query typeName="'+originalLayer+'"/>' + 
-            '</wfs:GetFeature>' + 
-            '</wps:Body>' + 
-            '</wps:Reference>' + 
-            '</wps:Input>' + 
-            '<wps:Input>' + 
-            '<ows:Identifier>workspace</ows:Identifier>' + 
-            '<wps:Data>' + 
-            '<wps:LiteralData>'+CONFIG.tempSession.getCurrentSessionKey()+'</wps:LiteralData>' + 
-            '</wps:Data>' + 
-            '</wps:Input>' + 
-            '<wps:Input>' + 
-            '<ows:Identifier>store</ows:Identifier>' + 
-            '<wps:Data>' + 
-            '<wps:LiteralData>ch-input</wps:LiteralData>' + 
-            '</wps:Data>' + 
-            '</wps:Input>' + 
-            '<wps:Input>' + 
-            '<ows:Identifier>name</ows:Identifier>' + 
-            '<wps:Data>' + 
-            '<wps:LiteralData>'+newLayer+'</wps:LiteralData>' + 
-            '</wps:Data>' + 
-            '</wps:Input>' + 
-            '<wps:Input>' + 
-            '<ows:Identifier>srsHandling</ows:Identifier>' + 
-            '<wps:Data>' + 
-            '<wps:LiteralData>REPROJECT_TO_DECLARED</wps:LiteralData>' + 
-            '</wps:Data>' + 
-            '</wps:Input>' + 
-            '</wps:DataInputs>' + 
-            '<wps:ResponseForm>' + 
-            '<wps:RawDataOutput>' + 
-            '<ows:Identifier>layerName</ows:Identifier>' + 
-            '</wps:RawDataOutput>' + 
-            '</wps:ResponseForm>' + 
-            '</wps:Execute>';
+                '<ows:Identifier>gs:Import</ows:Identifier>' + 
+                '<wps:DataInputs>' + 
+                '<wps:Input>' + 
+                '<ows:Identifier>features</ows:Identifier>' + 
+                '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
+                '<wps:Body>' + 
+                '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:sample="gov.usgs.cida.ch.sample">' + 
+                '<wfs:Query typeName="'+originalLayer+'"/>' + 
+                '</wfs:GetFeature>' + 
+                '</wps:Body>' + 
+                '</wps:Reference>' + 
+                '</wps:Input>' + 
+                '<wps:Input>' + 
+                '<ows:Identifier>workspace</ows:Identifier>' + 
+                '<wps:Data>' + 
+                '<wps:LiteralData>'+CONFIG.tempSession.getCurrentSessionKey()+'</wps:LiteralData>' + 
+                '</wps:Data>' + 
+                '</wps:Input>' + 
+                '<wps:Input>' + 
+                '<ows:Identifier>store</ows:Identifier>' + 
+                '<wps:Data>' + 
+                '<wps:LiteralData>ch-input</wps:LiteralData>' + 
+                '</wps:Data>' + 
+                '</wps:Input>' + 
+                '<wps:Input>' + 
+                '<ows:Identifier>name</ows:Identifier>' + 
+                '<wps:Data>' + 
+                '<wps:LiteralData>'+newLayer+'</wps:LiteralData>' + 
+                '</wps:Data>' + 
+                '</wps:Input>' + 
+                '<wps:Input>' + 
+                '<ows:Identifier>srsHandling</ows:Identifier>' + 
+                '<wps:Data>' + 
+                '<wps:LiteralData>REPROJECT_TO_DECLARED</wps:LiteralData>' + 
+                '</wps:Data>' + 
+                '</wps:Input>' + 
+                '</wps:DataInputs>' + 
+                '<wps:ResponseForm>' + 
+                '<wps:RawDataOutput>' + 
+                '<ows:Identifier>layerName</ows:Identifier>' + 
+                '</wps:RawDataOutput>' + 
+                '</wps:ResponseForm>' + 
+                '</wps:Execute>';
         
             CONFIG.ows.executeWPSProcess({
                 processIdentifier : 'gs:Import',
@@ -446,46 +446,103 @@ var OWS = function(endpoint) {
             var store = args.store;
             var columns = args.columns;
             var wps = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
-            '<ows:Identifier>gs:AppendColumnsToLayer</ows:Identifier>' + 
-            '<wps:DataInputs>' + 
-            '<wps:Input>' + 
-            '<ows:Identifier>layer</ows:Identifier>' + 
-            '<wps:Data>' + 
-            '<wps:LiteralData>'+layer+'</wps:LiteralData>' + 
-            '</wps:Data>' + 
-            '</wps:Input>' + 
-            '<wps:Input>' + 
-            '<ows:Identifier>workspace</ows:Identifier>' + 
-            '<wps:Data>' + 
-            '<wps:LiteralData>'+workspace+'</wps:LiteralData>' + 
-            '</wps:Data>' + 
-            '</wps:Input>' + 
-            '<wps:Input>' + 
-            '<ows:Identifier>store</ows:Identifier>' + 
-            '<wps:Data>' + 
-            '<wps:LiteralData>'+store+'</wps:LiteralData>' + 
-            '</wps:Data>' + 
-            '</wps:Input>';
+                '<ows:Identifier>gs:AppendColumnsToLayer</ows:Identifier>' + 
+                '<wps:DataInputs>' + 
+                '<wps:Input>' + 
+                '<ows:Identifier>layer</ows:Identifier>' + 
+                '<wps:Data>' + 
+                '<wps:LiteralData>'+layer+'</wps:LiteralData>' + 
+                '</wps:Data>' + 
+                '</wps:Input>' + 
+                '<wps:Input>' + 
+                '<ows:Identifier>workspace</ows:Identifier>' + 
+                '<wps:Data>' + 
+                '<wps:LiteralData>'+workspace+'</wps:LiteralData>' + 
+                '</wps:Data>' + 
+                '</wps:Input>' + 
+                '<wps:Input>' + 
+                '<ows:Identifier>store</ows:Identifier>' + 
+                '<wps:Data>' + 
+                '<wps:LiteralData>'+store+'</wps:LiteralData>' + 
+                '</wps:Data>' + 
+                '</wps:Input>';
             
             columns.each(function(column) {
                 wps += '<wps:Input>' + 
-                '<ows:Identifier>column</ows:Identifier>' + 
-                '<wps:Data>' + 
-                '<wps:LiteralData>'+column+'</wps:LiteralData>' + 
-                '</wps:Data>' + 
-                '</wps:Input>';
+                    '<ows:Identifier>column</ows:Identifier>' + 
+                    '<wps:Data>' + 
+                    '<wps:LiteralData>'+column+'</wps:LiteralData>' + 
+                    '</wps:Data>' + 
+                    '</wps:Input>';
             })
             
             wps += '</wps:DataInputs>' + 
-            '<wps:ResponseForm>' + 
-            '<wps:RawDataOutput>' + 
-            '<ows:Identifier>layerName</ows:Identifier>' + 
-            '</wps:RawDataOutput>' + 
-            '</wps:ResponseForm>' + 
-            '</wps:Execute>';
+                '<wps:ResponseForm>' + 
+                '<wps:RawDataOutput>' + 
+                '<ows:Identifier>layerName</ows:Identifier>' + 
+                '</wps:RawDataOutput>' + 
+                '</wps:ResponseForm>' + 
+                '</wps:Execute>';
     
             return wps;
-        } ,
+        },
+        renameColumns : function(args) {
+            var wps = CONFIG.ows.createRenameColumnsWPSXML(args);
+            CONFIG.ows.executeWPSProcess({
+                processIdentifier : 'gs:RenameLayerColumns',
+                request : wps,
+                callbacks : args.callbacks || [],
+                context : args.context || this
+            })
+        },
+        createRenameColumnsWPSXML : function(args) {
+            var layer = args.layer;
+            var workspace = args.workspace;
+            var store = args.store;
+            var columns = args.columns || [];
+            var wps = '<?xml version="1.0" encoding="UTF-8"?>' + 
+                '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
+                '<ows:Identifier>gs:RenameLayerColumns</ows:Identifier>' + 
+                '<wps:DataInputs>' + 
+                '<wps:Input>' + 
+                '<ows:Identifier>layer</ows:Identifier>' + 
+                '<wps:Data>' + 
+                '<wps:LiteralData>'+layer+'</wps:LiteralData>' + 
+                '</wps:Data>' + 
+                '</wps:Input>' + 
+                '<wps:Input>' + 
+                '<ows:Identifier>workspace</ows:Identifier>' + 
+                '<wps:Data>' + 
+                '<wps:LiteralData>'+workspace+'</wps:LiteralData>' + 
+                '</wps:Data>' + 
+                '</wps:Input>' + 
+                '<wps:Input>' + 
+                ' <ows:Identifier>store</ows:Identifier>' + 
+                '<wps:Data>' + 
+                '<wps:LiteralData>'+store+'</wps:LiteralData>' + 
+                '</wps:Data>' + 
+                '</wps:Input>';
+    
+            columns.each(function(column) {
+                wps +=  '<wps:Input>' + 
+                    '<ows:Identifier>column</ows:Identifier>' + 
+                    '<wps:Data>' + 
+                    '<wps:LiteralData>'+column+'</wps:LiteralData>' + 
+                    '</wps:Data>' + 
+                    '</wps:Input>';
+            })
+               
+            wps += '</wps:DataInputs>' + 
+                '<wps:ResponseForm>' + 
+                '<wps:RawDataOutput>' + 
+                '<ows:Identifier>layerName</ows:Identifier>' + 
+                '</wps:RawDataOutput>' + 
+                '</wps:ResponseForm>' + 
+                '</wps:Execute>';
+           
+            return wps;
+        },
+        
         createResultsRasterSLD : function(args) {
             var argss = args || {};
             var attribute = argss.attribute || 'LRR';
@@ -493,59 +550,59 @@ var OWS = function(endpoint) {
             var colorMapEntries = argss.colorMapEntries || [];
             
             var sld = '<?xml version="1.0" encoding="ISO-8859-1"?>' + 
-            '<StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' + 
-            '<NamedLayer>' + 
-            '<Name>#[layer]</Name>' + 
-            '<UserStyle>' +
-            '<FeatureTypeStyle>' + 
-            '<Transformation>' + 
-            '<ogc:Function name="gs:ResultsRaster">' + 
+                '<StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' + 
+                '<NamedLayer>' + 
+                '<Name>#[layer]</Name>' + 
+                '<UserStyle>' +
+                '<FeatureTypeStyle>' + 
+                '<Transformation>' + 
+                '<ogc:Function name="gs:ResultsRaster">' + 
             
-            '<ogc:Function name="parameter">' + 
-            '<ogc:Literal>features</ogc:Literal>' +
-            '</ogc:Function>' + 
+                '<ogc:Function name="parameter">' + 
+                '<ogc:Literal>features</ogc:Literal>' +
+                '</ogc:Function>' + 
             
-            '<ogc:Function name="parameter">' + 
-            '<ogc:Literal>attribute</ogc:Literal>' + 
-            '<ogc:Literal>'+attribute+'</ogc:Literal>' + 
-            '</ogc:Function>' + 
+                '<ogc:Function name="parameter">' + 
+                '<ogc:Literal>attribute</ogc:Literal>' + 
+                '<ogc:Literal>'+attribute+'</ogc:Literal>' + 
+                '</ogc:Function>' + 
             
-            '<ogc:Function name="parameter">' + 
-            '<ogc:Literal>bbox</ogc:Literal>' + 
-            '<ogc:Function name="env">' + 
-            '<ogc:Literal>wms_bbox</ogc:Literal>' + 
-            '</ogc:Function>' + 
-            '</ogc:Function>' + 
+                '<ogc:Function name="parameter">' + 
+                '<ogc:Literal>bbox</ogc:Literal>' + 
+                '<ogc:Function name="env">' + 
+                '<ogc:Literal>wms_bbox</ogc:Literal>' + 
+                '</ogc:Function>' + 
+                '</ogc:Function>' + 
             
-            '<ogc:Function name="parameter">' + 
-            '<ogc:Literal>width</ogc:Literal>' + 
-            '<ogc:Function name="env">' + 
-            '<ogc:Literal>wms_width</ogc:Literal>' + 
-            '</ogc:Function>' + 
-            '</ogc:Function>' + 
+                '<ogc:Function name="parameter">' + 
+                '<ogc:Literal>width</ogc:Literal>' + 
+                '<ogc:Function name="env">' + 
+                '<ogc:Literal>wms_width</ogc:Literal>' + 
+                '</ogc:Function>' + 
+                '</ogc:Function>' + 
             
-            '<ogc:Function name="parameter">' + 
-            '<ogc:Literal>height</ogc:Literal>' + 
-            '<ogc:Function name="env">' + 
-            '<ogc:Literal>wms_height</ogc:Literal>' + 
-            '</ogc:Function>' + 
-            '</ogc:Function>' + 
+                '<ogc:Function name="parameter">' + 
+                '<ogc:Literal>height</ogc:Literal>' + 
+                '<ogc:Function name="env">' + 
+                '<ogc:Literal>wms_height</ogc:Literal>' + 
+                '</ogc:Function>' + 
+                '</ogc:Function>' + 
             
-            '</ogc:Function>' + 
+                '</ogc:Function>' + 
             
-            '</Transformation>' + 
-            '<Rule>' + 
-            '<RasterSymbolizer>' + 
-            '<Geometry>' + 
-            '<ogc:PropertyName>the_geom</ogc:PropertyName>' + 
-            '</Geometry>' + 
-            '<Opacity>1</Opacity>' + 
-            '</RasterSymbolizer>' + 
-            '</Rule>' + 
-            '</FeatureTypeStyle>' + 
-            '</UserStyle>' + 
-            '</NamedLayer>' + 
-            '</StyledLayerDescriptor>';
+                '</Transformation>' + 
+                '<Rule>' + 
+                '<RasterSymbolizer>' + 
+                '<Geometry>' + 
+                '<ogc:PropertyName>the_geom</ogc:PropertyName>' + 
+                '</Geometry>' + 
+                '<Opacity>1</Opacity>' + 
+                '</RasterSymbolizer>' + 
+                '</Rule>' + 
+                '</FeatureTypeStyle>' + 
+                '</UserStyle>' + 
+                '</NamedLayer>' + 
+                '</StyledLayerDescriptor>';
             return sld.replace('#[layer]', layerName)
         }
     });

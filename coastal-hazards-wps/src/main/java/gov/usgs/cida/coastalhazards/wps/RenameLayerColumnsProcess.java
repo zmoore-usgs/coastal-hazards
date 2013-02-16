@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gov.usgs.cida.coastalhazards.wps;
 
 import gov.usgs.cida.coastalhazards.util.GeoserverUtils;
@@ -106,11 +102,25 @@ public class RenameLayerColumnsProcess implements GeoServerProcess {
                 featureType.getRestrictions(),
                 featureType.getSuper(),
                 featureType.getDescription());
-        SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(newFeatureType);
         
+        SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(newFeatureType);
         while (features.hasNext()) {
             SimpleFeature feature = (SimpleFeature) features.next();
             SimpleFeature newFeature = SimpleFeatureBuilder.retype(feature, sfb);
+            List<Object> oldAttributes = feature.getAttributes();
+            List<Object> newAttributes = newFeature.getAttributes();
+            // If the feature type contains attributes in which the original 
+            // feature does not have a value for, 
+            // the value in the resulting feature is set to null.
+            // Need to copy it back from the original feature
+            for (int aInd = 0;aInd < newAttributes.size();aInd++) {
+                Object oldAttribute = oldAttributes.get(aInd);
+                Object newAttribute = newAttributes.get(aInd);
+                
+                if (newAttribute == null && oldAttribute != null) {
+                    newFeature.setAttribute(aInd, oldAttribute);
+                }
+            }
             sfList.add(newFeature);
         }
 
