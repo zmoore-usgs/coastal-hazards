@@ -164,10 +164,9 @@ var Shorelines = {
                                             store : 'ch-input',
                                             columns : columns,
                                             callbacks : [
-                                            Shorelines.addLayerToMap({
-                                                layer : layerName,
-                                                describeFeaturetypeRespone : describeFeaturetypeRespone
-                                            })                                                
+                                            function() {
+                                                $("#shorelines-list").trigger('change');    
+                                            }
                                             ]
                                         })
                                     }
