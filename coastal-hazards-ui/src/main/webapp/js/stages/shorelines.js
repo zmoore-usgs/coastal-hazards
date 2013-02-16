@@ -87,7 +87,7 @@ var Shorelines = {
                             }
                         })
                         
-                        if (foundCt < Shorelines.mandatoryColumns.length) {
+                        if (layerPrefix != CONFIG.name.published && foundCt < Shorelines.mandatoryColumns.length) {
                             LOG.debug('Shorelines.js::addShorelines: Could not automatically map all layer attributes. Need help');
                             var container = $('<div />').addClass('container-fluid');
                             var containerRow = $('<div />').addClass('row-fluid').attr('id', layerName + '-drag-drop-row');
