@@ -52,7 +52,7 @@ var Shorelines = {
         LOG.info('Shorelines.js::addShorelines');
         
         LOG.debug('Shorelines.js::addShorelines: Adding ' + layers.length + ' shoreline layers to map'); 
-        $(layers).each(function(index,layer) {
+        layers.each(function(layer) {
             var layerTitle = layer.title;
             var layerPrefix = layer.prefix;
             var layerName = layer.name;
@@ -65,7 +65,6 @@ var Shorelines = {
                     callbacks : [
                     function(describeFeaturetypeRespone) {
                         LOG.trace('Shorelines.js::addShorelines: Parsing layer attributes to check that they contain the attributes needed.'); 
-                        var layerColumns = Object.extended();
                         var attributes = describeFeaturetypeRespone.featureTypes[0].properties;
                         if (attributes.length < Shorelines.mandatoryColumns.length) {
                             LOG.warn('Shorelines.js::addShorelines: There are not enough attributes in the selected shapefile to constitute a valid shoreline. Will be deleted. Needed: '  + Shorelines.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
@@ -80,205 +79,17 @@ var Shorelines = {
                             })
                         }
                         
-                        attributes.map(function(property) {
-                            return property.name;
+                        var layerColumns = Util.createLayerUnionAttributeMap({
+                            caller : Shorelines,
+                            attributes : attributes
                         })
-                        .each(function(property) {
-                            layerColumns[property] = '';
-                        })
+                        var foundAll = layerColumns.values().findIndex('') == -1 ? true : false;
                         
-                        var foundCt = 0;
-                        layerColumns.keys(function(columnName) {
-                            var eqColName = Shorelines.mandatoryColumns.find(function(column) {
-                                return column.toLowerCase() == columnName.toLowerCase()
-                            })
-                            if (eqColName) {
-                                layerColumns[columnName] = eqColName;
-                                foundCt++;
-                            }
-                        })
-                        
-                        if (layerPrefix != CONFIG.name.published && foundCt < Shorelines.mandatoryColumns.length) {
-                            LOG.debug('Shorelines.js::addShorelines: Could not automatically map all layer attributes. Need help');
-                            var container = $('<div />').addClass('container-fluid');
-                            
-                            var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
-                            var explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well');
-                            explanationWell.html('There is a attribute mismatch between the resource you are trying to view and what is considered a valid shoreline resource. <br /><br />We require "the_geom, Date_, uncy". Please drag attributes from the left to the right to properly map to the correct attributes. The resource will be updated server-side once complete.')
-                            container.append(explanationRow.append(explanationWell));
-                            
-                            var containerRow = $('<div />').addClass('row-fluid').attr('id', layerName + '-drag-drop-row');
-                        
-                            // Create the draggable column
-                            var dragListContainer = $('<div />').
-                            attr('id', layerName + '-drag-container').
-                            addClass('well span5');
-                            var dragList = $('<ul />').
-                            attr('id', layerName + '-drag-list').
-                            addClass('ui-helper-reset');
-                            layerColumns.keys().each(function(name) {
-                                
-                                var li = $('<li />')
-                                var dragHolder = $('<div />').
-                                addClass(layerName + '-drop-holder left-drop-holder');
-                                var dragItem = $('<div />').
-                                addClass(layerName + '-drag-item ui-state-default ui-corner-all').
-                                attr('id', name + '-drag-item').
-                                html(name);
-                                var iconSpan = $('<span />').
-                                attr('style', 'float:left;').
-                                addClass('ui-icon ui-icon-link').
-                                html('&nbsp;');
-                            
-                                dragItem.append(iconSpan);
-                                dragHolder.append(dragItem);
-                                li.append(dragHolder);
-                                dragList.append(li);
-                            })
-                            dragListContainer.append(dragList);
-                            containerRow.append(dragListContainer);
-                            container.append(containerRow);
-                            
-                            // Create the droppable column
-                            var dropListContainer = $('<div />').
-                            attr('id', layerName + '-drop-container').
-                            addClass('well span5 offset2');
-                            var dropList = $('<ul />').
-                            attr('id', layerName + '-drop-list').
-                            addClass('ui-helper-reset');
-                            Shorelines.mandatoryColumns.each(function(name) {
-                                var listItem = $('<li />').
-                                append(
-                                    $('<div />').
-                                    addClass(layerName + '-drop-holder right-drop-holder').
-                                    attr('id', name + '-drop-item').
-                                    html(name));
-                            
-                                dropList.append(listItem);
-                            })
-                            dropListContainer.append(dropList);
-                            containerRow.append(dropListContainer);
-                            
-                            container.append(containerRow);
-                            
-                            CONFIG.ui.createModalWindow({
-                                headerHtml : 'Resource Attribute Mismatch Detected',
-                                bodyHtml : container.html(),
-                                buttons : [{
-                                    id : 'modal-update-button',
-                                    text : 'Update',
-                                    type : 'btn-success',
-                                    callback : function(event, context) {
-                                        var mapping = $('#' + layerName + '-drag-drop-row').data('mapping');
-                                        var columns = [];
-                                        mapping.keys().each(function(key) {
-                                            if (key != mapping[key]) {
-                                                columns.push(key + '|' + mapping[key])
-                                            }
-                                        })
-                                        CONFIG.ows.renameColumns({
-                                            layer : layerName,
-                                            workspace : CONFIG.tempSession.getCurrentSessionKey(),
-                                            store : 'ch-input',
-                                            columns : columns,
-                                            callbacks : [
-                                            function() {
-                                                $("#shorelines-list").trigger('change');    
-                                            }
-                                            ]
-                                        })
-                                    }
-                                }],
-                                callbacks : [
-                                function() {
-                                    $('#modal-update-button').attr('disabled', 'disabled');
-                                    $('#' + layerName + '-drag-drop-row').data('mapping', layerColumns);
-                                    $('.'+layerName+'-drag-item').draggable({
-                                        containment: '#' + layerName + '-drag-drop-row', 
-                                        scroll: false,
-                                        snap :  '.'+layerName+'-drop-holder',
-                                        snapMode : 'inner',
-                                        cursor: 'move',
-                                        revert : 'invalid',
-                                        stack : '.'+layerName+'-drag-item'
-                                    });
-                                    $('.'+layerName+'-drop-holder').droppable({
-                                        greedy: true,
-                                        activeClass: 'ui-state-highlight',
-                                        hoverClass: 'drop-hover',
-                                        tolerance : 'fit',
-                                        drop: function(event,ui) {
-                                            var draggable = ui.draggable;
-                                            var dragId = draggable.attr('id');
-                                            var dropId = this.id;
-                                            var layerAttribute = dragId.substr(0, dragId.indexOf('-drag-item'));
-                                            var layerMappingAttribute = dropId.substr(0, dropId.indexOf('-drop-item'))
-                                            var mapping = $('#' + layerName + '-drag-drop-row').data('mapping');
-                                            
-                                            // Figure out if we are in a drag or drop well
-                                            if ($(this).closest('.well').attr('id').contains('drop-container')) {
-                                                mapping[layerAttribute] = layerMappingAttribute;
-                                            } else { // left column, remove from map
-                                                mapping[layerAttribute] = '';
-                                            }
-                                            
-                                            var readyToUpdate = true;
-                                            mapping.values().each(function(val) {
-                                                if (!val) {
-                                                    readyToUpdate = false;
-                                                }
-                                            })
-                                            if (readyToUpdate) {
-                                                $('#modal-update-button').removeAttr('disabled');
-                                            } else {
-                                                $('#modal-update-button').attr('disabled', 'disabled');
-                                            }
-                                            
-                                        }
-                                    });
-                                    
-                                    var moveDraggable = function(draggable, droppable) {
-                                        var dragTop = draggable.position().top;
-                                        var dragLeft = draggable.position().left;
-                                        var dropTop = droppable.position().top;
-                                        var dropLeft = droppable.position().left;
-                                        var horizontalMove = dropLeft - dragLeft;
-                                        var verticalMove = dropTop < dragTop ? dropTop - dragTop + 5 : dropTop + dragTop + 5 // 5 = margin-top
-                                        draggable.animate({
-                                            left: horizontalMove
-                                        },{
-                                            queue : 'fx',
-                                            duration : 1000
-                                        }).animate({
-                                            top: verticalMove
-                                        },
-                                        {
-                                            queue : 'fx',
-                                            duration : 1000,
-                                            complete : function() {
-                                                this.style.zIndex = 9999;
-                                            }
-                                        });
-                                    }
-                                    var showCallback = function() {
-                                        $("#modal-window").unbind('shown', showCallback)
-                                        // Move stuff over if the layers are already mapped
-                                        layerColumns.keys().each(function(key) {
-                                            if (layerColumns[key]) {
-                                                var draggable = $('#' + key + '-drag-item').draggable('widget');
-                                                var droppable = $('#' + layerColumns[key] + '-drop-item').droppable('widget');
-                                                draggable.queue("fx");
-                                                moveDraggable(draggable,droppable)
-                                            }
-                                        })
-                                    }
-                                    $("#modal-window").on('shown', showCallback)
-                                    
-                                    $("#modal-window").on('hidden', function() {
-                                        $('#' + layerName + '-drag-drop-row').data('mapping', undefined);
-                                    })
-                                    
-                                }]
+                        if (layerPrefix != CONFIG.name.published && !foundAll) {
+                            CONFIG.ui.buildColumnMatchingModalWindow({
+                                layerName : layerName,
+                                columns : layerColumns,
+                                caller : Shorelines
                             })
                         } else {
                             Shorelines.addLayerToMap({
