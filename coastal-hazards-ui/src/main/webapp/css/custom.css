@@ -62,14 +62,27 @@ select option.session-layer{
 }
 
 /* ---------------------------------------------------------------------- Shorelines */
-#shoreline-table-container {
+.shoreline-feature-table {
     height: 16.25em;
+    overflow : scroll;
 }
 .shoreline-table-selected-head-column {
     width: 30%;
 }
 #shorelines-list {
     height: 7.25em;
+}
+
+.wildcard-link {
+    cursor: pointer;
+    color: #0055CC;
+    margin-left: 5px;
+    font-size: 2em;
+    float: right;
+}
+
+#wildcard-select-list {
+    width: 100%;
 }
 
 /* ---------------------------------------------------------------------- Baselines */
