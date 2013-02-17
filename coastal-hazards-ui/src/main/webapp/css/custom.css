@@ -73,6 +73,16 @@ select option.session-layer{
     height: 7.25em;
 }
 
+.wildcard-link {
+    cursor: pointer;
+    color: #0055CC;
+    margin-left: 5px;
+}
+
+#wildcard-select-list {
+    width: 100%;
+}
+
 /* ---------------------------------------------------------------------- Baselines */
 #toggle-direction-checkbox {
     width: 210px;

@@ -362,6 +362,7 @@ var Shorelines = {
         var navTabs = 	$('#shoreline-table-navtabs');
         var tabContent = $('#shoreline-table-tabcontent');
         var shorelineList = $('#shorelines-list');
+        var layerPrefix = event.object.prefix;
         var layerName = event.object.params.LAYERS;
         
         var selectedVals = shorelineList.children(':selected').map(function(i,v) {
@@ -380,6 +381,12 @@ var Shorelines = {
         colorTableHeadR.append($('<th />').addClass('shoreline-table-selected-head-column').html('Visibility'));
         colorTableHeadR.append($('<th />').html('Date'));
         colorTableHeadR.append($('<th />').attr('data-sorter',false).html('Color'));
+        //        colorTableHeadR.append($('<th />').
+        //            attr('data-sorter',false).
+        //            append($('<span />').
+        //                addClass('shoreline-feature-table-wildcard-th-span').
+        //                attr('id', layerName + '-shoreline-feature-table-wildcard-th-span').
+        //                html('* Wildcard')));
         colorTableHead.append(colorTableHeadR);
         colorTable.append(colorTableHead);
     			
@@ -411,10 +418,12 @@ var Shorelines = {
             tableData.append(toggleDiv);
             tableRow.append(tableData);
             tableRow.append($('<td />').html(date));
-            tableRow.append($('<td />')
-                .attr({
-                    style : 'background-color:' + colorGroup[0] + ';'
-                }).html('&nbsp;'));
+            tableRow.append($('<td />').
+                attr('style' ,'background-color:' + colorGroup[0] + ';').
+                html('&nbsp;'));
+            //            tableRow.append($('<td />').
+            //                addClass('shoreline-feature-table-wildcard-td-span').
+            //                html('&nbsp;'));
             
             colorTableBody.append(tableRow);
         })
@@ -451,8 +460,10 @@ var Shorelines = {
         LOG.debug('Shorelines.js::createFeatureTable:: Adding color feature table to DOM');
         
         tabContent.append(
-            $('<div />').addClass('tab-pane active').attr('id', this.name).append(
-                colorTableContainer));
+            $('<div />').
+            addClass('tab-pane active').
+            attr('id', this.name).
+            append(colorTableContainer));
                         
         $('#' + layerName + ' .switch').each(function(index, element){
             var attachedLayer =  event.object.prefix + ':' + layerName;
@@ -496,11 +507,89 @@ var Shorelines = {
                     layer.params.SLD_BODY = sldBody;
                     layer.redraw();
                     $("table.tablesorter").trigger('update', false)
-                });//end elt.on
+                });
         });
-         
+        
         Shorelines.setupTableSorting();
         $('#' + layerName + ' .switch').bootstrapSwitch();
+        $('#shoreline-table-navtabs').find('li a[href="#'+layerName+'"]').
+        append(
+            $('<span />').
+            addClass('wildcard-link').
+            html('*').
+            on('click', function() {
+            
+                var container = $('<div />').addClass('container-fluid');
+                var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
+                var explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well');
+                explanationWell.html('Something something')
+                container.append(explanationRow.append(explanationWell));
+                
+                var selectionRow = $('<div />').addClass('row-fluid').attr('id', 'selection-row');
+                var selectionWell = $('<div />').addClass('well').attr('id', 'selection-well');
+                var selectList = $('<select />').addClass('wildcard-select-list');
+                var ignoredColumns = ['id','date_']
+                var featureKeys = Object.keys(event.object.describedFeatures[0].attributes).filter(function(key) {
+                    return ignoredColumns.indexOf(key.toLowerCase()) == -1
+                });
+                
+                selectList.append(
+                    $('<option />').
+                    val('').
+                    html(''))
+                    
+                featureKeys.each(function(attribute) {
+                    selectList.append(
+                        $('<option />').
+                        val(attribute).
+                        html(attribute))
+                })
+                selectionWell.append(selectList);
+                selectionRow.append(selectionWell);
+                container.append(selectionWell);
+                $('#shoreline-table-navtabs li[class="active"] a').data('layer', {
+                    'layerPrefix' : layerPrefix,
+                    'layerName' : layerName
+                })
+                var modalShown = function() {
+                    var currentSelected = $('#shoreline-table-tabcontent>#'+layerName+'>.shoreline-feature-table>table>thead>tr>th:nth-child(4)').html() || '';
+                    $('.wildcard-select-list').val(currentSelected)
+                    $('.wildcard-select-list').on('change', function(event) {
+                        var layerPrefix =  $('#shoreline-table-navtabs li[class="active"] a').data('layer').layerPrefix;
+                        var layerName =  $('#shoreline-table-navtabs li[class="active"] a').data('layer').layerName;
+                        var layerObj = CONFIG.ows.featureTypeDescription[layerPrefix][layerName];
+                        var selectedVal = $(this).val();
+                        var table = $('#shoreline-table-tabcontent>#'+layerName+'>.shoreline-feature-table>table');
+                        
+                        // Clear table of previous wildcard, if any
+                        table.find('thead>tr>th:nth-child(4)').remove();
+                        table.find('tbody>tr>td:nth-child(4)').remove();
+                        
+                        if (selectedVal) {
+                            $(table).find('>thead>tr').append($('<th />').html(selectedVal))
+                            var dateAttr = Object.keys(layerObj[0].data).find(function(k){
+                                return k.toLowerCase() == 'date_'
+                            })
+                            layerObj.unique(function(l){
+                                return l.data[dateAttr]
+                            }).each(function(l) {
+                                var attributeData = l.data;
+                                var tr = $(table).find('>tbody>tr td:nth-child(2):contains("'+attributeData[dateAttr]+'")').parent()
+                                tr.append($('<td />').html(attributeData[selectedVal]));
+                            })
+                        }
+                        $("#modal-window").modal('hide');
+                    })
+                }
+                
+                CONFIG.ui.createModalWindow({
+                    headerHtml : 'Choose A Wildcard Attribute',
+                    bodyHtml : container.html(),
+                    callbacks : [
+                    modalShown
+                    ]
+                })
+            }))
     },
     setupTableSorting : function() {
         $.tablesorter.addParser({ 
