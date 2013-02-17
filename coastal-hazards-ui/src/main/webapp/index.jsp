@@ -142,7 +142,7 @@
                                 <li class="active"><a data-toggle="tab" href="#baseline-view-tab">View</a></li>
                                 <li><a data-toggle="tab" href="#baseline-manage-tab">Manage</a></li>
                             </ul>
-                            <div class="tab-content">
+                            <div id="baseline-tab-content" class="tab-content">
                                 <div class="tab-pane active" id="baseline-view-tab">
                                     <select id="baseline-list" class="feature-list"></select>
                                 </div>
@@ -156,10 +156,6 @@
                                                 <i class="icon-pencil icon-white"></i>
                                                 &nbsp;Draw
                                             </button>
-                                            <button data-toggle="button" class="btn btn-success" disabled id="baseline-edit-form-toggle">
-                                                <i class="icon-edit icon-white"></i>
-                                                &nbsp;Edit
-                                            </button>
                                             <button class="btn btn-success" disabled id="baseline-clone-btn">
                                                 <i class="icon-plus icon-white"></i>
                                                 &nbsp;Clone
@@ -168,6 +164,24 @@
                                                 <i class="icon-remove icon-white"></i>
                                                 &nbsp;Remove
                                             </button>
+                                            <div id="baseline-edit-btn-group" class="btn-group">
+                                                <button id="baseline-edit-button" data-toggle="button" class="btn btn-success">
+                                                    <i class="icon-edit icon-white"></i>
+                                                    &nbsp;Edit
+                                                </button>
+                                                <button id="baseline-edit-form-toggle" class="btn dropdown-toggle btn-success" data-toggle="dropdown">
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul id="baseline-edit-menu" class="dropdown-menu"  role="menu" aria-labelledby="dropdownMenu">
+                                                    <li id="baseline-edit-create-vertex"><a tabindex="-1" href="#">Create Vertex</a></li>
+                                                    <li id="baseline-edit-rotate"><a tabindex="-1" href="#">Rotate</a></li>
+                                                    <li id="baseline-edit-resize"><a tabindex="-1" href="#">Resize</a></li>
+                                                    <li id="baseline-edit-resize-w-aspect"><a tabindex="-1" href="#">Resize + Maintain Aspect Ratio</a></li>
+                                                    <li id="baseline-edit-drag"><a tabindex="-1" href="#">Drag</a></li>
+                                                    <li id="baseline-edit-orient-seaward" class="disabled"><a tabindex="-1" href="#">Set Direction Seaward</a></li>
+                                                    <li id="baseline-edit-orient-shoreward" class="disabled"><a tabindex="-1" href="#">Set Direction Shoreward</a></li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -189,57 +203,27 @@
 
                                     <!-- Baseline Editing -->
                                     <div class="row-fluid">
-                                        <div id="baseline-edit-container" class="well well-small hidden">
-                                            <div class="row-fluid">
-                                                <div class="span3">
-                                                    <label for="toggle-create-vertex-checkbox">Create Vertex</label>
-                                                    <div class="baseline-edit-toggle" id="toggle-create-vertex-checkbox">
-                                                        <input type="checkbox">
-                                                    </div>
-                                                </div>
+                                        <div id="baseline-edit-container" class="well hidden">
+                                            <div id="baseline-edit-container-instructions-initial" class="baseline-edit-container-instructions hidden">
+                                                Initial instructions
                                             </div>
-                                            <div class="row-fluid">
-                                                <div class="span6">
-                                                    <label for="toggle-allow-rotation-checkbox">Rotate</label>
-                                                    <div class="baseline-edit-toggle" id="toggle-allow-rotation-checkbox">
-                                                        <input type="checkbox">
-                                                    </div>
-                                                </div>
+                                            <div id="baseline-edit-container-instructions-vertex" class="baseline-edit-container-instructions hidden">
+                                                Create Vertex instructions
                                             </div>
-                                            <div class="row-fluid">
-                                                <div class="span6">
-                                                    <label for="toggle-allow-resizing-checkbox">Resize</label>
-                                                    <div class="baseline-edit-toggle" id="toggle-allow-resizing-checkbox">
-                                                        <input type="checkbox">
-                                                    </div>
-                                                </div>
-                                                <div class="span6">
-                                                    <label for="toggle-aspect-ratio-checkbox">Maintain Aspect Ratio</label>
-                                                    <div class="baseline-edit-toggle" id="toggle-aspect-ratio-checkbox">
-                                                        <input type="checkbox">
-                                                    </div>
-                                                </div>
+                                            <div id="baseline-edit-container-instructions-rotate" class="baseline-edit-container-instructions hidden">
+                                                Rotate instructions
                                             </div>
-                                            <div class="row-fluid">
-                                                <div class="span6">
-                                                    <label for="toggle-allow-dragging-checkbox">Drag</label>
-                                                    <div class="baseline-edit-toggle" id="toggle-allow-dragging-checkbox">
-                                                        <input type="checkbox">
-                                                    </div>
-                                                </div>
+                                            <div id="baseline-edit-container-instructions-resize" class="baseline-edit-container-instructions hidden">
+                                                Resize instructions
                                             </div>
-                                            <div class="row-fluid">
-                                                <div class="span12">
-                                                    <label for="toggle-direction-checkbox">Direction</label>
-                                                    <div id="toggle-direction-checkbox" data-on-label="SEAWARD" data-off-label="SHOREWARD" class="baseline-edit-toggle">
-                                                        <input type="checkbox">
-                                                    </div>
-                                                </div>
+                                            <div id="baseline-edit-container-instructions-drag" class="baseline-edit-container-instructions hidden">
+                                                Drag instructions
                                             </div>
                                             <div class="row-fluid">
                                                 <button class="btn btn-success" id="baseline-edit-save-button" title="Update Modified Baseline">Update Baseline</button>
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -362,8 +346,8 @@
                                         <div class="tabbable">
                                             <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
                                             <div class="tab-content" id="results-tabcontent"></div>
-                                                <div><a id="initiateExport" href="#">Export Me</a></div>
-                                                <div><img id="exportedImage"/></div>
+                                            <div><a id="initiateExport" href="#">Export Me</a></div>
+                                            <div><img id="exportedImage"/></div>
                                         </div>
                                     </div>
                                 </div>
@@ -424,7 +408,7 @@
         <jsp:param name="relPath" value="" />
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
-    
+
     <script type="text/javascript">splashUpdate("Loading JQuery UI...")</script>
     <script type="text/javascript" src="js/jquery-ui/jquery-ui-1.10.0.custom.min.js"></script>
 
@@ -476,25 +460,25 @@
             results : []
         }
             
-    JSON.stringify = JSON.stringify || function (obj) {
-        var t = typeof (obj);
-        if (t != "object" || obj === null) {
-            // simple data type
-            if (t == "string") obj = '"'+obj+'"';
-            return String(obj);
-        }
-        else {
-            // recurse array or object
-            var n, v, json = [], arr = (obj && obj.constructor == Array);
-            for (n in obj) {
-                v = obj[n]; t = typeof(v);
-                if (t == "string") v = '"'+v+'"';
-                else if (t == "object" && v !== null) v = JSON.stringify(v);
-                json.push((arr ? "" : '"' + n + '":') + String(v));
+        JSON.stringify = JSON.stringify || function (obj) {
+            var t = typeof (obj);
+            if (t != "object" || obj === null) {
+                // simple data type
+                if (t == "string") obj = '"'+obj+'"';
+                return String(obj);
             }
-            return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
-        }
-    };
+            else {
+                // recurse array or object
+                var n, v, json = [], arr = (obj && obj.constructor == Array);
+                for (n in obj) {
+                    v = obj[n]; t = typeof(v);
+                    if (t == "string") v = '"'+v+'"';
+                    else if (t == "object" && v !== null) v = JSON.stringify(v);
+                    json.push((arr ? "" : '"' + n + '":') + String(v));
+                }
+                return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+            }
+        };
 
             
     </script>
@@ -525,10 +509,10 @@
     <script type="text/javascript">splashUpdate("Loading Toggle plugin...")</script>
     <link type="text/css" rel="stylesheet" href="js/bootstrap-switch/static/stylesheets/bootstrapSwitch.css" />
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
-    <script type="text/javascript">splashUpdate("Loading Application-specific CSS...")</script>
-    <link type="text/css" rel="stylesheet" href="css/custom.css" />
-    <script type="text/javascript">splashUpdate("Loading Dygraph Export Plugin...")</script>
-    <script type="text/javascript" src="js/dygraph-extra/dygraph-extra.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Main module...")</script>
-    <script type="text/javascript" src="js/onReady.js"></script>
+<script type="text/javascript">splashUpdate("Loading Application-specific CSS...")</script>
+<link type="text/css" rel="stylesheet" href="css/custom.css" />
+<script type="text/javascript">splashUpdate("Loading Dygraph Export Plugin...")</script>
+<script type="text/javascript" src="js/dygraph-extra/dygraph-extra.js"></script>
+<script type="text/javascript">splashUpdate("Loading Main module...")</script>
+<script type="text/javascript" src="js/onReady.js"></script>
 </html>

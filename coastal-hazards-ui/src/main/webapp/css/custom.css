@@ -89,7 +89,9 @@ select option.session-layer{
 #toggle-direction-checkbox {
     width: 210px;
 }
-
+#baseline-tab-content {
+    overflow : visible;
+}
 /* ---------------------------------------------------------------------- Transects */
 #transects-well {
     height: 5em;
