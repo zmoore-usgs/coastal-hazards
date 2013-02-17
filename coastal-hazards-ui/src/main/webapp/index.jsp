@@ -165,11 +165,11 @@
                                                 &nbsp;Remove
                                             </button>
                                             <div id="baseline-edit-btn-group" class="btn-group">
-                                                <button id="baseline-edit-button" data-toggle="button" class="btn btn-success">
+                                                <button id="baseline-edit-button" data-toggle="button" class="btn btn-success"  disabled="disabled">
                                                     <i class="icon-edit icon-white"></i>
                                                     &nbsp;Edit
                                                 </button>
-                                                <button id="baseline-edit-form-toggle" class="btn dropdown-toggle btn-success" data-toggle="dropdown">
+                                                <button id="baseline-edit-form-toggle" class="btn dropdown-toggle btn-success" data-toggle="dropdown" disabled="disabled">
                                                     <span class="caret"></span>
                                                 </button>
                                                 <ul id="baseline-edit-menu" class="dropdown-menu"  role="menu" aria-labelledby="dropdownMenu">
