@@ -77,6 +77,8 @@ select option.session-layer{
     cursor: pointer;
     color: #0055CC;
     margin-left: 5px;
+    font-size: 2em;
+    float: right;
 }
 
 #wildcard-select-list {
