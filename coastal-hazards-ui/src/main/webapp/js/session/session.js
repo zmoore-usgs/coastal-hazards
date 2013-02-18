@@ -273,6 +273,117 @@ var Session = function(name, isPerm) {
     }
 
     return $.extend(me, {
+        importSession : function() {
+            if (window.File && window.FileReader) {
+                var container = $('<div />').addClass('container-fluid');
+                var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
+                var explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well');
+                explanationWell.html('Something something')
+                container.append(explanationRow.append(explanationWell));
+                    
+                var selectionRow = $('<div />').addClass('row-fluid').attr('id', 'file-upload-row');
+                var uploadForm = $('<form />');
+                var fileInput = $('<input />').attr({
+                    'id' : 'file-upload-input',
+                    'name' : 'file-upload-input',
+                    'type' : 'file'
+                })
+                container.append(selectionRow.append(uploadForm.append(fileInput)));
+                
+                var importWell = $('<div />').addClass('well').attr('id', 'import-well');
+                var importRow = $('<div />').addClass('row-fluid').attr('id', 'import-row');
+                container.append(importWell.append(importRow));
+                
+                CONFIG.ui.createModalWindow({
+                    headerHtml : 'Import A Session File',
+                    bodyHtml : container.html(),
+                    callbacks : [
+                    function() {
+                        $('#file-upload-input').on('change', function(event) {
+                            var fileObject = event.target.files[0];
+                            if (fileObject.type.match('json')) {
+                                var reader = new FileReader();
+                                var importWell = $('#import-well')
+                                var importRow = $('#import-row');
+                                var resultObject;
+                                importRow.empty();
+                                reader.onloadend = function(event){
+                                    try {
+                                        resultObject = $.parseJSON(event.target.result); // This will not work with 
+                                        var importDisplay = $('<div />').addClass('span12')
+                                        var currentId = resultObject.currentSession;
+                                        if (!currentId) {
+                                            importRow.html('Imported session object has no current session');
+                                            return;
+                                        }
+                                
+                                        var session = resultObject.sessions.find(function(s){
+                                            return s.id == currentId
+                                        })
+                                        if (!session) {
+                                            importRow.html('Imported session has a nonexistent session marked as current');
+                                            return;
+                                        }
+                                
+                                        importDisplay.append('Session File Information')
+                                        importDisplay.append('<br />Sessions found: ' + resultObject.sessions.length);
+                                        importDisplay.append('<br />Current session key: ' + currentId)
+                                        importDisplay.append('<br />Session created: ' + session.created)
+                                        importDisplay.append('<br />Layers found: ' + session.layers.length + '<br />')
+                                        importDisplay.append(
+                                            $('<button />').
+                                            attr('id', 'import-current-session-button').
+                                            addClass('btn btn-success span6').
+                                            html('Import Current Session'),
+                                            $('<button />').
+                                            attr('id', 'import-all-session-button').
+                                            addClass('btn btn-success span6').
+                                            html('Import All Sessions'))
+                                        
+                                        importRow.append(importDisplay);
+                                        importWell.append(importRow);
+                                        
+                                        $('#import-current-session-button').on('click', function() {
+                                            var currentSession = resultObject.sessions.find(function(n){ return n.id == resultObject.currentSession})
+                                            CONFIG.tempSession.setCurrentSession(currentSession);
+                                            CONFIG.tempSession.persistSession();
+                                            location.reload(true);
+                                            
+                                        })
+                                        $('#import-all-session-button').on('click', function() {
+                                            localStorage.setItem('coastal-hazards', JSON.stringify(resultObject)) //TODO- This will not work with IE8 and below. No JSON object
+                                            sessionStorage.removeItem('coastal-hazards');
+                                            location.reload(true);
+                                        })
+                                
+                                    } catch (ex) {
+                                        importRow.html('Your file could not be read: ' + ex);
+                                        return;
+                                    }
+                                }
+                                
+                                try {
+                                    reader.readAsText(fileObject);
+                                } catch (ex) {
+                                    importRow.html('Your file could not be read: ' + ex);
+                                    return;
+                                }
+                            } else {
+                                // Not a json file
+                                $('#file-upload-input').val('')
+                                var importRow = $('#import-row');
+                                 importRow.html('Your file could not be read: ' + ex);
+                            }
+                        })
+                    }
+                    ]
+                })
+            } else {
+                CONFIG.ui.showAlert({
+                    message : 'Functionality not yet supported for non-HTML5 browsers'
+                })
+            }  
+        },
         exportSession : function() {
             CONFIG.tempSession.persistSession();
             $('body').append(
