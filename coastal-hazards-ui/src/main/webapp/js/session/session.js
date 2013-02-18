@@ -273,6 +273,30 @@ var Session = function(name, isPerm) {
     }
 
     return $.extend(me, {
+        exportSession : function() {
+            CONFIG.tempSession.persistSession();
+            $('body').append(
+                $('<form />').attr({
+                    'id' : 'export-form',
+                    'style' : 'display:none;visibility:hidden;',
+                    'method' : 'POST'
+                }).
+                append(
+                    $('<input />').attr({
+                        'type' : 'hidden',
+                        'name' : 'filename'
+                    }).val('cch_session_' + me.getCurrentSessionKey() + '.json')).
+                append(
+                    $('<input />').attr({
+                        'type' : 'hidden',
+                        'name' : 'data'
+                    }).val(localStorage['coastal-hazards'])))
+            $('#export-form').attr('action', 'service/export');
+            $('#export-form').submit(function() {
+                $('#export-form').remove();
+            });
+            $('#export-form').submit();
+        },
         save : function() {
             LOG.info('Session.js::save:Saving session object to storage');
             me.sessionObject.setItem(me.name, JSON.stringify(me.session));
