@@ -10,12 +10,22 @@ var UI = function() {
     $('#clear-sessions-btn').on("click", CONFIG.tempSession.clearSessions)
         
     LOG.debug('UI.js::constructor: Initializing AJAX start/stop hooks');
+    $.ajaxSetup({
+        timeout : 300000 // 5 minute timout on ajax requests
+    })
     $(document).ajaxStart(function() {
         LOG.debug('AJAX Call Started');
         $("#application-spinner").fadeIn();
     });
     $(document).ajaxStop(function() {
         LOG.debug('AJAX Call Finished');
+        $("#application-spinner").fadeOut();
+    });
+    $(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
+        LOG.debug('AJAX Call Error: ' + thrownError);
+        CONFIG.ui.showAlert({
+            message : 'There was an error while communicating with the server. Check logs for more info. Please try again.'
+        })
         $("#application-spinner").fadeOut();
     });
     
