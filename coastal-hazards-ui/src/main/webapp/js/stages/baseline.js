@@ -113,8 +113,8 @@ var Baseline = {
     leaveStage : function() {
         LOG.debug('Baseline.js::leaveStage');
         Baseline.deactivateHighlightControl();
-        if ($('#baseline-edit-form-toggle').hasClass('active')) {
-            $('#baseline-edit-form-toggle').trigger('click');
+        if ($('#baseline-edit-button').hasClass('active')) {
+            $('#baseline-edit-button').trigger('click');
         }
     },
     
