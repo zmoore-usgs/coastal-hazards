@@ -65,7 +65,6 @@ var Transects = {
             },
             onUnselect : function(feature) {
                 LOG.debug('Transects.js::SelectFeature.onSelect(): A feature was unselected');
-                CONFIG.ui.initializeBaselineEditForm();
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'transects-edit-control')[0];
                 Transects.removeAngleLayer();
                 modifyControl.unselectFeature(feature);
@@ -151,6 +150,34 @@ var Transects = {
                     deleteCodes : [8, 46, 48, 68],
                     standalone : true,
                     createVertices : false,
+                    onModification : function(feature) {
+                        var baseLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0]
+                        var baseLayerFeatures = baseLayer.features;
+                        var vertices = feature.geometry.components[0].components;
+                        var connectedToBaseline = false
+                        baseLayerFeatures.each(function(f) {
+                            var g = f.geometry;
+                            vertices.each(function(vertex) {
+                                LOG.debug(parseInt(g.distanceTo(vertex)));
+                                if (parseInt(g.distanceTo(vertex)) <= 5) {
+                                    connectedToBaseline = true;
+                                }
+                            })
+                        })
+                        if (connectedToBaseline) {
+                            feature.state = OpenLayers.State.UPDATE;
+                            feature.style = {
+                                strokeColor : '#0000FF'
+                            };
+                            
+                        } else {
+                            feature.state = OpenLayers.State.DELETE;
+                            feature.style = {
+                                strokeColor : '#FF0000'
+                            };
+                        }
+                        feature.layer.redraw();
+                    },
                     handleKeypress : function(evt) {
                         var code = evt.keyCode;
                         if(this.feature && OpenLayers.Util.indexOf(this.deleteCodes, code) != -1) {

@@ -622,7 +622,7 @@ var Baseline = {
     },
     beginDrawing : function() {
         LOG.debug('Baseline.js::beginDrawing: Initializing baseline draw panel');
-        Baseline.disableEditButton();
+        Baseline.disableEditButtonSet();
         
         LOG.debug('Baseline.js::beginDrawing: Removing currently drawn features, if any');
         Baseline.clearDrawFeatures();
@@ -648,7 +648,7 @@ var Baseline = {
 
         LOG.debug('Baseline.js::stopDrawing: Removing draw control');
         Baseline.getDrawControl().deactivate();
-        Baseline.enableEditButton();
+        Baseline.enableEditButtonSet();
         
         LOG.debug('Baseline.js::stopDrawing: Removing currently drawn features, if any');
         Baseline.clearDrawFeatures();
