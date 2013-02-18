@@ -522,8 +522,8 @@ var Shorelines = {
                     explanationWell.html('Something something')
                     container.append(explanationRow.append(explanationWell));
                 
-                    var selectionRow = $('<div />').addClass('row-fluid').attr('id', 'selection-row');
                     var selectionWell = $('<div />').addClass('well').attr('id', 'selection-well');
+                    var selectionRow = $('<div />').addClass('row-fluid').attr('id', 'selection-row');
                     var selectList = $('<select />').addClass('wildcard-select-list');
                 
                     selectList.append(
