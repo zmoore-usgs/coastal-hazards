@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SessionService extends HttpServlet {
 
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ImportService.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ShapefileImportService.class);
     private static DynamicReadOnlyProperties props = null;
     private static GeoserverHandler geoserverHandler = null;
     private static String geoserverEndpoint = null;

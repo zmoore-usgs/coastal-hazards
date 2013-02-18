@@ -2,7 +2,7 @@ var OWS = function(endpoint) {
     LOG.info('OWS.js::constructor: OWS class is initializing.');
     var me = (this === window) ? {} : this;
     
-    me.importEndpoint = 'service/import'
+    me.importEndpoint = 'service/import/shapefile'
     me.geoserverEndpoint = endpoint ? endpoint : CONFIG.geoServerEndpoint;
     me.geoserverProxyEndpoint = 'geoserver/';
     me.wfsGetCapsUrl = me.geoserverProxyEndpoint + 'ows?service=wfs&version=1.0.0&request=GetCapabilities'
