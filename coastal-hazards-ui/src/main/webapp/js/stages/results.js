@@ -280,8 +280,10 @@ var Results = {
         });
             
         LOG.debug('Shorelines.js::addLayerToMap: Adding results WMS layer to the map');
+        resultsWMS.type="results"
         CONFIG.map.getMap().addLayer(resultsWMS);
         LOG.debug('Shorelines.js::addLayerToMap: Adding results Vector layer to the map');
+        resultsWMS.type="results"
         CONFIG.map.getMap().addLayer(resultsVector);
         LOG.debug('Shorelines.js::addLayerToMap: Adding select feature control to map and activating');
         CONFIG.map.getMap().addControl(selectFeatureControl);

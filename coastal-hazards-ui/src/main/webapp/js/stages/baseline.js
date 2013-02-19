@@ -234,6 +234,7 @@ var Baseline = {
     refreshFeatureList : function(args) {
         LOG.info('Baseline.js::refreshFeatureList: Will cause WMS GetCapabilities call to refresh current feature list')
         var updatedArgs = args || {};
+        var isCloning = updatedArgs.isCloning;
         var selectLayer = updatedArgs.selectLayer || ''; 
         var namespace = selectLayer ? selectLayer.split(':')[0] : CONFIG.tempSession.getCurrentSessionKey();
         CONFIG.ows.getWMSCapabilities({
@@ -251,7 +252,7 @@ var Baseline = {
                             if (v.value === selectLayer) {
                                 LOG.debug('Triggering "select" on featurelist option');
                                 $('#' + Baseline.stage + '-list').val(v.value);
-                                $('#' + Baseline.stage + '-list').trigger('change');
+                                $('#' + Baseline.stage + '-list').trigger('change', isCloning);
                             }
                         })
                     } else {
@@ -272,7 +273,9 @@ var Baseline = {
         $("#baseline-list").val('');
         Baseline.listboxChanged();
     },
-    listboxChanged : function() {
+    
+    //@param: optional boolean
+    listboxChanged : function(event, isCloning) {
         LOG.debug('Baseline.js::baselineSelected: A baseline was selected from the dropdown list');
         
         Baseline.disableEditButtonSet();
@@ -280,7 +283,13 @@ var Baseline = {
         Baseline.disableRemoveButton();
         Baseline.deactivateHighlightControl();
         
-        var mappedLayers = CONFIG.map.getMap().getLayersBy('type', 'baseline');
+        //now get all non-draw and non-base layers via the custom
+        //'type' property that we added to the pertinent layers.
+        var typesRegex = /baseline|transects|intersections|results/;
+        if(isCloning){
+            typesRegex = /transects|intersections|results/;
+        }
+        var mappedLayers = CONFIG.map.getMap().getLayersBy('type', typesRegex);
         mappedLayers.each(function(layer) {
             LOG.debug('Baseline.js::listboxChanged: Removing layer ' + layer.name + ' from map');
             CONFIG.map.removeLayer(layer);
@@ -523,7 +532,8 @@ var Baseline = {
                                 function(describeFeaturetypeRespone) {
                                     var displayLayer = function() {
                                         Baseline.refreshFeatureList({
-                                            selectLayer : data
+                                            selectLayer : data,
+                                            isCloning: true
                                         })
                                         $('a[href="#' + Baseline.stage + '-view-tab"]').tab('show');
                                     }

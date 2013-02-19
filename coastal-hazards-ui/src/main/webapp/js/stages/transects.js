@@ -59,6 +59,7 @@ var Transects = {
                 })
                 selectedFeature.geometry.addComponents([angleGeometry1,angleGeometry2])
                 angleLayer.addFeatures([selectedFeature]);
+                angleLayer.type = "transects";
                 CONFIG.map.getMap().addLayer(angleLayer);
                 var snapControl = CONFIG.map.getMap().getControlsBy('id', 'snap-control')[0]
                 snapControl.addTargetLayer(angleLayer);
@@ -139,7 +140,7 @@ var Transects = {
              
             LOG.debug('Transects.js::editButtonToggled: Adding cloned layer to map');
             
-            
+            clonedLayer.type = "transects"; 
             CONFIG.map.getMap().addLayer(clonedLayer);
             
             LOG.debug('Transects.js::editButtonToggled: Adding clone control to map');

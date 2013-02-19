@@ -73,7 +73,7 @@ var Calculation = {
                 singleTile: true, 
                 ratio: 1
             });
-	
+        intersections.type="intersections";	
         CONFIG.map.getMap().addLayer(intersections);
         intersections.redraw(true);
     },
