@@ -83,7 +83,14 @@ var Shorelines = {
                             caller : Shorelines,
                             attributes : attributes
                         })
-                        var foundAll = layerColumns.values().findIndex('') == -1 ? true : false;
+                        var foundAll = true;
+                        Shorelines.mandatoryColumns.each(function(mc){
+                            if (!layerColumns.values().find(mc)) {
+                                foundAll = false;
+                            }
+                        })
+
+
                         
                         if (layerPrefix != CONFIG.name.published && !foundAll) {
                             CONFIG.ui.buildColumnMatchingModalWindow({
