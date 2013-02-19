@@ -12,7 +12,7 @@ if (localRun){
   ptm <- proc.time() # for time of process
 }
 
-if (ci>1 || ci<=0.5){
+if (ci>=1 || ci<=0.5){
   stop("confidence interval argument must be between 0.5 and 1.0 (non-inclusive)")
 }
 
