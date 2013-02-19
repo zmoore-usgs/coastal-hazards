@@ -547,6 +547,62 @@ var Results = {
         '</wps:Execute>';
 
         return wps;
+    },
+    exportResultsSquiggleImage : function() {
+        var layer = CONFIG.map.getMap().getLayersBy('name', $("#results-list option:selected")[0].value)[0];
+        var propertyArray = ['base_dist','BaselineID','LRR','LCI'];
+        CONFIG.ows.getFilteredFeature({
+            layerPrefix : layer.prefix,
+            layerName : layer.name.split(':')[1],
+            propertyArray : propertyArray,
+            callbacks : {
+                success : [
+                function(features) {
+                    var data = '';
+                    features.each(function(feature) {
+                        var att = feature.attributes;
+                        var props = [];
+                        propertyArray.each(function(property) {
+                            props.push(att[property]);
+                        })
+                        data += props.join('\t') + '\n';
+                    })
+                    var wps = CONFIG.ows.createSquigglePlotWPSXML({
+                        data : data
+                    }) 
+                    var errAlert = function() {
+                        CONFIG.ui.showAlert({
+                            message : 'Server was unable to generate plot. Check logs',
+                            displayTime : 7500,
+                            caller : Results
+                        })
+                    }
+                    CONFIG.ows.executeWPSProcess({
+                        processIdentifier : 'gs:RenameLayerColumns',
+                        request : wps,
+                        url : CONFIG.n52Endpoint + '/WebProcessingService',
+                        callbacks : {
+                            success : [
+                            function(data, textStatus, jqXHR) {
+                                if ($(data).find('ns\\:Exception').length) {
+                                    LOG.error(jqXHR.responseText)
+                                    errAlert();
+                                } else {
+                                // Not yet implemented - Need a working response
+                                }
+                            }
+                            ],
+                            error : [
+                            function(data, textStatus, jqXHR) {
+                                errAlert()
+                            }
+                            ]
+                        }
+                    })
+                }
+                ]
+            }
+        })
         
     }
 }

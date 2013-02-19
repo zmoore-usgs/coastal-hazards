@@ -346,7 +346,7 @@
                                         <div class="tabbable">
                                             <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
                                             <div class="tab-content" id="results-tabcontent"></div>
-                                            <div><a id="initiateExport" href="#">Export Me</a></div>
+                                            <div style="visibility:none;"><a id="initiateExport" href="#">Export Me</a></div>
                                             <div><img id="exportedImage"/></div>
                                         </div>
                                     </div>
