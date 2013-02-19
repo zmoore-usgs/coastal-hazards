@@ -319,8 +319,10 @@
                                     <div class="row-fluid">
                                         <div id="results-calculation-panel-well" class="well span6">
                                             <label class="control-label" for="results-form-name">Results Name</label>
-                                            <input class="input-large" name="results-form-name" id="results-form-name"  style="width: 100%;" />
-                                            <button class="btn btn-success" id="create-results-btn">
+                                            <input class="input-large" name="results-form-name" id="results-form-name"  style="width: 50%;" />
+                                            <label class="control-label" for="results-form-ci">Confidence Interval</label>
+                                            <input class="input-large" name="results-form-ci" id="results-form-ci"  style="width: 50%;"  placeholder="0.9"/>
+                                            <button class="btn btn-success span12" id="create-results-btn">
                                                 <i class="icon-tasks icon-white"></i>
                                                 &nbsp;Calculate Results
                                             </button>
