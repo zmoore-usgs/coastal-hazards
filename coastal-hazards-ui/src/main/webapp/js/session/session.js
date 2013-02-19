@@ -386,8 +386,7 @@ var Session = function(name, isPerm) {
         },
         exportSession : function() {
             CONFIG.tempSession.persistSession();
-            $('body').append(
-                $('<form />').attr({
+            var exportForm = $('<form />').attr({
                     'id' : 'export-form',
                     'style' : 'display:none;visibility:hidden;',
                     'method' : 'POST'
@@ -401,12 +400,11 @@ var Session = function(name, isPerm) {
                     $('<input />').attr({
                         'type' : 'hidden',
                         'name' : 'data'
-                    }).val(localStorage['coastal-hazards'])))
-            $('#export-form').attr('action', 'service/export');
-            $('#export-form').submit(function() {
-                $('#export-form').remove();
-            });
-            $('#export-form').submit();
+                    }).val(localStorage['coastal-hazards']))
+            $('body').append(exportForm)
+            exportForm.attr('action', 'service/export');
+            exportForm.submit();
+            exportForm.remove();
         },
         save : function() {
             LOG.info('Session.js::save:Saving session object to storage');
