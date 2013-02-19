@@ -663,7 +663,7 @@ var UI = function() {
                         var mapping = $('#' + layerName + '-drag-drop-row').data('mapping');
                         var columns = [];
                         mapping.keys().each(function(key) {
-                            if (key != mapping[key]) {
+                            if (key && mapping[key] && key != mapping[key]) {
                                 columns.push(key + '|' + mapping[key])
                             }
                         })
@@ -671,7 +671,7 @@ var UI = function() {
                             layer : layerName,
                             workspace : CONFIG.tempSession.getCurrentSessionKey(),
                             store : 'ch-input',
-                            columns : columns,
+                            columns : columns.filter(function(c) { return !c.endsWith('|') }),
                             callbacks : [
                             function() {
                                 $("#"+caller.stage+"-list").val(CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName)
@@ -763,6 +763,9 @@ var UI = function() {
                                 moveDraggable(draggable,droppable)
                             }
                         })
+                        if (columns.values().filter(function(v) { return v != ''}).length == Shorelines.mandatoryColumns.length) {
+                            $('#modal-update-button').removeAttr('disabled');
+                        }
                     }
                     $("#modal-window").on('shown', showCallback)
                                     
