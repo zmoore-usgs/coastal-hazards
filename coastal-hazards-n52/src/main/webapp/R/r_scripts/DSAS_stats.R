@@ -1,6 +1,6 @@
 # wps.des: id=DSAS_stats, title=Digital Shoreline Analysis System Stats, abstract=stats available - LRR LCI WLR WCI SCE NSM EPR;
 # wps.in: input, xml, block intersection text, text input from intersections layer with time elements and uncertainty;
-
+# wps.in: ci, double, confidence interval, percentage for confidence level between 0.5 and 1.0;
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
