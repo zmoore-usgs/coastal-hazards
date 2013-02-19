@@ -604,43 +604,6 @@ var OWS = function(endpoint) {
             '</NamedLayer>' + 
             '</StyledLayerDescriptor>';
             return sld.replace('#[layer]', layerName)
-        },
-        
-        createSquigglePlotWPSXML : function(args) {
-            var data = args.data || '';
-            var tsv = 'base_dist\tBaselineID\tLRR\tLCI\n' + data;
-            
-            // Possible alternative input?
-            //        <wps:Input>
-            //        <ows:Identifier>input</ows:Identifier> 
-            //        <wps:Reference mimeType="text/xml" xlink:href="http://localhost:8080/coastal-hazards-ui/geoserver/g91CF6BE7-687C-4BC3-BF47-DD9DBB36AFA9/wfs" method="POST">
-            //        <wps:Body>
-            //          <wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:g91CF6BE7-687C-4BC3-BF47-DD9DBB36AFA9="gov.usgs.cida.ch.g91CF6BE7-687C-4BC3-BF47-DD9DBB36AFA9">
-            //            <wfs:Query typeName="g91CF6BE7-687C-4BC3-BF47-DD9DBB36AFA9:NewJerseyN_rates"/>
-            //          </wfs:GetFeature>
-            //        </wps:Body>
-            //      </wps:Reference>
-            // </wps:Input>
-            
-            var wps = '<?xml version="1.0" encoding="UTF-8"?>' + 
-            '<wps:Execute xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" service="WPS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">' + 
-            '<ows:Identifier>org.n52.wps.server.r.DSAS_squigglePlot</ows:Identifier>' + 
-            '<wps:DataInputs>' + 
-            '<wps:Input>' + 
-            '<ows:Identifier>input</ows:Identifier>' + 
-            '<wps:Data>' + 
-            '<wps:ComplexData mimeType="text/xml"><![CDATA['+tsv+']]></wps:ComplexData>' + 
-            '</wps:Data>' + 
-            '</wps:Input>' + 
-            '</wps:DataInputs>' + 
-            '<wps:ResponseForm>' + 
-            '<wps:RawDataOutput>' + 
-            '<ows:Identifier>output</ows:Identifier>' + 
-            '</wps:RawDataOutput>' + 
-            '</wps:ResponseForm>' + 
-            '</wps:Execute>';
-            
-            return wps;
         }
     });
 }
