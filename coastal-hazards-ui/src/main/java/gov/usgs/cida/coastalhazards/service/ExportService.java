@@ -109,10 +109,10 @@ public class ExportService extends HttpServlet {
 
         StringBuilder sb = new StringBuilder(data);
         byte[] dataByteArr;
-        if ("image/png;base64".equalsIgnoreCase(type)) {
-            dataByteArr = new BASE64Decoder().decodeBuffer(sb.toString());
+        if ("image/png;base64".equalsIgnoreCase(type) || "image/tiff;base64".equalsIgnoreCase(type)) {
+            dataByteArr = new BASE64Decoder().decodeBuffer(data.toString());
         } else {
-            dataByteArr = sb.toString().getBytes("UTF-8");
+            dataByteArr = data.toString().getBytes("UTF-8");
         }
         int length = dataByteArr.length;
 
