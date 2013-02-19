@@ -319,6 +319,14 @@ var Baseline = {
             }
             Transects.disableCreateTransectsButton();
         }
+        //set all subsequent dropdowns to none and trigger changes
+        var subsequentSelectIds = ['transects-list', 'intersections-list', 'results-list'];
+        $.each(subsequentSelectIds, function(index, id){
+            $(id).val('');
+            $(id).trigger('change');
+        });
+        //now hide all of the custom layer name boxes
+
     },
     editButtonToggled : function(event) {
         var activated = !$(event.target).hasClass('active');

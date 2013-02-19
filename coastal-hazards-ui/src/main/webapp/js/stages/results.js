@@ -72,10 +72,13 @@ var Results = {
                                 success : [
                                 Results.populateFeaturesList,
                                 function() {
+                                    /*
+                                     //@todo: why were these being cleared?
                                     Shorelines.clear();
                                     Baseline.clear();
                                     Transects.clear();
                                     Calculation.clear();
+                                    */
                                     $('#results-list').val(data);
                                     Results.listboxChanged();
                                     $('a[href="#' + Results.stage + '-view-tab"]').tab('show');
