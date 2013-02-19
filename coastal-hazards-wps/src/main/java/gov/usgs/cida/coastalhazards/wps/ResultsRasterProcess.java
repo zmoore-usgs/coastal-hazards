@@ -58,9 +58,10 @@ public class ResultsRasterProcess implements GeoServerProcess {
             @DescribeParameter(name = "attribute", min = 1, max = 1) String attribute,
             @DescribeParameter(name = "bbox", min = 0, max = 1) ReferencedEnvelope bbox,
             @DescribeParameter(name = "width", min = 1, max = 1) Integer width,
-            @DescribeParameter(name = "height", min = 1, max = 1) Integer height) throws Exception {
+            @DescribeParameter(name = "height", min = 1, max = 1) Integer height,
+            @DescribeParameter(name = "invert", min = 0, max = 1) Boolean invert) throws Exception {
 
-        return new Process(features, attribute, bbox, width, height).execute();
+        return new Process(features, attribute, bbox, width, height, invert == null ? false : invert).execute();
 
     }
 
@@ -72,6 +73,8 @@ public class ResultsRasterProcess implements GeoServerProcess {
         private final ReferencedEnvelope coverageEnvelope;
         private final int coverageWidth;
         private final int coverageHeight;
+        private final boolean invert;
+        
         private ReferencedEnvelope extent;
         private GridGeometry2D gridGeometry;
         private MathTransform featureToRasterTransform;
@@ -87,12 +90,14 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 String className,
                 ReferencedEnvelope coverageEnvelope,
                 int coverageWidth,
-                int coverageHeight) {
+                int coverageHeight,
+                boolean invert) {
             this.featureCollection = featureCollection;
             this.attributeName = className;
             this.coverageEnvelope = coverageEnvelope;
             this.coverageWidth = coverageWidth;
             this.coverageHeight = coverageHeight;
+            this.invert = invert;
         }
 
         private GridCoverage2D execute() throws Exception {
@@ -174,7 +179,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 } else {
                     LOGGER.log(Level.INFO, "Using cached attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
                 }
-                colorMap = new JetColorMap(attributeRange);
+                colorMap = new ZeroInflectedJetColorMap(attributeRange, invert);
             }
         }
 
@@ -314,18 +319,20 @@ public class ResultsRasterProcess implements GeoServerProcess {
         Color valueToColor(T value);
     }
     
-    public static class JetColorMap implements ColorMap<Number> {
+    public static class ZeroInflectedJetColorMap implements ColorMap<Number> {
         
         public final static Color CLAMP_MIN = new Color(0f, 0f, 0.5f);
         public final static Color CLAMP_MAX = new Color(0.5f, 0f, 0f);
         
         public final AttributeRange range;
            
-        public JetColorMap(AttributeRange range) {
+        public ZeroInflectedJetColorMap(AttributeRange range, boolean invert) {
             double absOfMax = range.max < 0 ? 0 - range.max : range.max;
             double absOfMin = range.min < 0 ? 0 - range.min : range.min;
             double maxAbs = absOfMax > absOfMin ? absOfMax : absOfMin;
-            this.range = new AttributeRange(0 - maxAbs, maxAbs);
+            this.range = invert ?
+                    new AttributeRange(maxAbs, 0 - maxAbs) :
+                    new AttributeRange(0 - maxAbs, maxAbs);
         }
         
         @Override

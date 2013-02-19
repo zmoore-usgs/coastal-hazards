@@ -1,6 +1,7 @@
 /* ---------------------------------------------------------------------- UI */
 .btn {
     margin-top: .25em;
+    margin-bottom: .25em;
 }
 .feature-list {
     width: 100%;
@@ -62,8 +63,9 @@ select option.session-layer{
 }
 
 /* ---------------------------------------------------------------------- Shorelines */
-#shoreline-table-container {
+.shoreline-feature-table {
     height: 16.25em;
+    overflow : scroll;
 }
 .shoreline-table-selected-head-column {
     width: 30%;
@@ -72,11 +74,25 @@ select option.session-layer{
     height: 7.25em;
 }
 
+.wildcard-link {
+    cursor: pointer;
+    color: #0055CC;
+    margin-left: 5px;
+    font-size: 2em;
+    float: right;
+}
+
+#wildcard-select-list {
+    width: 100%;
+}
+
 /* ---------------------------------------------------------------------- Baselines */
 #toggle-direction-checkbox {
     width: 210px;
 }
-
+#baseline-tab-content {
+    overflow : visible;
+}
 /* ---------------------------------------------------------------------- Transects */
 #transects-well {
     height: 5em;
@@ -110,4 +126,25 @@ li.alert-error {
 
 .alert-error .qq-upload-failed-text {
     display: inline;
+}
+
+/* ---------------------------------------------------------------------- Drag-Drop */
+.left-drop-holder {
+    text-align: center;
+    border-radius: 5px; 
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px; 
+    border: 1px dashed #800000; 
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.right-drop-holder {
+    text-align: center;
+    border-radius: 5px; 
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px; 
+    border: 1px dashed #00CCFF; 
+    margin-top: 5px;
+    margin-bottom: 5px;
 }

@@ -9,7 +9,11 @@
     <bean id="appendColumnsToLayer" class="gov.usgs.cida.coastalhazards.wps.AppendColumnsToLayerProcess">
         <constructor-arg index="0" ref="importProcess"/>
         <constructor-arg index="1" ref="catalog"/>
-        <constructor-arg index="2" ref="geoServer"/>
+    </bean>
+
+    <bean id="renameLayerColumns" class="gov.usgs.cida.coastalhazards.wps.RenameLayerColumnsProcess">
+        <constructor-arg index="0" ref="importProcess"/>
+        <constructor-arg index="1" ref="catalog"/>
     </bean>
     
     <bean id="addResults" class="gov.usgs.cida.coastalhazards.wps.CreateResultsLayerProcess">

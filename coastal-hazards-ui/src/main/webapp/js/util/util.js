@@ -107,6 +107,27 @@ var Util =  {
         }
         return null;
     },
+    createLayerUnionAttributeMap : function(args) {
+        var caller = args.caller;
+        var attributes = args.attributes;//describeFeaturetypeRespone.featureTypes[0].properties;
+        var layerColumns = Object.extended();
+        attributes.map(function(property) {
+            return property.name;
+        })
+        .each(function(property) {
+            layerColumns[property] = '';
+        })
+                
+        layerColumns.keys(function(columnName) {
+            var eqColName = caller.mandatoryColumns.find(function(column) {
+                return column.toLowerCase() == columnName.toLowerCase()
+            })
+            if (eqColName) {
+                layerColumns[columnName] = eqColName;
+            }
+        })
+        return layerColumns;
+    },
     createColorGroups : function(groups) {
         LOG.info('Util.js::createColorGroups: Creating color groups')
         var colorGroups = [];

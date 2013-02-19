@@ -43,10 +43,10 @@ import org.xml.sax.InputSource;
  *
  * @author isuftin
  */
-public class ImportService extends HttpServlet {
+public class ShapefileImportService extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ImportService.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ShapefileImportService.class);
     private static DynamicReadOnlyProperties props = null;
     private static String uploadDirectory = null;
     private static String geoserverEndpoint = null;
@@ -75,7 +75,7 @@ public class ImportService extends HttpServlet {
         try {
             gsrm = new GeoServerRESTManager(new URL(geoserverEndpoint), geoserverUsername, geoserverPassword);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(ImportService.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ShapefileImportService.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -211,7 +211,7 @@ public class ImportService extends HttpServlet {
                 list = (NodeList) xPath.evaluate("//*[local-name()='ExceptionText']", source, XPathConstants.NODESET);
                 error = list.item(0).getTextContent();
             } catch (XPathExpressionException ex) {
-                Logger.getLogger(ImportService.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ShapefileImportService.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             responseMap.put("file-token", fileToken);

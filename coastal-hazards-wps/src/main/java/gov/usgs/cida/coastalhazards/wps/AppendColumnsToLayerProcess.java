@@ -1,29 +1,20 @@
 package gov.usgs.cida.coastalhazards.wps;
 
+import gov.usgs.cida.coastalhazards.util.GeoserverUtils;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.config.GeoServer;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
+import org.geotools.data.DataAccess;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -37,7 +28,7 @@ import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
-import org.geotools.util.DefaultProgressListener;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -56,12 +47,12 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
 
     private Catalog catalog;
     private LayerImportUtil importer;
-    private GeoServer geoserver;
+    private ImportProcess importProcess;
 
-    public AppendColumnsToLayerProcess(ImportProcess importer, Catalog catalog, GeoServer geoserver) {
+    public AppendColumnsToLayerProcess(ImportProcess importer, Catalog catalog) {
         this.catalog = catalog;
         this.importer = new LayerImportUtil(catalog, importer);
-        this.geoserver = geoserver;
+        this.importProcess = importer;
     }
 
     @DescribeResult(name = "layerName", description = "Name of the new featuretype, with workspace")
@@ -71,25 +62,15 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
             @DescribeParameter(name = "store", min = 1, description = "Store in which layer resides") String store,
             @DescribeParameter(name = "column", min = 1, max = Integer.MAX_VALUE, description = "Column Name|Column Type|Column Description|Default Value") String[] columns)
             throws ProcessException {
-
-        WorkspaceInfo ws;
-        ws = catalog.getWorkspaceByName(workspace);
-        if (ws == null) {
-            throw new ProcessException("Could not find workspace " + workspace);
-        }
-
-        DataStoreInfo ds = catalog.getDataStoreByName(ws.getName(), store);
-        if (ds == null) {
-            throw new ProcessException("Could not find store " + store + " in workspace " + workspace);
-        }
-
-        FeatureSource featureSource;
-        try {
-            featureSource = ds.getDataStore(new DefaultProgressListener()).getFeatureSource(new NameImpl(layer));
-        } catch (IOException ioe) {
-            throw new ProcessException(ioe);
-        }
-
+        
+        GeoserverUtils gsUtils = new GeoserverUtils(catalog);
+        WorkspaceInfo ws = gsUtils.getWorkspaceByName(workspace);
+        DataStoreInfo ds = gsUtils.getDataStoreByName(workspace, store);
+        DataAccess<? extends FeatureType, ? extends Feature> dataAccess = gsUtils.getDataAccess(ds, null);
+        FeatureSource<? extends FeatureType, ? extends Feature> featureSource = gsUtils.getFeatureSource(dataAccess, layer);
+        FeatureCollection<? extends FeatureType, ? extends Feature> featureCollection = gsUtils.getFeatureCollection(featureSource);
+        FeatureIterator<? extends Feature> features = featureCollection.features();
+        
         Map<String, String[]> newColumns = new HashMap<String, String[]>();
         for (String column : columns) {
             String[] columnAttributes = column.split("\\|");
@@ -213,47 +194,21 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
                 ft.getDescription());
         SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(newFeatureType);
         List<SimpleFeature> sfList = new ArrayList<SimpleFeature>();
-        FeatureCollection fc;
-        try {
-            fc  = featureSource.getFeatures();
-            FeatureIterator<SimpleFeature> features = fc.features();
-            while (features.hasNext()) {
-                SimpleFeature feature = features.next();
-                SimpleFeature newFeature = SimpleFeatureBuilder.retype(feature, sfb);
-                for (String columnKey : colKeys) {
-                    String name = columnKey;
-                    if (newFeature.getAttribute(new NameImpl(name)) == null) {
-                        newFeature.setAttribute(name, newFeature.getFeatureType().getDescriptor(name).getDefaultValue());
-                    }
+        
+        while (features.hasNext()) {
+            SimpleFeature feature = (SimpleFeature) features.next();
+            SimpleFeature newFeature = SimpleFeatureBuilder.retype(feature, sfb);
+            for (String columnKey : colKeys) {
+                String name = columnKey;
+                if (newFeature.getAttribute(new NameImpl(name)) == null) {
+                    newFeature.setAttribute(name, newFeature.getFeatureType().getDescriptor(name).getDefaultValue());
                 }
-                sfList.add(newFeature);
             }
-        } catch (IOException ex) {
-            throw new ProcessException(ex);
+            sfList.add(newFeature);
         }
 
         SimpleFeatureCollection collection = DataUtilities.collection(sfList);
-        CatalogFacade cf = catalog.getFacade();
-        LayerInfo layerByName = cf.getLayerByName(layer);
-        ResourceInfo layerResource = layerByName.getResource();
-        cf.detach(layerResource);
-        cf.remove(layerResource);
-        cf.remove(layerByName);
-        try {
-            File diskDirectory = new File(ds.getDataStore(new DefaultProgressListener()).getInfo().getSource());
-            Collection<File> listFiles = FileUtils.listFiles(diskDirectory, new PrefixFileFilter(layerByName.getName()), null);
-            for (File file : listFiles) {
-                FileUtils.deleteQuietly(file);
-            }
-//            FileUtils.deleteDirectory(new File(diskDirectory, layerByName.getName()));
-        } catch (IOException ex) {
-            throw new ProcessException(ex);
-        }
         
-        cf.save(ds);
-        cf.save(ws);
-        
-        String imported = importer.importLayer(collection, workspace, store, layer, collection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
-        return imported;
+        return gsUtils.replaceLayer(collection, layer, ds, ws, importProcess);
     }
 }

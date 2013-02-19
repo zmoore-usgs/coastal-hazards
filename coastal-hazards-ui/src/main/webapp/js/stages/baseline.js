@@ -1,6 +1,7 @@
 var Baseline = {
     stage : 'baseline',
     suffixes :  ['_baseline'],
+    mandatoryColumns : ['the_geom', 'ID', 'Orient'],
     reservedColor : '#7570B3',
     shorewardColor : '#76C5AD',
     description : {
@@ -10,39 +11,18 @@ var Baseline = {
         'upload-button' : 'Upload a zipped shapefile containing a baseline polyline.'
     },
     baselineDrawButton : $('#baseline-draw-btn'),
+    baselineCloneButton : $('#baseline-clone-btn'),
+    baselineRemoveButton : $('#baseline-remove-btn'),
+    baselineEditButton : $('#baseline-edit-button'),
+    baselineEditMenu : $('#baseline-edit-menu'), 
     appInit : function() {
         $('#baseline-draw-form-name').val(Util.getRandomLorem());
-        $('#baseline-clone-btn').on('click', Baseline.cloneButtonClicked);
+        Baseline.baselineCloneButton.on('click', Baseline.cloneButtonClicked);
+        Baseline.baselineRemoveButton.on('click', Baseline.removeResource)
         Baseline.baselineDrawButton.on("click", Baseline.drawButtonToggled);
-        $('#baseline-draw-form-name').val(Util.getRandomLorem());
-        $('#baseline-remove-btn').on('click', Baseline.removeResource)
-        
-        Baseline.baselineDrawButton.popover({
-            title : Baseline.stage.capitalize() + ' Draw',
-            content : $('<div />')
-            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
-            .html(),
-            html : true,
-            placement : 'bottom',
-            trigger : 'hover',
-            delay : {
-                show : CONFIG.popupHoverDelay
-            }
-        })
-            
-        $('#baseline-edit-btn').popover({
-            title : Baseline.stage.capitalize() + ' Edit',
-            content : $('<div />')
-            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
-            .html(),
-            html : true,
-            placement : 'bottom',
-            trigger : 'hover',
-            delay : {
-                show : CONFIG.popupHoverDelay
-            }
-        })
-        
+        Baseline.baselineEditButton.on('click', Baseline.editButtonToggled);
+        Baseline.baselineEditMenu.find('li').on('click', Baseline.editMenuToggled)
+
         Baseline.baselineDrawButton.popover({
             title : Baseline.stage.capitalize() + ' Draw',
             content : $('<div />')
@@ -56,7 +36,7 @@ var Baseline = {
             }
         })
         
-        $('#baseline-edit-btn').popover({
+        Baseline.baselineEditButton.popover({
             title : Baseline.stage.capitalize() + ' Edit',
             content : $('<div />')
             .append($('<div />').html('Expand the editing pallet and modify the selected baseline. '))
@@ -69,7 +49,7 @@ var Baseline = {
             }
         })
         
-        $('#baseline-clone-btn').popover({
+        Baseline.baselineCloneButton.popover({
             title : Baseline.stage.capitalize() + ' Clone',
             content : $('<div />')
             .append($('<div />').html('Clone an existing baseline layer so that it can be modified if desired.'))
@@ -82,7 +62,6 @@ var Baseline = {
             }
         })
         
-        Baseline.initializeUploader();
         var sessionKey = CONFIG.tempSession.getCurrentSessionKey();
         var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
             strategies : [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
@@ -120,6 +99,8 @@ var Baseline = {
             autoActivate : false,
             box : false
         }));
+        
+        Baseline.initializeUploader();
     },
     
     enterStage : function() {
@@ -132,74 +113,114 @@ var Baseline = {
     leaveStage : function() {
         LOG.debug('Baseline.js::leaveStage');
         Baseline.deactivateHighlightControl();
-        if ($('#baseline-edit-form-toggle').hasClass('active')) {
-            $('#baseline-edit-form-toggle').trigger('click');
+        if ($('#baseline-edit-button').hasClass('active')) {
+            $('#baseline-edit-button').trigger('click');
         }
     },
     
-    addBaselineToMap : function(args) {
-        var orient = 'Orient';
-        LOG.info('Baseline.js::addBaselineToMap: Adding baseline layer to map')
-        var style = new OpenLayers.Style({
-            strokeColor: '#FFFFFF',
-            strokeWidth: 2
-        },{
-            rules : [
-            new OpenLayers.Rule({
-                filter: new OpenLayers.Filter.Comparison({
-                    type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                    property: orient, 
-                    value: 'shoreward'
-                }),
-                symbolizer: {
-                    strokeColor: Baseline.shorewardColor,
-                    strokeWidth: 2
+    addLayerToMap : function(args) {
+        var layerPrefix = args.name.split(':')[0];
+        var layerName = args.name.split(':')[1];
+        
+        CONFIG.ows.getDescribeFeatureType({
+            layerNS : layerPrefix,
+            layerName : layerName,
+            callbacks : [
+            function(describeFeaturetypeRespone) {
+                LOG.trace('Baseline.js::addLayerToMap: Parsing layer attributes to check that they contain the attributes needed.'); 
+                var attributes = describeFeaturetypeRespone.featureTypes[0].properties;
+                if (layerPrefix != CONFIG.name.published && attributes.length < Baseline.mandatoryColumns.length) {
+                    LOG.warn('Baseline.js::addLayerToMap: There are not enough attributes in the selected shapefile to constitute a valid baseline. Will be deleted. Needed: '  + Baseline.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
+                    Baseline.removeResource();
+                    CONFIG.ui.showAlert({
+                        message : 'Not enough attributes in upload - Check Logs',
+                        caller : Shorelines,
+                        displayTime : 7000,
+                        style: {
+                            classes : ['alert-error']
+                        }
+                    })
                 }
-            }),
-            new OpenLayers.Rule({
-                filter: new OpenLayers.Filter.Comparison({
-                    type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                    property: orient, 
-                    value: 'seaward'
-                }),
-                symbolizer : {
-                    strokeColor: Baseline.reservedColor,
-                    strokeWidth: 2
+                
+                var layerColumns = Util.createLayerUnionAttributeMap({
+                    caller : Baseline,
+                    attributes : attributes
+                })
+                var foundAll = layerColumns.values().findIndex('') == -1 ? true : false;
+                
+                if (layerPrefix != CONFIG.name.published && !foundAll) {
+                    CONFIG.ui.buildColumnMatchingModalWindow({
+                        layerName : layerName,
+                        columns : layerColumns,
+                        caller : Baseline
+                    })
+                } else {
+                    var orient = 'Orient';
+                    LOG.info('Baseline.js::addLayerToMap: Adding baseline layer to map')
+                    var style = new OpenLayers.Style({
+                        strokeColor: '#FFFFFF',
+                        strokeWidth: 2
+                    },{
+                        rules : [
+                        new OpenLayers.Rule({
+                            filter: new OpenLayers.Filter.Comparison({
+                                type: OpenLayers.Filter.Comparison.EQUAL_TO, 
+                                property: orient, 
+                                value: 'shoreward'
+                            }),
+                            symbolizer: {
+                                strokeColor: Baseline.shorewardColor,
+                                strokeWidth: 2
+                            }
+                        }),
+                        new OpenLayers.Rule({
+                            filter: new OpenLayers.Filter.Comparison({
+                                type: OpenLayers.Filter.Comparison.EQUAL_TO, 
+                                property: orient, 
+                                value: 'seaward'
+                            }),
+                            symbolizer : {
+                                strokeColor: Baseline.reservedColor,
+                                strokeWidth: 2
+                            }
+                        }),
+                        new OpenLayers.Rule({
+                            filter: new OpenLayers.Filter.Comparison({
+                                type: OpenLayers.Filter.Comparison.EQUAL_TO, 
+                                property: orient, 
+                                value: 'seaward'
+                            }),
+                            symbolizer : {
+                                strokeColor: Baseline.reservedColor,
+                                strokeWidth: 2
+                            }
+                        }),
+                        new OpenLayers.Rule({
+                            elseFilter: true
+                        })
+                        ]
+                    })
+        
+                    var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
+                        strategies: [new OpenLayers.Strategy.BBOX()],
+                        protocol: new OpenLayers.Protocol.WFS({
+                            url:  "geoserver/"+args.name.split(':')[0]+"/wfs",
+                            featureType: args.name.split(':')[1],
+                            geometryName: "the_geom"
+                        }),
+                        renderers: CONFIG.map.getRenderer(),
+                        styleMap: new OpenLayers.StyleMap(style),
+                        type : Baseline.stage
+                    });
+        
+                    CONFIG.map.removeLayerByName(baselineLayer.name);
+                    CONFIG.map.getMap().addLayer(baselineLayer);
+                    CONFIG.tempSession.getStage(Baseline.stage).viewing = args.name;
+                    CONFIG.tempSession.persistSession();
                 }
-            }),
-            new OpenLayers.Rule({
-                filter: new OpenLayers.Filter.Comparison({
-                    type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                    property: orient, 
-                    value: 'seaward'
-                }),
-                symbolizer : {
-                    strokeColor: Baseline.reservedColor,
-                    strokeWidth: 2
-                }
-            }),
-            new OpenLayers.Rule({
-                elseFilter: true
-            })
-            ]
+            }]
         })
         
-        var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
-            strategies: [new OpenLayers.Strategy.BBOX()],
-            protocol: new OpenLayers.Protocol.WFS({
-                url:  "geoserver/"+args.name.split(':')[0]+"/wfs",
-                featureType: args.name.split(':')[1],
-                geometryName: "the_geom"
-            }),
-            renderers: CONFIG.map.getRenderer(),
-            styleMap: new OpenLayers.StyleMap(style),
-            type : Baseline.stage
-        });
-        
-        CONFIG.map.removeLayerByName(baselineLayer.name);
-        CONFIG.map.getMap().addLayer(baselineLayer);
-        CONFIG.tempSession.getStage(Baseline.stage).viewing = args.name;
-        CONFIG.tempSession.persistSession();
     },
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
@@ -254,7 +275,7 @@ var Baseline = {
     listboxChanged : function() {
         LOG.debug('Baseline.js::baselineSelected: A baseline was selected from the dropdown list');
         
-        Baseline.disableEditButton();
+        Baseline.disableEditButtonSet();
         Baseline.disableCloneButton();
         Baseline.disableRemoveButton();
         Baseline.deactivateHighlightControl();
@@ -269,13 +290,13 @@ var Baseline = {
         if (selectVal) {
             LOG.debug('Baseline.js::baselineSelected: Adding selected baseline ( ' + selectVal + ' ) from list');
             
-            Baseline.addBaselineToMap({
+            Baseline.addLayerToMap({
                 name : selectVal
             })
             
             if (selectVal.startsWith(CONFIG.tempSession.getCurrentSessionKey())) {
                 LOG.debug('Baseline.js::baselineSelected: Selected baseline is user-created and is writable. Displaying edit panel.');
-                Baseline.enableEditButton();
+                Baseline.enableEditButtonSet();
                 Baseline.enableRemoveButton();
             } else {
                 Baseline.enableCloneButton();
@@ -291,24 +312,19 @@ var Baseline = {
         }
     },
     editButtonToggled : function(event) {
-        LOG.debug('Baseline.js::editButtonToggled: Baseline Edit Button Clicked');
-                
-        LOG.debug('Baseline.js::editButtonToggled: Disabling draw button');
-        $(Baseline.baselineDrawButton).attr('disabled', 'disabled');
-        $(Baseline.baselineDrawButton).removeClass('active');
-                
-        var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
-                
-        if (toggledOn) {
-            LOG.debug('Baseline.js::editButtonToggled: Edit form to be displayed');
+        var activated = !$(event.target).hasClass('active');
+        if (activated) {
+            $('#baseline-edit-save-button').on('click', Baseline.saveEditedLayer);
+            $('#baseline-edit-container').removeClass('hidden');
+           
+            LOG.debug('Baseline.js::editMenuToggled: Disabling draw button');
+            $(Baseline.baselineDrawButton).attr('disabled', 'disabled');
+            $(Baseline.baselineDrawButton).removeClass('active');
+            
+            LOG.debug('Baseline.js::editMenuToggled: Edit description panel to be displayed');
             
             Baseline.disableDrawButton();
-                    
-            var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
-            renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
-                    
-            LOG.debug('Baseline.js::editButtonToggled: Attempting to clone current active baseline layer into an edit layer');
-            
+            LOG.debug('Baseline.js::editMenuToggled: Attempting to clone current active baseline layer into an edit layer');
             var originalLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0].clone();
             var clonedLayer = new OpenLayers.Layer.Vector('baseline-edit-layer',{
                 strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
@@ -329,64 +345,146 @@ var Baseline = {
                 deleteCodes : [8, 46, 48],
                 standalone : true
             })
-            
-            LOG.debug('Baseline.js::editButtonToggled: Removing previous cloned layer from map, if any');
+                    
+            LOG.debug('Baseline.js::editMenuToggled: Removing previous cloned layer from map, if any');
             CONFIG.map.removeLayerByName('baseline-edit-layer');
-            
-            LOG.debug('Baseline.js::editButtonToggled: Adding cloned layer to map');
+                    
+            LOG.debug('Baseline.js::editMenuToggled: Adding cloned layer to map');
             CONFIG.map.getMap().addLayer(clonedLayer);
-            
-            LOG.debug('Baseline.js::editButtonToggled: Removing previous cloned layer from map, if any');
+                    
+            LOG.debug('Baseline.js::editMenuToggled: Removing previous cloned layer from map, if any');
             CONFIG.map.removeControl({
                 id : 'baseline-edit-control'
             });
-            
-            LOG.debug('Baseline.js::editButtonToggled: Adding clone control to map');
+                    
+            LOG.debug('Baseline.js::editMenuToggled: Adding clone control to map');
             CONFIG.map.getMap().addControl(editControl);
-            
-            $("#baseline-edit-container").removeClass('hidden');
-            
-            CONFIG.ui.initializeBaselineEditForm();
-            
+                    
             var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
             var highlightControl = Baseline.getHighlightControl();
-            
+                    
             highlightControl.deactivate();
             selectControl.deactivate();
-            
+                    
             selectControl.onSelect = function(feature) {
-                $('.baseline-edit-toggle').bootstrapSwitch('setState', false);
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
                 modifyControl.selectFeature(feature);
-                modifyControl.activate();
-                modifyControl.deactivate();
                 if (feature.attributes.Orient == 'seaward') {
-                    $('#toggle-direction-checkbox').bootstrapSwitch('setState', true, true);
+                    $('#baseline-edit-orient-seaward').addClass('disabled');
+                    $('#baseline-edit-orient-shoreward').removeClass('disabled');
                 } else {
-                    $('#toggle-direction-checkbox').bootstrapSwitch('setState', false, true);
+                    $('#baseline-edit-orient-shoreward').addClass('disabled');
+                    $('#baseline-edit-orient-seaward').removeClass('disabled');
+                }
+                
+                var activeMenuItem = Baseline.baselineEditMenu.find('li[class="active"]');
+                if (!activeMenuItem.length) {
+                    $('#baseline-edit-create-vertex').trigger('click');
                 }
             }
+                 
             selectControl.onUnselect = function(feature) {
-                CONFIG.ui.initializeBaselineEditForm();
+                $('#baseline-edit-save-button').unbind('click', Baseline.saveEditedLayer);
+                $('#baseline-edit-save-button').on('click', Baseline.saveEditedLayer);
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
                 modifyControl.unselectFeature(feature);
-                $('.baseline-edit-toggle').bootstrapSwitch('setState', false);
-                $('#toggle-direction-checkbox').bootstrapSwitch('setState', false, true);
             }
-            
+                    
             selectControl.setLayer(clonedLayer);
             highlightControl.setLayer(clonedLayer);
-            
+                    
             highlightControl.activate();
             selectControl.activate();
+            
+            var activeMenuItem = Baseline.baselineEditMenu.find('li[class="active"]');
+            if (!activeMenuItem.length) {
+                $('.baseline-edit-container-instructions').addClass('hidden');
+                $('#baseline-edit-container-instructions-initial').removeClass('hidden');
+            }
         } else {
-            // remove edit layer, remove edit control
+            $('#baseline-edit-container').addClass('hidden');
+            $('.baseline-edit-container-instructions').addClass('hidden');
+            Baseline.baselineEditMenu.find('li').removeClass('active');
+            // TODO- Check if user does want to save?
             Baseline.deactivateHighlightControl();
             CONFIG.map.removeLayerByName('baseline-edit-layer');
             CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0]);
             CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0].deactivate();
             Baseline.baselineDrawButton.removeAttr('disabled');
-            $("#baseline-edit-container").addClass('hidden');
+        }
+    },
+    editMenuToggled : function(event) {
+        LOG.info('Baseline.js::editMenuToggled: Baseline Edit Menu Toggled');
+        
+        if (!Baseline.baselineEditButton.hasClass('active')){
+            Baseline.baselineEditButton.trigger('click');
+        }
+        
+        var target = $(event.currentTarget);
+        var targetId = target.attr('id');
+        var toggledOn = target.hasClass('active') ? false : true;
+        var targetDisabled = target.hasClass('disabled');
+        var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+        var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
+        
+        if (targetId == 'baseline-edit-orient-seaward' || targetId == 'baseline-edit-orient-shoreward') {
+            var selectedFeature = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.find(function(n){
+                return n.id == selectControl.layer.selectedFeatures[0].id
+            })
+            if (targetId == 'baseline-edit-orient-seaward') {
+                selectedFeature.attributes.Orient = 'seaward';
+                selectedFeature.state = OpenLayers.State.UPDATE;
+                $('#baseline-edit-orient-seaward').addClass('disabled');
+                $('#baseline-edit-orient-shoreward').removeClass('disabled');
+            } else {
+                selectedFeature.attributes.Orient = 'shoreward';
+                selectedFeature.state = OpenLayers.State.UPDATE;
+                $('#baseline-edit-orient-shoreward').addClass('disabled');
+                $('#baseline-edit-orient-seaward').removeClass('disabled');
+            }
+        } else if (toggledOn && !targetDisabled) {
+            if (modifyControl.active) {
+                modifyControl.deactivate();
+            }
+            Baseline.baselineEditMenu.find('li').removeClass('active');
+            target.addClass('active');
+            $('.baseline-edit-container-instructions').addClass('hidden');
+            switch (targetId) {
+                case 'baseline-edit-create-vertex' : {
+                    modifyControl.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+                    modifyControl.mode.createVertices = true;
+                    $('#baseline-edit-container-instructions-vertex').removeClass('hidden');
+                    break;
+                } 
+                case 'baseline-edit-rotate' : {
+                    modifyControl.mode |= OpenLayers.Control.ModifyFeature.ROTATE;
+                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                    $('#baseline-edit-container-instructions-rotate').removeClass('hidden');
+                    break;
+                }
+                case 'baseline-edit-drag': {
+                    modifyControl.mode |= OpenLayers.Control.ModifyFeature.DRAG;
+                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                    $('#baseline-edit-container-instructions-drag').removeClass('hidden');
+                    break;
+                }
+                case 'baseline-edit-resize-w-aspect' : {
+                    modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                    modifyControl.mode &= ~OpenLayers.Control.ModifyFeature.RESHAPE;
+                }
+                case 'baseline-edit-resize': {
+                    modifyControl.mode |= OpenLayers.Control.ModifyFeature.RESIZE;
+                    $('#baseline-edit-container-instructions-resize').removeClass('hidden');
+                    break;
+                }
+                default : {
+                    $('#baseline-edit-container-instructions-initial').removeClass('hidden');
+                }
+            }
+            modifyControl.activate();
+            if (selectControl.layer.selectedFeatures[0]) {
+                modifyControl.selectFeature(selectControl.layer.selectedFeatures[0]);
+            }
         }
     },
     enableCloneButton : function() {
@@ -487,26 +585,26 @@ var Baseline = {
     enableDrawButton : function() {
         Baseline.baselineDrawButton.removeAttr('disabled');
     },
-    disableEditButton : function() {
+    disableEditButtonSet : function() {
         if (!$('#baseline-edit-container').hasClass('hidden')) {
             LOG.debug('UI.js::?: Edit form was found to be active. Deactivating edit form');
-            $('#baseline-edit-form-toggle').click();
+            Baseline.baselineEditButton.trigger('click');
         }
-        $('#baseline-edit-form-toggle').attr('disabled', 'disabled');
+        $('#baseline-edit-btn-group button').attr('disabled', 'disabled');
     },
-    enableEditButton : function() {
+    enableEditButtonSet : function() {
         if ($("#baseline-list option:selected")[0].value.startsWith(CONFIG.tempSession.getCurrentSessionKey())) {
             LOG.info('Baseline.js::enableEditButton: Showing baseline edit button on panel')
             
-            var baselineEditButton = $('#baseline-edit-form-toggle');
+            var baselineEditButtonGroup = $('#baseline-edit-btn-group button');
             
             LOG.debug('UI.js::displayBaselineEditButton: Enabling baseline edit button');
-            $(baselineEditButton).removeAttr('disabled');
-            $(baselineEditButton).removeClass('active');
+            baselineEditButtonGroup.removeAttr('disabled');
+            Baseline.baselineEditMenu.find('li').removeClass('active');
             
             LOG.debug('UI.js::displayBaselineEditButton: Rebinding click event hookon baseline edit button');
-            $(baselineEditButton).unbind('click', Baseline.editButtonToggled);
-            $(baselineEditButton).on('click', Baseline.editButtonToggled);
+            Baseline.baselineEditMenu.find('li').unbind('click', Baseline.editMenuToggled);
+            Baseline.baselineEditMenu.find('li').on('click', Baseline.editMenuToggled);
         }
     },
     drawButtonToggled : function(event) {
@@ -524,7 +622,7 @@ var Baseline = {
     },
     beginDrawing : function() {
         LOG.debug('Baseline.js::beginDrawing: Initializing baseline draw panel');
-        Baseline.disableEditButton();
+        Baseline.disableEditButtonSet();
         
         LOG.debug('Baseline.js::beginDrawing: Removing currently drawn features, if any');
         Baseline.clearDrawFeatures();
@@ -550,7 +648,7 @@ var Baseline = {
 
         LOG.debug('Baseline.js::stopDrawing: Removing draw control');
         Baseline.getDrawControl().deactivate();
-        Baseline.enableEditButton();
+        Baseline.enableEditButtonSet();
         
         LOG.debug('Baseline.js::stopDrawing: Removing currently drawn features, if any');
         Baseline.clearDrawFeatures();
@@ -587,8 +685,6 @@ var Baseline = {
             Baseline.refreshFeatureList({
                 selectLayer : layer.cloneOf
             })
-                    
-            $('#baseline-edit-form-toggle').click();
         });
                 
         saveStrategy.save();  

@@ -1,16 +1,14 @@
 // TODO - Onclick table rows to zoom to shoreline set
-// TODO - Back end and front-end verification for uploaded shapefiles
-// TODO - Deal with non-standard shapefiles
 var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
+    mandatoryColumns : ['the_geom', 'Date_', 'uncy'],
     description : {
         'stage' : 'View and select existing published shorelines, or upload your own. Shorelines represent snap-shots of the coastline at various points in time.',
         'view-tab' : 'Select a published collection of shorelines to add to the workspace.',
         'manage-tab' : ' Upload a zipped shapefile to add it to the workspace.',
         'upload-button' : 'Upload a zipped shapefile which includes shoreline polyline features.'
     },
-    
     appInit : function() {
         var getShorelineIdControl = new OpenLayers.Control.WMSGetFeatureInfo({
             title: 'shoreline-identify-control',
@@ -54,7 +52,7 @@ var Shorelines = {
         LOG.info('Shorelines.js::addShorelines');
         
         LOG.debug('Shorelines.js::addShorelines: Adding ' + layers.length + ' shoreline layers to map'); 
-        $(layers).each(function(index,layer) {
+        layers.each(function(layer) {
             var layerTitle = layer.title;
             var layerPrefix = layer.prefix;
             var layerName = layer.name;
@@ -66,10 +64,39 @@ var Shorelines = {
                     layerName : layerName,
                     callbacks : [
                     function(describeFeaturetypeRespone) {
-                        Shorelines.addLayerToMap({
-                            layer : layer,
-                            describeFeaturetypeRespone : describeFeaturetypeRespone
+                        LOG.trace('Shorelines.js::addShorelines: Parsing layer attributes to check that they contain the attributes needed.'); 
+                        var attributes = describeFeaturetypeRespone.featureTypes[0].properties;
+                        if (attributes.length < Shorelines.mandatoryColumns.length) {
+                            LOG.warn('Shorelines.js::addShorelines: There are not enough attributes in the selected shapefile to constitute a valid shoreline. Will be deleted. Needed: '  + Shorelines.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
+                            Shorelines.removeResource();
+                            CONFIG.ui.showAlert({
+                                message : 'Not enough attributes in upload - Check Logs',
+                                caller : Shorelines,
+                                displayTime : 7000,
+                                style: {
+                                    classes : ['alert-error']
+                                }
+                            })
+                        }
+                        
+                        var layerColumns = Util.createLayerUnionAttributeMap({
+                            caller : Shorelines,
+                            attributes : attributes
                         })
+                        var foundAll = layerColumns.values().findIndex('') == -1 ? true : false;
+                        
+                        if (layerPrefix != CONFIG.name.published && !foundAll) {
+                            CONFIG.ui.buildColumnMatchingModalWindow({
+                                layerName : layerName,
+                                columns : layerColumns,
+                                caller : Shorelines
+                            })
+                        } else {
+                            Shorelines.addLayerToMap({
+                                layer : layer,
+                                describeFeaturetypeRespone : describeFeaturetypeRespone
+                            })
+                        }
                     }
                     ]
                 })
@@ -104,8 +131,8 @@ var Shorelines = {
     },
     
     /**
-     * Uses a OWS DescribeFeatureType response to add a layer to a map
-     */
+    * Uses a OWS DescribeFeatureType response to add a layer to a map
+    */
     addLayerToMap : function(args) {
         LOG.info('Shorelines.js::addLayerToMap');
         var layer = args.layer;
@@ -335,6 +362,7 @@ var Shorelines = {
         var navTabs = 	$('#shoreline-table-navtabs');
         var tabContent = $('#shoreline-table-tabcontent');
         var shorelineList = $('#shorelines-list');
+        var layerPrefix = event.object.prefix;
         var layerName = event.object.params.LAYERS;
         
         var selectedVals = shorelineList.children(':selected').map(function(i,v) {
@@ -344,7 +372,7 @@ var Shorelines = {
         event.object.events.unregister('loadend', event.object, Shorelines.createFeatureTable);
         
         LOG.debug('Shorelines.js::createFeatureTable:: Creating color feature table header');
-        var colorTableContainer = $('<div />');
+        var colorTableContainer = $('<div />').addClass('shoreline-feature-table');
         var colorTable = $('<table />').addClass('table table-bordered table-condensed tablesorter shoreline-table');
         var colorTableHead = $('<thead />');
         var colorTableHeadR = $('<tr />');
@@ -384,11 +412,9 @@ var Shorelines = {
             tableData.append(toggleDiv);
             tableRow.append(tableData);
             tableRow.append($('<td />').html(date));
-            tableRow.append($('<td />')
-                .attr({
-                    style : 'background-color:' + colorGroup[0] + ';'
-                }).html('&nbsp;'));
-            
+            tableRow.append($('<td />').
+                attr('style' ,'background-color:' + colorGroup[0] + ';').
+                html('&nbsp;'));
             colorTableBody.append(tableRow);
         })
         
@@ -424,56 +450,143 @@ var Shorelines = {
         LOG.debug('Shorelines.js::createFeatureTable:: Adding color feature table to DOM');
         
         tabContent.append(
-            $('<div />').addClass('tab-pane active').attr('id', this.name).append(
-                colorTableContainer));
+            $('<div />').
+            addClass('tab-pane active').
+            attr('id', this.name).
+            append(colorTableContainer));
                         
         $('#' + layerName + ' .switch').each(function(index, element){
             var attachedLayer =  event.object.prefix + ':' + layerName;
             $(element).on('switch-change', 
-            function(event, data) {
-                var status = data.value,
+                function(event, data) {
+                    var status = data.value,
                     $element = data.el,
                     layerName = attachedLayer,
                     date = $element.parent().parent().data('date'),
                     stageDatesDisabled = CONFIG.tempSession.getDisabledDatesForShoreline(layerName);
                 
-                LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for date ' + date + ' on layer ' + layerName);
+                    LOG.info('Shorelines.js::?: User has selected to ' + (status ? 'activate' : 'deactivate') + ' shoreline for date ' + date + ' on layer ' + layerName);
                         
-                var idTableButtons = $('.btn-year-toggle[date="'+date+'"]');
-                if (!status) {
-                    if (stageDatesDisabled.indexOf(date) == -1) {
-                        stageDatesDisabled.push(date);
-                    }
+                    var idTableButtons = $('.btn-year-toggle[date="'+date+'"]');
+                    if (!status) {
+                        if (stageDatesDisabled.indexOf(date) == -1) {
+                            stageDatesDisabled.push(date);
+                        }
                     
-                    idTableButtons.removeClass('btn-success');
-                    idTableButtons.addClass('btn-danger');
-                    idTableButtons.html('Enable');
-                } else {
-                    while (stageDatesDisabled.indexOf(date) != -1) {
-                        stageDatesDisabled.remove(date);
-                    }
+                        idTableButtons.removeClass('btn-success');
+                        idTableButtons.addClass('btn-danger');
+                        idTableButtons.html('Enable');
+                    } else {
+                        while (stageDatesDisabled.indexOf(date) != -1) {
+                            stageDatesDisabled.remove(date);
+                        }
                     
-                    idTableButtons.removeClass('btn-danger');
-                    idTableButtons.addClass('btn-success');
-                    idTableButtons.html('Disable');
-                }
-                CONFIG.tempSession.persistSession();
+                        idTableButtons.removeClass('btn-danger');
+                        idTableButtons.addClass('btn-success');
+                        idTableButtons.html('Disable');
+                    }
+                    CONFIG.tempSession.persistSession();
                         
-                var layer  = CONFIG.map.getMap().getLayersByName(layerName.split(':')[1])[0];
-                var sldBody = Shorelines.createSLDBody({
-                    colorDatePairings : layer.colorGroups,
-                    groupColumn : layer.groupByAttribute,
-                    layerTitle : layerName.split(':')[1],
-                    layerName : layerName
-                })
-                layer.params.SLD_BODY = sldBody;
-                layer.redraw();
-                $("table.tablesorter").trigger('update', false)
-            });//end elt.on
+                    var layer  = CONFIG.map.getMap().getLayersByName(layerName.split(':')[1])[0];
+                    var sldBody = Shorelines.createSLDBody({
+                        colorDatePairings : layer.colorGroups,
+                        groupColumn : layer.groupByAttribute,
+                        layerTitle : layerName.split(':')[1],
+                        layerName : layerName
+                    })
+                    layer.params.SLD_BODY = sldBody;
+                    layer.redraw();
+                    $("table.tablesorter").trigger('update', false)
+                });
         });
-         
+        
         Shorelines.setupTableSorting();
         $('#' + layerName + ' .switch').bootstrapSwitch();
+        
+        // Check to see if we need to create a wildcard column by seeing if there's anything to wildcard
+        var ignoredColumns = ['id','date_']
+        var featureKeys = Object.keys(event.object.describedFeatures[0].attributes).filter(function(key) {
+            return ignoredColumns.indexOf(key.toLowerCase()) == -1
+        });
+        if (featureKeys.length) {
+            $('#shoreline-table-navtabs').find('li a[href="#'+layerName+'"]').
+            append(
+                $('<span />').
+                addClass('wildcard-link').
+                html('*').
+                on('click', function() {
+            
+                    var container = $('<div />').addClass('container-fluid');
+                    var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
+                    var explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well');
+                    explanationWell.html('Something something')
+                    container.append(explanationRow.append(explanationWell));
+                
+                    var selectionWell = $('<div />').addClass('well').attr('id', 'selection-well');
+                    var selectionRow = $('<div />').addClass('row-fluid').attr('id', 'selection-row');
+                    var selectList = $('<select />').addClass('wildcard-select-list');
+                
+                    selectList.append(
+                        $('<option />').
+                        val('').
+                        html(''))
+                    
+                    featureKeys.each(function(attribute) {
+                        selectList.append(
+                            $('<option />').
+                            val(attribute).
+                            html(attribute))
+                    })
+                    selectionWell.append(selectList);
+                    selectionRow.append(selectionWell);
+                    container.append(selectionWell);
+                    $('#shoreline-table-navtabs li[class="active"] a').data('layer', {
+                        'layerPrefix' : layerPrefix,
+                        'layerName' : layerName
+                    })
+                    var modalShown = function() {
+                        var currentSelected = $('#shoreline-table-tabcontent>#'+layerName+'>.shoreline-feature-table>table>thead>tr>th:nth-child(4)').text() || '';
+                        $('.wildcard-select-list').val(currentSelected)
+                        $('.wildcard-select-list').on('change', function(event) {
+                            var layerPrefix =  $('#shoreline-table-navtabs li[class="active"] a').data('layer').layerPrefix;
+                            var layerName =  $('#shoreline-table-navtabs li[class="active"] a').data('layer').layerName;
+                            var layerObj = CONFIG.ows.featureTypeDescription[layerPrefix][layerName];
+                            var selectedVal = $(this).val();
+                            var table = $('#shoreline-table-tabcontent>#'+layerName+'>.shoreline-feature-table>table');
+                        
+                            // Clear table of previous wildcard, if any
+                            table.find('thead>tr>th:nth-child(4)').remove();
+                            table.find('tbody>tr>td:nth-child(4)').remove();
+                        
+                            if (selectedVal) {
+                                $(table).find('>thead>tr').append(
+                                    $('<th />').
+                                    html(selectedVal))
+                                var dateAttr = Object.keys(layerObj[0].data).find(function(k){
+                                    return k.toLowerCase() == 'date_'
+                                })
+                                layerObj.unique(function(l){
+                                    return l.data[dateAttr]
+                                }).each(function(l) {
+                                    var attributeData = l.data;
+                                    var tr = $(table).find('>tbody>tr td:nth-child(2):contains("'+attributeData[dateAttr]+'")').parent()
+                                    tr.append($('<td />').html(attributeData[selectedVal]));
+                                })
+                            }
+                            $("#modal-window").modal('hide');
+                            Shorelines.setupTableSorting();
+                        })
+                    }
+                
+                    CONFIG.ui.createModalWindow({
+                        headerHtml : 'Choose A Wildcard Attribute',
+                        bodyHtml : container.html(),
+                        callbacks : [
+                        modalShown
+                        ]
+                    })
+                }))
+        }
     },
     setupTableSorting : function() {
         $.tablesorter.addParser({ 
@@ -489,7 +602,8 @@ var Shorelines = {
             type: 'numeric' 
         }); 
         
-        $("table.tablesorter").tablesorter({
+        $("table.tablesorter").trigger('destroy');
+        $("table").tablesorter({
             headers : {
                 0 : {
                     sorter : 'visibility'
@@ -633,12 +747,23 @@ var Shorelines = {
                         }
                     })
                     
-                    $('#shorelines-list').val('');
-                    CONFIG.ui.switchTab({
-                        caller : Shorelines,
-                        tab : 'view'
+                    CONFIG.ows.getWMSCapabilities({
+                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
+                        callbacks : {
+                            success : [
+                            function() {
+                                $('#shorelines-list').val('');
+                                $('#shorelines-list').trigger('change');
+                                CONFIG.ui.switchTab({
+                                    caller : Shorelines,
+                                    tab : 'view'
+                                })
+                                Shorelines.populateFeaturesList();
+                            }
+                            ]
+                        }
                     })
-                    Shorelines.refreshFeatureList();
+                    
                 }
                 ]
             })
