@@ -89,7 +89,7 @@ var Session = function(name, isPerm) {
             return session.id == CONFIG.permSession.session.currentSession
         });
         me.sessionObject.setItem(me.name, JSON.stringify(me.session));
-        me.namespaces = Object.extended(); 
+        me.namespace = Object.extended(); 
         
         /**
          * Persist the temp session to the appropriate location in the permanent session 

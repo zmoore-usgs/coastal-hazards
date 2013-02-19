@@ -234,7 +234,7 @@ var OWS = function(endpoint) {
                         me.featureTypeDescription[prefix] = Object.extended();
                     }
                     me.featureTypeDescription[prefix][describeFeaturetypeRespone.featureTypes[0].typeName] = describeFeaturetypeRespone;
-                    CONFIG.tempSession.namespaces[prefix] = namespace;
+                    CONFIG.tempSession.namespace[prefix] = namespace;
                     
                     $(args.callbacks || []).each(function(index, callback) {
                         callback(describeFeaturetypeRespone, this);

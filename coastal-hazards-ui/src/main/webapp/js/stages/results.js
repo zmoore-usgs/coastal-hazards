@@ -547,6 +547,48 @@ var Results = {
         '</wps:Execute>';
 
         return wps;
-        
+    },
+    retrieveRSquigglePlotPNG : function() {
+        var val =$("#results-list option:selected")[0].value
+        if (val) {
+            var layerNS = val.split(':')[0];
+            var layerName = val.split(':')[1];
+            var workspaceNS = 'gov.usgs.cida.ch.' + CONFIG.tempSession.getCurrentSessionKey();
+            var exportForm = $('<form />').attr({
+                'id' : 'export-form',
+                'style' : 'display:none;visibility:hidden;',
+                'method' : 'POST'
+            }).
+            append(
+                $('<input />').attr({
+                    'type' : 'hidden',
+                    'name' : 'filename'
+                }).val(layerName + '.png')).
+            append(
+                $('<input />').attr({
+                    'type' : 'hidden',
+                    'name' : 'layer'
+                }).val(val)).
+            append(
+                $('<input />').attr({
+                    'type' : 'hidden',
+                    'name' : 'workspaceNS'
+                }).val(workspaceNS)).
+            append(
+                $('<input />').attr({
+                    'type' : 'hidden',
+                    'name' : 'output'
+                }).val('output')).
+            append(
+                $('<input />').attr({
+                    'type' : 'hidden',
+                    'name' : 'type'
+                }).val('image/png;base64'))
+            $('body').append(exportForm)
+            exportForm.attr('action', 'service/export/squiggle');
+            exportForm.submit();
+            exportForm.remove();
+            
+        }
     }
 }

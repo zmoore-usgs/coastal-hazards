@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <display-name>coastal-hazards-ui</display-name>
+    
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
+    
     <listener>
         <description>ServletContextListener</description>
         <listener-class>gov.usgs.cida.coastalhazards.InitListener</listener-class>
     </listener>
+    
     <!-- FILTER -->
     <filter>
         <filter-name>TomcatFilter</filter-name>
@@ -17,6 +20,7 @@
         <filter-name>TomcatFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+    
     <!-- SERVLET -->
     <!-- AlternateProxy -->
     <servlet>
@@ -42,8 +46,7 @@
             <param-name>readTimeout</param-name>
             <param-value>300000</param-value>
         </init-param>
-    </servlet>
-    <!-- /AlternateProxy -->
+    </servlet><!-- /AlternateProxy -->
     <servlet>
         <servlet-name>ShapefileImportService</servlet-name>
         <servlet-class>gov.usgs.cida.coastalhazards.service.ShapefileImportService</servlet-class>
@@ -60,6 +63,7 @@
         <servlet-name>ExportService</servlet-name>
         <servlet-class>gov.usgs.cida.coastalhazards.service.ExportService</servlet-class>
     </servlet>
+    
     <!-- MAPPING -->
     <servlet-mapping>
         <servlet-name>GeoServerServlet</servlet-name>
@@ -83,6 +87,6 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ExportService</servlet-name>
-        <url-pattern>/service/export</url-pattern>
+        <url-pattern>/service/export/*</url-pattern>
     </servlet-mapping>
 </web-app>
