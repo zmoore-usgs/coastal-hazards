@@ -44,7 +44,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
 /**
- *
+ * This class was used to calculate intersections, now wrapped in Transects and Intersections
+ * New edit transects process will take the place where transects change
+ * 
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @DescribeProcess(
