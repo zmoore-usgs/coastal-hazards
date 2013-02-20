@@ -74,6 +74,27 @@ var Results = {
                                 success : [
                                 Results.populateFeaturesList,
                                 function() {
+                                    var results = CONFIG.tempSession.results;
+                                    if (!results) {
+                                        results = Object.extended();
+                                        CONFIG.tempSession.results = results;
+                                    }
+
+                                    var selectedShorelines = CONFIG.tempSession.getStage(Shorelines.stage).viewing;
+                                    var selectedBaseline = CONFIG.tempSession.getStage(Baseline.stage).viewing;
+                                    var selectedTransects = CONFIG.tempSession.getStage(Baseline.stage).viewing;
+                                    var selectedIntersections = CONFIG.tempSession.getStage('intersections').viewing;
+                                    
+                                    results[data] = {
+                                        shorelines : selectedShorelines,
+                                        baseline : selectedBaseline,
+                                        transects : selectedTransects,
+                                        intersections : selectedIntersections
+                                    }
+                                    
+                                    CONFIG.tempSession.results = results
+                                    CONFIG.tempSession.persistSession();
+                                    
                                     Shorelines.clear();
                                     Baseline.clear();
                                     Transects.clear();

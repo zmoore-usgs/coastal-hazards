@@ -340,6 +340,7 @@
                             </div>
                             <ul class="nav nav-tabs" id="action-result-tablist">
                                 <li class="active"><a  data-toggle="tab" href="#results-view-tab">View</a></li>
+                                <li><a data-toggle="tab" href="#results-manage-tab">Manage</a></li>
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="results-view-tab">
@@ -348,10 +349,13 @@
                                         <div class="tabbable">
                                             <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
                                             <div class="tab-content" id="results-tabcontent"></div>
-                                            <div style="visibility:none;"><a id="initiateExport" href="#">Export Me</a></div>
+                                            <!--<div style="visibility:none;"><a id="initiateExport" href="#">Export Me</a></div>-->
                                             <div><img id="exportedImage"/></div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="tab-pane" id="results-manage-tab">
+                                    // Hi Carl. Put your results management stuff here
                                 </div>
                             </div>
                         </div> <!-- /Results -->
