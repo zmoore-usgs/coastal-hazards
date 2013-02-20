@@ -265,7 +265,12 @@ var Transects = {
         LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
                 
         var layer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
-        
+        var updatedFeatures = layer.features.filter(function(f){
+            return f.state
+        }).map(function(f){
+            return f.attributes.TransectID
+        })
+            
         var saveStrategy = layer.strategies.find(function(n) {
             return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
         });
@@ -275,11 +280,24 @@ var Transects = {
         saveStrategy.events.register('success', null, function() {
             LOG.debug('Baseline.js::saveEditedLayer: Layer was updated on OWS server. Refreshing layer list');
                     
-            CONFIG.map.removeLayerByName(layer.cloneOf);
+            CONFIG.ows.updateTransectsAndIntersections({
+                shorelines : Shorelines.getActive(),
+                baseline : Baseline.getActive(),
+                transects : Transects.getActive(),
+                intersections : Calculation.getActive(),
+                transectId : updatedFeatures,
+                farthest : false,
+                callbacks : {
+                    success : [],
+                    error : []
+                }
+            });
+                    
+            //            CONFIG.map.removeLayerByName(layer.cloneOf);
             Transects.refreshFeatureList({
                 selectLayer : layer.cloneOf
             })
-            $('#transect-edit-form-toggle').trigger('click'); 
+        //            $('#transect-edit-form-toggle').trigger('click'); 
         });
                 
         saveStrategy.save();  
@@ -710,10 +728,12 @@ var Transects = {
         
         return request;
     },
-    
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({
             caller : Transects
         }, args))
+    },
+    getActive : function() {
+        return $("#transects-list option:selected").first().val();
     }
 }

@@ -877,5 +877,8 @@ var Baseline = {
         CONFIG.ui.initializeUploader($.extend({
             caller : Baseline
         }, args))
+    },
+    getActive : function() {
+        return $("#baseline-list option:selected").first().val();
     }
 }
