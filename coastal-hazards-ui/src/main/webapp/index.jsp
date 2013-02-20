@@ -273,8 +273,7 @@
                                                 <div class="row-fluid">
                                                     <label for="create-transects-input-spacing">Spacing</label>
                                                     <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
-                                                    <label for="create-transects-input-name" class="customLayerName">Name</label>
-                                                    <input type="text" id="create-transects-input-name" class="customLayerName" style="width: 100%;">
+                                                    <input type="hidden" id="create-transects-input-name" class="customLayerName" style="width: 100%;">
                                                 </div>
                                             </div>
                                         </div>
@@ -318,8 +317,7 @@
                                     <!-- Intersection Calculation -->
                                     <div class="row-fluid">
                                         <div id="results-calculation-panel-well" class="well span6">
-                                            <label class="control-label" for="results-form-name" class="customLayerName">Results Name</label>
-                                            <input class="input-large" name="results-form-name" class="customLayerName" id="results-form-name"  style="width: 100%;" />
+                                            <input type="hidden" class="input-large" name="results-form-name" class="customLayerName" id="results-form-name"  style="width: 100%;" />
                                             <button class="btn btn-success" id="create-results-btn">
                                                 <i class="icon-tasks icon-white"></i>
                                                 &nbsp;Calculate Results

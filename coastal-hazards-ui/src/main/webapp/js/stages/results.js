@@ -73,9 +73,8 @@ var Results = {
                                 Results.populateFeaturesList,
                                 function() {
                                     /*
-                                     //@todo: why were these being cleared?
                                     Shorelines.clear();
-                                    Baseline.clear();
+                                    Baseline.clear(true);
                                     Transects.clear();
                                     Calculation.clear();
                                     */
@@ -245,7 +244,6 @@ var Results = {
                     cursor: "pointer"
                 })
             }),
-            type : 'results'
         });
 	
         var featureHighlighted = function(event) {
@@ -283,10 +281,10 @@ var Results = {
         });
             
         LOG.debug('Shorelines.js::addLayerToMap: Adding results WMS layer to the map');
-        resultsWMS.type="results"
+        resultsWMS.type="results";
         CONFIG.map.getMap().addLayer(resultsWMS);
         LOG.debug('Shorelines.js::addLayerToMap: Adding results Vector layer to the map');
-        resultsWMS.type="results"
+        resultsVector.type="highlight";
         CONFIG.map.getMap().addLayer(resultsVector);
         LOG.debug('Shorelines.js::addLayerToMap: Adding select feature control to map and activating');
         CONFIG.map.getMap().addControl(selectFeatureControl);
@@ -395,7 +393,7 @@ var Results = {
                 highlightCallback: function(e, x, pts, row) {
                     var selectionControl = CONFIG.map.getMap().getControlsBy('id','results-select-control')[0];
                     selectionControl.unselectAll()
-                    var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'results')[0].features.find(function(f){
+                    var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'highlight')[0].features.find(function(f){
                         return f.attributes.base_dist == x
                     })
                     selectionControl.select(hlFeature);
