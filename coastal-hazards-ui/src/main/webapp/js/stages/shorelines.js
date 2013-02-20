@@ -784,5 +784,10 @@ var Shorelines = {
                 }
             })
         }
+    },
+    getActive : function() {
+        return $('#shorelines-list').children(':selected').map(function(i,v) {
+            return v.value
+        }).toArray();
     }
 }
