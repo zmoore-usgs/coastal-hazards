@@ -318,7 +318,11 @@
                                     <div class="row-fluid">
                                         <div id="results-calculation-panel-well" class="well span6">
                                             <input type="hidden" class="input-large" name="results-form-name" class="customLayerName" id="results-form-name"  style="width: 100%;" />
-                                            <button class="btn btn-success" id="create-results-btn">
+                                            <label class="control-label" for="results-form-name">Results Name</label>
+                                            <input class="input-large" name="results-form-name" id="results-form-name"  style="width: 50%;" />
+                                            <label class="control-label" for="results-form-ci">Confidence Interval</label>
+                                            <input class="input-large" name="results-form-ci" id="results-form-ci"  style="width: 50%;"  placeholder="0.9"/>
+                                            <button class="btn btn-success span12" id="create-results-btn">
                                                 <i class="icon-tasks icon-white"></i>
                                                 &nbsp;Calculate Results
                                             </button>
@@ -336,6 +340,7 @@
                             </div>
                             <ul class="nav nav-tabs" id="action-result-tablist">
                                 <li class="active"><a  data-toggle="tab" href="#results-view-tab">View</a></li>
+                                <li><a data-toggle="tab" href="#results-manage-tab">Manage</a></li>
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="results-view-tab">
@@ -344,10 +349,13 @@
                                         <div class="tabbable">
                                             <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
                                             <div class="tab-content" id="results-tabcontent"></div>
-                                            <div style="visibility:none;"><a id="initiateExport" href="#">Export Me</a></div>
+                                            <!--<div style="visibility:none;"><a id="initiateExport" href="#">Export Me</a></div>-->
                                             <div><img id="exportedImage"/></div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="tab-pane" id="results-manage-tab">
+                                    // Hi Carl. Put your results management stuff here
                                 </div>
                             </div>
                         </div> <!-- /Results -->

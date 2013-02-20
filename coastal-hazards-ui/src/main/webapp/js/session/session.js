@@ -76,6 +76,7 @@ var Session = function(name, isPerm) {
                 })
             });
             session.layers = [];
+            session.results = Object.extended();
             
             me.session.sessions.push(session);
             me.session.currentSession = randID;
