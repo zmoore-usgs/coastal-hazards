@@ -49,6 +49,7 @@ var Results = {
             })
             return;
         }
+        Results.clear();
         LOG.info('Results.js::calcResults');
         var transects = $('#transects-list :selected')[0].value;
         var intersects = $('#intersections-list :selected')[0].value;
@@ -161,7 +162,7 @@ var Results = {
         }
     },
     clear : function() {
-        $("#transects-list").val('');
+        $("#results-list").val('');
         Results.listboxChanged();
     },
     listboxChanged : function() {

@@ -317,9 +317,7 @@
                                     <!-- Intersection Calculation -->
                                     <div class="row-fluid">
                                         <div id="results-calculation-panel-well" class="well span6">
-                                            <input type="hidden" class="input-large" name="results-form-name" class="customLayerName" id="results-form-name"  style="width: 100%;" />
-                                            <label class="control-label" for="results-form-name">Results Name</label>
-                                            <input class="input-large" name="results-form-name" id="results-form-name"  style="width: 50%;" />
+                                            <input type="hidden" class="input-large" name="results-form-name"  id="results-form-name"  style="width: 100%;" />
                                             <label class="control-label" for="results-form-ci">Confidence Interval</label>
                                             <input class="input-large" name="results-form-ci" id="results-form-ci"  style="width: 50%;"  placeholder="0.9"/>
                                             <button class="btn btn-success span12" id="create-results-btn">

@@ -357,10 +357,14 @@ var Transects = {
         $("#transects-list").val('');
         Transects.listboxChanged();
     },
+    clearSubsequentStages : function(){
+        Calculation.clear();
+        Results.clear();
+    },
     listboxChanged : function() {
         LOG.info('Transects.js::listboxChanged: Transect listbox changed');
         Transects.disableEditButton();
-        
+         
         $("#transects-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
             if (layers.length) {
@@ -478,6 +482,7 @@ var Transects = {
         $('#create-transects-input-button').toggleClass('hidden');
     },
     createTransectSubmit : function(event) {
+        Transects.clearSubsequentStages();
         var visibleShorelines = $('#shorelines-list :selected').map(function(i,v){
             return v.value
         })
