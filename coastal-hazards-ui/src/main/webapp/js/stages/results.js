@@ -49,6 +49,7 @@ var Results = {
             })
             return;
         }
+        Results.clear();
         LOG.info('Results.js::calcResults');
         var transects = $('#transects-list :selected')[0].value;
         var intersects = $('#intersections-list :selected')[0].value;
@@ -95,10 +96,12 @@ var Results = {
                                     CONFIG.tempSession.results = results
                                     CONFIG.tempSession.persistSession();
                                     
+                                    /*
                                     Shorelines.clear();
-                                    Baseline.clear();
+                                    Baseline.clear(true);
                                     Transects.clear();
                                     Calculation.clear();
+                                    */
                                     $('#results-list').val(data);
                                     Results.listboxChanged();
                                     $('a[href="#' + Results.stage + '-view-tab"]').tab('show');
@@ -159,7 +162,7 @@ var Results = {
         }
     },
     clear : function() {
-        $("#transects-list").val('');
+        $("#results-list").val('');
         Results.listboxChanged();
     },
     listboxChanged : function() {
@@ -265,7 +268,6 @@ var Results = {
                     cursor: "pointer"
                 })
             }),
-            type : 'results'
         });
 	
         var featureHighlighted = function(event) {
@@ -303,8 +305,10 @@ var Results = {
         });
             
         LOG.debug('Shorelines.js::addLayerToMap: Adding results WMS layer to the map');
+        resultsWMS.type="results";
         CONFIG.map.getMap().addLayer(resultsWMS);
         LOG.debug('Shorelines.js::addLayerToMap: Adding results Vector layer to the map');
+        resultsVector.type="highlight";
         CONFIG.map.getMap().addLayer(resultsVector);
         LOG.debug('Shorelines.js::addLayerToMap: Adding select feature control to map and activating');
         CONFIG.map.getMap().addControl(selectFeatureControl);
@@ -413,7 +417,7 @@ var Results = {
                 highlightCallback: function(e, x, pts, row) {
                     var selectionControl = CONFIG.map.getMap().getControlsBy('id','results-select-control')[0];
                     selectionControl.unselectAll()
-                    var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'results')[0].features.find(function(f){
+                    var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'highlight')[0].features.find(function(f){
                         return f.attributes.base_dist == x
                     })
                     selectionControl.select(hlFeature);

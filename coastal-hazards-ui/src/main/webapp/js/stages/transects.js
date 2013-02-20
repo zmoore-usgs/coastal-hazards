@@ -59,6 +59,7 @@ var Transects = {
                 })
                 selectedFeature.geometry.addComponents([angleGeometry1,angleGeometry2])
                 angleLayer.addFeatures([selectedFeature]);
+                angleLayer.type = "transects";
                 CONFIG.map.getMap().addLayer(angleLayer);
                 var snapControl = CONFIG.map.getMap().getControlsBy('id', 'snap-control')[0]
                 snapControl.addTargetLayer(angleLayer);
@@ -139,7 +140,7 @@ var Transects = {
              
             LOG.debug('Transects.js::editButtonToggled: Adding cloned layer to map');
             
-            
+            clonedLayer.type = "transects"; 
             CONFIG.map.getMap().addLayer(clonedLayer);
             
             LOG.debug('Transects.js::editButtonToggled: Adding clone control to map');
@@ -356,10 +357,14 @@ var Transects = {
         $("#transects-list").val('');
         Transects.listboxChanged();
     },
+    clearSubsequentStages : function(){
+        Calculation.clear();
+        Results.clear();
+    },
     listboxChanged : function() {
         LOG.info('Transects.js::listboxChanged: Transect listbox changed');
         Transects.disableEditButton();
-        
+         
         $("#transects-list option:not(:selected)").each(function (index, option) {
             var layers = CONFIG.map.getMap().getLayersBy('name', option.value);
             if (layers.length) {
@@ -477,6 +482,7 @@ var Transects = {
         $('#create-transects-input-button').toggleClass('hidden');
     },
     createTransectSubmit : function(event) {
+        Transects.clearSubsequentStages();
         var visibleShorelines = $('#shorelines-list :selected').map(function(i,v){
             return v.value
         })

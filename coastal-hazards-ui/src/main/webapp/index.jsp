@@ -273,8 +273,7 @@
                                                 <div class="row-fluid">
                                                     <label for="create-transects-input-spacing">Spacing</label>
                                                     <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
-                                                    <label for="create-transects-input-name">Name</label>
-                                                    <input type="text" id="create-transects-input-name" style="width: 100%;">
+                                                    <input type="hidden" id="create-transects-input-name" class="customLayerName" style="width: 100%;">
                                                 </div>
                                             </div>
                                         </div>
@@ -318,8 +317,7 @@
                                     <!-- Intersection Calculation -->
                                     <div class="row-fluid">
                                         <div id="results-calculation-panel-well" class="well span6">
-                                            <label class="control-label" for="results-form-name">Results Name</label>
-                                            <input class="input-large" name="results-form-name" id="results-form-name"  style="width: 50%;" />
+                                            <input type="hidden" class="input-large" name="results-form-name"  id="results-form-name"  style="width: 100%;" />
                                             <label class="control-label" for="results-form-ci">Confidence Interval</label>
                                             <input class="input-large" name="results-form-ci" id="results-form-ci"  style="width: 50%;"  placeholder="0.9"/>
                                             <button class="btn btn-success span12" id="create-results-btn">
@@ -517,8 +515,6 @@
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
 <script type="text/javascript">splashUpdate("Loading Application-specific CSS...")</script>
 <link type="text/css" rel="stylesheet" href="css/custom.css" />
-<script type="text/javascript">splashUpdate("Loading Dygraph Export Plugin...")</script>
-<script type="text/javascript" src="js/dygraph-extra/dygraph-extra.js"></script>
 <script type="text/javascript">splashUpdate("Loading Main module...")</script>
 <script type="text/javascript" src="js/onReady.js"></script>
 </html>
