@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.wps;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import gov.usgs.cida.coastalhazards.util.GeoserverUtils;
@@ -24,17 +25,20 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
+import gov.usgs.cida.coastalhazards.wps.geom.Transect;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.filter.FilterFactoryImpl;
 import org.joda.time.DateTime;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.expression.Expression;
 
 /**
  *
@@ -124,10 +128,27 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
             DefaultFeatureCollection intersectionCollection = new DefaultFeatureCollection((SimpleFeatureCollection)intersectionSource.getFeatures());
             List<SimpleFeature> returnFeatures = new LinkedList<SimpleFeature>();
             for (int id : transectIds) {
-                PropertyIsEqualTo filter = filterFactory.equals(filterFactory.property(TRANSECT_ID_ATTR), filterFactory.literal(id));
-                Collection<SimpleFeature> features = (Collection<SimpleFeature>)intersectionSource.getFeatures(filter);
-                intersectionCollection.removeAll(features);
-                Map<DateTime, Intersection> newIntersections = Intersection.calculateIntersections(null, strtree, useFarthest);
+                // use AttributeGetter to get real attr names
+                PropertyIsEqualTo transectFilter = filterFactory.equals(filterFactory.property(TRANSECT_ID_ATTR), filterFactory.literal(id));
+                PropertyIsEqualTo intersectionFilter = filterFactory.equals(filterFactory.property(TRANSECT_ID_ATTR), filterFactory.literal(id));
+                
+                Collection<SimpleFeature> intersectionFeatures = (Collection<SimpleFeature>)intersectionSource.getFeatures(intersectionFilter);
+                SimpleFeatureCollection transectFeatures = (SimpleFeatureCollection)intersectionSource.getFeatures(transectFilter);
+                SimpleFeatureCollection transformedTransects = CRSUtils.transformFeatureCollection(transectFeatures, transectSource.getInfo().getCRS(), utmCrs);
+                SimpleFeatureIterator transectIterator = transformedTransects.features();
+                SimpleFeature transect = null;
+                while (transectIterator.hasNext()) {
+                    if (null == transect) {
+                        transect = transectIterator.next();
+                    }
+                    else {
+                        throw new IllegalStateException("There shouldn't be more than one transect with the same id");
+                    }
+                }
+                Transect transectObj = Transect.fromFeature(transect);
+                
+                intersectionCollection.removeAll(intersectionFeatures);
+                Map<DateTime, Intersection> newIntersections = Intersection.calculateIntersections(transectObj, strtree, useFarthest);
                 for (DateTime key : newIntersections.keySet()) {
                     Intersection newIntersection = newIntersections.get(key);
                     SimpleFeature newFeature = newIntersection.createFeature(intersectionCollection.getSchema());

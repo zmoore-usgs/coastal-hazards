@@ -47,11 +47,15 @@ package gov.usgs.cida.coastalhazards.wps.geom;
 
 import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import gov.usgs.cida.coastalhazards.util.AttributeGetter;
+import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.util.Constants.Orientation;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -163,6 +167,24 @@ public class Transect {
                 throw new IllegalStateException("Must be either clockwise or counterclockwise");
         }
         return new Transect(origin, angle, orientation, transectId, baselineId, baselineDistance);
+    }
+    
+    public static Transect fromFeature(SimpleFeature feature) {
+        MultiLineString lines = CRSUtils.getLinesFromFeature(feature);
+        LineString line = (LineString)lines.getGeometryN(0);  // ignore more than one for now (shouldn't happen)
+        LineSegment segment = new LineSegment(line.getStartPoint().getCoordinate(),
+                line.getEndPoint().getCoordinate());
+        AttributeGetter getter = new AttributeGetter(feature.getFeatureType());
+        String orientVal = (String)getter.getValue(BASELINE_ORIENTATION_ATTR, feature);
+        Orientation orient = Orientation.fromAttr(orientVal);
+        int id = (Integer)getter.getValue(TRANSECT_ID_ATTR, feature);
+        String baselineId = (String)getter.getValue(BASELINE_ID_ATTR, feature);
+        double baseDist = (Double)getter.getValue(BASELINE_DIST_ATTR, feature);
+        
+        Transect transect = new Transect(segment.p0, segment.angle(), orient, id, baselineId, baseDist);
+        transect.length = segment.p0.distance(segment.p1);
+        
+        return transect;
     }
     
     public boolean equals(Transect b) {
