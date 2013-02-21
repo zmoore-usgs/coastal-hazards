@@ -277,10 +277,13 @@ var Transects = {
         // This will be a callback from WPS
         var editCleanup = function(data, textStatus, jqXHR) {
             LOG.debug('Transects.js::saveEditedLayer: Receieved response from updateTransectsAndIntersections WPS');
-                
+            
+            Calculation.clear();
             var intersectionsList = CONFIG.ui.populateFeaturesList({
-                caller : Calculation
+                caller : Calculation,
+                stage : 'intersections'
             })
+            Results.clear();
             var resultsList = CONFIG.ui.populateFeaturesList({
                 caller : Results
             })
@@ -324,15 +327,7 @@ var Transects = {
             LOG.debug('Baseline.js::saveEditedLayer: Transects layer was updated on OWS server. Refreshing layer list');
             
             LOG.debug('Transects.js::saveEditedLayer: Removing associated intersections layer');
-            $.get('service/session', {
-                action : 'remove-layer',
-                workspace : CONFIG.tempSession.getCurrentSessionKey(),
-                store : 'ch-input',
-                layer : intersectsLayer.split(':')[1]
-            },
-            function(data, textStatus, jqXHR) {
                 LOG.debug('Transects.js::saveEditedLayer: Calling updateTransectsAndIntersections WPS');
-                Calculation.clear();
                 CONFIG.ows.updateTransectsAndIntersections({
                     shorelines : Shorelines.getActive(),
                     baseline : Baseline.getActive(),
@@ -378,7 +373,6 @@ var Transects = {
                         }
                     })
                 }, 'json')
-            }, 'json')
         });
                 
         saveStrategy.save();  
@@ -489,6 +483,9 @@ var Transects = {
         $('#transect-edit-form-toggle').removeAttr('disabled');
     },
     disableEditButton : function() {
+        if ($('#transect-edit-form-toggle').hasClass('active')) {
+            $('#transect-edit-form-toggle').trigger('click');
+        }
         $('#transect-edit-form-toggle').attr('disabled', 'disabled');
     },
     enableCreateTransectsButton : function() {
@@ -498,6 +495,9 @@ var Transects = {
     },
     disableCreateTransectsButton : function() {
         LOG.info('Transects.js::disableCreateTransectsButton: No valid baseline on the map. Disabling create transect button');
+        if ($('#create-transects-toggle').hasClass('active')) {
+            $('#create-transects-toggle').trigger('click');
+        }
         $('#create-transects-toggle').attr('disabled', 'disabled');
          
     },
@@ -571,11 +571,10 @@ var Transects = {
         var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
         
         if (toggledOn) {
-            $('#transects-list').val('');
-        //            $('#create-transects-input-name').val(Util.getRandomLorem());
+            if ($('#transect-edit-form-toggle').hasClass('active')) {
+                $('#transect-edit-form-toggle').trigger('click');
+            }
         } else {
-            
-        // Hide transect layer if needed
         }
         $('#create-transects-panel-well').toggleClass('hidden');
         $('#intersection-calculation-panel-well').toggleClass('hidden');
