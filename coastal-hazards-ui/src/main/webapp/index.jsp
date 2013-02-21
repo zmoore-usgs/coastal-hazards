@@ -314,7 +314,7 @@
                         <div class="tab-pane  container-fluid" id="calculation">
                             <div class="row-fluid">
                                 <div class="span4"><h3>Calculation</h3></div>
-                                <div class="span8" id="intersections-alert-container"></div>
+                                <div class="span8" id="calculation-alert-container"></div>
                             </div>
                             <ul class="nav nav-tabs" id="action-intersections-tablist">
                                 <li class="active"><a  data-toggle="tab" href="#intersections-view-tab">View</a></li>
@@ -330,7 +330,7 @@
                                         <div id="results-calculation-panel-well" class="well span6">
                                             <input type="hidden" class="input-large" name="results-form-name"  id="results-form-name"  style="width: 100%;" />
                                             <label class="control-label" for="results-form-ci">Confidence Interval</label>
-                                            <input class="input-large" name="results-form-ci" id="results-form-ci"  style="width: 50%;"  placeholder="0.9"/>
+                                            <input type="number" min="50" max="100" step="1" value="90" class="input-large" name="results-form-ci" id="results-form-ci"  style="width: 50%;">% (50-100)
                                             <button class="btn btn-success span12" id="create-results-btn">
                                                 <i class="icon-tasks icon-white"></i>
                                                 &nbsp;Calculate Results
@@ -364,7 +364,11 @@
                                 </div>
                                 <div class="tab-pane" id="results-manage-tab">
                                     <h4>Download Results</h4>
-                                    <button class="btn btn-success" id="download-spreadsheet-btn">
+                                    <button class="btn btn-success" id="download-plot-btn">
+                                        <i class="icon-signal icon-white"></i>
+                                        Plot (.png)
+                                    </button>
+                                   <button class="btn btn-success" id="download-spreadsheet-btn">
                                         <i class="icon-th icon-white"></i>
                                         Spreadsheet (.csv)
                                     </button>

@@ -368,7 +368,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
     
     // NOTE: For each segment p0 is interval coord, with p1 = p0 + direction of segment as unit vector.
     public static List<LineSegment> findIntervals(LineString lineString, boolean includeOrigin, double interval, double smoothing) {
-        if (smoothing <= 0) {
+        if (smoothing <= 0 || lineString.getNumPoints() == 2) {
             return findIntervals(lineString, includeOrigin, interval);
         }
         LinkedList<LineSegment> intervalList = new LinkedList<LineSegment>();
@@ -377,7 +377,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         double next = includeOrigin ? 0 : interval;
         final double half = smoothing / 2d;
         int index = 0;
-        final int indexMax = segmentList.size() -1;
+        final int count = segmentList.size();
         for (LineSegment segment : segmentList) {
             final double length = segment.getLength();
             if (progress + length >= next) {
@@ -390,12 +390,12 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                     if (low < 0 || high > length) {
                         Coordinate intervalLow = low < 0 && index > 0 ?
                                     // find distance along line string from end of *last* segment (removing distance along current segment);
-                                    fromEnd(segmentList.subList(0, index - 1), 0 - low, false) :
+                                    fromEnd(segmentList.subList(0, index), 0 - low, false) :
                                     // otherwise project along segment
                                     segment.pointAlong(low / length);
-                        Coordinate intervalHigh = high > length && index < indexMax ?
+                        Coordinate intervalHigh = high > length && index < (count - 1) ?
                                     // find distance along line string from end of *last* segment (removing distance along current segment);
-                                    fromStart(segmentList.subList(index + 1, indexMax), high - length, false) :
+                                    fromStart(segmentList.subList(index + 1, count), high - length, false) :
                                     // otherwise project along segment
                                     segment.pointAlong(high / length);
                         LineSegment smoothSegment = new LineSegment(intervalLow, intervalHigh);

@@ -127,6 +127,7 @@ var Transects = {
                 renderers: CONFIG.map.getRenderer()
             })
             clonedLayer.addFeatures(originalLayer.features);
+            clonedLayer.styleMap.styles['default'].defaultStyle.strokeWidth = 4;
             
             var baselineLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
             var snap = new OpenLayers.Control.Snapping({
@@ -189,12 +190,13 @@ var Transects = {
                             var cloneFeature = cloneLayer.getFeatureBy('fid', fid);
                             cloneFeature.state = OpenLayers.State.DELETE;
                             cloneFeature.style = {
-                                strokeOpacity : 0
+                                strokeColor : '#FF0000'
                             }
                             originalFeature.style = {
                                 strokeOpacity : 0
                             }
-                            Transects.saveEditedLayer();
+                            originalFeature.layer.redraw();
+                            cloneFeature.layer.redraw();
                         }
                     }
                 })
@@ -237,8 +239,10 @@ var Transects = {
                     // Find the baseline segment we touch
                     var f = feature;
                     var baseline =  CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
-                    var editLayer = CONFIG.map.getMap().getLayersBy('name', "transects-edit-layer")[0]
-                    var features = editLayer.features
+                    var editLayer = CONFIG.map.getMap().getLayersBy('name', "transects-edit-layer")[0];
+                    var features = editLayer.features;
+                    var originalFeatures = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0].features;
+                    var fc = originalFeatures.length;
                     var sortedFeatures = features.sort(function(f){
                         return f.attributes.TransectID
                     })
@@ -250,13 +254,14 @@ var Transects = {
                     
                     // Apply the baseline orient to the new feature
                     if (blTouchFeature.length) {
-                        feature.attributes.Orient = blTouchFeature[0].attributes.Orient
+                        feature.attributes.Orient = blTouchFeature[0].attributes.Orient;
+                        feature.attributes.BaselineID = blTouchFeature[0].fid;
                     } else {
                         feature.attributes.Orient = 'seaward';
                     }
                     
                     // Add one to the largest sorted feature
-                    feature.attributes.TransectID =  parseInt(sortedFeatures[sortedFeatures.length - 1].attributes.TransectID) + 1;
+                    feature.attributes.TransectID =  fc;
                 }
             })
         CONFIG.map.addControl(drawControl);
@@ -327,52 +332,52 @@ var Transects = {
             LOG.debug('Baseline.js::saveEditedLayer: Transects layer was updated on OWS server. Refreshing layer list');
             
             LOG.debug('Transects.js::saveEditedLayer: Removing associated intersections layer');
-                LOG.debug('Transects.js::saveEditedLayer: Calling updateTransectsAndIntersections WPS');
-                CONFIG.ows.updateTransectsAndIntersections({
-                    shorelines : Shorelines.getActive(),
-                    baseline : Baseline.getActive(),
-                    transects : Transects.getActive(),
-                    intersections : Calculation.getActive(),
-                    transectId : updatedFeatures,
-                    farthest : $('#create-intersections-nearestfarthest-list').val(),
+            LOG.debug('Transects.js::saveEditedLayer: Calling updateTransectsAndIntersections WPS');
+            CONFIG.ows.updateTransectsAndIntersections({
+                shorelines : Shorelines.getActive(),
+                baseline : Baseline.getActive(),
+                transects : Transects.getActive(),
+                intersections : Calculation.getActive(),
+                transectId : updatedFeatures,
+                farthest : $('#create-intersections-nearestfarthest-list').val(),
+                callbacks : {
+                    success : [
+                    function(data, textStatus, jqXHR) {
+                        editCleanup(data, textStatus, jqXHR);
+                    }
+                    ],
+                    error : [
+                    function(data, textStatus, jqXHR) {
+                        editCleanup(data, textStatus, jqXHR);
+                    }
+                    ]
+                }
+            });
+                    
+            LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
+            $.get('service/session', {
+                action : 'remove-layer',
+                workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                store : 'ch-output',
+                layer : resultsLayer.split(':')[1]
+            },
+            function(data, textStatus, jqXHR) {
+                CONFIG.ows.getWMSCapabilities({
+                    namespace : CONFIG.tempSession.getCurrentSessionKey(),
                     callbacks : {
                         success : [
-                        function(data, textStatus, jqXHR) {
-                            editCleanup(data, textStatus, jqXHR);
+                        CONFIG.tempSession.updateLayersFromWMS,
+                        function() {
+                            LOG.debug('Transects.js::saveEditedLayer: WMS Capabilities retrieved for your session');
+                            Results.clear();
                         }
                         ],
-                        error : [
-                        function(data, textStatus, jqXHR) {
-                            editCleanup(data, textStatus, jqXHR);
-                        }
-                        ]
+                        error : [function() {
+                            LOG.warn('Transects.js::saveEditedLayer: There was an error in retrieving the WMS capabilities for your session. This is probably be due to a new session. Subsequent loads should not see this error');
+                        }]
                     }
-                });
-                    
-                LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
-                $.get('service/session', {
-                    action : 'remove-layer',
-                    workspace : CONFIG.tempSession.getCurrentSessionKey(),
-                    store : 'ch-output',
-                    layer : resultsLayer.split(':')[1]
-                },
-                function(data, textStatus, jqXHR) {
-                    CONFIG.ows.getWMSCapabilities({
-                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
-                        callbacks : {
-                            success : [
-                            CONFIG.tempSession.updateLayersFromWMS,
-                            function() {
-                                LOG.debug('Transects.js::saveEditedLayer: WMS Capabilities retrieved for your session');
-                                Results.clear();
-                            }
-                            ],
-                            error : [function() {
-                                LOG.warn('Transects.js::saveEditedLayer: There was an error in retrieving the WMS capabilities for your session. This is probably be due to a new session. Subsequent loads should not see this error');
-                            }]
-                        }
-                    })
-                }, 'json')
+                })
+            }, 'json')
         });
                 
         saveStrategy.save();  
