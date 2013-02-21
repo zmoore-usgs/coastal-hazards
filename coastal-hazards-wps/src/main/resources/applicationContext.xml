@@ -7,8 +7,7 @@
     </bean>
     
     <bean id="updateTransects" class="gov.usgs.cida.coastalhazards.wps.UpdateTransectsAndIntersectionsProcess">
-        <constructor-arg index="0" ref="importProcess"/>
-        <constructor-arg index="1" ref="catalog"/>
+        <constructor-arg index="0" ref="catalog"/>
     </bean>
     
     <bean id="appendColumnsToLayer" class="gov.usgs.cida.coastalhazards.wps.AppendColumnsToLayerProcess">

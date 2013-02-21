@@ -108,6 +108,10 @@ public class Transect {
         this.length = length;
     }
     
+    public void setBaselineDistance(double dist) {
+        this.baselineDistance = dist;
+    }
+    
     public LineString getLineString() {
         double rise = length * Math.sin(angle);
         double run = length * Math.cos(angle);
