@@ -108,6 +108,9 @@ var Calculation = {
         '</NamedLayer>' + 
         '</StyledLayerDescriptor>'
         return sldBody;
+    },
+    getActive : function() {
+        return $("#intersections-list option:selected").first().val();
     }
 //    createWPSCalculateIntersectionsRequest : function(args) {
 //        var shorelines = args.shorelines || [];

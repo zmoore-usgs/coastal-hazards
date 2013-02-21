@@ -100,6 +100,9 @@ select option.session-layer{
 #create-transects-input-spacing {
     width: 6em;
 }
+#create-transects-input-smoothing {
+    width: 6em;
+}
 
 /* ---------------------------------------------------------------------- Results */
 #results-table-container {

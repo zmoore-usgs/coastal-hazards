@@ -264,9 +264,56 @@ var Transects = {
     },
     saveEditedLayer : function() {
         LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
-                
-        var layer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
         
+        var layer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
+        var intersectsLayer = layer.cloneOf.replace('transects', 'intersects');
+        var resultsLayer = layer.cloneOf.replace('transects', 'rates');
+        var updatedFeatures = layer.features.filter(function(f){
+            return f.state
+        }).map(function(f){
+            return f.attributes.TransectID
+        })
+        
+        // This will be a callback from WPS
+        var editCleanup = function(data, textStatus, jqXHR) {
+            LOG.debug('Transects.js::saveEditedLayer: Receieved response from updateTransectsAndIntersections WPS');
+                
+            var intersectionsList = CONFIG.ui.populateFeaturesList({
+                caller : Calculation
+            })
+            var resultsList = CONFIG.ui.populateFeaturesList({
+                caller : Results
+            })
+                
+            if ($(data).find('ows\\:ExceptionReport').length) {
+                LOG.debug('Transects.js::saveEditedLayer: UpdateTransectsAndIntersections WPS failed. Removing Intersections layer');
+                
+                CONFIG.ui.showAlert({
+                    message : 'Automatic intersection gen failed.',
+                    displayTime : 7500,
+                    caller : Transects,
+                    style: {
+                        classes : ['alert-success']
+                    }
+                })
+                
+                intersectionsList.val('');
+                resultsList.val('');
+                
+            } else {
+                CONFIG.map.removeLayerByName(layer.cloneOf);
+                Transects.refreshFeatureList({
+                    selectLayer : layer.cloneOf
+                })
+                $('#transect-edit-form-toggle').trigger('click'); 
+                
+                intersectionsList.val(intersectsLayer);
+                resultsList.val(resultsLayer);
+            }
+            intersectionsList.trigger('change');
+            resultsList.trigger('change');
+        }
+            
         var saveStrategy = layer.strategies.find(function(n) {
             return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
         });
@@ -274,13 +321,64 @@ var Transects = {
         saveStrategy.events.remove('success');
 
         saveStrategy.events.register('success', null, function() {
-            LOG.debug('Baseline.js::saveEditedLayer: Layer was updated on OWS server. Refreshing layer list');
+            LOG.debug('Baseline.js::saveEditedLayer: Transects layer was updated on OWS server. Refreshing layer list');
+            
+            LOG.debug('Transects.js::saveEditedLayer: Removing associated intersections layer');
+            $.get('service/session', {
+                action : 'remove-layer',
+                workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                store : 'ch-input',
+                layer : intersectsLayer.split(':')[1]
+            },
+            function(data, textStatus, jqXHR) {
+                LOG.debug('Transects.js::saveEditedLayer: Calling updateTransectsAndIntersections WPS');
+                Calculation.clear();
+                CONFIG.ows.updateTransectsAndIntersections({
+                    shorelines : Shorelines.getActive(),
+                    baseline : Baseline.getActive(),
+                    transects : Transects.getActive(),
+                    intersections : Calculation.getActive(),
+                    transectId : updatedFeatures,
+                    farthest : $('#create-intersections-nearestfarthest-list').val(),
+                    callbacks : {
+                        success : [
+                        function(data, textStatus, jqXHR) {
+                            editCleanup(data, textStatus, jqXHR);
+                        }
+                        ],
+                        error : [
+                        function(data, textStatus, jqXHR) {
+                            editCleanup(data, textStatus, jqXHR);
+                        }
+                        ]
+                    }
+                });
                     
-            CONFIG.map.removeLayerByName(layer.cloneOf);
-            Transects.refreshFeatureList({
-                selectLayer : layer.cloneOf
-            })
-            $('#transect-edit-form-toggle').trigger('click'); 
+                LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
+                $.get('service/session', {
+                    action : 'remove-layer',
+                    workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                    store : 'ch-output',
+                    layer : resultsLayer.split(':')[1]
+                },
+                function(data, textStatus, jqXHR) {
+                    CONFIG.ows.getWMSCapabilities({
+                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
+                        callbacks : {
+                            success : [
+                            CONFIG.tempSession.updateLayersFromWMS,
+                            function() {
+                                LOG.debug('Transects.js::saveEditedLayer: WMS Capabilities retrieved for your session');
+                                Results.clear();
+                            }
+                            ],
+                            error : [function() {
+                                LOG.warn('Transects.js::saveEditedLayer: There was an error in retrieving the WMS capabilities for your session. This is probably be due to a new session. Subsequent loads should not see this error');
+                            }]
+                        }
+                    })
+                }, 'json')
+            }, 'json')
         });
                 
         saveStrategy.save();  
@@ -304,10 +402,12 @@ var Transects = {
                             if (v.value === selectLayer) {
                                 LOG.debug('Triggering "select" on featurelist option');
                                 $('#transects-list').val(v.value);
-                                $('#transects-list').trigger('change');
                             }
                         })
+                    } else {
+                        $('#transects-list').val('');
                     }
+                    $('#transects-list').trigger('change');
                 }
                 ],
                 error: [
@@ -490,11 +590,19 @@ var Transects = {
         var spacing = $('#create-transects-input-spacing').val() || 0;
         var layerName = $('#create-transects-input-name').val();
         var farthest = $('#create-intersections-nearestfarthest-list').val();
+        var smoothing = parseFloat($('#create-transects-input-smoothing').val());
+        if (isNaN(smoothing)) {
+            smoothing = 0.0;
+        } else {
+            smoothing = smoothing <= 0.0 ? 0.0 : smoothing;
+        }
+        
         var request = Transects.createWPScreateTransectsAndIntersectionsRequest({
             shorelines : visibleShorelines,
             baseline : baseline,
             spacing : spacing,
             farthest : farthest,
+            smoothing : smoothing,
             workspace : CONFIG.tempSession.getCurrentSessionKey(),
             store : 'ch-input',
             transectLayer : layerName + '_transects',
@@ -604,8 +712,9 @@ var Transects = {
         var shorelines = args.shorelines;
         var baseline = args.baseline;
         var spacing = args.spacing ? args.spacing : Transects.defaultSpacing;
+        var smoothing = args.smoothing || 0.0;
         var layer = args.layer;
-        var farthest = args.fathest;
+        var farthest = args.farthest;
         var workspace = args.workspace;
         var transectLayer = args.transectLayer;
         var intersectionLayer = args.intersectionLayer;
@@ -677,6 +786,12 @@ var Transects = {
         '</wps:Data>' + 
         '</wps:Input>' + 
         '<wps:Input>' + 
+        '<ows:Identifier>smoothing</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+smoothing+'</wps:LiteralData>' +
+        '</wps:Data>' + 
+        '</wps:Input>' + 
+        '<wps:Input>' + 
         '<ows:Identifier>farthest</ows:Identifier>' + 
         '<wps:Data>' + 
         '<wps:LiteralData>'+farthest+'</wps:LiteralData>' + 
@@ -716,10 +831,12 @@ var Transects = {
         
         return request;
     },
-    
     initializeUploader : function(args) {
         CONFIG.ui.initializeUploader($.extend({
             caller : Transects
         }, args))
+    },
+    getActive : function() {
+        return $("#transects-list option:selected").first().val();
     }
 }

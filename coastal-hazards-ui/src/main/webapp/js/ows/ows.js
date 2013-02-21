@@ -604,6 +604,114 @@ var OWS = function(endpoint) {
             '</NamedLayer>' + 
             '</StyledLayerDescriptor>';
             return sld.replace('#[layer]', layerName)
+        },
+        updateTransectsAndIntersections : function(args) {
+          var wps =   CONFIG.ows.createUpdateTransectsAndIntersectionsWPSXML(args);
+          CONFIG.ows.executeWPSProcess({
+                processIdentifier : 'gs:UpdateTransectsAndIntersections',
+                request : wps,
+                callbacks : args.callbacks || [],
+                context : args.context || this
+            })
+        },
+        
+        createUpdateTransectsAndIntersectionsWPSXML : function(args) {
+            var transects = args.transects;
+            var intersections = args.intersections;
+            var baseline = args.baseline;
+            var shorelines = args.shorelines;
+            var transectId = args.transectId || [];
+            var farthest = args.farthest || 'false'
+            
+            var wps = '<?xml version="1.0" encoding="UTF-8"?>' + 
+            '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
+            '<ows:Identifier>gs:UpdateTransectsAndIntersections</ows:Identifier>' + 
+            '<wps:DataInputs>' + 
+            '<wps:Input>' + 
+            '<ows:Identifier>transectLayer</ows:Identifier>'  + 
+            '<wps:Data>' + 
+            '<wps:LiteralData>'+transects+'</wps:LiteralData>' + 
+            '</wps:Data>' + 
+            '</wps:Input>' + 
+            '<wps:Input>' + 
+            '<ows:Identifier>intersectionLayer</ows:Identifier>' + 
+            '<wps:Data>' + 
+            '<wps:LiteralData>'+intersections+'</wps:LiteralData>' + 
+            '</wps:Data>' + 
+            '</wps:Input>' + 
+            '<wps:Input>' + 
+            '<ows:Identifier>baselineLayer</ows:Identifier>' + 
+            '<wps:Data>' + 
+            '<wps:LiteralData>'+baseline+'</wps:LiteralData>' + 
+            '</wps:Data>' + 
+            '</wps:Input>';
+    
+            shorelines.each(function(shoreline) {
+                var excludedDates = CONFIG.tempSession.getDisabledDatesForShoreline(shoreline);
+                var prefix = shoreline.split(':')[0];
+                wps += '<wps:Input>' + 
+                '<ows:Identifier>shorelines</ows:Identifier>' + 
+                '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
+                '<wps:Body>' + 
+                '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2" xmlns:'+prefix+'="gov.usgs.cida.ch.' + prefix + '">' + 
+            
+                (function(args) {
+                    var filter = '';
+                    if (excludedDates) {
+                        var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + CONFIG.tempSession.getStage(Shorelines.stage).groupingColumn;
+                    
+                        filter += '<wfs:Query typeName="'+shoreline+'" srsName="EPSG:4326">' +
+                        '<ogc:Filter>' + 
+                        '<ogc:And>';
+                    
+                        excludedDates.each(function(date) {
+                            filter += '<ogc:Not>' + 
+                            '<ogc:PropertyIsLike  wildCard="*" singleChar="." escape="!">' + 
+                            '<ogc:PropertyName>'+property+ '</ogc:PropertyName>' + 
+                            '<ogc:Literal>' +date+ '</ogc:Literal>' + 
+                            '</ogc:PropertyIsLike>' + 
+                            '</ogc:Not>' 
+                        })
+                    
+                        filter += '</ogc:And>' + 
+                    '</ogc:Filter>' + 
+                    '</wfs:Query>';
+                    } else {
+                        filter += '<wfs:Query typeName="'+shoreline+'" srsName="EPSG:4326" />';
+                    }
+                    return filter;
+                }({ 
+                    shoreline : shoreline
+                })) + 
+                '</wfs:GetFeature>' + 
+                '</wps:Body>' + 
+                '</wps:Reference>' + 
+                '</wps:Input>';
+            })
+    
+            transectId.each(function(tid) {
+                wps += '<wps:Input>' + 
+                '<ows:Identifier>transectID</ows:Identifier>' + 
+                '<wps:Data>' + 
+                '<wps:LiteralData>'+tid+'</wps:LiteralData>' + 
+                '</wps:Data>' + 
+                '</wps:Input>';
+            })
+    
+            wps += '<wps:Input>' + 
+            '<ows:Identifier>farthest</ows:Identifier>' + 
+            '<wps:Data>' + 
+            '<wps:LiteralData>'+farthest+'</wps:LiteralData>' + 
+            '</wps:Data>' + 
+            '</wps:Input>' + 
+            '</wps:DataInputs>' + 
+            '<wps:ResponseForm>' + 
+            '<wps:RawDataOutput mimeType="text/xml; subtype=wfs-collection/1.0">' + 
+            '<ows:Identifier>intersections</ows:Identifier>'  + 
+            '</wps:RawDataOutput>' + 
+            '</wps:ResponseForm>' + 
+            '</wps:Execute>';
+            return wps;
         }
     });
 }

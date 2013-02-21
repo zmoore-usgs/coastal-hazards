@@ -47,9 +47,11 @@
     </head>
     <body>
         <div id="application-overlay" style="height : 100%;width : 100%;position : fixed;top : 0;left : 0;background-color: #FFFFFF;z-index: 9999;">
-            <div id="application-overlay-content" style='height: 50%;padding-left: 25%;position: relative;top: 25%;width: 50%;color: #333333;font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;font-size: 14px;line-height: 20px;'>
-                <h1 style="letter-spacing: 0.5em;font-size: 38.5px; line-height: 40px;color: inherit; font-family: inherit; font-weight: bold;text-rendering: optimizelegibility;"><div>Coastal Hazards</div></h1>
-                <img id="application-overlay-banner" src="images/banner/banner.jpg" style="width: 100%;max-width: none;border: 0 none;height: auto;vertical-align: middle;"/>
+            <div id="application-overlay-content" style='height: 50%;padding-left: 25%;position: relative;top: 15%;width: 50%;color: #333333;font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;font-size: 14px;line-height: 20px;'>
+                <div style="text-align: center"><h1 style="letter-spacing: 0.5em;font-size: 38.5px; line-height: 40px;color: inherit; font-family: inherit; font-weight: bold;text-rendering: optimizelegibility;">Coastal Hazards</h1></div>
+                <div style="width: 100%;max-width: none;border: 0 none;height: auto;vertical-align: middle;">
+                    <img id="application-overlay-banner" src="images/splash/splash.png" style="width:75%" />
+                </div>
                 This web-based Digital Shoreline Analysis System (DSASweb) is a software application that enables a user to calculate shoreline rate-of-change statistics from multiple historical shoreline positions.
                 <br /><br />
                 A user-friendly interface of simple buttons and menus guides the user through the major steps of shoreline change analysis.
@@ -262,6 +264,13 @@
                                     </div>
 
                                     <div  id="transects-edit-container" class="row-fluid hidden">
+                                        <div id="transects-update-panel-well" class="well">
+                                            <label for="update-intersections-nearestfarthest-list">Take Nearest/Farthest Intersection</label>
+                                            <select id="update-intersections-nearestfarthest-list" style="width: 100%;">
+                                                <option selected="selected" value="false">Nearest</option>
+                                                <option value="true">Farthest</option>
+                                            </select>
+                                        </div>
                                         <button class="btn btn-success" id="transects-edit-save-button" title="Update Modified Transect">Update Transect</button>
                                         <button class="btn btn-success" id="transects-edit-add-button" title="Add Transect">Add Transect</button>
                                     </div>
@@ -274,6 +283,8 @@
                                                     <label for="create-transects-input-spacing">Spacing</label>
                                                     <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
                                                     <input type="hidden" id="create-transects-input-name" class="customLayerName" style="width: 100%;">
+                                                    <label for="create-transects-input-smoothing">Baseline Smoothing</label>
+                                                    <input type="text" id="create-transects-input-smoothing" maxLength="6" placeholder="0.0">m
                                                 </div>
                                             </div>
                                         </div>
