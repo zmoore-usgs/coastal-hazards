@@ -17,8 +17,23 @@ var Results = {
     appInit : function() {
         $('#results-form-name').val(Util.getRandomLorem());
         $("#create-results-btn").on("click", function() {
-            CONFIG.ui.displayStage(Results);
-            Results.calcResults();
+            var ci = $('#results-form-ci').val();
+            var ciNum = parseFloat(ci);
+            if (isNaN(ci)) {
+                CONFIG.ui.showAlert({
+                    message : 'Confidence Interval needs to be numeric.',
+                    displayTime : 3000,
+                    caller : Calculation
+                })
+            } else if (ciNum < 50 || ciNum > 100) {
+                CONFIG.ui.showAlert({
+                    message : 'Confidence Interval needs to be in range 50 - 100.',
+                    displayTime : 3000,
+                    caller : Calculation
+                })
+            } else {
+                Results.calcResults();
+            }
         })
         $('#download-shapefile-btn').click(Results.retrieveResultsShapefile);
         $('#download-spreadsheet-btn').click(Results.retrieveResultsSpreadsheet);
@@ -48,7 +63,7 @@ var Results = {
             CONFIG.ui.showAlert({
                 message : 'Missing transects or intersections.',
                 displayTime : 7500,
-                caller : Results
+                caller : Calculation
             })
             return;
         }
@@ -56,7 +71,7 @@ var Results = {
         LOG.info('Results.js::calcResults');
         var transects = $('#transects-list :selected')[0].value;
         var intersects = $('#intersections-list :selected')[0].value;
-        var ci = $('#results-form-ci').val() || 0.9;
+        var ci = parseFloat($('#results-form-ci').val()) / 100;
         var resultsLayerName = $('#results-form-name').val() ? $('#results-form-name').val() + '_rates' : transects.replace('_transects', Results.suffixes[0]); 
         var request = Results.createWPSCalculateResultsRequest({
             transects : transects,
@@ -83,7 +98,7 @@ var Results = {
                                         results = Object.extended();
                                         CONFIG.tempSession.results = results;
                                     }
-
+                                    
                                     var selectedShorelines = CONFIG.tempSession.getStage(Shorelines.stage).viewing;
                                     var selectedBaseline = CONFIG.tempSession.getStage(Baseline.stage).viewing;
                                     var selectedTransects = CONFIG.tempSession.getStage(Baseline.stage).viewing;
@@ -107,6 +122,7 @@ var Results = {
                                     */
                                     $('#results-list').val(data);
                                     Results.listboxChanged();
+                                    CONFIG.ui.displayStage(Results);
                                     $('a[href="#' + Results.stage + '-view-tab"]').tab('show');
                                     CONFIG.ui.showAlert({
                                         message : 'Results were created successfully.',
@@ -382,8 +398,8 @@ var Results = {
             return [ 
             // X axis values
             baseDist, 
-            // [Error bar top, Value, Error bar bottom]
-            [/*lci,*/lrr,lci] 
+            // [Value, Error bars]
+            [lrr,lci] 
             ]
         }).sortBy(function(n) {
             return n[0]
@@ -504,12 +520,11 @@ var Results = {
     createWPSCalculateResultsRequest : function(args) {
         var transects = args.transects;
         var intersects = args.intersects;
-        var ci = args.ci || 0.9;
+        var ci = args.ci;
         var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
         var wps = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
         '<ows:Identifier>gs:CreateResultsLayer</ows:Identifier>' + 
         '<wps:DataInputs>'+
-        
         '<wps:Input>' + 
         '<ows:Identifier>results</ows:Identifier>' +         
         '<wps:Reference mimeType="text/xml" xlink:href="'+CONFIG.n52Endpoint+'/WebProcessingService" method="POST">' + 
@@ -661,7 +676,6 @@ var Results = {
             'typeName=' + escape(layerName) + '&' +
             'outputFormat=csv&' +
             'propertyName=TransectID,Orient,BaselineID,base_dist,LRR,LCI,WLR,WCI,SCE,NSM,EPR,StartX';
-;
         window.open(url);
     }
 }
