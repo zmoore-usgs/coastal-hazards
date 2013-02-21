@@ -57,7 +57,7 @@ public class FeatureCollectionRParser extends AbstractParser {
                 while (features.hasNext()) {
                     SimpleFeature feature = features.next();
 
-                    Intersection intersection = new Intersection(feature);
+                    Intersection intersection = new Intersection(feature, getter);
                     int transectId = intersection.getTransectId();
                     if (map.containsKey(transectId)) {
                         map.get(transectId).add(intersection);
