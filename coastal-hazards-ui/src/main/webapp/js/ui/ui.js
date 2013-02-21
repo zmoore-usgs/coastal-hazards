@@ -3,6 +3,7 @@ var UI = function() {
     var me = (this === window) ? {} : this;
     me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
     me.work_stages_objects = [Shorelines, Baseline, Transects, Calculation, Results];
+    me.base_name = undefined;//init to undefined. Update in baselines
     
     LOG.debug('UI.js::constructor: Setting popup hover delay to ' + popupHoverDelay);
     var popupHoverDelay = CONFIG.popupHoverDelay;
@@ -179,6 +180,11 @@ var UI = function() {
             })
             
             $("#modal-window").modal('show');
+        },
+        lockBaseNameTo : function(name){
+            me.base_name = name;
+            $('#results-form-name').val(name).trigger('change');
+            $('#create-transects-input-name').val(name).trigger('change');
         },
         switchStage : function (stage) {
             LOG.info('UI.js::switchImage: Changing application context to ' + me.work_stages[stage])

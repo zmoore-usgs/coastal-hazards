@@ -24,6 +24,7 @@ import gov.usgs.cida.coastalhazards.wps.geom.Transect;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ProjectionPolicy;
@@ -66,12 +67,15 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             @DescribeParameter(name = "shorelines", min = 1, max = 1) SimpleFeatureCollection shorelines,
             @DescribeParameter(name = "baseline", min = 1, max = 1) SimpleFeatureCollection baseline,
             @DescribeParameter(name = "spacing", min = 1, max = 1) Double spacing,
+            @DescribeParameter(name = "smoothing", min = 0, max = 1) Double smoothing, 
             @DescribeParameter(name = "farthest", min = 0, max = 1) Boolean farthest,
             @DescribeParameter(name = "workspace", min = 1, max = 1) String workspace,
             @DescribeParameter(name = "store", min = 1, max = 1) String store,
             @DescribeParameter(name = "transectLayer", min = 1, max = 1) String transectLayer,
             @DescribeParameter(name = "intersectionLayer", min = 1, max = 1) String intersectionLayer) throws Exception {
-        return new Process(shorelines, baseline, spacing, farthest, workspace, store, transectLayer, intersectionLayer).execute();
+        // defaults
+        if (smoothing == null) { smoothing = 0d; }
+        return new Process(shorelines, baseline, spacing, smoothing, farthest, workspace, store, transectLayer, intersectionLayer).execute();
     }
     
     protected class Process {
@@ -81,6 +85,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> shorelineFeatureCollection;
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> baselineFeatureCollection;
         private final double spacing;
+        private final double smoothing;
         private final boolean useFarthest;
         private final String workspace;
         private final String store;
@@ -103,6 +108,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         protected Process(FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines,
                 FeatureCollection<SimpleFeatureType, SimpleFeature> baseline,
                 double spacing,
+                double smoothing,
                 Boolean farthest,
                 String workspace,
                 String store,
@@ -111,6 +117,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             this.shorelineFeatureCollection = shorelines;
             this.baselineFeatureCollection = baseline;
             this.spacing = spacing;
+            this.smoothing = smoothing;
             
             if (farthest == null) {
                 this.useFarthest = false;
@@ -263,7 +270,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                 int orthoDirection,
                 String baselineId,
                 double accumulatedBaselineLength) {
-            List<LineSegment> intervals = findIntervals(lineString, spacing, true);
+            List<LineSegment> intervals = findIntervals(lineString, true, spacing, smoothing);
             List<Transect> transects = new ArrayList<Transect>(intervals.size());
             for (LineSegment interval : intervals) {
                 transects.add(
@@ -341,23 +348,70 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
     }
     
     // NOTE: For each segment p0 is interval coord, with p1 = p0 + direction of segment as unit vector.
-    public static List<LineSegment> findIntervals(LineString lineString, double interval, boolean includeOrigin) {
+    public static List<LineSegment> findIntervals(LineString lineString, boolean includeOrigin, double interval) {
         LinkedList<LineSegment> intervalList = new LinkedList<LineSegment>();
         List<LineSegment> segmentList = toLineSegments(lineString);       
-        double processed = 0;
+        double progress = 0;
         double next = includeOrigin ? 0 : interval;
         for (LineSegment segment : segmentList) {
             double segmentLength = segment.getLength();
-            if (processed + segmentLength >= next) {
+            if (progress + segmentLength >= next) {
                 double segmentAngle = segment.angle();
                 double segmentOffset;
-                for (segmentOffset = next - processed; segmentOffset <= segmentLength; segmentOffset += interval, next += interval) {
+                for (segmentOffset = next - progress; segmentOffset <= segmentLength; segmentOffset += interval, next += interval) {
                     Coordinate c = segment.pointAlong(segmentOffset / segmentLength);
                     intervalList.add(new LineSegment(
                             c.x, c.y, c.x + Math.cos(segmentAngle), c.y + Math.sin(segmentAngle)));
                 }
             }
-            processed += segmentLength;
+            progress += segmentLength;
+        }
+        return intervalList;
+    }
+    
+    // NOTE: For each segment p0 is interval coord, with p1 = p0 + direction of segment as unit vector.
+    public static List<LineSegment> findIntervals(LineString lineString, boolean includeOrigin, double interval, double smoothing) {
+        if (smoothing <= 0) {
+            return findIntervals(lineString, includeOrigin, interval);
+        }
+        LinkedList<LineSegment> intervalList = new LinkedList<LineSegment>();
+        List<LineSegment> segmentList = toLineSegments(lineString);     
+        double progress = 0;
+        double next = includeOrigin ? 0 : interval;
+        final double half = smoothing / 2d;
+        int index = 0;
+        final int indexMax = segmentList.size() -1;
+        for (LineSegment segment : segmentList) {
+            final double length = segment.getLength();
+            if (progress + length >= next) {
+                double offset;
+                for (offset = next - progress; offset <= length; offset += interval, next += interval) {
+                    Coordinate intervalCenter = segment.pointAlong(offset / length);
+                    double low = offset - half; // offset from p0 of current segment for low bound of smoothed segment (may be < 0)
+                    double high = offset + half; // offset from p0 of current segment for high bound of smoothed segment (may be > length)
+                    double angle;
+                    if (low < 0 || high > length) {
+                        Coordinate intervalLow = low < 0 && index > 0 ?
+                                    // find distance along line string from end of *last* segment (removing distance along current segment);
+                                    fromEnd(segmentList.subList(0, index - 1), 0 - low, false) :
+                                    // otherwise project along segment
+                                    segment.pointAlong(low / length);
+                        Coordinate intervalHigh = high > length && index < indexMax ?
+                                    // find distance along line string from end of *last* segment (removing distance along current segment);
+                                    fromStart(segmentList.subList(index + 1, indexMax), high - length, false) :
+                                    // otherwise project along segment
+                                    segment.pointAlong(high / length);
+                        LineSegment smoothSegment = new LineSegment(intervalLow, intervalHigh);
+                        angle = smoothSegment.angle();
+                    } else {
+                        angle = segment.angle();
+                    }
+                    intervalList.add(new LineSegment(
+                        intervalCenter.x, intervalCenter.y, intervalCenter.x + Math.cos(angle), intervalCenter.y + Math.sin(angle)));
+                }
+            }
+            index++;
+            progress += length;
         }
         return intervalList;
     }
@@ -388,5 +442,67 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         double endProjStart = nextStart.p0.distance(nextStart.project(previousEnd.p1));
         return startProjEnd < endProjStart ? startProjEnd : endProjStart;
     }
+        
+    static Coordinate fromStart(LineString lineString, double distance, boolean clamp) {
+        return fromStart(toLineSegments(lineString), distance, clamp);
+    }
     
+    static Coordinate fromStart(List<LineSegment> lineSegments, double distance, boolean clamp) {
+        ListIterator<LineSegment> iterator = lineSegments.listIterator();
+        double progress = 0;
+        while (iterator.hasNext()) {
+            final LineSegment segement = iterator.next();
+            final double length = segement.getLength();
+            final double offset = distance - progress;
+            if (offset <= length) {
+                return segement.pointAlong(offset / length);
+            }
+            progress += length;
+        }
+        // special case handling, distance is longer than line
+        LineSegment last = lineSegments.get(lineSegments.size() - 1);
+        // clamp or project?
+        if (clamp) {
+            // end of last segment in list
+            return last.getCoordinate(1);
+        } else {
+            double overflow = distance - progress;
+            // project along last line segment, add 1 since this method
+            // uses fraction-of-segment-length as distance from p0 and our
+            // overflow is distance from p1
+            return last.pointAlong(1d + (overflow / last.getLength()));
+        }
+    }
+    
+    static Coordinate fromEnd(LineString lineString, double distance, boolean clamp) {
+        return fromEnd(toLineSegments(lineString), distance, clamp);
+    }
+    
+    static Coordinate fromEnd(List<LineSegment> lineSegments, double distance, boolean clamp) {
+        ListIterator<LineSegment> iterator = lineSegments.listIterator(lineSegments.size());
+        double progress = 0;
+        while (iterator.hasPrevious()) {
+            final LineSegment segement = iterator.previous();
+            final double length = segement.getLength();
+            final double offset = distance - progress;
+            if (offset <= length) {
+                // since method is fraction from p0, but offset is distance from p1.
+                return segement.pointAlong(1d - (offset / length));
+            }
+            progress += length;
+        }
+        // special case handling, distance is longer than line
+        LineSegment first = lineSegments.get(0);
+        // clamp or project?
+        if (clamp) {
+            // start of first segment in list
+            return first.getCoordinate(0);
+        } else {
+            double overflow = distance - progress;
+            // project along first line segment, negate since this method
+            // uses fraction-of-segment-length as distance from p0 towards p1 and our
+            // overflow is distance from p0 (in p1 to p0 direction)
+            return first.pointAlong(-(overflow / first.getLength()));
+        }
+    }
 }
