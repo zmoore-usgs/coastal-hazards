@@ -347,13 +347,21 @@
                                         <div class="tabbable">
                                             <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
                                             <div class="tab-content" id="results-tabcontent"></div>
-                                            <!--<div style="visibility:none;"><a id="initiateExport" href="#">Export Me</a></div>-->
                                             <div><img id="exportedImage"/></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="results-manage-tab">
-                                    // Hi Carl. Put your results management stuff here
+                                    <h4>Download Results</h4>
+                                    <button class="btn btn-success" id="download-spreadsheet-btn">
+                                        <i class="icon-th icon-white"></i>
+                                        Spreadsheet (.csv)
+                                    </button>
+                                    <button class="btn btn-success" id="download-shapefile-btn">
+                                        <i class="icon-file icon-white"></i>
+                                        Shapefile (.zip)
+                                    </button>
+                                
                                 </div>
                             </div>
                         </div> <!-- /Results -->
