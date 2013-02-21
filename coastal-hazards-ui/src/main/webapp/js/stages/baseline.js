@@ -367,6 +367,7 @@ var Baseline = {
                 renderers: CONFIG.map.getRenderer()
             })
             clonedLayer.addFeatures(originalLayer.features);
+            clonedLayer.styleMap.styles['default'].defaultStyle.strokeWidth = 4;
             var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, 
             {
                 id : 'baseline-edit-control',
