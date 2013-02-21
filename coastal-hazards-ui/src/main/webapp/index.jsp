@@ -299,7 +299,7 @@
                                         <div class="control-group">
                                             <button type="button" class="btn btn-success span12 hidden" id="create-transects-input-button">
                                                 <i class="icon-tasks icon-white"></i>
-                                                &nbsp;Generate
+                                                &nbsp;Cast Transects
                                             </button>
                                         </div>
 
@@ -364,17 +364,18 @@
                                 </div>
                                 <div class="tab-pane" id="results-manage-tab">
                                     <h4>Download Results</h4>
+                                    <p>Your browser's popup blocker might attempt to block these downloads. Direct your browser to allow popups for this site to streamline your data export experience.</p>
                                     <button class="btn btn-success" id="download-plot-btn">
                                         <i class="icon-signal icon-white"></i>
-                                        Plot (.png)
+                                        &nbsp;Plot (.png)
                                     </button>
                                    <button class="btn btn-success" id="download-spreadsheet-btn">
                                         <i class="icon-th icon-white"></i>
-                                        Spreadsheet (.csv)
+                                        &nbsp;Spreadsheet (.csv)
                                     </button>
                                     <button class="btn btn-success" id="download-shapefile-btn">
                                         <i class="icon-file icon-white"></i>
-                                        Shapefile (.zip)
+                                        &nbsp;Shapefile (.zip)
                                     </button>
                                 
                                 </div>
