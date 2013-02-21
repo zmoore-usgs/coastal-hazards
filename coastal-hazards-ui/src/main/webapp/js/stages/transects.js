@@ -127,6 +127,7 @@ var Transects = {
                 renderers: CONFIG.map.getRenderer()
             })
             clonedLayer.addFeatures(originalLayer.features);
+            clonedLayer.styleMap.styles['default'].defaultStyle.strokeWidth = 4;
             
             var baselineLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
             var snap = new OpenLayers.Control.Snapping({
@@ -327,52 +328,52 @@ var Transects = {
             LOG.debug('Baseline.js::saveEditedLayer: Transects layer was updated on OWS server. Refreshing layer list');
             
             LOG.debug('Transects.js::saveEditedLayer: Removing associated intersections layer');
-                LOG.debug('Transects.js::saveEditedLayer: Calling updateTransectsAndIntersections WPS');
-                CONFIG.ows.updateTransectsAndIntersections({
-                    shorelines : Shorelines.getActive(),
-                    baseline : Baseline.getActive(),
-                    transects : Transects.getActive(),
-                    intersections : Calculation.getActive(),
-                    transectId : updatedFeatures,
-                    farthest : $('#create-intersections-nearestfarthest-list').val(),
+            LOG.debug('Transects.js::saveEditedLayer: Calling updateTransectsAndIntersections WPS');
+            CONFIG.ows.updateTransectsAndIntersections({
+                shorelines : Shorelines.getActive(),
+                baseline : Baseline.getActive(),
+                transects : Transects.getActive(),
+                intersections : Calculation.getActive(),
+                transectId : updatedFeatures,
+                farthest : $('#create-intersections-nearestfarthest-list').val(),
+                callbacks : {
+                    success : [
+                    function(data, textStatus, jqXHR) {
+                        editCleanup(data, textStatus, jqXHR);
+                    }
+                    ],
+                    error : [
+                    function(data, textStatus, jqXHR) {
+                        editCleanup(data, textStatus, jqXHR);
+                    }
+                    ]
+                }
+            });
+                    
+            LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
+            $.get('service/session', {
+                action : 'remove-layer',
+                workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                store : 'ch-output',
+                layer : resultsLayer.split(':')[1]
+            },
+            function(data, textStatus, jqXHR) {
+                CONFIG.ows.getWMSCapabilities({
+                    namespace : CONFIG.tempSession.getCurrentSessionKey(),
                     callbacks : {
                         success : [
-                        function(data, textStatus, jqXHR) {
-                            editCleanup(data, textStatus, jqXHR);
+                        CONFIG.tempSession.updateLayersFromWMS,
+                        function() {
+                            LOG.debug('Transects.js::saveEditedLayer: WMS Capabilities retrieved for your session');
+                            Results.clear();
                         }
                         ],
-                        error : [
-                        function(data, textStatus, jqXHR) {
-                            editCleanup(data, textStatus, jqXHR);
-                        }
-                        ]
+                        error : [function() {
+                            LOG.warn('Transects.js::saveEditedLayer: There was an error in retrieving the WMS capabilities for your session. This is probably be due to a new session. Subsequent loads should not see this error');
+                        }]
                     }
-                });
-                    
-                LOG.debug('Transects.js::saveEditedLayer: Removing associated results layer');
-                $.get('service/session', {
-                    action : 'remove-layer',
-                    workspace : CONFIG.tempSession.getCurrentSessionKey(),
-                    store : 'ch-output',
-                    layer : resultsLayer.split(':')[1]
-                },
-                function(data, textStatus, jqXHR) {
-                    CONFIG.ows.getWMSCapabilities({
-                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
-                        callbacks : {
-                            success : [
-                            CONFIG.tempSession.updateLayersFromWMS,
-                            function() {
-                                LOG.debug('Transects.js::saveEditedLayer: WMS Capabilities retrieved for your session');
-                                Results.clear();
-                            }
-                            ],
-                            error : [function() {
-                                LOG.warn('Transects.js::saveEditedLayer: There was an error in retrieving the WMS capabilities for your session. This is probably be due to a new session. Subsequent loads should not see this error');
-                            }]
-                        }
-                    })
-                }, 'json')
+                })
+            }, 'json')
         });
                 
         saveStrategy.save();  
