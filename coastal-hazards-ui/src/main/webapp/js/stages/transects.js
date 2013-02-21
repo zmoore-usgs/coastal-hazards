@@ -277,10 +277,13 @@ var Transects = {
         // This will be a callback from WPS
         var editCleanup = function(data, textStatus, jqXHR) {
             LOG.debug('Transects.js::saveEditedLayer: Receieved response from updateTransectsAndIntersections WPS');
-                
+            
+            Calculation.clear();
             var intersectionsList = CONFIG.ui.populateFeaturesList({
-                caller : Calculation
+                caller : Calculation,
+                stage : 'intersections'
             })
+            Results.clear();
             var resultsList = CONFIG.ui.populateFeaturesList({
                 caller : Results
             })
@@ -324,15 +327,7 @@ var Transects = {
             LOG.debug('Baseline.js::saveEditedLayer: Transects layer was updated on OWS server. Refreshing layer list');
             
             LOG.debug('Transects.js::saveEditedLayer: Removing associated intersections layer');
-            $.get('service/session', {
-                action : 'remove-layer',
-                workspace : CONFIG.tempSession.getCurrentSessionKey(),
-                store : 'ch-input',
-                layer : intersectsLayer.split(':')[1]
-            },
-            function(data, textStatus, jqXHR) {
                 LOG.debug('Transects.js::saveEditedLayer: Calling updateTransectsAndIntersections WPS');
-                Calculation.clear();
                 CONFIG.ows.updateTransectsAndIntersections({
                     shorelines : Shorelines.getActive(),
                     baseline : Baseline.getActive(),
@@ -378,7 +373,6 @@ var Transects = {
                         }
                     })
                 }, 'json')
-            }, 'json')
         });
                 
         saveStrategy.save();  
