@@ -113,7 +113,7 @@ var Transects = {
             var oLayerTitle = originalLayer.name.split(':')[1];
             var oLayerName = originalLayer.name;
             var clonedLayer = new OpenLayers.Layer.Vector('transects-edit-layer',{
-                strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
+                strategies: [new OpenLayers.Strategy.Fixed(), new OpenLayers.Strategy.Save()],
                 protocol: new OpenLayers.Protocol.WFS({
                     version: "1.1.0",
                     url:  "geoserver/"+oLayerPrefix+"/wfs",
@@ -210,7 +210,6 @@ var Transects = {
             highlightControl.activate();
             selectControl.activate();
             
-            
             $("#transects-edit-container").removeClass('hidden');
             $('#transects-edit-save-button').unbind('click', Transects.saveEditedLayer);
             $('#transects-edit-save-button').on('click', Transects.saveEditedLayer);
@@ -240,12 +239,14 @@ var Transects = {
                     var f = feature;
                     var baseline =  CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
                     var editLayer = CONFIG.map.getMap().getLayersBy('name', "transects-edit-layer")[0];
-                    var features = editLayer.features;
                     var originalFeatures = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0].features;
-                    var fc = originalFeatures.length;
-                    var sortedFeatures = features.sort(function(f){
+                    var highestOriginaltidStr = originalFeatures.clone().sort(function(f){
                         return f.attributes.TransectID
-                    })
+                    }).last().attributes.TransectID
+                    var highestOriginaltid = parseInt(highestOriginaltidStr);
+                    
+                    editLayer.highestFid =  editLayer.highestFid ?  editLayer.highestFid + 1 : highestOriginaltid + 1;
+                    
                     var blTouchFeature = baseline.features.filter(
                         function(baselineFeature){ 
                             return baselineFeature.geometry.distanceTo(f.geometry) == 0
@@ -261,7 +262,8 @@ var Transects = {
                     }
                     
                     // Add one to the largest sorted feature
-                    feature.attributes.TransectID =  fc;
+                    feature.attributes.TransectID =  parseInt(editLayer.highestFid) + 1;
+                    
                 }
             })
         CONFIG.map.addControl(drawControl);
