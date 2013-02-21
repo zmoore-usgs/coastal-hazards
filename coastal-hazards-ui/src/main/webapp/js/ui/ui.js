@@ -114,19 +114,6 @@ var UI = function() {
         })
     })
     
-    $('#map-well').popover({
-        title : 'Map',
-        content : $('<div />')
-        .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium'))
-        .html(),
-        html : true,
-        placement : 'left',
-        trigger : 'hover',
-        delay : {
-            show : popupHoverDelay
-        }
-    })
-    
     $('.nav-stacked>li>a').each(function(index, ele) { 
         $(ele).on('click', function() {
             me.switchStage(index);
