@@ -1,0 +1,53 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package gov.usgs.cida.coastalhazards.util;
+
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
+
+/**
+ *
+ * @author Jordan Walker <jiwalker@usgs.gov>
+ */
+public class BaselineDistanceAccumulator {
+    
+    private double accumulatedBaselineLength;
+    private LineSegment previousBaselineEnd;
+        
+    public BaselineDistanceAccumulator() {
+        this.accumulatedBaselineLength = 0;
+        this.previousBaselineEnd = null;
+    }
+    
+    public double accumulate(LineString line) {
+        if (previousBaselineEnd != null) {
+            accumulatedBaselineLength += getMinimumProjectedDistance(previousBaselineEnd, getStartLineSegment(line));
+        }
+        double baseDist = accumulatedBaselineLength;
+        
+        accumulatedBaselineLength += line.getLength();
+        previousBaselineEnd = getEndLineSegment(line);
+        
+        return baseDist;
+    }
+    
+    public static LineSegment getStartLineSegment(LineString line) {
+        return new LineSegment(
+                line.getCoordinateN(0), line.getCoordinateN(1));
+    }
+    
+    public static LineSegment getEndLineSegment(LineString line) {
+        int lastIndex = line.getNumPoints() - 1;
+        return new LineSegment(
+                line.getCoordinateN(lastIndex - 1), line.getCoordinateN(lastIndex));
+    }
+
+    public static double getMinimumProjectedDistance(LineSegment previousEnd, LineSegment nextStart) {
+        double startProjEnd = previousEnd.p1.distance(previousEnd.project(nextStart.p0));
+        double endProjStart = nextStart.p0.distance(nextStart.project(previousEnd.p1));
+        return startProjEnd < endProjStart ? startProjEnd : endProjStart;
+    }
+}

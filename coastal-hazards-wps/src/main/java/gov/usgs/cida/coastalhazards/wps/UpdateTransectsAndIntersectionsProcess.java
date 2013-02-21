@@ -1,44 +1,45 @@
 package gov.usgs.cida.coastalhazards.wps;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
+import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.util.GeoserverUtils;
+import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.exceptions.LayerDoesNotExistException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
+import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineSTRTreeBuilder;
+import gov.usgs.cida.coastalhazards.wps.geom.Transect;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
 import org.geotools.data.DataAccess;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.filter.FilterFactoryImpl;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import static gov.usgs.cida.coastalhazards.util.Constants.*;
-import gov.usgs.cida.coastalhazards.util.UTMFinder;
-import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
-import gov.usgs.cida.coastalhazards.wps.geom.Transect;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import org.geotools.data.DataUtilities;
-import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.feature.DefaultFeatureCollection;
-import org.geotools.filter.FilterFactoryImpl;
 import org.joda.time.DateTime;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.expression.Expression;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  *
@@ -62,8 +63,8 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
         this.filterFactory = new FilterFactoryImpl();
     }
     
-    @DescribeResult(name = "intersections", description = "Feature collection of intersection points")
-    public SimpleFeatureCollection execute(
+    @DescribeResult(name = "intersections", description = "intersection layer name")
+    public String execute(
             @DescribeParameter(name = "transectLayer", description = "layer containing transects", min = 1, max = 1) String transectLayer,
             @DescribeParameter(name = "intersectionLayer", description = "layer containing intersections", min = 1, max = 1) String intersectionLayer,
             @DescribeParameter(name = "baselineLayer", description = "layer containing baseline", min = 1, max = 1) String baselineLayer,
@@ -91,7 +92,7 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
             this.useFarthest = (null == useFarthest) ? false : useFarthest;
         }
         
-        private SimpleFeatureCollection execute() throws Exception {
+        private String execute() throws Exception {
             if (null == transectLayer || null == intersectionLayer || null == baselineLayer) {
                 throw new LayerDoesNotExistException("Input layers must exist");
             }
@@ -131,8 +132,13 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
                 // use AttributeGetter to get real attr names
                 PropertyIsEqualTo transectFilter = filterFactory.equals(filterFactory.property(TRANSECT_ID_ATTR), filterFactory.literal(id));
                 PropertyIsEqualTo intersectionFilter = filterFactory.equals(filterFactory.property(TRANSECT_ID_ATTR), filterFactory.literal(id));
-                
-                Collection<SimpleFeature> intersectionFeatures = (Collection<SimpleFeature>)intersectionSource.getFeatures(intersectionFilter);
+                FeatureCollection<? extends FeatureType, ? extends Feature> intersectionFeatures = intersectionSource.getFeatures(intersectionFilter);
+                FeatureIterator<SimpleFeature> intersectionIterator = (FeatureIterator<SimpleFeature>)intersectionFeatures.features();
+                while (intersectionIterator.hasNext()) {
+                    SimpleFeature intersection = intersectionIterator.next();
+                    intersectionCollection.remove(intersection);
+                }
+                                       
                 SimpleFeatureCollection transectFeatures = (SimpleFeatureCollection)intersectionSource.getFeatures(transectFilter);
                 SimpleFeatureCollection transformedTransects = CRSUtils.transformFeatureCollection(transectFeatures, transectSource.getInfo().getCRS(), utmCrs);
                 SimpleFeatureIterator transectIterator = transformedTransects.features();
@@ -145,20 +151,28 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
                         throw new IllegalStateException("There shouldn't be more than one transect with the same id");
                     }
                 }
-                Transect transectObj = Transect.fromFeature(transect);
-                
-                intersectionCollection.removeAll(intersectionFeatures);
-                Map<DateTime, Intersection> newIntersections = Intersection.calculateIntersections(transectObj, strtree, useFarthest);
-                for (DateTime key : newIntersections.keySet()) {
-                    Intersection newIntersection = newIntersections.get(key);
-                    SimpleFeature newFeature = newIntersection.createFeature(intersectionCollection.getSchema());
-                    intersectionCollection.add(newFeature);
+
+                if (null != transect) {
+                    Transect transectObj = Transect.fromFeature(transect);
+
+                    Map<DateTime, Intersection> newIntersections = Intersection.calculateIntersections(transectObj, strtree, useFarthest);
+                    for (DateTime key : newIntersections.keySet()) {
+                        Intersection newIntersection = newIntersections.get(key);
+                        SimpleFeature newFeature = newIntersection.createFeature(intersectionCollection.getSchema());
+                        intersectionCollection.add(newFeature);
+                    }
+                    
+                    updateTransectBaseDist(transectObj, (FeatureSource<SimpleFeatureType, SimpleFeature>)baselineSource);
                 }
              
                 // modify transect base_dist if exists otherwise add new transect
             }
             
-            return DataUtilities.collection(returnFeatures);
+            return intersectionSource.getInfo().getName();
+        }
+        
+        private void updateTransectBaseDist(Transect transect, FeatureSource<SimpleFeatureType, SimpleFeature> baseline) {
+            
         }
     }
 }
