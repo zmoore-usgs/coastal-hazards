@@ -69,7 +69,7 @@ public class TestFailingHawaiiTransects {
         FeatureCollection<SimpleFeatureType, SimpleFeature> shorelinefc =
                 FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
         CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(), new DummyCatalog());
-        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 100.0d, Boolean.FALSE, null, null, null, null);
+        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 100.0d, 0d, Boolean.FALSE, null, null, null, null);
     }
     
     /*
@@ -88,6 +88,6 @@ public class TestFailingHawaiiTransects {
         SimpleFeatureCollection shorelinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
         CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(shpfile), new DummyCatalog());
-        generate.execute(shorelinefc, baselinefc, 100.0d, Boolean.FALSE, null, null, null, null);
+        generate.execute(shorelinefc, baselinefc, 100.0d, 0d, Boolean.FALSE, null, null, null, null);
     }
 }

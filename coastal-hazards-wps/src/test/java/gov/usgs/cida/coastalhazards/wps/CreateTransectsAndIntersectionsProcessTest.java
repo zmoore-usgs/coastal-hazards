@@ -81,7 +81,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
         FeatureCollection<SimpleFeatureType, SimpleFeature> shorelinefc =
                 FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
         CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(), new DummyCatalog());
-        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, Boolean.FALSE, null, null, null, null);
+        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, 0d, Boolean.FALSE, null, null, null, null);
     }
     
     /*
@@ -100,7 +100,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
         SimpleFeatureCollection shorelinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
         CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(shpfile), new DummyCatalog());
-        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, Boolean.FALSE, null, null, null, null);
+        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, 0d, Boolean.FALSE, null, null, null, null);
     }
     
         
@@ -147,7 +147,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
             new Coordinate(0, 4),
         });
         
-        lineSegments = CreateTransectsAndIntersectionsProcess.findIntervals(lineString, 1, true);
+        lineSegments = CreateTransectsAndIntersectionsProcess.findIntervals(lineString, true, 1);
         
         assertNotNull(lineSegments);
         assertEquals(lineString.getNumPoints(), lineSegments.size());
@@ -192,7 +192,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
             new Coordinate(4, 0),
         });
         
-        lineSegments = CreateTransectsAndIntersectionsProcess.findIntervals(lineString, 1, false);
+        lineSegments = CreateTransectsAndIntersectionsProcess.findIntervals(lineString, false, 1);
         
         assertNotNull(lineSegments);
         assertEquals(lineString.getNumPoints() - 1, lineSegments.size());
@@ -229,7 +229,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
             new Coordinate(0, 20)
         });
         
-        lineSegments = CreateTransectsAndIntersectionsProcess.findIntervals(lineString, 1, true);
+        lineSegments = CreateTransectsAndIntersectionsProcess.findIntervals(lineString, true, 1);
         
         assertNotNull(lineSegments);
         assertEquals(21, lineSegments.size());
@@ -265,7 +265,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
             new Coordinate(20, 0)
         });
                 
-        lineSegments = CreateTransectsAndIntersectionsProcess.findIntervals(lineString, 1, false);
+        lineSegments = CreateTransectsAndIntersectionsProcess.findIntervals(lineString, false, 1);
         
         assertNotNull(lineSegments);
         assertEquals(20, lineSegments.size());
@@ -308,7 +308,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
             new Coordinate(0, 9),
         });
         
-        lineSegments = CreateTransectsAndIntersectionsProcess.findIntervals(lineString, 2.5, true);
+        lineSegments = CreateTransectsAndIntersectionsProcess.findIntervals(lineString, true, 2.5);
         
         assertNotNull(lineSegments);
         assertEquals(4, lineSegments.size());
@@ -357,7 +357,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
             new Coordinate(9, 0),
         });        
         
-        lineSegments = CreateTransectsAndIntersectionsProcess.findIntervals(lineString, 2.5, false);
+        lineSegments = CreateTransectsAndIntersectionsProcess.findIntervals(lineString, false, 2.5);
         
         assertNotNull(lineSegments);
         assertEquals(3, lineSegments.size());

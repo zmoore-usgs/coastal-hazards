@@ -3,6 +3,7 @@ var UI = function() {
     var me = (this === window) ? {} : this;
     me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
     me.work_stages_objects = [Shorelines, Baseline, Transects, Calculation, Results];
+    me.base_name = undefined;//init to undefined. Update in baselines
     
     LOG.debug('UI.js::constructor: Setting popup hover delay to ' + popupHoverDelay);
     var popupHoverDelay = CONFIG.popupHoverDelay;
@@ -179,6 +180,11 @@ var UI = function() {
             })
             
             $("#modal-window").modal('show');
+        },
+        lockBaseNameTo : function(name){
+            me.base_name = name;
+            $('#results-form-name').val(name).trigger('change');
+            $('#create-transects-input-name').val(name).trigger('change');
         },
         switchStage : function (stage) {
             LOG.info('UI.js::switchImage: Changing application context to ' + me.work_stages[stage])
@@ -663,7 +669,7 @@ var UI = function() {
                         var mapping = $('#' + layerName + '-drag-drop-row').data('mapping');
                         var columns = [];
                         mapping.keys().each(function(key) {
-                            if (key != mapping[key]) {
+                            if (key && mapping[key] && key != mapping[key]) {
                                 columns.push(key + '|' + mapping[key])
                             }
                         })
@@ -671,7 +677,7 @@ var UI = function() {
                             layer : layerName,
                             workspace : CONFIG.tempSession.getCurrentSessionKey(),
                             store : 'ch-input',
-                            columns : columns,
+                            columns : columns.filter(function(c) { return !c.endsWith('|') }),
                             callbacks : [
                             function() {
                                 $("#"+caller.stage+"-list").val(CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName)
@@ -763,6 +769,9 @@ var UI = function() {
                                 moveDraggable(draggable,droppable)
                             }
                         })
+                        if (columns.values().filter(function(v) { return v != ''}).length == Shorelines.mandatoryColumns.length) {
+                            $('#modal-update-button').removeAttr('disabled');
+                        }
                     }
                     $("#modal-window").on('shown', showCallback)
                                     
