@@ -5,81 +5,84 @@ var Session = function(name, isPerm) {
     me.name = name;
     me.sessionObject = isPerm ? localStorage : sessionStorage;
     me.session =  isPerm ? $.parseJSON(me.sessionObject.getItem(me.name)) : Object.extended();
-    
+    me.createNewSession = function() {
+        // - A session has not yet been created for perm storage. Probably the first
+        // run of the application or a new browser with no imported session
+            
+        // - Because the session is used in the namespace for WFS-T, it needs to 
+        // not have a number at the head of it so add a random letter
+        var randID = String.fromCharCode(97 + Math.round(Math.random() * 25)) + Util.randomUUID();
+            
+        // Prepare the session on the OWS server
+        $.ajax('service/session?action=prepare&workspace=' + randID, 
+        {
+            success : function(data, textStatus, jqXHR) {
+                LOG.info('Session.js::init: A workspace has been prepared on the OWS server with the name of ' + randID)
+                CONFIG.ui.showAlert({
+                    message : 'No session could be found. A new session has been created',
+                    displayTime : 5000,
+                    style: {
+                        classes : ['alert-info']
+                    }
+                })
+            },
+            error : function(data, textStatus, jqXHR) {
+                LOG.error('Session.js::init: A workspace could not be created on the OWS server with the name of ' + randID)
+                CONFIG.ui.showAlert({
+                    message : 'No session could be found. A new session could not be created on server. This application may not function correctly.',
+                    style: {
+                        classes : ['alert-error']
+                    }
+                })
+            }
+        })
+        
+       var newSession = Object.extended();
+        newSession.sessions = [];
+            
+        // This will constitute a new session object
+        var session = Object.extended();
+        session.id = randID;
+        session.created = new Date().toString();
+        session.stage = Object.extended({
+            shorelines : Object.extended({
+                layers : [],
+                viewing : [],
+                groupingColumn : 'date_',
+                dateFormat : '',
+                view : Object.extended({
+                    layer : Object.extended({
+                        'dates-disabled' : []
+                    })
+                })
+            }),
+            baseline : Object.extended({
+                layers : [],
+                viewing : ''
+            }),
+            transects : Object.extended({
+                layers : [],
+                viewing : ''
+            }),
+            intersections : Object.extended({
+                layers : [],
+                viewing : ''
+            }),
+            results : Object.extended({
+                layers : [],
+                viewing : ''
+            })
+        });
+        session.layers = [];
+        session.results = Object.extended();
+            
+        newSession.sessions.push(session);
+        newSession.currentSession = randID;
+        return newSession;
+    }
     if (isPerm) {
         if (!me.session) {
-            // - A session has not yet been created for perm storage. Probably the first
-            // run of the application or a new browser with no imported session
-            
-            // - Because the session is used in the namespace for WFS-T, it needs to 
-            // not have a number at the head of it so add a random letter
-            var randID = String.fromCharCode(97 + Math.round(Math.random() * 25)) + Util.randomUUID();
-            
-            // Prepare the session on the OWS server
-            $.ajax('service/session?action=prepare&workspace=' + randID, 
-            {
-                success : function(data, textStatus, jqXHR) {
-                    LOG.info('Session.js::init: A workspace has been prepared on the OWS server with the name of ' + randID)
-                    CONFIG.ui.showAlert({
-                        message : 'No session could be found. A new session has been created',
-                        displayTime : 5000,
-                        style: {
-                            classes : ['alert-info']
-                        }
-                    })
-                },
-                error : function(data, textStatus, jqXHR) {
-                    LOG.error('Session.js::init: A workspace could not be created on the OWS server with the name of ' + randID)
-                    CONFIG.ui.showAlert({
-                        message : 'No session could be found. A new session could not be created on server. This application may not function correctly.',
-                        style: {
-                            classes : ['alert-error']
-                        }
-                    })
-                }
-            })
-            
-            me.session = Object.extended();
-            me.session.sessions = [];
-            
-            // This will constitute a new session object
-            var session = Object.extended();
-            session.id = randID;
-            session.created = new Date().toString();
-            session.stage = Object.extended({
-                shorelines : Object.extended({
-                    layers : [],
-                    viewing : [],
-                    groupingColumn : 'date_',
-                    dateFormat : '',
-                    view : Object.extended({
-                        layer : Object.extended({
-                            'dates-disabled' : []
-                        })
-                    })
-                }),
-                baseline : Object.extended({
-                    layers : [],
-                    viewing : ''
-                }),
-                transects : Object.extended({
-                    layers : [],
-                    viewing : ''
-                }),
-                intersections : Object.extended({
-                    layers : [],
-                    viewing : ''
-                }),
-                results : Object.extended({
-                    layers : [],
-                    viewing : ''
-                })
-            });
-            session.layers = [];
-            session.results = Object.extended();
-            
-            me.session.sessions.push(session);
-            me.session.currentSession = randID;
+            me.session = me.createNewSession();
         }
     } else {
         LOG.info('Session.js::constructor:Removing previous temp session');
@@ -93,8 +96,8 @@ var Session = function(name, isPerm) {
         me.namespace = Object.extended(); 
         
         /**
-         * Persist the temp session to the appropriate location in the permanent session 
-         */
+     * Persist the temp session to the appropriate location in the permanent session 
+     */
         me.persistSession = function() {
             LOG.info('Session.js::persistSession: Persisting temp session to perm session');
             var permSession = CONFIG.permSession; 
@@ -248,8 +251,8 @@ var Session = function(name, isPerm) {
         }
         
         /**
-         * Replace the current temp session with 
-         */
+     * Replace the current temp session with 
+     */
         me.setCurrentSession = function(key, session) {
             LOG.info('Replacing current session');
             if (session) {
@@ -345,7 +348,9 @@ var Session = function(name, isPerm) {
                                         importWell.append(importRow);
                                         
                                         $('#import-current-session-button').on('click', function() {
-                                            var currentSession = resultObject.sessions.find(function(n){ return n.id == resultObject.currentSession})
+                                            var currentSession = resultObject.sessions.find(function(n){
+                                                return n.id == resultObject.currentSession
+                                            })
                                             CONFIG.tempSession.setCurrentSession(currentSession);
                                             CONFIG.tempSession.persistSession();
                                             location.reload(true);
@@ -373,7 +378,7 @@ var Session = function(name, isPerm) {
                                 // Not a json file
                                 $('#file-upload-input').val('')
                                 var importRow = $('#import-row');
-                                 importRow.html('Your file could not be read: ' + ex);
+                                importRow.html('Your file could not be read: ' + ex);
                             }
                         })
                     }
@@ -388,20 +393,20 @@ var Session = function(name, isPerm) {
         exportSession : function() {
             CONFIG.tempSession.persistSession();
             var exportForm = $('<form />').attr({
-                    'id' : 'export-form',
-                    'style' : 'display:none;visibility:hidden;',
-                    'method' : 'POST'
-                }).
-                append(
-                    $('<input />').attr({
-                        'type' : 'hidden',
-                        'name' : 'filename'
-                    }).val('cch_session_' + me.getCurrentSessionKey() + '.json')).
-                append(
-                    $('<input />').attr({
-                        'type' : 'hidden',
-                        'name' : 'data'
-                    }).val(localStorage['coastal-hazards']))
+                'id' : 'export-form',
+                'style' : 'display:none;visibility:hidden;',
+                'method' : 'POST'
+            }).
+            append(
+                $('<input />').attr({
+                    'type' : 'hidden',
+                    'name' : 'filename'
+                }).val('cch_session_' + me.getCurrentSessionKey() + '.json')).
+            append(
+                $('<input />').attr({
+                    'type' : 'hidden',
+                    'name' : 'data'
+                }).val(localStorage['coastal-hazards']))
             $('body').append(exportForm)
             exportForm.attr('action', 'service/export');
             exportForm.submit();
@@ -416,7 +421,6 @@ var Session = function(name, isPerm) {
             LOG.info('Session.js::load:Loading session object from storage');
             $.parseJSON(me.sessionObject.getItem(name ? name : me.name));
         },
-        
         getCurrentSessionKey : function() {
             if (me.isPerm) {
                 return me.session.currentSession;
