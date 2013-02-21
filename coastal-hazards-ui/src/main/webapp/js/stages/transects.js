@@ -590,11 +590,19 @@ var Transects = {
         var spacing = $('#create-transects-input-spacing').val() || 0;
         var layerName = $('#create-transects-input-name').val();
         var farthest = $('#create-intersections-nearestfarthest-list').val();
+        var smoothing = parseFloat($('#create-transects-input-smoothing').val());
+        if (isNaN(smoothing)) {
+            smoothing = 0.0;
+        } else {
+            smoothing = smoothing <= 0.0 ? 0.0 : smoothing;
+        }
+        
         var request = Transects.createWPScreateTransectsAndIntersectionsRequest({
             shorelines : visibleShorelines,
             baseline : baseline,
             spacing : spacing,
             farthest : farthest,
+            smoothing : smoothing,
             workspace : CONFIG.tempSession.getCurrentSessionKey(),
             store : 'ch-input',
             transectLayer : layerName + '_transects',
@@ -704,8 +712,9 @@ var Transects = {
         var shorelines = args.shorelines;
         var baseline = args.baseline;
         var spacing = args.spacing ? args.spacing : Transects.defaultSpacing;
+        var smoothing = args.smoothing || 0.0;
         var layer = args.layer;
-        var farthest = args.fathest;
+        var farthest = args.farthest;
         var workspace = args.workspace;
         var transectLayer = args.transectLayer;
         var intersectionLayer = args.intersectionLayer;
@@ -774,6 +783,12 @@ var Transects = {
         '<ows:Identifier>spacing</ows:Identifier>' + 
         '<wps:Data>' + 
         '<wps:LiteralData>'+spacing+'</wps:LiteralData>' +
+        '</wps:Data>' + 
+        '</wps:Input>' + 
+        '<wps:Input>' + 
+        '<ows:Identifier>smoothing</ows:Identifier>' + 
+        '<wps:Data>' + 
+        '<wps:LiteralData>'+smoothing+'</wps:LiteralData>' +
         '</wps:Data>' + 
         '</wps:Input>' + 
         '<wps:Input>' + 

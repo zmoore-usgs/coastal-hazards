@@ -283,6 +283,8 @@
                                                     <label for="create-transects-input-spacing">Spacing</label>
                                                     <input type="text" id="create-transects-input-spacing" maxLength="6" placeholder="500">m
                                                     <input type="hidden" id="create-transects-input-name" class="customLayerName" style="width: 100%;">
+                                                    <label for="create-transects-input-smoothing">Baseline Smoothing</label>
+                                                    <input type="text" id="create-transects-input-smoothing" maxLength="6" placeholder="0.0">m
                                                 </div>
                                             </div>
                                         </div>
