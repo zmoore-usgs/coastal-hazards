@@ -190,12 +190,13 @@ var Transects = {
                             var cloneFeature = cloneLayer.getFeatureBy('fid', fid);
                             cloneFeature.state = OpenLayers.State.DELETE;
                             cloneFeature.style = {
-                                strokeOpacity : 0
+                                strokeColor : '#FF0000'
                             }
                             originalFeature.style = {
                                 strokeOpacity : 0
                             }
-                            Transects.saveEditedLayer();
+                            originalFeature.layer.redraw();
+                            cloneFeature.layer.redraw();
                         }
                     }
                 })
@@ -238,8 +239,10 @@ var Transects = {
                     // Find the baseline segment we touch
                     var f = feature;
                     var baseline =  CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
-                    var editLayer = CONFIG.map.getMap().getLayersBy('name', "transects-edit-layer")[0]
-                    var features = editLayer.features
+                    var editLayer = CONFIG.map.getMap().getLayersBy('name', "transects-edit-layer")[0];
+                    var features = editLayer.features;
+                    var originalFeatures = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0].features;
+                    var fc = originalFeatures.length;
                     var sortedFeatures = features.sort(function(f){
                         return f.attributes.TransectID
                     })
@@ -251,13 +254,14 @@ var Transects = {
                     
                     // Apply the baseline orient to the new feature
                     if (blTouchFeature.length) {
-                        feature.attributes.Orient = blTouchFeature[0].attributes.Orient
+                        feature.attributes.Orient = blTouchFeature[0].attributes.Orient;
+                        feature.attributes.BaselineID = blTouchFeature[0].fid;
                     } else {
                         feature.attributes.Orient = 'seaward';
                     }
                     
                     // Add one to the largest sorted feature
-                    feature.attributes.TransectID =  parseInt(sortedFeatures[sortedFeatures.length - 1].attributes.TransectID) + 1;
+                    feature.attributes.TransectID =  fc;
                 }
             })
         CONFIG.map.addControl(drawControl);
