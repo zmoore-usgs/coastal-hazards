@@ -385,7 +385,7 @@
                 <div id="application-alert-container" id="span11 offset1"></div>
             </div>
 
-            <div class="row-fluid">
+            <div class="row-fluid" id="footer-row">
                 <jsp:include page="template/USGSFooter.jsp">
                     <jsp:param name="relPath" value="" />
                     <jsp:param name="header-class" value="" />

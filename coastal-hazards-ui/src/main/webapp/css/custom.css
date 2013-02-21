@@ -16,6 +16,10 @@
     text-align: center;
     display: none;
 }
+
+#header #banner-area {
+    background-image: url("../images/banner/banner.png");
+}
 /* Update bootstrap's buttons to have a bit of space on top */
 #site-title {
     line-height: 20px;
