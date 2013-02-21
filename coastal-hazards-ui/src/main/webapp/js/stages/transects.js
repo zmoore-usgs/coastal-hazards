@@ -489,6 +489,9 @@ var Transects = {
         $('#transect-edit-form-toggle').removeAttr('disabled');
     },
     disableEditButton : function() {
+        if ($('#transect-edit-form-toggle').hasClass('active')) {
+            $('#transect-edit-form-toggle').trigger('click');
+        }
         $('#transect-edit-form-toggle').attr('disabled', 'disabled');
     },
     enableCreateTransectsButton : function() {
@@ -498,6 +501,9 @@ var Transects = {
     },
     disableCreateTransectsButton : function() {
         LOG.info('Transects.js::disableCreateTransectsButton: No valid baseline on the map. Disabling create transect button');
+        if ($('#create-transects-toggle').hasClass('active')) {
+            $('#create-transects-toggle').trigger('click');
+        }
         $('#create-transects-toggle').attr('disabled', 'disabled');
          
     },
@@ -571,11 +577,10 @@ var Transects = {
         var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
         
         if (toggledOn) {
-            $('#transects-list').val('');
-        //            $('#create-transects-input-name').val(Util.getRandomLorem());
+            if ($('#transect-edit-form-toggle').hasClass('active')) {
+                $('#transect-edit-form-toggle').trigger('click');
+            }
         } else {
-            
-        // Hide transect layer if needed
         }
         $('#create-transects-panel-well').toggleClass('hidden');
         $('#intersection-calculation-panel-well').toggleClass('hidden');
