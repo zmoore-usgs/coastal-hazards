@@ -52,13 +52,18 @@ import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.exceptions.InputFileFormatException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
+import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.collections.list.TreeList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wps.gs.GeoServerProcess;
@@ -186,7 +191,7 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
         }
 
         protected List<SimpleFeature> joinResultsToTransects(String[] columnHeaders, Map<Long, Double[]> resultMap, FeatureCollection<SimpleFeatureType, SimpleFeature> transects) {
-            List<SimpleFeature> sfList = new LinkedList<SimpleFeature>();
+            SortedMap<Double, SimpleFeature> sfMap = new TreeMap<Double, SimpleFeature>(); // want it sorted by base_dist
             
             SimpleFeatureType transectFeatureType = transects.getSchema();
             List<AttributeDescriptor> descriptors = transectFeatureType.getAttributeDescriptors();
@@ -205,6 +210,10 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                 SimpleFeature next = features.next();
                 Object transectId = attGet.getValue(Constants.TRANSECT_ID_ATTR, next);
                 long id = -1;
+                Double baseDist = (Double)attGet.getValue(Constants.BASELINE_DIST_ATTR, next);
+                if (baseDist == null) {
+                    throw new UnsupportedFeatureTypeException("Transects must have baseline distance");
+                }
                 if (transectId instanceof Integer) {
                     id = new Long(((Integer)transectId).longValue());
                 }
@@ -217,9 +226,9 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                 oldAttributes.addAll(Arrays.asList(values));
                 oldAttributes.toArray(joinedAttrs);
                 SimpleFeature feature = SimpleFeatureBuilder.build(newFeatureType, joinedAttrs, null);
-                sfList.add(feature);
+                sfMap.put(baseDist, feature);
             }
-            return sfList;
+            return new ArrayList<SimpleFeature>(sfMap.values());
         }
 
         private String[] getColumnHeaders(String results) {
