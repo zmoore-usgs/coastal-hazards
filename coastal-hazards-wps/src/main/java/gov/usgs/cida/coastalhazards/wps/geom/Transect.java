@@ -183,7 +183,10 @@ public class Transect {
         Orientation orient = Orientation.fromAttr(orientVal);
         int id = (Integer)getter.getValue(TRANSECT_ID_ATTR, feature);
         String baselineId = (String)getter.getValue(BASELINE_ID_ATTR, feature);
-        double baseDist = (Double)getter.getValue(BASELINE_DIST_ATTR, feature);
+        Double baseDist = (Double)getter.getValue(BASELINE_DIST_ATTR, feature);
+        if (baseDist == null) {
+            baseDist = -1.0;
+        }
         
         Transect transect = new Transect(segment.p0, segment.angle(), orient, id, baselineId, baseDist);
         transect.length = segment.p0.distance(segment.p1);
