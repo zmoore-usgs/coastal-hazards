@@ -22,6 +22,8 @@ var Results = {
         })
         $('#download-shapefile-btn').click(Results.retrieveResultsShapefile);
         $('#download-spreadsheet-btn').click(Results.retrieveResultsSpreadsheet);
+        $('#download-plot-btn').click(Results.retrieveRSquigglePlotPNG);
+        
         
     },
     

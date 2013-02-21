@@ -364,7 +364,11 @@
                                 </div>
                                 <div class="tab-pane" id="results-manage-tab">
                                     <h4>Download Results</h4>
-                                    <button class="btn btn-success" id="download-spreadsheet-btn">
+                                    <button class="btn btn-success" id="download-plot-btn">
+                                        <i class="icon-signal icon-white"></i>
+                                        Plot (.png)
+                                    </button>
+                                   <button class="btn btn-success" id="download-spreadsheet-btn">
                                         <i class="icon-th icon-white"></i>
                                         Spreadsheet (.csv)
                                     </button>
