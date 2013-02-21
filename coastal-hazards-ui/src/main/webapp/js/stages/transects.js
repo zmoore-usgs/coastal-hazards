@@ -190,12 +190,13 @@ var Transects = {
                             var cloneFeature = cloneLayer.getFeatureBy('fid', fid);
                             cloneFeature.state = OpenLayers.State.DELETE;
                             cloneFeature.style = {
-                                strokeOpacity : 0
+                                strokeColor : '#FF0000'
                             }
                             originalFeature.style = {
                                 strokeOpacity : 0
                             }
-                            Transects.saveEditedLayer();
+                            originalFeature.layer.redraw();
+                            cloneFeature.layer.redraw();
                         }
                     }
                 })
