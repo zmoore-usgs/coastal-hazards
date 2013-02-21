@@ -48,6 +48,22 @@ select option.session-layer{
     color : #116611; 
 }
 
+.backgroundPaneImage{
+    height: 252px;
+}
+#shorelinesPaneImage{
+    background-image:url('../images/paneBackgrounds/shorelines_tutorial.png');
+}
+#baselinesPaneImage{
+    background-image:url('../images/paneBackgrounds/baselines_tutorial.png');
+}
+#transectsPaneImage{
+    background-image:url('../images/paneBackgrounds/transects_tutorial.png');
+}
+#resultsPaneImage{
+    background-image:url('../images/paneBackgrounds/results_tutorial.png');
+}
+
 /* ---------------------------------------------------------------------- Map */
 /* Add a drop shadow effect to scale and mouse position so they can be seen against a dark background */
 .olControlScaleLine {

@@ -116,10 +116,17 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="shorelines-view-tab">
                                     <select id="shorelines-list" class="feature-list" multiple="multiple"></select>
-                                    <div class="tabbable">
-                                        <ul class="nav nav-tabs" id="shoreline-table-navtabs">
-                                        </ul>
-                                        <div class="tab-content" id="shoreline-table-tabcontent">
+                                    <div class="backgroundPaneImage" id="shorelinesPaneImage">
+                                        <div class="tabbable">
+                                            <ul class="nav nav-tabs" id="shoreline-table-navtabs">
+                                            </ul>
+                                            <div class="tab-content" id="shoreline-table-tabcontent">
+                                            </div>
+                                            <div class="collapsibleHelp">
+                                            <div>DSASweb Help</div>
+                                                <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. In dignissim aliquam pellentesque. Donec diam odio, pellentesque id adipiscing eget, volutpat in tortor. Vivamus egestas rhoncus odio, sed pellentesque est scelerisque in. Nulla non varius mauris. Nulla vel magna ipsum. Nulla vitae purus mi. Phasellus luctus, elit vel sodales scelerisque, felis felis tempor nibh, ac auctor orci lorem vitae risus. Nulla consectetur gravida tincidunt. Aliquam erat volutpat. Duis a arcu id ligula pulvinar ultrices.</p>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -147,6 +154,8 @@
                             <div id="baseline-tab-content" class="tab-content">
                                 <div class="tab-pane active" id="baseline-view-tab">
                                     <select id="baseline-list" class="feature-list"></select>
+                                    <div class="backgroundPaneImage" id="baselinesPaneImage">
+                                    </div>
                                 </div>
                                 <div class="tab-pane" id="baseline-manage-tab">
 
@@ -248,6 +257,8 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="transects-view-tab">
                                     <select id="transects-list" class="feature-list"></select>
+                                    <div class="backgroundPaneImage" id="transectsPaneImage">
+                                    </div>
                                 </div>
                                 <div class="tab-pane" id="transects-manage-tab">
                                     <div class="row-fluid">
@@ -323,6 +334,8 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="intersections-view-tab">
                                     <select id="intersections-list" class="feature-list"></select>
+                                    <div class="backgroundPaneImage" id=""><!-- no background for now -->
+                                    </div>
                                 </div>
                                 <div class="tab-pane" id="intersections-manage-tab">
                                     <!-- Intersection Calculation -->
@@ -354,11 +367,12 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="results-view-tab">
                                     <select id="results-list" class="feature-list"></select>
-                                    <div class="row-fluid">
-                                        <div class="tabbable">
-                                            <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
-                                            <div class="tab-content" id="results-tabcontent"></div>
-                                            <div><img id="exportedImage"/></div>
+                                    <div class="backgroundPaneImage" id="resultsPaneImage">
+                                        <div class="row-fluid">
+                                            <div class="tabbable">
+                                                <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
+                                                <div class="tab-content" id="results-tabcontent"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
