@@ -48,6 +48,7 @@ package gov.usgs.cida.coastalhazards.wps.geom;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.index.strtree.STRtree;
+import gov.usgs.cida.coastalhazards.util.AttributeGetter;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
 import java.text.ParseException;
@@ -78,6 +79,7 @@ public class Intersection {
     private double distance;
     private SimpleFeature feature;
     private int transectId;
+    private AttributeGetter attGet;
     private static DateTimeFormatter inputFormat;
     private static DateTimeFormatter outputFormat;
 
@@ -111,11 +113,12 @@ public class Intersection {
      * @param uncy Uncertainty measurement
      * @throws ParseException if date is in wrong format
      */
-    public Intersection(Point point, double dist, SimpleFeature shoreline, int transectId) {
+    public Intersection(Point point, double dist, SimpleFeature shoreline, int transectId, AttributeGetter getter) {
         this.point = point;
         this.distance = dist;
         this.feature = shoreline;
         this.transectId = transectId;
+        this.attGet = getter;
     }
 
     /**
@@ -123,13 +126,12 @@ public class Intersection {
      *
      * @param intersectionFeature
      */
-    public Intersection(SimpleFeature intersectionFeature) {
+    public Intersection(SimpleFeature intersectionFeature, AttributeGetter getter) {
         this.point = (Point) intersectionFeature.getDefaultGeometry();
-        this.transectId = (Integer) intersectionFeature.getAttribute(TRANSECT_ID_ATTR);
-        this.distance = (Double) intersectionFeature.getAttribute(DISTANCE_ATTR);
+        this.attGet = getter;
+        this.transectId = (Integer) attGet.getValue(TRANSECT_ID_ATTR, intersectionFeature);
+        this.distance = (Double) attGet.getValue(DISTANCE_ATTR, intersectionFeature);
         this.feature = intersectionFeature;
-        //this.            (String) intersectionFeature.getAttribute(DATE_ATTR),
-        //                (Double) intersectionFeature.getAttribute(UNCY_ATTR)
     }
 
     /**
@@ -166,9 +168,9 @@ public class Intersection {
             AttributeType attrType = types.get(i);
             if (attrType instanceof GeometryType) {
                 featureObjectArr[i] = point;
-            } else if (attrType.getName().getLocalPart().equals(TRANSECT_ID_ATTR)) {
+            } else if (attGet.matches(attrType.getName(), TRANSECT_ID_ATTR)) {
                 featureObjectArr[i] = new Long(transectId);
-            } else if (attrType.getName().getLocalPart().equals(DISTANCE_ATTR)) {
+            } else if (attGet.matches(attrType.getName(), DISTANCE_ATTR)) {
                 featureObjectArr[i] = new Double(distance);
             } else {
                 featureObjectArr[i] = this.feature.getAttribute(attrType.getName());
@@ -178,7 +180,7 @@ public class Intersection {
     }
 
     public DateTime getDate() {
-        Object date = feature.getAttribute(DATE_ATTR);
+        Object date = attGet.getValue(DATE_ATTR, this.feature);
         if (date instanceof Date) {
             return new DateTime((Date) date);
         } else if (date instanceof String) {
@@ -190,7 +192,7 @@ public class Intersection {
     }
 
     public double getUncertainty() {
-        Object uncy = feature.getAttribute(UNCY_ATTR);
+        Object uncy = attGet.getValue(UNCY_ATTR, this.feature);
         if (uncy instanceof Double) {
             return (Double) uncy;
         } else {
@@ -230,7 +232,7 @@ public class Intersection {
         return maxVal;
     }
 
-    public static Map<DateTime, Intersection> calculateIntersections(Transect transect, STRtree strTree, boolean useFarthest) {
+    public static Map<DateTime, Intersection> calculateIntersections(Transect transect, STRtree strTree, boolean useFarthest, AttributeGetter getter) {
         Map<DateTime, Intersection> allIntersections = new HashMap<DateTime, Intersection>();
         LineString line = transect.getLineString();
         List<ShorelineFeature> possibleIntersects = strTree.query(line.getEnvelopeInternal());
@@ -244,7 +246,7 @@ public class Intersection {
                         * transect.getOriginCoord()
                         .distance(crossPoint.getCoordinate());
                 Intersection intersection =
-                        new Intersection(crossPoint, distance, shoreline.feature, transect.getId());
+                        new Intersection(crossPoint, distance, shoreline.feature, transect.getId(), getter);
                 DateTime date = intersection.getDate();
                 if (allIntersections.containsKey(date)) {  // use closest/farthest intersection
                     Intersection thatIntersection = allIntersections.get(date);

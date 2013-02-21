@@ -9,6 +9,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 import com.vividsolutions.jts.index.strtree.STRtree;
+import gov.usgs.cida.coastalhazards.util.AttributeGetter;
 import gov.usgs.cida.coastalhazards.util.BaselineDistanceAccumulator;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
@@ -189,9 +190,11 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             SimpleFeatureIterator features = baseline.features();
             
             BaselineDistanceAccumulator accumulator = new BaselineDistanceAccumulator();
+            AttributeGetter attGet = new AttributeGetter(baseline.getSchema());
             while (features.hasNext()) {
                 SimpleFeature feature = features.next();
-                Orientation orientation = Orientation.fromAttr((String)feature.getAttribute(BASELINE_ORIENTATION_ATTR));
+                String orientVal = (String)attGet.getValue(BASELINE_ORIENTATION_ATTR, feature);
+                Orientation orientation = Orientation.fromAttr(orientVal);
                 if (orientation == Orientation.UNKNOWN) {
                     // default to seaward
                     orientation = Orientation.SEAWARD;
@@ -236,8 +239,8 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                 if (!preparedShorelines.intersects(testLine)) {
                     continue; // don't draw if it doesn't cross
                 }
-                
-                Map<DateTime, Intersection> allIntersections = Intersection.calculateIntersections(transect, strTree, useFarthest);
+                AttributeGetter attGet = new AttributeGetter(intersectionFeatureType);
+                Map<DateTime, Intersection> allIntersections = Intersection.calculateIntersections(transect, strTree, useFarthest, attGet);
                 double transectLength = Intersection.absoluteFarthest(MIN_TRANSECT_LENGTH, allIntersections.values());
                 transect.setLength(transectLength + TRANSECT_PADDING);
                 SimpleFeature feature = transect.createFeature(transectFeatureType);

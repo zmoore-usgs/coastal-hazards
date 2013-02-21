@@ -48,6 +48,7 @@ package gov.usgs.cida.coastalhazards.r;
 
 import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
 import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
+import gov.usgs.cida.coastalhazards.util.AttributeGetter;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -123,7 +124,7 @@ public class IntersectionParserTest {
             SimpleFeature feature = features.next();
             int transectId = (Integer)feature.getAttribute("TransectID");
 
-            Intersection intersection = new Intersection(feature);
+            Intersection intersection = new Intersection(feature, new AttributeGetter(feature.getType()));
 
             if (map.containsKey(transectId)) {
                 map.get(transectId).add(intersection);

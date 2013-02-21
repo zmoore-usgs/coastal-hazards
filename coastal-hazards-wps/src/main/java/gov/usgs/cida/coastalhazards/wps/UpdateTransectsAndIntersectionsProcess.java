@@ -9,6 +9,7 @@ import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.util.GeoserverUtils;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
+import gov.usgs.cida.coastalhazards.util.AttributeGetter;
 import gov.usgs.cida.coastalhazards.wps.exceptions.LayerDoesNotExistException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
@@ -115,6 +116,7 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
             DataAccess<? extends FeatureType, ? extends Feature> intersectionDa = gsUtils.getDataAccess(intersectionDs, null);
             SimpleFeatureStore intersectionStore = (SimpleFeatureStore)gsUtils.getFeatureSource(intersectionDa, intersectionLayer.getName());
             intersectionStore.setTransaction(transaction);
+            AttributeGetter intersectionAttr = new AttributeGetter(intersectionStore.getSchema());
                     
             DataStoreInfo baselineDs = gsUtils.getDataStoreByName(
                                         baselineLayer.getResource().getStore().getWorkspace().getName(),
@@ -163,8 +165,8 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
 
                 if (null != transect) {
                     Transect transectObj = Transect.fromFeature(transect);
-
-                    Map<DateTime, Intersection> newIntersections = Intersection.calculateIntersections(transectObj, strtree, useFarthest);
+                    
+                    Map<DateTime, Intersection> newIntersections = Intersection.calculateIntersections(transectObj, strtree, useFarthest, intersectionAttr);
                     for (DateTime key : newIntersections.keySet()) {
                         Intersection newIntersection = newIntersections.get(key);
                         SimpleFeature newFeature = newIntersection.createFeature(intersectionStore.getSchema());
