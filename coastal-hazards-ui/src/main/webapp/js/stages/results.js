@@ -658,26 +658,40 @@ var Results = {
         //make endpoint
         var geoserverEndpoint = CONFIG.ows.geoserverProxyEndpoint.endsWith('/') ? CONFIG.ows.geoserverProxyEndpoint : CONFIG.ows.geoserverProxyEndpoint + '/';
         
-        //first get properties of the layer:
+        //first get all properties of the results layer:
         var url = geoserverEndpoint + 'wfs?' +
             'service=wfs&'+
             'version=2.2.3&'+
             'request=DescribeFeatureType&'+
-            'outputFormat=application/json&' +
             'typeName=' + layerName;
-        console.log(url);
+        
+        //once you get the properties, filter out unwanted properties that we added 
+        //during server-side calculation and request the layer with the remaining
+        //properties
+
         $.ajax(url, {
                 success : function(data, textStatus, jqXHR) {
-                    console.dir(data);
-                    return;
+                    data = $(data);
+                    var featureXML = data.find('sequence').find('element');
+                    var propertyNames = $.map(featureXML, function(elt, index){
+                       return $(elt).attr('name'); 
+                    });
+                    var propertyNamesToExclude = ['the_geom'];
+                    
+                    //remove each excluded attribute name from the array
+                    propertyNamesToExclude.each(function(nameToExclude){
+                        propertyNames.remove(nameToExclude);
+                    });
+                    
+                    var stringPropertyNames = escape(propertyNames.join(','));
+
                     url = geoserverEndpoint + 'wfs?' +
                         'service=wfs&'+
                         'version=2.2.3&'+
                         'request=GetFeature&'+
                         'typeName=' + layerName + '&' +
                         'outputFormat=csv&' +
-                        'propertyName=TransectID,Orient,BaselineID,base_dist,LRR,LCI,WLR,WCI,SCE,NSM,EPR,StartX';
-                    
+                        'propertyName=' + stringPropertyNames;
                     window.open(url);
                 },
                 error : function(data, textStatus, jqXHR){
