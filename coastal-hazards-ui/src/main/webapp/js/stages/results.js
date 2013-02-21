@@ -20,6 +20,9 @@ var Results = {
             CONFIG.ui.displayStage(Results);
             Results.calcResults();
         })
+        $('#download-shapefile-btn').click(Results.retrieveResultsShapefile);
+        $('#download-spreadsheet-btn').click(Results.retrieveResultsSpreadsheet);
+        
     },
     
     leaveStage : function() {
@@ -624,5 +627,41 @@ var Results = {
             exportForm.remove();
             
         }
+    },
+    retrieveResultsShapefile: function(){
+        var layerName = $('#results-list').val();
+        
+        if('' === layerName){
+            alert('Please select a result from the list');
+            return;
+        }
+        
+        var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
+        var url = geoserverEndpoint + 'wfs?' +
+            'service=wfs&'+
+            'version=2.2.3&'+
+            'request=GetFeature&'+
+            'typeName=' + escape(layerName) + '&' +
+            'outputFormat=SHAPE-ZIP';
+        window.open(url);
+    },
+    retrieveResultsSpreadsheet: function(){
+        var layerName = $('#results-list').val();
+        
+        if('' === layerName){
+            alert('Please select a result from the list');
+            return;
+        }
+        
+        var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
+        var url = geoserverEndpoint + 'wfs?' +
+            'service=wfs&'+
+            'version=2.2.3&'+
+            'request=GetFeature&'+
+            'typeName=' + escape(layerName) + '&' +
+            'outputFormat=csv&' +
+            'propertyName=TransectID,Orient,BaselineID,base_dist,LRR,LCI,WLR,WCI,SCE,NSM,EPR,StartX';
+;
+        window.open(url);
     }
 }
