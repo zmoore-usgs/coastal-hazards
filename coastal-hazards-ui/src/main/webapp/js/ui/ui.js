@@ -677,7 +677,9 @@ var UI = function() {
                             layer : layerName,
                             workspace : CONFIG.tempSession.getCurrentSessionKey(),
                             store : 'ch-input',
-                            columns : columns.filter(function(c) { return !c.endsWith('|') }),
+                            columns : columns.filter(function(c) {
+                                return !c.endsWith('|')
+                            }),
                             callbacks : [
                             function() {
                                 $("#"+caller.stage+"-list").val(CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName)
@@ -721,8 +723,8 @@ var UI = function() {
                             }
                                             
                             var readyToUpdate = true;
-                            mapping.values().each(function(val) {
-                                if (!val) {
+                            Shorelines.mandatoryColumns.each(function(mc) { 
+                                if (!mapping.values().filter(mc).length) {
                                     readyToUpdate = false;
                                 }
                             })
@@ -769,7 +771,9 @@ var UI = function() {
                                 moveDraggable(draggable,droppable)
                             }
                         })
-                        if (columns.values().filter(function(v) { return v != ''}).length == Shorelines.mandatoryColumns.length) {
+                        if (columns.values().filter(function(v) {
+                            return v != ''
+                            }).length == Shorelines.mandatoryColumns.length) {
                             $('#modal-update-button').removeAttr('disabled');
                         }
                     }
