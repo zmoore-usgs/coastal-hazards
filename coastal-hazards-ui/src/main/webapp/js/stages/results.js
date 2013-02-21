@@ -653,7 +653,7 @@ var Results = {
             return;
         }
         
-        var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
+        var geoserverEndpoint = CONFIG.ows.geoserverProxyEndpoint.endsWith('/') ? CONFIG.ows.geoserverProxyEndpoint : CONFIG.ows.geoserverProxyEndpoint + '/';
         var url = geoserverEndpoint + 'wfs?' +
             'service=wfs&'+
             'version=2.2.3&'+
@@ -663,21 +663,55 @@ var Results = {
         window.open(url);
     },
     retrieveResultsSpreadsheet: function(){
-        var layerName = $('#results-list').val();
+        var layerName = escape($('#results-list').val());
         
         if('' === layerName){
             alert('Please select a result from the list');
             return;
         }
         
-        var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
+        //make endpoint
+        var geoserverEndpoint = CONFIG.ows.geoserverProxyEndpoint.endsWith('/') ? CONFIG.ows.geoserverProxyEndpoint : CONFIG.ows.geoserverProxyEndpoint + '/';
+        
+        //first get all properties of the results layer:
         var url = geoserverEndpoint + 'wfs?' +
             'service=wfs&'+
             'version=2.2.3&'+
-            'request=GetFeature&'+
-            'typeName=' + escape(layerName) + '&' +
-            'outputFormat=csv&' +
-            'propertyName=TransectID,Orient,BaselineID,base_dist,LRR,LCI,WLR,WCI,SCE,NSM,EPR,StartX';
-        window.open(url);
+            'request=DescribeFeatureType&'+
+            'typeName=' + layerName;
+        
+        //once you get the properties, filter out unwanted properties that we added 
+        //during server-side calculation and request the layer with the remaining
+        //properties
+
+        $.ajax(url, {
+                success : function(data, textStatus, jqXHR) {
+                    data = $(data);
+                    var featureXML = data.find('sequence').find('element');
+                    var propertyNames = $.map(featureXML, function(elt, index){
+                       return $(elt).attr('name'); 
+                    });
+                    var propertyNamesToExclude = ['the_geom'];
+                    
+                    //remove each excluded attribute name from the array
+                    propertyNamesToExclude.each(function(nameToExclude){
+                        propertyNames.remove(nameToExclude);
+                    });
+                    
+                    var stringPropertyNames = escape(propertyNames.join(','));
+
+                    url = geoserverEndpoint + 'wfs?' +
+                        'service=wfs&'+
+                        'version=2.2.3&'+
+                        'request=GetFeature&'+
+                        'typeName=' + layerName + '&' +
+                        'outputFormat=csv&' +
+                        'propertyName=' + stringPropertyNames;
+                    window.open(url);
+                },
+                error : function(data, textStatus, jqXHR){
+                    alert('Error: Could not describe feature type.')
+                }
+        });
     }
 }
