@@ -213,22 +213,23 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 return;
             }
             
-            int sce = ((Number)sceObject).intValue();
-            int idCurrent = ((Number)baselineObject).intValue();
+            double sce = ((Number)sceObject).doubleValue();
+            int id = ((Number)baselineObject).intValue();
 
             Coordinate[] coordinates = geometry.getCoordinates();
-            LineSegment segmentCurrent = new LineSegment(coordinates[0], coordinates[1]);
+            LineSegment transect = new LineSegment(coordinates[0], coordinates[1]);
+            LineSegment segment = new LineSegment(transect.pointAlong(1d - (sce / transect.getLength())), transect.p1);
            
-            if (segmentLast != null && idCurrent == idLast)  {
+            if (segmentLast != null && id == idLast)  {
                 
                 geometry = geometryFactory.createPolygon(
                         geometryFactory.createLinearRing(
                             new Coordinate[] {
-                                segmentCurrent.p0,
-                                segmentCurrent.p1,
+                                segment.p0,
+                                segment.p1,
                                 segmentLast.p1,
                                 segmentLast.p0,
-                                segmentCurrent.p0
+                                segment.p0
                         }),
                         null);
                 
@@ -256,8 +257,8 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 }
             }
             
-            idLast = idCurrent;
-            segmentLast = segmentCurrent;
+            idLast = id;
+            segmentLast = segment;
         }
 
         private void setBounds(SimpleFeatureCollection features, ReferencedEnvelope requestBounds) throws TransformException {
