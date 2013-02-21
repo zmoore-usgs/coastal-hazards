@@ -122,12 +122,17 @@
                                             </ul>
                                             <div class="tab-content" id="shoreline-table-tabcontent">
                                             </div>
-                                            <div class="collapsibleHelp">
-                                            <div>DSASweb Help</div>
-                                                <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. In dignissim aliquam pellentesque. Donec diam odio, pellentesque id adipiscing eget, volutpat in tortor. Vivamus egestas rhoncus odio, sed pellentesque est scelerisque in. Nulla non varius mauris. Nulla vel magna ipsum. Nulla vitae purus mi. Phasellus luctus, elit vel sodales scelerisque, felis felis tempor nibh, ac auctor orci lorem vitae risus. Nulla consectetur gravida tincidunt. Aliquam erat volutpat. Duis a arcu id ligula pulvinar ultrices.</p>
-                                            </div>
-
                                         </div>
+                                        <div class="collapsibleHelp">
+                                                <div>DSASweb Help</div>
+                                                <div class="helpText">
+                                                    <p>Shorelines are geospatial polylines which represent the location of the shoreline and various points in time</p>
+                                                    <p>Add shorelines to your workspace with the selection box above or upload your own zipped shapefile containing shoreline polylines within the Manage tab.</p>
+                                                    <p>Use the map to investigate the selected shorelines, clicking to enable/disable for DSASweb processing.</p>
+                                                </div>
+                                        </div>
+
+
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="shorelines-manage-tab">
@@ -155,7 +160,16 @@
                                 <div class="tab-pane active" id="baseline-view-tab">
                                     <select id="baseline-list" class="feature-list"></select>
                                     <div class="backgroundPaneImage" id="baselinesPaneImage">
-                                    </div>
+                                        <div class="collapsibleHelp">
+                                                    <div>DSASweb Help</div>
+                                                    <div>
+                                                        <p>The baseline provides the local frame of reference for calculating erosion and deposition rates from shorelines.</p>
+                                                        <p>Add a reference baseline to your workspace with the selection box above or upload your own zipped shapefile containing a baseline polyline with the Manage tab.</p>
+                                                        <p>Alternatively, create a new reference baseline with the drawing, cloning, or editing tools that are located within the Manage tab.</p>
+                                                    </div>
+                                            </div>
+
+                                        </div>
                                 </div>
                                 <div class="tab-pane" id="baseline-manage-tab">
 
@@ -258,8 +272,17 @@
                                 <div class="tab-pane active" id="transects-view-tab">
                                     <select id="transects-list" class="feature-list"></select>
                                     <div class="backgroundPaneImage" id="transectsPaneImage">
+                                        <div class="collapsibleHelp">
+                                                    <div>DSASweb Help</div>
+                                                    <div>
+                                                    <p>Transects are cast perpendicular to the workspace baseline, at user-defined intervals. The intersections between the transects and shorelines are used to calculate erosion and deposition rates.</p>
+                                                    <p>Add a pre-cast group of transects to your workspace with the selection box above or upload your own zipped shapefile containing a set of transects with the Manage tab. </p>
+                                                    <p>Alternatively, create or modify transects with the editing and transect casting tools that are located within the Manage tab.</p>
+                                                    </div>
+                                            </div>
+
+                                        </div>
                                     </div>
-                                </div>
                                 <div class="tab-pane" id="transects-manage-tab">
                                     <div class="row-fluid">
                                         <div id="transects-uploader" class="uploader"></div>
@@ -335,7 +358,12 @@
                                 <div class="tab-pane active" id="intersections-view-tab">
                                     <select id="intersections-list" class="feature-list"></select>
                                     <div class="backgroundPaneImage" id=""><!-- no background for now -->
-                                    </div>
+                                        <div class="collapsibleHelp">
+                                                    <div>DSASweb Help</div>
+                                                    <p>Rates or erosion or deposition are calculated at the location of each transect using the user-defined statistics and parameters found within the Manage tab.</p>
+                                            </div>
+
+                                        </div>
                                 </div>
                                 <div class="tab-pane" id="intersections-manage-tab">
                                     <!-- Intersection Calculation -->
@@ -373,6 +401,15 @@
                                                 <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
                                                 <div class="tab-content" id="results-tabcontent"></div>
                                             </div>
+                                            <div class="collapsibleHelp">
+                                                <div>DSASweb Help</div>
+                                                <div>
+                                                <p>Erosion and deposition rates are contained within the results layer of DSASweb processing.</p>
+                                                <p>View existing results by selecting layers from the list above. Use the Manage tab to export results information onto your desktop.</p>
+                                                <p>The results map, plot, and table are all interactive. Users can view the map location which corresponds to the line plot, or use the table to view map locations.</p>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>

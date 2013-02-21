@@ -51,6 +51,12 @@ select option.session-layer{
 .backgroundPaneImage{
     height: 252px;
 }
+.collapsibleHelp .ui-widget-content {
+    background: transparent;
+}
+.collapsibleHelp .ui-state-active{
+    background: transparent;
+}
 #shorelinesPaneImage{
     background-image:url('../images/paneBackgrounds/shorelines_tutorial.png');
 }
