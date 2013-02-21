@@ -46,6 +46,7 @@
 
 package gov.usgs.cida.coastalhazards.wps;
 
+import gov.usgs.cida.coastalhazards.util.AttributeGetter;
 import gov.usgs.cida.coastalhazards.util.Constants;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
@@ -197,13 +198,12 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                     builder.add(header, Double.class);
                 }
             }
-            builder.add("StartX", Integer.class);
             SimpleFeatureType newFeatureType = builder.buildFeatureType();
             FeatureIterator<SimpleFeature> features = transects.features();
-            int startx = 0;
+            AttributeGetter attGet = new AttributeGetter(newFeatureType);
             while (features.hasNext()) {
                 SimpleFeature next = features.next();
-                Object transectId = next.getAttribute(Constants.TRANSECT_ID_ATTR);
+                Object transectId = attGet.getValue(Constants.TRANSECT_ID_ATTR, next);
                 long id = -1;
                 if (transectId instanceof Integer) {
                     id = new Long(((Integer)transectId).longValue());
@@ -215,7 +215,6 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                 Object[] joinedAttrs = new Object[next.getAttributeCount() + values.length + 1];
                 List<Object> oldAttributes = next.getAttributes();
                 oldAttributes.addAll(Arrays.asList(values));
-                oldAttributes.add(new Integer(startx++));
                 oldAttributes.toArray(joinedAttrs);
                 SimpleFeature feature = SimpleFeatureBuilder.build(newFeatureType, joinedAttrs, null);
                 sfList.add(feature);
