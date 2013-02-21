@@ -267,7 +267,7 @@ var Results = {
                     fillOpacity: 1,
                     cursor: "pointer"
                 })
-            }),
+            })
         });
 	
         var featureHighlighted = function(event) {
@@ -347,7 +347,7 @@ var Results = {
                         function(event) {
                             var baseDist = $(this).data().base_dist
                             var selectionControl = CONFIG.map.getMap().getControlsBy('id','results-select-control')[0];
-                            var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'results')[0].features.find(function(f){
+                            var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'highlight')[0].features.find(function(f){
                                 return f.attributes.base_dist == baseDist
                             })
                             selectionControl.select(hlFeature);
