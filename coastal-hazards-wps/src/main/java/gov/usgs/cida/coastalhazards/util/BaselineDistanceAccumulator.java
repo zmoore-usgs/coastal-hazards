@@ -1,18 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.usgs.cida.coastalhazards.util;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class BaselineDistanceAccumulator {
+    
+    public static final double EPS = 1.0d;
     
     private double accumulatedBaselineLength;
     private LineSegment previousBaselineEnd;
@@ -32,6 +32,21 @@ public class BaselineDistanceAccumulator {
         previousBaselineEnd = getEndLineSegment(line);
         
         return baseDist;
+    }
+    
+    public double accumulateToPoint(LineString line, Point point) {
+        for (int j=0; j<line.getNumPoints()-1; j++) {
+            LineSegment segment = new LineSegment(line.getCoordinateN(j), line.getCoordinateN(j+1));
+            Coordinate coord = point.getCoordinate();
+            if (segment.distance(coord) < EPS) {
+                accumulatedBaselineLength += (segment.segmentFraction(coord) * segment.getLength());
+                return accumulatedBaselineLength; //done accumulating
+            }
+            else {
+                accumulatedBaselineLength += segment.getLength();
+            }
+        }
+        throw new PoorlyDefinedBaselineException("Baseline section does not contain transect origin");
     }
     
     public static LineSegment getStartLineSegment(LineString line) {
