@@ -526,11 +526,16 @@ var Shorelines = {
                     var container = $('<div />').addClass('container-fluid');
                     var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
                     var explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well');
-                    explanationWell.html('Something something')
+                    explanationWell.html('Choose an attribute from the shorelines resource to use as a wildcard column in the shorelines table for sorting purposes.')
                     container.append(explanationRow.append(explanationWell));
                 
-                    var selectionWell = $('<div />').addClass('well').attr('id', 'selection-well');
-                    var selectionRow = $('<div />').addClass('row-fluid').attr('id', 'selection-row');
+                    var selectionWell = $('<div />').addClass('well').attr({
+                        'style' : 'text-align:center;',
+                        'id' : 'selection-well'
+                    });
+                    var selectionRow = $('<div />').addClass('row-fluid').attr({
+                        'id' : 'selection-row'
+                    });
                     var selectList = $('<select />').addClass('wildcard-select-list');
                 
                     selectList.append(
@@ -560,7 +565,9 @@ var Shorelines = {
                             var layerObj = CONFIG.ows.featureTypeDescription[layerPrefix][layerName];
                             var selectedVal = $(this).val();
                             var table = $('#shoreline-table-tabcontent>#'+layerName+'>.shoreline-feature-table>table');
-                        
+                            
+                            $("table.tablesorter").trigger('destroy');
+                            
                             // Clear table of previous wildcard, if any
                             table.find('thead>tr>th:nth-child(4)').remove();
                             table.find('tbody>tr>td:nth-child(4)').remove();
@@ -609,7 +616,7 @@ var Shorelines = {
             type: 'numeric' 
         }); 
         
-        $("table.tablesorter").trigger('destroy');
+        //        $("table.tablesorter").trigger('destroy');
         $("table").tablesorter({
             headers : {
                 0 : {
