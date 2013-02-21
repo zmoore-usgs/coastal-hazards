@@ -656,7 +656,7 @@ var Results = {
         var geoserverEndpoint = CONFIG.ows.geoserverProxyEndpoint.endsWith('/') ? CONFIG.ows.geoserverProxyEndpoint : CONFIG.ows.geoserverProxyEndpoint + '/';
         var url = geoserverEndpoint + 'wfs?' +
             'service=wfs&'+
-            'version=2.2.3&'+
+            'version=2.0.0&'+
             'request=GetFeature&'+
             'typeName=' + escape(layerName) + '&' +
             'outputFormat=SHAPE-ZIP';
@@ -676,7 +676,7 @@ var Results = {
         //first get all properties of the results layer:
         var url = geoserverEndpoint + 'wfs?' +
             'service=wfs&'+
-            'version=2.2.3&'+
+            'version=2.0.0&'+
             'request=DescribeFeatureType&'+
             'typeName=' + layerName;
         
@@ -702,7 +702,7 @@ var Results = {
 
                     url = geoserverEndpoint + 'wfs?' +
                         'service=wfs&'+
-                        'version=2.2.3&'+
+                        'version=2.0.0&'+
                         'request=GetFeature&'+
                         'typeName=' + layerName + '&' +
                         'outputFormat=csv&' +
