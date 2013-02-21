@@ -264,6 +264,13 @@
                                     </div>
 
                                     <div  id="transects-edit-container" class="row-fluid hidden">
+                                        <div id="transects-update-panel-well" class="well">
+                                            <label for="update-intersections-nearestfarthest-list">Take Nearest/Farthest Intersection</label>
+                                            <select id="update-intersections-nearestfarthest-list" style="width: 100%;">
+                                                <option selected="selected" value="false">Nearest</option>
+                                                <option value="true">Farthest</option>
+                                            </select>
+                                        </div>
                                         <button class="btn btn-success" id="transects-edit-save-button" title="Update Modified Transect">Update Transect</button>
                                         <button class="btn btn-success" id="transects-edit-add-button" title="Add Transect">Add Transect</button>
                                     </div>

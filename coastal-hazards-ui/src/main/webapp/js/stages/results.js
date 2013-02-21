@@ -159,7 +159,7 @@ var Results = {
         }
     },
     clear : function() {
-        $("#transects-list").val('');
+        $("#results-list").val('');
         Results.listboxChanged();
     },
     listboxChanged : function() {
