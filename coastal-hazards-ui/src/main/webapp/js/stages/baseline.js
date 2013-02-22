@@ -76,7 +76,11 @@ var Baseline = {
                 schema: "geoserver/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + sessionKey + ":featureType"
             }),
             onFeatureInsert : function(feature) {
+                var indexOfFeatureInLayer = feature.layer.features.findIndex(function(f) {
+                    return f.id == feature.id
+                })
                 feature.attributes['Orient'] = 'seaward';
+                feature.attributes['ID'] = indexOfFeatureInLayer + 1;
             }
         });
 
@@ -338,7 +342,7 @@ var Baseline = {
             }
             Transects.disableCreateTransectsButton();
         }
-},
+    },
     editButtonToggled : function(event) {
         var activated = !$(event.target).hasClass('active');
         if (activated) {
