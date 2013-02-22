@@ -38,10 +38,7 @@ var Results = {
         $('#download-shapefile-btn').click(Results.retrieveResultsShapefile);
         $('#download-spreadsheet-btn').click(Results.retrieveResultsSpreadsheet);
         $('#download-plot-btn').click(Results.retrieveRSquigglePlotPNG);
-        
-        
     },
-    
     leaveStage : function() {
         LOG.debug('Results.js::leaveStage');
         CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id','results-select-control')[0])
@@ -53,7 +50,6 @@ var Results = {
             tab : 'view'
         })
     },
-    
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
             caller : Results

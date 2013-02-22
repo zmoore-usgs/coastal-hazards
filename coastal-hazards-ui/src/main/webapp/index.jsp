@@ -92,9 +92,6 @@
                         <li><a href="#transects" data-toggle="tab"><img id="transects_img" src="images/workflow_figures/transects_future.png" title="Calculate Transects"/></a></li>
                         <li><a href="#calculation" data-toggle="tab"><img id="calculation_img" src="images/workflow_figures/calculation_future.png" title="Show Calculation"/></a></li>
                         <li><a href="#results" data-toggle="tab"><img id="results_img" src="images/workflow_figures/results_future.png" title="Display Results"/></a></li>
-                                <% if (development) {%>
-                        <li><button class="btn btn-success" id="clear-sessions-btn">Clear Sessions</button>
-                            <% }%>
                     </ul>
                     <div id="application-spinner"><img src="images/spinner/spinner3.gif" /></div>
                 </div>
@@ -420,7 +417,7 @@
                                         <i class="icon-signal icon-white"></i>
                                         &nbsp;Plot (.png)
                                     </button>
-                                   <button class="btn btn-success" id="download-spreadsheet-btn">
+                                    <button class="btn btn-success" id="download-spreadsheet-btn">
                                         <i class="icon-th icon-white"></i>
                                         &nbsp;Spreadsheet (.csv)
                                     </button>
@@ -428,7 +425,7 @@
                                         <i class="icon-file icon-white"></i>
                                         &nbsp;Shapefile (.zip)
                                     </button>
-                                
+
                                 </div>
                             </div>
                         </div> <!-- /Results -->
@@ -446,7 +443,10 @@
 
             </div>
             <div class="row-fluid">
-                <div id="application-alert-container" id="span11 offset1"></div>
+                <div id="manage-sessions-container" class="span1">
+                    <button class="btn" id="manage-sessions-btn">Session Management</button>
+                </div>
+                <div id="application-alert-container" class="span11"></div>
             </div>
 
             <div class="row-fluid" id="footer-row">

@@ -8,27 +8,12 @@ var UI = function() {
     LOG.debug('UI.js::constructor: Setting popup hover delay to ' + popupHoverDelay);
     var popupHoverDelay = CONFIG.popupHoverDelay;
     
-    $('#clear-sessions-btn').on("click", CONFIG.tempSession.clearSessions)
-        
+    $('#manage-sessions-btn').on('click', CONFIG.tempSession.createSessionManagementModalWindow);
+    
     LOG.debug('UI.js::constructor: Initializing AJAX start/stop hooks');
     $.ajaxSetup({
         timeout : 300000 // 5 minute timout on ajax requests
     })
-    $(document).ajaxStart(function() {
-        LOG.debug('AJAX Call Started');
-        $("#application-spinner").fadeIn();
-    });
-    $(document).ajaxStop(function() {
-        LOG.debug('AJAX Call Finished');
-        $("#application-spinner").fadeOut();
-    });
-    $(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
-        LOG.debug('AJAX Call Error: ' + thrownError);
-        CONFIG.ui.showAlert({
-            message : 'There was an error while communicating with the server. Check logs for more info. Please try again.'
-        })
-        $("#application-spinner").fadeOut();
-    });
     
     //init help accordion
     $('.collapsibleHelp').accordion({
@@ -496,11 +481,6 @@ var UI = function() {
             var close = args.close || true;
             var displayTime = args.displayTime || 0;
             
-            if (caller.stage == 'application') {
-                style.classes.push('span11');
-                style.classes.push('offset1');
-            }
-            
             CONFIG.alertQueue[caller.stage].unshift({
                 message : message,
                 style : style,
@@ -766,7 +746,7 @@ var UI = function() {
                         })
                         if (columns.values().filter(function(v) {
                             return v != ''
-                            }).length == Shorelines.mandatoryColumns.length) {
+                        }).length == Shorelines.mandatoryColumns.length) {
                             $('#modal-update-button').removeAttr('disabled');
                         }
                     }
