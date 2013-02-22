@@ -561,7 +561,7 @@ var Results = {
         '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
         '<wps:Body>' + 
         '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+transects.split(':')[0]+'="gov.usgs.cida.ch.'+transects.split(':')[0]+'">' + 
-        '<wfs:Query typeName="'+transects+'" srsName="EPSG:4326" />' + 
+        '<wfs:Query typeName="'+transects+'" />' + 
         '</wfs:GetFeature>' + 
         '</wps:Body>' + 
         '</wps:Reference>' + 
