@@ -2,11 +2,11 @@ package gov.usgs.cida.coastalhazards.wps;
 
 import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import org.apache.commons.io.IOUtils;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -21,11 +21,11 @@ public class CreateResultsLayerProcessTest {
     @Test
     //@Ignore
     public void testExecute() throws Exception {
-        URL resource = CreateResultsLayerProcessTest.class.getClassLoader()
-                .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_results.txt");
+        InputStream resourceAsStream = CreateResultsLayerProcessTest.class.getClassLoader()
+                                               .getResourceAsStream("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_results.txt");
         URL transects = CreateResultsLayerProcessTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyNa_transects.shp");
-        BufferedReader reader = new BufferedReader(new FileReader(resource.getFile()));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(resourceAsStream));
         StringBuffer buffer = new StringBuffer();
         String line = null;
         while (null != (line = reader.readLine())) {
