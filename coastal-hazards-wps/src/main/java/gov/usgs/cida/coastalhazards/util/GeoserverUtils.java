@@ -7,21 +7,16 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wps.gs.ImportProcess;
 import org.geotools.data.DataAccess;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.process.ProcessException;
 import org.geotools.util.DefaultProgressListener;
 import org.opengis.feature.Feature;
@@ -100,7 +95,7 @@ public class GeoserverUtils {
     }
     
     public String replaceLayer(FeatureCollection<SimpleFeatureType, SimpleFeature> collection, String layer, DataStoreInfo dataStore, WorkspaceInfo workspace, ImportProcess importProc) {
-        LayerInfo layerByName = catalog.getLayerByName(layer);
+        LayerInfo layerByName = catalog.getLayerByName(workspace.getName() + ':' + layer);
         new CascadeDeleteVisitor(catalog).visit(layerByName);
         try {
             File diskDirectory = new File(dataStore.getDataStore(new DefaultProgressListener()).getInfo().getSource());

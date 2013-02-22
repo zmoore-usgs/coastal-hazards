@@ -359,6 +359,12 @@ var Session = function(name, isPerm) {
                 'role' : 'menuitem',
                 'id' : 'session-menu-item-set-current'
             }).html('Set Current'))
+            var setCurrentli = $('<li />').attr('role', 'presentation').
+            append($('<a />').attr({
+                'tabindex' : '-1',
+                'role' : 'menuitem',
+                'id' : 'session-menu-item-set-metadata'
+            }).html('Provide Metadata'))
             sessionDropDownList.append(createli)
             sessionDropDownList.append(clearAllli)
             sessionDropDownList.append(setCurrentli)
@@ -387,9 +393,6 @@ var Session = function(name, isPerm) {
             var importDescriptionWell = $('<div />').addClass('well well-small');
             var importDescriptionRow = $('<div />').attr('id', 'session-management-session-description-row').addClass('row-fluid');
             container.append(importDescriptionWell.append(importDescriptionRow))
-//            
-//            var buttonRowWell = $('<div />').addClass('well well-small');
-//            var buttonRowRow = $('<div />').attr('id', 'session-management-button-row').addClass('row-fluid');
             
             CONFIG.ui.createModalWindow({
                 headerHtml : 'Session Management',
@@ -414,6 +417,10 @@ var Session = function(name, isPerm) {
                         var id = $('#session-management-session-list').val();
                         CONFIG.permSession.session.currentSession = id;
                         CONFIG.permSession.save();
+                        CONFIG.tempSession.createSessionManagementModalWindow();
+                    })
+                    $('#session-menu-item-set-metadata').on('click', function() {
+                        
                         CONFIG.tempSession.createSessionManagementModalWindow();
                     })
                 },
@@ -444,6 +451,7 @@ var Session = function(name, isPerm) {
                 }]
             })
         },
+        
         importSession : function() {
             if (window.File && window.FileReader) {
                 var container = $('<div />').addClass('container-fluid');

@@ -3,6 +3,7 @@ var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
     mandatoryColumns : ['the_geom', 'Date_', 'uncy'],
+    groupingColumn : 'Date_',
     description : {
         'stage' : 'View and select existing published shorelines, or upload your own. Shorelines represent snap-shots of the coastline at various points in time.',
         'view-tab' : 'Select a published collection of shorelines to add to the workspace.',
@@ -744,45 +745,48 @@ var Shorelines = {
     enableRemoveButton : function() {
         $('#shorelines-remove-btn').removeAttr('disabled');
     },
-    removeResource : function() {
+    removeResource : function(args) {
+        var layer = args.layer || $('#shorelines-list option:selected')[0].text;
+        var store = args.store || 'ch-input';
+        var callbacks  = args.callbacks || [
+        function(data, textStatus, jqXHR) {
+            CONFIG.ui.showAlert({
+                message : 'Shorelines removed',
+                caller : Shorelines,
+                displayTime : 4000,
+                style: {
+                    classes : ['alert-success']
+                }
+            })
+                    
+            CONFIG.ows.getWMSCapabilities({
+                namespace : CONFIG.tempSession.getCurrentSessionKey(),
+                callbacks : {
+                    success : [
+                    function() {
+                        $('#shorelines-list').val('');
+                        $('#shorelines-list').trigger('change');
+                        CONFIG.ui.switchTab({
+                            caller : Shorelines,
+                            tab : 'view'
+                        })
+                        Shorelines.populateFeaturesList();
+                    }
+                    ]
+                }
+            })
+                    
+        }
+        ]
         try {
             CONFIG.tempSession.removeResource({
-                store : 'ch-input',
-                layer : $('#shorelines-list option:selected')[0].text,
-                callbacks : [
-                function(data, textStatus, jqXHR) {
-                    CONFIG.ui.showAlert({
-                        message : 'Shorelines removed',
-                        caller : Shorelines,
-                        displayTime : 4000,
-                        style: {
-                            classes : ['alert-success']
-                        }
-                    })
-                    
-                    CONFIG.ows.getWMSCapabilities({
-                        namespace : CONFIG.tempSession.getCurrentSessionKey(),
-                        callbacks : {
-                            success : [
-                            function() {
-                                $('#shorelines-list').val('');
-                                $('#shorelines-list').trigger('change');
-                                CONFIG.ui.switchTab({
-                                    caller : Shorelines,
-                                    tab : 'view'
-                                })
-                                Shorelines.populateFeaturesList();
-                            }
-                            ]
-                        }
-                    })
-                    
-                }
-                ]
+                store : store,
+                layer : layer,
+                callbacks : callbacks
             })
         } catch (ex) {
             CONFIG.ui.showAlert({
-                message : 'Draw Failed - ' + ex,
+                message : 'Unable to remove resource - ' + ex,
                 caller : Shorelines,
                 displayTime : 4000,
                 style: {
