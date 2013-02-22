@@ -304,7 +304,7 @@ var Results = {
             });
             
             LOG.trace('Results.js::addLayerToMap: Scrolling the table into view and highlighting the correct row');
-            tableRow.scrollIntoView();
+//            tableRow.scrollIntoView();
             $(tableRow).addClass('warning'); // Highlight in yellow
         }
         
