@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Collection;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
+import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.DataStoreInfo;
@@ -99,12 +100,8 @@ public class GeoserverUtils {
     }
     
     public String replaceLayer(FeatureCollection<SimpleFeatureType, SimpleFeature> collection, String layer, DataStoreInfo dataStore, WorkspaceInfo workspace, ImportProcess importProc) {
-        CatalogFacade cf = catalog.getFacade();
-        LayerInfo layerByName = cf.getLayerByName(layer);
-        ResourceInfo layerResource = layerByName.getResource();
-        cf.detach(layerResource);
-        cf.remove(layerResource);
-        cf.remove(layerByName);
+        LayerInfo layerByName = catalog.getLayerByName(layer);
+        new CascadeDeleteVisitor(catalog).visit(layerByName);
         try {
             File diskDirectory = new File(dataStore.getDataStore(new DefaultProgressListener()).getInfo().getSource());
             Collection<File> listFiles = FileUtils.listFiles(diskDirectory, new PrefixFileFilter(layerByName.getName()), null);
@@ -114,9 +111,8 @@ public class GeoserverUtils {
         } catch (IOException ex) {
             throw new ProcessException(ex);
         }
-        
-        cf.save(dataStore);
-        cf.save(workspace);
+        catalog.save(dataStore);
+        catalog.save(workspace);
         
         LayerImportUtil importer = new LayerImportUtil(catalog, importProc);
         return importer.importLayer((SimpleFeatureCollection) collection, workspace.getName(), dataStore.getName(), layer, collection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
