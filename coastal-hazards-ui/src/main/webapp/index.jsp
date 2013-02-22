@@ -114,24 +114,24 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="shorelines-view-tab">
                                     <select id="shorelines-list" class="feature-list" multiple="multiple"></select>
-                                    <div class="backgroundPaneImage" id="shorelinesPaneImage">
+                                    <!--<div class="backgroundPaneImage" id="shorelinesPaneImage">-->
                                         <div class="tabbable">
                                             <ul class="nav nav-tabs" id="shoreline-table-navtabs">
                                             </ul>
                                             <div class="tab-content" id="shoreline-table-tabcontent">
                                             </div>
                                         </div>
-                                        <div class="collapsibleHelp">
+<!--                                        <div class="collapsibleHelp">
                                                 <div>DSASweb Help</div>
                                                 <div class="helpText">
                                                     <p>Shorelines are geospatial polylines which represent the location of the shoreline and various points in time</p>
                                                     <p>Add shorelines to your workspace with the selection box above or upload your own zipped shapefile containing shoreline polylines within the Manage tab.</p>
                                                     <p>Use the map to investigate the selected shorelines, clicking to enable/disable for DSASweb processing.</p>
                                                 </div>
-                                        </div>
+                                        </div>-->
 
 
-                                    </div>
+                                    <!--</div>-->
                                 </div>
                                 <div class="tab-pane" id="shorelines-manage-tab">
                                     <div id="shorelines-uploader" class="uploader"></div>
@@ -157,7 +157,7 @@
                             <div id="baseline-tab-content" class="tab-content">
                                 <div class="tab-pane active" id="baseline-view-tab">
                                     <select id="baseline-list" class="feature-list"></select>
-                                    <div class="backgroundPaneImage" id="baselinesPaneImage">
+<!--                                    <div class="backgroundPaneImage" id="baselinesPaneImage">
                                         <div class="collapsibleHelp">
                                                     <div>DSASweb Help</div>
                                                     <div>
@@ -167,7 +167,7 @@
                                                     </div>
                                             </div>
 
-                                        </div>
+                                        </div>-->
                                 </div>
                                 <div class="tab-pane" id="baseline-manage-tab">
 
@@ -269,7 +269,7 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="transects-view-tab">
                                     <select id="transects-list" class="feature-list"></select>
-                                    <div class="backgroundPaneImage" id="transectsPaneImage">
+<!--                                    <div class="backgroundPaneImage" id="transectsPaneImage">
                                         <div class="collapsibleHelp">
                                                     <div>DSASweb Help</div>
                                                     <div>
@@ -279,7 +279,7 @@
                                                     </div>
                                             </div>
 
-                                        </div>
+                                        </div>-->
                                     </div>
                                 <div class="tab-pane" id="transects-manage-tab">
                                     <div class="row-fluid">
@@ -355,13 +355,14 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="intersections-view-tab">
                                     <select id="intersections-list" class="feature-list"></select>
-                                    <div class="backgroundPaneImage" id=""><!-- no background for now -->
+<!--                                    <div class="backgroundPaneImage" id="">
+                                         no background for now 
                                         <div class="collapsibleHelp">
                                                     <div>DSASweb Help</div>
                                                     <p>Rates or erosion or deposition are calculated at the location of each transect using the user-defined statistics and parameters found within the Manage tab.</p>
                                             </div>
 
-                                        </div>
+                                        </div>-->
                                 </div>
                                 <div class="tab-pane" id="intersections-manage-tab">
                                     <!-- Intersection Calculation -->
@@ -393,23 +394,23 @@
                             <div class="tab-content">
                                 <div class="tab-pane active" id="results-view-tab">
                                     <select id="results-list" class="feature-list"></select>
-                                    <div class="backgroundPaneImage" id="resultsPaneImage">
+                                    <!--<div class="backgroundPaneImage" id="resultsPaneImage">-->
                                         <div class="row-fluid">
                                             <div class="tabbable">
                                                 <ul class="nav nav-tabs" id="results-table-navtabs"></ul>
                                                 <div class="tab-content" id="results-tabcontent"></div>
                                             </div>
-                                            <div class="collapsibleHelp">
+<!--                                            <div class="collapsibleHelp">
                                                 <div>DSASweb Help</div>
                                                 <div>
                                                 <p>Erosion and deposition rates are contained within the results layer of DSASweb processing.</p>
                                                 <p>View existing results by selecting layers from the list above. Use the Manage tab to export results information onto your desktop.</p>
                                                 <p>The results map, plot, and table are all interactive. Users can view the map location which corresponds to the line plot, or use the table to view map locations.</p>
                                                 </div>
-                                            </div>
+                                            </div>-->
 
                                         </div>
-                                    </div>
+                                    <!--</div>-->
                                 </div>
                                 <div class="tab-pane" id="results-manage-tab">
                                     <h4>Download Results</h4>
