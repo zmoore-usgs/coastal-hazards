@@ -4,6 +4,15 @@ $(document).ready(function() {
         LOG4JS_LOG_THRESHOLD : CONFIG.development ? 'debug' : 'info'
     });
     
+    $(document).ajaxStart(function() {
+        LOG.debug('AJAX Call Started');
+        $("#application-spinner").fadeIn();
+    });
+    $(document).ajaxStop(function() {
+        LOG.debug('AJAX Call Finished');
+        $("#application-spinner").fadeOut();
+    });
+    
     splashUpdate("Initializing Sessions...");
     try {
         LOG.info('OnReady.js:: Initializing session objects')
@@ -57,6 +66,15 @@ $(document).ready(function() {
         return;
     }
     
+    var setupAjaxError = function() {
+        $(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
+            LOG.debug('AJAX Call Error: ' + thrownError);
+            CONFIG.ui.showAlert({
+                message : 'There was an error while communicating with the server. Check logs for more info. Please try again.'
+            })
+            $("#application-spinner").fadeOut();
+        });
+    }
     // Utility class for the user interface
     splashUpdate("Initializing User Interface...");
     CONFIG.ui = new UI();
@@ -108,7 +126,8 @@ $(document).ready(function() {
             success : [
             function() {
                 LOG.debug('OnReady.js:: WMS Capabilities retrieved for sample workspace');
-                interrogateSessionResources()
+                interrogateSessionResources();
+            //                setupAjaxError();
             }
             ],
             error : [
@@ -118,6 +137,7 @@ $(document).ready(function() {
                     bodyHtml : 'The application could not interrogate the OWS server to get published layers.'
                 })
                 interrogateSessionResources();
+            //                setupAjaxError();
             },
                    
             ]

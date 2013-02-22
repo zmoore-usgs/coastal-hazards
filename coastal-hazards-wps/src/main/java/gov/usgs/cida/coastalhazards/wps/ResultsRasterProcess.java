@@ -109,8 +109,13 @@ public class ResultsRasterProcess implements GeoServerProcess {
         }
 
         private GridCoverage2D execute() throws Exception {
-
+            
             initialize();
+            
+            // check that initialization was successful
+            if (colorMap == null) {
+                return null;
+            }
 
             SimpleFeatureIterator featureIterator = featureCollection.features();
             try {
@@ -151,16 +156,17 @@ public class ResultsRasterProcess implements GeoServerProcess {
             
             // NOTE!  intern() is important, using instance as synchrnization lock, need equality by reference
             String featureCollectionId = featureCollection.getSchema().getName().getURI().intern();
-            
-            LOGGER.log(Level.INFO, "Using identifier {} for attribute value range map lookup", featureCollectionId);
-            synchronized (featureCollectionId) {
-                Map<String, AttributeRange> attributeRangeMap = featureAttributeRangeMap.get(featureCollectionId);
-                if (attributeRangeMap == null) {
-                    attributeRangeMap = new WeakHashMap<String, AttributeRange>();
-                    featureAttributeRangeMap.put(featureCollectionId, attributeRangeMap);
-                    LOGGER.log(Level.INFO, "Created attribute value range map for {}", featureCollectionId);
-                }
-                AttributeRange attributeRange = attributeRangeMap.get(attributeName);
+//            
+//            LOGGER.log(Level.INFO, "Using identifier {} for attribute value range map lookup", featureCollectionId);
+            /* synchronized (featureCollectionId) */ {
+//                Map<String, AttributeRange> attributeRangeMap = featureAttributeRangeMap.get(featureCollectionId);
+//                if (attributeRangeMap == null) {
+//                    attributeRangeMap = new WeakHashMap<String, AttributeRange>();
+//                    featureAttributeRangeMap.put(featureCollectionId, attributeRangeMap);
+//                    LOGGER.log(Level.INFO, "Created attribute value range map for {}", featureCollectionId);
+//                }
+//                AttributeRange attributeRange = attributeRangeMap.get(attributeName);
+                AttributeRange attributeRange = null;
                 if (attributeRange == null) {
                     LOGGER.log(Level.INFO, "Calculating attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
                     SimpleFeatureIterator iterator = featureCollection.features();
@@ -178,7 +184,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
                             }
                         }
                         attributeRange = new AttributeRange(minimum, maximum);
-                        attributeRangeMap.put(attributeName, attributeRange);
+//                        attributeRangeMap.put(attributeName, attributeRange);
                         LOGGER.log(Level.INFO, "Caching attribute value range for {}:{} {}",
                                 new Object[] {
                                     featureCollectionId, attributeName, attributeRange
@@ -187,14 +193,16 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 } else {
                     LOGGER.log(Level.INFO, "Using cached attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
                 }
-                colorMap = new ZeroInflectedJetColorMap(attributeRange, invert);
+                if (attributeRange != null) {
+                    colorMap = new ZeroInflectedJetColorMap(attributeRange, invert);
+                }
             }
             
             geometryFactory = new GeometryFactory(new PrecisionModel());
         }
 
         private LineSegment segmentLast;
-        private int idLast;
+        private Object idObjectLast;
         private void processFeature(SimpleFeature feature, String attributeName) throws Exception {
 
             Geometry geometry = (Geometry) feature.getDefaultGeometry();
@@ -203,24 +211,31 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 return;
             }
             Object sceObject = feature.getAttribute(Constants.SCE_ATTR);
-            Object baselineObject = feature.getAttribute(Constants.BASELINE_ID_ATTR);
+            Object idObject = feature.getAttribute(Constants.BASELINE_ID_ATTR);
             
-            if (!(sceObject instanceof Number) || !(baselineObject instanceof Number)) {
+            if (!(sceObject instanceof Number)) {
                 return;
             }
             
-            if (!((geometry instanceof LineString) || (geometry instanceof MultiLineString))) {
+            if (idObject == null) {
+                return;
+            }
+            
+            if (!((geometry instanceof LineString) || (geometry instanceof MultiLineString)) ) {
+                return;
+            }
+            
+            if (geometry.getNumGeometries() != 1 || geometry.getNumPoints() != 2) {
                 return;
             }
             
             double sce = ((Number)sceObject).doubleValue();
-            int id = ((Number)baselineObject).intValue();
 
             Coordinate[] coordinates = geometry.getCoordinates();
             LineSegment transect = new LineSegment(coordinates[0], coordinates[1]);
             LineSegment segment = new LineSegment(transect.pointAlong(1d - (sce / transect.getLength())), transect.p1);
            
-            if (segmentLast != null && id == idLast)  {
+            if (segmentLast != null && idObject.equals(idObjectLast))  {
                 
                 geometry = geometryFactory.createPolygon(
                         geometryFactory.createLinearRing(
@@ -257,7 +272,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 }
             }
             
-            idLast = id;
+            idObjectLast = idObject;
             segmentLast = segment;
         }
 
