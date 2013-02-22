@@ -22,7 +22,7 @@ public class CreateResultsLayerProcessTest {
     //@Ignore
     public void testExecute() throws Exception {
         URL resource = CreateResultsLayerProcessTest.class.getClassLoader()
-                .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_results");
+                .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_results.txt");
         URL transects = CreateResultsLayerProcessTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyNa_transects.shp");
         BufferedReader reader = new BufferedReader(new FileReader(resource.getFile()));
