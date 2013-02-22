@@ -814,30 +814,34 @@ var Baseline = {
             ca[0].activate();
         }
     },
-    removeResource : function() {
+    removeResource : function(args) {
+        var layer = args.layer || $('#baseline-list option:selected')[0].text;
+        var store = args.store || 'ch-input';
+        var callbacks  = args.callbacks || [
+        function(data, textStatus, jqXHR) {
+            CONFIG.ui.showAlert({
+                message : 'Baseline removed',
+                caller : Baseline,
+                displayTime : 4000,
+                style: {
+                    classes : ['alert-success']
+                }
+            })
+                    
+            $('#baseline-list').val('');
+            CONFIG.ui.switchTab({
+                caller : Baseline,
+                tab : 'view'
+            })
+            Baseline.refreshFeatureList();
+        }
+        ]
+        
         try {
             CONFIG.tempSession.removeResource({
-                store : 'ch-input',
-                layer : $('#baseline-list option:selected')[0].text,
-                callbacks : [
-                function(data, textStatus, jqXHR) {
-                    CONFIG.ui.showAlert({
-                        message : 'Baseline removed',
-                        caller : Baseline,
-                        displayTime : 4000,
-                        style: {
-                            classes : ['alert-success']
-                        }
-                    })
-                    
-                    $('#baseline-list').val('');
-                    CONFIG.ui.switchTab({
-                        caller : Baseline,
-                        tab : 'view'
-                    })
-                    Baseline.refreshFeatureList();
-                }
-                ]
+                store : store,
+                layer : layer,
+                callbacks : callbacks
             })
         } catch (ex) {
             CONFIG.ui.showAlert({
