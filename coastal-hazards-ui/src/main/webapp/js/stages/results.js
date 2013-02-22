@@ -707,7 +707,9 @@ var Results = {
                         'typeName=' + layerName + '&' +
                         'outputFormat=csv&' +
                         'propertyName=' + stringPropertyNames;
-                    window.open(url);
+                    //reset it to blank in case the user downloads the same file again
+                    $('#download').attr('src', '').attr('src', url);
+                 
                 },
                 error : function(data, textStatus, jqXHR){
                     alert('Error: Could not describe feature type.')
