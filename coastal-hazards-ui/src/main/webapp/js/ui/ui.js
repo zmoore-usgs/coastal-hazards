@@ -30,6 +30,12 @@ var UI = function() {
         $("#application-spinner").fadeOut();
     });
     
+    //init help accordion
+    $('.collapsibleHelp').accordion({
+        collapsible: true,
+        heightStyle: 'content'
+    });
+    
     me.work_stages_objects.each(function(stage) {
         if (stage.description.stage) {
             $('#nav-list a[href="#'+stage.stage+'"]').popover({
@@ -112,19 +118,6 @@ var UI = function() {
                 show : popupHoverDelay
             }
         })
-    })
-    
-    $('#map-well').popover({
-        title : 'Map',
-        content : $('<div />')
-        .append($('<div />').html('Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium'))
-        .html(),
-        html : true,
-        placement : 'left',
-        trigger : 'hover',
-        delay : {
-            show : popupHoverDelay
-        }
     })
     
     $('.nav-stacked>li>a').each(function(index, ele) { 

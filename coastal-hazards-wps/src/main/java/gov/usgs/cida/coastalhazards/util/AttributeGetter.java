@@ -55,6 +55,9 @@ public class AttributeGetter {
             else if (isOther(desc, Constants.LRR_ATTR)) {
                 attrMap.put(Constants.LRR_ATTR, desc.getName());
             }
+            else if (isOther(desc, Constants.SCE_ATTR)) {
+                attrMap.put(Constants.SCE_ATTR, desc.getName());
+            }
             
         }
     }
