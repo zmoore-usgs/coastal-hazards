@@ -107,7 +107,7 @@ public class AttributeGetter {
         String name = desc.getName().getLocalPart();
         if ("uncertainty_".equalsIgnoreCase(name) || "uncertainty".equalsIgnoreCase(name) ||
                 "uncy_".equalsIgnoreCase(name) || "uncy".equalsIgnoreCase(name) ||
-                Constants.UNCY_ATTR.equalsIgnoreCase(name)) {
+                "accuracy".equalsIgnoreCase(name) || Constants.UNCY_ATTR.equalsIgnoreCase(name)) {
             return true;
         }
         return false;
