@@ -202,7 +202,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
         }
 
         private LineSegment segmentLast;
-        private int idLast;
+        private Object idObjectLast;
         private void processFeature(SimpleFeature feature, String attributeName) throws Exception {
 
             Geometry geometry = (Geometry) feature.getDefaultGeometry();
@@ -211,24 +211,31 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 return;
             }
             Object sceObject = feature.getAttribute(Constants.SCE_ATTR);
-            Object baselineObject = feature.getAttribute(Constants.BASELINE_ID_ATTR);
+            Object idObject = feature.getAttribute(Constants.BASELINE_ID_ATTR);
             
-            if (!(sceObject instanceof Number) || !(baselineObject instanceof Number)) {
+            if (!(sceObject instanceof Number)) {
                 return;
             }
             
-            if (!((geometry instanceof LineString) || (geometry instanceof MultiLineString))) {
+            if (idObject == null) {
+                return;
+            }
+            
+            if (!((geometry instanceof LineString) || (geometry instanceof MultiLineString)) ) {
+                return;
+            }
+            
+            if (geometry.getNumGeometries() != 1 || geometry.getNumPoints() != 2) {
                 return;
             }
             
             double sce = ((Number)sceObject).doubleValue();
-            int id = ((Number)baselineObject).intValue();
 
             Coordinate[] coordinates = geometry.getCoordinates();
             LineSegment transect = new LineSegment(coordinates[0], coordinates[1]);
             LineSegment segment = new LineSegment(transect.pointAlong(1d - (sce / transect.getLength())), transect.p1);
            
-            if (segmentLast != null && id == idLast)  {
+            if (segmentLast != null && idObject.equals(idObjectLast))  {
                 
                 geometry = geometryFactory.createPolygon(
                         geometryFactory.createLinearRing(
@@ -265,7 +272,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 }
             }
             
-            idLast = id;
+            idObjectLast = idObject;
             segmentLast = segment;
         }
 
