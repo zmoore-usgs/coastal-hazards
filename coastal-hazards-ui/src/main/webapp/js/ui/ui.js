@@ -30,6 +30,12 @@ var UI = function() {
         $("#application-spinner").fadeOut();
     });
     
+    //init help accordion
+    $('.collapsibleHelp').accordion({
+        collapsible: true,
+        heightStyle: 'content'
+    });
+    
     me.work_stages_objects.each(function(stage) {
         if (stage.description.stage) {
             $('#nav-list a[href="#'+stage.stage+'"]').popover({

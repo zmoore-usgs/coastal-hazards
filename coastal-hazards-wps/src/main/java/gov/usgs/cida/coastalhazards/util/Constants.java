@@ -67,6 +67,7 @@ public class Constants {
     public static final String BASELINE_ID_ATTR = "BaselineID";
     public static final String LRR_ATTR = "LRR";
     public static final String LCI_ATTR = "LCI";
+    public static final String SCE_ATTR = "SCE";
 
     public static enum Orientation {
         SHOREWARD("shoreward", 1),

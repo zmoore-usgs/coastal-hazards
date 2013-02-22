@@ -2,6 +2,12 @@ package gov.usgs.cida.coastalhazards.wps;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import gov.usgs.cida.coastalhazards.util.Constants;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
@@ -86,6 +92,8 @@ public class ResultsRasterProcess implements GeoServerProcess {
 
         private ColorMap<Number> colorMap;
         
+        GeometryFactory geometryFactory;
+        
         private Process(SimpleFeatureCollection featureCollection,
                 String className,
                 ReferencedEnvelope coverageEnvelope,
@@ -101,8 +109,13 @@ public class ResultsRasterProcess implements GeoServerProcess {
         }
 
         private GridCoverage2D execute() throws Exception {
-
+            
             initialize();
+            
+            // check that initialization was successful
+            if (colorMap == null) {
+                return null;
+            }
 
             SimpleFeatureIterator featureIterator = featureCollection.features();
             try {
@@ -143,16 +156,17 @@ public class ResultsRasterProcess implements GeoServerProcess {
             
             // NOTE!  intern() is important, using instance as synchrnization lock, need equality by reference
             String featureCollectionId = featureCollection.getSchema().getName().getURI().intern();
-            
-            LOGGER.log(Level.INFO, "Using identifier {} for attribute value range map lookup", featureCollectionId);
-            synchronized (featureCollectionId) {
-                Map<String, AttributeRange> attributeRangeMap = featureAttributeRangeMap.get(featureCollectionId);
-                if (attributeRangeMap == null) {
-                    attributeRangeMap = new WeakHashMap<String, AttributeRange>();
-                    featureAttributeRangeMap.put(featureCollectionId, attributeRangeMap);
-                    LOGGER.log(Level.INFO, "Created attribute value range map for {}", featureCollectionId);
-                }
-                AttributeRange attributeRange = attributeRangeMap.get(attributeName);
+//            
+//            LOGGER.log(Level.INFO, "Using identifier {} for attribute value range map lookup", featureCollectionId);
+            /* synchronized (featureCollectionId) */ {
+//                Map<String, AttributeRange> attributeRangeMap = featureAttributeRangeMap.get(featureCollectionId);
+//                if (attributeRangeMap == null) {
+//                    attributeRangeMap = new WeakHashMap<String, AttributeRange>();
+//                    featureAttributeRangeMap.put(featureCollectionId, attributeRangeMap);
+//                    LOGGER.log(Level.INFO, "Created attribute value range map for {}", featureCollectionId);
+//                }
+//                AttributeRange attributeRange = attributeRangeMap.get(attributeName);
+                AttributeRange attributeRange = null;
                 if (attributeRange == null) {
                     LOGGER.log(Level.INFO, "Calculating attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
                     SimpleFeatureIterator iterator = featureCollection.features();
@@ -170,7 +184,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
                             }
                         }
                         attributeRange = new AttributeRange(minimum, maximum);
-                        attributeRangeMap.put(attributeName, attributeRange);
+//                        attributeRangeMap.put(attributeName, attributeRange);
                         LOGGER.log(Level.INFO, "Caching attribute value range for {}:{} {}",
                                 new Object[] {
                                     featureCollectionId, attributeName, attributeRange
@@ -179,10 +193,16 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 } else {
                     LOGGER.log(Level.INFO, "Using cached attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
                 }
-                colorMap = new ZeroInflectedJetColorMap(attributeRange, invert);
+                if (attributeRange != null) {
+                    colorMap = new ZeroInflectedJetColorMap(attributeRange, invert);
+                }
             }
+            
+            geometryFactory = new GeometryFactory(new PrecisionModel());
         }
 
+        private LineSegment segmentLast;
+        private int idLast;
         private void processFeature(SimpleFeature feature, String attributeName) throws Exception {
 
             Geometry geometry = (Geometry) feature.getDefaultGeometry();
@@ -190,29 +210,63 @@ public class ResultsRasterProcess implements GeoServerProcess {
             if (!(attributeValue instanceof Number)) {
                 return;
             }
+            Object sceObject = feature.getAttribute(Constants.SCE_ATTR);
+            Object baselineObject = feature.getAttribute(Constants.BASELINE_ID_ATTR);
+            
+            if (!(sceObject instanceof Number) || !(baselineObject instanceof Number)) {
+                return;
+            }
+            
+            if (!((geometry instanceof LineString) || (geometry instanceof MultiLineString))) {
+                return;
+            }
+            
+            double sce = ((Number)sceObject).doubleValue();
+            int id = ((Number)baselineObject).intValue();
 
-            if (extent.intersects(feature.getBounds().toBounds(extent.getCoordinateReferenceSystem()))) {
-                graphics.setColor(colorMap.valueToColor(((Number)attributeValue)));
-                Geometries geomType = Geometries.get(geometry);
-                switch (geomType) {
-                    case MULTIPOLYGON:
-                    case MULTILINESTRING:
-                    case MULTIPOINT:
-                        final int numGeom = geometry.getNumGeometries();
-                        for (int i = 0; i < numGeom; i++) {
-                            Geometry geomN = geometry.getGeometryN(i);
-                            drawGeometry(Geometries.get(geomN), geomN);
-                        }
-                        break;
-                    case POLYGON:
-                    case LINESTRING:
-                    case POINT:
-                        drawGeometry(geomType, geometry);
-                        break;
-                    default:
-                    // TODO:  Log!
+            Coordinate[] coordinates = geometry.getCoordinates();
+            LineSegment transect = new LineSegment(coordinates[0], coordinates[1]);
+            LineSegment segment = new LineSegment(transect.pointAlong(1d - (sce / transect.getLength())), transect.p1);
+           
+            if (segmentLast != null && id == idLast)  {
+                
+                geometry = geometryFactory.createPolygon(
+                        geometryFactory.createLinearRing(
+                            new Coordinate[] {
+                                segment.p0,
+                                segment.p1,
+                                segmentLast.p1,
+                                segmentLast.p0,
+                                segment.p0
+                        }),
+                        null);
+                
+                if (extent.intersects(feature.getBounds().toBounds(extent.getCoordinateReferenceSystem()))) {
+                    graphics.setColor(colorMap.valueToColor(((Number)attributeValue)));
+                    Geometries geomType = Geometries.get(geometry);
+                    switch (geomType) {
+                        case MULTIPOLYGON:
+                        case MULTILINESTRING:
+                        case MULTIPOINT:
+                            final int numGeom = geometry.getNumGeometries();
+                            for (int i = 0; i < numGeom; i++) {
+                                Geometry geomN = geometry.getGeometryN(i);
+                                drawGeometry(Geometries.get(geomN), geomN);
+                            }
+                            break;
+                        case POLYGON:
+                        case LINESTRING:
+                        case POINT:
+                            drawGeometry(geomType, geometry);
+                            break;
+                        default:
+                        // TODO:  Log!
+                    }
                 }
             }
+            
+            idLast = id;
+            segmentLast = segment;
         }
 
         private void setBounds(SimpleFeatureCollection features, ReferencedEnvelope requestBounds) throws TransformException {
