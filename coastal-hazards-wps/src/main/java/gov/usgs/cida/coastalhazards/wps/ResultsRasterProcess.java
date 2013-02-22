@@ -109,8 +109,13 @@ public class ResultsRasterProcess implements GeoServerProcess {
         }
 
         private GridCoverage2D execute() throws Exception {
-
+            
             initialize();
+            
+            // check that initialization was successful
+            if (colorMap == null) {
+                return null;
+            }
 
             SimpleFeatureIterator featureIterator = featureCollection.features();
             try {
@@ -151,16 +156,17 @@ public class ResultsRasterProcess implements GeoServerProcess {
             
             // NOTE!  intern() is important, using instance as synchrnization lock, need equality by reference
             String featureCollectionId = featureCollection.getSchema().getName().getURI().intern();
-            
-            LOGGER.log(Level.INFO, "Using identifier {} for attribute value range map lookup", featureCollectionId);
-            synchronized (featureCollectionId) {
-                Map<String, AttributeRange> attributeRangeMap = featureAttributeRangeMap.get(featureCollectionId);
-                if (attributeRangeMap == null) {
-                    attributeRangeMap = new WeakHashMap<String, AttributeRange>();
-                    featureAttributeRangeMap.put(featureCollectionId, attributeRangeMap);
-                    LOGGER.log(Level.INFO, "Created attribute value range map for {}", featureCollectionId);
-                }
-                AttributeRange attributeRange = attributeRangeMap.get(attributeName);
+//            
+//            LOGGER.log(Level.INFO, "Using identifier {} for attribute value range map lookup", featureCollectionId);
+            /* synchronized (featureCollectionId) */ {
+//                Map<String, AttributeRange> attributeRangeMap = featureAttributeRangeMap.get(featureCollectionId);
+//                if (attributeRangeMap == null) {
+//                    attributeRangeMap = new WeakHashMap<String, AttributeRange>();
+//                    featureAttributeRangeMap.put(featureCollectionId, attributeRangeMap);
+//                    LOGGER.log(Level.INFO, "Created attribute value range map for {}", featureCollectionId);
+//                }
+//                AttributeRange attributeRange = attributeRangeMap.get(attributeName);
+                AttributeRange attributeRange = null;
                 if (attributeRange == null) {
                     LOGGER.log(Level.INFO, "Calculating attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
                     SimpleFeatureIterator iterator = featureCollection.features();
@@ -178,7 +184,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
                             }
                         }
                         attributeRange = new AttributeRange(minimum, maximum);
-                        attributeRangeMap.put(attributeName, attributeRange);
+//                        attributeRangeMap.put(attributeName, attributeRange);
                         LOGGER.log(Level.INFO, "Caching attribute value range for {}:{} {}",
                                 new Object[] {
                                     featureCollectionId, attributeName, attributeRange
@@ -187,7 +193,9 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 } else {
                     LOGGER.log(Level.INFO, "Using cached attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
                 }
-                colorMap = new ZeroInflectedJetColorMap(attributeRange, invert);
+                if (attributeRange != null) {
+                    colorMap = new ZeroInflectedJetColorMap(attributeRange, invert);
+                }
             }
             
             geometryFactory = new GeometryFactory(new PrecisionModel());
