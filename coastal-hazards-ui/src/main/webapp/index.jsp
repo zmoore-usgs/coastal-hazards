@@ -414,15 +414,15 @@
                                 <div class="tab-pane" id="results-manage-tab">
                                     <h4>Download Results</h4>
                                     <p>Your browser's popup blocker might attempt to block these downloads. Direct your browser to allow popups for this site to streamline your data export experience.</p>
-                                    <button class="btn btn-success" id="download-plot-btn">
+                                    <button class="btn btn-success" id="download-plot-btn" disabled>
                                         <i class="icon-signal icon-white"></i>
                                         &nbsp;Plot (.png)
                                     </button>
-                                    <button class="btn btn-success" id="download-spreadsheet-btn">
+                                    <button class="btn btn-success" id="download-spreadsheet-btn" disabled>
                                         <i class="icon-th icon-white"></i>
                                         &nbsp;Spreadsheet (.csv)
                                     </button>
-                                    <button class="btn btn-success" id="download-shapefile-btn">
+                                    <button class="btn btn-success" id="download-shapefile-btn" disabled>
                                         <i class="icon-file icon-white"></i>
                                         &nbsp;Shapefile (.zip)
                                     </button>

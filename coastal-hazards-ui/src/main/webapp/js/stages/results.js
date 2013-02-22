@@ -183,6 +183,17 @@ var Results = {
         Results.listboxChanged();
     },
     listboxChanged : function() {
+        var value = $("#results-list :selected").val();
+        
+        var downloadButtons = $('#results-manage-tab button');
+        if('' === value){
+            downloadButtons.attr('disabled', 'disabled');
+            
+        }
+        else{
+            downloadButtons.removeAttr('disabled', '');
+        }
+        
         LOG.info('Results.js::listboxChanged: A result was selected from the select list');
 
         $('#results-table-navtabs').children().remove();
