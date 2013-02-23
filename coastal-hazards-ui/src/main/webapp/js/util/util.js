@@ -109,7 +109,7 @@ var Util =  {
     },
     createLayerUnionAttributeMap : function(args) {
         var caller = args.caller;
-        var attributes = args.attributes;//describeFeaturetypeRespone.featureTypes[0].properties;
+        var attributes = args.attributes;
         var layerColumns = Object.extended();
         attributes.map(function(property) {
             return property.name;
