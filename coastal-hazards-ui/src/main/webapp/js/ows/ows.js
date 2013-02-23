@@ -660,7 +660,7 @@ var OWS = function(endpoint) {
                     if (excludedDates) {
                         var property = args.shoreline.substring(0, args.shoreline.indexOf(':') + 1) + CONFIG.tempSession.getStage(Shorelines.stage).groupingColumn;
                     
-                        filter += '<wfs:Query typeName="'+shoreline+'>' +
+                        filter += '<wfs:Query typeName="'+shoreline+'"  srsName="EPSG:4326">' +
                         '<ogc:Filter>' + 
                         '<ogc:And>';
                     
@@ -677,7 +677,7 @@ var OWS = function(endpoint) {
                     '</ogc:Filter>' + 
                     '</wfs:Query>';
                     } else {
-                        filter += '<wfs:Query typeName="'+shoreline+'"/>';
+                        filter += '<wfs:Query typeName="'+shoreline+'"  srsName="EPSG:4326" />';
                     }
                     return filter;
                 }({ 

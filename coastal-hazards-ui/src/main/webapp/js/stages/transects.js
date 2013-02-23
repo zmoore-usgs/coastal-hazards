@@ -234,6 +234,9 @@ var Transects = {
             {
                 id: 'transects-draw-control',
                 multi: true,
+                handlerOptions : {
+                    maxVertices : 2  
+                },
                 featureAdded : function(feature) {
                     // Find the baseline segment we touch
                     var f = feature;

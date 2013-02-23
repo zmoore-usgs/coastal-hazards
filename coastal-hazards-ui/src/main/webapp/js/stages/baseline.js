@@ -123,7 +123,6 @@ var Baseline = {
     },
     
     addLayerToMap : function(args) {
-        var orient = 'Orient';
         var layerPrefix = args.name.split(':')[0];
         var layerName = args.name.split(':')[1];
         
@@ -132,11 +131,72 @@ var Baseline = {
             layerName : layerName,
             callbacks : [
             function(describeFeaturetypeRespone) {
+                var orient = 'Orient';
                 LOG.trace('Baseline.js::addLayerToMap: Parsing layer attributes to check that they contain the attributes needed.'); 
                 var attributes = describeFeaturetypeRespone.featureTypes[0].properties;
-                if (!attributes.find(function(a){
+                var hasOrientAttr = attributes.find(function(a){
                     return a.name == orient;
-                })) {
+                });
+                var displayBaseline = function(){
+                    var shorewardRule = new OpenLayers.Rule({
+                        filter: new OpenLayers.Filter.Comparison({
+                            type: OpenLayers.Filter.Comparison.EQUAL_TO, 
+                            property: orient, 
+                            value: 'shoreward'
+                        }),
+                        symbolizer: {
+                            strokeColor: Baseline.shorewardColor,
+                            strokeWidth: 2
+                        }
+                    });
+                    var seawardRule = new OpenLayers.Rule({
+                        filter: new OpenLayers.Filter.Comparison({
+                            type: OpenLayers.Filter.Comparison.EQUAL_TO, 
+                            property: orient, 
+                            value: 'seaward'
+                        }),
+                        symbolizer : {
+                            strokeColor: Baseline.reservedColor,
+                            strokeWidth: 2
+                        }
+                    })
+                    LOG.info('Baseline.js::addLayerToMap: Adding baseline layer to map')
+                    var style = new OpenLayers.Style({
+                        strokeColor: '#FFFFFF',
+                        strokeWidth: 2
+                    },{
+                        rules : [
+                        shorewardRule,
+                        seawardRule,
+                        seawardRule,
+                        new OpenLayers.Rule({
+                            elseFilter: true
+                        })
+                        ]
+                    })
+        
+                    var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
+                        strategies: [new OpenLayers.Strategy.BBOX()],
+                        protocol: new OpenLayers.Protocol.WFS({
+                            url:  "geoserver/"+args.name.split(':')[0]+"/wfs",
+                            featureType: args.name.split(':')[1],
+                            geometryName: "the_geom"
+                        }),
+                        renderers: CONFIG.map.getRenderer(),
+                        styleMap: new OpenLayers.StyleMap(style),
+                        type : Baseline.stage
+                    });
+        
+                    LOG.trace('Baseline.js::addLayerToMap: Replacing baseline layer')
+                    CONFIG.map.removeLayerByName(baselineLayer.name);
+                    CONFIG.map.getMap().addLayer(baselineLayer);
+                    CONFIG.tempSession.getStage(Baseline.stage).viewing = args.name;
+                    CONFIG.tempSession.persistSession();
+                }
+                
+                if (layerPrefix == CONFIG.name.published) {
+                    displayBaseline();
+                } else if (!hasOrientAttr) {
                     LOG.debug('Baseline.js::addLayerToMap: Baseline does not contain Orient attribute. Attempting to add Orient attribute.'); 
                     CONFIG.ows.appendAttributesToLayer({
                         workspace : CONFIG.tempSession.getCurrentSessionKey(),
@@ -164,7 +224,7 @@ var Baseline = {
                             
                     })
                 } else {
-                    if (layerPrefix != CONFIG.name.published && attributes.length < Baseline.mandatoryColumns.length) {
+                    if (attributes.length < Baseline.mandatoryColumns.length) {
                         LOG.warn('Baseline.js::addLayerToMap: There are not enough attributes in the selected shapefile to constitute a valid baseline. Will be deleted. Needed: '  + Baseline.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
                         Baseline.removeResource();
                         CONFIG.ui.showAlert({
@@ -181,70 +241,21 @@ var Baseline = {
                         caller : Baseline,
                         attributes : attributes
                     })
-                    var foundAll = layerColumns.values().findIndex('') == -1 ? true : false;
+                    var foundAll = true;
+                    Baseline.mandatoryColumns.each(function(mc){
+                        if (!layerColumns[mc]) {
+                            foundAll = false;
+                        }
+                    })
                 
-                    if (layerPrefix != CONFIG.name.published && !foundAll) {
+                    if (!foundAll) {
                         CONFIG.ui.buildColumnMatchingModalWindow({
                             layerName : layerName,
                             columns : layerColumns,
                             caller : Baseline
                         })
                     } else {
-                        var orient = orient;
-                        var shorewardRule = new OpenLayers.Rule({
-                            filter: new OpenLayers.Filter.Comparison({
-                                type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                                property: orient, 
-                                value: 'shoreward'
-                            }),
-                            symbolizer: {
-                                strokeColor: Baseline.shorewardColor,
-                                strokeWidth: 2
-                            }
-                        });
-                        var seawardRule = new OpenLayers.Rule({
-                            filter: new OpenLayers.Filter.Comparison({
-                                type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                                property: orient, 
-                                value: 'seaward'
-                            }),
-                            symbolizer : {
-                                strokeColor: Baseline.reservedColor,
-                                strokeWidth: 2
-                            }
-                        })
-                        LOG.info('Baseline.js::addLayerToMap: Adding baseline layer to map')
-                        var style = new OpenLayers.Style({
-                            strokeColor: '#FFFFFF',
-                            strokeWidth: 2
-                        },{
-                            rules : [
-                            shorewardRule,
-                            seawardRule,
-                            seawardRule,
-                            new OpenLayers.Rule({
-                                elseFilter: true
-                            })
-                            ]
-                        })
-        
-                        var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
-                            strategies: [new OpenLayers.Strategy.BBOX()],
-                            protocol: new OpenLayers.Protocol.WFS({
-                                url:  "geoserver/"+args.name.split(':')[0]+"/wfs",
-                                featureType: args.name.split(':')[1],
-                                geometryName: "the_geom"
-                            }),
-                            renderers: CONFIG.map.getRenderer(),
-                            styleMap: new OpenLayers.StyleMap(style),
-                            type : Baseline.stage
-                        });
-        
-                        LOG.trace('Baseline.js::addLayerToMap: Replacing baseline layer')
-                        CONFIG.map.removeLayerByName(baselineLayer.name);
-                        CONFIG.map.getMap().addLayer(baselineLayer);
-                        CONFIG.tempSession.getStage(Baseline.stage).viewing = args.name;
-                        CONFIG.tempSession.persistSession();
+                        displayBaseline();
                     }
                 }
             }]
