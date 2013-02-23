@@ -468,7 +468,7 @@ var Session = function(name, isPerm) {
             var nameInputLabel = $('<label />').attr({
                 'id' : 'name-input-label',
                 'for' : 'name-input'
-            });
+            }).html('Name:');
             var nameInput = $('<input>').attr({
                 'id' : 'name-input',
                 'name' : 'name-input',
@@ -483,13 +483,14 @@ var Session = function(name, isPerm) {
             var metadataInputLabel = $('<label />').attr({
                 'id' : 'metadata-input-label',
                 'for' : 'metadata-input'
-            });
+            }).html('Metadata:');
             var metadataInput = $('<input>').attr({
                 'id' : 'metadata-input',
                 'name' : 'metadata-input',
                 'type' : 'textarea',
-                'style' : 'width:100%;',
+                'style' : 'width:100%;height:5em;',
                 'maxLength' : '4000',
+                'rows': '10',
                 'placeholder' : session.metadata
             });
             container.append(metadataRow.append(metadataWell.append(metadataInputLabel, metadataInput)))
