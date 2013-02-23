@@ -123,6 +123,7 @@ var Baseline = {
     },
     
     addLayerToMap : function(args) {
+        var orient = 'Orient';
         var layerPrefix = args.name.split(':')[0];
         var layerName = args.name.split(':')[1];
         
@@ -133,40 +134,64 @@ var Baseline = {
             function(describeFeaturetypeRespone) {
                 LOG.trace('Baseline.js::addLayerToMap: Parsing layer attributes to check that they contain the attributes needed.'); 
                 var attributes = describeFeaturetypeRespone.featureTypes[0].properties;
-                if (layerPrefix != CONFIG.name.published && attributes.length < Baseline.mandatoryColumns.length) {
-                    LOG.warn('Baseline.js::addLayerToMap: There are not enough attributes in the selected shapefile to constitute a valid baseline. Will be deleted. Needed: '  + Baseline.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
-                    Baseline.removeResource();
-                    CONFIG.ui.showAlert({
-                        message : 'Not enough attributes in upload - Check Logs',
-                        caller : Shorelines,
-                        displayTime : 7000,
-                        style: {
-                            classes : ['alert-error']
+                if (!attributes.find(function(a){
+                    return a.name == orient;
+                })) {
+                    LOG.debug('Baseline.js::addLayerToMap: Baseline does not contain Orient attribute. Attempting to add Orient attribute.'); 
+                    CONFIG.ows.appendAttributesToLayer({
+                        workspace : CONFIG.tempSession.getCurrentSessionKey(),
+                        store : 'ch-input',
+                        layer :layerName,
+                        columns : [orient + '|s|Baseline Orientation|seaward'],
+                        callbacks : {
+                            success : [function() {
+                                LOG.debug('Baseline.js::addLayerToMap: Orient attribute added to baseline.'); 
+                                $('#' + Baseline.stage + '-list').trigger('change');
+                            }],
+                            error : [function() {
+                                LOG.warn('Baseline.js::addLayerToMap: Orient attribute could not be added to baseline - removing baseline.'); 
+                                Baseline.removeResource();
+                                CONFIG.ui.showAlert({
+                                    message : 'Unable to normalize baseline attributes - Check logs',
+                                    caller : Baseline,
+                                    displayTime : 7000,
+                                    style: {
+                                        classes : ['alert-error']
+                                    }
+                                })
+                            }]
                         }
-                    })
-                }
-                
-                var layerColumns = Util.createLayerUnionAttributeMap({
-                    caller : Baseline,
-                    attributes : attributes
-                })
-                var foundAll = layerColumns.values().findIndex('') == -1 ? true : false;
-                
-                if (layerPrefix != CONFIG.name.published && !foundAll) {
-                    CONFIG.ui.buildColumnMatchingModalWindow({
-                        layerName : layerName,
-                        columns : layerColumns,
-                        caller : Baseline
+                            
                     })
                 } else {
-                    var orient = 'Orient';
-                    LOG.info('Baseline.js::addLayerToMap: Adding baseline layer to map')
-                    var style = new OpenLayers.Style({
-                        strokeColor: '#FFFFFF',
-                        strokeWidth: 2
-                    },{
-                        rules : [
-                        new OpenLayers.Rule({
+                    if (layerPrefix != CONFIG.name.published && attributes.length < Baseline.mandatoryColumns.length) {
+                        LOG.warn('Baseline.js::addLayerToMap: There are not enough attributes in the selected shapefile to constitute a valid baseline. Will be deleted. Needed: '  + Baseline.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
+                        Baseline.removeResource();
+                        CONFIG.ui.showAlert({
+                            message : 'Not enough attributes in upload - Check Logs',
+                            caller : Baseline,
+                            displayTime : 7000,
+                            style: {
+                                classes : ['alert-error']
+                            }
+                        })
+                    }
+                
+                    var layerColumns = Util.createLayerUnionAttributeMap({
+                        caller : Baseline,
+                        attributes : attributes
+                    })
+                    var foundAll = layerColumns.values().findIndex('') == -1 ? true : false;
+                
+                    if (layerPrefix != CONFIG.name.published && !foundAll) {
+                        CONFIG.ui.buildColumnMatchingModalWindow({
+                            layerName : layerName,
+                            columns : layerColumns,
+                            caller : Baseline
+                        })
+                    } else {
+                        var orient = orient;
+                        var shorewardRule = new OpenLayers.Rule({
                             filter: new OpenLayers.Filter.Comparison({
                                 type: OpenLayers.Filter.Comparison.EQUAL_TO, 
                                 property: orient, 
@@ -176,8 +201,8 @@ var Baseline = {
                                 strokeColor: Baseline.shorewardColor,
                                 strokeWidth: 2
                             }
-                        }),
-                        new OpenLayers.Rule({
+                        });
+                        var seawardRule = new OpenLayers.Rule({
                             filter: new OpenLayers.Filter.Comparison({
                                 type: OpenLayers.Filter.Comparison.EQUAL_TO, 
                                 property: orient, 
@@ -187,44 +212,43 @@ var Baseline = {
                                 strokeColor: Baseline.reservedColor,
                                 strokeWidth: 2
                             }
-                        }),
-                        new OpenLayers.Rule({
-                            filter: new OpenLayers.Filter.Comparison({
-                                type: OpenLayers.Filter.Comparison.EQUAL_TO, 
-                                property: orient, 
-                                value: 'seaward'
-                            }),
-                            symbolizer : {
-                                strokeColor: Baseline.reservedColor,
-                                strokeWidth: 2
-                            }
-                        }),
-                        new OpenLayers.Rule({
-                            elseFilter: true
                         })
-                        ]
-                    })
+                        LOG.info('Baseline.js::addLayerToMap: Adding baseline layer to map')
+                        var style = new OpenLayers.Style({
+                            strokeColor: '#FFFFFF',
+                            strokeWidth: 2
+                        },{
+                            rules : [
+                            shorewardRule,
+                            seawardRule,
+                            seawardRule,
+                            new OpenLayers.Rule({
+                                elseFilter: true
+                            })
+                            ]
+                        })
         
-                    var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
-                        strategies: [new OpenLayers.Strategy.BBOX()],
-                        protocol: new OpenLayers.Protocol.WFS({
-                            url:  "geoserver/"+args.name.split(':')[0]+"/wfs",
-                            featureType: args.name.split(':')[1],
-                            geometryName: "the_geom"
-                        }),
-                        renderers: CONFIG.map.getRenderer(),
-                        styleMap: new OpenLayers.StyleMap(style),
-                        type : Baseline.stage
-                    });
+                        var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
+                            strategies: [new OpenLayers.Strategy.BBOX()],
+                            protocol: new OpenLayers.Protocol.WFS({
+                                url:  "geoserver/"+args.name.split(':')[0]+"/wfs",
+                                featureType: args.name.split(':')[1],
+                                geometryName: "the_geom"
+                            }),
+                            renderers: CONFIG.map.getRenderer(),
+                            styleMap: new OpenLayers.StyleMap(style),
+                            type : Baseline.stage
+                        });
         
-                    CONFIG.map.removeLayerByName(baselineLayer.name);
-                    CONFIG.map.getMap().addLayer(baselineLayer);
-                    CONFIG.tempSession.getStage(Baseline.stage).viewing = args.name;
-                    CONFIG.tempSession.persistSession();
+                        LOG.trace('Baseline.js::addLayerToMap: Replacing baseline layer')
+                        CONFIG.map.removeLayerByName(baselineLayer.name);
+                        CONFIG.map.getMap().addLayer(baselineLayer);
+                        CONFIG.tempSession.getStage(Baseline.stage).viewing = args.name;
+                        CONFIG.tempSession.persistSession();
+                    }
                 }
             }]
         })
-        
     },
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
@@ -280,7 +304,7 @@ var Baseline = {
     //@param: params.isCloning - optional boolean
     listboxChanged : function(params) {
         LOG.debug('Baseline.js::baselineSelected: A baseline was selected from the dropdown list');
-        var params = $.extend({}, params);
+        params = $.extend({}, params);
         var isCloning = params.isCloning;
 
         Baseline.disableEditButtonSet();
@@ -318,8 +342,6 @@ var Baseline = {
 
 
             CONFIG.ui.lockBaseNameTo(baseName);
-            LOG.debug('Baseline.js::baselineSelected: Adding selected baseline ( ' + selectVal + ' ) from list');
-
             LOG.debug('Baseline.js::baselineSelected: Adding selected baseline ( ' + selectVal + ' ) from list');
             
             Baseline.addLayerToMap({
@@ -573,7 +595,6 @@ var Baseline = {
                                             callbacks : [
                                             displayLayer
                                             ]
-                                            
                                         })
                                     } else {
                                         displayLayer();
@@ -815,6 +836,7 @@ var Baseline = {
         }
     },
     removeResource : function(args) {
+        args = args || {};
         var layer = args.layer || $('#baseline-list option:selected')[0].text;
         var store = args.store || 'ch-input';
         var callbacks  = args.callbacks || [

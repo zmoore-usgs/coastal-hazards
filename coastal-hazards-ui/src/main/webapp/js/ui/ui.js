@@ -120,9 +120,9 @@ var UI = function() {
             var headerHtml = args.headerHtml || '';
             var bodyHtml = args.bodyHtml || '';
             var buttons = args.buttons || [];
+            var includeCancelButton = args.includeCancelButton || true;
             var callbacks = args.callbacks || [];
-            var id = args.id || '';
-            
+                
             $('#application-overlay').fadeOut();
             $('#modal-window-label').html(headerHtml);
             $('#modal-body-content').html(bodyHtml);
@@ -144,20 +144,22 @@ var UI = function() {
                 $('#modal-window>.modal-footer').append(modalButton)
             })
             
-            $('#modal-window>.modal-footer').append(
-                $('<button />')
-                .addClass('btn')
-                .attr({
-                    'data-dismiss' : 'modal',
-                    'aria-hidden' : 'true'
-                })
-                .html('Cancel'))
+            if (includeCancelButton) {
+                $('#modal-window>.modal-footer').append(
+                    $('<button />')
+                    .addClass('btn')
+                    .attr({
+                        'id' : 'cancel-button',
+                        'data-dismiss' : 'modal',
+                        'aria-hidden' : 'true'
+                    })
+                    .html('Cancel'))
+            }
             
             callbacks.each(function(callback) {
                 callback();
             })
-            
-            $("#modal-window").modal('show');
+            $('#modal-window').modal('show');
         },
         lockBaseNameTo : function(name){
             me.base_name = name;
