@@ -75,6 +75,8 @@ var Session = function(name, isPerm) {
         });
         session.layers = [];
         session.results = Object.extended();
+        session.name = randID;
+        session.metadata = '';
             
         newSession.sessions.push(session);
         newSession.currentSession = randID;
@@ -193,7 +195,7 @@ var Session = function(name, isPerm) {
                     LOG.debug('Session.js::updateLayersFromWMS: Scanning layers on server for layers in this session');
                     var ioLayers = wmsLayers.findAll(function(wmsLayer) {
                         return (wmsLayer.prefix == 'ch-input' || wmsLayer.prefix == 'ch-output') &&
-                        wmsLayer.name.indexOf(me.getCurrentSessionKey() != -1);
+                            wmsLayer.name.indexOf(me.getCurrentSessionKey() != -1);
                     })
             
                     $(ioLayers).each(function(index, layer) {
@@ -253,8 +255,8 @@ var Session = function(name, isPerm) {
         }
         
         /**
-     * Replace the current temp session with 
-     */
+         * Replace the current temp session with 
+         */
         me.setCurrentSession = function(key, session) {
             LOG.info('Replacing current session');
             if (session) {
@@ -284,8 +286,8 @@ var Session = function(name, isPerm) {
             var menuNavBar = $('<div />').addClass('navbar navbar-static');
             var innerNavBar = $('<div />').addClass('navbar-inner');
             var navBarItem = $('<ul />').
-            addClass('nav').
-            attr({
+                addClass('nav').
+                attr({
                 'role' : 'navigation'
             })
             var fileDropDown = $('<li />').addClass('dropdown');
@@ -295,9 +297,9 @@ var Session = function(name, isPerm) {
                 'role' : 'button',
                 'href' : '#'
             }).
-            html('File').
-            addClass('dropdown-toggle').
-            append($('<b />').addClass('caret'))
+                html('File').
+                addClass('dropdown-toggle').
+                append($('<b />').addClass('caret'))
             container.append(menuNavBar.append(innerNavBar.append(navBarItem.append(fileDropDown.append(fileDropDownLink)))));
             
             var sessionDropDown = $('<li />').addClass('dropdown');
@@ -307,69 +309,65 @@ var Session = function(name, isPerm) {
                 'role' : 'button',
                 'href' : '#'
             }).
-            html('Session').
-            addClass('dropdown-toggle').
-            append($('<b />').addClass('caret'))
+                html('Session').
+                addClass('dropdown-toggle').
+                append($('<b />').addClass('caret'))
             container.append(menuNavBar.append(innerNavBar.append(navBarItem.append(sessionDropDown.append(sessionDropDownLink)))));
             
             
             var fileDropDownList = $('<ul />').
-            addClass('dropdown-menu').
-            attr({
+                addClass('dropdown-menu').
+                attr({
                 'aria-labelledby' : 'file-drop-down'
             })
             
             var importli = $('<li />').attr('role', 'presentation').
-            append($('<a />').attr({
+                append($('<a />').attr({
                 'tabindex' : '-1',
                 'role' : 'menuitem',
                 'id' : 'file-menu-item-import'
             }).html('Import'))
             
             var exportli = $('<li />').attr('role', 'presentation').
-            append($('<a />').attr({
+                append($('<a />').attr({
                 'tabindex' : '-1',
                 'role' : 'menuitem',
                 'id' : 'file-menu-item-export'
             }).html('Export'))
-            fileDropDownList.append(importli);
-            fileDropDownList.append(exportli);
+            fileDropDownList.append(importli, exportli);
             fileDropDown.append(fileDropDownList);
             
             var sessionDropDownList = $('<ul />').
-            addClass('dropdown-menu').
-            attr({
+                addClass('dropdown-menu').
+                attr({
                 'aria-labelledby' : 'session-drop-down'
             })
             var createli = $('<li />').attr('role', 'presentation').
-            append($('<a />').attr({
+                append($('<a />').attr({
                 'tabindex' : '-1',
                 'role' : 'menuitem',
                 'id' : 'session-menu-item-create'
             }).html('Create New'))
             var clearAllli = $('<li />').attr('role', 'presentation').
-            append($('<a />').attr({
+                append($('<a />').attr({
                 'tabindex' : '-1',
                 'role' : 'menuitem',
                 'id' : 'session-menu-item-clear-all'
             }).html('Clear All'))
             var setCurrentli = $('<li />').attr('role', 'presentation').
-            append($('<a />').attr({
+                append($('<a />').attr({
                 'tabindex' : '-1',
                 'role' : 'menuitem',
                 'id' : 'session-menu-item-set-current'
             }).html('Set Current'))
-            var setCurrentli = $('<li />').attr('role', 'presentation').
-            append($('<a />').attr({
+            var setMetadatatli = $('<li />').attr('role', 'presentation').
+                append($('<a />').attr({
                 'tabindex' : '-1',
                 'role' : 'menuitem',
                 'id' : 'session-menu-item-set-metadata'
             }).html('Provide Metadata'))
-            sessionDropDownList.append(createli)
-            sessionDropDownList.append(clearAllli)
-            sessionDropDownList.append(setCurrentli)
+            sessionDropDownList.append(createli, clearAllli, setCurrentli, setMetadatatli);
             sessionDropDown.append(sessionDropDownList)
-            
             
             var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
             var explanationWell = $('<div />').addClass('well well-small').attr('id', 'explanation-well');
@@ -384,9 +382,9 @@ var Session = function(name, isPerm) {
             })
             CONFIG.permSession.session.sessions.each(function(session) {
                 sessionList.append(
-                    $('<option />').attr({
-                        'value' : session.id
-                    }).html(session.id))
+                $('<option />').attr({
+                    'value' : session.id
+                }).html(session.id))
             })
             container.append(sessionListWell.append(sessionListRow.append(sessionList)));
             
@@ -398,60 +396,129 @@ var Session = function(name, isPerm) {
                 headerHtml : 'Session Management',
                 bodyHtml : container.html(),
                 callbacks : [
-                function() {
-                    $('#file-menu-item-import').on('click', function() {
-                        CONFIG.tempSession.importSession();
-                    })
-                    $('#file-menu-item-export').on('click', function() {
-                        CONFIG.tempSession.exportSession();
-                    })
-                    $('#session-menu-item-create').on('click', function() {
-                        var session = CONFIG.tempSession.createNewSession().sessions[0];
-                        CONFIG.permSession.session.sessions.push(session);
-                        CONFIG.permSession.session.currentSession = session.id;
-                        CONFIG.permSession.save();
-                        CONFIG.tempSession.createSessionManagementModalWindow();
-                    })
-                    $('#session-menu-item-clear-all').on('click', CONFIG.tempSession.clearSessions)
-                    $('#session-menu-item-set-current').on('click', function() {
-                        var id = $('#session-management-session-list').val();
-                        CONFIG.permSession.session.currentSession = id;
-                        CONFIG.permSession.save();
-                        CONFIG.tempSession.createSessionManagementModalWindow();
-                    })
-                    $('#session-menu-item-set-metadata').on('click', function() {
-                        
-                        CONFIG.tempSession.createSessionManagementModalWindow();
-                    })
-                },
-                function() {
-                    var sessionList = $('#session-management-session-list');
-                    sessionList.on('change', function() {
-                        var key = this.value;
-                        var importDescriptionRow = $('#session-management-session-description-row');
-                        importDescriptionRow.html('');
-                        var session = CONFIG.permSession.session.sessions.find(function(s){
-                            return s.id == key
+                    function() {
+                        $('#file-menu-item-import').on('click', function() {
+                            CONFIG.tempSession.importSession();
                         })
-                        var sessionLayers = CONFIG.permSession.session.sessions.find(function(s){
-                            return s.id == key
-                        }).layers.filter(function(l){
-                            return l.prefix == key
+                        $('#file-menu-item-export').on('click', function() {
+                            CONFIG.tempSession.exportSession();
                         })
-                        var html = 'Session Information' + 
-                        '<br />Created: ' + session.created + 
-                        '<br />Is Current: ' + (key == CONFIG.permSession.session.currentSession ? 'true' : 'false') + 
-                        '<br />Layers: ' + sessionLayers.length + 
-                        '<br />Results: ' + Object.values(session.results).length;
-                        importDescriptionRow.html(html);
+                        $('#session-menu-item-create').on('click', function() {
+                            var session = CONFIG.tempSession.createNewSession().sessions[0];
+                            CONFIG.permSession.session.sessions.push(session);
+                            CONFIG.permSession.session.currentSession = session.id;
+                            CONFIG.permSession.save();
+                            CONFIG.tempSession.createSessionManagementModalWindow();
+                        })
+                        $('#session-menu-item-clear-all').on('click', CONFIG.tempSession.clearSessions)
+                        $('#session-menu-item-set-current').on('click', function() {
+                            var id = $('#session-management-session-list').val();
+                            CONFIG.permSession.session.currentSession = id;
+                            CONFIG.permSession.save();
+                            CONFIG.tempSession.createSessionManagementModalWindow();
+                        })
+                        $('#session-menu-item-set-metadata').on('click', function() {
+                            CONFIG.tempSession.createMetadataEntryForm();
+                        })
+                    },
+                    function() {
+                        var sessionList = $('#session-management-session-list');
+                        sessionList.on('change', function() {
+                            var key = this.value;
+                            var importDescriptionRow = $('#session-management-session-description-row');
+                            importDescriptionRow.html('');
+                            var session = CONFIG.permSession.session.sessions.find(function(s){
+                                return s.id == key
+                            })
+                            var sessionLayers = CONFIG.permSession.session.sessions.find(function(s){
+                                return s.id == key
+                            }).layers.filter(function(l){
+                                return l.prefix == key
+                            })
+                            var html = 'Session Information' + 
+                                '<br />Name: ' + (session.name || '') + 
+                                '<br />Created: ' + session.created + 
+                                '<br />Is Current: ' + (key == CONFIG.permSession.session.currentSession ? 'true' : 'false') + 
+                                '<br />Layers: ' + sessionLayers.length + 
+                                '<br />Results: ' + Object.values(session.results).length + 
+                                '<br />Metadata: ' + (session.metadata || '');
+                    
+                            importDescriptionRow.html(html);
                         
-                    })
-                    sessionList.val(CONFIG.permSession.session.currentSession);
-                    sessionList.trigger('change');
-                }]
+                        })
+                        sessionList.val(CONFIG.permSession.session.currentSession);
+                        sessionList.trigger('change');
+                    }]
             })
         },
-        
+        createMetadataEntryForm : function() {
+            var sessionId = $('#session-management-session-list :selected').val();
+            var session = CONFIG.permSession.session.sessions.find(function(s) {
+                return s.id == sessionId
+            })
+                        
+            var container = $('<div />').addClass('container-fluid');
+            var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
+            var explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well');
+            explanationWell.html('Provide a name and some optional metadata for this session<br /><br />Session: ' + session.id);
+            container.append(explanationRow.append(explanationWell));
+                        
+            var nameRow = $('<div />').addClass('row-fluid').attr('id', 'name-row');
+            var nameWell = $('<div />').addClass('well').attr('id', 'name-well');
+            var nameInputLabel = $('<label />').attr({
+                'id' : 'name-input-label',
+                'for' : 'name-input'
+            });
+            var nameInput = $('<input>').attr({
+                'id' : 'name-input',
+                'name' : 'name-input',
+                'type' : 'text',
+                'style' : 'width:100%;',
+                'placeholder' : session.name
+            });
+            container.append(nameRow.append(nameWell.append(nameInputLabel, nameInput)));
+                        
+            var metadataRow = $('<div />').addClass('row-fluid').attr('id', 'metadata-row');
+            var metadataWell = $('<div />').addClass('well').attr('id', 'metadata-well');
+            var metadataInputLabel = $('<label />').attr({
+                'id' : 'metadata-input-label',
+                'for' : 'metadata-input'
+            });
+            var metadataInput = $('<input>').attr({
+                'id' : 'metadata-input',
+                'name' : 'metadata-input',
+                'type' : 'textarea',
+                'style' : 'width:100%;',
+                'maxLength' : '4000',
+                'placeholder' : session.metadata
+            });
+            container.append(metadataRow.append(metadataWell.append(metadataInputLabel, metadataInput)))
+                        
+            CONFIG.ui.createModalWindow({
+                bodyHtml : container.html(),
+                buttons : [{
+                        id : 'save-metadata-button',
+                        type : 'btn-success',
+                        text : 'Save',
+                        callback : function() {
+                            var name = $('#name-input').val();
+                            var metadata = $('#metadata-input').val();
+                            session.name = name;
+                            session.metadata = metadata;
+                            CONFIG.permSession.save();
+                            CONFIG.tempSession.persistSession();
+                            CONFIG.tempSession.createSessionManagementModalWindow();
+                        }
+                    }],
+                callbacks : [
+                    function() {
+                        $('#cancel-button').on('click', function() {
+                            CONFIG.tempSession.createSessionManagementModalWindow();
+                        })
+                    }
+                ]
+            })
+        },
         importSession : function() {
             if (window.File && window.FileReader) {
                 var container = $('<div />').addClass('container-fluid');
@@ -477,95 +544,95 @@ var Session = function(name, isPerm) {
                     headerHtml : 'Import A Session File',
                     bodyHtml : container.html(),
                     callbacks : [
-                    function() {
-                        $('#file-upload-input').on('change', function(event) {
-                            var fileObject = event.target.files[0];
-                            if (fileObject.type.match('json')) {
-                                var reader = new FileReader();
-                                var importWell = $('#import-well')
-                                var importRow = $('#import-row');
-                                var resultObject;
-                                importRow.empty();
-                                reader.onloadend = function(event){
-                                    try {
-                                        resultObject = $.parseJSON(event.target.result); // This will not work with 
-                                        var importDisplay = $('<div />').addClass('span12');
-                                        var currentId = resultObject.currentSession;
-                                        if (!currentId) {
-                                            importRow.html('Imported session object has no current session');
-                                            return;
-                                        }
+                        function() {
+                            $('#file-upload-input').on('change', function(event) {
+                                var fileObject = event.target.files[0];
+                                if (fileObject.type.match('json')) {
+                                    var reader = new FileReader();
+                                    var importWell = $('#import-well')
+                                    var importRow = $('#import-row');
+                                    var resultObject;
+                                    importRow.empty();
+                                    reader.onloadend = function(event){
+                                        try {
+                                            resultObject = $.parseJSON(event.target.result); // This will not work with 
+                                            var importDisplay = $('<div />').addClass('span12');
+                                            var currentId = resultObject.currentSession;
+                                            if (!currentId) {
+                                                importRow.html('Imported session object has no current session');
+                                                return;
+                                            }
                                 
-                                        var session = resultObject.sessions.find(function(s){
-                                            return s.id == currentId
-                                        })
-                                        if (!session) {
-                                            importRow.html('Imported session has a nonexistent session marked as current');
-                                            return;
-                                        }
+                                            var session = resultObject.sessions.find(function(s){
+                                                return s.id == currentId
+                                            })
+                                            if (!session) {
+                                                importRow.html('Imported session has a nonexistent session marked as current');
+                                                return;
+                                            }
                                 
-                                        importDisplay.append('Session File Information')
-                                        importDisplay.append('<br />Sessions found: ' + resultObject.sessions.length);
-                                        importDisplay.append('<br />Current session key: ' + currentId)
-                                        importDisplay.append('<br />Session created: ' + session.created)
-                                        importDisplay.append('<br />Layers found: ' + session.layers.length + '<br />')
-                                        importDisplay.append(
+                                            importDisplay.append('Session File Information')
+                                            importDisplay.append('<br />Sessions found: ' + resultObject.sessions.length);
+                                            importDisplay.append('<br />Current session key: ' + currentId)
+                                            importDisplay.append('<br />Session created: ' + session.created)
+                                            importDisplay.append('<br />Layers found: ' + session.layers.length + '<br />')
+                                            importDisplay.append(
                                             //                                            $('<button />').
                                             //                                            attr('id', 'import-current-session-button').
                                             //                                            addClass('btn btn-success span6').
                                             //                                            html('Import Current Session'),
                                             $('<button />').
-                                            attr('id', 'import-all-session-button').
-                                            addClass('btn btn-success span6').
-                                            html('Import Sessions'))
+                                                attr('id', 'import-all-session-button').
+                                                addClass('btn btn-success span6').
+                                                html('Import Sessions'))
                                         
-                                        importRow.append(importDisplay);
-                                        importWell.append(importRow);
+                                            importRow.append(importDisplay);
+                                            importWell.append(importRow);
                                         
-                                        //                                        $('#import-current-session-button').on('click', function() {
-                                        //                                            var currentSession = resultObject.sessions.find(function(n){
-                                        //                                                return n.id == resultObject.currentSession
-                                        //                                            })
-                                        //                                            CONFIG.tempSession.setCurrentSession(currentSession);
-                                        //                                            CONFIG.tempSession.persistSession();
-                                        //                                            location.reload(true);
-                                        //                                            
-                                        //                                        })
-                                        $('#import-all-session-button').on('click', function() {
-                                            var chObj = JSON.parse(localStorage.getItem('coastal-hazards'));
-                                            resultObject.sessions.each(function(ros) {
-                                                var foundSession = chObj.sessions.find(function(s){ 
-                                                    return s.id == ros.id
+                                            //                                        $('#import-current-session-button').on('click', function() {
+                                            //                                            var currentSession = resultObject.sessions.find(function(n){
+                                            //                                                return n.id == resultObject.currentSession
+                                            //                                            })
+                                            //                                            CONFIG.tempSession.setCurrentSession(currentSession);
+                                            //                                            CONFIG.tempSession.persistSession();
+                                            //                                            location.reload(true);
+                                            //                                            
+                                            //                                        })
+                                            $('#import-all-session-button').on('click', function() {
+                                                var chObj = JSON.parse(localStorage.getItem('coastal-hazards'));
+                                                resultObject.sessions.each(function(ros) {
+                                                    var foundSession = chObj.sessions.find(function(s){ 
+                                                        return s.id == ros.id
+                                                    })
+                                                    if (!foundSession) {
+                                                        chObj.sessions.push(ros);
+                                                        CONFIG.permSession.session.sessions.push(ros);
+                                                    }
                                                 })
-                                                if (!foundSession) {
-                                                    chObj.sessions.push(ros);
-                                                    CONFIG.permSession.session.sessions.push(ros);
-                                                }
-                                            })
                                             
-                                            localStorage.setItem('coastal-hazards', JSON.stringify(chObj)) //TODO- This will not work with IE8 and below. No JSON object
-                                            CONFIG.tempSession.createSessionManagementModalWindow();
-                                        })
+                                                localStorage.setItem('coastal-hazards', JSON.stringify(chObj)) //TODO- This will not work with IE8 and below. No JSON object
+                                                CONFIG.tempSession.createSessionManagementModalWindow();
+                                            })
+                                        } catch (ex) {
+                                            importRow.html('Your file could not be read: ' + ex);
+                                            return;
+                                        }
+                                    }
+                                
+                                    try {
+                                        reader.readAsText(fileObject);
                                     } catch (ex) {
                                         importRow.html('Your file could not be read: ' + ex);
                                         return;
                                     }
-                                }
-                                
-                                try {
-                                    reader.readAsText(fileObject);
-                                } catch (ex) {
+                                } else {
+                                    // Not a json file
+                                    $('#file-upload-input').val('')
+                                    importRow = $('#import-row');
                                     importRow.html('Your file could not be read: ' + ex);
-                                    return;
                                 }
-                            } else {
-                                // Not a json file
-                                $('#file-upload-input').val('')
-                                importRow = $('#import-row');
-                                importRow.html('Your file could not be read: ' + ex);
-                            }
-                        })
-                    }
+                            })
+                        }
                     ]
                 })
             } else {
@@ -581,16 +648,16 @@ var Session = function(name, isPerm) {
                 'style' : 'display:none;visibility:hidden;',
                 'method' : 'POST'
             }).
-            append(
-                $('<input />').attr({
-                    'type' : 'hidden',
-                    'name' : 'filename'
-                }).val('cch_session_' + me.getCurrentSessionKey() + '.json')).
-            append(
-                $('<input />').attr({
-                    'type' : 'hidden',
-                    'name' : 'data'
-                }).val(localStorage['coastal-hazards']))
+                append(
+            $('<input />').attr({
+                'type' : 'hidden',
+                'name' : 'filename'
+            }).val('cch_session_' + me.getCurrentSessionKey() + '.json')).
+                append(
+            $('<input />').attr({
+                'type' : 'hidden',
+                'name' : 'data'
+            }).val(localStorage['coastal-hazards']))
             $('body').append(exportForm)
             exportForm.attr('action', 'service/export');
             exportForm.submit();
