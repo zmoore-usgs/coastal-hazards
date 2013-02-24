@@ -2,16 +2,16 @@ var OWS = function(endpoint) {
     LOG.info('OWS.js::constructor: OWS class is initializing.');
     var me = (this === window) ? {} : this;
     
-    me.importEndpoint = 'service/import/shapefile'
+    me.importEndpoint = 'service/import/shapefile';
     me.geoserverEndpoint = endpoint ? endpoint : CONFIG.geoServerEndpoint;
     me.geoserverProxyEndpoint = 'geoserver/';
-    me.wfsGetCapsUrl = me.geoserverProxyEndpoint + 'ows?service=wfs&version=1.0.0&request=GetCapabilities'
-    me.wfsGetFeature = me.geoserverProxyEndpoint + 'ows?service=wfs&version=1.0.0&request=GetFeature'
+    me.wfsGetCapsUrl = me.geoserverProxyEndpoint + 'ows?service=wfs&version=1.1.0&request=GetCapabilities';
+    me.wfsGetFeature = me.geoserverProxyEndpoint + 'ows?service=wfs&version=1.0.0&request=GetFeature';
     me.wfsCapabilities = Object.extended();
     me.wmsCapabilities = Object.extended();
     me.wmsCapabilitiesXML = Object.extended();
     me.wfsCapabilitiesXML = null;
-    me.wpsExecuteRequestPostUrl = me.geoserverProxyEndpoint + 'ows?service=wps&version=1.0.0&request=execute'
+    me.wpsExecuteRequestPostUrl = me.geoserverProxyEndpoint + 'ows?service=wps&version=1.0.0&request=execute';
     
     // An object to hold the return from WFS DescribeFeatureType
     me.featureTypeDescription = Object.extended();
@@ -21,9 +21,6 @@ var OWS = function(endpoint) {
     
     LOG.debug('OWS.js::constructor: OWS class initialized.');
     return $.extend(me, {
-        /**
-         * Imports file into GeoServer from the upload area
-         */
         importFile : function(args) {
             LOG.info('OWS.js::importFile: Importing file into OWS resource');
             $.ajax(me.importEndpoint,{
@@ -39,7 +36,7 @@ var OWS = function(endpoint) {
                     var scope = this;
                     $(args.callbacks).each(function(index, callback, allCallbacks) {
                         callback(data, scope);
-                    })
+                    });
                 }
             });
         },
@@ -152,28 +149,29 @@ var OWS = function(endpoint) {
                                     style: {
                                         classes : ['alert-error']
                                     }
-                                })
+                                });
                             }
-                        })
+                        });
                     }
                 }
-            })
+            });
         },
         getWFSCapabilities : function(args) {
+            args = args || {};
             $.ajax(me.wfsGetCapsUrl, {
                 context: args,
                 success : function(data, textStatus, jqXHR) {
                     var getCapsResponse = new OpenLayers.Format.WFSCapabilities.v1_1_0().read(data); 
                     me.wfsCapabilities = getCapsResponse;
                     me.wfsCapabilitiesXML = data;
-                    $(args.callbacks).each(function(index, callback, allCallbacks) {
+                    $(args.callbacks || []).each(function(index, callback, allCallbacks) {
                         callback(getCapsResponse, this);
-                    })
+                    });
                 },
                 error : function(data,textStatus, jqXHR) {
                     
                 }
-            })
+            });
         },
         getFeatureByName : function(name) {
             return me.wfsCapabilities.featureTypeList.featureTypes.find(function(featureType) {
@@ -716,17 +714,18 @@ var OWS = function(endpoint) {
         projectPointOnLine : function(args) {
             var wps =   CONFIG.ows.createProjectPointOnLineWPSXML(args);
             CONFIG.ows.executeWPSProcess({
-                processIdentifier : 'gs:NearestPointOnLine',
-                request : wps,
-                callbacks : args.callbacks || [],
-                context : args.context || this
-            })
+                'processIdentifier' : 'gs:NearestPointOnLine',
+                'request' : wps,
+                'callbacks' : args.callbacks || [],
+                'context' : args.context || this
+            });
         },
         createProjectPointOnLineWPSXML : function(args) {
             var workspaceNS = args.workspaceNS;
             var layer = args.layer;
             var workspace = layer.split(':')[0];
             var point = args.point;
+            var transectSRID = args.transectSRID;
             
             return '<?xml version="1.0" encoding="UTF-8"?>' + 
             '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
@@ -737,7 +736,7 @@ var OWS = function(endpoint) {
             '<wps:Reference mimeType="text/xml" xlink:href="http://geoserver/wfs" method="POST">' + 
             '<wps:Body>' + 
             '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+workspace+'="'+workspaceNS+'">' + 
-            '<wfs:Query typeName="'+layer+'"/>' +
+            '<wfs:Query typeName="'+layer+'" srsName="EPSG:'+transectSRID+'"/>' +
             '</wfs:GetFeature>' + 
             ' </wps:Body>' + 
             '</wps:Reference>' + 
@@ -757,4 +756,4 @@ var OWS = function(endpoint) {
             '</wps:Execute>';
         }
     });
-}
+};
