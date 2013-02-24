@@ -107,9 +107,9 @@ var Results = {
                                         baseline : selectedBaseline,
                                         transects : selectedTransects,
                                         intersections : selectedIntersections
-                                    }
+                                    };
                                     
-                                    CONFIG.tempSession.results = results
+                                    CONFIG.tempSession.session.results = results;
                                     CONFIG.tempSession.persistSession();
                                     
                                     /*
@@ -304,14 +304,14 @@ var Results = {
             
             LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the plot');
             var xPlotIdx = CONFIG.graph.rawData_.findIndex(function(o){
-                return o[0] == xValue
-            })
-            CONFIG.graph.setSelection(xPlotIdx)   
+                return o[0] == xValue;
+            });
+            CONFIG.graph.setSelection(xPlotIdx)  ; 
             
             LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the table');
             $('#results-table tbody>tr').removeClass('warning');
             var tableRow = $('#results-table tbody>tr').toArray().find(function(tr){
-                return $(tr).data().base_dist == xValue
+                return $(tr).data().base_dist == xValue;
             });
             
             LOG.trace('Results.js::addLayerToMap: Scrolling the table into view and highlighting the correct row');
@@ -320,7 +320,7 @@ var Results = {
         }
         
         LOG.debug('Shorelines.js::addLayerToMap: (re?)-adding vector selector control for new results set');
-        CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id','results-select-control')[0])
+        CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id','results-select-control')[0]);
         var selectFeatureControl = new OpenLayers.Control.SelectFeature(resultsVector, {
             id : 'results-select-control',
             hover: true,

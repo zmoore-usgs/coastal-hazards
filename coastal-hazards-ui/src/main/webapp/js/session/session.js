@@ -81,7 +81,7 @@ var Session = function(name, isPerm) {
         newSession.sessions.push(session);
         newSession.currentSession = randID;
         return newSession;
-    }
+    };
     if (isPerm) {
         if (!me.session) {
             me.session = me.createNewSession();
@@ -106,11 +106,11 @@ var Session = function(name, isPerm) {
             LOG.info('Session.js::persistSession: Persisting temp session to perm session');
             var permSession = CONFIG.permSession; 
             var sessionIndex = permSession.session.sessions.findIndex(function(session){
-                return session.id == me.session.id
+                return session.id == me.session.id;
             });
                 
             permSession.session.currentSession = me.session.id;
-            if (sessionIndex == -1) {
+            if (sessionIndex === -1) {
                 permSession.session.sessions.push(me.session);
             } else {
                 permSession.session.sessions[sessionIndex] = me.session;
@@ -118,7 +118,7 @@ var Session = function(name, isPerm) {
             
             permSession.save();
             me.save();
-        }
+        };
         
         me.getStage = function(stage) {
             return me.session.stage[stage];
