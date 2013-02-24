@@ -663,6 +663,7 @@ var Transects = {
                                         namespace: CONFIG.tempSession.getCurrentSessionKey(),
                                         callbacks: {
                                             success: [
+                                                CONFIG.ows.getWFSCapabilities,
                                                 Transects.populateFeaturesList,
                                                 Calculation.populateFeaturesList,
                                                 function() {

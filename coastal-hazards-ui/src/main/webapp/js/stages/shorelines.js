@@ -345,19 +345,21 @@ var Shorelines = {
         
         $(layers).each(function(i, layer) {
             if (layer.zoomToWhenAdded) {
-                var layerNS = layer.prefix
-                var layerName = layer.name
-                bounds.extend(new OpenLayers.Bounds(CONFIG.ows.getLayerByName({
+                var layerNS = layer.prefix;
+                var layerName = layer.name;
+                var mapLayer = CONFIG.ows.getLayerByName({
                     layerNS : layerNS,
                     layerName : layerName
-                    }).bbox["EPSG:900913"].bbox));
-                
-                if (layer.events.listeners.loadend.length) {
-                    layer.events.unregister('loadend', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);
+                    });
+                if (mapLayer) {
+                    bounds.extend(new OpenLayers.Bounds(mapLayer.bbox["EPSG:900913"].bbox));
+
+                    if (layer.events.listeners.loadend.length) {
+                        layer.events.unregister('loadend', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);
+                    }
                 }
-                
             }
-        })
+        });
                     
         if (bounds.left && bounds.right && bounds.top && bounds.bottom) {
             CONFIG.map.getMap().zoomToExtent(bounds, false);
