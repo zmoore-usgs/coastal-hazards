@@ -91,7 +91,7 @@ var Results = {
                                 success : [
                                 Results.populateFeaturesList,
                                 function() {
-                                    var results = CONFIG.tempSession.results;
+                                    var results = CONFIG.tempSession.session.results;
                                     if (!results) {
                                         results = Object.extended();
                                         CONFIG.tempSession.session.results = results;
