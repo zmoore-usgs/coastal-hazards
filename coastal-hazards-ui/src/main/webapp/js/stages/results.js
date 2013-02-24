@@ -315,7 +315,7 @@ var Results = {
             });
             
             LOG.trace('Results.js::addLayerToMap: Scrolling the table into view and highlighting the correct row');
-//            tableRow.scrollIntoView();
+            //            tableRow.scrollIntoView();
             $(tableRow).addClass('warning'); // Highlight in yellow
         }
         
@@ -662,65 +662,49 @@ var Results = {
         
         var geoserverEndpoint = CONFIG.ows.geoserverProxyEndpoint.endsWith('/') ? CONFIG.ows.geoserverProxyEndpoint : CONFIG.ows.geoserverProxyEndpoint + '/';
         var url = geoserverEndpoint + 'wfs?' +
-            'service=wfs&'+
-            'version=2.0.0&'+
-            'request=GetFeature&'+
-            'typeName=' + escape(layerName) + '&' +
-            'outputFormat=SHAPE-ZIP';
+        'service=wfs&'+
+        'version=2.0.0&'+
+        'request=GetFeature&'+
+        'typeName=' + escape(layerName) + '&' +
+        'outputFormat=SHAPE-ZIP';
         window.open(url);
     },
     retrieveResultsSpreadsheet: function(){
-        var layerName = escape($('#results-list').val());
+        var layerName = $('#results-list').val();
         
         if('' === layerName){
             alert('Please select a result from the list');
             return;
         }
         
-        //make endpoint
-        var geoserverEndpoint = CONFIG.ows.geoserverProxyEndpoint.endsWith('/') ? CONFIG.ows.geoserverProxyEndpoint : CONFIG.ows.geoserverProxyEndpoint + '/';
-        
-        //first get all properties of the results layer:
-        var url = geoserverEndpoint + 'wfs?' +
-            'service=wfs&'+
-            'version=2.0.0&'+
-            'request=DescribeFeatureType&'+
-            'typeName=' + layerName;
-        
-        //once you get the properties, filter out unwanted properties that we added 
-        //during server-side calculation and request the layer with the remaining
-        //properties
-
-        $.ajax(url, {
-                success : function(data, textStatus, jqXHR) {
-                    data = $(data);
-                    var featureXML = data.find('sequence').find('element');
-                    var propertyNames = $.map(featureXML, function(elt, index){
-                       return $(elt).attr('name'); 
-                    });
-                    var propertyNamesToExclude = ['the_geom'];
+        CONFIG.ows.getDescribeFeatureType({
+            layerNS : layerName.split(':')[0],
+            layerName : layerName.split(':')[1],
+            callbacks : [
+            function(describeFeatureResponse) {
+                var propertyNames = describeFeatureResponse.featureTypes[0].properties.map(function(ft){
+                    return ft.name
+                    })
+                var propertyNamesToExclude = ['the_geom'];
                     
-                    //remove each excluded attribute name from the array
-                    propertyNamesToExclude.each(function(nameToExclude){
-                        propertyNames.remove(nameToExclude);
-                    });
+                //remove each excluded attribute name from the array
+                propertyNamesToExclude.each(function(nameToExclude){
+                    propertyNames.remove(nameToExclude);
+                });
                     
-                    var stringPropertyNames = escape(propertyNames.join(','));
+                var stringPropertyNames = escape(propertyNames.join(','));
 
-                    url = geoserverEndpoint + 'wfs?' +
-                        'service=wfs&'+
-                        'version=2.0.0&'+
-                        'request=GetFeature&'+
-                        'typeName=' + layerName + '&' +
-                        'outputFormat=csv&' +
-                        'propertyName=' + stringPropertyNames;
-                    //reset it to blank in case the user downloads the same file again
-                    $('#download').attr('src', '').attr('src', url);
-                 
-                },
-                error : function(data, textStatus, jqXHR){
-                    alert('Error: Could not describe feature type.')
-                }
-        });
+                var url = CONFIG.ows.geoserverProxyEndpoint + 'wfs?' +
+                'service=wfs&'+
+                'version=2.0.0&'+
+                'request=GetFeature&'+
+                'typeName=' + layerName + '&' +
+                'outputFormat=csv&' +
+                'propertyName=' + stringPropertyNames;
+                //reset it to blank in case the user downloads the same file again
+                $('#download').attr('src', '').attr('src', url);
+            }
+            ]
+        })
     }
 }
