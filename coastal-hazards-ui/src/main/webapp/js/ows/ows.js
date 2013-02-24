@@ -606,8 +606,8 @@ var OWS = function(endpoint) {
             return sld.replace('#[layer]', layerName)
         },
         updateTransectsAndIntersections : function(args) {
-          var wps =   CONFIG.ows.createUpdateTransectsAndIntersectionsWPSXML(args);
-          CONFIG.ows.executeWPSProcess({
+            var wps =   CONFIG.ows.createUpdateTransectsAndIntersectionsWPSXML(args);
+            CONFIG.ows.executeWPSProcess({
                 processIdentifier : 'gs:UpdateTransectsAndIntersections',
                 request : wps,
                 callbacks : args.callbacks || [],
@@ -712,6 +712,49 @@ var OWS = function(endpoint) {
             '</wps:ResponseForm>' + 
             '</wps:Execute>';
             return wps;
+        },
+        projectPointOnLine : function(args) {
+            var wps =   CONFIG.ows.createProjectPointOnLineWPSXML(args);
+            CONFIG.ows.executeWPSProcess({
+                processIdentifier : 'gs:NearestPointOnLine',
+                request : wps,
+                callbacks : args.callbacks || [],
+                context : args.context || this
+            })
+        },
+        createProjectPointOnLineWPSXML : function(args) {
+            var workspaceNS = args.workspaceNS;
+            var layer = args.layer;
+            var workspace = layer.split(':')[0];
+            var point = args.point;
+            
+            return '<?xml version="1.0" encoding="UTF-8"?>' + 
+            '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
+            '<ows:Identifier>gs:NearestPointOnLine</ows:Identifier>' + 
+            '<wps:DataInputs>' + 
+            '<wps:Input>' + 
+            '<ows:Identifier>lines</ows:Identifier>' + 
+            '<wps:Reference mimeType="text/xml" xlink:href="http://geoserver/wfs" method="POST">' + 
+            '<wps:Body>' + 
+            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+workspace+'="'+workspaceNS+'">' + 
+            '<wfs:Query typeName="'+layer+'"/>' +
+            '</wfs:GetFeature>' + 
+            ' </wps:Body>' + 
+            '</wps:Reference>' + 
+            '</wps:Input>' + 
+            '<wps:Input>' + 
+            '<ows:Identifier>point</ows:Identifier>' + 
+            '<wps:Data>' + 
+            '<wps:LiteralData>'+point+'</wps:LiteralData>' + 
+            '</wps:Data>' + 
+            '</wps:Input>' + 
+            '</wps:DataInputs>' + 
+            '<wps:ResponseForm>' + 
+            '<wps:RawDataOutput>' + 
+            '<ows:Identifier>point</ows:Identifier>' + 
+            '</wps:RawDataOutput>' + 
+            '</wps:ResponseForm>' + 
+            '</wps:Execute>';
         }
     });
 }

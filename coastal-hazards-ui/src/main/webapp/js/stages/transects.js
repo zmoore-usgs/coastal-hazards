@@ -261,6 +261,26 @@ var Transects = {
                     if (blTouchFeature.length) {
                         feature.attributes.Orient = blTouchFeature[0].attributes.Orient;
                         feature.attributes.BaselineID = blTouchFeature[0].fid;
+                        
+                        var transectPoint0 = f.geometry.components[0].components[0];
+                        var transectPoint1 = f.geometry.components[0].components[1];
+                        var blDist0 = blTouchFeature[0].geometry.components[0].distanceTo(transectPoint0);
+                        var blDist1 = blTouchFeature[0].geometry.components[0].distanceTo(transectPoint1);
+                        var workingPoint = blDist0 < blDist1 ? transectPoint0 : transectPoint1;
+                        CONFIG.ows.projectPointOnLine({
+                            workspaceNS : CONFIG.ows.featureTypeDescription[blTouchFeature[0].layer.name.split(':')[0]][blTouchFeature[0].layer.name.split(':')[1]].targetNamespace,
+                            layer : blTouchFeature[0].layer.name,
+                            point : 'SRID=' + blTouchFeature[0].layer.projection.projCode.split(':')[1] + ';POINT(' + workingPoint.x + ' ' + workingPoint.y + ')',
+                            callbacks : {
+                                success : [function(data) {
+                                    var b = data.from(data.indexOf('(') + 1)
+                                    var c = b.substring(0, b.length - 1).split(' ');
+                                    workingPoint.x = c[0];
+                                    workingPoint.y = c[1];
+                                    workingPoint.clearBounds();
+                                }]
+                            }
+                        })
                     } else {
                         feature.attributes.Orient = 'seaward';
                     }
