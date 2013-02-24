@@ -134,7 +134,8 @@ var Transects = {
                 id: 'snap-control',
                 layer: clonedLayer,
                 targets: [baselineLayer],
-                greedy: true
+                greedy: true,
+                tolerance : 1
             });
             snap.activate();
             CONFIG.map.getMap().addControl(snap);
