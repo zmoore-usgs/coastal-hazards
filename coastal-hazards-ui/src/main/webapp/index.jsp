@@ -516,8 +516,8 @@
 
     <script type="text/javascript">
         splashUpdate("Setting configuration...")
-        var CONFIG = {};
-			
+        var CONFIG = Object.extended();
+        
         CONFIG.development = <%= development%>;
         CONFIG.geoServerEndpoint = '<%=geoserverEndpoint%>';
         CONFIG.n52Endpoint = '<%=n52Endpoint%>';
