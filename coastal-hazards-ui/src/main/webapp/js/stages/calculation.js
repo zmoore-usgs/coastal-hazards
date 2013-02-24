@@ -3,7 +3,7 @@ var Calculation = {
     reservedColor : '#1B9E77',
     suffixes : ['_intersects'],
     description : {
-        'stage' : 'DSAS rates can be calculated using the collection of features in the current workspace.',
+        'stage' : '<p>Rates or erosion or deposition are calculated at the location of each transect using the user-defined statistics and parameters found within the Manage tab.</p><hr />DSAS rates can be calculated using the collection of features in the current workspace.',
         'view-tab' : '',
         'manage-tab' : '',
         'upload-button' : ''

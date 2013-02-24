@@ -23,56 +23,45 @@ var UI = function() {
     
     me.work_stages_objects.each(function(stage) {
         if (stage.description.stage) {
-            $('#nav-list a[href="#'+stage.stage+'"]').popover({
-                title : stage.stage.capitalize(),
-                content : $('<div />')
-                .append($('<div />').html(stage.description.stage))
-                .html(),
+            $('#nav-list a[href="#'+stage.stage+'"]').parent().popover({
+                title : '<h3>' + stage.stage.capitalize() + '</h3>',
+                content : $('<div />').attr('id', stage.stage + '-description').addClass('stage-icon-description').html(stage.description.stage),
                 html : true,
                 placement : 'right',
-                trigger : 'hover',
-                delay : {
-                    show : popupHoverDelay
-                }
-            })
+                trigger : 'hover'
+            });
         }
         
         if (stage.description['view-tab']) {
             $('#'+stage.stage+' [href="#'+stage.stage+'-view-tab"]').popover({
                 title : stage.stage.capitalize() + ' View',
-                content : $('<div />')
-                .append($('<div />').html(stage.description['view-tab']))
-                .html(),
+                content :stage.description['view-tab'],
                 html : true,
                 placement : 'top',
                 trigger : 'hover',
                 delay : {
                     show : popupHoverDelay
                 }
-            })
+            });
         }
             
         if (stage.description['manage-tab']) {
             $('#'+stage.stage+' [href="#'+stage.stage+'-manage-tab"]').popover({
                 title : stage.stage.capitalize() + ' Manage',
-                content : $('<div />')
-                .append($('<div />').html(stage.description['manage-tab']))
-                .html(),
+                content : stage.description['manage-tab'],
                 html : true,
                 placement : 'top',
                 trigger : 'hover',
                 delay : {
                     show : popupHoverDelay
                 }
-            })
+            });
         }
             
         if (stage.description['upload-button']) {
             $('#'+stage.stage+'-triggerbutton').popover({
                 title : stage.stage.capitalize() + ' Resource Upload',
-                content : $('<div />')
-                .append($('<div />').html(stage.description['upload-button']))
-                .html(),
+                content : stage.description['upload-button'],
                 html : true,
                 placement : 'bottom',
                 trigger : 'hover',

@@ -5,7 +5,7 @@ var Shorelines = {
     mandatoryColumns : ['the_geom', 'Date_', 'uncy'],
     groupingColumn : 'Date_',
     description : {
-        'stage' : 'View and select existing published shorelines, or upload your own. Shorelines represent snap-shots of the coastline at various points in time.',
+        'stage' : '<p>Shorelines are geospatial polylines which represent the location of the shoreline and various points in time</p> <p>Add shorelines to your workspace with the selection box above or upload your own zipped shapefile containing shoreline polylines within the Manage tab.</p><p>Use the map to investigate the selected shorelines, clicking to enable/disable for DSASweb processing.</p><hr />View and select existing published shorelines, or upload your own. Shorelines represent snap-shots of the coastline at various points in time.',
         'view-tab' : 'Select a published collection of shorelines to add to the workspace.',
         'manage-tab' : ' Upload a zipped shapefile to add it to the workspace.',
         'upload-button' : 'Upload a zipped shapefile which includes shoreline polyline features.'
