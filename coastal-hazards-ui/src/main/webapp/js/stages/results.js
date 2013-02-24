@@ -94,7 +94,7 @@ var Results = {
                                     var results = CONFIG.tempSession.results;
                                     if (!results) {
                                         results = Object.extended();
-                                        CONFIG.tempSession.results = results;
+                                        CONFIG.tempSession.session.results = results;
                                     }
                                     
                                     var selectedShorelines = CONFIG.tempSession.getStage(Shorelines.stage).viewing;
