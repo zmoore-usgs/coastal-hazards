@@ -8,7 +8,7 @@ var Results = {
     reservedColor: '#0061A3',
     
     description : {
-        'stage' : 'View results from the workspace calculations or view published results from other studies.',
+        'stage' : '<p>Erosion and deposition rates are contained within the results layer of DSASweb processing.</p><p>View existing results by selecting layers from the list above. Use the Manage tab to export results information onto your desktop.</p><p>The results map, plot, and table are all interactive. Users can view the map location which corresponds to the line plot, or use the table to view map locations.</p><hr />View results from the workspace calculations or view published results from other studies.',
         'view-tab' : '',
         'manage-tab' : '',
         'upload-button' : ''

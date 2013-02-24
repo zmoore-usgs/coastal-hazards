@@ -57,18 +57,32 @@ select option.session-layer{
 .collapsibleHelp .ui-state-active{
     background: transparent;
 }
-#shorelinesPaneImage{
-    background-image:url('../images/paneBackgrounds/shorelines_tutorial.png');
+
+#stage-select-tablist .popover {
+    width : 50%;
 }
-#baselinesPaneImage{
-    background-image:url('../images/paneBackgrounds/baselines_tutorial.png');
+#stage-select-tablist .stage-icon-description {
+    font-size: 1.1em;
 }
-#transectsPaneImage{
-    background-image:url('../images/paneBackgrounds/transects_tutorial.png');
+#stage-select-tablist .stage-icon-description p {
+    margin-bottom: 0.3em;
 }
-#resultsPaneImage{
-    background-image:url('../images/paneBackgrounds/results_tutorial.png');
+#stage-select-tablist #shorelines-description {
+   background-image:url('../images/paneBackgrounds/shorelines_tutorial.png');
 }
+#stage-select-tablist #baseline-description {
+   background-image:url('../images/paneBackgrounds/baselines_tutorial.png');
+}
+#stage-select-tablist #transects-description {
+   background-image:url('../images/paneBackgrounds/transects_tutorial.png');
+}
+#stage-select-tablist #calculation-description {
+   background-image:url('../images/paneBackgrounds/transects_tutorial.png');
+}
+#stage-select-tablist #results-description {
+   background-image:url('../images/paneBackgrounds/results_tutorial.png');
+}
+
 
 /* ---------------------------------------------------------------------- Map */
 /* Add a drop shadow effect to scale and mouse position so they can be seen against a dark background */

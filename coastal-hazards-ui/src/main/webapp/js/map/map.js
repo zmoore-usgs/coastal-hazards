@@ -65,12 +65,12 @@ var Map = function() {
             var layers = me.map.getLayersByName(featureName) || [];
             layers.each(function(layer){
                 me.map.removeLayer(layer);
-            })
+            });
         },
         removeLayersByName : function(featureNames) {
             $(featureNames).each(function(index, fn) {
                 me.removeLayerByName(fn);
-            })
+            });
         },
         copyVectorLayer : function(args) {
             var layerName = args.layerName;

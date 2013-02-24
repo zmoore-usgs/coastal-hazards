@@ -4,7 +4,7 @@ var Transects = {
     reservedColor: '#D95F02',
     defaultSpacing: 500,
     description: {
-        'stage': 'Select existing transects, or generate new transects from the workspace baseline. Transects are rays that are projected from the baseline, and the intersections between shorelines and transects are used to calculate rates of erosion and deposition.',
+        'stage': '<p>Transects are cast perpendicular to the workspace baseline, at user-defined intervals. The intersections between the transects and shorelines are used to calculate erosion and deposition rates.</p><p>Add a pre-cast group of transects to your workspace with the selection box above or upload your own zipped shapefile containing a set of transects with the Manage tab. </p><p>Alternatively, create or modify transects with the editing and transect casting tools that are located within the Manage tab.</p><hr />Select existing transects, or generate new transects from the workspace baseline. Transects are rays that are projected from the baseline, and the intersections between shorelines and transects are used to calculate rates of erosion and deposition.',
         'view-tab': 'Select a published collection of shorelines to add to the workspace.',
         'manage-tab': 'Upload a new collection of transects to the workspace, generate new transects, or edit existing transects.',
         'upload-button': 'Upload a zipped shapefile which contains a collection of transects.',

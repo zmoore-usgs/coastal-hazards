@@ -5,7 +5,7 @@ var Baseline = {
     reservedColor : '#7570B3',
     shorewardColor : '#76C5AD',
     description : {
-        'stage' : 'Select an existing published baseline, upload your own, or draw a new baseline. A baseline provides a reference polyline to determine the orientation of erosion and deposition of coastlines.',
+        'stage' : '<p>The baseline provides the local frame of reference for calculating erosion and deposition rates from shorelines.</p><p>Add a reference baseline to your workspace with the selection box above or upload your own zipped shapefile containing a baseline polyline with the Manage tab.</p><p>Alternatively, create a new reference baseline with the drawing, cloning, or editing tools that are located within the Manage tab.</p><hr />Select an existing published baseline, upload your own, or draw a new baseline. A baseline provides a reference polyline to determine the orientation of erosion and deposition of coastlines.',
         'view-tab' : 'Select a published collection of shorelines to add to the workspace.',
         'manage-tab' : 'Add a new baseline to the workspace, or clone and edit an existing baseline.',
         'upload-button' : 'Upload a zipped shapefile containing a baseline polyline.'
@@ -18,10 +18,10 @@ var Baseline = {
     appInit : function() {
         $('#baseline-draw-form-name').val(Util.getRandomLorem());
         Baseline.baselineCloneButton.on('click', Baseline.cloneButtonClicked);
-        Baseline.baselineRemoveButton.on('click', Baseline.removeResource)
+        Baseline.baselineRemoveButton.on('click', Baseline.removeResource);
         Baseline.baselineDrawButton.on("click", Baseline.drawButtonToggled);
         Baseline.baselineEditButton.on('click', Baseline.editButtonToggled);
-        Baseline.baselineEditMenu.find('li').on('click', Baseline.editMenuToggled)
+        Baseline.baselineEditMenu.find('li').on('click', Baseline.editMenuToggled);
 
         Baseline.baselineDrawButton.popover({
             title : Baseline.stage.capitalize() + ' Draw',
@@ -135,7 +135,7 @@ var Baseline = {
                 LOG.trace('Baseline.js::addLayerToMap: Parsing layer attributes to check that they contain the attributes needed.'); 
                 var attributes = describeFeaturetypeRespone.featureTypes[0].properties;
                 var hasOrientAttr = attributes.find(function(a){
-                    return a.name == orient;
+                    return a.name === orient;
                 });
                 var displayBaseline = function(){
                     var shorewardRule = new OpenLayers.Rule({
@@ -159,8 +159,8 @@ var Baseline = {
                             strokeColor: Baseline.reservedColor,
                             strokeWidth: 2
                         }
-                    })
-                    LOG.info('Baseline.js::addLayerToMap: Adding baseline layer to map')
+                    });
+                    LOG.info('Baseline.js::addLayerToMap: Adding baseline layer to map');
                     var style = new OpenLayers.Style({
                         strokeColor: '#FFFFFF',
                         strokeWidth: 2
@@ -173,7 +173,7 @@ var Baseline = {
                             elseFilter: true
                         })
                         ]
-                    })
+                    });
         
                     var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
                         strategies: [new OpenLayers.Strategy.BBOX()],
@@ -187,12 +187,12 @@ var Baseline = {
                         type : Baseline.stage
                     });
         
-                    LOG.trace('Baseline.js::addLayerToMap: Replacing baseline layer')
+                    LOG.trace('Baseline.js::addLayerToMap: Replacing baseline layer');
                     CONFIG.map.removeLayerByName(baselineLayer.name);
                     CONFIG.map.getMap().addLayer(baselineLayer);
                     CONFIG.tempSession.getStage(Baseline.stage).viewing = args.name;
                     CONFIG.tempSession.persistSession();
-                }
+                };
                 
                 if (layerPrefix == CONFIG.name.published) {
                     displayBaseline();
