@@ -27,5 +27,6 @@
     
     <bean id="utmZoneCount" class="gov.usgs.cida.coastalhazards.wps.UTMZoneCountProcess" />
     <bean id="resultsRaster" class="gov.usgs.cida.coastalhazards.wps.ResultsRasterProcess" />
+    <bean id="projectPointOnLine" class="gov.usgs.cida.coastalhazards.wps.ProjectPointOnLineProcess" />
     <bean id="plainTextPPIO" class="gov.usgs.cida.coastalhazards.wps.ppio.PlainTextPPIO" />
 </beans>
