@@ -268,11 +268,11 @@ var Results = {
                 },
                 ratio: 1,
                 singleTile : true
-            })
+            });
             
         LOG.trace('Results.js::addLayerToMap: Creating Vector layer that will be used for highlighting');
         var resultsVector = new OpenLayers.Layer.Vector(layerPrefix + ':' + layerName, {
-            strategies: [new OpenLayers.Strategy.BBOX()],
+            strategies: [new OpenLayers.Strategy.Fixed()],
             protocol: new OpenLayers.Protocol.WFS({
                 version: '1.1.0',
                 url:  "geoserver/"+layerPrefix+"/wfs",
