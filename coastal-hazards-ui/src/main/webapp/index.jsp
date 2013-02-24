@@ -228,19 +228,19 @@
                                     <div class="row-fluid">
                                         <div id="baseline-edit-container" class="well hidden">
                                             <div id="baseline-edit-container-instructions-initial" class="baseline-edit-container-instructions hidden">
-                                                Initial instructions
+                                                Begin by selecting a base line segment you wish to edit. Select a base line segment by hovering over a segment until it turns blue, then click on it.
                                             </div>
                                             <div id="baseline-edit-container-instructions-vertex" class="baseline-edit-container-instructions hidden">
-                                                Create Vertex instructions
+                                                When editing vertices, you have control over two typs of vertices. The vertices appearing at the endpoints and bends of features allow you to drag these endpoints and bends. The less opaque vertices appearing at the midpoint of each segment allow you to cerate new segments by dragging on them.
                                             </div>
                                             <div id="baseline-edit-container-instructions-rotate" class="baseline-edit-container-instructions hidden">
-                                                Rotate instructions
+                                                By dragging the single handler for a feature, you are able to rotate the feature around a central point.
                                             </div>
                                             <div id="baseline-edit-container-instructions-resize" class="baseline-edit-container-instructions hidden">
-                                                Resize instructions
+                                                Drag the handler to resize the selected feature.  If you wish, you are also able to maintain the feature's aspect ratio while resizing.
                                             </div>
                                             <div id="baseline-edit-container-instructions-drag" class="baseline-edit-container-instructions hidden">
-                                                Drag instructions
+                                                Drag the handler to drag the selected feature.
                                             </div>
                                             <div class="row-fluid">
                                                 <button class="btn btn-success" id="baseline-edit-save-button" title="Update Modified Baseline">Update Baseline</button>
