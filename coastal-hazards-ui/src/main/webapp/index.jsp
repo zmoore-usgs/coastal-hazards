@@ -29,8 +29,8 @@
     <![endif]-->
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
-            <jsp:param name="shortName" value="USGS Coastal Change Hazards **BETA**" />
-            <jsp:param name="title" value="USGS Coastal Change Hazards **BETA**" />
+            <jsp:param name="shortName" value="USGS Coastal Change Hazards" />
+            <jsp:param name="title" value="USGS Coastal Change Hazards" />
             <jsp:param name="description" value="" />
             <jsp:param name="author" value="" />
             <jsp:param name="keywords" value="" />
