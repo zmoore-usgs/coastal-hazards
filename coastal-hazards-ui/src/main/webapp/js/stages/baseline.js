@@ -178,13 +178,16 @@ var Baseline = {
                     var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
                         strategies: [new OpenLayers.Strategy.BBOX()],
                         protocol: new OpenLayers.Protocol.WFS({
+                            version : '1.1.0',
                             url:  "geoserver/"+args.name.split(':')[0]+"/wfs",
                             featureType: args.name.split(':')[1],
-                            geometryName: "the_geom"
+                            geometryName: "the_geom",
+                            srsName: CONFIG.map.getMap().getProjection()
                         }),
                         renderers: CONFIG.map.getRenderer(),
                         styleMap: new OpenLayers.StyleMap(style),
-                        type : Baseline.stage
+                        type : Baseline.stage,
+                        projection : CONFIG.map.getMap().getProjection()
                     });
         
                     LOG.trace('Baseline.js::addLayerToMap: Replacing baseline layer');
