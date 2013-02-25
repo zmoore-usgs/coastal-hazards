@@ -235,10 +235,6 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                         fidGenerator.next()));
             }
             
-            for (SimpleFeature f : joinedFeatureList) {
-                System.out.println(f.getID());
-            }
-            
             return joinedFeatureList;
         }
 
