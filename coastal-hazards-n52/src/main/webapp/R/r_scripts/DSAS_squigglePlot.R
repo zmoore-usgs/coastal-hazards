@@ -23,7 +23,6 @@ fontN <- 11
 
 fileN    <- input # will have input as a string (long string read in)
 delim    <- "\t"
-sdMult   <- 2.5 # multiplier for axis 
 
 BD_i = 1 # baseline distance index
 ID_i = 2 # baseline ID index
@@ -43,8 +42,8 @@ numBase <- sum(!baseL)
 indx <- seq(1,nLines)
 dropI <- c(indx[!baseL],nLines)
 
-mxY <- mean(rwRT+rwCI)+sdMult*sd(rwRT+rwCI)
-mnY <- mean(rwRT-rwCI)-sdMult*sd(rwRT-rwCI)
+mxY <- max(rwRT+rwCI)
+mnY <- min(rwRT-rwCI)
 
 # resort values
 output = "output.png"
