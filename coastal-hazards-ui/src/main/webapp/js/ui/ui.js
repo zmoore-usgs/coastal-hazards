@@ -142,7 +142,7 @@ var UI = function() {
                         'data-dismiss' : 'modal',
                         'aria-hidden' : 'true'
                     })
-                    .html('Cancel'))
+                    .html('Done'))
             }
             
             callbacks.each(function(callback) {
