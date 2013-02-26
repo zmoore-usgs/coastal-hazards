@@ -58,8 +58,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wps.gs.GeoServerProcess;
@@ -187,8 +189,7 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
         }
 
         protected List<SimpleFeature> joinResultsToTransects(String[] columnHeaders, Map<Long, Double[]> resultMap, FeatureCollection<SimpleFeatureType, SimpleFeature> transects) {
-            SortedMap<Double, SimpleFeature> sfMap = new TreeMap<Double, SimpleFeature>();
-            
+                     
             SimpleFeatureType transectFeatureType = transects.getSchema();
             List<AttributeDescriptor> descriptors = transectFeatureType.getAttributeDescriptors();
             SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
@@ -199,34 +200,42 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                     builder.add(header, Double.class);
                 }
             }
-            SimpleFeatureType newFeatureType = builder.buildFeatureType();
-            FeatureIterator<SimpleFeature> features = transects.features();
-            AttributeGetter attGet = new AttributeGetter(newFeatureType);
-            while (features.hasNext()) {
-                SimpleFeature next = features.next();
-                Object transectId = attGet.getValue(Constants.TRANSECT_ID_ATTR, next);
-                long id = -1;
-                if (transectId instanceof Integer) {
-                    id = new Long(((Integer)transectId).longValue());
-                }
-                else if (transectId instanceof Long) {
-                    id = (Long)transectId;
-                }
+            SimpleFeatureType joinedFeatureType = builder.buildFeatureType();
+            
+            SortedMap<Double, List<Object>> distanceToAttribureMap = new TreeMap<Double, List<Object>>();
+            FeatureIterator<SimpleFeature> features = null;
+            try { 
+                features = transects.features();
+                AttributeGetter getter = new AttributeGetter(joinedFeatureType);
+                while (features.hasNext()) {
+                    SimpleFeature feature = features.next();
+                    Object transectIdAsObject = getter.getValue(Constants.TRANSECT_ID_ATTR, feature);
+                    long transectId = ((Number)transectIdAsObject).longValue();
+                    Double baseDistance = (Double)getter.getValue(Constants.BASELINE_DIST_ATTR, feature);
+                    if (baseDistance == null) {
+                        throw new UnsupportedFeatureTypeException("Transects must include base_dist attribute");
+                    }
+                    Double[] values = resultMap.get(transectId);
+                    List<Object> joinedAttributes = new ArrayList<Object>(joinedFeatureType.getAttributeCount());
+                    joinedAttributes.addAll(feature.getAttributes());
+                    joinedAttributes.addAll(Arrays.asList(values));
+                    distanceToAttribureMap.put(baseDistance, joinedAttributes);
                 
-                Double baseDist = (Double)attGet.getValue(Constants.BASELINE_DIST_ATTR, next);
-                if (baseDist == null) {
-                    throw new UnsupportedFeatureTypeException("Transects must include base_dist attribute");
                 }
-                
-                Double[] values = resultMap.get(id);
-                Object[] joinedAttrs = new Object[next.getAttributeCount() + values.length];
-                List<Object> oldAttributes = next.getAttributes();
-                oldAttributes.addAll(Arrays.asList(values));
-                oldAttributes.toArray(joinedAttrs);
-                SimpleFeature feature = SimpleFeatureBuilder.build(newFeatureType, joinedAttrs, null);
-                sfMap.put(baseDist, feature);
+            } finally {
+                if (features != null) { features.close(); }
             }
-            return new ArrayList<SimpleFeature>(sfMap.values());
+            int joinedFeatureCount = distanceToAttribureMap.size();
+            SequentialFeatureIDGenerator fidGenerator = new SequentialFeatureIDGenerator(joinedFeatureCount);
+            List<SimpleFeature> joinedFeatureList = new ArrayList<SimpleFeature>(distanceToAttribureMap.size()); 
+            for (List<Object> attributes : distanceToAttribureMap.values()) {
+                joinedFeatureList.add(SimpleFeatureBuilder.build(
+                        joinedFeatureType,
+                        attributes,
+                        fidGenerator.next()));
+            }
+            
+            return joinedFeatureList;
         }
 
         private String[] getColumnHeaders(String results) {
@@ -239,6 +248,24 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                 header[i] = header[i].replaceAll("\"", "");
             }
             return header;
+        }
+    }
+    
+    public static class SequentialFeatureIDGenerator {
+        final String base;
+        final int digits;
+        final int count;
+        int index = 0;
+        public SequentialFeatureIDGenerator(int featureCount) {
+            this.count = featureCount;
+            this.base = SimpleFeatureBuilder.createDefaultFeatureId() + "-";
+            this.digits = (int)Math.ceil(Math.log10(featureCount));
+        }
+        public String next() {
+            if (index < count) {
+                return base + StringUtils.leftPad(Integer.toString(index++), digits, '0');
+            }
+            throw new NoSuchElementException("FIDs have been exhausted for this generator: " + index++ + " < " + count);
         }
     }
 }

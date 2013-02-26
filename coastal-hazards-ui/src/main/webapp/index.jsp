@@ -32,13 +32,13 @@
             <jsp:param name="shortName" value="USGS Coastal Change Hazards" />
             <jsp:param name="title" value="USGS Coastal Change Hazards" />
             <jsp:param name="description" value="" />
-            <jsp:param name="author" value="" />
+            <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Jordan Read, Carl Schroedl" />
             <jsp:param name="keywords" value="" />
             <jsp:param name="publisher" value="" />
             <jsp:param name="revisedDate" value="" />
             <jsp:param name="nextReview" value="" />
             <jsp:param name="expires" value="never" />
-            <jsp:param name="development" value="true" />
+            <jsp:param name="development" value="" />
         </jsp:include>
         <jsp:include page="js/jquery/jquery.jsp">
             <jsp:param name="relPath" value="" />
@@ -402,8 +402,8 @@
                 <jsp:include page="template/USGSFooter.jsp">
                     <jsp:param name="relPath" value="" />
                     <jsp:param name="header-class" value="" />
-                    <jsp:param name="site-url" value="" />
-                    <jsp:param name="contact-info" value="" />
+                    <jsp:param name="site-url" value="http://cida.usgs.gov/DSASweb/" />
+                    <jsp:param name="contact-info" value="<a href='mailto:jread@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Jordan Read</a>" />
                 </jsp:include>
             </div>
         </div>

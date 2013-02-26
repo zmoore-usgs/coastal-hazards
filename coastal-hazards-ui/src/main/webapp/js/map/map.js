@@ -5,7 +5,8 @@ var Map = function() {
     
     LOG.debug('Map.js::constructor:Loading Map object');
     me.map = new OpenLayers.Map('map', {
-        projection : "EPSG:900913"
+        projection : "EPSG:900913",
+        displayProjection : new OpenLayers.Projection("EPSG:900913")
     });
     LOG.debug('Map.js::constructor:Creating base layer');
     me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
