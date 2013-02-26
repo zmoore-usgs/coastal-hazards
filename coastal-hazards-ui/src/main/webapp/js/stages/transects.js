@@ -56,12 +56,12 @@ var Transects = {
                         strokeColor: '#A1A1A1',
                         strokeOpacity: 0.25
                     }
-                })
-                selectedFeature.geometry.addComponents([angleGeometry1, angleGeometry2])
+                });
+                selectedFeature.geometry.addComponents([angleGeometry1, angleGeometry2]);
                 angleLayer.addFeatures([selectedFeature]);
                 angleLayer.type = "transects";
                 CONFIG.map.getMap().addLayer(angleLayer);
-                var snapControl = CONFIG.map.getMap().getControlsBy('id', 'snap-control')[0]
+                var snapControl = CONFIG.map.getMap().getControlsBy('id', 'snap-control')[0];
                 snapControl.addTargetLayer(angleLayer);
             },
             onUnselect: function(feature) {
