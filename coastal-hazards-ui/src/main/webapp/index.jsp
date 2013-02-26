@@ -70,9 +70,9 @@
 
         <script type="text/javascript">
             var splashUpdate = function(message) {
-                $('#splash-status-update').html(message)
-            }
-            splashUpdate("Loading application...")
+                $('#splash-status-update').html(message);
+            };
+            splashUpdate("Loading application...");
         </script>
 
         <div class="container-fluid">
@@ -270,7 +270,7 @@
                                             </select>
                                         </div>
                                         <button class="btn btn-success" id="transects-edit-save-button" title="Update Modified Transect">Update Transect</button>
-                                        <button class="btn btn-success" id="transects-edit-add-button" title="Add Transect">Add Transect</button>
+                                        <button class="btn btn-success" id="transects-edit-add-button" title="Add Transect" data-toggle="button">Add Transect</button>
                                     </div>
 
                                     <div id="create-transects-panel-well" class="row-fluid  hidden">
@@ -421,48 +421,48 @@
 
 
     </body>
-    <script type="text/javascript">splashUpdate("Loading Graphing Utilities...")</script>
+    <script type="text/javascript">splashUpdate("Loading Graphing Utilities...");</script>
     <jsp:include page="js/dygraphs/dygraphs.jsp">
         <jsp:param name="debug-qualifier" value="true" />
     </jsp:include>
 
-    <script type="text/javascript">splashUpdate("Loading Logging...")</script>
+    <script type="text/javascript">splashUpdate("Loading Logging...");</script>
     <jsp:include page="js/log4javascript/log4javascript.jsp">
         <jsp:param name="relPath" value="" />
     </jsp:include>
 
-    <script type="text/javascript">splashUpdate("Loading Sorting Tables...")</script>
+    <script type="text/javascript">splashUpdate("Loading Sorting Tables...");</script>
     <jsp:include page="js/jquery-tablesorter/package.jsp">
         <jsp:param name="relPath" value="" />
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
 
-    <script type="text/javascript">splashUpdate("Loading JQuery UI...")</script>
+    <script type="text/javascript">splashUpdate("Loading JQuery UI...");</script>
     <script type="text/javascript" src="js/jquery-ui/jquery-ui-1.10.0.custom.min.js"></script>
 
-    <script type="text/javascript">splashUpdate("Loading UI Framework...")</script>
+    <script type="text/javascript">splashUpdate("Loading UI Framework...");</script>
     <jsp:include page="js/bootstrap/package.jsp">
         <jsp:param name="relPath" value="" />
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
 
-    <script type="text/javascript">splashUpdate("Loading Geospatial Framework...")</script>
+    <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
     <jsp:include page="js/openlayers/openlayers.jsp">
         <jsp:param name="debug-qualifier" value="false" />
     </jsp:include>
 
-    <script type="text/javascript">splashUpdate("Loading JS Utilities...")</script>
+    <script type="text/javascript">splashUpdate("Loading JS Utilities...");</script>
     <jsp:include page="js/sugar/sugar.jsp">
         <jsp:param name="relPath" value="" />
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
 
     <!-- TODO - Modularize -->
-    <script type="text/javascript">splashUpdate("Loading Upload Management...")</script>
+    <script type="text/javascript">splashUpdate("Loading Upload Management...");</script>
     <script type="text/javascript" src="js/jquery-fineuploader/jquery.fineuploader-3.0.js"></script>
 
     <script type="text/javascript">
-        splashUpdate("Setting configuration...")
+        splashUpdate("Setting configuration...");
         var CONFIG = Object.extended();
         
         CONFIG.development = <%= development%>;
@@ -486,7 +486,7 @@
             transects : [],
             calculation : [],
             results : []
-        }
+        };
             
         JSON.stringify = JSON.stringify || function (obj) {
             var t = typeof (obj);
@@ -510,35 +510,35 @@
 
             
     </script>
-    <script type="text/javascript">splashUpdate("Loading UI module...")</script>
+    <script type="text/javascript">splashUpdate("Loading UI module...");</script>
     <script type="text/javascript" src="js/ui/ui.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Utilities module...")</script>
+    <script type="text/javascript">splashUpdate("Loading Utilities module...");</script>
     <script type="text/javascript" src="js/util/util.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Mapping module...")</script>
+    <script type="text/javascript">splashUpdate("Loading Mapping module...");</script>
     <script type="text/javascript" src="js/map/map.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Session Management module...")</script>
+    <script type="text/javascript">splashUpdate("Loading Session Management module...");</script>
     <script type="text/javascript" src="js/session/session.js"></script>
-    <script type="text/javascript">splashUpdate("Loading OWS module...")</script>
+    <script type="text/javascript">splashUpdate("Loading OWS module...");</script>
     <script type="text/javascript" src="js/ows/ows.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Shorelines module...")</script>
+    <script type="text/javascript">splashUpdate("Loading Shorelines module...");</script>
     <script type="text/javascript" src="js/stages/shorelines.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Baseline module...")</script>
+    <script type="text/javascript">splashUpdate("Loading Baseline module...");</script>
     <script type="text/javascript" src="js/stages/baseline.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Transects module...")</script>
+    <script type="text/javascript">splashUpdate("Loading Transects module...");</script>
     <script type="text/javascript" src="js/stages/transects.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Calculation module...")</script>
+    <script type="text/javascript">splashUpdate("Loading Calculation module...");</script>
     <script type="text/javascript" src="js/stages/calculation.js"></script>
-    <script type="text/javascript">splashUpdate("Loading Results module...")</script>
+    <script type="text/javascript">splashUpdate("Loading Results module...");</script>
     <script type="text/javascript" src="js/stages/results.js"></script>
 
     <!-- TODO - Modularize -->
-    <script type="text/javascript">splashUpdate("Loading JQuery UI CSS...")</script>
+    <script type="text/javascript">splashUpdate("Loading JQuery UI CSS...");</script>
     <link type="text/css" rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
-    <script type="text/javascript">splashUpdate("Loading Toggle plugin...")</script>
+    <script type="text/javascript">splashUpdate("Loading Toggle plugin...");</script>
     <link type="text/css" rel="stylesheet" href="js/bootstrap-switch/static/stylesheets/bootstrapSwitch.css" />
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
-<script type="text/javascript">splashUpdate("Loading Application-specific CSS...")</script>
+<script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
 <link type="text/css" rel="stylesheet" href="css/custom.css" />
-<script type="text/javascript">splashUpdate("Loading Main module...")</script>
+<script type="text/javascript">splashUpdate("Loading Main module...");</script>
 <script type="text/javascript" src="js/onReady.js"></script>
 </html>

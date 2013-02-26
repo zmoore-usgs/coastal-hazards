@@ -14,7 +14,7 @@ var Transects = {
         $('#transect-edit-form-toggle').on('click', Transects.editButtonToggled);
         $('#create-transects-toggle').on('click', Transects.createTransectsButtonToggled);
         $('#create-transects-input-button').on('click', Transects.createTransectSubmit);
-        $('#transects-edit-add-button').on('click', Transects.addTransect);
+        $('#transects-edit-add-button').on('click', Transects.addTransectButtonToggled);
 
         $('#create-transects-button').popover({
             title: Transects.stage.capitalize() + ' Generate',
@@ -224,85 +224,89 @@ var Transects = {
             Transects.deactivateHighlightControl();
         }
     },
-    addTransect: function() {
-        var cloneLayer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
-        Transects.deactivateSelectControl();
-        var drawControl = new OpenLayers.Control.DrawFeature(
-                cloneLayer,
-                OpenLayers.Handler.Path,
-                {
-                    id: 'transects-draw-control',
-                    multi: true,
-                    handlerOptions: {
-                        maxVertices: 2
-                    },
-                    featureAdded: function(addedFeature) {
-                        LOG.debug('Transects.js::featureAdded: A new transect has been added');
-                        var baseline = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
-                        var editLayer = CONFIG.map.getMap().getLayersBy('name', "transects-edit-layer")[0];
+    addTransectButtonToggled: function(event) {
+        if (!$(this).hasClass('active')) {
+            var cloneLayer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
+            Transects.deactivateSelectControl();
+            var drawControl = new OpenLayers.Control.DrawFeature(
+                    cloneLayer,
+                    OpenLayers.Handler.Path,
+                    {
+                        id: 'transects-draw-control',
+                        multi: true,
+                        handlerOptions: {
+                            maxVertices: 2
+                        },
+                        featureAdded: function(addedFeature) {
+                            LOG.debug('Transects.js::featureAdded: A new transect has been added');
+                            var baseline = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
+                            var editLayer = CONFIG.map.getMap().getLayersBy('name', "transects-edit-layer")[0];
 
-                        LOG.trace('Transects.js::featureAdded: Trying to figure out how many transects we have at this point');
-                        var editFeatureCount = editLayer.features.length;
-                        editLayer.highestFid = editLayer.highestFid ? editLayer.highestFid + 1 : editFeatureCount + 1;
-                        LOG.trace('Transects.js::featureAdded: The transect being added is # ' + editLayer.highestFid);
-                        
-                        LOG.trace('Transects.js::featureAdded: Trying to find the baseline segment that the new transect is touching');
-                        var baselineFeature = baseline.features.find(
-                                function(baselineFeature) {
-                                    return baselineFeature.geometry.distanceTo(addedFeature.geometry) === 0;
-                                }
-                        );
+                            LOG.trace('Transects.js::featureAdded: Trying to figure out how many transects we have at this point');
+                            var editFeatureCount = editLayer.features.length;
+                            editLayer.highestFid = editLayer.highestFid ? editLayer.highestFid + 1 : editFeatureCount + 1;
+                            LOG.trace('Transects.js::featureAdded: The transect being added is # ' + editLayer.highestFid);
 
-                        addedFeature.attributes.TransectID = parseInt(editLayer.highestFid);
-                        if (baselineFeature) {
-                            LOG.trace('Transects.js::featureAdded: It looks like the new transect added does touch a baseline section');
-                            LOG.trace('Transects.js::featureAdded: Grab info from the baseline feature to add to the transect');
-                            addedFeature.attributes.Orient = baselineFeature.attributes.Orient;
-                            addedFeature.attributes.BaselineID = baselineFeature.fid;
+                            LOG.trace('Transects.js::featureAdded: Trying to find the baseline segment that the new transect is touching');
+                            var baselineFeature = baseline.features.find(
+                                    function(baselineFeature) {
+                                        return baselineFeature.geometry.distanceTo(addedFeature.geometry) === 0;
+                                    }
+                            );
 
-                            LOG.trace('Transects.js::featureAdded: Between the two points on the transect, figure out which point touches the baseline');
-                            var transectPoint0 = addedFeature.geometry.components[0].components[0];
-                            var transectPoint1 = addedFeature.geometry.components[0].components[1];
-                            var blDist0 = baselineFeature.geometry.components[0].distanceTo(transectPoint0);
-                            var blDist1 = baselineFeature.geometry.components[0].distanceTo(transectPoint1);
-                            var workingPoint = addedFeature.geometry.components[0].components[blDist0 < blDist1 ? 0 : 1];
+                            addedFeature.attributes.TransectID = parseInt(editLayer.highestFid);
+                            if (baselineFeature) {
+                                LOG.trace('Transects.js::featureAdded: It looks like the new transect added does touch a baseline section');
+                                LOG.trace('Transects.js::featureAdded: Grab info from the baseline feature to add to the transect');
+                                addedFeature.attributes.Orient = baselineFeature.attributes.Orient;
+                                addedFeature.attributes.BaselineID = baselineFeature.fid;
 
-                            LOG.trace('Transects.js::featureAdded: The WFS getcaps response holds the native SRS proj of the transects layer, which is needed');
-                            var workspaceNS = CONFIG.ows.featureTypeDescription[baseline.name.split(':')[0]][baseline.name.split(':')[1]].targetNamespace;
-                            var transectLayerInfo = CONFIG.ows.wfsCapabilities.featureTypeList.featureTypes.find(function(ft) {
-                                return ft.featureNS === workspaceNS && ft.name === editLayer.cloneOf.split(':')[1];
-                            });
-                            var transectSRID = transectLayerInfo.srs.from(transectLayerInfo.srs.lastIndexOf(':') + 1);
-                            var baselineSRID = baseline.projection.projCode.split(':')[1];
+                                LOG.trace('Transects.js::featureAdded: Between the two points on the transect, figure out which point touches the baseline');
+                                var transectPoint0 = addedFeature.geometry.components[0].components[0];
+                                var transectPoint1 = addedFeature.geometry.components[0].components[1];
+                                var blDist0 = baselineFeature.geometry.components[0].distanceTo(transectPoint0);
+                                var blDist1 = baselineFeature.geometry.components[0].distanceTo(transectPoint1);
+                                var workingPoint = addedFeature.geometry.components[0].components[blDist0 < blDist1 ? 0 : 1];
 
-                            LOG.trace('Transects.js::featureAdded: We need to move the point connected on the baseline to a baseline in the UTM projection');
-                            CONFIG.ows.projectPointOnLine({
-                                'workspaceNS': workspaceNS,
-                                'layer': baseline.name,
-                                'point': 'SRID=' + baselineSRID + ';POINT(' + workingPoint.x + ' ' + workingPoint.y + ')',
-                                'transectSRID': transectSRID,
-                                callbacks: {
-                                    'success': [function(data) {
-                                            // If the data is in string format, this means the process succeeded
-                                            // TODO - Handle when the process did not succeed
-                                            if (typeof data === 'string') {
-                                                var slicedData = data.from(data.indexOf('(') + 1);
-                                                var newPoint = slicedData.substring(0, slicedData.length - 1).split(' ');
-                                                workingPoint.x = newPoint[0];
-                                                workingPoint.y = newPoint[1];
-                                                workingPoint.clearBounds();
-                                            }
-                                        }]
-                                }
-                            });
-                        } else {
-                            addedFeature.attributes.Orient = 'seaward';
+                                LOG.trace('Transects.js::featureAdded: The WFS getcaps response holds the native SRS proj of the transects layer, which is needed');
+                                var workspaceNS = CONFIG.ows.featureTypeDescription[baseline.name.split(':')[0]][baseline.name.split(':')[1]].targetNamespace;
+                                var transectLayerInfo = CONFIG.ows.wfsCapabilities.featureTypeList.featureTypes.find(function(ft) {
+                                    return ft.featureNS === workspaceNS && ft.name === editLayer.cloneOf.split(':')[1];
+                                });
+                                var transectSRID = transectLayerInfo.srs.from(transectLayerInfo.srs.lastIndexOf(':') + 1);
+                                var baselineSRID = baseline.projection.projCode.split(':')[1];
+
+                                LOG.trace('Transects.js::featureAdded: We need to move the point connected on the baseline to a baseline in the UTM projection');
+                                CONFIG.ows.projectPointOnLine({
+                                    'workspaceNS': workspaceNS,
+                                    'layer': baseline.name,
+                                    'point': 'SRID=' + baselineSRID + ';POINT(' + workingPoint.x + ' ' + workingPoint.y + ')',
+                                    'transectSRID': transectSRID,
+                                    callbacks: {
+                                        'success': [function(data) {
+                                                // If the data is in string format, this means the process succeeded
+                                                // TODO - Handle when the process did not succeed
+                                                if (typeof data === 'string') {
+                                                    var slicedData = data.from(data.indexOf('(') + 1);
+                                                    var newPoint = slicedData.substring(0, slicedData.length - 1).split(' ');
+                                                    workingPoint.x = newPoint[0];
+                                                    workingPoint.y = newPoint[1];
+                                                    workingPoint.clearBounds();
+                                                }
+                                            }]
+                                    }
+                                });
+                            } else {
+                                addedFeature.attributes.Orient = 'seaward';
+                            }
+
                         }
-
-                    }
-                });
-                CONFIG.map.addControl(drawControl);
-                drawControl.activate();
+                    });
+                    CONFIG.map.addControl(drawControl);
+                    drawControl.activate();
+                } else {
+                    Transects.removeDrawControl();
+                }
             },
             saveEditedLayer: function() {
                 LOG.debug('Baseline.js::saveEditedLayer: Edit layer save button clicked');
