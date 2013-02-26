@@ -34,7 +34,7 @@ var Baseline = {
             delay : {
                 show : CONFIG.popupHoverDelay
             }
-        })
+        });
         
         Baseline.baselineEditButton.popover({
             title : Baseline.stage.capitalize() + ' Edit',
@@ -47,7 +47,7 @@ var Baseline = {
             delay : {
                 show : CONFIG.popupHoverDelay
             }
-        })
+        });
         
         Baseline.baselineCloneButton.popover({
             title : Baseline.stage.capitalize() + ' Clone',
@@ -60,7 +60,7 @@ var Baseline = {
             delay : {
                 show : CONFIG.popupHoverDelay
             }
-        })
+        });
         
         var sessionKey = CONFIG.tempSession.getCurrentSessionKey();
         var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
@@ -77,8 +77,8 @@ var Baseline = {
             }),
             onFeatureInsert : function(feature) {
                 var indexOfFeatureInLayer = feature.layer.features.findIndex(function(f) {
-                    return f.id == feature.id
-                })
+                    return f.id == feature.id;
+                });
                 feature.attributes['Orient'] = 'seaward';
                 feature.attributes['ID'] = indexOfFeatureInLayer + 1;
             }
@@ -112,13 +112,17 @@ var Baseline = {
         CONFIG.ui.switchTab({
             caller : Baseline,
             tab : 'view'
-        })
+        });
     },
     leaveStage : function() {
         LOG.debug('Baseline.js::leaveStage');
         Baseline.deactivateHighlightControl();
+        Baseline.stopDrawing();
         if ($('#baseline-edit-button').hasClass('active')) {
             $('#baseline-edit-button').trigger('click');
+        }
+        if ($('#baseline-draw-btn').hasClass('active')) {
+            $('#baseline-draw-btn').trigger('click');
         }
     },
     
