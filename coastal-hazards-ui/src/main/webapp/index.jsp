@@ -38,7 +38,7 @@
             <jsp:param name="revisedDate" value="" />
             <jsp:param name="nextReview" value="" />
             <jsp:param name="expires" value="never" />
-            <jsp:param name="development" value="" />
+            <jsp:param name="development" value="<%= development %>" />
         </jsp:include>
         <jsp:include page="js/jquery/jquery.jsp">
             <jsp:param name="relPath" value="" />
