@@ -266,7 +266,10 @@ var Transects = {
                                 var transectPoint1 = addedFeature.geometry.components[0].components[1];
                                 var blDist0 = baselineFeature.geometry.components[0].distanceTo(transectPoint0);
                                 var blDist1 = baselineFeature.geometry.components[0].distanceTo(transectPoint1);
-                                var workingPoint = addedFeature.geometry.components[0].components[blDist0 < blDist1 ? 0 : 1];
+                                if (blDist0 > blDist1) {
+                                    addedFeature.geometry.components[0].components.reverse();
+                                }
+                                var workingPoint = addedFeature.geometry.components[0].components[0];
 
                                 LOG.trace('Transects.js::featureAdded: The WFS getcaps response holds the native SRS proj of the transects layer, which is needed');
                                 var workspaceNS = CONFIG.ows.featureTypeDescription[baseline.name.split(':')[0]][baseline.name.split(':')[1]].targetNamespace;
@@ -414,8 +417,8 @@ var Transects = {
                                         LOG.warn('Transects.js::saveEditedLayer: There was an error in retrieving the WMS capabilities for your session. This is probably be due to a new session. Subsequent loads should not see this error');
                                     }]
                             }
-                        })
-                    }, 'json')
+                        });
+                    }, 'json');
                 });
 
                 saveStrategy.save();
@@ -431,17 +434,17 @@ var Transects = {
                         success: [
                             CONFIG.tempSession.updateLayersFromWMS,
                             function(caps, context) {
-                                LOG.info('Transects.js::refreshFeatureList: WMS GetCapabilities response parsed')
+                                LOG.info('Transects.js::refreshFeatureList: WMS GetCapabilities response parsed');
                                 Transects.populateFeaturesList(caps);
 
                                 if (selectLayer) {
-                                    LOG.info('Transects.js::refreshFeatureList: Auto-selecting layer ' + selectLayer)
+                                    LOG.info('Transects.js::refreshFeatureList: Auto-selecting layer ' + selectLayer);
                                     $('#transects-list').children().each(function(i, v) {
                                         if (v.value === selectLayer) {
                                             LOG.debug('Triggering "select" on featurelist option');
                                             $('#transects-list').val(v.value);
                                         }
-                                    })
+                                    });
                                 } else {
                                     $('#transects-list').val('');
                                 }
@@ -452,7 +455,7 @@ var Transects = {
                             LOG.warn('Transects.js::refreshFeatureList: WMS GetCapabilities could not be attained')
                         ]
                     }
-                })
+                });
             },
             addTransects: function(args) {
                 var transects = new OpenLayers.Layer.Vector(args.name, {
@@ -479,12 +482,53 @@ var Transects = {
                 CONFIG.tempSession.getStage(Transects.stage).viewing = args.name;
                 CONFIG.tempSession.persistSession();
             },
+            removeResource: function(args) {
+                args = args || {};
+                var layer = args.layer || $('#transects-list option:selected')[0].text;
+                var store = args.store || 'ch-input';
+                var callbacks = args.callbacks || [
+                    function(data, textStatus, jqXHR) {
+                        CONFIG.ui.showAlert({
+                            message: 'Transect removed',
+                            caller: Transects,
+                            displayTime: 4000,
+                            style: {
+                                classes: ['alert-success']
+                            }
+                        });
+
+                        $('#transects-list').val('');
+                        CONFIG.ui.switchTab({
+                            caller: Transects,
+                            tab: 'view'
+                        });
+                        Transects.refreshFeatureList();
+                    }
+                ];
+
+                try {
+                    CONFIG.tempSession.removeResource({
+                        store: store,
+                        layer: layer,
+                        callbacks: callbacks
+                    });
+                } catch (ex) {
+                    CONFIG.ui.showAlert({
+                        message: 'Remove Failed - ' + ex,
+                        caller: Transects,
+                        displayTime: 4000,
+                        style: {
+                            classes: ['alert-error']
+                        }
+                    });
+                }
+            },
             removeTransects: function() {
                 CONFIG.map.getMap().getLayersBy('type', 'transects').each(function(layer) {
                     CONFIG.map.getMap().removeLayer(layer, false);
                     CONFIG.tempSession.getStage(Transects.stage).viewing = layer.name;
                     CONFIG.tempSession.persistSession();
-                })
+                });
             },
             populateFeaturesList: function() {
                 CONFIG.ui.populateFeaturesList({
@@ -517,7 +561,7 @@ var Transects = {
                     var name = $("#transects-list option:selected")[0].value;
                     Transects.addTransects({
                         name: name
-                    })
+                    });
                     CONFIG.tempSession.getStage(Transects.stage).viewing = name;
                     CONFIG.tempSession.persistSession();
                     Transects.enableEditButton();
@@ -529,12 +573,15 @@ var Transects = {
             disableEditButton: function() {
                 if ($('#transect-edit-form-toggle').hasClass('active')) {
                     $('#transect-edit-form-toggle').trigger('click');
+                    if ($('#transects-edit-add-button').hasClass('active')) {
+                        $('#transects-edit-add-button').hasClass('active').trigger('click');
+                    }
                 }
                 $('#transect-edit-form-toggle').attr('disabled', 'disabled');
             },
             enableCreateTransectsButton: function() {
                 LOG.info('Transects.js::enableCreateTransectsButton: Baseline has been added to the map. Enabling create transect button');
-                $('#create-transects-toggle').removeAttr('disabled')
+                $('#create-transects-toggle').removeAttr('disabled');
 
             },
             disableCreateTransectsButton: function() {
@@ -877,9 +924,9 @@ var Transects = {
             initializeUploader: function(args) {
                 CONFIG.ui.initializeUploader($.extend({
                     caller: Transects
-                }, args))
+                }, args));
             },
             getActive: function() {
                 return $("#transects-list option:selected").first().val();
             }
-        }
+        };
