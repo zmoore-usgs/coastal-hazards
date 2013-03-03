@@ -100,9 +100,9 @@ var Transects = {
         var toggledOn = $(event.currentTarget).hasClass('active') ? false : true;
         if (toggledOn) {
             LOG.debug('Transects.js::editButtonToggled: Edit form was toggled on');
-            
+
             Transects.disableUpdateTransectsButton();
-            
+
             if ($('#create-transects-toggle').hasClass('active')) {
                 $('#create-transects-toggle').trigger('click');
             }
@@ -239,7 +239,7 @@ var Transects = {
                         multi: true,
                         handlerOptions: {
                             maxVertices: 2,
-                            dblclick : function(evt) {
+                            dblclick: function(evt) {
                                 // We do not want to begin drawing another transect
                                 // on click. Therefore, when a double click does occur,
                                 // destroy the point the first click made and get out
@@ -271,7 +271,7 @@ var Transects = {
                                 LOG.trace('Transects.js::featureAdded: Grab info from the baseline feature to add to the transect');
                                 addedFeature.attributes.Orient = baselineFeature.attributes.Orient;
                                 addedFeature.attributes.BaselineID = baselineFeature.fid;
-                                
+
                                 Transects.enableUpdateTransectsButton();
 
                                 LOG.trace('Transects.js::featureAdded: Between the two points on the transect, figure out which point touches the baseline');
@@ -348,6 +348,9 @@ var Transects = {
                     LOG.debug('Transects.js::saveEditedLayer: Receieved response from updateTransectsAndIntersections WPS');
 
                     Calculation.clear();
+                    if ($('#transects-edit-add-button').hasClass('active')) {
+                        $('#transects-edit-add-button').trigger('click');
+                    }
                     var intersectionsList = CONFIG.ui.populateFeaturesList({
                         caller: Calculation,
                         stage: 'intersections'
@@ -701,8 +704,9 @@ var Transects = {
             createTransectSubmit: function(event) {
                 Transects.clearSubsequentStages();
                 var visibleShorelines = $('#shorelines-list :selected').map(function(i, v) {
-                    return v.value
-                })
+                    return v.value;
+                });
+
                 var baseline = $('#baseline-list :selected')[0].value;
                 var spacing = $('#create-transects-input-spacing').val() || 0;
                 var layerName = $('#create-transects-input-name').val();
