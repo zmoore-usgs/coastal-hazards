@@ -235,7 +235,11 @@ var Transects = {
                         id: 'transects-draw-control',
                         multi: true,
                         handlerOptions: {
-                            maxVertices: 2
+                            maxVertices: 2,
+                            dblclick : function(evt) {
+                                this.destroyFeature(true);
+                                return false;
+                            }
                         },
                         featureAdded: function(addedFeature) {
                             LOG.debug('Transects.js::featureAdded: A new transect has been added');
