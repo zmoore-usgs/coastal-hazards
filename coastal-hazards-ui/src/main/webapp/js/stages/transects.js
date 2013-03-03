@@ -79,7 +79,13 @@ var Transects = {
         CONFIG.ui.switchTab({
             stage: 'transects',
             tab: 'view'
-        })
+        });
+        
+        if ($('#shorelines-list').val() && $('#baseline-list').val()) {
+            Transects.enableUploadButton();
+        } else {
+            Transects.disableUploadButton();
+        }
     },
     leaveStage: function() {
         LOG.debug('Transects.js::leaveStage');
@@ -951,6 +957,12 @@ var Transects = {
                         '</wps:Execute>';
 
                 return request;
+            },
+            enableUploadButton: function() {
+                $('#transects-triggerbutton').removeAttr('disabled');
+            },
+            disableUploadButton: function() {
+                $('#transects-triggerbutton').attr('disabled', 'disabled');
             },
             initializeUploader: function(args) {
                 CONFIG.ui.initializeUploader($.extend({
