@@ -503,10 +503,10 @@ var Results = {
         LOG.debug('Results.js::createResultsTable:: Creating new tab for new results table. Removing old result tabs');
         navTabs.children().each(function(i,navTab) {
             $(navTab).remove();
-        })
+        });
         tabContent.children().each(function(i, tc) {
             $(tc).remove();
-        })
+        });
 
         var navTabTable = $('<li />');
         var navTabPlot = $('<li />').addClass('active');
@@ -551,6 +551,7 @@ var Results = {
         '</wps:Body>' + 
         '</wps:Reference>' + 
         '</wps:Input>' + 
+        
         '<wps:Input>' + 
         '<ows:Identifier>ci</ows:Identifier>' + 
         '<wps:Data>' + 
@@ -566,6 +567,17 @@ var Results = {
         '</wps:Execute>]]></wps:Body>' + 
         '</wps:Reference>' +         
         '</wps:Input>'+
+        
+        '<wps:Input>' + 
+        '<ows:Identifier>intersects</ows:Identifier>' + 
+        '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
+        '<wps:Body>' + 
+        '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+intersects.split(':')[0]+'="gov.usgs.cida.ch.'+intersects.split(':')[0]+'">' + 
+        '<wfs:Query typeName="'+intersects+'" />' + 
+        '</wfs:GetFeature>' + 
+        '</wps:Body>' + 
+        '</wps:Reference>' + 
+        '</wps:Input>' +  
         
         '<wps:Input>' + 
         '<ows:Identifier>transects</ows:Identifier>' + 
