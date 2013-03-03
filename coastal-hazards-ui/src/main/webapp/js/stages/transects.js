@@ -768,7 +768,6 @@ var Transects = {
                                                     $('#transects-list').trigger('change');
                                                     $('#intersections-list').trigger('change');
                                                     $('#stage-select-tablist a[href="#calculation"]').trigger('click');
-                                                    $('a[href="#' + Calculation.stage + '-view-tab"]').tab('show');
 
                                                     CONFIG.ui.showAlert({
                                                         message: 'Intersection calculation succeeded.',
