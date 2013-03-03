@@ -237,6 +237,10 @@ var Transects = {
                         handlerOptions: {
                             maxVertices: 2,
                             dblclick : function(evt) {
+                                // We do not want to begin drawing another transect
+                                // on click. Therefore, when a double click does occur,
+                                // destroy the point the first click made and get out
+                                // of draw mode
                                 this.destroyFeature(true);
                                 return false;
                             }
@@ -304,7 +308,14 @@ var Transects = {
                                     }
                                 });
                             } else {
-                                addedFeature.attributes.Orient = 'seaward';
+                                // The baseline was not hit. This feature needs 
+                                // to be removed from the features array
+                                addedFeature.destroy();
+                                CONFIG.ui.showAlert({
+                                    message: 'Intersection did not touch baseline',
+                                    displayTime: 7500,
+                                    caller: Transects
+                                });
                             }
 
                         }
