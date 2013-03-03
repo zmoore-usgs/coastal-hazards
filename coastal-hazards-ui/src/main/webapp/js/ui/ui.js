@@ -179,22 +179,33 @@ var UI = function() {
                 }
             }
         },
-        initializeUploader : function(args) {
-            LOG.info('UI.js::initializeUploader: Initializing uploader for the '  + context + ' context');
+        initializeUploader: function(args) {
+            LOG.info('UI.js::initializeUploader: Initializing uploader for the ' + context + ' context');
             var caller = args.caller;
             var context = caller.stage;
-            
+
             var uploader = new qq.FineUploader({
                 element: document.getElementById(context + '-uploader'),
                 request: {
-                    endpoint: 'service/upload'
+                    endpoint: 'service/upload',
+                    params: {
+                        'response.encoding': 'json',
+                        'filename.param': 'qqfile',
+                        'overwrite.existing.layer': 'true',
+                        'workspace': CONFIG.tempSession.getCurrentSessionKey(),
+                        'store': 'ch-input',
+                        'srs': CONFIG.map.getMap().getProjection(),
+                        'use.crs.failover': 'true',
+                        'projection.policy': 'reproject',
+                        'layer': '' // Use the file name for the name
+                    }
                 },
                 validation: {
                     allowedExtensions: ['zip']
                 },
-                multiple : false,
+                multiple: false,
                 autoUpload: true,
-                caller : caller,
+                caller: caller,
                 text: {
                     uploadButton: '<i class="icon-upload icon-white"></i>Upload'
                 },
@@ -204,90 +215,73 @@ var UI = function() {
                 },
                 callbacks: {
                     onComplete: function(id, fileName, responseJSON) {
-                        if (responseJSON.success != 'true') {
-                            LOG.warn('File failed to complete upload')
-                        } else {
-                            LOG.info("UI.js::initializeUploader: Upload complete: File token returned: :" + responseJSON['file-token']);
-                            
-                            var importName = responseJSON['file-name'].split('.')[0] + '_' + context;
-                            caller.removeResource({
-                                layer : importName,
-                                callbacks : [
-                                function() {
-                                    CONFIG.ows.importFile({
-                                        'file-token' : responseJSON['file-token'],
-                                        importName : importName, 
-                                        workspace : CONFIG.tempSession.getCurrentSessionKey(),
-                                        callbacks : [
-                                        function(data) {
-                                            if (data.success === 'true') {
-                                                LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
-                                                CONFIG.ows.getWMSCapabilities({
-                                                    namespace : CONFIG.tempSession.getCurrentSessionKey(),
-                                                    layerName : data,
-                                                    callbacks : {
-                                                        success : [
-                                                        function (args) {
-                                                            CONFIG.ui.showAlert({
-                                                                message : 'Upload Successful',
-                                                                caller : caller,
-                                                                displayTime : 3000,
-                                                                style: {
-                                                                    classes : ['alert-success']
-                                                                }
-                                                            })
-                                                            CONFIG.tempSession.updateLayersFromWMS(args);
-                                                            CONFIG.ui.populateFeaturesList({
-                                                                caller : caller
-                                                            });
-                                                            $('a[href="#' + caller.stage + '-view-tab"]').tab('show');
-                                                            $('#' + caller.stage + '-list')
-                                                            .val(args.context.layerName.feature)
-                                                            .trigger('change');
-                                                    
-                                                        }
-                                                        ],
-                                                        error : [
-                                                        function(args) {
-                                                            LOG.info('UI.js::Uploader Error Callback: Import incomplete.');
-                                                            CONFIG.ui.showAlert({
-                                                                message : 'Import incomplete',
-                                                                caller : caller,
-                                                                displayTime : 3000,
-                                                                style: {
-                                                                    classes : ['alert-error']
-                                                                }
-                                                            })
-                                                        }
-                                                        ]
-                                                    }
-                                                })
-                                            } else {
-                                                LOG.warn(data.error);
-                                                LOG.info('UI.js::Uploader Error Callback: Import incomplete.');
-                                                CONFIG.ui.showAlert({
-                                                    message : 'Import incomplete',
-                                                    caller : caller,
-                                                    displayTime : 3000,
-                                                    style: {
-                                                        classes : ['alert-error']
-                                                    }
-                                                })
-                                                
-                                            }
-                                        }]
-                                    });
+                        var success = responseJSON.success;
+                        var layerName = responseJSON.name;
+                        var workspace = responseJSON.workspace;
+                        var store = responseJSON.store;
+
+                        if (success) {
+                            LOG.info("UI.js::initializeUploader: Upload complete");
+                            LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
+                            CONFIG.ows.getWMSCapabilities({
+                                namespace: CONFIG.tempSession.getCurrentSessionKey(),
+                                layerName: layerName,
+                                callbacks: {
+                                    success: [
+                                        function(args) {
+                                            CONFIG.ui.showAlert({
+                                                message: 'Upload Successful',
+                                                caller: caller,
+                                                displayTime: 3000,
+                                                style: {
+                                                    classes: ['alert-success']
+                                                }
+                                            });
+                                            CONFIG.tempSession.updateLayersFromWMS(args);
+                                            CONFIG.ui.populateFeaturesList({
+                                                caller: caller
+                                            });
+                                            $('a[href="#' + caller.stage + '-view-tab"]').tab('show');
+                                            $('#' + caller.stage + '-list')
+                                                    .val(workspace + ':' + layerName)
+                                                    .trigger('change');
+
+                                        }
+                                    ],
+                                    error: [
+                                        function(args) {
+                                            LOG.info('UI.js::Uploader Error Callback: Import incomplete.');
+                                            CONFIG.ui.showAlert({
+                                                message: 'Import incomplete',
+                                                caller: caller,
+                                                displayTime: 3000,
+                                                style: {
+                                                    classes: ['alert-error']
+                                                }
+                                            });
+                                        }
+                                    ]
                                 }
-                                ]
-                            })
-                           
+                            });
+                        } else {
+                            LOG.warn('File failed to complete upload');
+                            LOG.warn(data.error);
+                            LOG.info('UI.js::Uploader Error Callback: Import incomplete.');
+                            CONFIG.ui.showAlert({
+                                message: 'Import incomplete',
+                                caller: caller,
+                                displayTime: 3000,
+                                style: {
+                                    classes: ['alert-error']
+                                }
+                            });
                         }
                     }
                 }
-            })
-            $('#'+context+'-triggerbutton').on('click', function() {
-                $('#'+context+'-uploader input').fineUploader().trigger('click')
-            })
+            });
+            $('#' + context + '-triggerbutton').on('click', function() {
+                $('#' + context + '-uploader input').fineUploader().trigger('click');
+            });
             return uploader;
         },
         populateFeaturesList : function(args) {
