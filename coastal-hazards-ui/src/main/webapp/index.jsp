@@ -250,7 +250,7 @@
                                 <div class="tab-pane" id="transects-manage-tab">
                                     <div class="row-fluid">
                                         <div id="transects-uploader" class="uploader"></div>
-                                        <button class="btn btn-success" id="transects-triggerbutton"><i class="icon-arrow-up icon-white"></i>Upload</button>
+                                        <button class="btn btn-success" id="transects-triggerbutton" disabled="disabled"><i class="icon-arrow-up icon-white"></i>Upload</button>
                                         <button data-toggle="button" class="btn btn-success" disabled id="create-transects-toggle">
                                             <i class="icon-tasks icon-white"></i>
                                             &nbsp;Generate

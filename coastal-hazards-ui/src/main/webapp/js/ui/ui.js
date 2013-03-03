@@ -220,7 +220,7 @@ var UI = function() {
                         var workspace = responseJSON.workspace;
                         var store = responseJSON.store;
 
-                        if (success) {
+                        if (success === 'true') {
                             LOG.info("UI.js::initializeUploader: Upload complete");
                             LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
                             CONFIG.ows.getWMSCapabilities({
@@ -264,11 +264,9 @@ var UI = function() {
                                 }
                             });
                         } else {
-                            LOG.warn('File failed to complete upload');
-                            LOG.warn(data.error);
-                            LOG.info('UI.js::Uploader Error Callback: Import incomplete.');
+                            LOG.warn('UI.js::Uploader Error Callback: Import incomplete.');
                             CONFIG.ui.showAlert({
-                                message: 'Import incomplete',
+                                message: 'Import incomplete. ' + (responseJSON.exception ? responseJSON.exception : ''),
                                 caller: caller,
                                 displayTime: 3000,
                                 style: {
