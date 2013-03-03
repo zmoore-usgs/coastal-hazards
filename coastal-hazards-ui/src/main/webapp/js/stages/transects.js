@@ -101,6 +101,8 @@ var Transects = {
         if (toggledOn) {
             LOG.debug('Transects.js::editButtonToggled: Edit form was toggled on');
 
+            Transects.disableUpdateTransectsButton();
+
             if ($('#create-transects-toggle').hasClass('active')) {
                 $('#create-transects-toggle').trigger('click');
             }
@@ -123,7 +125,7 @@ var Transects = {
                 }),
                 cloneOf: oLayerName,
                 renderers: CONFIG.map.getRenderer()
-            })
+            });
             clonedLayer.addFeatures(originalLayer.features);
             clonedLayer.styleMap.styles['default'].defaultStyle.strokeWidth = 4;
 
@@ -152,10 +154,10 @@ var Transects = {
                         standalone: true,
                         createVertices: false,
                         onModification: function(feature) {
-                            var baseLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0]
+                            var baseLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0];
                             var baseLayerFeatures = baseLayer.features;
                             var vertices = feature.geometry.components[0].components;
-                            var connectedToBaseline = false
+                            var connectedToBaseline = false;
                             baseLayerFeatures.each(function(f) {
                                 var g = f.geometry;
                                 vertices.each(function(vertex) {
@@ -163,8 +165,8 @@ var Transects = {
                                     if (parseInt(g.distanceTo(vertex)) <= 5) {
                                         connectedToBaseline = true;
                                     }
-                                })
-                            })
+                                });
+                            });
                             if (connectedToBaseline) {
                                 feature.state = OpenLayers.State.UPDATE;
                                 feature.style = {
@@ -178,27 +180,28 @@ var Transects = {
                                 };
                             }
                             feature.layer.redraw();
+                            Transects.enableUpdateTransectsButton();
                         },
                         handleKeypress: function(evt) {
                             var code = evt.keyCode;
-                            if (this.feature && OpenLayers.Util.indexOf(this.deleteCodes, code) != -1) {
-                                var fid = this.feature.fid
+                            if (this.feature && OpenLayers.Util.indexOf(this.deleteCodes, code) !== -1) {
+                                var fid = this.feature.fid;
                                 var originalLayer = CONFIG.map.getMap().getLayersByName($("#transects-list option:selected")[0].value)[0];
                                 var cloneLayer = CONFIG.map.getMap().getLayersByName('transects-edit-layer')[0];
-                                var originalFeature = originalLayer.getFeatureBy('fid', fid)
+                                var originalFeature = originalLayer.getFeatureBy('fid', fid);
                                 var cloneFeature = cloneLayer.getFeatureBy('fid', fid);
                                 cloneFeature.state = OpenLayers.State.DELETE;
                                 cloneFeature.style = {
                                     strokeColor: '#FF0000'
-                                }
+                                };
                                 originalFeature.style = {
                                     strokeOpacity: 0
-                                }
+                                };
                                 originalFeature.layer.redraw();
                                 cloneFeature.layer.redraw();
                             }
                         }
-                    })
+                    });
             CONFIG.map.getMap().addControl(mfControl);
             mfControl.activate();
             mfControl.handlers.keyboard.activate();
@@ -235,7 +238,15 @@ var Transects = {
                         id: 'transects-draw-control',
                         multi: true,
                         handlerOptions: {
-                            maxVertices: 2
+                            maxVertices: 2,
+                            dblclick: function(evt) {
+                                // We do not want to begin drawing another transect
+                                // on click. Therefore, when a double click does occur,
+                                // destroy the point the first click made and get out
+                                // of draw mode
+                                this.destroyFeature(true);
+                                return false;
+                            }
                         },
                         featureAdded: function(addedFeature) {
                             LOG.debug('Transects.js::featureAdded: A new transect has been added');
@@ -260,6 +271,8 @@ var Transects = {
                                 LOG.trace('Transects.js::featureAdded: Grab info from the baseline feature to add to the transect');
                                 addedFeature.attributes.Orient = baselineFeature.attributes.Orient;
                                 addedFeature.attributes.BaselineID = baselineFeature.fid;
+
+                                Transects.enableUpdateTransectsButton();
 
                                 LOG.trace('Transects.js::featureAdded: Between the two points on the transect, figure out which point touches the baseline');
                                 var transectPoint0 = addedFeature.geometry.components[0].components[0];
@@ -300,7 +313,14 @@ var Transects = {
                                     }
                                 });
                             } else {
-                                addedFeature.attributes.Orient = 'seaward';
+                                // The baseline was not hit. This feature needs 
+                                // to be removed from the features array
+                                addedFeature.destroy();
+                                CONFIG.ui.showAlert({
+                                    message: 'Intersection did not touch baseline',
+                                    displayTime: 7500,
+                                    caller: Transects
+                                });
                             }
 
                         }
@@ -328,6 +348,9 @@ var Transects = {
                     LOG.debug('Transects.js::saveEditedLayer: Receieved response from updateTransectsAndIntersections WPS');
 
                     Calculation.clear();
+                    if ($('#transects-edit-add-button').hasClass('active')) {
+                        $('#transects-edit-add-button').trigger('click');
+                    }
                     var intersectionsList = CONFIG.ui.populateFeaturesList({
                         caller: Calculation,
                         stage: 'intersections'
@@ -359,6 +382,7 @@ var Transects = {
                         intersectionsList.val(intersectsLayer);
                         resultsList.val(resultsLayer);
                     }
+                    Transects.enableUpdateTransectsButton();
                     intersectionsList.trigger('change');
                     resultsList.trigger('change');
                 };
@@ -579,6 +603,12 @@ var Transects = {
                 }
                 $('#transect-edit-form-toggle').attr('disabled', 'disabled');
             },
+            enableUpdateTransectsButton: function() {
+                $('#transects-edit-save-button').removeAttr('disabled');
+            },
+            disableUpdateTransectsButton: function() {
+                $('#transects-edit-save-button').attr('disabled', 'disabled');
+            },
             enableCreateTransectsButton: function() {
                 LOG.info('Transects.js::enableCreateTransectsButton: Baseline has been added to the map. Enabling create transect button');
                 $('#create-transects-toggle').removeAttr('disabled');
@@ -674,8 +704,9 @@ var Transects = {
             createTransectSubmit: function(event) {
                 Transects.clearSubsequentStages();
                 var visibleShorelines = $('#shorelines-list :selected').map(function(i, v) {
-                    return v.value
-                })
+                    return v.value;
+                });
+
                 var baseline = $('#baseline-list :selected')[0].value;
                 var spacing = $('#create-transects-input-spacing').val() || 0;
                 var layerName = $('#create-transects-input-name').val();
