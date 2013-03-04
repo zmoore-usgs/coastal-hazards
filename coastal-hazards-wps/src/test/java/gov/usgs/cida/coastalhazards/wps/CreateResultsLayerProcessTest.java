@@ -37,7 +37,7 @@ public class CreateResultsLayerProcessTest {
                 FeatureCollectionFromShp.featureCollectionFromShp(transects);
         // need to get the matching transect layer to run against
         CreateResultsLayerProcess createResultsLayerProcess = new CreateResultsLayerProcess(new DummyImportProcess(), new DummyCatalog());
-        createResultsLayerProcess.execute(buffer, transectfc, null, null, null);
+        createResultsLayerProcess.execute(buffer, transectfc, null, null, null, null);
     }
     
 }

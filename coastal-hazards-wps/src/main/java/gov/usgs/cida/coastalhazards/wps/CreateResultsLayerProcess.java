@@ -101,7 +101,8 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
     
     @DescribeResult(name = "resultLayer", description = "Layer containing results of shoreline statistics")
     public String execute(@DescribeParameter(name = "results", description = "Block of text with TransectID and stats results", min = 1, max = 1) StringBuffer results,
-            @DescribeParameter(name = "transects", description = "Feature collection of transects to clone", min = 1, max = 1) FeatureCollection<SimpleFeatureType, SimpleFeature> transects,
+            @DescribeParameter(name = "transects", description = "Feature collection of transects to join", min = 1, max = 1) FeatureCollection<SimpleFeatureType, SimpleFeature> transects,
+            @DescribeParameter(name = "intersects", description = "Feature collection of intersects used to calculate results", min = 0, max = 1) FeatureCollection<SimpleFeatureType, SimpleFeature> intersects,
             @DescribeParameter(name = "workspace", description = "Workspace in which to put results layer", min = 1, max = 1) String workspace,
             @DescribeParameter(name = "store", description = "Store in which to put results", min = 1, max = 1) String store,
             @DescribeParameter(name = "layer", description = "Layer name of results", min = 1, max = 1) String layer) throws Exception {

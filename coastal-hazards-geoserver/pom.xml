@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.usgs.cida.coastalhazards</groupId>
         <artifactId>coastal-hazards</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>coastal-hazards-geoserver</artifactId>
