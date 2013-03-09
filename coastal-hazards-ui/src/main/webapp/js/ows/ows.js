@@ -78,14 +78,14 @@ var OWS = function(endpoint) {
                 request : request,
                 callbacks : callbacks,
                 context : context
-            })
+            });
           
         },
         getWMSCapabilities : function(args) {
             LOG.info('OWS.js::getWMSCapabilities');
-            var namespace = args.namespace || 'ows'
-            var url = me.geoserverProxyEndpoint + namespace + '/wms?service=wms&version=1.3.0&request=GetCapabilities'
-            var callbacks = args.callbacks || {}
+            var namespace = args.namespace || 'ows';
+            var url = me.geoserverProxyEndpoint + namespace + '/wms?service=wms&version=1.3.0&request=GetCapabilities&cb=' + new Date().getTime();
+            var callbacks = args.callbacks || {};
             var sucessCallbacks = callbacks.success || [];
             var errorCallbacks = callbacks.error || [];
             
@@ -97,8 +97,8 @@ var OWS = function(endpoint) {
                     
                     // Fixes an issue with prefixes not being parsed correctly from response
                     getCapsResponse.capability.layers.each(function(n, i) {
-                        n.prefix = namespace
-                    })
+                        n.prefix = namespace;
+                    });
                     me.wmsCapabilities[namespace] = getCapsResponse;
                     me.wmsCapabilitiesXML[namespace] = data;
                     getCapsResponse.capability.layers.each(function(layer) {
