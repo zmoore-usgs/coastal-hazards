@@ -21,6 +21,10 @@
 
 <html lang="en">
     <head>
+        <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+        <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+        <META HTTP-EQUIV="CONTENT-LANGUAGE" CONTENT="en-US">
+        <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8">
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -46,7 +50,6 @@
         </jsp:include>
     </head>
     <body>
-        <iframe id="download" class="hidden"></iframe>
         <div id="application-overlay" style="height : 100%;width : 100%;position : fixed;top : 0;left : 0;background-color: #FFFFFF;z-index: 9999;">
             <div id="application-overlay-content" style='height: 50%;padding-left: 25%;position: relative;top: 15%;width: 50%;color: #333333;font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;font-size: 14px;line-height: 20px;'>
                 <div style="text-align: center"><h1 style="letter-spacing: 0.5em;font-size: 38.5px; line-height: 40px;color: inherit; font-family: inherit; font-weight: bold;text-rendering: optimizelegibility;">Coastal Hazards</h1></div>
@@ -418,8 +421,7 @@
             </div>
             <div class="modal-footer"></div>
         </div>
-
-
+        <iframe id="download" class="hidden"></iframe>
     </body>
     <script type="text/javascript">splashUpdate("Loading Graphing Utilities...");</script>
     <jsp:include page="js/dygraphs/dygraphs.jsp">

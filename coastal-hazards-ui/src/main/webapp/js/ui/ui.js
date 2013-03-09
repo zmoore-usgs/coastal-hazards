@@ -311,16 +311,16 @@ var UI = function() {
             
                     // Add the option to the list only if it's from the sample namespace or
                     // if it's from the input namespace and in the current session
-                    if (layerNS == CONFIG.name.published || layerNS == currentSessionKey) {
+                    if (layerNS === CONFIG.name.published || layerNS === currentSessionKey) {
                         var type = title.substr(title.lastIndexOf('_'));
-                        if (suffixes.length == 0 || suffixes.find(type.toLowerCase())) {
-                            LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title)
+                        if (suffixes.length === 0 || suffixes.find(type.toLowerCase())) {
+                            LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title);
                             var layerFullName = layer.prefix + ':' + layer.name;
                             var sessionStage = CONFIG.tempSession.getStage(stage);
                             var lIdx = sessionStage.layers.findIndex(function(l) {
-                                return l == layerFullName;
-                            })
-                            if (lIdx == -1) {
+                                return l === layerFullName;
+                            });
+                            if (lIdx === -1) {
                                 sessionStage.layers.push(layerFullName);
                             }
                             CONFIG.tempSession.persistSession();

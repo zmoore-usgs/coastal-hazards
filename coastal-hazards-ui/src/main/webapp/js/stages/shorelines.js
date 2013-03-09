@@ -207,9 +207,10 @@ var Shorelines = {
                             layer.title, 
                             'geoserver/'+layer.prefix+'/wms',
                             {
-                                layers : layer.name,
+                                layers : [layer.name],
                                 transparent : true,
-                                sld_body : sldBody
+                                sld_body : sldBody,
+                                format :"image/png"
                             },
                             {
                                 prefix : layer.prefix,
@@ -229,9 +230,9 @@ var Shorelines = {
                                 groups : groups
                             });
                             
-                        Shorelines.getShorelineIdControl().layers.push(wmsLayer)
+                        Shorelines.getShorelineIdControl().layers.push(wmsLayer);
                         wmsLayer.events.register("loadend", wmsLayer, Shorelines.createFeatureTable);
-                        wmsLayer.events.register("loadend", wmsLayer, Shorelines.zoomToLayer);
+                        wmsLayer.events.register("added", wmsLayer, Shorelines.zoomToLayer);
                         CONFIG.map.getMap().addLayer(wmsLayer);
                         wmsLayer.redraw(true);
                     }
@@ -355,14 +356,14 @@ var Shorelines = {
                     bounds.extend(new OpenLayers.Bounds(mapLayer.bbox["EPSG:900913"].bbox));
 
                     if (layer.events.listeners.loadend.length) {
-                        layer.events.unregister('loadend', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);
+                        layer.events.unregister('added', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);
                     }
                 }
             }
         });
                     
         if (bounds.left && bounds.right && bounds.top && bounds.bottom) {
-            CONFIG.map.getMap().zoomToExtent(bounds, false);
+            CONFIG.map.getMap().zoomToExtent(bounds, true);
         }
         
     },
