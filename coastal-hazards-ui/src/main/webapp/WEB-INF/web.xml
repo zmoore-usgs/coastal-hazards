@@ -52,7 +52,7 @@
     
     <servlet>
         <servlet-name>shapefile-upload-servlet</servlet-name>
-        <servlet-class>gov.usgs.cida.geoutils.geoutils.geoserver.servlet.ShapefileUploadServlet</servlet-class>
+        <servlet-class>gov.usgs.cida.geoutils.geoserver.servlet.ShapefileUploadServlet</servlet-class>
         <!-- 
         Used for reading JNDI variables. All JNDI variables used for this application 
         will be prefixed with this parameter. Example: 
