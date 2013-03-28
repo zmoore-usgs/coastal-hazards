@@ -201,7 +201,7 @@ var Baseline = {
                     CONFIG.tempSession.persistSession();
                 };
                 
-                if (layerPrefix == CONFIG.name.published) {
+                if (layerPrefix === CONFIG.name.published) {
                     displayBaseline();
                 } else if (!hasOrientAttr) {
                     LOG.debug('Baseline.js::addLayerToMap: Baseline does not contain Orient attribute. Attempting to add Orient attribute.'); 
@@ -228,8 +228,7 @@ var Baseline = {
                                 })
                             }]
                         }
-                            
-                    })
+                    });
                 } else {
                     if (attributes.length < Baseline.mandatoryColumns.length) {
                         LOG.warn('Baseline.js::addLayerToMap: There are not enough attributes in the selected shapefile to constitute a valid baseline. Will be deleted. Needed: '  + Baseline.mandatoryColumns.length + ', Found in upload: ' + attributes.length);
@@ -260,13 +259,13 @@ var Baseline = {
                             layerName : layerName,
                             columns : layerColumns,
                             caller : Baseline
-                        })
+                        });
                     } else {
                         displayBaseline();
                     }
                 }
             }]
-        })
+        });
     },
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
@@ -278,7 +277,7 @@ var Baseline = {
         return Baseline.getDrawLayer().removeAllFeatures();
     },
     refreshFeatureList : function(args) {
-        LOG.info('Baseline.js::refreshFeatureList: Will cause WMS GetCapabilities call to refresh current feature list')
+        LOG.info('Baseline.js::refreshFeatureList: Will cause WMS GetCapabilities call to refresh current feature list');
         var updatedArgs = args || {};
         var isCloning = updatedArgs.isCloning;
         var selectLayer = updatedArgs.selectLayer || ''; 
@@ -289,18 +288,18 @@ var Baseline = {
                 success : [
                 CONFIG.tempSession.updateLayersFromWMS,
                 function(caps, context) {
-                    LOG.info('Baseline.js::refreshFeatureList: WMS GetCapabilities response parsed')
+                    LOG.info('Baseline.js::refreshFeatureList: WMS GetCapabilities response parsed');
                     Baseline.populateFeaturesList(caps);
                 
                     if (selectLayer) {
-                        LOG.info('Baseline.js::refreshFeatureList: Auto-selecting layer ' + selectLayer)
+                        LOG.info('Baseline.js::refreshFeatureList: Auto-selecting layer ' + selectLayer);
                         $('#' + Baseline.stage + '-list').children().each(function(i,v) {
                             if (v.value === selectLayer) {
                                 LOG.debug('Triggering "select" on featurelist option');
                                 $('#' + Baseline.stage + '-list').val(v.value);
                                 $('#' + Baseline.stage + '-list').trigger('change', isCloning);
                             }
-                        })
+                        });
                     } else {
                         $('#' + Baseline.stage + '-list').val('');
                         Baseline.listboxChanged();
@@ -309,11 +308,11 @@ var Baseline = {
                 ],
                 error: [
                 function() {
-                    LOG.warn('Baseline.js::refreshFeatureList: Could not get WMS capabilities.')
+                    LOG.warn('Baseline.js::refreshFeatureList: Could not get WMS capabilities.');
                 }
                 ]
             }
-        })
+        });
     },
     clear : function() {
         $("#baseline-list").val('');

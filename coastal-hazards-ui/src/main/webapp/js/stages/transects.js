@@ -164,6 +164,9 @@ var Transects = {
                             var baseLayerFeatures = baseLayer.features;
                             var vertices = feature.geometry.components[0].components;
                             var connectedToBaseline = false;
+                            
+                            Transects.enableUpdateTransectsButton();
+                            
                             baseLayerFeatures.each(function(f) {
                                 var g = f.geometry;
                                 vertices.each(function(vertex) {
@@ -186,7 +189,6 @@ var Transects = {
                                 };
                             }
                             feature.layer.redraw();
-                            Transects.enableUpdateTransectsButton();
                         },
                         handleKeypress: function(evt) {
                             var code = evt.keyCode;
@@ -205,6 +207,7 @@ var Transects = {
                                 };
                                 originalFeature.layer.redraw();
                                 cloneFeature.layer.redraw();
+                                Transects.enableUpdateTransectsButton();
                             }
                         }
                     });
