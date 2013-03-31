@@ -13,8 +13,8 @@
     <name>Coastal Hazards Geoserver</name>
 
 	<properties>
-		<gs.version>2.2.3</gs.version>
-		<gt.version>8.5</gt.version>
+		<gs.version>2.2.5</gs.version>
+		<gt.version>8.7</gt.version>
 	</properties>
 
     <repositories>
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>gov.usgs.cida.geoserver</groupId>
             <artifactId>geoserver</artifactId>
-            <version>${gs.version}-2</version>
+            <version>${gs.version}-1</version>
             <type>war</type>
         </dependency>
     </dependencies>
