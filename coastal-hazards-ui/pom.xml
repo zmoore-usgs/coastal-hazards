@@ -14,16 +14,16 @@
 
     <properties>
         <gt.version>8.5</gt.version>
-		<slf4j.version>1.7.2</slf4j.version>
+        <slf4j.version>1.7.2</slf4j.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <!-- CIDA JAVA LIBS -->
             <dependency>
-                    <groupId>gov.usgs.cida</groupId>
-                    <artifactId>tomcat-filters</artifactId>
-                    <version>1.0</version>
+                <groupId>gov.usgs.cida</groupId>
+                <artifactId>tomcat-filters</artifactId>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>it.geosolutions</groupId>
@@ -178,6 +178,12 @@
                 <type>war</type>
             </dependency>
             <dependency>
+                <groupId>gov.usgs.cida.jslibs</groupId>
+                <artifactId>jquery-fineuploader</artifactId>
+                <version>3.4.0-3</version>
+                <type>war</type>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpcore</artifactId>
                 <version>4.2</version>
@@ -254,8 +260,8 @@
             <artifactId>geoserver-manager</artifactId>
         </dependency>
         <dependency>
-                <groupId>gov.usgs.cida</groupId>
-                <artifactId>tomcat-filters</artifactId>
+            <groupId>gov.usgs.cida</groupId>
+            <artifactId>tomcat-filters</artifactId>
         </dependency>
         <dependency>
             <artifactId>proxy-utils</artifactId>
@@ -327,6 +333,11 @@
         <dependency>
             <groupId>gov.usgs.cida.jslibs</groupId>
             <artifactId>dygraphs-core</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>jquery-fineuploader</artifactId>
             <type>war</type>
         </dependency>
         

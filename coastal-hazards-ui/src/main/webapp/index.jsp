@@ -459,9 +459,10 @@
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
 
-    <!-- TODO - Modularize -->
     <script type="text/javascript">splashUpdate("Loading Upload Management...");</script>
-    <script type="text/javascript" src="js/jquery-fineuploader/jquery.fineuploader-3.0.js"></script>
+    <jsp:include page="js/fineuploader/fineuploader.jsp">
+        <jsp:param name="debug-qualifier" value="true" />
+    </jsp:include>
 
     <script type="text/javascript">
         splashUpdate("Setting configuration...");

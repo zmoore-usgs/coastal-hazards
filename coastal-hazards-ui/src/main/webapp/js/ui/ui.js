@@ -184,8 +184,11 @@ var UI = function() {
 
             var uploader = new qq.FineUploader({
                 element: document.getElementById(context + '-uploader'),
+                multiple : false,
                 request: {
                     endpoint: 'service/upload',
+                    paramsInBody: false,
+                    forceMultipart : false,
                     params: {
                         'response.encoding': 'json',
                         'filename.param': 'qqfile',
@@ -201,7 +204,6 @@ var UI = function() {
                 validation: {
                     allowedExtensions: ['zip']
                 },
-                multiple: false,
                 autoUpload: true,
                 caller: caller,
                 text: {

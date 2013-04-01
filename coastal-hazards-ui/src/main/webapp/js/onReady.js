@@ -54,9 +54,8 @@ $(document).ready(function() {
         LOG.trace('AJAX Call Finished');
         $("#application-spinner").fadeOut();
     });
-
     $.ajaxSetup({
-        timeout : CONFIG.ajaxTimeout
+        timeout: CONFIG.ajaxTimeout
     });
 
     splashUpdate("Initializing Sessions...");
@@ -121,7 +120,7 @@ $(document).ready(function() {
             $("#application-spinner").fadeOut();
         });
     };
-    
+
     // Utility class for the user interface
     splashUpdate("Initializing User Interface...");
     CONFIG.ui = new UI();
