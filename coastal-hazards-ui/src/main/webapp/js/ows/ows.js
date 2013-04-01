@@ -236,9 +236,9 @@ var OWS = function(endpoint) {
                     
                     $(args.callbacks || []).each(function(index, callback) {
                         callback(describeFeaturetypeRespone, this);
-                    })
+                    });
                 }
-            })
+            });
         },
         getFilteredFeature : function(args) {
             LOG.info('OWS.js::getFilteredFeature');
@@ -247,7 +247,7 @@ var OWS = function(endpoint) {
             var layerPrefix = args.layerPrefix;
             var layerName = args.layerName;
             var scope = args.scope;
-            var propertyArray = args.propertyAraay;
+            var propertyArray = args.propertyArray;
             var callbacks = args.callbacks;
             
             var url = me.geoserverProxyEndpoint + layerPrefix + '/wfs?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&typeName=' + layerPrefix + ':' + layerName + '&propertyName=';
