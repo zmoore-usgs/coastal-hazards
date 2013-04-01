@@ -82,6 +82,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
     
     protected class Process {
         private static final double MIN_TRANSECT_LENGTH = 50.0d; // meters
+        private static final double MAX_TRANSECT_LENGTH = EARTH_RADIUS;
         private static final double TRANSECT_PADDING = 5.0d; // meters
         
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> shorelineFeatureCollection;
@@ -132,7 +133,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             this.transectLayer = transectLayer;
             this.intersectionLayer = intersectionLayer;
             
-            this.guessTransectLength = 500.0d; // start guess at .5km
+            this.guessTransectLength = MIN_TRANSECT_LENGTH; // start out small
             this.transectId = 0; // start ids at 0
             
             // Leave these null to start, they get populated after error checks occur (somewhat expensive)
@@ -231,24 +232,30 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             List<SimpleFeature> intersectionFeatures = new LinkedList<SimpleFeature>();
             
             // add an extra 1k for good measure
-            guessTransectLength += 1000.0d;
+            //guessTransectLength += 1000.0d;
             
             for (Transect transect : vectsOnBaseline) {
-                transect.setLength(guessTransectLength);
-                LineString testLine = transect.getLineString();
-                if (!preparedShorelines.intersects(testLine)) {
-                    continue; // don't draw if it doesn't cross
+                double growingLength = guessTransectLength;
+                LineString testLine = null;
+                do {
+                    growingLength *= 2;
+                    transect.setLength(growingLength);
+                    testLine = transect.getLineString();
                 }
-                AttributeGetter attGet = new AttributeGetter(intersectionFeatureType);
-                Map<DateTime, Intersection> allIntersections = Intersection.calculateIntersections(transect, strTree, useFarthest, attGet);
-                double transectLength = Intersection.absoluteFarthest(MIN_TRANSECT_LENGTH, allIntersections.values());
-                transect.setLength(transectLength + TRANSECT_PADDING);
-                SimpleFeature feature = transect.createFeature(transectFeatureType);
-                transectFeatures.add(feature);
+                while (!preparedShorelines.intersects(testLine) && growingLength < MAX_TRANSECT_LENGTH);
                 
-                for (Intersection intersection : allIntersections.values()) {
-                    // do I need to worry about order?
-                    intersectionFeatures.add(intersection.createFeature(intersectionFeatureType));
+                if (growingLength < MAX_TRANSECT_LENGTH) {  // ignore non-crossing lines
+                    AttributeGetter attGet = new AttributeGetter(intersectionFeatureType);
+                    Map<DateTime, Intersection> allIntersections = Intersection.calculateIntersections(transect, strTree, useFarthest, attGet);
+                    double transectLength = Intersection.absoluteFarthest(MIN_TRANSECT_LENGTH, allIntersections.values());
+                    transect.setLength(transectLength + TRANSECT_PADDING);
+                    SimpleFeature feature = transect.createFeature(transectFeatureType);
+                    transectFeatures.add(feature);
+
+                    for (Intersection intersection : allIntersections.values()) {
+                        // do I need to worry about order?
+                        intersectionFeatures.add(intersection.createFeature(intersectionFeatureType));
+                    }
                 }
             }
             resultTransectsCollection = DataUtilities.collection(transectFeatures);
