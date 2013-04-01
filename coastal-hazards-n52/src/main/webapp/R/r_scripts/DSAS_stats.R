@@ -44,45 +44,56 @@ blockI <- grep("# ", fileLines)
 blckNm <- sub("# ","",fileLines[blockI])
 numBlck<- length(blockI)
 
+calcLRR <- function(dates,dist){
+  rate <- dates
+  mdl  <- lm(formula=dist~rate)
+  coef <- coefficients(mdl)
+  CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
+  rate <- coef["rate"]  # is m/day
+  
+  LRR_rates <- rate*rateConv 
+  LCI <- (CI[2]-CI[1])/2 # LCI
+  return(data.frame("LRR"=LRR_rates,"LCI"=LCI))
+}
+
+calcWLR <- function(dates,dist,uncy){
+  rate <- dates
+  mdl  <- lm(formula=dist~rate, weights=(1/(uncy^2)))
+  coef <- coefficients(mdl)
+  CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
+  rate <- coef["rate"]
+  WLR_rates <- rate*rateConv 
+  WCI  <- (CI[2]-CI[1])/2 # WCI
+  return(data.frame("WLR"=WLR_rates,"WCI"=WCI))
+}
+
+
 getDSAS <- function(blockNumber){   # get indices for start and end of block
   if (blockNumber==numBlck) {enI <- nRead-1}
   else{enI <- blockI[blockNumber+1]-1}
   stI <- blockI[blockNumber]+1
   splitsTxt <- unlist(strsplit(paste(fileLines[stI:enI],collapse=delim),delim))
-  dates <- as.Date(splitsTxt[seq(t_i,length(splitsTxt),3)],format="%Y-%m-%d")
+  dates <- as(as.Date(splitsTxt[seq(t_i,length(splitsTxt),3)],format="%Y-%m-%d"),"numeric")
   dist  <- as(splitsTxt[seq(d_i,length(splitsTxt),3)],"numeric")
-  uncy <- max(c(as(splitsTxt[seq(d_i,length(splitsTxt),3)],"numeric"),zRepV))
+  uncy  <- as(splitsTxt[seq(u_i,length(splitsTxt),3)],"numeric")
+  uncy[uncy<zRepV] <- zRepV
+  
   useI  <- which(!is.na(dates)) & which(!is.na(dist)) & which(!is.na(uncy))
   dates <- dates[useI]
   dist  <- dist[useI]
   uncy  <- uncy[useI]
   
   if (length(dates) < 2) {
-    LRR_rates <- NA
-    LCI       <- NA
-    WLR_rates <- NA
-    WCI       <- NA
+    LRRCI <- data.frame("LRR"=NA,"LCI"=NA)
+    WLRCI <- data.frame("WLR"=NA,"WCI"=NA)
     SCE_dist  <- NA
     NSM_dist  <- NA
     EPR_dates <- NA
   }
   else{
-    rate <- dates
-    mdl  <- lm(formula=dist~rate)
-    coef <- coefficients(mdl)
-    CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
-    rate <- coef["rate"]  # is m/day
+    LRRCI <- calcLRR(dates,dist)
+    WLRCI <- calcWLR(dates,dist,uncy)
     
-    LRR_rates <- rate*rateConv 
-    LCI <- (CI[2]-CI[1])/2 # LCI
-    
-    rate <- dates
-    mdl  <- lm(formula=dist~rate, weights=(1/(uncy^2)))
-    coef <- coefficients(mdl)
-    CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
-    rate <- coef["rate"]
-    WLR_rates <- rate*rateConv 
-    WCI  <- (CI[2]-CI[1])/2 # WCI
     
     SCE_dist <- max(dist)-min(dist)
     
@@ -93,10 +104,7 @@ getDSAS <- function(blockNumber){   # get indices for start and end of block
     EPR_rates <- NSM_dist/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
     
   }
-  return(data.frame("LRR"=LRR_rates,
-                    "LCI"=LCI,
-                    "WLR"=WLR_rates,
-                    "WCI"=WCI,
+  return(data.frame(LRRCI,WLRCI,
                     "SCE"=SCE_dist,
                     "NSM"=NSM_dist,
                     "EPR"=EPR_rates))
@@ -109,7 +117,6 @@ listVals <- foreach(b=1:numBlck,.combine='rbind') %dopar% {
 statsout <-data.frame(blckNm,listVals)
 colnames(statsout)<-c('transect_ID','LRR','LCI','WLR','WCI','SCE','NSM','EPR')
 
-if (localRun) proc.time() - ptm
 
 # output is an identifier and R variable (WPS identifier). The ouput is the name of the text file
 # wps.out: output, text, output title, tabular output data to append to shapefile;
