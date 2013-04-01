@@ -216,18 +216,31 @@ var UI = function() {
                 callbacks: {
                     onSubmit: function(id, name) {
                         CONFIG.ui.showSpinner();
+
                         CONFIG.ui.showAlert({
-                            close : false,
-                            message : 'Upload beginning',
+                            close: false,
+                            message: 'Upload beginning',
                             style: {
-                                classes : ['alert-info']
+                                classes: ['alert-info']
                             }
-                        })
+                        });
+
+                        // Test to see if the upload name ends with an underscore and the stage name we are in. If not, add it
+                        if (!name.endsWith(caller.stage + '.zip')) {
+                            this._options.request.params.layer = name.substring(0, name.length - 4) + '_' + caller.stage;
+                        }
+
+                        // Test to see if the first character in the layer is a digit. If so, prepend an underscore. Otherwise we get big 
+                        // fails working with the layer later on
+                        if (/^[0-9]/.test(this._options.request.params.layer)) {
+                            this._options.request.params.layer = '_' + this._options.request.params.layer;
+                        }
+
                     },
                     onCancel: function(id, name) {
                         CONFIG.ui.hideSpinner();
                         $('#application-alert').alert('close');
-                        
+
                     },
                     onError: function(id, name, errorReason, xhr) {
                         CONFIG.ui.hideSpinner();
@@ -245,7 +258,7 @@ var UI = function() {
 
                         if (success === 'true') {
                             LOG.info("UI.js::initializeUploader: Upload complete");
-                            LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
+                            LOG.info('UI.js::initializeUploader: Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
                             CONFIG.ows.getWMSCapabilities({
                                 namespace: CONFIG.tempSession.getCurrentSessionKey(),
                                 layerName: layerName,
