@@ -22,7 +22,6 @@ if (ci>=1 || ci<=0.5){
 }
 
 fileN    <- input # will have input as a string (long string read in)
-reader   <- c("character","numeric","numeric")
 conLevel <- ci
 zRepV    <- 0.01 #replace value for when the uncertainty is zero
 rateConv <- 365.25
@@ -45,26 +44,19 @@ blockI <- grep("# ", fileLines)
 blckNm <- sub("# ","",fileLines[blockI])
 numBlck<- length(blockI)
 
-
-#proc.time() - ptm
 getDSAS <- function(blockNumber){   # get indices for start and end of block
-  if (b==numBlck) enI <- nRead-1
-  else enI <- blockI[b+1]-1
-  stI <- blockI[b]+1
-  dates <- vector(length=length(sTeD[1]:sTeD[2]))
-  dist  <- vector(length=length(sTeD[1]:sTeD[2]))
-  uncy  <- vector(length=length(sTeD[1]:sTeD[2]))
-  for (i in sTeD[1]:sTeD[2]){
-    splitsTxt <- strsplit(fileLines[i],delim)
-    sT <- splitsTxt[[1]]
-    dates[i-sTeD[1]+1] <- as.Date(sT[t_i],format="%Y-%m-%d")
-    dist[i-sTeD[1]+1] <- as(sT[d_i],"numeric")
-    uncy[i-sTeD[1]+1] <- max(c(as(sT[u_i],"numeric"),zRepV))
-  }
+  if (blockNumber==numBlck) {enI <- nRead-1}
+  else{enI <- blockI[blockNumber+1]-1}
+  stI <- blockI[blockNumber]+1
+  
+  splitsTxt <- unlist(strsplit(paste(fileLines[stI:enI],collapse=delim),delim))
+  dates <- as.Date(splitsTxt[seq(t_i,length(splitsTxt),3)],format="%Y-%m-%d")
+  dist  <- as(splitsTxt[seq(d_i,length(splitsTxt),3)],"numeric")
+  uncy <- max(c(as(splitsTxt[seq(d_i,length(splitsTxt),3)],"numeric"),zRepV))
   useI  <- which(!is.na(dates)) & which(!is.na(dist)) & which(!is.na(uncy))
   dates <- dates[useI]
   dist  <- dist[useI]
-  uncy  <- usny[useI]
+  uncy  <- uncy[useI]
   if (length(dates) < 2) {
     LRR_rates=NA
     LCI=NA
@@ -72,9 +64,9 @@ getDSAS <- function(blockNumber){   # get indices for start and end of block
     WCI=NA
     SCE_dist=NA
     NSM_dist=NA
-    EPR_dates=NA)
+    EPR_dates=NA
   }
-  else {
+  else{
     rate <- dates
     mdl  <- lm(formula=dist~rate)
     coef <- coefficients(mdl)
@@ -84,7 +76,8 @@ getDSAS <- function(blockNumber){   # get indices for start and end of block
     LRR_rates <- rate*rateConv 
     LCI <- (CI[2]-CI[1])/2 # LCI
     
-    mdl <- lm(formula=dist~rate, weights=1/(uncy^2))
+    rate <- dates
+    mdl <- lm(formula=dist~rate, weights=(1/(uncy^2)))
     coef <- coefficients(mdl)
     CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
     rate <- coef["rate"]
@@ -100,91 +93,13 @@ getDSAS <- function(blockNumber){   # get indices for start and end of block
     EPR_rates <- NSM_dist/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
     
   }
-  return(data.frame('LRR'=LRR_rates,'LCI'=LCI,'WLR'=WLR_rates,'WCI'=WCI,
-                    'SCE'=SCE_dist,'NSM'=NSM_dist,'EPR'=EPR_rates))
-
-transect_ID <- blckNm
-getIdxs <- function(b){   # get indices for start and end of block
-  if (b==numBlck) enI <- nRead-1
-  else enI <- blockI[b+1]-1
-  stI <- blockI[b]+1
-  return(c(stI,enI))
+  return(data.frame("LRR"=LRR_rates,"LCI"=LCI,"WLR"=WLR_rates,"WCI"=WCI,
+                    "SCE"=SCE_dist,"NSM"=NSM_dist,"EPR"=EPR_rates))
 }
 
-readBlock <- function(sTeD){
-  dates <- vector(length=length(sTeD[1]:sTeD[2]))
-  dist  <- vector(length=length(sTeD[1]:sTeD[2]))
-  uncy  <- vector(length=length(sTeD[1]:sTeD[2]))
-  for (i in sTeD[1]:sTeD[2]){
-    splitsTxt <- strsplit(fileLines[i],delim)
-    sT <- splitsTxt[[1]]
-    dates[i-sTeD[1]+1] <- as.Date(sT[t_i],format="%Y-%m-%d")
-    dist[i-sTeD[1]+1] <- as(sT[d_i],"numeric")
-    uncy[i-sTeD[1]+1] <- max(c(as(sT[u_i],"numeric"),zRepV))
-  }
-  useI  <- which(!is.na(dates)) & which(!is.na(dist)) & which(!is.na(uncy))
-  return(list(dates[useI],dist[useI],uncy[useI]))
-}
-
-LRRfun <- function(DSAS_list){
-  if(length(DSAS_list[[1]]) < 2) {
-    LRR_rates <- NA
-    LCI <- NA
-  }
-  else {
-    # call LRR
-    rate <- DSAS_list[[1]]
-    mdl <- lm(formula=DSAS_list[[2]]~rate)
-    coef <- coefficients(mdl)
-    CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
-    rate <- coef["rate"]  # is m/day
-    
-    LRR_rates <- rate*rateConv 
-    LCI <- (CI[2]-CI[1])/2 # LCI
-  }
-  return(data.frame("LRR"=LRR_rates,"LCI"=LCI))
-}
-
-WLRfun <- function(DSAS_list){
-  if(length(DSAS_list[[1]]) < 2) {
-    WLR_rates <- NA
-    WCI <- NA
-  }
-  else {
-    # call WLR
-    rate <- DSAS_list[[1]]
-    mdl <- lm(formula=DSAS_list[[2]]~rate, weights=1/(DSAS_list[[3]]^2))
-    coef <- coefficients(mdl)
-    CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
-    rate <- coef["rate"]
-    WLR_rates <- rate*rateConv 
-    WCI <- (CI[2]-CI[1])/2 # WCI
-  }
-  return(data.frame("WLR"=WLR_rates,"WCI"=WCI))
-}
-
-SCEfun <- function(DSAS_list){
-  distance <- DSAS_list[[2]]
-  SCE_dist <- max(distance)-min(distance)
-  return(data.frame("SCE"=SCE_dist))
-}
-
-NSMfun <- function(DSAS_list){
-  dates <- DSAS_list[[1]]
-  distance <- DSAS_list[[2]]
-  firstDateIdx <- which.min(dates)
-  lastDateIdx  <- which.max(dates)
-  NSM_dist <- distance[firstDateIdx]-distance[lastDateIdx]
-  dateDiff <- dates[lastDateIdx]-dates[firstDateIdx]
-  EPR_rates <- NSM_dist/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
-  return(data.frame("NSM"=NSM_dist,"EPR"=EPR_rates))
-}
-  
 listVals <- foreach(b=1:numBlck,.combine='rbind') %dopar% {
   getDSAS(b)
 }
-proc.time() - ptm
-
 
 statsout <-data.frame(transect_ID,listVals)
 colnames(statsout)<-c('transect_ID','LRR','LCI','WLR','WCI','SCE','NSM','EPR')
