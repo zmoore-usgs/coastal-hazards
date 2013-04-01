@@ -489,6 +489,7 @@
             calculation : [],
             results : []
         };
+        CONFIG.ajaxTimeout = 300000;
             
         JSON.stringify = JSON.stringify || function (obj) {
             var t = typeof (obj);

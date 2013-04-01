@@ -1,6 +1,8 @@
 var UI = function() {
     LOG.info('UI.js::constructor: UI class is initializing.');
+    
     var me = (this === window) ? {} : this;
+    
     me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
     me.work_stages_objects = [Shorelines, Baseline, Transects, Calculation, Results];
     me.base_name = undefined;//init to undefined. Update in baselines
@@ -10,17 +12,19 @@ var UI = function() {
     
     $('#manage-sessions-btn').on('click', CONFIG.tempSession.createSessionManagementModalWindow);
     
-    LOG.debug('UI.js::constructor: Initializing AJAX start/stop hooks');
-    $.ajaxSetup({
-        timeout : 300000 // 5 minute timout on ajax requests
-    })
-    
-    //init help accordion
     $('.collapsibleHelp').accordion({
         collapsible: true,
         heightStyle: 'content'
     });
     
+    // Set up on-click functionality for stage buttons
+    $('.nav-stacked>li>a').each(function(index, ele) { 
+        $(ele).on('click', function() {
+            me.switchStage(index);
+        });
+    });
+    
+    // Setup of popovers
     me.work_stages_objects.each(function(stage) {
         if (stage.description.stage) {
             $('#nav-list a[href="#'+stage.stage+'"]').parent().popover({
@@ -68,7 +72,7 @@ var UI = function() {
                 delay : {
                     show : popupHoverDelay
                 }
-            })
+            });
         }
     
         $('.feature-list').popover({
@@ -91,14 +95,8 @@ var UI = function() {
             delay : {
                 show : popupHoverDelay
             }
-        })
-    })
-    
-    $('.nav-stacked>li>a').each(function(index, ele) { 
-        $(ele).on('click', function() {
-            me.switchStage(index);
-        })
-    })
+        });
+    });
     
     LOG.debug('UI.js::constructor: UI class initialized.');
     return $.extend(me, {
@@ -129,9 +127,9 @@ var UI = function() {
                 .on('click', callback)
                 .on('click', function() {
                     $("#modal-window").modal('hide');
-                })
-                $('#modal-window>.modal-footer').append(modalButton)
-            })
+                });
+                $('#modal-window>.modal-footer').append(modalButton);
+            });
             
             if (includeCancelButton) {
                 $('#modal-window>.modal-footer').append(
@@ -142,7 +140,7 @@ var UI = function() {
                         'data-dismiss' : 'modal',
                         'aria-hidden' : 'true'
                     })
-                    .html('Done'))
+                    .html('Done'));
             }
             
             callbacks.each(function(callback) {
