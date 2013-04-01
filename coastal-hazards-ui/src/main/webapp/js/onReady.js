@@ -47,12 +47,15 @@ $(document).ready(function() {
     }
 
     $(document).ajaxStart(function() {
-        LOG.debug('AJAX Call Started');
+        LOG.trace('AJAX Call Started');
         $("#application-spinner").fadeIn();
     });
     $(document).ajaxStop(function() {
-        LOG.debug('AJAX Call Finished');
+        LOG.trace('AJAX Call Finished');
         $("#application-spinner").fadeOut();
+    });
+    $.ajaxSetup({
+        timeout: CONFIG.ajaxTimeout
     });
 
     splashUpdate("Initializing Sessions...");
@@ -117,7 +120,7 @@ $(document).ready(function() {
             $("#application-spinner").fadeOut();
         });
     };
-    
+
     // Utility class for the user interface
     splashUpdate("Initializing User Interface...");
     CONFIG.ui = new UI();
