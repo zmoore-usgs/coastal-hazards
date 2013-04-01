@@ -48,7 +48,6 @@ getDSAS <- function(blockNumber){   # get indices for start and end of block
   if (blockNumber==numBlck) {enI <- nRead-1}
   else{enI <- blockI[blockNumber+1]-1}
   stI <- blockI[blockNumber]+1
-  
   splitsTxt <- unlist(strsplit(paste(fileLines[stI:enI],collapse=delim),delim))
   dates <- as.Date(splitsTxt[seq(t_i,length(splitsTxt),3)],format="%Y-%m-%d")
   dist  <- as(splitsTxt[seq(d_i,length(splitsTxt),3)],"numeric")
@@ -57,14 +56,15 @@ getDSAS <- function(blockNumber){   # get indices for start and end of block
   dates <- dates[useI]
   dist  <- dist[useI]
   uncy  <- uncy[useI]
+  
   if (length(dates) < 2) {
-    LRR_rates=NA
-    LCI=NA
-    WLR_rates=NA
-    WCI=NA
-    SCE_dist=NA
-    NSM_dist=NA
-    EPR_dates=NA
+    LRR_rates <- NA
+    LCI       <- NA
+    WLR_rates <- NA
+    WCI       <- NA
+    SCE_dist  <- NA
+    NSM_dist  <- NA
+    EPR_dates <- NA
   }
   else{
     rate <- dates
@@ -77,12 +77,12 @@ getDSAS <- function(blockNumber){   # get indices for start and end of block
     LCI <- (CI[2]-CI[1])/2 # LCI
     
     rate <- dates
-    mdl <- lm(formula=dist~rate, weights=(1/(uncy^2)))
+    mdl  <- lm(formula=dist~rate, weights=(1/(uncy^2)))
     coef <- coefficients(mdl)
     CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
     rate <- coef["rate"]
     WLR_rates <- rate*rateConv 
-    WCI <- (CI[2]-CI[1])/2 # WCI
+    WCI  <- (CI[2]-CI[1])/2 # WCI
     
     SCE_dist <- max(dist)-min(dist)
     
@@ -93,15 +93,20 @@ getDSAS <- function(blockNumber){   # get indices for start and end of block
     EPR_rates <- NSM_dist/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
     
   }
-  return(data.frame("LRR"=LRR_rates,"LCI"=LCI,"WLR"=WLR_rates,"WCI"=WCI,
-                    "SCE"=SCE_dist,"NSM"=NSM_dist,"EPR"=EPR_rates))
+  return(data.frame("LRR"=LRR_rates,
+                    "LCI"=LCI,
+                    "WLR"=WLR_rates,
+                    "WCI"=WCI,
+                    "SCE"=SCE_dist,
+                    "NSM"=NSM_dist,
+                    "EPR"=EPR_rates))
 }
 
 listVals <- foreach(b=1:numBlck,.combine='rbind') %dopar% {
   getDSAS(b)
 }
 
-statsout <-data.frame(transect_ID,listVals)
+statsout <-data.frame(blckNm,listVals)
 colnames(statsout)<-c('transect_ID','LRR','LCI','WLR','WCI','SCE','NSM','EPR')
 
 if (localRun) proc.time() - ptm
