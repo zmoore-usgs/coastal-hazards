@@ -7,6 +7,7 @@
 localRun <- FALSE
 # comment this out for WPS!!!
 if (localRun){
+  Rprof("DSAS_profiler.txt")
   ci <- 0.95
   input <- "testOut.tsv"
   ptm <- proc.time() # for time of process
@@ -17,120 +18,116 @@ if (ci>=1 || ci<=0.5){
 }
 
 fileN    <- input # will have input as a string (long string read in)
-reader   <- c("character","numeric","numeric")
 conLevel <- ci
 zRepV    <- 0.01 #replace value for when the uncertainty is zero
 rateConv <- 365.25
 delim    <- "\t"
 
 hNum <- 1 # number of header lines in each block ** should be 1 now **
-ignoreStr <- c("dist","uncy") # kill for JW....
 c <- file(fileN,"r") #
 
 t_i = 1 # time index
 d_i = 2 # distance index
 u_i = 3 # uncertainty index
 
-nRead <- length(readLines(c))
+fileLines <- readLines(c)
+close(c)
+nRead <- length(fileLines)
+#-#-# nRead <- nlines(c)  # from parser package. Count lines in C++
 
-# get block starts
-blockI <- vector(length=nRead)
-blckNm <- vector(length=nRead)
+# get block starts and block names
+blockI <- grep("# ", fileLines)
+blckNm <- sub("# ","",fileLines[blockI])
+numBlck<- length(blockI)
+textBlck <- vector(length=numBlck,mode="character")
 
-datesV     <- seq( as.Date("1600-01-01"), by=1, len=nRead)
-distancesV <- vector(length=nRead)
-uncyV      <- vector(length=nRead)
-
-
-seek(con=c,where=0)
-for (p in 1:nRead){
-    r1 <- readLines(c,n=1) # read in all of file, line by line raw
-    if (substring(r1,1,1) == '#') {
-        blockI[p] = p
-        blckNm[p] = substring(r1,3,)
-    }
-    else {
-      # break up the string
-      splitsTxt <- strsplit(r1,delim)
-      sT <- splitsTxt[[1]]
-      datesV[p] <- as.Date(sT[t_i],format="%Y-%m-%d")
-      distancesV[p] <- as(sT[d_i],"numeric")
-      uncyV[p] <- max(c(as(sT[u_i],"numeric"),zRepV))
-    }
+for (blockNumber in 1:numBlck){
+  if (blockNumber==numBlck) {enI <- nRead-1}
+  else{enI <- blockI[blockNumber+1]-1}
+  stI <- blockI[blockNumber]+1
+  textBlck[blockNumber] <- paste(fileLines[stI:enI],collapse=delim)
 }
 
-close(c)
+calcLRR <- function(dates,dist){
+  rate <- dates
+  mdl  <- lm(formula=dist~rate)
+  coef <- coefficients(mdl)
+  CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
+  rate <- coef["rate"]  # is m/day
+  
+  LRR_rates <- rate*rateConv 
+  LCI <- (CI[2]-CI[1])/2 # LCI
+  return(c(LRR_rates,LCI))
+}
 
+calcWLR <- function(dates,dist,uncy){
+  rate <- dates
+  mdl  <- lm(formula=dist~rate, weights=(1/(uncy^2)))
+  coef <- coefficients(mdl)
+  CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
+  rate <- coef["rate"]
+  WLR_rates <- rate*rateConv 
+  WCI  <- (CI[2]-CI[1])/2 # WCI
+  return(c(WLR_rates,WCI))
+}
+calcNSM <- function(dates,dist){
+  firstDateIdx <- which.min(dates)
+  lastDateIdx  <- which.max(dates)
+  NSM_dist <- dist[firstDateIdx]-dist[lastDateIdx]
+  EPR_rates <- NSM_dist/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
+  return(c(NSM_dist,EPR_rates))
+}
 
+LRR <-  rep(NA,numBlck)
+LCI <-  rep(NA,numBlck)
+WLR <-  rep(NA,numBlck)
+WCI <-  rep(NA,numBlck)
+SCE <-  rep(NA,numBlck)
+NSM <-  rep(NA,numBlck)
+EPR <-  rep(NA,numBlck)
 
-# get block starts and number of blocks
-rmvI <- (blockI==0)
-blockI = blockI[!rmvI]
-blckNm = blckNm[!rmvI]
-numBlck= length(blockI)
+getDSAS <- function(blockText){  
+  splitsTxt <- unlist(strsplit(blockText,delim))
+  dates <- as(as.Date(splitsTxt[seq(t_i,length(splitsTxt),3)],format="%Y-%m-%d"),"numeric")
+  dist  <- as(splitsTxt[seq(d_i,length(splitsTxt),3)],"numeric")
+  uncy  <- as(splitsTxt[seq(u_i,length(splitsTxt),3)],"numeric")
+  uncy[uncy<zRepV] <- zRepV
+  
+  useI  <- which(!is.na(dates)) & which(!is.na(dist)) & which(!is.na(uncy))
+  dates <- dates[useI]
+  dist  <- dist[useI]
+  uncy  <- uncy[useI]
+  
+  if (length(dates) >= 3) {
+    LRRout   <- calcLRR(dates,dist)
+    WLRout   <- calcWLR(dates,dist,uncy)
+    SCE   <- (max(dist)-min(dist))
+    NSMout  <- calcNSM(dates,dist)
+    return(c(LRRout,WLRout,SCE,NSMout))
+  }
+  else{return(rep(NA,7))}
+  
+}
 
-LRR_rates   <- vector(length=numBlck)
-LCI         <- vector(length=numBlck)
-WLR_rates   <- vector(length=numBlck)
-WCI			    <- vector(length=numBlck)
-SCE_dist    <- vector(length=numBlck)
-NSM_dist    <- vector(length=numBlck)
-EPR_rates   <- vector(length=numBlck)
-
-transect_ID <- blckNm
 
 for (b in 1:numBlck){
-    if (b==numBlck) enI <- nRead-1
-    else enI <- blockI[b+1]-1
-    stI <- blockI[b]+hNum
-    
-    #numLines = enI-stI+1
-    # -- read in data according to data classes in reader
-    #data <- read.table(fileN, sep=delim, header=FALSE, na.strings = ignoreStr, colClasses=reader,skip=stI-1)
-    #data <-data[1:numLines,]
-    #dates <- as.Date(data[,t_i],format="%Y-%m-%d")
-    dates <- datesV[stI:enI]
-    distance <- distancesV[stI:enI]
-    uncy <- uncyV[stI:enI]
-    useI  <- which(!is.na(dates)) & which(!is.na(distance)) & which(!is.na(uncy))
-    
-    dates <- dates[useI]
-
-    if (length(dates) > 2){
-        
-      uncy <- uncy[useI]
-      distance <- distance[useI]
-      # call LRR
-      rate <- dates
-      mdl <- lm(formula=distance~rate)
-      coef <- coefficients(mdl)
-      CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
-      rate <- coef["rate"]  # is m/day
-        
-      LRR_rates[b] <- rate*rateConv 
-      LCI[b] <- (CI[2]-CI[1])/2 # LCI
-        
-      weights <- 1/(uncy^2)
-      rate <- dates
-      mdl <- lm(formula=distance~rate, weights=weights)
-      coef <- coefficients(mdl)
-      CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
-      rate <- coef["rate"]
-      WLR_rates[b] <- rate*rateConv 
-      WCI[b] <- (CI[2]-CI[1])/2 # WCI
-		
-      SCE_dist[b] <- max(distance)-min(distance)
-      firstDateIdx <- which.min(dates)
-      lastDateIdx  <- which.max(dates)
-		  NSM_dist[b] <- distance[firstDateIdx]-distance[lastDateIdx]
-      dateDiff <- dates[lastDateIdx]-dates[firstDateIdx]
-		  EPR_rates[b] <- NSM_dist[b]/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
-    } 
+  DSASstats <- getDSAS(textBlck[b])
+  LRR[b] <- DSASstats[1]
+  LCI[b] <- DSASstats[2]
+  WLR[b] <- DSASstats[3]
+  WCI[b] <- DSASstats[4]
+  SCE[b] <- DSASstats[5]
+  NSM[b] <- DSASstats[6]
+  EPR[b] <- DSASstats[7]
 }
-statsout <-data.frame(transect_ID,LRR_rates,LCI,WLR_rates,WCI,SCE_dist,NSM_dist,EPR_rates)
-colnames(statsout)<-c('transect_ID','LRR','LCI','WLR','WCI','SCE','NSM','EPR')
 
-if (localRun) proc.time() - ptm
+statsout <- data.frame("transect_ID"=blckNm,LRR,LCI,WLR,WCI,SCE,NSM,EPR)
+
+if (localRun){
+  proc.time() -ptm
+  Rprof(NULL)
+  summaryRprof(filename = "DSAS_profiler.txt",chunksize=5000)
+}
 
 # output is an identifier and R variable (WPS identifier). The ouput is the name of the text file
 # wps.out: output, text, output title, tabular output data to append to shapefile;
