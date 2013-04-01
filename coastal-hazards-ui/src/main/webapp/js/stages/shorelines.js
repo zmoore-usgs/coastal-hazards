@@ -147,12 +147,14 @@ var Shorelines = {
         var properties = CONFIG.ows.getLayerPropertiesFromWFSDescribeFeatureType({
             describeFeatureType : args.describeFeaturetypeRespone,
             includeGeom : false
-        });
+        })[layer.name];
         
+		
+		
         CONFIG.ows.getFilteredFeature({ 
             layerPrefix : layer.prefix,
             layerName : layer.name,
-            propertyArray : properties[layer.name], 
+            propertyArray : properties, 
             scope : this,
             callbacks : {
                 success : [
