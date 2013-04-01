@@ -50,7 +50,7 @@ output = "output.png"
 png(output, width=figW, height=figH, units="in",res=fRes)
 par(mai=c(bM,lM,rM,tM))
 
-plot(c(0,max(rwBD)),c(mnY,mxY),type="n",xlab="Distance alongshore (kilometers)",ylab=expression('Rate of change (m yr'^-1 ~')'),
+plot(c(0,max(rwBD)),c(mnY,mxY),type="n",xlab="Distance alongshore (km)",ylab=expression('Rate of change (m yr'^-1 ~')'),
      font=fontN,font.lab=fontN,tcl=-.2,xaxs="i",cex.lab=1.2,cex=1.3)
 lines(c(0,max(rwBD)),c(0,0),col="grey24",lwd=1.2,pch=1,lty=2)
 
