@@ -214,11 +214,34 @@ var UI = function() {
                     fail: 'alert alert-error'
                 },
                 callbacks: {
+                    onSubmit: function(id, name) {
+                        CONFIG.ui.showSpinner();
+                        CONFIG.ui.showAlert({
+                            close : false,
+                            message : 'Upload beginning',
+                            style: {
+                                classes : ['alert-info']
+                            }
+                        })
+                    },
+                    onCancel: function(id, name) {
+                        CONFIG.ui.hideSpinner();
+                        $('#application-alert').alert('close');
+                        
+                    },
+                    onError: function(id, name, errorReason, xhr) {
+                        CONFIG.ui.hideSpinner();
+                        $('#application-alert').alert('close');
+                    },
+                    onProgress: function(id, name, uploadBytes, totalBytes) {
+                        $('#application-alert #message').html('Uploading <b>' + uploadBytes + '<b /> of <b>' + totalBytes + '<b /> total bytes');
+                    },
                     onComplete: function(id, fileName, responseJSON) {
+                        CONFIG.ui.hideSpinner();
+                        $('#application-alert').alert('close');
                         var success = responseJSON.success;
                         var layerName = responseJSON.name;
                         var workspace = responseJSON.workspace;
-                        var store = responseJSON.store;
 
                         if (success === 'true') {
                             LOG.info("UI.js::initializeUploader: Upload complete");
@@ -482,7 +505,6 @@ var UI = function() {
                 var nextMessageObj = CONFIG.alertQueue[args.caller.stage].pop();
                 if (nextMessageObj.hasOwnProperty('message')) {
                     var alertContainer = args.alertContainer;
-                    var alertDom = $('<div />');
                     var style = nextMessageObj.style;
                     var close = nextMessageObj.close;
                     var message = nextMessageObj.message;
@@ -510,7 +532,7 @@ var UI = function() {
                         alertDom.append($('<div />').addClass('alert-queue-notifier').html(queueLength + ' more'))
                     }
             
-                    alertDom.append($('<div />').html(message));
+                    alertDom.append($('<div id="message"/>').html(message));
                     alertContainer.append(alertDom);
                 
                     alertDom.on('closed', function() {
@@ -748,6 +770,12 @@ var UI = function() {
                                     
                 }]
             })
+        },
+        showSpinner: function() {
+            $("#application-spinner").fadeIn();
+        },
+        hideSpinner: function() {
+            $("#application-spinner").fadeOut();
         }
     });
 }

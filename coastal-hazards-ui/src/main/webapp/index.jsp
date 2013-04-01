@@ -20,6 +20,7 @@
 %>
 
 <html lang="en">
+    
     <head>
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" />
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE" />
@@ -50,6 +51,7 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
     </head>
+    
     <body>
         <%-- Loads during application startup, fades out when application is built --%>
         <jsp:include page="applicationOverlay.jsp"></jsp:include>
