@@ -66,7 +66,21 @@ calcWLR <- function(dates,dist,uncy){
   WCI  <- (CI[2]-CI[1])/2 # WCI
   return(data.frame("WLR"=WLR_rates,"WCI"=WCI))
 }
+calcNSM <- function(dates,dist){
+  firstDateIdx <- which.min(dates)
+  lastDateIdx  <- which.max(dates)
+  NSM_dist <- dist[firstDateIdx]-dist[lastDateIdx]
+  EPR_rates <- NSM_dist/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
+  return(data.frame("NSM"=NSM_dist,"EPR"=EPR_rates))
+}
 
+LRR <-  rep(NA,numBlck)
+LCI <-  rep(NA,numBlck)
+WLR <-  rep(NA,numBlck)
+WCI <-  rep(NA,numBlck)
+SCE <-  rep(NA,numBlck)
+NSM <-  rep(NA,numBlck)
+EPR <-  rep(NA,numBlck)
 
 getDSAS <- function(blockNumber){   # get indices for start and end of block
   if (blockNumber==numBlck) {enI <- nRead-1}
@@ -83,40 +97,28 @@ getDSAS <- function(blockNumber){   # get indices for start and end of block
   dist  <- dist[useI]
   uncy  <- uncy[useI]
   
-  if (length(dates) < 2) {
-    LRRCI <- data.frame("LRR"=NA,"LCI"=NA)
-    WLRCI <- data.frame("WLR"=NA,"WCI"=NA)
-    SCE_dist  <- NA
-    NSM_dist  <- NA
-    EPR_dates <- NA
+  if (length(dates) >= 3) {
+    SCE   <- data.frame("SCE"=(max(dist)-min(dist)))
+    return(data.frame("transect_ID"=blckNm[blockNumber],calcLRR(dates,dist),
+                      calcWLR(dates,dist,uncy),SCE,calcNSM(dates,dist)))
   }
-  else{
-    LRRCI <- calcLRR(dates,dist)
-    WLRCI <- calcWLR(dates,dist,uncy)
-    
-    
-    SCE_dist <- max(dist)-min(dist)
-    
-    firstDateIdx <- which.min(dates)
-    lastDateIdx  <- which.max(dates)
-    NSM_dist <- dist[firstDateIdx]-dist[lastDateIdx]
-    dateDiff <- dates[lastDateIdx]-dates[firstDateIdx]
-    EPR_rates <- NSM_dist/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
-    
-  }
-  return(data.frame(LRRCI,WLRCI,
-                    "SCE"=SCE_dist,
-                    "NSM"=NSM_dist,
-                    "EPR"=EPR_rates))
+  
+}
+statsout <- data.frame("transect_ID"=as.numeric(),"LRR"=as.numeric(),
+                       "LCI"=as.numeric(),"WLR"=as.numeric(),
+                       "WCI"=as.numeric(),"SCE"=as.numeric(),
+                       "NSM"=as.numeric(),"EPR"=as.numeric())
+for (b in 1:numBlck){
+  DSASstats <- getDSAS(b))
 }
 
-listVals <- foreach(b=1:numBlck,.combine='rbind') %dopar% {
+proc.time() -ptm
+statsout <- foreach(b=1:numBlck,.combine='rbind') %do% {
   getDSAS(b)
 }
 
-statsout <-data.frame(blckNm,listVals)
 colnames(statsout)<-c('transect_ID','LRR','LCI','WLR','WCI','SCE','NSM','EPR')
-
+if (localRun){proc.time() -ptm}
 
 # output is an identifier and R variable (WPS identifier). The ouput is the name of the text file
 # wps.out: output, text, output title, tabular output data to append to shapefile;
