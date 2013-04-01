@@ -88,7 +88,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
      * Ignoring this because it is really just to get the shp for testing
      */
     @Test
-    //@Ignore
+    @Ignore
     public void testExecuteAndWriteToFile() throws Exception {
         File shpfile = File.createTempFile("test", ".shp");
         URL baselineShapefile = CreateTransectsAndIntersectionsProcessTest.class.getClassLoader()

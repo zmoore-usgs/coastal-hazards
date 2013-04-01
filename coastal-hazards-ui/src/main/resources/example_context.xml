@@ -1,79 +1,36 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<WPSConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://n52.org/wps schema_v2.xsd" xmlns="http://n52.org/wps">
-    <Datahandlers>
-                <ParserList>
-            <Parser name="FeatureCollectionRParser" className="gov.usgs.cida.coastalhazards.parser.FeatureCollectionRParser" active="true">
-                                <Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
-                                <Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
-                                <Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
-                <Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
-                                <Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
-                                <Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
-                                <Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
-                                <Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
-                                <Format mimetype="text/xml" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
-                                <Format mimetype="text/xml; subtype=gml/2.0.0" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
-                                <Format mimetype="text/xml; subtype=gml/2.1.1" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
-                                <Format mimetype="text/xml; subtype=gml/2.1.2" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
-                                <Format mimetype="text/xml; subtype=gml/2.1.2.1" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
-                                <Format mimetype="text/xml; subtype=gml/3.0.0" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
-                                <Format mimetype="text/xml; subtype=gml/3.0.1" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
-                                <Format mimetype="text/xml; subtype=gml/3.1.0" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
-                                <Format mimetype="text/xml; subtype=gml/3.1.1" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
-                                <Format mimetype="text/xml; subtype=gml/3.2.1" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
-                        </Parser>
-                </ParserList>
-                <GeneratorList>
-            <Generator name="GenericFileGenerator" className="org.n52.wps.io.datahandler.generator.GenericFileGenerator" active="true">
-                <Format mimetype="application/dbase"/>
-                <Format mimetype="application/shp" encoding="base64"/>
-                <Format mimetype="application/dgn"/>
-                <Format mimetype="image/tiff" encoding="base64"/>
-                <Format mimetype="image/geotiff"/>
-                <Format mimetype="text/plain" encoding="base64"/>
-                <Format mimetype="application/img"/>
-                <Format mimetype="application/shp"/>
-                <Format mimetype="application/x-zipped-shp"/>
-                <Format mimetype="image/geotiff" encoding="base64"/>
-                <Format mimetype="application/dgn" encoding="base64"/>
-                <Format mimetype="image/png"/>
-                <Format mimetype="image/png" encoding="base64"/>
-                <Format mimetype="application/x-zipped-shp" encoding="base64"/>
-                <Format mimetype="application/x-erdas-hfa"/>
-                <Format mimetype="application/remap"/>
-                <Format mimetype="text/plain"/>
-                <Format mimetype="application/x-netcdf"/>
-                <Format mimetype="image/tiff"/>
-                <Format mimetype="application/img" encoding="base64"/>
-                <Format mimetype="application/geotiff"/>
-                <Format mimetype="image/jpeg" encoding="base64"/>
-                <Format mimetype="application/x-erdas-hfa" encoding="base64"/>
-                <Format mimetype="application/geotiff" encoding="base64"/>
-                <Format mimetype="application/dbase" encoding="base64"/>
-                <Format mimetype="application/x-netcdf" encoding="base64"/>
-                <Format mimetype="image/jpeg"/>
-                <Format mimetype="application/x-geotiff" encoding="base64"/>
-                <Format mimetype="application/x-geotiff"/>
-                <Format mimetype="application/remap" encoding="base64"/>
-                <Format mimetype="application/zip"/>
-                <Format mimetype="application/zip" encoding="base64"/>
-            </Generator>
-                </GeneratorList>
-        </Datahandlers>
-        <AlgorithmRepositoryList>
-        <Repository name="LocalRAlgorithmRepository" className="org.n52.wps.server.r.LocalRAlgorithmRepository" active="true">
-            <Property name="Rserve_Host" active="true">cida-wiwsc-rserve.er.usgs.gov</Property>
-                        <Property name="Rserve_Port" active="true">6311</Property>
-                        <Property name="Rserve_User" active="true">cch</Property>
-                        <Property name="Rserve_Password" active="true">Supply_Your_PWN</Property>
-                        <Property name="Algorithm" active="true">org.n52.wps.server.r.DSAS_stats</Property>
-        </Repository>
-        </AlgorithmRepositoryList>
-    <!-- @hostname@, @hostport@ and @webappPath@ are filtered and replaced by values derived from
-         HttpServelRequest instance of getRequestURL() in response using a Filter -->
-        <Server hostname="@hostname@" hostport="@hostport@" webappPath="@webappPath@" includeDataInputsInResponse="true" computationTimeoutMilliSeconds="5" cacheCapabilites="false">
-        <Database>
-            <Property name="databaseClass" active="true">gov.usgs.cida.n52.wps.database.ResultsDatabase</Property>
-        </Database>
-    </Server>
-</WPSConfiguration>
+<!-- Sets logging and script types that are loaded --> 
+<Environment name="coastal-hazards.development" type="java.lang.String" value="true" />
+
+<!-- The maximum file size that is allowed to the server - Set to 0 to disable size checking -->
+<Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="15728640" />
+
+<!-- The parameter that the application uses to get the name of the incoming file - qqfile is used by default -->
+<Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="qqfile" />
+
+<!-- The base directory for the project's file structure - the default will be a "coastal-hazards" directory in the system's temp dir-->
+<Environment name="coastal-hazards.files.directory.base" type="java.lang.String" value="/tmp/coastal-hazards" />
+
+<!-- Work Directory. Typically where files are temporarily stored after uploading, unzipping, etc. Default will be /work - sits in coastal-hazards.files.directory.base -->
+<Environment name="coastal-hazards.files.directory.work" type="java.lang.String" value="/work" />
+
+<!-- Directory in which uploads are held -->
+<Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="/upload" />
+
+<!-- gov.usgs.cida.n52.wps.config.location which is path to wps_config.xml file. Rserve connection won't work without -->
+<Environment name="gov.usgs.cida.n52.wps.config.location" type="java.lang.String" value="/Users/isuftin/Server/8080/7.0.35/data/coastal-hazards/n52/wps_config.xml" />
+
+<!-- GeoServer Config -->
+<!-- 
+coastal-hazards.geoserver.datadir - 
+Data Directory. Where GeoServer stores its files. 
+The combination of coastal-hazards.files.directory.base + coastal-hazards.files.directory.data should also
+be set in Geoserver's bin/setenv.sh as GEOSERVER_DATA_DIR 
+Example: JAVA_OPTS="$JAVA_OPTS -DGEOSERVER_DATA_DIR=/path/to/your/data/dir"
+-->
+<Environment name="coastal-hazards.geoserver.datadir" type="java.lang.String" value="/Users/isuftin/Source/CIDA/coastal-hazards/coastal-hazards-geoserver/target/geoserver/data" />
+<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="admin" />
+<Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="supply.your.own" />
+
+<!-- URL Forwarding Configuration -->
+<Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/coastal-hazards-geoserver" />
+<Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="http://localhost:8080/coastal-hazards-n52" />
