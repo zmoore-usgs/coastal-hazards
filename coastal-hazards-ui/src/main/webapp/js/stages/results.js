@@ -531,7 +531,7 @@ var Results = {
         var intersects = args.intersects;
         var ci = args.ci;
         var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
-        var wps = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
+        var wps = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
         '<ows:Identifier>gs:CreateResultsLayer</ows:Identifier>' + 
         '<wps:DataInputs>'+
         '<wps:Input>' + 
@@ -545,7 +545,7 @@ var Results = {
         '<ows:Identifier>input</ows:Identifier>' + 
         '<wps:Reference xlink:href="' + geoserverEndpoint + CONFIG.tempSession.getCurrentSessionKey() + '/wfs">' + 
         '<wps:Body>' + 
-        '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2" >' + 
+        '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2" xmlns:ogc="http://www.opengis.net/ogc">' + 
         '<wfs:Query typeName="'+intersects+'" />' + 
         '<ogc:PropertyName>TransectID</ogc:PropertyName>' + 
         '<ogc:PropertyName>Distance</ogc:PropertyName>' + 
