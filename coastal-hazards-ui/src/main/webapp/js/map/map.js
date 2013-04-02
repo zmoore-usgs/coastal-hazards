@@ -1,7 +1,7 @@
 var Map = function() {
     LOG.info('Map.js::constructor:Map class is initializing.');
     var me = (this === window) ? {} : this;
-    var initialExtent = [-10684062.064102,-17180597.971211,17180597.971211,10684062.064102];
+    var initialExtent = [-15843196.966553,2251625.961233,-5501572.7891212,7593656.9932838];
     
     LOG.debug('Map.js::constructor:Loading Map object');
     me.map = new OpenLayers.Map('map', {
@@ -10,13 +10,14 @@ var Map = function() {
     });
     LOG.debug('Map.js::constructor:Creating base layer');
     me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
-        "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
-        {
-            sphericalMercator: true,
-            isBaseLayer: true,
-            numZoomLevels : 20
-        }
-        ));
+            "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
+            {
+                sphericalMercator: true,
+                isBaseLayer: true,
+                numZoomLevels: 20,
+                wrapDateLine: true
+            }
+    ));
     
     LOG.debug('Map.js::constructor:Adding ontrols to map');
     me.map.addControl(new OpenLayers.Control.MousePosition());
@@ -25,7 +26,7 @@ var Map = function() {
     }));
     
     LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
-    me.map.zoomToExtent([-10684062.064102,-17180597.971211,17180597.971211,10684062.064102], true);
+    me.map.zoomToExtent(initialExtent, true);
     
     LOG.debug('Map.js::constructor: Map class initialized.');
     return $.extend(me, {
