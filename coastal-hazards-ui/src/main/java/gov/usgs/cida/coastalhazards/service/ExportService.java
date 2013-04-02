@@ -63,7 +63,7 @@ public class ExportService extends HttpServlet {
             
             if (gsEndpoint.endsWith("/")) {
                 gsEndpoint = gsEndpoint.substring(0, gsEndpoint.length() - 1);
-            };
+            }
             
             String wpsRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                     + "<wps:Execute xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" service=\"WPS\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd\">"
@@ -73,8 +73,13 @@ public class ExportService extends HttpServlet {
                     + "<ows:Identifier>input</ows:Identifier>"
                     + "<wps:Reference mimeType=\"text/xml\" xlink:href=\"" + gsEndpoint + "/" + workspace + "/wfs\" method=\"POST\">"
                     + "<wps:Body>"
-                    + "<wfs:GetFeature service=\"WFS\" xmlns:" + workspace + "=\"" + workspaceNS + "\"  version=\"1.1.0\" outputFormat=\"GML2\" >"
+                    + "<wfs:GetFeature service=\"WFS\" xmlns:" + workspace + "=\"" + workspaceNS + "\"  version=\"1.1.0\" outputFormat=\"GML2\" xmlns:ogc=\"http://www.opengis.net/ogc\">"
                     + "<wfs:Query typeName=\"" + layer + "\"/>"
+                    + "<ogc:PropertyName>BaselineID</ogc:PropertyName>"
+                    + "<ogc:PropertyName>TransectID</ogc:PropertyName>"
+                    + "<ogc:PropertyName>base_dist</ogc:PropertyName>"
+                    + "<ogc:PropertyName>LRR</ogc:PropertyName>"
+                    + "<ogc:PropertyName>LCI</ogc:PropertyName>"
                     + "</wfs:GetFeature>"
                     + "</wps:Body>"
                     + "</wps:Reference>"

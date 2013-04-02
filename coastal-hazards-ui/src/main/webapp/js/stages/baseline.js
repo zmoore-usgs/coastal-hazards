@@ -608,7 +608,7 @@ var Baseline = {
                     callbacks : [
                     function(data, textStatus, jqXHR, context) {
                         // Check if we got a document (error) or a string (success) back
-                        if (typeof data == "string") {
+                        if (typeof data === "string") {
                             CONFIG.ui.showAlert({
                                 message : 'Layer cloned successfully.',
                                 displayTime : 7500,
@@ -616,7 +616,7 @@ var Baseline = {
                                 style: {
                                     classes : ['alert-success']
                                 }
-                            })
+                            });
                             
                             CONFIG.ows.getDescribeFeatureType({
                                 layerNS : selectVal.split(':')[0],
@@ -627,12 +627,12 @@ var Baseline = {
                                         Baseline.refreshFeatureList({
                                             selectLayer : data,
                                             isCloning: true
-                                        })
+                                        });
                                         $('a[href="#' + Baseline.stage + '-view-tab"]').tab('show');
-                                    }
+                                    };
                                     var orientProp = describeFeaturetypeRespone.featureTypes[0].properties.find(function(p){
-                                        return p.name.toLowerCase() == 'orient';
-                                    })
+                                        return p.name.toLowerCase() === 'orient';
+                                    });
                                     if (!orientProp) {
                                         CONFIG.ows.appendAttributesToLayer({
                                             workspace : CONFIG.tempSession.getCurrentSessionKey(),
@@ -642,7 +642,7 @@ var Baseline = {
                                             callbacks : [
                                             displayLayer
                                             ]
-                                        })
+                                        });
                                     } else {
                                         displayLayer();
                                     }
@@ -650,7 +650,7 @@ var Baseline = {
                                     
                                 }
                                 ]
-                            })
+                            });
                             
                             
                             
@@ -663,17 +663,17 @@ var Baseline = {
                                 style: {
                                     classes : ['alert-error']
                                 }
-                            })
+                            });
                         }
                     }
                     ]
-                })
+                });
             } else {
                 CONFIG.ui.showAlert({
                     message : 'Cloned layer exists.',
                     displayTime : 7500,
                     caller : Baseline
-                })
+                });
             }
         }
     },
@@ -696,7 +696,7 @@ var Baseline = {
     },
     enableEditButtonSet : function() {
         if ($("#baseline-list option:selected")[0].value.startsWith(CONFIG.tempSession.getCurrentSessionKey())) {
-            LOG.info('Baseline.js::enableEditButton: Showing baseline edit button on panel')
+            LOG.info('Baseline.js::enableEditButton: Showing baseline edit button on panel');
             
             var baselineEditButtonGroup = $('#baseline-edit-btn-group button');
             
@@ -780,7 +780,7 @@ var Baseline = {
         var layer = CONFIG.map.getMap().getLayersByName('baseline-edit-layer')[0];
         
         var saveStrategy = layer.strategies.find(function(n) {
-            return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
+            return n['CLASS_NAME'] === 'OpenLayers.Strategy.Save'
         });
                         
         saveStrategy.events.remove('success');

@@ -115,7 +115,8 @@ $(document).ready(function() {
         $(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
             LOG.debug('AJAX Call Error: ' + thrownError);
             CONFIG.ui.showAlert({
-                message: 'There was an error while communicating with the server. Check logs for more info. Please try again.'
+                message: 'There was an error while communicating with the server. Check logs for more info. Please try again.',
+                displayTime : 0
             });
             $("#application-spinner").fadeOut();
         });

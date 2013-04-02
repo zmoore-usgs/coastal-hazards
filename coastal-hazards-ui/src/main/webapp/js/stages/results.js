@@ -531,7 +531,7 @@ var Results = {
         var intersects = args.intersects;
         var ci = args.ci;
         var geoserverEndpoint = CONFIG.geoServerEndpoint.endsWith('/') ? CONFIG.geoServerEndpoint : CONFIG.geoServerEndpoint + '/';
-        var wps = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
+        var wps = '<?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 
         '<ows:Identifier>gs:CreateResultsLayer</ows:Identifier>' + 
         '<wps:DataInputs>'+
         '<wps:Input>' + 
@@ -545,8 +545,12 @@ var Results = {
         '<ows:Identifier>input</ows:Identifier>' + 
         '<wps:Reference xlink:href="' + geoserverEndpoint + CONFIG.tempSession.getCurrentSessionKey() + '/wfs">' + 
         '<wps:Body>' + 
-        '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2" >' + 
+        '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2" xmlns:ogc="http://www.opengis.net/ogc">' + 
         '<wfs:Query typeName="'+intersects+'" />' + 
+        '<ogc:PropertyName>TransectID</ogc:PropertyName>' + 
+        '<ogc:PropertyName>Distance</ogc:PropertyName>' + 
+        '<ogc:PropertyName>Date_</ogc:PropertyName>' + 
+        '<ogc:PropertyName>Uncy</ogc:PropertyName>' + 
         '</wfs:GetFeature>' + 
         '</wps:Body>' + 
         '</wps:Reference>' + 
@@ -567,17 +571,6 @@ var Results = {
         '</wps:Execute>]]></wps:Body>' + 
         '</wps:Reference>' +         
         '</wps:Input>'+
-        
-        '<wps:Input>' + 
-        '<ows:Identifier>intersects</ows:Identifier>' + 
-        '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
-        '<wps:Body>' + 
-        '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+intersects.split(':')[0]+'="gov.usgs.cida.ch.'+intersects.split(':')[0]+'">' + 
-        '<wfs:Query typeName="'+intersects+'" />' + 
-        '</wfs:GetFeature>' + 
-        '</wps:Body>' + 
-        '</wps:Reference>' + 
-        '</wps:Input>' +  
         
         '<wps:Input>' + 
         '<ows:Identifier>transects</ows:Identifier>' + 
@@ -622,9 +615,8 @@ var Results = {
         return wps;
     },
     retrieveRSquigglePlotPNG : function() {
-        var val =$("#results-list option:selected")[0].value
+        var val =$("#results-list option:selected")[0].value;
         if (val) {
-            var layerNS = val.split(':')[0];
             var layerName = val.split(':')[1];
             var workspaceNS = 'gov.usgs.cida.ch.' + CONFIG.tempSession.getCurrentSessionKey();
             var exportForm = $('<form />').attr({
@@ -656,8 +648,8 @@ var Results = {
                 $('<input />').attr({
                     'type' : 'hidden',
                     'name' : 'type'
-                }).val('image/png;base64'))
-            $('body').append(exportForm)
+                }).val('image/png;base64'));
+            $('body').append(exportForm);
             exportForm.attr('action', 'service/export/squiggle');
             exportForm.submit();
             exportForm.remove();
