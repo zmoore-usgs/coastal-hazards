@@ -102,6 +102,7 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
     @DescribeResult(name = "resultLayer", description = "Layer containing results of shoreline statistics")
     public String execute(@DescribeParameter(name = "results", description = "Block of text with TransectID and stats results", min = 1, max = 1) StringBuffer results,
             @DescribeParameter(name = "transects", description = "Feature collection of transects to join", min = 1, max = 1) FeatureCollection<SimpleFeatureType, SimpleFeature> transects,
+            // TODO Intersects aren't used, this should be removed to avoid confusion
             @DescribeParameter(name = "intersects", description = "Feature collection of intersects used to calculate results", min = 0, max = 1) FeatureCollection<SimpleFeatureType, SimpleFeature> intersects,
             @DescribeParameter(name = "workspace", description = "Workspace in which to put results layer", min = 1, max = 1) String workspace,
             @DescribeParameter(name = "store", description = "Store in which to put results", min = 1, max = 1) String store,
@@ -111,6 +112,8 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
     }
     
     protected class Process {
+        
+        /* this is different from the one in Constants, this is a "contract" with the R process on the column name for TransectId*/
         public static final String TRANSECT_ID = "transect_ID";
         
         private String results;
