@@ -137,14 +137,6 @@
                                                 <i class="icon-pencil icon-white"></i>
                                                 &nbsp;Draw
                                             </button>
-                                            <button class="btn btn-success" disabled id="baseline-clone-btn">
-                                                <i class="icon-plus icon-white"></i>
-                                                &nbsp;Clone
-                                            </button>
-                                            <button id="baseline-remove-btn" disabled class="btn btn-success">
-                                                <i class="icon-remove icon-white"></i>
-                                                &nbsp;Remove
-                                            </button>
                                             <div id="baseline-edit-btn-group" class="btn-group">
                                                 <button id="baseline-edit-button" data-toggle="button" class="btn btn-success"  disabled="disabled">
                                                     <i class="icon-edit icon-white"></i>
@@ -163,6 +155,14 @@
                                                     <li id="baseline-edit-orient-shoreward" class="disabled"><a tabindex="-1" href="#">Set Direction Shoreward</a></li>
                                                 </ul>
                                             </div>
+                                            <button class="btn btn-success" disabled id="baseline-clone-btn">
+                                                <i class="icon-plus icon-white"></i>
+                                                &nbsp;Clone
+                                            </button>
+                                            <button id="baseline-remove-btn" disabled class="btn btn-success">
+                                                <i class="icon-remove icon-white"></i>
+                                                &nbsp;Remove
+                                            </button>
                                         </div>
                                     </div>
 
