@@ -547,6 +547,10 @@ var Results = {
         '<wps:Body>' + 
         '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2" >' + 
         '<wfs:Query typeName="'+intersects+'" />' + 
+        '<ogc:PropertyName>TransectID</ogc:PropertyName>' + 
+        '<ogc:PropertyName>Distance</ogc:PropertyName>' + 
+        '<ogc:PropertyName>Date_</ogc:PropertyName>' + 
+        '<ogc:PropertyName>Uncy</ogc:PropertyName>' + 
         '</wfs:GetFeature>' + 
         '</wps:Body>' + 
         '</wps:Reference>' + 
@@ -567,17 +571,6 @@ var Results = {
         '</wps:Execute>]]></wps:Body>' + 
         '</wps:Reference>' +         
         '</wps:Input>'+
-        
-        '<wps:Input>' + 
-        '<ows:Identifier>intersects</ows:Identifier>' + 
-        '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
-        '<wps:Body>' + 
-        '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+intersects.split(':')[0]+'="gov.usgs.cida.ch.'+intersects.split(':')[0]+'">' + 
-        '<wfs:Query typeName="'+intersects+'" />' + 
-        '</wfs:GetFeature>' + 
-        '</wps:Body>' + 
-        '</wps:Reference>' + 
-        '</wps:Input>' +  
         
         '<wps:Input>' + 
         '<ows:Identifier>transects</ows:Identifier>' + 
@@ -622,7 +615,7 @@ var Results = {
         return wps;
     },
     retrieveRSquigglePlotPNG : function() {
-        var val =$("#results-list option:selected")[0].value
+        var val =$("#results-list option:selected")[0].value;
         if (val) {
             var layerNS = val.split(':')[0];
             var layerName = val.split(':')[1];
