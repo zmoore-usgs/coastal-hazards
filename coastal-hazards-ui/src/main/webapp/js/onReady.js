@@ -47,12 +47,15 @@ $(document).ready(function() {
     }
 
     $(document).ajaxStart(function() {
-        LOG.debug('AJAX Call Started');
+        LOG.trace('AJAX Call Started');
         $("#application-spinner").fadeIn();
     });
     $(document).ajaxStop(function() {
-        LOG.debug('AJAX Call Finished');
+        LOG.trace('AJAX Call Finished');
         $("#application-spinner").fadeOut();
+    });
+    $.ajaxSetup({
+        timeout: CONFIG.ajaxTimeout
     });
 
     splashUpdate("Initializing Sessions...");
@@ -112,12 +115,13 @@ $(document).ready(function() {
         $(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
             LOG.debug('AJAX Call Error: ' + thrownError);
             CONFIG.ui.showAlert({
-                message: 'There was an error while communicating with the server. Check logs for more info. Please try again.'
+                message: 'There was an error while communicating with the server. Check logs for more info. Please try again.',
+                displayTime : 0
             });
             $("#application-spinner").fadeOut();
         });
     };
-    
+
     // Utility class for the user interface
     splashUpdate("Initializing User Interface...");
     CONFIG.ui = new UI();

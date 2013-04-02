@@ -20,17 +20,19 @@
 %>
 
 <html lang="en">
+    
     <head>
-        <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-        <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
-        <META HTTP-EQUIV="CONTENT-LANGUAGE" CONTENT="en-US">
-        <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8">
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-        <link rel="icon" href="/favicon.ico" type="image/x-icon">
+        <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" />
+        <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE" />
+        <META HTTP-EQUIV="EXPIRES" CONTENT="0" />
+        <META HTTP-EQUIV="CONTENT-LANGUAGE" CONTENT="en-US" />
+        <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8" />
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="shortName" value="USGS Coastal Change Hazards" />
@@ -42,41 +44,17 @@
             <jsp:param name="revisedDate" value="" />
             <jsp:param name="nextReview" value="" />
             <jsp:param name="expires" value="never" />
-            <jsp:param name="development" value="" />
+            <jsp:param name="development" value="<%= development %>" />
         </jsp:include>
         <jsp:include page="js/jquery/jquery.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
     </head>
+    
     <body>
-        <div id="application-overlay" style="height : 100%;width : 100%;position : fixed;top : 0;left : 0;background-color: #FFFFFF;z-index: 9999;">
-            <div id="application-overlay-content" style='height: 50%;padding-left: 25%;position: relative;top: 15%;width: 50%;color: #333333;font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;font-size: 14px;line-height: 20px;'>
-                <div style="text-align: center"><h1 style="letter-spacing: 0.5em;font-size: 38.5px; line-height: 40px;color: inherit; font-family: inherit; font-weight: bold;text-rendering: optimizelegibility;">Coastal Hazards</h1></div>
-                <div style="width: 100%;max-width: none;border: 0 none;height: auto;vertical-align: middle;">
-                    <img id="application-overlay-banner" src="images/splash/splash.png" style="width:75%" />
-                </div>
-                This web-based Digital Shoreline Analysis System (DSASweb) is a software application that enables a user to calculate shoreline rate-of-change statistics from multiple historical shoreline positions.
-                <br /><br />
-                A user-friendly interface of simple buttons and menus guides the user through the major steps of shoreline change analysis.
-                <br /><br />
-                You can use our current database of shorelines, or upload your own.
-                <br /><br />
-                DSASweb is a convenient, web-based version of the original USGS DSAS analysis tool.
-                <br /><br />
-                <div style="text-align:center;">
-                    <div id="splash-status-update"></div>
-                    <img src="images/spinner/spinner3.gif" />
-                </div>
-            </div>
-        </div>
-
-        <script type="text/javascript">
-            var splashUpdate = function(message) {
-                $('#splash-status-update').html(message);
-            };
-            splashUpdate("Loading application...");
-        </script>
+        <%-- Loads during application startup, fades out when application is built --%>
+        <jsp:include page="applicationOverlay.jsp"></jsp:include>
 
         <div class="container-fluid">
             <div class="row-fluid">
@@ -159,14 +137,6 @@
                                                 <i class="icon-pencil icon-white"></i>
                                                 &nbsp;Draw
                                             </button>
-                                            <button class="btn btn-success" disabled id="baseline-clone-btn">
-                                                <i class="icon-plus icon-white"></i>
-                                                &nbsp;Clone
-                                            </button>
-                                            <button id="baseline-remove-btn" disabled class="btn btn-success">
-                                                <i class="icon-remove icon-white"></i>
-                                                &nbsp;Remove
-                                            </button>
                                             <div id="baseline-edit-btn-group" class="btn-group">
                                                 <button id="baseline-edit-button" data-toggle="button" class="btn btn-success"  disabled="disabled">
                                                     <i class="icon-edit icon-white"></i>
@@ -185,6 +155,14 @@
                                                     <li id="baseline-edit-orient-shoreward" class="disabled"><a tabindex="-1" href="#">Set Direction Shoreward</a></li>
                                                 </ul>
                                             </div>
+                                            <button class="btn btn-success" disabled id="baseline-clone-btn">
+                                                <i class="icon-plus icon-white"></i>
+                                                &nbsp;Clone
+                                            </button>
+                                            <button id="baseline-remove-btn" disabled class="btn btn-success">
+                                                <i class="icon-remove icon-white"></i>
+                                                &nbsp;Remove
+                                            </button>
                                         </div>
                                     </div>
 
@@ -208,7 +186,8 @@
                                     <div class="row-fluid">
                                         <div id="baseline-edit-container" class="well hidden">
                                             <div id="baseline-edit-container-instructions-initial" class="baseline-edit-container-instructions hidden">
-                                                Begin by selecting a base line segment you wish to edit. Select a base line segment by hovering over a segment until it turns blue, then click on it.
+                                                Begin by selecting a base line segment you wish to edit. Select a base line segment by hovering over a segment until it turns blue, then click on it. <br /><br />
+                                                You may also begin adding segments to the baseline by clicking on an empty area on the map to begin drawing.
                                             </div>
                                             <div id="baseline-edit-container-instructions-vertex" class="baseline-edit-container-instructions hidden">
                                                 When editing vertices, you have control over two typs of vertices. The vertices appearing at the endpoints and bends of features allow you to drag these endpoints and bends. The less opaque vertices appearing at the midpoint of each segment allow you to cerate new segments by dragging on them.
@@ -450,7 +429,7 @@
 
     <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
     <jsp:include page="js/openlayers/openlayers.jsp">
-        <jsp:param name="debug-qualifier" value="false" />
+        <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
 
     <script type="text/javascript">splashUpdate("Loading JS Utilities...");</script>
@@ -459,9 +438,10 @@
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
 
-    <!-- TODO - Modularize -->
     <script type="text/javascript">splashUpdate("Loading Upload Management...");</script>
-    <script type="text/javascript" src="js/jquery-fineuploader/jquery.fineuploader-3.0.js"></script>
+    <jsp:include page="js/fineuploader/fineuploader.jsp">
+        <jsp:param name="debug-qualifier" value="true" />
+    </jsp:include>
 
     <script type="text/javascript">
         splashUpdate("Setting configuration...");
@@ -489,21 +469,22 @@
             calculation : [],
             results : []
         };
+        CONFIG.ajaxTimeout = 300000;
             
         JSON.stringify = JSON.stringify || function (obj) {
             var t = typeof (obj);
-            if (t != "object" || obj === null) {
+            if (t !== "object" || obj === null) {
                 // simple data type
-                if (t == "string") obj = '"'+obj+'"';
+                if (t === "string") obj = '"'+obj+'"';
                 return String(obj);
             }
             else {
                 // recurse array or object
-                var n, v, json = [], arr = (obj && obj.constructor == Array);
+                var n, v, json = [], arr = (obj && obj.constructor === Array);
                 for (n in obj) {
                     v = obj[n]; t = typeof(v);
-                    if (t == "string") v = '"'+v+'"';
-                    else if (t == "object" && v !== null) v = JSON.stringify(v);
+                    if (t === "string") v = '"'+v+'"';
+                    else if (t === "object" && v !== null) v = JSON.stringify(v);
                     json.push((arr ? "" : '"' + n + '":') + String(v));
                 }
                 return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
@@ -539,6 +520,7 @@
     <script type="text/javascript">splashUpdate("Loading Toggle plugin...");</script>
     <link type="text/css" rel="stylesheet" href="js/bootstrap-switch/static/stylesheets/bootstrapSwitch.css" />
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
+
 <script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
 <link type="text/css" rel="stylesheet" href="css/custom.css" />
 <script type="text/javascript">splashUpdate("Loading Main module...");</script>

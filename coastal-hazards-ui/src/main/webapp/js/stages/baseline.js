@@ -16,51 +16,17 @@ var Baseline = {
     baselineEditButton : $('#baseline-edit-button'),
     baselineEditMenu : $('#baseline-edit-menu'), 
     appInit : function() {
+        // Default value for new drawn base layer is random. If a shoreline is chosen,
+        // the name of the shoreline will be used instead
         $('#baseline-draw-form-name').val(Util.getRandomLorem());
-        Baseline.baselineCloneButton.on('click', Baseline.cloneButtonClicked);
+
+        Baseline.baselineCloneButton.on('click', Baseline.cloneLayer);
         Baseline.baselineRemoveButton.on('click', Baseline.removeResource);
         Baseline.baselineDrawButton.on("click", Baseline.drawButtonToggled);
         Baseline.baselineEditButton.on('click', Baseline.editButtonToggled);
         Baseline.baselineEditMenu.find('li').on('click', Baseline.editMenuToggled);
-
-        Baseline.baselineDrawButton.popover({
-            title : Baseline.stage.capitalize() + ' Draw',
-            content : $('<div />')
-            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
-            .html(),
-            html : true,
-            placement : 'bottom',
-            trigger : 'hover',
-            delay : {
-                show : CONFIG.popupHoverDelay
-            }
-        });
         
-        Baseline.baselineEditButton.popover({
-            title : Baseline.stage.capitalize() + ' Edit',
-            content : $('<div />')
-            .append($('<div />').html('Expand the editing pallet and modify the selected baseline. '))
-            .html(),
-            html : true,
-            placement : 'bottom',
-            trigger : 'hover',
-            delay : {
-                show : CONFIG.popupHoverDelay
-            }
-        });
-        
-        Baseline.baselineCloneButton.popover({
-            title : Baseline.stage.capitalize() + ' Clone',
-            content : $('<div />')
-            .append($('<div />').html('Clone an existing baseline layer so that it can be modified if desired.'))
-            .html(),
-            html : true,
-            placement : 'bottom',
-            trigger : 'hover',
-            delay : {
-                show : CONFIG.popupHoverDelay
-            }
-        });
+        Baseline.initializeUploader();
         
         var sessionKey = CONFIG.tempSession.getCurrentSessionKey();
         var drawLayer  = new OpenLayers.Layer.Vector("baseline-draw-layer",{
@@ -77,7 +43,7 @@ var Baseline = {
             }),
             onFeatureInsert : function(feature) {
                 var indexOfFeatureInLayer = feature.layer.features.findIndex(function(f) {
-                    return f.id == feature.id;
+                    return f.id === feature.id;
                 });
                 feature.attributes['Orient'] = 'seaward';
                 feature.attributes['ID'] = indexOfFeatureInLayer + 1;
@@ -104,7 +70,43 @@ var Baseline = {
             box : false
         }));
         
-        Baseline.initializeUploader();
+        // Set up popovers
+        Baseline.baselineDrawButton.popover({
+            title : Baseline.stage.capitalize() + ' Draw',
+            content : $('<div />')
+            .append($('<div />').html('Click vertex points on the map to draw your own baseline. Double-click to finish.'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        });
+        Baseline.baselineEditButton.popover({
+            title : Baseline.stage.capitalize() + ' Edit',
+            content : $('<div />')
+            .append($('<div />').html('Expand the editing pallet and modify the selected baseline. '))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        });
+        Baseline.baselineCloneButton.popover({
+            title : Baseline.stage.capitalize() + ' Clone',
+            content : $('<div />')
+            .append($('<div />').html('Clone an existing baseline layer so that it can be modified if desired.'))
+            .html(),
+            html : true,
+            placement : 'bottom',
+            trigger : 'hover',
+            delay : {
+                show : CONFIG.popupHoverDelay
+            }
+        });
     },
     
     enterStage : function() {
@@ -114,6 +116,7 @@ var Baseline = {
             tab : 'view'
         });
     },
+            
     leaveStage : function() {
         LOG.debug('Baseline.js::leaveStage');
         Baseline.deactivateHighlightControl();
@@ -225,7 +228,7 @@ var Baseline = {
                                     style: {
                                         classes : ['alert-error']
                                     }
-                                })
+                                });
                             }]
                         }
                     });
@@ -240,19 +243,19 @@ var Baseline = {
                             style: {
                                 classes : ['alert-error']
                             }
-                        })
+                        });
                     }
                 
                     var layerColumns = Util.createLayerUnionAttributeMap({
                         caller : Baseline,
                         attributes : attributes
-                    })
+                    });
                     var foundAll = true;
                     Baseline.mandatoryColumns.each(function(mc){
                         if (!layerColumns[mc]) {
                             foundAll = false;
                         }
-                    })
+                    });
                 
                     if (!foundAll) {
                         CONFIG.ui.buildColumnMatchingModalWindow({
@@ -340,7 +343,7 @@ var Baseline = {
         mappedLayers.each(function(layer) {
             LOG.debug('Baseline.js::listboxChanged: Removing layer ' + layer.name + ' from map');
             CONFIG.map.removeLayer(layer);
-        })
+        });
 
         //set all subsequent dropdowns to none and trigger changes
         var subsequentSelectIds = ['transects-list', 'intersections-list', 'results-list'];
@@ -363,7 +366,7 @@ var Baseline = {
             
             Baseline.addLayerToMap({
                 name : selectVal
-            })
+            });
             
             if (selectVal.startsWith(CONFIG.tempSession.getCurrentSessionKey())) {
                 LOG.debug('Baseline.js::baselineSelected: Selected baseline is user-created and is writable. Displaying edit panel.');
@@ -385,6 +388,7 @@ var Baseline = {
     editButtonToggled : function(event) {
         var activated = !$(event.target).hasClass('active');
         if (activated) {
+            LOG.debug('Baseline.js::editMenuToggled: Edit menu button has been toggled on');
             $('#baseline-edit-save-button').on('click', Baseline.saveEditedLayer);
             $('#baseline-edit-container').removeClass('hidden');
            
@@ -392,31 +396,54 @@ var Baseline = {
             $(Baseline.baselineDrawButton).attr('disabled', 'disabled');
             $(Baseline.baselineDrawButton).removeClass('active');
             
-            LOG.debug('Baseline.js::editMenuToggled: Edit description panel to be displayed');
-            
+            LOG.debug('Baseline.js::editMenuToggled: Disabling draw button');
             Baseline.disableDrawButton();
+            
             LOG.debug('Baseline.js::editMenuToggled: Attempting to clone current active baseline layer into an edit layer');
             var originalLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0].clone();
-            var clonedLayer = new OpenLayers.Layer.Vector('baseline-edit-layer',{
+            var clonedLayer = new OpenLayers.Layer.Vector('baseline-edit-layer', {
                 strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
                 protocol: new OpenLayers.Protocol.WFS({
-                    url:  "geoserver/"+originalLayer.name.split(':')[0]+"/wfs",
+                    url: "geoserver/" + originalLayer.name.split(':')[0] + "/wfs",
                     featureType: originalLayer.name.split(':')[1],
                     featureNS: CONFIG.namespace[originalLayer.name.split(':')[0]],
                     geometryName: "the_geom",
-                    schema: "geoserver/"+originalLayer.name.split(':')[0]+"/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + originalLayer.name
+                    schema: "geoserver/" + originalLayer.name.split(':')[0] + "/wfs/DescribeFeatureType?version=1.1.0&outputFormat=GML2&typename=" + originalLayer.name
                 }),
-                cloneOf : originalLayer.name,
-                renderers: CONFIG.map.getRenderer()
-            })
+                cloneOf: originalLayer.name,
+                renderers: CONFIG.map.getRenderer(),
+                // Use this for features we draw, not those that already exist
+                onFeatureInsert: function(feature) {
+                    if (!feature.attributes['Orient']) {
+                        var indexOfFeatureInLayer = feature.layer.features.findIndex(function(f) {
+                            return f.id === feature.id;
+                        });
+                        feature.attributes['Orient'] = 'seaward';
+                        feature.attributes['ID'] = indexOfFeatureInLayer + 1;
+                    }
+
+                }
+            });
             clonedLayer.addFeatures(originalLayer.features);
             clonedLayer.styleMap.styles['default'].defaultStyle.strokeWidth = 4;
-            var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer, 
-            {
-                id : 'baseline-edit-control',
-                deleteCodes : [8, 46, 48],
-                standalone : true
-            })
+            
+            var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer,
+                    {
+                        id: 'baseline-edit-control',
+                        deleteCodes: [8, 46, 48],
+                        standalone: true
+                    });
+                    
+            var drawControl = new OpenLayers.Control.DrawFeature(
+                    clonedLayer,
+                    OpenLayers.Handler.Path,
+                    {
+                        id: 'baseline-edit-draw-control',
+                        multi: true
+                    });
+
+            CONFIG.map.addControl(drawControl);
+            drawControl.activate();
                     
             LOG.debug('Baseline.js::editMenuToggled: Removing previous cloned layer from map, if any');
             CONFIG.map.removeLayerByName('baseline-edit-layer');
@@ -441,7 +468,7 @@ var Baseline = {
             selectControl.onSelect = function(feature) {
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
                 modifyControl.selectFeature(feature);
-                if (feature.attributes.Orient == 'seaward') {
+                if (feature.attributes.Orient === 'seaward') {
                     $('#baseline-edit-orient-seaward').addClass('disabled');
                     $('#baseline-edit-orient-shoreward').removeClass('disabled');
                 } else {
@@ -453,14 +480,14 @@ var Baseline = {
                 if (!activeMenuItem.length) {
                     $('#baseline-edit-create-vertex').trigger('click');
                 }
-            }
+            };
                  
             selectControl.onUnselect = function(feature) {
                 $('#baseline-edit-save-button').unbind('click', Baseline.saveEditedLayer);
                 $('#baseline-edit-save-button').on('click', Baseline.saveEditedLayer);
                 var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
                 modifyControl.unselectFeature(feature);
-            }
+            };
                     
             selectControl.setLayer(clonedLayer);
             highlightControl.setLayer(clonedLayer);
@@ -474,13 +501,15 @@ var Baseline = {
                 $('#baseline-edit-container-instructions-initial').removeClass('hidden');
             }
         } else {
+            LOG.debug('Baseline.js::editMenuToggled: Edit menu button has been toggled off');
             $('#baseline-edit-container').addClass('hidden');
             $('.baseline-edit-container-instructions').addClass('hidden');
             Baseline.baselineEditMenu.find('li').removeClass('active');
             // TODO- Check if user does want to save?
             Baseline.deactivateHighlightControl();
-            CONFIG.map.removeLayerByName('baseline-edit-layer');
             CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0]);
+            CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-draw-control')[0]);
+            CONFIG.map.removeLayerByName('baseline-edit-layer');
             CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0].deactivate();
             Baseline.baselineDrawButton.removeAttr('disabled');
         }
@@ -496,14 +525,14 @@ var Baseline = {
         var targetId = target.attr('id');
         var toggledOn = target.hasClass('active') ? false : true;
         var targetDisabled = target.hasClass('disabled');
-        var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
-        var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
+        var modifyControl = Baseline.getModifyControl();
+        var selectControl = Baseline.getSelectControl();
         
-        if (targetId == 'baseline-edit-orient-seaward' || targetId == 'baseline-edit-orient-shoreward') {
+        if (targetId ==='baseline-edit-orient-seaward' || targetId === 'baseline-edit-orient-shoreward') {
             var selectedFeature = CONFIG.map.getMap().getLayersBy('name', 'baseline-edit-layer')[0].features.find(function(n){
-                return n.id == selectControl.layer.selectedFeatures[0].id
-            })
-            if (targetId == 'baseline-edit-orient-seaward') {
+                return n.id === selectControl.layer.selectedFeatures[0].id;
+            });
+            if (targetId === 'baseline-edit-orient-seaward') {
                 selectedFeature.attributes.Orient = 'seaward';
                 selectedFeature.state = OpenLayers.State.UPDATE;
                 $('#baseline-edit-orient-seaward').addClass('disabled');
@@ -553,6 +582,7 @@ var Baseline = {
                     $('#baseline-edit-container-instructions-initial').removeClass('hidden');
                 }
             }
+            
             modifyControl.activate();
             if (selectControl.layer.selectedFeatures[0]) {
                 modifyControl.selectFeature(selectControl.layer.selectedFeatures[0]);
@@ -565,8 +595,8 @@ var Baseline = {
     disableCloneButton : function() {
         $('#baseline-clone-btn').attr('disabled', 'disabled');
     },
-    cloneButtonClicked : function() {
-        LOG.debug('Baseline.js::cloneButtonClicked');
+    cloneLayer : function() {
+        LOG.debug('Baseline.js::cloneLayer');
         var selectVal = $("#baseline-list option:selected").val();
         var selectText = $("#baseline-list option:selected").html();
         if (selectVal) {
@@ -578,7 +608,7 @@ var Baseline = {
                     callbacks : [
                     function(data, textStatus, jqXHR, context) {
                         // Check if we got a document (error) or a string (success) back
-                        if (typeof data == "string") {
+                        if (typeof data === "string") {
                             CONFIG.ui.showAlert({
                                 message : 'Layer cloned successfully.',
                                 displayTime : 7500,
@@ -586,7 +616,7 @@ var Baseline = {
                                 style: {
                                     classes : ['alert-success']
                                 }
-                            })
+                            });
                             
                             CONFIG.ows.getDescribeFeatureType({
                                 layerNS : selectVal.split(':')[0],
@@ -597,12 +627,12 @@ var Baseline = {
                                         Baseline.refreshFeatureList({
                                             selectLayer : data,
                                             isCloning: true
-                                        })
+                                        });
                                         $('a[href="#' + Baseline.stage + '-view-tab"]').tab('show');
-                                    }
+                                    };
                                     var orientProp = describeFeaturetypeRespone.featureTypes[0].properties.find(function(p){
-                                        return p.name.toLowerCase() == 'orient';
-                                    })
+                                        return p.name.toLowerCase() === 'orient';
+                                    });
                                     if (!orientProp) {
                                         CONFIG.ows.appendAttributesToLayer({
                                             workspace : CONFIG.tempSession.getCurrentSessionKey(),
@@ -612,7 +642,7 @@ var Baseline = {
                                             callbacks : [
                                             displayLayer
                                             ]
-                                        })
+                                        });
                                     } else {
                                         displayLayer();
                                     }
@@ -620,12 +650,12 @@ var Baseline = {
                                     
                                 }
                                 ]
-                            })
+                            });
                             
                             
                             
                         } else {
-                            LOG.warn('Baseline.js::cloneButtonClicked: Error returned from server: ' + $(data).find('ows\\:ExceptionText').text());
+                            LOG.warn('Baseline.js::cloneLayer: Error returned from server: ' + $(data).find('ows\\:ExceptionText').text());
                             CONFIG.ui.showAlert({
                                 message : 'Layer not cloned. Check logs.',
                                 displayTime : 7500,
@@ -633,17 +663,17 @@ var Baseline = {
                                 style: {
                                     classes : ['alert-error']
                                 }
-                            })
+                            });
                         }
                     }
                     ]
-                })
+                });
             } else {
                 CONFIG.ui.showAlert({
                     message : 'Cloned layer exists.',
                     displayTime : 7500,
                     caller : Baseline
-                })
+                });
             }
         }
     },
@@ -666,7 +696,7 @@ var Baseline = {
     },
     enableEditButtonSet : function() {
         if ($("#baseline-list option:selected")[0].value.startsWith(CONFIG.tempSession.getCurrentSessionKey())) {
-            LOG.info('Baseline.js::enableEditButton: Showing baseline edit button on panel')
+            LOG.info('Baseline.js::enableEditButton: Showing baseline edit button on panel');
             
             var baselineEditButtonGroup = $('#baseline-edit-btn-group button');
             
@@ -732,6 +762,12 @@ var Baseline = {
         LOG.debug('Baseline.js::stopDrawing: Hiding draw control panel ');
         $('#draw-panel-well').addClass('hidden');
     },
+    getModifyControl : function() {
+        return CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+    },
+    getSelectControl : function() {
+        return CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
+    },
     getDrawControl : function() {
         return CONFIG.map.getMap().getControlsBy('id','baseline-draw-control')[0];
     },
@@ -744,7 +780,7 @@ var Baseline = {
         var layer = CONFIG.map.getMap().getLayersByName('baseline-edit-layer')[0];
         
         var saveStrategy = layer.strategies.find(function(n) {
-            return n['CLASS_NAME'] == 'OpenLayers.Strategy.Save'
+            return n['CLASS_NAME'] === 'OpenLayers.Strategy.Save'
         });
                         
         saveStrategy.events.remove('success');

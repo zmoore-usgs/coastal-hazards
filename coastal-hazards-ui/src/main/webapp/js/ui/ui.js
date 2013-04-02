@@ -1,6 +1,8 @@
 var UI = function() {
     LOG.info('UI.js::constructor: UI class is initializing.');
+    
     var me = (this === window) ? {} : this;
+    
     me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
     me.work_stages_objects = [Shorelines, Baseline, Transects, Calculation, Results];
     me.base_name = undefined;//init to undefined. Update in baselines
@@ -10,17 +12,19 @@ var UI = function() {
     
     $('#manage-sessions-btn').on('click', CONFIG.tempSession.createSessionManagementModalWindow);
     
-    LOG.debug('UI.js::constructor: Initializing AJAX start/stop hooks');
-    $.ajaxSetup({
-        timeout : 300000 // 5 minute timout on ajax requests
-    })
-    
-    //init help accordion
     $('.collapsibleHelp').accordion({
         collapsible: true,
         heightStyle: 'content'
     });
     
+    // Set up on-click functionality for stage buttons
+    $('.nav-stacked>li>a').each(function(index, ele) { 
+        $(ele).on('click', function() {
+            me.switchStage(index);
+        });
+    });
+    
+    // Setup of popovers
     me.work_stages_objects.each(function(stage) {
         if (stage.description.stage) {
             $('#nav-list a[href="#'+stage.stage+'"]').parent().popover({
@@ -68,7 +72,7 @@ var UI = function() {
                 delay : {
                     show : popupHoverDelay
                 }
-            })
+            });
         }
     
         $('.feature-list').popover({
@@ -91,14 +95,8 @@ var UI = function() {
             delay : {
                 show : popupHoverDelay
             }
-        })
-    })
-    
-    $('.nav-stacked>li>a').each(function(index, ele) { 
-        $(ele).on('click', function() {
-            me.switchStage(index);
-        })
-    })
+        });
+    });
     
     LOG.debug('UI.js::constructor: UI class initialized.');
     return $.extend(me, {
@@ -129,9 +127,9 @@ var UI = function() {
                 .on('click', callback)
                 .on('click', function() {
                     $("#modal-window").modal('hide');
-                })
-                $('#modal-window>.modal-footer').append(modalButton)
-            })
+                });
+                $('#modal-window>.modal-footer').append(modalButton);
+            });
             
             if (includeCancelButton) {
                 $('#modal-window>.modal-footer').append(
@@ -142,7 +140,7 @@ var UI = function() {
                         'data-dismiss' : 'modal',
                         'aria-hidden' : 'true'
                     })
-                    .html('Done'))
+                    .html('Done'));
             }
             
             callbacks.each(function(callback) {
@@ -186,8 +184,11 @@ var UI = function() {
 
             var uploader = new qq.FineUploader({
                 element: document.getElementById(context + '-uploader'),
+                multiple : false,
                 request: {
                     endpoint: 'service/upload',
+                    paramsInBody: false,
+                    forceMultipart : false,
                     params: {
                         'response.encoding': 'json',
                         'filename.param': 'qqfile',
@@ -203,7 +204,6 @@ var UI = function() {
                 validation: {
                     allowedExtensions: ['zip']
                 },
-                multiple: false,
                 autoUpload: true,
                 caller: caller,
                 text: {
@@ -214,15 +214,51 @@ var UI = function() {
                     fail: 'alert alert-error'
                 },
                 callbacks: {
+                    onSubmit: function(id, name) {
+                        CONFIG.ui.showSpinner();
+
+                        CONFIG.ui.showAlert({
+                            close: false,
+                            message: 'Upload beginning',
+                            style: {
+                                classes: ['alert-info']
+                            }
+                        });
+
+                        // Test to see if the upload name ends with an underscore and the stage name we are in. If not, add it
+                        if (!name.endsWith(caller.stage + '.zip')) {
+                            this._options.request.params.layer = name.substring(0, name.length - 4) + '_' + caller.stage;
+                        }
+
+                        // Test to see if the first character in the layer is a digit. If so, prepend an underscore. Otherwise we get big 
+                        // fails working with the layer later on
+                        if (/^[0-9]/.test(this._options.request.params.layer)) {
+                            this._options.request.params.layer = '_' + this._options.request.params.layer;
+                        }
+
+                    },
+                    onCancel: function(id, name) {
+                        CONFIG.ui.hideSpinner();
+                        $('#application-alert').alert('close');
+
+                    },
+                    onError: function(id, name, errorReason, xhr) {
+                        CONFIG.ui.hideSpinner();
+                        $('#application-alert').alert('close');
+                    },
+                    onProgress: function(id, name, uploadBytes, totalBytes) {
+                        $('#application-alert #message').html('Uploading <b>' + uploadBytes + '<b /> of <b>' + totalBytes + '<b /> total bytes');
+                    },
                     onComplete: function(id, fileName, responseJSON) {
+                        CONFIG.ui.hideSpinner();
+                        $('#application-alert').alert('close');
                         var success = responseJSON.success;
                         var layerName = responseJSON.name;
                         var workspace = responseJSON.workspace;
-                        var store = responseJSON.store;
 
                         if (success === 'true') {
                             LOG.info("UI.js::initializeUploader: Upload complete");
-                            LOG.info('UI.js::(anon function): Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
+                            LOG.info('UI.js::initializeUploader: Import complete. Will now call WMS GetCapabilities to refresh session object and ui.');
                             CONFIG.ows.getWMSCapabilities({
                                 namespace: CONFIG.tempSession.getCurrentSessionKey(),
                                 layerName: layerName,
@@ -482,7 +518,6 @@ var UI = function() {
                 var nextMessageObj = CONFIG.alertQueue[args.caller.stage].pop();
                 if (nextMessageObj.hasOwnProperty('message')) {
                     var alertContainer = args.alertContainer;
-                    var alertDom = $('<div />');
                     var style = nextMessageObj.style;
                     var close = nextMessageObj.close;
                     var message = nextMessageObj.message;
@@ -510,7 +545,7 @@ var UI = function() {
                         alertDom.append($('<div />').addClass('alert-queue-notifier').html(queueLength + ' more'))
                     }
             
-                    alertDom.append($('<div />').html(message));
+                    alertDom.append($('<div id="message"/>').html(message));
                     alertContainer.append(alertDom);
                 
                     alertDom.on('closed', function() {
@@ -748,6 +783,12 @@ var UI = function() {
                                     
                 }]
             })
+        },
+        showSpinner: function() {
+            $("#application-spinner").fadeIn();
+        },
+        hideSpinner: function() {
+            $("#application-spinner").fadeOut();
         }
     });
 }
