@@ -617,7 +617,6 @@ var Results = {
     retrieveRSquigglePlotPNG : function() {
         var val =$("#results-list option:selected")[0].value;
         if (val) {
-            var layerNS = val.split(':')[0];
             var layerName = val.split(':')[1];
             var workspaceNS = 'gov.usgs.cida.ch.' + CONFIG.tempSession.getCurrentSessionKey();
             var exportForm = $('<form />').attr({
@@ -649,8 +648,8 @@ var Results = {
                 $('<input />').attr({
                     'type' : 'hidden',
                     'name' : 'type'
-                }).val('image/png;base64'))
-            $('body').append(exportForm)
+                }).val('image/png;base64'));
+            $('body').append(exportForm);
             exportForm.attr('action', 'service/export/squiggle');
             exportForm.submit();
             exportForm.remove();
