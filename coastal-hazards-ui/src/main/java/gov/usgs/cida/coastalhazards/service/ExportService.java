@@ -73,7 +73,7 @@ public class ExportService extends HttpServlet {
                     + "<ows:Identifier>input</ows:Identifier>"
                     + "<wps:Reference mimeType=\"text/xml\" xlink:href=\"" + gsEndpoint + "/" + workspace + "/wfs\" method=\"POST\">"
                     + "<wps:Body>"
-                    + "<wfs:GetFeature service=\"WFS\" xmlns:" + workspace + "=\"" + workspaceNS + "\"  version=\"1.1.0\" outputFormat=\"GML2\" >"
+                    + "<wfs:GetFeature service=\"WFS\" xmlns:" + workspace + "=\"" + workspaceNS + "\"  version=\"1.1.0\" outputFormat=\"GML2\" xmlns:ogc=\"http://www.opengis.net/ogc\">"
                     + "<wfs:Query typeName=\"" + layer + "\"/>"
                     + "<ogc:PropertyName>BaselineID</ogc:PropertyName>"
                     + "<ogc:PropertyName>TransectID</ogc:PropertyName>"
