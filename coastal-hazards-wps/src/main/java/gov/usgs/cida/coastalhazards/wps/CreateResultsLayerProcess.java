@@ -181,8 +181,12 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                             transectId = Long.parseLong(id);
                         }
                         else {
-                            // may need to remove " here too
-                            values[j] = Double.parseDouble(columns[i]);
+                            try {
+                                // may need to remove " here too
+                                values[j] = Double.parseDouble(columns[i]);
+                            } catch (NumberFormatException e) {
+                                values[j] = Double.NaN;
+                            }
                             j++;
                         }
                     }
