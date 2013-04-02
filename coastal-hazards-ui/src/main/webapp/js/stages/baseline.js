@@ -17,7 +17,7 @@ var Baseline = {
     baselineEditMenu : $('#baseline-edit-menu'), 
     appInit : function() {
         $('#baseline-draw-form-name').val(Util.getRandomLorem());
-        Baseline.baselineCloneButton.on('click', Baseline.cloneButtonClicked);
+        Baseline.baselineCloneButton.on('click', Baseline.cloneLayer);
         Baseline.baselineRemoveButton.on('click', Baseline.removeResource);
         Baseline.baselineDrawButton.on("click", Baseline.drawButtonToggled);
         Baseline.baselineEditButton.on('click', Baseline.editButtonToggled);
@@ -114,6 +114,7 @@ var Baseline = {
             tab : 'view'
         });
     },
+            
     leaveStage : function() {
         LOG.debug('Baseline.js::leaveStage');
         Baseline.deactivateHighlightControl();
@@ -565,8 +566,8 @@ var Baseline = {
     disableCloneButton : function() {
         $('#baseline-clone-btn').attr('disabled', 'disabled');
     },
-    cloneButtonClicked : function() {
-        LOG.debug('Baseline.js::cloneButtonClicked');
+    cloneLayer : function() {
+        LOG.debug('Baseline.js::cloneLayer');
         var selectVal = $("#baseline-list option:selected").val();
         var selectText = $("#baseline-list option:selected").html();
         if (selectVal) {
@@ -625,7 +626,7 @@ var Baseline = {
                             
                             
                         } else {
-                            LOG.warn('Baseline.js::cloneButtonClicked: Error returned from server: ' + $(data).find('ows\\:ExceptionText').text());
+                            LOG.warn('Baseline.js::cloneLayer: Error returned from server: ' + $(data).find('ows\\:ExceptionText').text());
                             CONFIG.ui.showAlert({
                                 message : 'Layer not cloned. Check logs.',
                                 displayTime : 7500,
