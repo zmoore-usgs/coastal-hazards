@@ -415,8 +415,8 @@ var Baseline = {
                 // Use this for features we draw, not those that already exist
                 onFeatureInsert: function(feature) {
                     if (!feature.attributes['Orient']) {
-                        var indexOfFeatureInLayer = feature.layer.features.findIndex(function(f) {
-                            return f.id === feature.id;
+                        var indexOfFeatureInLayer = feature.layer.features.sum(function(f) {
+                            return f['data']['ID'] ? parseInt(f['data']['ID']) : 0;
                         });
                         feature.attributes['Orient'] = 'seaward';
                         feature.attributes['ID'] = indexOfFeatureInLayer + 1;
@@ -433,15 +433,20 @@ var Baseline = {
                         deleteCodes: [8, 46, 48],
                         standalone: true
                     });
-                    
+
             var drawControl = new OpenLayers.Control.DrawFeature(
                     clonedLayer,
                     OpenLayers.Handler.Path,
                     {
                         id: 'baseline-edit-draw-control',
-                        multi: true
+                        multi: true,
+                        // Turn off using the shift key to do free-draw and keep 
+                        // shift to be used for zooming
+                        handlerOptions : {
+                            freehandToggle : null
+                        }
                     });
-
+            
             CONFIG.map.addControl(drawControl);
             drawControl.activate();
                     
