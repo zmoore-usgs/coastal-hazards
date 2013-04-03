@@ -601,7 +601,7 @@ var OWS = function(endpoint) {
             '</UserStyle>' + 
             '</NamedLayer>' + 
             '</StyledLayerDescriptor>';
-            return sld.replace('#[layer]', layerName)
+            return sld.replace('#[layer]', layerName);
         },
         updateTransectsAndIntersections : function(args) {
             var wps =   CONFIG.ows.createUpdateTransectsAndIntersectionsWPSXML(args);
@@ -610,7 +610,7 @@ var OWS = function(endpoint) {
                 request : wps,
                 callbacks : args.callbacks || [],
                 context : args.context || this
-            })
+            });
         },
         
         createUpdateTransectsAndIntersectionsWPSXML : function(args) {
@@ -619,7 +619,7 @@ var OWS = function(endpoint) {
             var baseline = args.baseline;
             var shorelines = args.shorelines;
             var transectId = args.transectId || [];
-            var farthest = args.farthest || 'false'
+            var farthest = args.farthest || 'false';
             
             var wps = '<?xml version="1.0" encoding="UTF-8"?>' + 
             '<wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">' + 

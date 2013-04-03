@@ -751,6 +751,7 @@ var Shorelines = {
         $('#shorelines-remove-btn').removeAttr('disabled');
     },
     removeResource : function(args) {
+        args = args || {};
         var layer = args.layer || $('#shorelines-list option:selected')[0].text;
         var store = args.store || 'ch-input';
         var callbacks  = args.callbacks || [

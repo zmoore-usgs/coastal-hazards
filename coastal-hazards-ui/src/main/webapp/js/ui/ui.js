@@ -108,6 +108,7 @@ var UI = function() {
             var bodyHtml = args.bodyHtml || '';
             var buttons = args.buttons || [];
             var includeCancelButton = args.includeCancelButton || true;
+            var doneButtonText = args.doneButtonText || 'Done';
             var callbacks = args.callbacks || [];
                 
             $('#application-overlay').fadeOut();
@@ -140,12 +141,13 @@ var UI = function() {
                         'data-dismiss' : 'modal',
                         'aria-hidden' : 'true'
                     })
-                    .html('Done'));
+                    .html(doneButtonText));
             }
             
             callbacks.each(function(callback) {
                 callback();
-            })
+            });
+            
             $('#modal-window').modal('show');
         },
         lockBaseNameTo : function(name){
@@ -599,7 +601,7 @@ var UI = function() {
                             
             var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
             var explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well');
-            explanationWell.html('There is a attribute mismatch between the resource you are trying to view and what is considered a valid '+caller.stage+' resource. <br /><br />We require '+caller.mandatoryColumns.toString()+'. Please drag attributes from the left to the right to properly map to the correct attributes. The resource will be updated server-side once complete.')
+            explanationWell.html('There is a attribute mismatch between the resource you are trying to view and what is considered a valid '+caller.stage+' resource. <br /><br />We require '+caller.mandatoryColumns.toString()+'. Please drag attributes from the left to the right to properly map to the correct attributes. The resource will be updated server-side once complete.');
             container.append(explanationRow.append(explanationWell));
                             
             var containerRow = $('<div />').addClass('row-fluid').attr('id', layerName + '-drag-drop-row');
@@ -613,7 +615,7 @@ var UI = function() {
             addClass('ui-helper-reset');
             columns.keys().each(function(name) {
                                 
-                var li = $('<li />')
+                var li = $('<li />');
                 var dragHolder = $('<div />').
                 addClass(layerName + '-drop-holder left-drop-holder');
                 var dragItem = $('<div />').
@@ -629,7 +631,7 @@ var UI = function() {
                 dragHolder.append(dragItem);
                 li.append(dragHolder);
                 dragList.append(li);
-            })
+            });
             dragListContainer.append(dragList);
             containerRow.append(dragListContainer);
             container.append(containerRow);
@@ -650,7 +652,7 @@ var UI = function() {
                     html(name));
                             
                 dropList.append(listItem);
-            })
+            });
             dropListContainer.append(dropList);
             containerRow.append(dropListContainer);
                             
@@ -659,39 +661,54 @@ var UI = function() {
             CONFIG.ui.createModalWindow({
                 headerHtml : 'Layer Attribute Mismatch Detected',
                 bodyHtml : container.html(),
+                doneButtonText : 'Cancel',
                 buttons : [{
                     id : 'modal-update-button',
                     text : 'Update',
                     type : 'btn-success',
                     callback : function(event, context) {
                         var mapping = $('#' + layerName + '-drag-drop-row').data('mapping');
+                        
                         var columns = [];
                         mapping.keys().each(function(key) {
-                            if (key && mapping[key] && key != mapping[key]) {
-                                columns.push(key + '|' + mapping[key])
+                            if (key && mapping[key] && key !== mapping[key]) {
+                                columns.push(key + '|' + mapping[key]);
                             }
-                        })
+                        });
                         CONFIG.ows.renameColumns({
                             layer : layerName,
                             workspace : CONFIG.tempSession.getCurrentSessionKey(),
                             store : 'ch-input',
                             columns : columns.filter(function(c) {
-                                return !c.endsWith('|')
+                                return !c.endsWith('|');
                             }),
                             callbacks : [
                             function() {
-                                $("#"+caller.stage+"-list").val(CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName)
+                                $("#"+caller.stage+"-list").val(CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName);
                                 $("#"+caller.stage+"-list").trigger('change');    
                             }
                             ]
-                        })
+                        });
                     }
                 }],
                 callbacks : [
                 function() {
                     $('#modal-update-button').attr('disabled', 'disabled');
+                    
+                    // When cancel button is clicked, remove the layer on the server as well
+                    $('#cancel-button').click(function() {
+                        CONFIG.ows.clearFeaturesOnServer({
+                            layer: CONFIG.tempSession.getCurrentSessionKey() + ':' + layerName,
+                            callbacks: [
+                                function() {
+                                    caller.removeResource();
+                                }
+                            ]
+                        });
+                    });
+                    
                     $('#' + layerName + '-drag-drop-row').data('mapping', columns);
-                    $('.'+layerName+'-drag-item').draggable({
+                    $('.' + layerName + '-drag-item').draggable({
                         containment: '#' + layerName + '-drag-drop-row', 
                         scroll: false,
                         snap :  '.'+layerName+'-drop-holder',
@@ -710,7 +727,7 @@ var UI = function() {
                             var dragId = draggable.attr('id');
                             var dropId = this.id;
                             var layerAttribute = dragId.substr(0, dragId.indexOf('-drag-item'));
-                            var layerMappingAttribute = dropId.substr(0, dropId.indexOf('-drop-item'))
+                            var layerMappingAttribute = dropId.substr(0, dropId.indexOf('-drop-item'));
                             var mapping = $('#' + layerName + '-drag-drop-row').data('mapping');
                                             
                             // Figure out if we are in a drag or drop well
@@ -725,7 +742,7 @@ var UI = function() {
                                 if (!mapping.values().filter(mc).length) {
                                     readyToUpdate = false;
                                 }
-                            })
+                            });
                             if (readyToUpdate) {
                                 $('#modal-update-button').removeAttr('disabled');
                             } else {
@@ -741,7 +758,7 @@ var UI = function() {
                         var dropTop = droppable.position().top;
                         var dropLeft = droppable.position().left;
                         var horizontalMove = dropLeft - dragLeft;
-                        var verticalMove = dropTop < dragTop ? dropTop - dragTop + 5 : dropTop + dragTop + 5 // 5 = margin-top
+                        var verticalMove = dropTop < dragTop ? dropTop - dragTop + 5 : dropTop + dragTop + 5; // 5 = margin-top
                         draggable.animate({
                             left: horizontalMove
                         },{
@@ -757,32 +774,32 @@ var UI = function() {
                                 this.style.zIndex = 9999;
                             }
                         });
-                    }
+                    };
                     var showCallback = function() {
-                        $("#modal-window").unbind('shown', showCallback)
+                        $("#modal-window").unbind('shown', showCallback);
                         // Move stuff over if the layers are already mapped
                         columns.keys().each(function(key) {
                             if (columns[key]) {
                                 var draggable = $('#' + key + '-drag-item').draggable('widget');
                                 var droppable = $('#' + columns[key] + '-drop-item').droppable('widget');
                                 draggable.queue("fx");
-                                moveDraggable(draggable,droppable)
+                                moveDraggable(draggable,droppable);
                             }
-                        })
+                        });
                         if (columns.values().filter(function(v) {
-                            return v != ''
-                        }).length == Shorelines.mandatoryColumns.length) {
+                            return v !== '';
+                        }).length === Shorelines.mandatoryColumns.length) {
                             $('#modal-update-button').removeAttr('disabled');
                         }
-                    }
-                    $("#modal-window").on('shown', showCallback)
+                    };
+                    $("#modal-window").on('shown', showCallback);
                                     
                     $("#modal-window").on('hidden', function() {
                         $('#' + layerName + '-drag-drop-row').data('mapping', undefined);
-                    })
+                    });
                                     
                 }]
-            })
+            });
         },
         showSpinner: function() {
             $("#application-spinner").fadeIn();
@@ -791,5 +808,4 @@ var UI = function() {
             $("#application-spinner").fadeOut();
         }
     });
-}
-    
+};
