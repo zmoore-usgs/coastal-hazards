@@ -439,9 +439,14 @@ var Baseline = {
                     OpenLayers.Handler.Path,
                     {
                         id: 'baseline-edit-draw-control',
-                        multi: true
+                        multi: true,
+                        // Turn off using the shift key to do free-draw and keep 
+                        // shift to be used for zooming
+                        handlerOptions : {
+                            freehandToggle : null
+                        }
                     });
-
+            
             CONFIG.map.addControl(drawControl);
             drawControl.activate();
                     
