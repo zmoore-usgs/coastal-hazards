@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.wps;
 
 import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -21,6 +22,8 @@ public class CreateResultsLayerProcessTest {
     @Test
     //@Ignore
     public void testExecute() throws Exception {
+        File outTest = File.createTempFile("test", ".shp");
+        outTest.deleteOnExit();
         InputStream resourceAsStream = CreateResultsLayerProcessTest.class.getClassLoader()
                                                .getResourceAsStream("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_results.txt");
         URL transects = CreateResultsLayerProcessTest.class.getClassLoader()
@@ -36,7 +39,7 @@ public class CreateResultsLayerProcessTest {
         SimpleFeatureCollection transectfc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.featureCollectionFromShp(transects);
         // need to get the matching transect layer to run against
-        CreateResultsLayerProcess createResultsLayerProcess = new CreateResultsLayerProcess(new DummyImportProcess(), new DummyCatalog());
+        CreateResultsLayerProcess createResultsLayerProcess = new CreateResultsLayerProcess(new DummyImportProcess(outTest), new DummyCatalog());
         createResultsLayerProcess.execute(buffer, transectfc, null, null, null, null);
     }
     
