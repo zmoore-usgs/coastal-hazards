@@ -279,7 +279,7 @@ var UI = function() {
                                             });
                                             $('a[href="#' + caller.stage + '-view-tab"]').tab('show');
                                             $('#' + caller.stage + '-list')
-                                                    .val(workspace + ':' + layerName)
+                                                    .val(layerName)
                                                     .trigger('change');
 
                                         }
@@ -328,7 +328,7 @@ var UI = function() {
             $('#'+stage+'-list').children().remove();
         
             // Add a blank spot at the top of the select list
-            if (stage != Shorelines.stage) {
+            if (stage !== Shorelines.stage) {
                 $('#'+stage+'-list')
                 .append($("<option />")
                     .attr("value",'')
@@ -364,15 +364,15 @@ var UI = function() {
                             .attr({
                                 "value" : layerNS + ':' + layer.name
                             })
-                            .addClass(layerNS == 'sample' ? publishedLayerClass : sessionLayerClass)
-                            .text(layer.name)
+                            .addClass(layerNS === 'sample' ? publishedLayerClass : sessionLayerClass)
+                            .text(layer.name);
                             
                             $('#'+stage+'-list')
                             .append(option);
                         } 
                     }
-                })
-            })
+                });
+            });
             
             CONFIG.tempSession.persistSession();
             LOG.debug('UI.js::populateFeaturesList: Re-binding select list');
@@ -491,7 +491,7 @@ var UI = function() {
                     style: {
                         classes : ['alert-info']
                     }
-                })
+                });
             }
         },
         showAlert : function(args) {
@@ -501,7 +501,7 @@ var UI = function() {
             var message = args.message || '';
             var style = args.style || {
                 classes : []
-            }
+            };
             var alertContainer = $('#' + caller.stage + '-alert-container');
             var alertDom = $('<div />').attr('id', caller.stage + '-alert');
             var close = args.close || true;
@@ -512,7 +512,7 @@ var UI = function() {
                 style : style,
                 displayTime : displayTime,
                 close : close
-            })
+            });
             
             var createAlert = function(args) {
                 var nextMessageObj = CONFIG.alertQueue[args.caller.stage].pop();
@@ -538,11 +538,11 @@ var UI = function() {
                                 'href' : '#'
                             })
                             .addClass('close')
-                            .html('&times;'))
+                            .html('&times;'));
                     }
                     
                     if (queueLength) {
-                        alertDom.append($('<div />').addClass('alert-queue-notifier').html(queueLength + ' more'))
+                        alertDom.append($('<div />').addClass('alert-queue-notifier').html(queueLength + ' more'));
                     }
             
                     alertDom.append($('<div id="message"/>').html(message));
@@ -555,22 +555,22 @@ var UI = function() {
                                 alertContainer : alertContainer,
                                 createAlertFn : createAlertFn,
                                 caller : args.caller
-                            })
+                            });
                         }
-                    })
+                    });
                 
-                    alertDom.alert()
+                    alertDom.alert();
                 
                     if (displayTime) {
                         setTimeout(function() {
                             alertDom.alert('close');
-                        },displayTime)
+                        },displayTime);
                     }
                 }
-            }
+            };
             
             // The container is empty so go ahead and fire the alert
-            if (alertContainer.children().length == 0) {
+            if (alertContainer.children().length === 0) {
                 createAlert({
                     alertDom : alertDom,
                     alertContainer : alertContainer,
