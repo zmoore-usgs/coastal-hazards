@@ -582,6 +582,17 @@ var Results = {
         '</wps:Body>' + 
         '</wps:Reference>' + 
         '</wps:Input>' + 
+		
+		'<wps:Input>' + 
+        '<ows:Identifier>intersects</ows:Identifier>' + 
+        '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
+        '<wps:Body>' + 
+        '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+intersects.split(':')[0]+'="gov.usgs.cida.ch.'+intersects.split(':')[0]+'">' + 
+        '<wfs:Query typeName="'+intersects+'" />' + 
+        '</wfs:GetFeature>' + 
+        '</wps:Body>' + 
+        '</wps:Reference>' + 
+        '</wps:Input>' +  
         
         '<wps:Input>' + 
         '<ows:Identifier>workspace</ows:Identifier>' + 
