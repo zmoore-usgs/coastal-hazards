@@ -184,8 +184,9 @@ var Baseline = {
         
                     var baselineLayer = new OpenLayers.Layer.Vector(args.name, {
                         strategies: [new OpenLayers.Strategy.BBOX()],
-                        protocol: new OpenLayers.Protocol.WFS({
+                        protocol: new OpenLayers.Protocol.WFS.v1_1_0({
                             version : '1.1.0',
+							outputFormat : 'gml2',
                             url:  "geoserver/"+args.name.split(':')[0]+"/wfs",
                             featureType: args.name.split(':')[1],
                             geometryName: "the_geom",
