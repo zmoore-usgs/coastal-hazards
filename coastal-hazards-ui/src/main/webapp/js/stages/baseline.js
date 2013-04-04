@@ -387,6 +387,10 @@ var Baseline = {
     },
     editButtonToggled : function(event) {
         var activated = !$(event.target).hasClass('active');
+		var baselineEditControlId = 'baseline-edit-control';
+		var baselineEditDrawControlId = 'baseline-edit-draw-control';
+		var baselineEditLayerId = 'baseline-edit-layer';
+		var baselineSelectControlTitle = 'baseline-select-control';
         if (activated) {
             LOG.debug('Baseline.js::editMenuToggled: Edit menu button has been toggled on');
             $('#baseline-edit-save-button').on('click', Baseline.saveEditedLayer);
@@ -401,7 +405,7 @@ var Baseline = {
             
             LOG.debug('Baseline.js::editMenuToggled: Attempting to clone current active baseline layer into an edit layer');
             var originalLayer = CONFIG.map.getMap().getLayersByName($("#baseline-list option:selected")[0].value)[0].clone();
-            var clonedLayer = new OpenLayers.Layer.Vector('baseline-edit-layer', {
+            var clonedLayer = new OpenLayers.Layer.Vector(baselineEditLayerId, {
                 strategies: [new OpenLayers.Strategy.BBOX(), new OpenLayers.Strategy.Save()],
                 protocol: new OpenLayers.Protocol.WFS({
                     url: "geoserver/" + originalLayer.name.split(':')[0] + "/wfs",
@@ -429,7 +433,7 @@ var Baseline = {
             
             var editControl = new OpenLayers.Control.ModifyFeature(clonedLayer,
                     {
-                        id: 'baseline-edit-control',
+                        id: baselineEditControlId,
                         deleteCodes: [8, 46, 48],
                         standalone: true
                     });
@@ -438,7 +442,7 @@ var Baseline = {
                     clonedLayer,
                     OpenLayers.Handler.Path,
                     {
-                        id: 'baseline-edit-draw-control',
+                        id: baselineEditDrawControlId,
                         multi: true,
                         // Turn off using the shift key to do free-draw and keep 
                         // shift to be used for zooming
@@ -451,27 +455,27 @@ var Baseline = {
             drawControl.activate();
                     
             LOG.debug('Baseline.js::editMenuToggled: Removing previous cloned layer from map, if any');
-            CONFIG.map.removeLayerByName('baseline-edit-layer');
+            CONFIG.map.removeLayerByName(baselineEditLayerId);
                     
             LOG.debug('Baseline.js::editMenuToggled: Adding cloned layer to map');
             CONFIG.map.getMap().addLayer(clonedLayer);
                     
             LOG.debug('Baseline.js::editMenuToggled: Removing previous cloned layer from map, if any');
             CONFIG.map.removeControl({
-                id : 'baseline-edit-control'
+                id : baselineEditControlId
             });
                     
             LOG.debug('Baseline.js::editMenuToggled: Adding clone control to map');
             CONFIG.map.getMap().addControl(editControl);
                     
-            var selectControl = CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0];
+            var selectControl = CONFIG.map.getMap().getControlsBy('title', baselineSelectControlTitle)[0];
             var highlightControl = Baseline.getHighlightControl();
                     
             highlightControl.deactivate();
             selectControl.deactivate();
                     
             selectControl.onSelect = function(feature) {
-                var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+                var modifyControl = CONFIG.map.getMap().getControlsBy('id', baselineEditControlId)[0];
                 modifyControl.selectFeature(feature);
                 if (feature.attributes.Orient === 'seaward') {
                     $('#baseline-edit-orient-seaward').addClass('disabled');
@@ -490,7 +494,7 @@ var Baseline = {
             selectControl.onUnselect = function(feature) {
                 $('#baseline-edit-save-button').unbind('click', Baseline.saveEditedLayer);
                 $('#baseline-edit-save-button').on('click', Baseline.saveEditedLayer);
-                var modifyControl = CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0];
+                var modifyControl = CONFIG.map.getMap().getControlsBy('id', baselineEditControlId)[0];
                 modifyControl.unselectFeature(feature);
             };
                     
@@ -512,10 +516,12 @@ var Baseline = {
             Baseline.baselineEditMenu.find('li').removeClass('active');
             // TODO- Check if user does want to save?
             Baseline.deactivateHighlightControl();
-            CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-control')[0]);
-            CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id', 'baseline-edit-draw-control')[0]);
-            CONFIG.map.removeLayerByName('baseline-edit-layer');
-            CONFIG.map.getMap().getControlsBy('title', 'baseline-select-control')[0].deactivate();
+            CONFIG.map.removeLayerByName(baselineEditLayerId);
+			var map = CONFIG.map.getMap();
+            map.removeControl(map.getControlsBy('id', baselineEditControlId)[0]);
+			map.getControlsBy('id', baselineEditDrawControlId)[0].deactivate();
+            map.removeControl(map.getControlsBy('id', baselineEditDrawControlId)[0]);
+            map.getControlsBy('title', baselineSelectControlTitle)[0].deactivate();
             Baseline.baselineDrawButton.removeAttr('disabled');
         }
     },
