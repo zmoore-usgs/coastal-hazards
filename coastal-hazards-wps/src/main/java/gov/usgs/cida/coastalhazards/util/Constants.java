@@ -69,6 +69,9 @@ public class Constants {
     public static final String LCI_ATTR = "LCI";
     public static final String SCE_ATTR = "SCE";
     
+    // Per http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf (Page 7), need value less that -10^38
+    public static final double  SHAPEFILE_NODATA = -1e39;
+    
     public static final double EARTH_RADIUS = 6371000.0d;
 
     public static enum Orientation {

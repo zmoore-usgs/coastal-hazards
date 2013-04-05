@@ -185,7 +185,7 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                                 // may need to remove " here too
                                 values[j] = Double.parseDouble(columns[i]);
                             } catch (NumberFormatException e) {
-                                values[j] = Double.NaN;
+                                values[j] = Constants.SHAPEFILE_NODATA;
                             }
                             j++;
                         }
