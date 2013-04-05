@@ -119,7 +119,6 @@ var UI = function() {
             buttons.each(function(button) {
                 var text = button.text;
                 var callback = button.callback;
-                var type = button.type || '';
                 var modalButton = $('<button />')
                 .attr('id', button.id || '')
                 .addClass('btn')
