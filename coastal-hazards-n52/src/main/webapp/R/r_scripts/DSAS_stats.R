@@ -110,23 +110,55 @@ getDSAS <- function(blockText){
 }
 
 
-for (b in 1:numBlck){
-  DSASstats <- getDSAS(textBlck[b])
-  LRR[b] <- DSASstats[1]
-  LCI[b] <- DSASstats[2]
-  WLR[b] <- DSASstats[3]
-  WCI[b] <- DSASstats[4]
-  SCE[b] <- DSASstats[5]
-  NSM[b] <- DSASstats[6]
-  EPR[b] <- DSASstats[7]
+numPar = 4
+numInEach = ceiling(numBlck/numPar)
+endI = seq(0, numBlck, numInEach)
+if(endI[length(endI)] != numBlck){
+  endI[length(endI) + 1] = numBlck
 }
+
+## Start some tossed together parallelization
+library(snow)
+library(doSNOW)
+library(foreach)
+c1 = makeCluster(c("localhost","localhost","localhost","localhost"),type="SOCK")
+registerDoSNOW(c1)
+
+DSASstatsAll = foreach(p=1:numPar) %dopar% {
+  i=1
+  DSASstats = list()
+  for (b in seq(endI[p]+1,endI[p+1])){
+    DSASstats[[i]] <- getDSAS(textBlck[b])
+    i = i+1
+  }
+  DSASstats
+}
+
+b = 1
+for (p in 1:numPar){
+  DSASstatsPar = DSASstatsAll[[p]]
+  for (dsI in 1:length(DSASstatsPar)){
+    #DSASstats <- getDSAS(textBlck[b])
+    DSASstats = DSASstatsPar[[dsI]]
+    LRR[b] <- DSASstats[1]
+    LCI[b] <- DSASstats[2]
+    WLR[b] <- DSASstats[3]
+    WCI[b] <- DSASstats[4]
+    SCE[b] <- DSASstats[5]
+    NSM[b] <- DSASstats[6]
+    EPR[b] <- DSASstats[7]
+    b = b + 1
+  }
+}
+
+stopCluster(c1)
 
 statsout <- data.frame("transect_ID"=blckNm,LRR,LCI,WLR,WCI,SCE,NSM,EPR)
 
 if (localRun){
-  proc.time() -ptm
   Rprof(NULL)
   summaryRprof(filename = "DSAS_profiler.txt",chunksize=5000)
+  proc.time() -ptm
 }
 
 # output is an identifier and R variable (WPS identifier). The ouput is the name of the text file
