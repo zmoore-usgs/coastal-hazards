@@ -118,12 +118,11 @@ if(endI[length(endI)] != numBlck){
 }
 
 ## Start some tossed together parallelization
-#library(snow,doSNOW,foreach)
+library(snow)
+library(doSNOW)
 library(foreach)
-library(doMC)
-#c1 = makeCluster(c("localhost","localhost","localhost","localhost"),type="SOCK")
-#registerDoSNOW(c1)
-registerDoMC(numPar)
+c1 = makeCluster(c("localhost","localhost","localhost","localhost"),type="SOCK")
+registerDoSNOW(c1)
 
 DSASstatsAll = foreach(p=1:numPar) %dopar% {
   i=1
@@ -152,14 +151,14 @@ for (p in 1:numPar){
   }
 }
 
-#stopCluster(c1)
+stopCluster(c1)
 
 statsout <- data.frame("transect_ID"=blckNm,LRR,LCI,WLR,WCI,SCE,NSM,EPR)
 
 if (localRun){
-  proc.time() -ptm
   Rprof(NULL)
   summaryRprof(filename = "DSAS_profiler.txt",chunksize=5000)
+  proc.time() -ptm
 }
 
 # output is an identifier and R variable (WPS identifier). The ouput is the name of the text file
