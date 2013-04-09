@@ -1,167 +1,74 @@
-# wps.des: id=DSAS_stats, title=Digital Shoreline Analysis System Stats, abstract=stats available - LRR LCI WLR WCI SCE NSM EPR;
-# wps.in: input, xml, block intersection text, text input from intersections layer with time elements and uncertainty;
-# wps.in: ci, double, confidence interval, percentage for confidence level > 0.5 and < 1.0;
+# wps.des: id=DSAS_squigglePlot, title=Digital Shoreline Analysis System squggle plot, abstract=plots and saves rate stats;
+# wps.in: input, xml, block rates text, text input from stats with base_dist baseline_ID LRR and LCI;
+
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
 localRun <- FALSE
 # comment this out for WPS!!!
 if (localRun){
-  Rprof("DSAS_profiler.txt")
-  ci <- 0.95
-  input <- "testOut.tsv"
+  input <- "squiggleOut.tsv"
   ptm <- proc.time() # for time of process
 }
 
-if (ci>=1 || ci<=0.5){
-  stop("confidence interval argument must be between 0.5 and 1.0 (non-inclusive)")
-}
+figW  <- 8
+figH  <- 3.5
+lM    <-.95
+bM    <-.95
+rM    <-.15
+tM    <-.15
+fRes  <- 200
+fontN <- 11
+
 
 fileN    <- input # will have input as a string (long string read in)
-conLevel <- ci
-zRepV    <- 0.01 #replace value for when the uncertainty is zero
-rateConv <- 365.25
 delim    <- "\t"
 
-hNum <- 1 # number of header lines in each block ** should be 1 now **
-c <- file(fileN,"r") #
+BD_i = 1 # baseline distance index
+ID_i = 2 # baseline ID index
+RT_i = 3 # rate index
+CI_i = 4 # confidence interval index
 
-t_i = 1 # time index
-d_i = 2 # distance index
-u_i = 3 # uncertainty index
+rateVals <- read.table(fileN,header=TRUE)
 
-fileLines <- readLines(c)
-close(c)
-nRead <- length(fileLines)
-#-#-# nRead <- nlines(c)  # from parser package. Count lines in C++
+rwBD <- rateVals[,BD_i]/1000
+rwID <- rateVals[,ID_i]
+rwRT <- rateVals[,RT_i]
+rwCI <- rateVals[,CI_i]
 
-# get block starts and block names
-blockI <- grep("# ", fileLines)
-blckNm <- sub("# ","",fileLines[blockI])
-numBlck<- length(blockI)
-textBlck <- vector(length=numBlck,mode="character")
+nLines <- length(rwBD)# total length excluding header
+baseL <- duplicated(rwID)
+numBase <- sum(!baseL)
+indx <- seq(1,nLines)
+dropI <- c(indx[!baseL],nLines)
 
-for (blockNumber in 1:numBlck){
-  if (blockNumber==numBlck) {enI <- nRead-1}
-  else{enI <- blockI[blockNumber+1]-1}
-  stI <- blockI[blockNumber]+1
-  textBlck[blockNumber] <- paste(fileLines[stI:enI],collapse=delim)
-}
+mxY <- max(rwRT+rwCI)
+mnY <- min(rwRT-rwCI)
 
-calcLRR <- function(dates,dist){
-  rate <- dates
-  mdl  <- lm(formula=dist~rate)
-  coef <- coefficients(mdl)
-  CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
-  rate <- coef["rate"]  # is m/day
+# resort values
+output = "output.png"
+png(output, width=figW, height=figH, units="in",res=fRes)
+par(mai=c(bM,lM,rM,tM))
+
+
+plot(c(0,max(rwBD)),c(mnY,mxY),type="n",xlab="Distance alongshore (km)",ylab=expression('Rate of change (m yr'^-1 ~')'),
+     font=fontN,font.lab=fontN,tcl=-.2,xaxs="i",cex.lab=1.2,cex=1.3)
+lines(c(0,max(rwBD)),c(0,0),col="grey24",lwd=1.2,pch=1,lty=2)
+
+for (p in 1:numBase){
+  indx_1 <- dropI[p]
+  indx_2 <- dropI[p+1]-1
+  dist <- rwBD[indx_1:indx_2]
+  rate <- rwRT[indx_1:indx_2]
+  CI_up <- rate+rwCI[indx_1:indx_2]
+  CI_dn <- rate-rwCI[indx_1:indx_2]
   
-  LRR_rates <- rate*rateConv 
-  LCI <- (CI[2]-CI[1])/2 # LCI
-  return(c(LRR_rates,LCI))
-}
-
-calcWLR <- function(dates,dist,uncy){
-  rate <- dates
-  mdl  <- lm(formula=dist~rate, weights=(1/(uncy^2)))
-  coef <- coefficients(mdl)
-  CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
-  rate <- coef["rate"]
-  WLR_rates <- rate*rateConv 
-  WCI  <- (CI[2]-CI[1])/2 # WCI
-  return(c(WLR_rates,WCI))
-}
-calcNSM <- function(dates,dist){
-  firstDateIdx <- which.min(dates)
-  lastDateIdx  <- which.max(dates)
-  NSM_dist <- dist[firstDateIdx]-dist[lastDateIdx]
-  EPR_rates <- NSM_dist/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
-  return(c(NSM_dist,EPR_rates))
-}
-
-LRR <-  rep(NA,numBlck)
-LCI <-  rep(NA,numBlck)
-WLR <-  rep(NA,numBlck)
-WCI <-  rep(NA,numBlck)
-SCE <-  rep(NA,numBlck)
-NSM <-  rep(NA,numBlck)
-EPR <-  rep(NA,numBlck)
-
-getDSAS <- function(blockText){  
-  splitsTxt <- unlist(strsplit(blockText,delim))
-  dates <- as(as.Date(splitsTxt[seq(t_i,length(splitsTxt),3)],format="%Y-%m-%d"),"numeric")
-  dist  <- as(splitsTxt[seq(d_i,length(splitsTxt),3)],"numeric")
-  uncy  <- as(splitsTxt[seq(u_i,length(splitsTxt),3)],"numeric")
-  uncy[uncy<zRepV] <- zRepV
+  polygon(c(dist,rev(dist)),c(CI_up,rev(CI_dn)),col="grey",border=NA)
   
-  useI  <- which(!is.na(dates)) & which(!is.na(dist)) & which(!is.na(uncy))
-  dates <- dates[useI]
-  dist  <- dist[useI]
-  uncy  <- uncy[useI]
-  
-  if (length(dates) >= 3) {
-    LRRout   <- calcLRR(dates,dist)
-    WLRout   <- calcWLR(dates,dist,uncy)
-    SCE   <- (max(dist)-min(dist))
-    NSMout  <- calcNSM(dates,dist)
-    return(c(LRRout,WLRout,SCE,NSMout))
-  }
-  else{return(rep(NA,7))}
-  
+  lines(dist,rate,lwd=2.5)
 }
 
-
-numPar = 4
-numInEach = ceiling(numBlck/numPar)
-endI = seq(0, numBlck, numInEach)
-if(endI[length(endI)] != numBlck){
-  endI[length(endI) + 1] = numBlck
-}
-
-## Start some tossed together parallelization
-library(snow)
-library(doSNOW)
-library(foreach)
-c1 = makeCluster(c("localhost","localhost","localhost","localhost"),type="SOCK")
-registerDoSNOW(c1)
-
-DSASstatsAll = foreach(p=1:numPar) %dopar% {
-  i=1
-  DSASstats = list()
-  for (b in seq(endI[p]+1,endI[p+1])){
-    DSASstats[[i]] <- getDSAS(textBlck[b])
-    i = i+1
-  }
-  DSASstats
-}
-
-b = 1
-for (p in 1:numPar){
-  DSASstatsPar = DSASstatsAll[[p]]
-  for (dsI in 1:length(DSASstatsPar)){
-    #DSASstats <- getDSAS(textBlck[b])
-    DSASstats = DSASstatsPar[[dsI]]
-    LRR[b] <- DSASstats[1]
-    LCI[b] <- DSASstats[2]
-    WLR[b] <- DSASstats[3]
-    WCI[b] <- DSASstats[4]
-    SCE[b] <- DSASstats[5]
-    NSM[b] <- DSASstats[6]
-    EPR[b] <- DSASstats[7]
-    b = b + 1
-  }
-}
-
-stopCluster(c1)
-
-statsout <- data.frame("transect_ID"=blckNm,LRR,LCI,WLR,WCI,SCE,NSM,EPR)
-
-if (localRun){
-  Rprof(NULL)
-  summaryRprof(filename = "DSAS_profiler.txt",chunksize=5000)
-  proc.time() -ptm
-}
-
+if (localRun) proc.time() - ptm
+dev.off()
 # output is an identifier and R variable (WPS identifier). The ouput is the name of the text file
-# wps.out: output, text, output title, tabular output data to append to shapefile;
-output = "output.txt"
-write.table(statsout,file="output.txt",col.names=TRUE, quote=FALSE, row.names=FALSE, sep="\t")
+# wps.out: output, png, Squiggle Plot, png plot of shoreline rates;
