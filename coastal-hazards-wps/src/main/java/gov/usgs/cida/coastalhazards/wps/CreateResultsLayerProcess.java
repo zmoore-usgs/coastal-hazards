@@ -46,7 +46,11 @@
 
 package gov.usgs.cida.coastalhazards.wps;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 import gov.usgs.cida.coastalhazards.util.AttributeGetter;
+import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import gov.usgs.cida.coastalhazards.util.Constants;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import gov.usgs.cida.coastalhazards.util.UTMFinder;
@@ -75,6 +79,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -102,13 +107,12 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
     @DescribeResult(name = "resultLayer", description = "Layer containing results of shoreline statistics")
     public String execute(@DescribeParameter(name = "results", description = "Block of text with TransectID and stats results", min = 1, max = 1) StringBuffer results,
             @DescribeParameter(name = "transects", description = "Feature collection of transects to join", min = 1, max = 1) FeatureCollection<SimpleFeatureType, SimpleFeature> transects,
-            // TODO Intersects aren't used, this should be removed to avoid confusion
             @DescribeParameter(name = "intersects", description = "Feature collection of intersects used to calculate results", min = 0, max = 1) FeatureCollection<SimpleFeatureType, SimpleFeature> intersects,
             @DescribeParameter(name = "workspace", description = "Workspace in which to put results layer", min = 1, max = 1) String workspace,
             @DescribeParameter(name = "store", description = "Store in which to put results", min = 1, max = 1) String store,
             @DescribeParameter(name = "layer", description = "Layer name of results", min = 1, max = 1) String layer) throws Exception {
         
-        return new Process(results, transects, workspace, store, layer).execute();
+        return new Process(results, transects, intersects, workspace, store, layer).execute();
     }
     
     protected class Process {
@@ -116,19 +120,22 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
         /* this is different from the one in Constants, this is a "contract" with the R process on the column name for TransectId*/
         public static final String TRANSECT_ID = "transect_ID";
         
-        private String results;
-        private FeatureCollection<SimpleFeatureType, SimpleFeature> transects;
-        private String workspace;
-        private String store;
-        private String layer;
+        private final String results;
+        private final FeatureCollection<SimpleFeatureType, SimpleFeature> transects;
+        private final FeatureCollection<SimpleFeatureType, SimpleFeature> intersects;
+        private final String workspace;
+        private final String store;
+        private final String layer;
         
         protected Process(StringBuffer results,
                 FeatureCollection<SimpleFeatureType, SimpleFeature> transects,
+                FeatureCollection<SimpleFeatureType, SimpleFeature> intersects,
                 String workspace,
                 String store,
                 String layer) {
             this.results = results.toString();
             this.transects = transects;
+            this.intersects = intersects;
             this.workspace = workspace;
             this.store = store;
             this.layer = layer;
@@ -142,6 +149,13 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
             CoordinateReferenceSystem utmZone = null;
             try {
                 utmZone = UTMFinder.findUTMZoneCRSForCentroid((SimpleFeatureCollection)transects);
+                
+                CoordinateReferenceSystem tCRS = CRSUtils.getCRSFromFeatureCollection(transects);
+                CoordinateReferenceSystem iCRS = CRSUtils.getCRSFromFeatureCollection(intersects);
+                if (CRS.equalsIgnoreMetadata(tCRS, iCRS)) {
+                    throw new IllegalStateException("Transects and Intersects do not share common Coordinate Reference System");
+                }
+                
             } catch (NoSuchAuthorityCodeException ex) {
                 throw new UnsupportedCoordinateReferenceSystemException("Could not find utm zone", ex);
             } catch (FactoryException ex) {
@@ -208,6 +222,10 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                     builder.add(header, Double.class);
                 }
             }
+            builder.add("NSD", Double.class);
+            Map<Integer, List<Point>> transectToIntersectMap = generateTransectToIntersectMap(intersects);
+
+            
             SimpleFeatureType joinedFeatureType = builder.buildFeatureType();
             
             SortedMap<Double, List<Object>> distanceToAttribureMap = new TreeMap<Double, List<Object>>();
@@ -227,6 +245,7 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                     List<Object> joinedAttributes = new ArrayList<Object>(joinedFeatureType.getAttributeCount());
                     joinedAttributes.addAll(feature.getAttributes());
                     joinedAttributes.addAll(Arrays.asList(values));
+                    joinedAttributes.add(calculateNSD((Geometry)feature.getDefaultGeometry(), transectToIntersectMap.get(transectIdAsObject)));
                     distanceToAttribureMap.put(baseDistance, joinedAttributes);
                 
                 }
@@ -257,6 +276,44 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
             }
             return header;
         }
+    }
+    
+    private Map<Integer, List<Point>> generateTransectToIntersectMap(FeatureCollection<?, SimpleFeature> intersects) {
+        Map<Integer, List<Point>> transectToIntersectionMap = new HashMap<Integer, List<Point>>();
+        FeatureIterator<SimpleFeature> intersectsIterator = intersects.features();
+        while (intersectsIterator.hasNext()) {
+            SimpleFeature feature = intersectsIterator.next();
+            Object transectIdAsObject = feature.getAttribute(Constants.TRANSECT_ID_ATTR);
+            if (transectIdAsObject instanceof Integer) {
+                List<Point> pointList = transectToIntersectionMap.get((Integer)transectIdAsObject);
+                if (pointList == null) {
+                    pointList = new ArrayList<Point>();
+                    transectToIntersectionMap.put((Integer)transectIdAsObject, pointList);
+                }
+                Object geometryAsObject = feature.getDefaultGeometry();
+                if (geometryAsObject instanceof Point) {
+                    pointList.add((Point)geometryAsObject);
+                } else {
+                    System.err.println("wtf?  null point");
+                }    
+            } else {
+                System.err.println("wtf? ");
+            }
+        }
+        return transectToIntersectionMap;
+    }
+    
+    private double calculateNSD(Geometry transect, List<? extends Geometry> intersects) {
+        Coordinate b = transect.getGeometryN(0).getCoordinates()[0];
+        double nsd = Double.MAX_VALUE;
+        for (Geometry intersect : intersects) {
+            Coordinate i = intersect.getGeometryN(0).getCoordinates()[0];
+            double d = b.distance(i);
+            if (d < nsd) {
+                nsd = d;
+            }
+        }
+        return nsd;
     }
     
     public static class SequentialFeatureIDGenerator {
