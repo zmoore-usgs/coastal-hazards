@@ -152,7 +152,10 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                 
                 CoordinateReferenceSystem tCRS = CRSUtils.getCRSFromFeatureCollection(transects);
                 CoordinateReferenceSystem iCRS = CRSUtils.getCRSFromFeatureCollection(intersects);
-                if (CRS.equalsIgnoreMetadata(tCRS, iCRS)) {
+                // This call will be too strict if CRS weren't generated from same
+                // authority.  I tried CRS.equalsIgnoreMetadata(o1, o2) but it
+                // did seem to work correctly (GT 8.7)
+                if (!tCRS.equals(iCRS)) {
                     throw new IllegalStateException("Transects and Intersects do not share common Coordinate Reference System");
                 }
                 
