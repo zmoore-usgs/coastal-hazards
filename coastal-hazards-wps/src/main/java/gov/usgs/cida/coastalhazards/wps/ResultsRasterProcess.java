@@ -211,6 +211,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 return;
             }
             Object sceObject = feature.getAttribute(Constants.SCE_ATTR);
+            Object nsdObject = feature.getAttribute(Constants.NSD_ATTR);
             Object idObject = feature.getAttribute(Constants.BASELINE_ID_ATTR);
             
             if (!(sceObject instanceof Number)) {
@@ -229,11 +230,17 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 return;
             }
             
+            
             double sce = ((Number)sceObject).doubleValue();
+            double nsd = nsdObject instanceof Number ? ((Number)nsdObject).doubleValue() : Double.NaN;
 
             Coordinate[] coordinates = geometry.getCoordinates();
             LineSegment transect = new LineSegment(coordinates[0], coordinates[1]);
-            LineSegment segment = new LineSegment(transect.pointAlong(1d - (sce / transect.getLength())), transect.p1);
+            double tl = transect.getLength();
+            
+            LineSegment segment = Double.isNaN(nsd) ?
+                    new LineSegment(transect.pointAlong(1d - (sce / tl)), transect.p1) :
+                    new LineSegment(transect.pointAlong(nsd / tl), transect.pointAlong((nsd + sce ) / tl));
            
             if (segmentLast != null && idObject.equals(idObjectLast))  {
                 
