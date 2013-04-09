@@ -4,7 +4,7 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-localRun <- FALSE
+localRun <- TRUE
 # comment this out for WPS!!!
 if (localRun){
   Rprof("DSAS_profiler.txt")
@@ -118,9 +118,9 @@ if(endI[length(endI)] != numBlck){
 }
 
 ## Start some tossed together parallelization
-library(snow)
+
 library(doSNOW)
-library(foreach)
+
 c1 = makeCluster(c("localhost","localhost","localhost","localhost"),type="SOCK")
 registerDoSNOW(c1)
 
