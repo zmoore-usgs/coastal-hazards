@@ -384,7 +384,7 @@
                 <jsp:include page="template/USGSFooter.jsp">
                     <jsp:param name="relPath" value="" />
                     <jsp:param name="header-class" value="" />
-                    <jsp:param name="site-url" value="http://cida.usgs.gov/DSASweb/" />
+                    <jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
                     <jsp:param name="contact-info" value="<a href='mailto:jread@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Jordan Read</a>" />
                 </jsp:include>
             </div>

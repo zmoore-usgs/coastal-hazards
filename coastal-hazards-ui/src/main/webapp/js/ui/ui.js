@@ -7,9 +7,6 @@ var UI = function() {
     me.work_stages_objects = [Shorelines, Baseline, Transects, Calculation, Results];
     me.base_name = undefined;//init to undefined. Update in baselines
     
-    LOG.debug('UI.js::constructor: Setting popup hover delay to ' + popupHoverDelay);
-    var popupHoverDelay = CONFIG.popupHoverDelay;
-    
     $('#manage-sessions-btn').on('click', CONFIG.tempSession.createSessionManagementModalWindow);
     
     $('.collapsibleHelp').accordion({
@@ -44,7 +41,7 @@ var UI = function() {
                 placement : 'top',
                 trigger : 'hover',
                 delay : {
-                    show : popupHoverDelay
+                    show : CONFIG.popupHoverDelay
                 }
             });
         }
@@ -57,7 +54,7 @@ var UI = function() {
                 placement : 'top',
                 trigger : 'hover',
                 delay : {
-                    show : popupHoverDelay
+                    show : CONFIG.popupHoverDelay
                 }
             });
         }
@@ -70,7 +67,7 @@ var UI = function() {
                 placement : 'bottom',
                 trigger : 'hover',
                 delay : {
-                    show : popupHoverDelay
+                    show : CONFIG.popupHoverDelay
                 }
             });
         }
@@ -93,7 +90,7 @@ var UI = function() {
             placement : 'bottom',
             trigger : 'hover',
             delay : {
-                show : popupHoverDelay
+                show : CONFIG.popupHoverDelay
             }
         });
     });
