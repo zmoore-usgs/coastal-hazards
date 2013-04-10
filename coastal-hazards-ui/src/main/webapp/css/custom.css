@@ -63,9 +63,10 @@ select option.session-layer{
     background: transparent;
 }
 
-#stage-select-tablist .popover {
-    width : 50%;
+.popover {
+    max-width: 100%;
 }
+
 #stage-select-tablist .stage-icon-description {
     font-size: 1.1em;
 }
