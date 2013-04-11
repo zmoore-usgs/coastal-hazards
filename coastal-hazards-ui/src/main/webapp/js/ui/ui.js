@@ -802,6 +802,75 @@ var UI = function() {
         },
         hideSpinner: function() {
             $("#application-spinner").fadeOut();
-        }
+        },
+        bindSearchInput: function(args) {
+            $('#app-navbar-search-form').submit(function(evt) {
+                var map = args.map;
+                var query = $('#app-navbar-search-input').val();
+                if (query) {
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find',
+                        data: {
+                            text: query,
+                            maxLocations: '20',
+                            outFields : '*',
+                            f: 'pjson',
+                            outSR: '3785'
+                        },
+                        async: false,
+                        contentType: 'application/json',
+                        dataType: 'jsonp',
+                        success: function(json) {
+                            if (json.locations[0]) {
+                                var firstLocation = '';
+                                var xmax = json.locations[0].extent.xmax;
+                                var xmin = json.locations[0].extent.xmin;
+                                var ymax = json.locations[0].extent.ymax;
+                                var ymin = json.locations[0].extent.ymin;
+                                var x = json.locations[0].feature.geometry.x;
+                                var y = json.locations[0].feature.geometry.y;
+                                var location = json.locations[0].feature.attributes.Match_addr;
+
+                                var markerLayer = CONFIG.map.getMarkerLayer();
+                                var iconSize = new OpenLayers.Size(21, 25);
+                                var icon = new OpenLayers.Icon('js/openlayers/img/marker.png', iconSize, new OpenLayers.Pixel(-(iconSize.w / 2), -iconSize.h))
+                                var marker = new OpenLayers.Marker(new OpenLayers.LonLat(x, y), icon);
+                                
+                                
+                                        
+                                markerLayer.addMarker(marker);
+
+                                map.zoomToExtent([xmin, ymin, xmax, ymax], true);
+                                
+                                var popup = new OpenLayers.Popup.FramedCloud("geocoding-popup",
+                                        new OpenLayers.LonLat(x, y),
+                                        new OpenLayers.Size(100, 100),
+                                        location,
+                                        icon,
+                                        true,
+                                        function() {
+                                            markerLayer.removeMarker(marker);
+                                            map.removePopup(this);
+                                        });
+                                        
+                                map.addPopup(popup);
+                                map.zoomToScale(300000, true);
+                            } else {
+                                CONFIG.ui.showAlert({
+                                    close: false,
+                                    message: query + ' not found',
+                                    displayTime : 1000,
+                                    style: {
+                                        classes: ['alert-info']
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+
+            });
+        }        
     });
 };
