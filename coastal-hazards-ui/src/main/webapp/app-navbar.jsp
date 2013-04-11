@@ -27,6 +27,10 @@
         background-color : #48638D;
         text-shadow: none;
     }
+    
+    #inner-navbar-container .nav li.dropdown.open .dropdown-menu {
+        z-index: 1006;
+    }
 
 
     #app-navbar-inner {
@@ -47,6 +51,8 @@
 
     #app-navbar-search-icon {
         margin-right: 5px;
+        color: white;
+        font-size: 18px;
     }
 
     #app-navbar-search-input {
@@ -68,6 +74,7 @@
 
                 <div class="nav-collapse">
                     <ul class="nav">
+                        <li><a id="manage-sessions-btn" href="#"><i class="icon-tasks icon-white"></i> Session</a></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
                             <ul class="dropdown-menu">
@@ -89,11 +96,12 @@
                                 <li><a href="#">Documentation</a></li>
                             </ul>
                         </li>
-                        <li><a id="manage-sessions-btn" href="#"><i class="icon-tasks icon-white"></i> Session</a></li>
                     </ul>
+                    
                     <form class="navbar-search pull-right" action="">
-                        <i id="app-navbar-search-icon" class="icon-search icon-white"></i><input id="app-navbar-search-input" type="text" class="search-query span2" placeholder="Location Search">
+                        <i id="app-navbar-search-icon" class="icon-search"></i><input id="app-navbar-search-input" type="text" class="search-query span2" placeholder="Location Search">
                     </form>
+                    
                 </div>
             </div>
         </div>
@@ -102,7 +110,3 @@
 <script type="text/javascript">
     $('#site-title').remove();
 </script>
-
-<!--<div id="manage-sessions-container" class="span1">
-                    <button class="btn" id="manage-sessions-btn">Session Management</button>
-                </div>-->
