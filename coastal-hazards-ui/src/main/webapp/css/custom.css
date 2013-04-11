@@ -8,15 +8,19 @@
     margin-top: .25em;
     margin-bottom: .25em;
 }
+
 .feature-list {
     width: 100%;
 }
+
 .hide {
     height: auto !important;
 }
+
 #toolbox-well {
     height: 39em;
 }
+
 #application-spinner {
     text-align: center;
     display: none;
