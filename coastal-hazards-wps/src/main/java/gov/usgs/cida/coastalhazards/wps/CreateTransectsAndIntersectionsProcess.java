@@ -36,6 +36,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
@@ -43,6 +44,7 @@ import org.geotools.referencing.CRS;
 import org.joda.time.DateTime;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -63,6 +65,8 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
 
     /** May actually want to return reference to new layer
      *  Check whether we need an offset at the start of the baseline
+     * 
+     *  With new maxLength algorithm, we may want to allow a maxLength parameter to speed up calculation
      */
     @DescribeResult(name = "transects", description = "Layer containing Transects normal to baseline")
     public String execute(
@@ -164,10 +168,11 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             }
             
             SimpleFeatureCollection transformedShorelines = CRSUtils.transformFeatureCollection(shorelineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
-            
-            // TODO Will need to be able to pull seaward vs. shoreward from attrs (maybe Map<Integer, LineString>)
-            // for now assume seaward
             SimpleFeatureCollection transformedBaselines = CRSUtils.transformFeatureCollection(baselineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
+            
+            // this could be from a parameter?
+            double maxLength = calculateMaxDistance(transformedShorelines, transformedBaselines);
+            
             MultiLineString shorelineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedShorelines);
             MultiLineString baselineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedBaselines);
             this.strTree = new ShorelineSTRTreeBuilder(transformedShorelines).build();
@@ -180,7 +185,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             
             Transect[] vectsOnBaseline = getEvenlySpacedOrthoVectorsAlongBaseline(transformedBaselines, shorelineGeometry, spacing);
             
-            trimTransectsToFeatureCollection(vectsOnBaseline, transformedShorelines);
+            trimTransectsToFeatureCollection(vectsOnBaseline, transformedShorelines, maxLength);
             String createdTransectLayer = importer.importLayer(resultTransectsCollection, workspace, store, transectLayer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED);
             String createdIntersectionLayer = importer.importLayer(resultIntersectionsCollection, workspace, store, intersectionLayer, utmCrs, ProjectionPolicy.REPROJECT_TO_DECLARED);
             return createdTransectLayer + "," + createdIntersectionLayer;
@@ -224,7 +229,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
          * @param shorelines
          * @return 
          */
-        protected void trimTransectsToFeatureCollection(Transect[] vectsOnBaseline, SimpleFeatureCollection shorelines) {
+        protected void trimTransectsToFeatureCollection(Transect[] vectsOnBaseline, SimpleFeatureCollection shorelines, double maxLength) {
             if (vectsOnBaseline.length == 0) {
                 return;
             } 
@@ -349,6 +354,8 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                 guessTransectLength *= 2;
             }
         }
+
+
     }
     
     // NOTE: For each segment p0 is interval coord, with p1 = p0 + direction of segment as unit vector.
@@ -491,5 +498,37 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             // overflow is distance from p0 (in p1 to p0 direction)
             return first.pointAlong(-(overflow / first.getLength()));
         }
+    }
+    
+    private static double calculateMaxDistance(SimpleFeatureCollection transformedShorelines, SimpleFeatureCollection transformedBaselines) {
+        ReferencedEnvelope shorelineBounds = transformedShorelines.getBounds();
+        ReferencedEnvelope baselineBounds = transformedBaselines.getBounds();
+        
+        double[] slUpperCorner1 = shorelineBounds.getUpperCorner().getCoordinate();
+        double[] slLowerCorner1 = shorelineBounds.getLowerCorner().getCoordinate();
+        double[] slUpperCorner2 = new double[] { slLowerCorner1[0], slUpperCorner1[1] };
+        double[] slLowerCorner2 = new double[] { slUpperCorner1[0], slLowerCorner1[1] };
+        
+        double[] blUpperCorner1 = baselineBounds.getUpperCorner().getCoordinate();
+        double[] blLowerCorner1 = baselineBounds.getLowerCorner().getCoordinate();
+        double[] blUpperCorner2 = new double[] { blLowerCorner1[0], blUpperCorner1[1] };
+        double[] blLowerCorner2 = new double[] { blUpperCorner1[0], blLowerCorner1[1] };
+        
+        double[][] pointsCompare = { slUpperCorner1, slUpperCorner2, slLowerCorner1,
+            slLowerCorner2, blUpperCorner1, blUpperCorner2, blLowerCorner1, blLowerCorner2 };
+        
+        double maxDist = 0.0d;
+        for (int i=0; i<4; i++) {
+            Coordinate a = new Coordinate(pointsCompare[i][0], pointsCompare[i][1]);
+            for (int j=0; j<4; j++) {
+                Coordinate b = new Coordinate(pointsCompare[4+j][0], pointsCompare[4+j][1]);
+                double dist = a.distance(b);
+                if (dist > maxDist) {
+                    maxDist = dist;
+                }
+            }
+        }
+        
+        return maxDist;
     }
 }
