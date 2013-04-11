@@ -142,7 +142,11 @@ $(document).ready(function() {
             });
 
             $('.qq-upload-button').addClass('btn btn-success');
-            $('#application-overlay').fadeOut();
+            $('#application-overlay').fadeOut({
+                complete : function() {
+                    $('#application-overlay').remove();
+                }
+            });
         };
 
         CONFIG.ows.getWMSCapabilities({

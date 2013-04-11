@@ -27,6 +27,7 @@
         <META HTTP-EQUIV="EXPIRES" CONTENT="0" />
         <META HTTP-EQUIV="CONTENT-LANGUAGE" CONTENT="en-US" />
         <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width">
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -64,7 +65,9 @@
                     <jsp:param name="site-title" value="USGS Coastal Change Hazards" />
                 </jsp:include>
             </div>
-
+            <%-- Loads during application startup, fades out when application is built --%>
+            <jsp:include page="app-navbar.jsp"></jsp:include>
+            
             <div class="row-fluid">
                 <!-- NAV -->
                 <div class="span1" id='nav-list'>
@@ -374,9 +377,6 @@
 
             </div>
             <div class="row-fluid">
-                <div id="manage-sessions-container" class="span1">
-                    <button class="btn" id="manage-sessions-btn">Session Management</button>
-                </div>
                 <div id="application-alert-container" class="span11"></div>
             </div>
 
@@ -424,6 +424,9 @@
     <script type="text/javascript">splashUpdate("Loading UI Framework...");</script>
     <jsp:include page="js/bootstrap/package.jsp">
         <jsp:param name="relPath" value="" />
+        <jsp:param name="debug-qualifier" value="<%= development%>" />
+    </jsp:include>
+    <jsp:include page="css/fontawesome/fontawesome.jsp">
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
 
