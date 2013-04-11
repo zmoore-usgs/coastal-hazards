@@ -45,7 +45,6 @@ import org.geotools.referencing.CRS;
 import org.joda.time.DateTime;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -235,16 +234,16 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             List<SimpleFeature> transectFeatures = new LinkedList<SimpleFeature>();
             List<SimpleFeature> intersectionFeatures = new LinkedList<SimpleFeature>();
             AttributeGetter attGet = new AttributeGetter(intersectionFeatureType);
-            // add an extra 1k for good measure
-            //guessTransectLength += 1000.0d;
+            // grow by about 200?
+            double guessTransectLength = MIN_TRANSECT_LENGTH * 4;
             
             for (Transect transect : vectsOnBaseline) {
                 Map<DateTime, Intersection> allIntersections = Maps.newHashMap();
                 double startDistance = 0;
                 
                 do {
-                    Transect subTransect = transect.subTransect(startDistance, MIN_TRANSECT_LENGTH);
-                    startDistance += MIN_TRANSECT_LENGTH;
+                    Transect subTransect = transect.subTransect(startDistance, guessTransectLength);
+                    startDistance += guessTransectLength;
                     Intersection.updateIntersectionsWithSubTransect
                             (allIntersections, transect.getOriginPoint(), subTransect, strTree, useFarthest, attGet);
                 }
