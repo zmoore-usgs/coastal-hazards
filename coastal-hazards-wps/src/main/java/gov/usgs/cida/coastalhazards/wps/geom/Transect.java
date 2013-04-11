@@ -152,6 +152,14 @@ public class Transect {
         angle += Math.PI;
     }
     
+    public Transect subTransect(double startDistance, double length) {
+        Transect subTransect = new Transect(cartesianCoord, angle, orientation, transectId, baselineId, baselineDistance);
+        subTransect.setLength(startDistance);
+        subTransect.cartesianCoord = subTransect.getLineString().getEndPoint().getCoordinate();
+        subTransect.setLength(length);
+        return subTransect;
+    }
+    
     public static Transect generatePerpendicularVector(Coordinate origin,
             LineSegment segment,
             Orientation orientation,

@@ -251,7 +251,6 @@ public class Intersection {
                 if (allIntersections.containsKey(date)) {  // use closest/farthest intersection
                     Intersection thatIntersection = allIntersections.get(date);
                     Intersection closest = Intersection.compare(intersection, thatIntersection, !useFarthest);
-                    allIntersections.remove(date);
                     allIntersections.put(date, closest);
                 } else {
                     allIntersections.put(date, intersection);
@@ -259,6 +258,36 @@ public class Intersection {
             }
         }
         return allIntersections;
+    }
+    
+    /**
+     * Map is mutated to include new intersections in section of transect called here "subTransect"
+     * 
+     * @param intersectionsSoFar
+     * @param origin
+     * @param subTransect
+     * @param strTree
+     * @param useFarthest
+     * @param getter 
+     */
+    public static void updateIntersectionsWithSubTransect(Map<DateTime, Intersection> intersectionsSoFar, Point origin,
+            Transect subTransect, STRtree strTree, boolean useFarthest, AttributeGetter getter) {
+        Map<DateTime, Intersection> intersectionSubset = calculateIntersections(subTransect, strTree, useFarthest, getter);
+        for (DateTime date : intersectionSubset.keySet()) {
+            Intersection intersection = intersectionSubset.get(date);
+            intersection.distance = subTransect.getOrientation().getSign() * intersection.point.distance(origin);
+            if (intersectionsSoFar.containsKey(date)) {
+                boolean isFarther = Math.abs(intersection.distance) > Math.abs(intersectionsSoFar.get(date).distance);
+                // only true  && true
+                // or   false && false
+                if (useFarthest == isFarther) {
+                    intersectionsSoFar.put(date, intersection);
+                }
+            }
+            else {
+                intersectionsSoFar.put(date, intersection);
+            }
+        }
     }
 
     @Override
