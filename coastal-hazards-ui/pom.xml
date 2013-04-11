@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.usgs.cida.coastalhazards</groupId>
         <artifactId>coastal-hazards</artifactId>
-        <version>1.0.4-SNAPSHOT</version>
+        <version>1.0.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>coastal-hazards-ui</artifactId>
@@ -403,7 +403,7 @@
         <dependency>
             <groupId>gov.usgs.cida.owsutils</groupId>
             <artifactId>cida-owsutils-geoserver</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
             <type>jar</type>
         </dependency>
     </dependencies>

@@ -24,6 +24,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.coverage.grid.InvalidGridGeometryException;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.DirectPosition2D;
@@ -53,8 +54,6 @@ import org.opengis.referencing.operation.TransformException;
 public class ResultsRasterProcess implements GeoServerProcess {
     
     private final static Logger LOGGER = Logging.getLogger(ResultsRasterProcess.class);
-
-    private final static int COORD_GRID_CHUNK_SIZE = 256;
     
     private Map<String, Map<String, AttributeRange>> featureAttributeRangeMap = new WeakHashMap<String, Map<String, AttributeRange>>();
 
@@ -84,8 +83,6 @@ public class ResultsRasterProcess implements GeoServerProcess {
         private ReferencedEnvelope extent;
         private GridGeometry2D gridGeometry;
         private MathTransform featureToRasterTransform;
-        private int[] coordGridX = new int[COORD_GRID_CHUNK_SIZE];
-        private int[] coordGridY = new int[COORD_GRID_CHUNK_SIZE];
         
         private BufferedImage image;
         private Graphics2D graphics;
@@ -210,7 +207,9 @@ public class ResultsRasterProcess implements GeoServerProcess {
             if (!(attributeValue instanceof Number)) {
                 return;
             }
+            
             Object sceObject = feature.getAttribute(Constants.SCE_ATTR);
+            Object nsdObject = feature.getAttribute(Constants.NSD_ATTR);
             Object idObject = feature.getAttribute(Constants.BASELINE_ID_ATTR);
             
             if (!(sceObject instanceof Number)) {
@@ -230,46 +229,32 @@ public class ResultsRasterProcess implements GeoServerProcess {
             }
             
             double sce = ((Number)sceObject).doubleValue();
+            double nsd = nsdObject instanceof Number ? ((Number)nsdObject).doubleValue() : Double.NaN;
 
             Coordinate[] coordinates = geometry.getCoordinates();
             LineSegment transect = new LineSegment(coordinates[0], coordinates[1]);
-            LineSegment segment = new LineSegment(transect.pointAlong(1d - (sce / transect.getLength())), transect.p1);
+            double tl = transect.getLength();
+            
+            LineSegment segment = Double.isNaN(nsd) ?
+                    new LineSegment(transect.pointAlong(1d - (sce / tl)), transect.p1) :
+                    new LineSegment(transect.pointAlong(nsd / tl), transect.pointAlong((nsd + sce ) / tl));
+            
+            if (featureToRasterTransform != null) {
+                JTS.transform(segment.p0, segment.p0, featureToRasterTransform);
+                JTS.transform(segment.p1, segment.p1, featureToRasterTransform);
+            }
            
             if (segmentLast != null && idObject.equals(idObjectLast))  {
                 
-                geometry = geometryFactory.createPolygon(
-                        geometryFactory.createLinearRing(
-                            new Coordinate[] {
-                                segment.p0,
-                                segment.p1,
-                                segmentLast.p1,
-                                segmentLast.p0,
-                                segment.p0
-                        }),
-                        null);
                 
-                if (extent.intersects(feature.getBounds().toBounds(extent.getCoordinateReferenceSystem()))) {
+
+                
+                if ( extent.contains(segment.p0) || extent.contains(segment.p1) ||
+                     extent.contains(segmentLast.p0) || extent.contains(segmentLast.p1) ) {
                     graphics.setColor(colorMap.valueToColor(((Number)attributeValue)));
-                    Geometries geomType = Geometries.get(geometry);
-                    switch (geomType) {
-                        case MULTIPOLYGON:
-                        case MULTILINESTRING:
-                        case MULTIPOINT:
-                            final int numGeom = geometry.getNumGeometries();
-                            for (int i = 0; i < numGeom; i++) {
-                                Geometry geomN = geometry.getGeometryN(i);
-                                drawGeometry(Geometries.get(geomN), geomN);
-                            }
-                            break;
-                        case POLYGON:
-                        case LINESTRING:
-                        case POINT:
-                            drawGeometry(geomType, geometry);
-                            break;
-                        default:
-                        // TODO:  Log!
-                    }
+                    drawPolygon(segment.p0, segment.p1, segmentLast.p1, segmentLast.p0);
                 }
+
             }
             
             idObjectLast = idObject;
@@ -316,49 +301,22 @@ public class ResultsRasterProcess implements GeoServerProcess {
             graphics = image.createGraphics();
         }
 
-        private void drawGeometry(Geometries geomType, Geometry geometry) throws TransformException {
-            if (featureToRasterTransform != null) {
-                try {
-                    geometry = JTS.transform(geometry, featureToRasterTransform);
-                } catch (TransformException ex) {
-                    throw ex;
-                } catch (MismatchedDimensionException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-
-            Coordinate[] coords = geometry.getCoordinates();
-
-            // enlarge if needed
-            if (coords.length > coordGridX.length) {
-                int n = coords.length / COORD_GRID_CHUNK_SIZE + 1;
-                coordGridX = new int[n * COORD_GRID_CHUNK_SIZE];
-                coordGridY = new int[n * COORD_GRID_CHUNK_SIZE];
-            }
-
-            // Go through coordinate array in order received
-            DirectPosition2D worldPos = new DirectPosition2D();
-            for (int n = 0; n < coords.length; n++) {
-                worldPos.setLocation(coords[n].x, coords[n].y);
-                GridCoordinates2D gridPos = gridGeometry.worldToGrid(worldPos);
-                coordGridX[n] = gridPos.x;
-                coordGridY[n] = gridPos.y;
-            }
-
-            switch (geomType) {
-                case POLYGON:
-                    graphics.fillPolygon(coordGridX, coordGridY, coords.length);
-                    break;
-                case LINESTRING:
-                    graphics.drawPolyline(coordGridX, coordGridY, coords.length);
-                    break;
-                case POINT:
-                    graphics.fillRect(coordGridX[0], coordGridY[0], 1, 1);
-                    break;
-                default:
-                    // nothing to do...
-            }
+        int[] px = new int[4];
+        int[] py = new int[4];
+        private void worldToGrid(Coordinate c, int i) throws InvalidGridGeometryException, TransformException {
+            DirectPosition2D world = new DirectPosition2D(c.x, c.y);
+            GridCoordinates2D grid = gridGeometry.worldToGrid(world);
+            px[i] = grid.x ; py[i] = grid.y;
         }
+        
+        private void drawPolygon(Coordinate c0, Coordinate c1, Coordinate c2, Coordinate c3) throws TransformException {
+            worldToGrid(c0, 0);
+            worldToGrid(c1, 1);
+            worldToGrid(c2, 2);
+            worldToGrid(c3, 3);            
+            graphics.fillPolygon(px, py, 4);
+        }
+
     }
     
     public static class AttributeRange {

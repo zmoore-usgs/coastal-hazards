@@ -63,9 +63,10 @@ select option.session-layer{
     background: transparent;
 }
 
-#stage-select-tablist .popover {
-    width : 50%;
+.popover {
+    max-width: 100%;
 }
+
 #stage-select-tablist .stage-icon-description {
     font-size: 1.1em;
 }
@@ -137,6 +138,9 @@ select option.session-layer{
 }
 #baseline-tab-content {
     overflow : visible;
+}
+#baseline-name-textbox {
+	text-align: right;
 }
 /* ---------------------------------------------------------------------- Transects */
 #transects-well {
