@@ -26,6 +26,10 @@
     display: none;
 }
 
+#alt-location-list {
+    width : 100%;
+}
+
 #header #banner-area {
     background-image: url("../images/banner/banner.png");
 }
