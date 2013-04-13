@@ -44,6 +44,7 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="<%= development%>" />
         </jsp:include>
+		<script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? ".min" : "" %>.js"></script>
     </head>
 	<body>
 		<jsp:include page="template/USGSHeader.jsp">
