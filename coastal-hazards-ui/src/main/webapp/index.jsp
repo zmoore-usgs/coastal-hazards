@@ -4,17 +4,17 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 
-<%!    private static final Logger log = LoggerFactory.getLogger("index.jsp");
+<%!    
     protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
     {
         try {
             props = props.addJNDIContexts(new String[0]);
         } catch (Exception e) {
-            log.error("Could not find JNDI - Application will probably not function correctly");
+            LoggerFactory.getLogger("index.jsp").error("Could not find JNDI - Application will probably not function correctly");
         }
     }
-    boolean development = Boolean.parseBoolean(props.getProperty("coastal-hazards.development"));
+    boolean development = Boolean.parseBoolean(props.getProperty("development"));
     String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
     String n52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
 %>

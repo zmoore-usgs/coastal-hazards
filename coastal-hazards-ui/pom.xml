@@ -21,11 +21,6 @@
         <dependencies>
             <!-- CIDA JAVA LIBS -->
             <dependency>
-                <groupId>gov.usgs.cida</groupId>
-                <artifactId>tomcat-filters</artifactId>
-                <version>1.0</version>
-            </dependency>
-            <dependency>
                 <groupId>it.geosolutions</groupId>
                 <artifactId>geoserver-manager</artifactId>
                 <version>1.5</version>
@@ -61,23 +56,6 @@
                 <artifactId>commons-io</artifactId>
                 <version>2.4</version>
             </dependency>
-            <dependency>
-                <groupId>gov.usgs.cida</groupId>
-                <artifactId>dynamicProperties</artifactId>
-                <version>0.0.1</version>
-            </dependency>
-            <dependency>
-                <artifactId>proxy-utils</artifactId>
-                <groupId>gov.usgs.cida</groupId>
-                <version>1.0.2</version>
-                <type>jar</type>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
             <!-- LOGGING -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
@@ -100,39 +78,6 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
-            </dependency>
-            <!-- Normal Servlet dependencies -->
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>2.5</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>javax.servlet.jsp</groupId>
-                <artifactId>jsp-api</artifactId>
-                <version>2.1</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.faces</groupId>
-                <artifactId>jsf-api</artifactId>
-                <version>2.1.16</version>
-                <scope>compile</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun.faces</groupId>
-                <artifactId>jsf-impl</artifactId>
-                <version>2.1.16</version>
-                <scope>compile</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>jstl</artifactId>
-                <version>1.2</version>
-                <scope>provided</scope>
             </dependency>
             <!-- JS Templates -->
             <dependency>
@@ -167,12 +112,6 @@
             </dependency>
             <dependency>
                 <groupId>gov.usgs.cida.jslibs</groupId>
-                <artifactId>usgs-template</artifactId>
-                <version>2.1</version>
-                <type>war</type>
-            </dependency>
-            <dependency>
-                <groupId>gov.usgs.cida.jslibs</groupId>
                 <artifactId>dygraphs-core</artifactId>
                 <version>20121127-1</version>
                 <type>war</type>
@@ -203,11 +142,6 @@
                 <groupId>commons-fileupload</groupId>
                 <artifactId>commons-fileupload</artifactId>
                 <version>1.2.2</version>
-            </dependency>
-            <dependency>
-                <groupId>javax</groupId>
-                <artifactId>javaee-web-api</artifactId>
-                <version>6.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -272,7 +206,6 @@
         <dependency>
             <artifactId>proxy-utils</artifactId>
             <groupId>gov.usgs.cida</groupId>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>gov.usgs.cida</groupId>
@@ -294,17 +227,7 @@
             <artifactId>jstl</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.sun.faces</groupId>
-            <artifactId>jsf-api</artifactId>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.sun.faces</groupId>
-            <artifactId>jsf-impl</artifactId>
-            <scope>compile</scope>
-        </dependency>
+		
         <!-- JS Templates -->
         <dependency>
             <groupId>gov.usgs.cida.jslibs</groupId>
@@ -381,6 +304,7 @@
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
+			<scope>provided</scope>
         </dependency>
         <dependency>
             <artifactId>slf4j-api</artifactId>
