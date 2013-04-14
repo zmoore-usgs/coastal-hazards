@@ -44,16 +44,21 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="<%= development%>" />
         </jsp:include>
+		<script type="text/javascript" src="webjars/jquery/1.8.3/jquery<%= development ? ".min" : ""%>.js"></script>
+		<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? ".min" : ""%>.css" />
+		<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap<%= development ? ".min" : ""%>.css" />
 		<script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? ".min" : "" %>.js"></script>
     </head>
 	<body>
+		<jsp:include page="components/application-overlay.jsp"></jsp:include>
 		<jsp:include page="template/USGSHeader.jsp">
 			<jsp:param name="relPath" value="" />
 			<jsp:param name="header-class" value="" />
 			<jsp:param name="site-title" value="USGS Coastal Hazards Portal" />
 		</jsp:include>
+		<jsp:include page="components/app-navbar.jsp"></jsp:include>
 
-		HELLO WORLD!
+			HELLO WORLD!
 
 		<jsp:include page="template/USGSFooter.jsp">
 			<jsp:param name="relPath" value="" />

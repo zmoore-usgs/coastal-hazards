@@ -82,12 +82,6 @@
             <!-- JS Templates -->
             <dependency>
                 <groupId>gov.usgs.cida.jslibs</groupId>
-                <artifactId>jquery</artifactId>
-                <version>1.8.1-2</version>
-                <type>war</type>
-            </dependency>
-            <dependency>
-                <groupId>gov.usgs.cida.jslibs</groupId>
                 <artifactId>log4js</artifactId>
                 <version>1.4.3-2</version>
                 <type>war</type>
@@ -228,11 +222,10 @@
             <artifactId>usgs-template</artifactId>
             <type>war</type>
         </dependency>
-        <dependency>
-            <groupId>gov.usgs.cida.jslibs</groupId>
-            <artifactId>jquery</artifactId>
-            <type>war</type>
-        </dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jquery</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>

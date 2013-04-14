@@ -1,0 +1,210 @@
+/* ---------------------------------------------------------------------- UI */
+/*html body>div.container-fluid {
+    background-image:url('../images/paneBackgrounds/application_background.png');
+    background-repeat:no-repeat;
+    background-size: 100% 100%;
+}*/
+.btn {
+    margin-top: .25em;
+    margin-bottom: .25em;
+}
+
+.feature-list {
+    width: 100%;
+}
+
+.hide {
+    height: auto !important;
+}
+
+#toolbox-well {
+    height: 39em;
+}
+
+#application-spinner {
+    text-align: center;
+    display: none;
+}
+
+#alt-location-list {
+    width : 100%;
+}
+
+#header #banner-area {
+    background-image: url("../images/banner/banner.png");
+}
+/* Update bootstrap's buttons to have a bit of space on top */
+#site-title {
+    line-height: 20px;
+}
+/* Left Nav Bar Image Sizing */
+.nav-stacked li.active a img {
+    height: 3.5em;
+    width: 4.5em;
+}
+.nav-stacked li a img {
+    height: 2.5em;
+    width: 3.5em;
+}
+.nav-pills.nav-stacked > li > a {
+    text-align: center;
+}
+/* Because of a conflict between twitter bootstrap and openlayers */
+img { 
+    max-width: none; 
+}
+/* Color differentiation for published and personal layers in select views */
+select option.published-layer{
+    color : #661111; 
+}
+select option.session-layer{
+    color : #116611; 
+}
+
+.backgroundPaneImage{
+    height: 252px;
+}
+.collapsibleHelp .ui-widget-content {
+    background: transparent;
+}
+.collapsibleHelp .ui-state-active{
+    background: transparent;
+}
+
+.popover {
+    max-width: 100%;
+}
+
+#stage-select-tablist .stage-icon-description {
+    font-size: 1.1em;
+}
+#stage-select-tablist .stage-icon-description p {
+    margin-bottom: 0.3em;
+}
+#stage-select-tablist #shorelines-description {
+   background-image:url('../images/paneBackgrounds/shorelines_tutorial.png');
+}
+#stage-select-tablist #baseline-description {
+   background-image:url('../images/paneBackgrounds/baselines_tutorial.png');
+}
+#stage-select-tablist #transects-description {
+   background-image:url('../images/paneBackgrounds/transects_tutorial.png');
+}
+#stage-select-tablist #calculation-description {
+   background-image:url('../images/paneBackgrounds/transects_tutorial.png');
+}
+#stage-select-tablist #results-description {
+   background-image:url('../images/paneBackgrounds/results_tutorial.png');
+}
+
+
+/* ---------------------------------------------------------------------- Map */
+/* Add a drop shadow effect to scale and mouse position so they can be seen against a dark background */
+.olControlScaleLine {
+    text-shadow: #FFFFFF 0px 0px 2px;
+    color: #000000;
+}
+.olControlMousePosition {
+    text-shadow: #FFFFFF 0px 0px 2px;
+    color: #000000;
+}
+#map {
+    height: 100%;
+    width: 100%;
+}
+#map-well {
+    height: 39em;
+}
+
+/* ---------------------------------------------------------------------- Shorelines */
+.shoreline-feature-table {
+    height: 16.25em;
+    overflow : scroll;
+}
+.shoreline-table-selected-head-column {
+    width: 30%;
+}
+#shorelines-list {
+    height: 7.25em;
+}
+
+.wildcard-link {
+    cursor: pointer;
+    color: #0055CC;
+    margin-left: 5px;
+    font-size: 2em;
+    float: right;
+}
+
+#wildcard-select-list {
+    width: 100%;
+}
+
+/* ---------------------------------------------------------------------- Baselines */
+#toggle-direction-checkbox {
+    width: 210px;
+}
+#baseline-tab-content {
+    overflow : visible;
+}
+#baseline-name-textbox {
+	text-align: right;
+}
+/* ---------------------------------------------------------------------- Transects */
+#transects-well {
+    height: 5em;
+}
+#create-transects-input-spacing {
+    width: 6em;
+}
+#create-transects-input-smoothing {
+    width: 6em;
+}
+
+/* ---------------------------------------------------------------------- Results */
+#results-table-container {
+    height: 16.25em;
+}
+
+/* ---------------------------------------------------------------------- Fine Uploader */
+.qq-upload-list {
+    text-align: left;
+    display: none;
+}
+.uploader {
+    display: none;
+}
+
+/* ---------------------------------------------------------------------- Alert system */
+li.alert-success {
+    background-color: #DFF0D8;
+}
+
+li.alert-error {
+    background-color: #F2DEDE;
+}
+
+.alert-error .qq-upload-failed-text {
+    display: inline;
+}
+
+/* ---------------------------------------------------------------------- Drag-Drop */
+.left-drop-holder {
+    text-align: center;
+    border-radius: 5px; 
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px; 
+    border: 1px dashed #800000; 
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.right-drop-holder {
+    text-align: center;
+    border-radius: 5px; 
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px; 
+    border: 1px dashed #00CCFF; 
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

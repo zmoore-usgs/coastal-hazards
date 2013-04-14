@@ -47,15 +47,12 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="<%= development %>" />
         </jsp:include>
-        <jsp:include page="js/jquery/jquery.jsp">
-            <jsp:param name="relPath" value="" />
-            <jsp:param name="debug-qualifier" value="<%= development%>" />
-        </jsp:include>
+		<script type="text/javascript" src="webjars/jquery/1.8.3/jquery<%= development ? ".min" : "" %>.js"></script>
     </head>
     
     <body>
         <%-- Loads during application startup, fades out when application is built --%>
-        <jsp:include page="applicationOverlay.jsp"></jsp:include>
+        <jsp:include page="components/application-overlay.jsp"></jsp:include>
 
         <div class="container-fluid">
             <div class="row-fluid">
@@ -66,7 +63,7 @@
                 </jsp:include>
             </div>
             <%-- Loads during application startup, fades out when application is built --%>
-            <jsp:include page="app-navbar.jsp"></jsp:include>
+            <jsp:include page="components/app-navbar.jsp"></jsp:include>
             
             <div class="row-fluid">
                 <!-- NAV -->
@@ -422,6 +419,9 @@
     <script type="text/javascript" src="js/jquery-ui/jquery-ui-1.10.0.custom.min.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading UI Framework...");</script>
+	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? ".min" : "" %>.css" />
+	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap<%= development ? ".min" : "" %>.css" />
+	<link type="text/css" rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
 	<script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? ".min" : "" %>.js"></script>
     <jsp:include page="css/fontawesome/fontawesome.jsp">
         <jsp:param name="debug-qualifier" value="<%= development%>" />
