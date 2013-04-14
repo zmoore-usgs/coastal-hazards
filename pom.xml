@@ -179,16 +179,23 @@
 				<type>war</type>
 			</dependency>
 			<dependency>
-                <groupId>gov.usgs.cida</groupId>
-                <artifactId>dynamicProperties</artifactId>
-                <version>0.0.1</version>
-            </dependency>
+				<groupId>gov.usgs.cida</groupId>
+				<artifactId>dynamicProperties</artifactId>
+				<version>0.0.1</version>
+			</dependency>
 			<dependency>
 				<groupId>gov.usgs.cida</groupId>
 				<artifactId>tomcat-filters</artifactId>
 				<version>1.0</version>
 			</dependency>
+			<dependency>
+				<groupId>org.webjars</groupId>
+				<artifactId>bootstrap</artifactId>
+				<version>2.3.1</version>
+			</dependency>
 		</dependencies>
+		
+		
 	</dependencyManagement>
 	
 	<build>

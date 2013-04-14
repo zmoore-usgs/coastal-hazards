@@ -422,10 +422,7 @@
     <script type="text/javascript" src="js/jquery-ui/jquery-ui-1.10.0.custom.min.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading UI Framework...");</script>
-    <jsp:include page="js/bootstrap/package.jsp">
-        <jsp:param name="relPath" value="" />
-        <jsp:param name="debug-qualifier" value="<%= development%>" />
-    </jsp:include>
+	<script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? ".min" : "" %>.js"></script>
     <jsp:include page="css/fontawesome/fontawesome.jsp">
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
