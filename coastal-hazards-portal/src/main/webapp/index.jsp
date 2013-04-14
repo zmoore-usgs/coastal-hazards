@@ -13,11 +13,8 @@
 		}
 	}
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
-	String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
 %>
-
 <html lang="en">
-
     <head>
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" />
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE" />
@@ -48,6 +45,7 @@
 		<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? ".min" : ""%>.css" />
 		<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap<%= development ? ".min" : ""%>.css" />
 		<script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? ".min" : "" %>.js"></script>
+		<script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min" %>.js"></script>
     </head>
 	<body>
 		<jsp:include page="components/application-overlay.jsp"></jsp:include>
@@ -57,7 +55,7 @@
 			<jsp:param name="site-title" value="USGS Coastal Hazards Portal" />
 		</jsp:include>
 		<jsp:include page="components/app-navbar.jsp"></jsp:include>
-
+		<jsp:include page="components/config.jsp"></jsp:include>
 			HELLO WORLD!
 
 		<jsp:include page="template/USGSFooter.jsp">

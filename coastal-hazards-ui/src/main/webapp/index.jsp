@@ -433,10 +433,7 @@
     </jsp:include>
 
     <script type="text/javascript">splashUpdate("Loading JS Utilities...");</script>
-    <jsp:include page="js/sugar/sugar.jsp">
-        <jsp:param name="relPath" value="" />
-        <jsp:param name="debug-qualifier" value="<%= development%>" />
-    </jsp:include>
+    <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min" %>.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading Upload Management...");</script>
     <jsp:include page="js/fineuploader/fineuploader.jsp">
