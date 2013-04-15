@@ -1,0 +1,47 @@
+/* ---------------------------------------------------------------------- UI */
+#application-spinner {
+    text-align: center;
+    display: none;
+}
+
+#app-navbar {
+	margin-bottom: 0px;
+}
+
+.block-element {
+	width: 100%;
+}
+
+#header #banner-area {
+    background-image: url("../images/banner/banner.png");
+}
+
+#map {
+	height: 100%;
+	width: 100%;
+}
+
+#map-wrapper-div {
+	height: 40em;
+}
+
+#site-title {
+    line-height: 20px;
+}
+
+/* Left Nav Bar Image Sizing */
+.nav-stacked li.active a img {
+    height: 3.5em;
+    width: 4.5em;
+}
+.nav-stacked li a img {
+    height: 2.5em;
+    width: 3.5em;
+}
+.nav-pills.nav-stacked > li > a {
+    text-align: center;
+}
+/* Because of a conflict between twitter bootstrap and openlayers */
+img { 
+    max-width: none !important; 
+}

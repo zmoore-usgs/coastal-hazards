@@ -27,7 +27,7 @@
         background-color : #48638D;
         text-shadow: none;
     }
-    
+
     #inner-navbar-container .nav li.dropdown.open .dropdown-menu {
         z-index: 1006;
     }
@@ -70,7 +70,7 @@
                     <span class="icon-bar"></span>
                 </a>
 
-                <span id="app-navbar-brand"><h4>USGS Coastal Change Hazards</h4></span>
+                <span id="app-navbar-brand"><h4>USGS Coastal Hazards Portal</h4></span>
 
                 <div class="nav-collapse">
                     <ul class="nav">
@@ -97,16 +97,16 @@
                             </ul>
                         </li>
                     </ul>
-                    
+
                     <form id="app-navbar-search-form" class="navbar-search pull-right" action="javascript:void(0);">
                         <i id="app-navbar-search-icon" class="icon-search"></i><input id="app-navbar-search-input" type="text" class="search-query span2" placeholder="Location Search">
                     </form>
-                    
+
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-    $('#site-title').remove();
+	$('#site-title').remove();
 </script>
