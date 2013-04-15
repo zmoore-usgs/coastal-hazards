@@ -96,5 +96,6 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
         </jsp:include>
         <script type="text/javascript" src="js/components/map/map.js"></script>
-        <script type="text/javascript" src="js/onready.js"></script>
+        <script type="text/javascript" src="js/components/common/ui.js"></script>
+        <script type="text/javascript" src="js/components/common/onready.js"></script>
     </body>
