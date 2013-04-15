@@ -16,6 +16,7 @@ $(document).ready(function() {
 		var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
 		$('#content-row').css('min-height', contentRowHeight);
 		$('#map-wrapper-div').css('min-height',contentRowHeight);
+		$('#map').css('height',$('#map-wrapper-div').height());
 	});
 	$(window).resize();
 
