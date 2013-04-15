@@ -422,9 +422,7 @@
 	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? ".min" : "" %>.css" />
 	<link type="text/css" rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
 	<script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? ".min" : "" %>.js"></script>
-    <jsp:include page="css/fontawesome/fontawesome.jsp">
-        <jsp:param name="debug-qualifier" value="<%= development%>" />
-    </jsp:include>
+    <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.0.2/css/font-awesome<%= development ? ".min" : "" %>.css" />
 
     <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
     <jsp:include page="js/openlayers/openlayers.jsp">

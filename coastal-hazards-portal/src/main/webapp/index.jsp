@@ -46,10 +46,11 @@
 			<jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<script type="text/javascript" src="webjars/jquery/1.8.3/jquery<%= development ? ".min" : ""%>.js"></script>
-	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap<%= development ? ".min" : "" %>.css" />
-	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? ".min" : "" %>.css" />
-	<script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? ".min" : "" %>.js"></script>
+		<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap<%= development ? ".min" : ""%>.css" />
+		<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? ".min" : ""%>.css" />
+		<script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? ".min" : ""%>.js"></script>
 		<script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+		<link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.0.2/css/font-awesome<%= development ? ".min" : "" %>.css" />
     </head>
 	<body>
 		<jsp:include page="components/application-overlay.jsp"></jsp:include>

@@ -12,12 +12,12 @@ $(document).ready(function() {
 	splashUpdate("Starting Application...");
 	splashUpdate = undefined;
 
-//	$(window).resize(function() {
-//		var contentRowHeight = $(document).height() - $('#header-row').height() - $('#footer-row').height();
-//		$('#content-row').css('min-height', contentRowHeight);
-//		$('#map-wrapper-div').css('min-height',contentRowHeight);
-//	});
-//	$(window).resize();
+	$(window).resize(function() {
+		var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
+		$('#content-row').css('min-height', contentRowHeight);
+		$('#map-wrapper-div').css('min-height',contentRowHeight);
+	});
+	$(window).resize();
 
 	$('#application-overlay').fadeOut(2000, function() {
 			$('#application-overlay').remove();

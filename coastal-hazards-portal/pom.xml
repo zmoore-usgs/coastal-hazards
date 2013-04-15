@@ -69,6 +69,10 @@
 			<artifactId>log4js</artifactId>
 			<type>war</type>
 		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>font-awesome</artifactId>
+		</dependency>
 	</dependencies>
 	
 	<build>
