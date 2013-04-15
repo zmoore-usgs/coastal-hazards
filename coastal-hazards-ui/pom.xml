@@ -82,22 +82,6 @@
 			<!-- JS Templates -->
 			<dependency>
 				<groupId>gov.usgs.cida.jslibs</groupId>
-				<artifactId>log4js</artifactId>
-				<version>1.4.3-2</version>
-				<type>war</type>
-			</dependency>
-			<dependency>
-				<groupId>org.webjars</groupId>
-				<artifactId>sugar</artifactId>
-			</dependency>
-			<dependency>
-				<groupId>gov.usgs.cida.jslibs</groupId>
-				<artifactId>openlayers</artifactId>
-				<version>2.12-2</version>
-				<type>war</type>
-			</dependency>
-			<dependency>
-				<groupId>gov.usgs.cida.jslibs</groupId>
 				<artifactId>dygraphs-core</artifactId>
 				<version>20121127-1</version>
 				<type>war</type>
@@ -252,6 +236,10 @@
 			<groupId>gov.usgs.cida.jslibs</groupId>
 			<artifactId>jquery-tablesorter</artifactId>
 			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>sugar</artifactId>
 		</dependency>
         
 		<!-- Commons -->

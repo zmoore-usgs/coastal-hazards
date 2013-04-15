@@ -59,6 +59,16 @@
 			<groupId>org.webjars</groupId>
 			<artifactId>sugar</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>gov.usgs.cida.jslibs</groupId>
+			<artifactId>openlayers</artifactId>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>gov.usgs.cida.jslibs</groupId>
+			<artifactId>log4js</artifactId>
+			<type>war</type>
+		</dependency>
 	</dependencies>
 	
 	<build>
