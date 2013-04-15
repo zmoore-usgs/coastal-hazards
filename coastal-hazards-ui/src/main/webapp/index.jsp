@@ -61,9 +61,8 @@
                     <jsp:param name="header-class" value="" />
                     <jsp:param name="site-title" value="USGS Coastal Change Hazards" />
                 </jsp:include>
-            </div>
-            <%-- Loads during application startup, fades out when application is built --%>
             <jsp:include page="components/app-navbar.jsp"></jsp:include>
+            </div>
             
             <div class="row-fluid">
                 <!-- NAV -->
@@ -419,8 +418,8 @@
     <script type="text/javascript" src="js/jquery-ui/jquery-ui-1.10.0.custom.min.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading UI Framework...");</script>
-	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? ".min" : "" %>.css" />
 	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap<%= development ? ".min" : "" %>.css" />
+	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? ".min" : "" %>.css" />
 	<link type="text/css" rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
 	<script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? ".min" : "" %>.js"></script>
     <jsp:include page="css/fontawesome/fontawesome.jsp">
