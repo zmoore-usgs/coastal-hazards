@@ -1,7 +1,7 @@
 var Map = function() {
     LOG.info('Map.js::constructor:Map class is initializing.');
     var me = (this === window) ? {} : this;
-    var initialExtent = [-15843196.966553,2251625.961233,-5501572.7891212,7593656.9932838];
+    var initialExtent = [-15381395.046388,4320929.1906812,-5969245.1327744,7060432.2840406 ];
     
     LOG.debug('Map.js::constructor:Loading Map object');
     me.map = new OpenLayers.Map('map', {
