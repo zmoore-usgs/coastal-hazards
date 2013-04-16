@@ -7,9 +7,6 @@ var UI = function() {
     me.work_stages_objects = [Shorelines, Baseline, Transects, Calculation, Results];
     me.base_name = undefined;//init to undefined. Update in baselines
     
-    LOG.debug('UI.js::constructor: Setting popup hover delay to ' + popupHoverDelay);
-    var popupHoverDelay = CONFIG.popupHoverDelay;
-    
     $('#manage-sessions-btn').on('click', CONFIG.tempSession.createSessionManagementModalWindow);
     
     $('.collapsibleHelp').accordion({
@@ -44,7 +41,7 @@ var UI = function() {
                 placement : 'top',
                 trigger : 'hover',
                 delay : {
-                    show : popupHoverDelay
+                    show : CONFIG.popupHoverDelay
                 }
             });
         }
@@ -57,7 +54,7 @@ var UI = function() {
                 placement : 'top',
                 trigger : 'hover',
                 delay : {
-                    show : popupHoverDelay
+                    show : CONFIG.popupHoverDelay
                 }
             });
         }
@@ -70,7 +67,7 @@ var UI = function() {
                 placement : 'bottom',
                 trigger : 'hover',
                 delay : {
-                    show : popupHoverDelay
+                    show : CONFIG.popupHoverDelay
                 }
             });
         }
@@ -93,7 +90,7 @@ var UI = function() {
             placement : 'bottom',
             trigger : 'hover',
             delay : {
-                show : popupHoverDelay
+                show : CONFIG.popupHoverDelay
             }
         });
     });
@@ -805,6 +802,137 @@ var UI = function() {
         },
         hideSpinner: function() {
             $("#application-spinner").fadeOut();
-        }
+        },
+        buildGeocodingPopup: function(args) {
+            var map = CONFIG.map.getMap();
+            var currentLocationIndex = args.currentLocationIndex || 0;
+            var locations = args.locations || $('#location-container').data('locations');
+            var currentLocation = locations[currentLocationIndex];
+            var xmax = currentLocation.extent.xmax;
+            var xmin = currentLocation.extent.xmin;
+            var ymax = currentLocation.extent.ymax;
+            var ymin = currentLocation.extent.ymin;
+            var x = currentLocation.feature.geometry.x;
+            var y = currentLocation.feature.geometry.y;
+            var locAttr = currentLocation.feature.attributes;
+            var select = $('<select />').attr('id', 'alt-location-list');
+
+            // Build Market
+            var markerLayer = CONFIG.map.getMarkerLayer();
+            var iconSize = new OpenLayers.Size(32, 32);
+            var icon = new OpenLayers.Icon('js/openlayers/img/BulbGrey.png', iconSize, new OpenLayers.Pixel(-(iconSize.w / 2), -iconSize.h));
+            var marker = new OpenLayers.Marker(new OpenLayers.LonLat(x, y), icon);
+
+            // Build HTML
+            var container = $('<div />').addClass('container-fluid').attr('id', 'location-container');
+            var table = $('<table />').addClass('table table-hover table-condensed');
+            table.append(
+                    $('<thead>').append(
+                    $('<tr />').attr('colspan', '2').append(
+                    $('<th />').attr('id', 'location-popup-title').html(locAttr.Match_addr))));
+            var tbody = $('<tbody />');
+            if (locAttr.Type) {
+                tbody.append('<tr><td>Address Type</td><td>' + locAttr.Addr_type + ' : ' + locAttr.Type + '</td></tr>');
+            }
+            if (locAttr.Country) {
+                tbody.append('<tr><td>Country</td><td>' + locAttr.Country + '</td></tr>');
+            }
+            if (locAttr.Loc_name) {
+                tbody.append('<tr><td>Source</td><td>' + locAttr.Loc_name + '</td></tr>');
+            }
+            table.append(tbody);
+            container.append($('<div />').addClass('row-fluid span12').append(table));
+
+            select.append($('<option />').attr('value', '-1').html(''));
+
+            for (var lInd = 0; lInd < locations.length; lInd++) {
+                if (lInd !== currentLocationIndex) {
+                    var loc = locations[lInd];
+                    var addr = loc.feature.attributes.Match_addr;
+                    var country = loc.feature.attributes.Country;
+                    var type = loc.feature.attributes.Type;
+                    var type2 = loc.feature.attributes.Addr_type;
+                    var typeDesc = ' (Type: ' + type + ', ' + type2 + ')';
+                    select.append($('<option />').attr('value', lInd).html(addr + ', ' + country + typeDesc));
+                }
+            }
+            
+            if (locations.length > 1) {
+                container.append($('<div />').addClass('row-fluid span12').html("Did you mean... ")).append($('<div />').addClass('fluid-row span12').append(select));
+            }
+            
+            markerLayer.addMarker(marker);
+
+            map.zoomToExtent([xmin, ymin, xmax, ymax], true);
+
+            var popup = new OpenLayers.Popup.FramedCloud("geocoding-popup",
+                    new OpenLayers.LonLat(x, y),
+                    new OpenLayers.Size(200, 200),
+                    $('<div />').append(container).html(),
+                    icon,
+                    true,
+                    function() {
+                        markerLayer.removeMarker(marker);
+                        map.removePopup(this);
+                    });
+
+            if (map.popups.length) {
+                map.popups[0].closeDiv.click();
+            }
+
+            map.addPopup(popup);
+
+            $('#alt-location-list').change(function(event) {
+                var index = parseInt(event.target.value);
+                if (index !==  -1) {
+                    CONFIG.ui.buildGeocodingPopup({
+                        currentLocationIndex : index,
+                        locations : locations
+                    });
+                }
+            });
+            // map.zoomToScale(300000, true);
+
+        },
+        bindSearchInput: function() {
+            $('#app-navbar-search-form').submit(function(evt) {
+                var query = $('#app-navbar-search-input').val();
+                if (query) {
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find',
+                        data: {
+                            text: query,
+                            maxLocations: '20',
+                            outFields: '*',
+                            f: 'pjson',
+                            outSR: '3785'
+                        },
+                        async: false,
+                        contentType: 'application/json',
+                        dataType: 'jsonp',
+                        success: function(json) {
+                            if (json.locations[0]) {
+                                
+                                CONFIG.ui.buildGeocodingPopup({
+                                    locations: json.locations
+                                });
+
+                            } else {
+                                CONFIG.ui.showAlert({
+                                    close: false,
+                                    message: query + ' not found',
+                                    displayTime: 1000,
+                                    style: {
+                                        classes: ['alert-info']
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+
+            });
+        }        
     });
 };

@@ -19,6 +19,8 @@ var Map = function() {
             }
     ));
     
+    me.map.addLayer(new OpenLayers.Layer.Markers('marker-layer'));
+    
     LOG.debug('Map.js::constructor:Adding ontrols to map');
     me.map.addControl(new OpenLayers.Control.MousePosition());
     me.map.addControl(new OpenLayers.Control.ScaleLine({
@@ -27,6 +29,11 @@ var Map = function() {
     
     LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
     me.map.zoomToExtent(initialExtent, true);
+    
+    LOG.debug('Map.js::constructor: Binding location search input box');
+    CONFIG.ui.bindSearchInput({
+        map : me.map
+    });
     
     LOG.debug('Map.js::constructor: Map class initialized.');
     return $.extend(me, {
@@ -84,7 +91,7 @@ var Map = function() {
                     name : copyName,
                     renderer : args.renderer,
                     styleMap : args.styleMap
-                })
+                });
             }
             
             return clonedLayer;
@@ -93,6 +100,9 @@ var Map = function() {
             var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
             renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
             return renderer;
+        },
+        getMarkerLayer: function() {
+            return me.map.getLayersByName('marker-layer')[0];
         }
     });
-}
+};

@@ -79,7 +79,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
-import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.AbstractCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -152,10 +152,13 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
                 
                 CoordinateReferenceSystem tCRS = CRSUtils.getCRSFromFeatureCollection(transects);
                 CoordinateReferenceSystem iCRS = CRSUtils.getCRSFromFeatureCollection(intersects);
-                // This call will be too strict if CRS weren't generated from same
-                // authority.  I tried CRS.equalsIgnoreMetadata(o1, o2) but it
-                // did seem to work correctly (GT 8.7)
-                if (!tCRS.equals(iCRS)) {
+                // NOTE: I tried CRS.equalsIgnoreMetadata(o1, o2) but it did seem to work correctly (GT 8.7)
+                // NOTE: I tried AbstractCRS)tCRS).equals((AbstractCRS)iCRS, false) but it did not seem to work correctly (GT 8.7)
+                // This is too strict as it won't resolve identical CRS defined by different authorities.  But what to do
+                // concerning issues noted above?  An example of a potential issue is a transect derived from a WFS via EPSG code
+                // and an intersect file provided vias Base64 encoded shapefile.  The EPSG code and PRJ could reference the 
+                // same UTM zone, but the test below would fail.
+                if (!tCRS.getName().equals(iCRS.getName())) {
                     throw new IllegalStateException("Transects and Intersects do not share common Coordinate Reference System");
                 }
                 
