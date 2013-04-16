@@ -303,10 +303,10 @@ var Results = {
             var xValue = event.feature.attributes.base_dist;
             
             LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the plot');
-            var xPlotIdx = CONFIG.graph.rawData_.findIndex(function(o){
+            var xPlotIdx = CONFIG.graph.plot.rawData_.findIndex(function(o){
                 return o[0] == xValue;
             });
-            CONFIG.graph.setSelection(xPlotIdx)  ; 
+            CONFIG.graph.plot.setSelection(xPlotIdx)  ; 
             
             LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the table');
             $('#results-table tbody>tr').removeClass('warning');
@@ -370,6 +370,8 @@ var Results = {
                         features : features,
                         layer : result
                     })
+					
+					Results.bindPlotControls();
                     
                     $('#results-table tbody>tr').hover( 
                         function(event) {
@@ -394,41 +396,106 @@ var Results = {
             }
         })
     },
-    createPlot : function(args) {
-        var features = args.features;
-        var layer = args.layer;
-        var plotDiv = $('#results-' + layer.title + '-plot').get()[0]
-        var labels = ['Distance (m)', 'Coastal Change (m/year)'];
-        var data = features.map(function(n){
+	bindPlotControls : function() {
+		var container = $('<div />').addClass('container-fluid').attr('id', 'plot-controls-container');
+		var row = $('<div />').addClass('row-fluid').attr('id', 'plot-controls-row');
+		var commonButtonControls = 'btn plot-ctrl-btn';
+		row.append(
+			$('<div />').addClass('btn-group').attr('data-toggle', 'buttons-radio')
+			.append($('<button />').addClass(commonButtonControls).attr('id', 'lrr-btn').html('LRR +/- LCI'))
+			.append($('<button />').addClass(commonButtonControls).attr('id', 'wlr-btn').html('WLR +/- LCI'))
+			.append($('<button />').addClass(commonButtonControls).attr('id', 'sce-btn').html('SCE'))
+			.append($('<button />').addClass(commonButtonControls).attr('id', 'nsm-btn').html('NSM'))
+			.append($('<button />').addClass(commonButtonControls).attr('id', 'epr-btn').html('EPR')));
+			container.append(row);
+		
+		$('#plot-menu-icon').popover({
+			animation : true,
+			html : true,
+			title : 'Select statistic to display',
+			placement : 'top',
+			trigger : 'click',
+		    content : container.html()
+		}).bind({
+			'shown' : function() {
+				// Hiding the popover detaches it from the DOM. This resets the HTML inside
+				// the popover. So the next time the popover gets opened, it doesn't have 
+				// the button the user clicked on enabled. This is annoying but I think this 
+				// is a bootstrap issue so I deal with it here
+				var enabled = CONFIG.graph.enabled;
+				var enabledId = '#' + enabled.toLowerCase() + '-btn';
+				var enabledButton = $(enabledId);
+				$(enabledButton).addClass('active');
+				
+				$('.plot-ctrl-btn').click(function(event) {
+					var attribute = $(event.target).html().substring(0,3);
+					CONFIG.graph.enabled = attribute;
+					Results.updatePlot();
+					$('#plot-menu-icon').popover('hide');
+				});
+			}
+		});
+		
+	},
+	preparePlotData : function() {
+		var features = CONFIG.graph.features;
+		var enabled = CONFIG.graph.enabled;
+		var uncertainty = CONFIG.graph.displayMap[enabled].uncertainty;
+		
+		var data = features.map(function(n){
             var baseDist = parseFloat(n.data['base_dist']);
-            var lrr = parseFloat(n.data['LRR']);
-            var lci = parseFloat(Math.abs(n.data['LCI']));
-            
+            var series = parseFloat(n.data[enabled]);
+            var values = [series];
+			
+			if (uncertainty) {
+				values.push(parseFloat(Math.abs(n.data[uncertainty])));
+			}
+			
             return [ 
             // X axis values
             baseDist, 
             // [Value, Error bars]
-            [lrr,lci] 
-            ]
+            values
+            ];
         }).sortBy(function(n) {
-            return n[0]
+            return n[0];
         });
         
         // Find 
         var fidBreaks = [];
         features.each(function(feature, index, features) {
-            if (index != 0) {
+            if (index !== 0) {
                 var previousFid = features[index - 1].attributes.BaselineID;
-                if (previousFid != feature.attributes.BaselineID) {
+                if (previousFid !== feature.attributes.BaselineID) {
                     fidBreaks.push(index);
                 }
             }
-        })
+        });
         fidBreaks.each(function(i) {
-            data.insert([[null,[null, null/*, null*/]]], i)
-        })
-        
-        CONFIG.graph = new Dygraph(
+            data.insert([[null,[null, null/*, null*/]]], i);
+        });
+		
+		return data;
+	},
+	updatePlot : function() {
+		var enabled = CONFIG.graph.enabled;
+		var plot = CONFIG.graph.plot;
+		var data = Results.preparePlotData()
+		CONFIG.graph.plot.updateOptions({
+			file : data
+		})
+	},
+    createPlot : function(args) {
+        var features = args.features;
+        var layer = args.layer;
+        var plotDiv = $('#results-' + layer.title + '-plot').get()[0]
+        var labels = ['Distance (m)', 'Coastal Change (m/year)'];
+		
+		CONFIG.graph.features = features;
+		
+        var data = Results.preparePlotData()
+		
+        CONFIG.graph.plot = new Dygraph(
             plotDiv,
             data,
             {
@@ -450,8 +517,10 @@ var Results = {
                     })
                     selectionControl.select(hlFeature);
                 }
-            }
-            );
+            });
+				
+		
+		
         return plotDiv;
     },
     createTable : function(args) {
@@ -510,9 +579,10 @@ var Results = {
 
         var navTabTable = $('<li />');
         var navTabPlot = $('<li />').addClass('active');
+        var navTabPlotLink = $('<a />').attr('href', '#results-' + layer.title + '-plot').attr('data-toggle', 'tab').html('LRR + LCI Rates Plot &nbsp;&nbsp;&nbsp;').append($('<i />').attr('id','plot-menu-icon').addClass('icon-cogs'));;
         var navTabTableLink = $('<a />').attr('href', '#results-' + layer.title + '-table').attr('data-toggle', 'tab').html(layer.title + ' Table');
-        var navTabPlotLink = $('<a />').attr('href', '#results-' + layer.title + '-plot').attr('data-toggle', 'tab').html(layer.title + ' Plot');
-        navTabTable.append(navTabTableLink);
+        
+		navTabTable.append(navTabTableLink);
         navTabPlot.append(navTabPlotLink);
         navTabs.append(navTabPlot);
         navTabs.append(navTabTable);

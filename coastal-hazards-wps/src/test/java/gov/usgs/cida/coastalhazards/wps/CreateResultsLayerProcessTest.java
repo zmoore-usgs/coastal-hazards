@@ -15,6 +15,7 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -25,6 +26,15 @@ import org.opengis.feature.type.AttributeDescriptor;
  * @author jiwalker
  */
 public class CreateResultsLayerProcessTest {
+    
+    private static File outTest = null;
+    
+    @BeforeClass
+    public static void setupAll() throws IOException {
+        // leaks files, need to delete all the files associated with .shp
+        outTest = File.createTempFile("test", ".shp");
+        outTest.deleteOnExit();
+    }
     
     /**
      * Test of execute method, of class CreateResultsLayerProcess.

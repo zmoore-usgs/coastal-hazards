@@ -166,6 +166,17 @@ select option.session-layer{
     height: 16.25em;
 }
 
+#plot-menu-icon {
+	color: #999999;
+	border-radius: 4px;
+	padding: 2px;
+	border : 1px solid #E5E5E5;
+}
+#plot-menu-icon:hover {
+	background-color: #E5E5E5;
+	cursor: pointer;
+}
+
 /* ---------------------------------------------------------------------- Fine Uploader */
 .qq-upload-list {
     text-align: left;

@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.wps;
 
+import com.google.common.collect.Maps;
 import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -36,6 +37,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
@@ -63,6 +65,8 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
 
     /** May actually want to return reference to new layer
      *  Check whether we need an offset at the start of the baseline
+     * 
+     *  With new maxLength algorithm, we may want to allow a maxLength parameter to speed up calculation
      */
     @DescribeResult(name = "transects", description = "Layer containing Transects normal to baseline")
     public String execute(
@@ -82,7 +86,6 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
     
     protected class Process {
         private static final double MIN_TRANSECT_LENGTH = 50.0d; // meters
-        private static final double MAX_TRANSECT_LENGTH = EARTH_RADIUS;
         private static final double TRANSECT_PADDING = 5.0d; // meters
         
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> shorelineFeatureCollection;
@@ -102,7 +105,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         private SimpleFeatureType intersectionFeatureType;
         private PreparedGeometry preparedShorelines;
         
-        private double guessTransectLength;
+        private double maxTransectLength;
         private int transectId;
         
         private SimpleFeatureCollection resultTransectsCollection;
@@ -133,7 +136,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             this.transectLayer = transectLayer;
             this.intersectionLayer = intersectionLayer;
             
-            this.guessTransectLength = MIN_TRANSECT_LENGTH; // start out small
+            this.maxTransectLength = 0; // start out small
             this.transectId = 0; // start ids at 0
             
             // Leave these null to start, they get populated after error checks occur (somewhat expensive)
@@ -164,10 +167,11 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             }
             
             SimpleFeatureCollection transformedShorelines = CRSUtils.transformFeatureCollection(shorelineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
-            
-            // TODO Will need to be able to pull seaward vs. shoreward from attrs (maybe Map<Integer, LineString>)
-            // for now assume seaward
             SimpleFeatureCollection transformedBaselines = CRSUtils.transformFeatureCollection(baselineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
+            
+            // this could be from a parameter?
+            this.maxTransectLength = calculateMaxDistance(transformedShorelines, transformedBaselines);
+            
             MultiLineString shorelineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedShorelines);
             MultiLineString baselineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedBaselines);
             this.strTree = new ShorelineSTRTreeBuilder(transformedShorelines).build();
@@ -205,7 +209,6 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                 MultiLineString lines = CRSUtils.getLinesFromFeature(feature);
                 for (int i=0; i<lines.getNumGeometries(); i++) { // probably only one Linestring
                     LineString line = (LineString)lines.getGeometryN(i);
-                    updateTransectLengthGuess(shorelines, line);
                     int direction = shorelineDirection(line, shorelines);
                     
                     double baseDist = accumulator.accumulate(line);
@@ -230,23 +233,24 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             } 
             List<SimpleFeature> transectFeatures = new LinkedList<SimpleFeature>();
             List<SimpleFeature> intersectionFeatures = new LinkedList<SimpleFeature>();
-            
-            // add an extra 1k for good measure
-            //guessTransectLength += 1000.0d;
+            AttributeGetter attGet = new AttributeGetter(intersectionFeatureType);
+            // grow by about 200?
+            double guessTransectLength = MIN_TRANSECT_LENGTH * 4;
             
             for (Transect transect : vectsOnBaseline) {
-                double growingLength = guessTransectLength;
-                LineString testLine = null;
-                do {
-                    growingLength *= 2;
-                    transect.setLength(growingLength);
-                    testLine = transect.getLineString();
-                }
-                while (!preparedShorelines.intersects(testLine) && growingLength < MAX_TRANSECT_LENGTH);
+                Map<DateTime, Intersection> allIntersections = Maps.newHashMap();
+                double startDistance = 0;
                 
-                if (growingLength < MAX_TRANSECT_LENGTH) {  // ignore non-crossing lines
-                    AttributeGetter attGet = new AttributeGetter(intersectionFeatureType);
-                    Map<DateTime, Intersection> allIntersections = Intersection.calculateIntersections(transect, strTree, useFarthest, attGet);
+                do {
+                    Transect subTransect = transect.subTransect(startDistance, guessTransectLength);
+                    startDistance += guessTransectLength;
+                    Intersection.updateIntersectionsWithSubTransect
+                            (allIntersections, transect.getOriginPoint(), subTransect, strTree, useFarthest, attGet);
+                }
+                while (startDistance < maxTransectLength);
+                
+                if (!allIntersections.isEmpty()) {  // ignore non-crossing lines
+                    
                     double transectLength = Intersection.absoluteFarthest(MIN_TRANSECT_LENGTH, allIntersections.values());
                     transect.setLength(transectLength + TRANSECT_PADDING);
                     SimpleFeature feature = transect.createFeature(transectFeatureType);
@@ -331,7 +335,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         }
         
         private int countIntersections(Transect transect) {
-            transect.setLength(guessTransectLength);
+            transect.setLength(maxTransectLength);
             LineString line = transect.getLineString();
             int count = 0;
             List<ShorelineFeature> possibleIntersections = strTree.query(line.getEnvelopeInternal());
@@ -341,13 +345,6 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                 }
             }
             return count;
-        }
-        
-        protected void updateTransectLengthGuess(MultiLineString shorelines, LineString baseline) {
-            while (!shorelines.isWithinDistance(baseline.getStartPoint(), guessTransectLength) ||
-                    !shorelines.isWithinDistance(baseline.getEndPoint(), guessTransectLength)) {
-                guessTransectLength *= 2;
-            }
         }
     }
     
@@ -491,5 +488,37 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             // overflow is distance from p0 (in p1 to p0 direction)
             return first.pointAlong(-(overflow / first.getLength()));
         }
+    }
+    
+    private static double calculateMaxDistance(SimpleFeatureCollection transformedShorelines, SimpleFeatureCollection transformedBaselines) {
+        ReferencedEnvelope shorelineBounds = transformedShorelines.getBounds();
+        ReferencedEnvelope baselineBounds = transformedBaselines.getBounds();
+        
+        double[] slUpperCorner1 = shorelineBounds.getUpperCorner().getCoordinate();
+        double[] slLowerCorner1 = shorelineBounds.getLowerCorner().getCoordinate();
+        double[] slUpperCorner2 = new double[] { slLowerCorner1[0], slUpperCorner1[1] };
+        double[] slLowerCorner2 = new double[] { slUpperCorner1[0], slLowerCorner1[1] };
+        
+        double[] blUpperCorner1 = baselineBounds.getUpperCorner().getCoordinate();
+        double[] blLowerCorner1 = baselineBounds.getLowerCorner().getCoordinate();
+        double[] blUpperCorner2 = new double[] { blLowerCorner1[0], blUpperCorner1[1] };
+        double[] blLowerCorner2 = new double[] { blUpperCorner1[0], blLowerCorner1[1] };
+        
+        double[][] pointsCompare = { slUpperCorner1, slUpperCorner2, slLowerCorner1,
+            slLowerCorner2, blUpperCorner1, blUpperCorner2, blLowerCorner1, blLowerCorner2 };
+        
+        double maxDist = 0.0d;
+        for (int i=0; i<4; i++) {
+            Coordinate a = new Coordinate(pointsCompare[i][0], pointsCompare[i][1]);
+            for (int j=0; j<4; j++) {
+                Coordinate b = new Coordinate(pointsCompare[4+j][0], pointsCompare[4+j][1]);
+                double dist = a.distance(b);
+                if (dist > maxDist) {
+                    maxDist = dist;
+                }
+            }
+        }
+        
+        return maxDist;
     }
 }
