@@ -4,17 +4,17 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 
-<%!    private static final Logger log = LoggerFactory.getLogger("index.jsp");
+<%!    
     protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
     {
         try {
             props = props.addJNDIContexts(new String[0]);
         } catch (Exception e) {
-            log.error("Could not find JNDI - Application will probably not function correctly");
+            LoggerFactory.getLogger("index.jsp").error("Could not find JNDI - Application will probably not function correctly");
         }
     }
-    boolean development = Boolean.parseBoolean(props.getProperty("coastal-hazards.development"));
+    boolean development = Boolean.parseBoolean(props.getProperty("development"));
     String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
     String n52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
 %>
@@ -27,6 +27,7 @@
         <META HTTP-EQUIV="EXPIRES" CONTENT="0" />
         <META HTTP-EQUIV="CONTENT-LANGUAGE" CONTENT="en-US" />
         <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width">
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -46,15 +47,12 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="<%= development %>" />
         </jsp:include>
-        <jsp:include page="js/jquery/jquery.jsp">
-            <jsp:param name="relPath" value="" />
-            <jsp:param name="debug-qualifier" value="<%= development%>" />
-        </jsp:include>
+		<script type="text/javascript" src="webjars/jquery/1.8.3/jquery<%= development ? ".min" : "" %>.js"></script>
     </head>
     
     <body>
         <%-- Loads during application startup, fades out when application is built --%>
-        <jsp:include page="applicationOverlay.jsp"></jsp:include>
+        <jsp:include page="components/application-overlay.jsp"></jsp:include>
 
         <div class="container-fluid">
             <div class="row-fluid">
@@ -63,8 +61,9 @@
                     <jsp:param name="header-class" value="" />
                     <jsp:param name="site-title" value="USGS Coastal Change Hazards" />
                 </jsp:include>
+            <jsp:include page="components/app-navbar.jsp"></jsp:include>
             </div>
-
+            
             <div class="row-fluid">
                 <!-- NAV -->
                 <div class="span1" id='nav-list'>
@@ -374,9 +373,6 @@
 
             </div>
             <div class="row-fluid">
-                <div id="manage-sessions-container" class="span1">
-                    <button class="btn" id="manage-sessions-btn">Session Management</button>
-                </div>
                 <div id="application-alert-container" class="span11"></div>
             </div>
 
@@ -422,10 +418,11 @@
     <script type="text/javascript" src="js/jquery-ui/jquery-ui-1.10.0.custom.min.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading UI Framework...");</script>
-    <jsp:include page="js/bootstrap/package.jsp">
-        <jsp:param name="relPath" value="" />
-        <jsp:param name="debug-qualifier" value="<%= development%>" />
-    </jsp:include>
+	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap<%= development ? ".min" : "" %>.css" />
+	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? ".min" : "" %>.css" />
+	<link type="text/css" rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
+	<script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? ".min" : "" %>.js"></script>
+    <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.0.2/css/font-awesome<%= development ? ".min" : "" %>.css" />
 
     <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
     <jsp:include page="js/openlayers/openlayers.jsp">
@@ -433,10 +430,7 @@
     </jsp:include>
 
     <script type="text/javascript">splashUpdate("Loading JS Utilities...");</script>
-    <jsp:include page="js/sugar/sugar.jsp">
-        <jsp:param name="relPath" value="" />
-        <jsp:param name="debug-qualifier" value="<%= development%>" />
-    </jsp:include>
+    <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min" %>.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading Upload Management...");</script>
     <jsp:include page="js/fineuploader/fineuploader.jsp">

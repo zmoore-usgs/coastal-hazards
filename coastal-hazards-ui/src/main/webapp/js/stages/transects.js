@@ -27,7 +27,7 @@ var Transects = {
             delay: {
                 show: CONFIG.popupHoverDelay
             }
-        })
+        });
 
         Transects.initializeUploader();
 
