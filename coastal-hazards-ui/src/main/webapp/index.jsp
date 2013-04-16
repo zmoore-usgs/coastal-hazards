@@ -464,6 +464,37 @@
             results : []
         };
         CONFIG.ajaxTimeout = 300000;
+		CONFIG.graph = Object.extended();
+		CONFIG.graph.enabled = 'LRR';
+		CONFIG.graph.displayMap = {
+			'LRR': {
+				longName: 'Linear regression rate',
+				units: 'm yr^-1',
+				uncertainty : 'LCI',
+				invert : true
+			},
+			'WLR': {
+				longName: 'Weighted linear regression rate',
+				units: 'm yr^-1',
+				uncertainty : 'WCI',
+				invert : true
+			},
+			'SCE': {
+				longName: 'Shoreline change envelope',
+				units: 'm',
+				invert : false
+			},
+			'NSM': {
+				longName: 'Net shoreline movement',
+				units: 'm',
+				invert : false
+			},
+			'EPR': {
+				longName: 'End point rate',
+				units: 'm yr^-1',
+				invert : false
+			}
+		};
             
         JSON.stringify = JSON.stringify || function (obj) {
             var t = typeof (obj);

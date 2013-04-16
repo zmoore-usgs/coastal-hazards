@@ -303,10 +303,10 @@ var Results = {
             var xValue = event.feature.attributes.base_dist;
             
             LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the plot');
-            var xPlotIdx = CONFIG.graph.rawData_.findIndex(function(o){
+            var xPlotIdx = CONFIG.graph.plot.rawData_.findIndex(function(o){
                 return o[0] == xValue;
             });
-            CONFIG.graph.setSelection(xPlotIdx)  ; 
+            CONFIG.graph.plot.setSelection(xPlotIdx)  ; 
             
             LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the table');
             $('#results-table tbody>tr').removeClass('warning');
@@ -418,37 +418,47 @@ var Results = {
 		    content : container.html()
 		}).bind({
 			'shown' : function() {
+				// Hiding the popover detaches it from the DOM. This resets the HTML inside
+				// the popover. So the next time the popover gets opened, it doesn't have 
+				// the button the user clicked on enabled. This is annoying but I think this 
+				// is a bootstrap issue so I deal with it here
 				var enabled = CONFIG.graph.enabled;
 				var enabledId = '#' + enabled.toLowerCase() + '-btn';
 				var enabledButton = $(enabledId);
 				$(enabledButton).addClass('active');
+				
 				$('.plot-ctrl-btn').click(function(event) {
 					var attribute = $(event.target).html().substring(0,3);
 					CONFIG.graph.enabled = attribute;
+					Results.updatePlot();
 					$('#plot-menu-icon').popover('hide');
 				});
 			}
 		});
 		
 	},
-    createPlot : function(args) {
-        var features = args.features;
-        var layer = args.layer;
-        var plotDiv = $('#results-' + layer.title + '-plot').get()[0]
-        var labels = ['Distance (m)', 'Coastal Change (m/year)'];
-        var data = features.map(function(n){
+	preparePlotData : function() {
+		var features = CONFIG.graph.features;
+		var enabled = CONFIG.graph.enabled;
+		var uncertainty = CONFIG.graph.displayMap[enabled].uncertainty;
+		
+		var data = features.map(function(n){
             var baseDist = parseFloat(n.data['base_dist']);
-            var lrr = parseFloat(n.data['LRR']);
-            var lci = parseFloat(Math.abs(n.data['LCI']));
-            
+            var series = parseFloat(n.data[enabled]);
+            var values = [series];
+			
+			if (uncertainty) {
+				values.push(parseFloat(Math.abs(n.data[uncertainty])));
+			}
+			
             return [ 
             // X axis values
             baseDist, 
             // [Value, Error bars]
-            [lrr,lci] 
-            ]
+            values
+            ];
         }).sortBy(function(n) {
-            return n[0]
+            return n[0];
         });
         
         // Find 
@@ -456,16 +466,36 @@ var Results = {
         features.each(function(feature, index, features) {
             if (index !== 0) {
                 var previousFid = features[index - 1].attributes.BaselineID;
-                if (previousFid != feature.attributes.BaselineID) {
+                if (previousFid !== feature.attributes.BaselineID) {
                     fidBreaks.push(index);
                 }
             }
-        })
+        });
         fidBreaks.each(function(i) {
-            data.insert([[null,[null, null/*, null*/]]], i)
-        })
-        
-        CONFIG.graph = new Dygraph(
+            data.insert([[null,[null, null/*, null*/]]], i);
+        });
+		
+		return data;
+	},
+	updatePlot : function() {
+		var enabled = CONFIG.graph.enabled;
+		var plot = CONFIG.graph.plot;
+		var data = Results.preparePlotData()
+		CONFIG.graph.plot.updateOptions({
+			file : data
+		})
+	},
+    createPlot : function(args) {
+        var features = args.features;
+        var layer = args.layer;
+        var plotDiv = $('#results-' + layer.title + '-plot').get()[0]
+        var labels = ['Distance (m)', 'Coastal Change (m/year)'];
+		
+		CONFIG.graph.features = features;
+		
+        var data = Results.preparePlotData()
+		
+        CONFIG.graph.plot = new Dygraph(
             plotDiv,
             data,
             {
@@ -487,46 +517,10 @@ var Results = {
                     })
                     selectionControl.select(hlFeature);
                 }
-            }
-            );
+            });
 				
-		CONFIG.graph.features = features;
-		CONFIG.graph.enabled = 'LRR';
-		CONFIG.graph.displayMap = {
-			'LRR': {
-				longName: 'Linear regression rate',
-				units: 'm yr^-1',
-				invert : true
-			},
-			'LCI': {
-				longName: 'Linear regression rate CI',
-				units: 'm yr^-1'
-			},
-			'WLR': {
-				longName: 'Weighted linear regression rate',
-				units: 'm yr^-1',
-				invert : true
-			},
-			'WCI': {
-				longName: 'Weighted linear regression rate CI',
-				units: 'm yr^-1'
-			},
-			'SCE': {
-				longName: 'Shoreline change envelope',
-				units: 'm',
-				invert : false
-			},
-			'NSM': {
-				longName: 'Net shoreline movement',
-				units: 'm',
-				invert : false
-			},
-			'EPR': {
-				longName: 'End point rate',
-				units: 'm yr^-1',
-				invert : false
-			}
-		};
+		
+		
         return plotDiv;
     },
     createTable : function(args) {
