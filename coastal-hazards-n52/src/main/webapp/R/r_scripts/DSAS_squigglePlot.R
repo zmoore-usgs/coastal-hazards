@@ -4,7 +4,7 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-localRun <- TRUE
+localRun <- FALSE
 # comment this out for WPS!!!
 if (localRun){
   shortName <- "NSM"
