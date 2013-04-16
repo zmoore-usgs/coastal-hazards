@@ -17,6 +17,15 @@ if (ci>=1 || ci<=0.5){
   stop("confidence interval argument must be between 0.5 and 1.0 (non-inclusive)")
 }
 
+statLongNames  <-  data.frame("LRR"="Linear regression rate",
+                         "LCI"="Linear regression rate CI",
+                         "WLR"="Weighted linear regression rate",
+                         "WCI"="Weighted linear regression rate CI",
+                         "SCE"="Shoreline change envelope",
+                         "NSM"="Net shoreline movement",
+                         "EPR"="End point rate")
+statUnits <-  data.frame("LRR"="m yr^-1","LCI"="m yr^-1","WLR"="m yr^-1",
+                         "WCI"="m yr^-1","SCE"="m","NSM"="m yr^-1","EPR"="m yr^-1")
 fileN    <- input # will have input as a string (long string read in)
 conLevel <- ci
 zRepV    <- 0.01 #replace value for when the uncertainty is zero
@@ -55,7 +64,7 @@ calcLRR <- function(dates,dist){
     mdl  <- lm(formula=dist~rate)
     coef <- coefficients(mdl)
     CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
-    rate <- coef["rate"]  # is m/day
+    rate <- coef["rate"]
     
     LRR_rates <- rate*rateConv 
     LCI <- (CI[2]-CI[1])/2 # LCI
@@ -124,8 +133,7 @@ if(endI[length(endI)] != numBlck){
   endI[length(endI) + 1] = numBlck
 }
 
-## Start some tossed together parallelization
-
+## initialize parallelization
 library(doSNOW)
 
 c1 = makeCluster(c("localhost","localhost","localhost","localhost"),type="SOCK")
@@ -145,7 +153,6 @@ b = 1
 for (p in 1:numPar){
   DSASstatsPar = DSASstatsAll[[p]]
   for (dsI in 1:length(DSASstatsPar)){
-    #DSASstats <- getDSAS(textBlck[b])
     DSASstats = DSASstatsPar[[dsI]]
     LRR[b] <- DSASstats[1]
     LCI[b] <- DSASstats[2]
@@ -161,6 +168,12 @@ for (p in 1:numPar){
 stopCluster(c1)
 
 statsout <- data.frame("transect_ID"=blckNm,LRR,LCI,WLR,WCI,SCE,NSM,EPR)
+
+for (i in 2:ncol(statsout)){
+  statShortName <- names(statsout)[i]
+  names(statsout)[i] = paste(statShortName," [",statLongNames[statShortName][[1]]," (",
+    statUnits[statShortName][[1]],")]",sep="")
+}
 
 if (localRun){
   Rprof(NULL)
