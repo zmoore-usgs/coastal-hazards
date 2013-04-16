@@ -255,7 +255,7 @@ var Results = {
                 layers : layerName,
                 transparent : true,
                 styles : 'ResultsRaster',
-                env : 'attribute:' + CONFIG.graph.enabled + ";invert:" + CONFIG.graph[CONFIG.graph.enabled].invert
+                env : 'attribute:' + CONFIG.graph.enabled + ";invert:" + CONFIG.graph.displayMap[CONFIG.graph.enabled].invert
             },
             {
                 prefix : layerPrefix,
