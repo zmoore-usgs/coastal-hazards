@@ -370,6 +370,8 @@ var Results = {
                         features : features,
                         layer : result
                     })
+					
+					Results.bindPlotControls();
                     
                     $('#results-table tbody>tr').hover( 
                         function(event) {
@@ -394,6 +396,41 @@ var Results = {
             }
         })
     },
+	bindPlotControls : function() {
+		var container = $('<div />').addClass('container-fluid').attr('id', 'plot-controls-container');
+		var row = $('<div />').addClass('row-fluid').attr('id', 'plot-controls-row');
+		var commonButtonControls = 'btn plot-ctrl-btn';
+		row.append(
+			$('<div />').addClass('btn-group').attr('data-toggle', 'buttons-radio')
+			.append($('<button />').addClass(commonButtonControls).attr('id', 'lrr-btn').html('LRR +/- LCI'))
+			.append($('<button />').addClass(commonButtonControls).attr('id', 'wlr-btn').html('WLR +/- LCI'))
+			.append($('<button />').addClass(commonButtonControls).attr('id', 'sce-btn').html('SCE'))
+			.append($('<button />').addClass(commonButtonControls).attr('id', 'nsm-btn').html('NSM'))
+			.append($('<button />').addClass(commonButtonControls).attr('id', 'epr-btn').html('EPR')));
+			container.append(row);
+		
+		$('#plot-menu-icon').popover({
+			animation : true,
+			html : true,
+			title : 'Select statistic to display',
+			placement : 'top',
+			trigger : 'click',
+		    content : container.html()
+		}).bind({
+			'shown' : function() {
+				var enabled = CONFIG.graph.enabled;
+				var enabledId = '#' + enabled.toLowerCase() + '-btn';
+				var enabledButton = $(enabledId);
+				$(enabledButton).addClass('active');
+				$('.plot-ctrl-btn').click(function(event) {
+					var attribute = $(event.target).html().substring(0,3);
+					CONFIG.graph.enabled = attribute;
+					$('#plot-menu-icon').popover('hide');
+				});
+			}
+		});
+		
+	},
     createPlot : function(args) {
         var features = args.features;
         var layer = args.layer;
@@ -417,7 +454,7 @@ var Results = {
         // Find 
         var fidBreaks = [];
         features.each(function(feature, index, features) {
-            if (index != 0) {
+            if (index !== 0) {
                 var previousFid = features[index - 1].attributes.BaselineID;
                 if (previousFid != feature.attributes.BaselineID) {
                     fidBreaks.push(index);
@@ -452,6 +489,44 @@ var Results = {
                 }
             }
             );
+				
+		CONFIG.graph.features = features;
+		CONFIG.graph.enabled = 'LRR';
+		CONFIG.graph.displayMap = {
+			'LRR': {
+				longName: 'Linear regression rate',
+				units: 'm yr^-1',
+				invert : true
+			},
+			'LCI': {
+				longName: 'Linear regression rate CI',
+				units: 'm yr^-1'
+			},
+			'WLR': {
+				longName: 'Weighted linear regression rate',
+				units: 'm yr^-1',
+				invert : true
+			},
+			'WCI': {
+				longName: 'Weighted linear regression rate CI',
+				units: 'm yr^-1'
+			},
+			'SCE': {
+				longName: 'Shoreline change envelope',
+				units: 'm',
+				invert : false
+			},
+			'NSM': {
+				longName: 'Net shoreline movement',
+				units: 'm',
+				invert : false
+			},
+			'EPR': {
+				longName: 'End point rate',
+				units: 'm yr^-1',
+				invert : false
+			}
+		};
         return plotDiv;
     },
     createTable : function(args) {
@@ -510,9 +585,10 @@ var Results = {
 
         var navTabTable = $('<li />');
         var navTabPlot = $('<li />').addClass('active');
+        var navTabPlotLink = $('<a />').attr('href', '#results-' + layer.title + '-plot').attr('data-toggle', 'tab').html('LRR + LCI Rates Plot &nbsp;&nbsp;&nbsp;').append($('<i />').attr('id','plot-menu-icon').addClass('icon-cogs'));;
         var navTabTableLink = $('<a />').attr('href', '#results-' + layer.title + '-table').attr('data-toggle', 'tab').html(layer.title + ' Table');
-        var navTabPlotLink = $('<a />').attr('href', '#results-' + layer.title + '-plot').attr('data-toggle', 'tab').html(layer.title + ' Plot');
-        navTabTable.append(navTabTableLink);
+        
+		navTabTable.append(navTabTableLink);
         navTabPlot.append(navTabPlotLink);
         navTabs.append(navTabPlot);
         navTabs.append(navTabTable);
