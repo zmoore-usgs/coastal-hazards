@@ -26,6 +26,13 @@ import org.opengis.feature.type.AttributeDescriptor;
  */
 public class CreateResultsLayerProcessTest {
     
+    private static File outTest = null;
+    @BeforeClass
+    public static void setupAll() throws IOException {
+        outTest = File.createTempFile("test", ".shp");
+        //outTest.deleteOnExit();
+    }
+    
     /**
      * Test of execute method, of class CreateResultsLayerProcess.
      */
