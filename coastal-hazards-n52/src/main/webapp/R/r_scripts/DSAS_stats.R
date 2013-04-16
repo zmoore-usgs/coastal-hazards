@@ -4,7 +4,7 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-localRun <- FALSE
+localRun <- TRUE
 # comment this out for WPS!!!
 if (localRun){
   Rprof("DSAS_profiler.txt")
@@ -99,6 +99,15 @@ calcNSM <- function(dates,dist){
   else{return(c(NA,NA))}
 }
 
+calcSCE <- function(dist){
+  mnN <-  2
+  if (length(dist)>= mnN){
+    SCE_dist  <-  (max(dist)-min(dist))
+    return(c(SCE_dist))
+  }
+  else{return(c(NA))}
+}
+
 LRR <-  rep(NA,numBlck)
 LCI <-  rep(NA,numBlck)
 WLR <-  rep(NA,numBlck)
@@ -120,7 +129,7 @@ getDSAS <- function(blockText){
   uncy  <- uncy[useI]
   LRRout   <- calcLRR(dates,dist)
   WLRout   <- calcWLR(dates,dist,uncy)
-  SCE   <- (max(dist)-min(dist))
+  SCE   <- calcSCE(dist)
   NSMout  <- calcNSM(dates,dist)
   return(c(LRRout,WLRout,SCE,NSMout))  
 }
