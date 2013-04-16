@@ -41,7 +41,9 @@ public class ExportService extends HttpServlet {
         String filename = request.getParameter("filename");
         String data = request.getParameter("data");
         String type = request.getParameter("type");
+        String shortName = request.getParameter("shortName");
         String url = request.getRequestURL().toString();
+
 
         if (StringUtils.isBlank(filename)) {
             response.sendError(500, "'filename' element was empty.");
@@ -75,14 +77,15 @@ public class ExportService extends HttpServlet {
                     + "<wps:Body>"
                     + "<wfs:GetFeature service=\"WFS\" xmlns:" + workspace + "=\"" + workspaceNS + "\"  version=\"1.1.0\" outputFormat=\"GML2\" xmlns:ogc=\"http://www.opengis.net/ogc\">"
                     + "<wfs:Query typeName=\"" + layer + "\"/>"
-                    + "<ogc:PropertyName>BaselineID</ogc:PropertyName>"
-                    + "<ogc:PropertyName>TransectID</ogc:PropertyName>"
-                    + "<ogc:PropertyName>base_dist</ogc:PropertyName>"
-                    + "<ogc:PropertyName>LRR</ogc:PropertyName>"
-                    + "<ogc:PropertyName>LCI</ogc:PropertyName>"
                     + "</wfs:GetFeature>"
                     + "</wps:Body>"
                     + "</wps:Reference>"
+                    + "</wps:Input>"
+                    + "<wps:Input>"
+                    + "<ows:Identifier>shortName</ows:Identifier>"
+                    + "<wps:Data>"
+                    + "<wps:LiteralData>" + shortName + "</wps:LiteralData>"
+                    + "</wps:Data>"
                     + "</wps:Input>"
                     + "</wps:DataInputs>"
                     + "<wps:ResponseForm>"

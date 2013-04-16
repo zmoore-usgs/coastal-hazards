@@ -13,7 +13,9 @@
             </ogc:Function>
             <ogc:Function name="parameter">
               <ogc:Literal>attribute</ogc:Literal>
-              <ogc:Literal>LRR</ogc:Literal>
+              <ogc:Function name="env">
+                <ogc:Literal>attribute</ogc:Literal>
+              </ogc:Function>
             </ogc:Function>
             <ogc:Function name="parameter">
               <ogc:Literal>bbox</ogc:Literal>
@@ -35,7 +37,9 @@
             </ogc:Function>
             <ogc:Function name="parameter">
               <ogc:Literal>invert</ogc:Literal>
-              <ogc:Literal>true</ogc:Literal>
+              <ogc:Function name="env">
+                <ogc:Literal>invert</ogc:Literal>
+              </ogc:Function>
             </ogc:Function>
           </ogc:Function>
         </Transformation>
