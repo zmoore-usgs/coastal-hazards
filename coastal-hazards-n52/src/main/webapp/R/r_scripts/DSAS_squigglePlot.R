@@ -1,12 +1,13 @@
 # wps.des: id=DSAS_squigglePlot, title=Digital Shoreline Analysis System squggle plot, abstract=plots and saves rate stats;
-# wps.in: input, xml, block rates text, text input from stats with base_dist baseline_ID LRR and LCI;
-
+# wps.in: input, xml, block rates text, text input from stats with base_dist baseline_ID and tab-delimited stats with headers;
+# wps.in: shortName, string, short name of statistic to plot, 3 letter string representing plot acronym;
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
 localRun <- FALSE
 # comment this out for WPS!!!
 if (localRun){
+  shortName <- "LRR"
   input <- "squiggleOut.tsv"
   ptm <- proc.time() # for time of process
 }
