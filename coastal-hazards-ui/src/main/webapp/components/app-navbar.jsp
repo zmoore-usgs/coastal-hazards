@@ -75,7 +75,7 @@
                 <div class="nav-collapse">
                     <ul class="nav">
                         <li><a id="manage-sessions-btn" href="#"><i class="icon-tasks icon-white"></i> Session</a></li>
-                        <li class="dropdown">
+<%--                        <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="#">Action</a></li>
@@ -95,7 +95,7 @@
                                 <li><a href="#">Show Me</a></li>
                                 <li><a href="#">Documentation</a></li>
                             </ul>
-                        </li>
+                        </li> --%>
                     </ul>
 
                     <form id="app-navbar-search-form" class="navbar-search pull-right" action="javascript:void(0);">
