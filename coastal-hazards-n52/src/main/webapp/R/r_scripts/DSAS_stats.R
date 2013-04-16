@@ -4,7 +4,7 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-localRun <- FALSE
+localRun <- TRUE
 # comment this out for WPS!!!
 if (localRun){
   Rprof("DSAS_profiler.txt")
@@ -49,33 +49,45 @@ for (blockNumber in 1:numBlck){
 }
 
 calcLRR <- function(dates,dist){
-  rate <- dates
-  mdl  <- lm(formula=dist~rate)
-  coef <- coefficients(mdl)
-  CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
-  rate <- coef["rate"]  # is m/day
-  
-  LRR_rates <- rate*rateConv 
-  LCI <- (CI[2]-CI[1])/2 # LCI
-  return(c(LRR_rates,LCI))
+  mnN <-  3
+  if (length(dates)>= mnN){
+    rate <- dates
+    mdl  <- lm(formula=dist~rate)
+    coef <- coefficients(mdl)
+    CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
+    rate <- coef["rate"]  # is m/day
+    
+    LRR_rates <- rate*rateConv 
+    LCI <- (CI[2]-CI[1])/2 # LCI
+    return(c(LRR_rates,LCI))
+  }
+  else{return(c(NA,NA))}
 }
 
 calcWLR <- function(dates,dist,uncy){
-  rate <- dates
-  mdl  <- lm(formula=dist~rate, weights=(1/(uncy^2)))
-  coef <- coefficients(mdl)
-  CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
-  rate <- coef["rate"]
-  WLR_rates <- rate*rateConv 
-  WCI  <- (CI[2]-CI[1])/2 # WCI
-  return(c(WLR_rates,WCI))
+  mnN <-  3
+  if (length(dates)>= mnN){
+    rate <- dates
+    mdl  <- lm(formula=dist~rate, weights=(1/(uncy^2)))
+    coef <- coefficients(mdl)
+    CI   <- confint(mdl,"rate",level=conLevel)*rateConv 
+    rate <- coef["rate"]
+    WLR_rates <- rate*rateConv 
+    WCI  <- (CI[2]-CI[1])/2 # WCI
+    return(c(WLR_rates,WCI))
+  }
+  else{return(c(NA,NA))}
 }
 calcNSM <- function(dates,dist){
-  firstDateIdx <- which.min(dates)
-  lastDateIdx  <- which.max(dates)
-  NSM_dist <- dist[firstDateIdx]-dist[lastDateIdx]
-  EPR_rates <- NSM_dist/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
-  return(c(NSM_dist,EPR_rates))
+  mnN <-  2
+  if (length(dates)>= mnN){
+    firstDateIdx <- which.min(dates)
+    lastDateIdx  <- which.max(dates)
+    NSM_dist <- dist[firstDateIdx]-dist[lastDateIdx]
+    EPR_rates <- NSM_dist/(as(dates[lastDateIdx]-dates[firstDateIdx],"numeric"))*rateConv
+    return(c(NSM_dist,EPR_rates))
+  }
+  else{return(c(NA,NA))}
 }
 
 LRR <-  rep(NA,numBlck)
@@ -97,16 +109,11 @@ getDSAS <- function(blockText){
   dates <- dates[useI]
   dist  <- dist[useI]
   uncy  <- uncy[useI]
-  
-  if (length(dates) >= 3) {
-    LRRout   <- calcLRR(dates,dist)
-    WLRout   <- calcWLR(dates,dist,uncy)
-    SCE   <- (max(dist)-min(dist))
-    NSMout  <- calcNSM(dates,dist)
-    return(c(LRRout,WLRout,SCE,NSMout))
-  }
-  else{return(rep(NA,7))}
-  
+  LRRout   <- calcLRR(dates,dist)
+  WLRout   <- calcWLR(dates,dist,uncy)
+  SCE   <- (max(dist)-min(dist))
+  NSMout  <- calcNSM(dates,dist)
+  return(c(LRRout,WLRout,SCE,NSMout))  
 }
 
 
