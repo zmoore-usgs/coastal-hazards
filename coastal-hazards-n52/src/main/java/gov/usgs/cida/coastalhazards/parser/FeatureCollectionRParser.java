@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.parser;
 
+import com.google.common.collect.Lists;
 import gov.usgs.cida.coastalhazards.util.AttributeGetter;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.n52.wps.io.data.GenericFileData;
@@ -29,6 +31,9 @@ import org.opengis.feature.type.FeatureType;
  * @author jiwalker
  */
 public class FeatureCollectionRParser extends AbstractParser {
+    
+    private static List<String> rateColumns = Lists.newArrayList(BASELINE_DIST_ATTR, BASELINE_ID_ATTR, 
+                        LRR_ATTR, LCI_ATTR, WLR_ATTR, WCI_ATTR, SCE_ATTR, NSM_ATTR, EPR_ATTR);
 
     public FeatureCollectionRParser() {
         supportedIDataTypes.add(GenericFileDataBinding.class);
@@ -78,27 +83,31 @@ public class FeatureCollectionRParser extends AbstractParser {
                     }
                 }
             } else if (getter.exists(TRANSECT_ID_ATTR)
-                    && getter.exists(BASELINE_DIST_ATTR)
-                    && getter.exists(BASELINE_ID_ATTR)
-                    && getter.exists(LRR_ATTR)
-                    && getter.exists(LCI_ATTR)) {
+                    && getter.exists(rateColumns)) {
                 FeatureIterator<SimpleFeature> features = collection.features();
                 Map<Integer, SimpleFeature> featureMap = new TreeMap<Integer, SimpleFeature>();
-                buf.write(BASELINE_DIST_ATTR + "\t" + BASELINE_ID_ATTR + "\t" + LRR_ATTR + "\t" + LCI_ATTR);
+
+                buf.write(StringUtils.join(rateColumns, '\t'));
                 buf.newLine();
                 while (features.hasNext()) {
                     SimpleFeature feature = features.next();
                     int transectId = (Integer)getter.getValue(TRANSECT_ID_ATTR, feature);
-                    featureMap.put(transectId, feature);   
+                    featureMap.put(transectId, feature);
                 }
                 for (Integer id : featureMap.keySet()) {
                     SimpleFeature feature = featureMap.get(id);
-                    double dist = (Double) getter.getValue(BASELINE_DIST_ATTR, feature);
-                    String featureId = (String) getter.getValue(BASELINE_ID_ATTR, feature);
-                    int baseId = Integer.parseInt(featureId.split("\\.")[1]);
-                    double lrr = (Double) getter.getValue(LRR_ATTR, feature);
-                    double lci = (Double) getter.getValue(LCI_ATTR, feature);
-                    buf.write(dist + "\t" + baseId + "\t" + lrr + "\t" + lci);
+                    List<String> values = Lists.newArrayListWithCapacity(rateColumns.size());
+                    for (String column : rateColumns) {
+                        if (column.equals(BASELINE_ID_ATTR)) {
+                            String featureId = (String) getter.getValue(column, feature);
+                            // relies on baselineId being featureId (Is that enforced anywhere?)
+                            values.add(featureId.split("\\.")[1]);
+                        }
+                        else {
+                            values.add(getter.getValue(column, feature).toString());
+                        }
+                    }
+                    buf.write(StringUtils.join(values, '\t'));
                     buf.newLine();
                 }
             } else {
