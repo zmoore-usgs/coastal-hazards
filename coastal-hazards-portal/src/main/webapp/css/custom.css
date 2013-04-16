@@ -27,6 +27,44 @@ body, html {
     width: 100%;
 }
 
+#nav {
+	text-align: center;
+	/*width: 7.8em;*/
+}
+
+#nav a:hover {
+	text-decoration: none;
+}
+
+#nav .accordion-toggle {
+	color : #333333;
+}
+
+#nav .accordion-toggle i{
+	font-size: 400%;
+}
+
+.accordion-group-item {
+	color: #858585;
+}
+
+.accordion-group-item:hover{
+	color: #333333;
+	cursor: pointer;
+}
+
+.accordion-group-item > i {
+	font-size: 200%;
+}
+
+#nav .accordion-body .accordion-group-item{
+	padding-bottom: 1em;
+}
+
+.accordion-heading-text {
+	font-size: 100%;
+}
+
 #site-title {
     line-height: 20px;
 }

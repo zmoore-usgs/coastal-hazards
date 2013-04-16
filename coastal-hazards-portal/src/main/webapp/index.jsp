@@ -5,14 +5,14 @@
 <!DOCTYPE html>
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
-    {
-        try {
-            props = props.addJNDIContexts(new String[0]);
-        } catch (Exception e) {
-            LoggerFactory.getLogger("index.jsp").error("Could not find JNDI - Application will probably not function correctly");
-        }
-    }
-    boolean development = Boolean.parseBoolean(props.getProperty("development"));
+	{
+		try {
+			props = props.addJNDIContexts(new String[0]);
+		} catch (Exception e) {
+			LoggerFactory.getLogger("index.jsp").error("Could not find JNDI - Application will probably not function correctly");
+		}
+	}
+	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 %>
 <html lang="en">
     <head>
@@ -68,18 +68,83 @@
 
             <jsp:include page="components/config.jsp"></jsp:include>
 
-
                 <div id="content-row" class="row-fluid">
-                    <div id="nav" class="span1">
-                        <div class="block-element">BLOCK ELEMENT</div>
-                        <div class="block-element">BLOCK ELEMENT</div>
-                        <div class="block-element">BLOCK ELEMENT</div>
-                        <div class="block-element">BLOCK ELEMENT</div>
+                    <div id="nav" class="accordion span1">
+						<div id="accordion-group-storms" class="accordion-group">
+							<div class="accordion-heading">
+								<a id="accordion-group-storms-heading" class="accordion-toggle" data-toggle="collapse" data-parent="#nav" href="#accordion-group-storms-collapse">
+									<i class="icon-bolt"></i>
+									<div class="accordion-heading-text">Storms</div>
+								</a>
+							</div>
+							<div id="accordion-group-storms-collapse" class="accordion-body collapse in">
+								<div class="accordion-inner">
+									<div id="accordion-group-storms-view" class="accordion-group-item">
+										<i class="icon-search"></i>
+										<div class="accordion-group-item-text">View</div>
+									</div>
+									<div id="accordion-group-storms-share" class="accordion-group-item">
+										<i class="icon-share"></i>
+										<div class="accordion-group-item-text">Share</div>
+									</div>
+									<div id="accordion-group-storms-learn" class="accordion-group-item">
+										<i class="icon-lightbulb"></i>
+										<div class="accordion-group-item-text">Learn</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div id="accordion-group-vulnerability" class="accordion-group">
+							<div class="accordion-heading">
+								<a id="accordion-group-vulnerability-heading" class="accordion-toggle" data-toggle="collapse" data-parent="#nav" href="#accordion-group-vulnerability-collapse">
+									<i class="icon-globe"></i>
+									<div class="accordion-heading-text">Vulnerability</div>
+								</a>
+							</div>
+							<div id="accordion-group-vulnerability-collapse" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<div id="accordion-group-vulnerability-view" class="accordion-group-item">
+										<i class="icon-search"></i>
+										<div class="accordion-group-item-text">View</div>
+									</div>
+									<div id="accordion-group-vulnerability-share" class="accordion-group-item">
+										<i class="icon-share"></i>
+										<div class="accordion-group-item-text">Share</div>
+									</div>
+									<div id="accordion-group-vulnerability-learn" class="accordion-group-item">
+										<i class="icon-lightbulb"></i>
+										<div class="accordion-group-item-text">Learn</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div id="accordion-group-historical" class="accordion-group">
+							<div class="accordion-heading">
+								<a id="accordion-group-historical-heading" class="accordion-toggle" data-toggle="collapse" data-parent="#nav" href="#accordion-group-historical-collapse">
+									<i class="icon-calendar"></i>
+									<div class="accordion-heading-text">Historical</div>
+								</a>
+							</div>
+							<div id="accordion-group-historical-collapse" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<div id="accordion-group-historical-view" class="accordion-group-item">
+										<i class="icon-search"></i>
+										<div class="accordion-group-item-text">View</div>
+									</div>
+									<div id="accordion-group-historical-share" class="accordion-group-item">
+										<i class="icon-share"></i>
+										<div class="accordion-group-item-text">Share</div>
+									</div>
+									<div id="accordion-group-historical-learn" class="accordion-group-item">
+										<i class="icon-lightbulb"></i>
+										<div class="accordion-group-item-text">Learn</div>
+									</div>
+								</div>
+							</div>
+						</div>
                     </div>
-                    <div class="span11">
-                        <div id="map-wrapper-div">
-                            <div id="map"></div>
-                        </div>
+                    <div id="map-wrapper" class="span11">
+						<div id="map"></div>
                     </div>
                 </div>	
 

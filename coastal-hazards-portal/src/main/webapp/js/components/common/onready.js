@@ -8,7 +8,8 @@ $(document).ready(function() {
 
 	splashUpdate("Initializing UI...");
 	CONFIG.ui = new UI();
-
+	CONFIG.ui.init();
+	
 	splashUpdate("Initializing Map...");
 	CONFIG.map = new Map();
 
