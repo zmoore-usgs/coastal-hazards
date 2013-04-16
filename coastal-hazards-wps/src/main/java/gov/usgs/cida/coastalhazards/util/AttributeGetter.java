@@ -90,11 +90,11 @@ public class AttributeGetter {
     }
     
     public boolean exists(Collection<String> guesses) {
-        boolean and = true;
+        boolean allExist = true;
         for (String guess : guesses) {
-            and = (and && exists(guess));
+            allExist = (allExist && exists(guess));
         }
-        return and;
+        return allExist;
     }
     
     public boolean matches(Name actual, String guess) {
