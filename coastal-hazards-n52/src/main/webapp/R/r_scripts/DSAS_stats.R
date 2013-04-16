@@ -25,7 +25,7 @@ statLongNames  <-  data.frame("LRR"="Linear regression rate",
                          "NSM"="Net shoreline movement",
                          "EPR"="End point rate")
 statUnits <-  data.frame("LRR"="m yr^-1","LCI"="m yr^-1","WLR"="m yr^-1",
-                         "WCI"="m yr^-1","SCE"="m","NSM"="m yr^-1","EPR"="m yr^-1")
+                         "WCI"="m yr^-1","SCE"="m","NSM"="m","EPR"="m yr^-1")
 fileN    <- input # will have input as a string (long string read in)
 conLevel <- ci
 zRepV    <- 0.01 #replace value for when the uncertainty is zero
