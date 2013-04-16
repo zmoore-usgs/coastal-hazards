@@ -254,7 +254,8 @@ var Results = {
             {
                 layers : layerName,
                 transparent : true,
-                styles : 'ResultsRaster'
+                styles : 'ResultsRaster',
+                env : 'attribute:' + CONFIG.graph.enabled + ";invert:" + CONFIG.graph[CONFIG.graph.enabled].invert
             },
             {
                 prefix : layerPrefix,
@@ -452,6 +453,7 @@ var Results = {
                 }
             }
             );
+                CONFIG.graph.enabled = "LRR";
         return plotDiv;
     },
     createTable : function(args) {
@@ -659,7 +661,12 @@ var Results = {
                 $('<input />').attr({
                     'type' : 'hidden',
                     'name' : 'type'
-                }).val('image/png;base64'));
+                }).val('image/png;base64').
+            append(
+                $('<input />').attr({
+                    'type' : 'hidden',
+                    'name' : 'shortName'
+                }).val(CONFIG.graph.enabled));
             $('body').append(exportForm);
             exportForm.attr('action', 'service/export/squiggle');
             exportForm.submit();
