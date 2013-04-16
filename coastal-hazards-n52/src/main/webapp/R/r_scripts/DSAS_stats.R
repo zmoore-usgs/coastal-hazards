@@ -4,7 +4,7 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-localRun <- FALSE
+localRun <- TRUE
 # comment this out for WPS!!!
 if (localRun){
   Rprof("DSAS_profiler.txt")
@@ -180,8 +180,8 @@ statsout <- data.frame("transect_ID"=blckNm,LRR,LCI,WLR,WCI,SCE,NSM,EPR)
 
 for (i in 2:ncol(statsout)){
   statShortName <- names(statsout)[i]
-  names(statsout)[i] = paste(statShortName," [",statLongNames[statShortName][[1]]," (",
-    statUnits[statShortName][[1]],")]",sep="")
+  names(statsout)[i] = paste(statShortName,"|",statLongNames[statShortName][[1]],"|",
+    statUnits[statShortName][[1]],sep="")
 }
 
 if (localRun){
