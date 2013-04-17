@@ -112,12 +112,6 @@ var Results = {
                                     CONFIG.tempSession.session.results = results;
                                     CONFIG.tempSession.persistSession();
                                     
-                                    /*
-                                    Shorelines.clear();
-                                    Baseline.clear(true);
-                                    Transects.clear();
-                                    Calculation.clear();
-                                    */
                                     $('#results-list').val(data);
                                     Results.listboxChanged();
                                     CONFIG.ui.displayStage(Results);
@@ -367,8 +361,8 @@ var Results = {
                         table : resultsTable
                     })
                     
+					CONFIG.graph.features = features
                     Results.createPlot({
-                        features : features,
                         layer : result
                     })
 					
@@ -379,7 +373,7 @@ var Results = {
                             var baseDist = $(this).data().base_dist
                             var selectionControl = CONFIG.map.getMap().getControlsBy('id','results-select-control')[0];
                             var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'highlight')[0].features.find(function(f){
-                                return f.attributes.base_dist == baseDist
+                                return f.attributes.base_dist === baseDist;
                             })
                             selectionControl.select(hlFeature);
                             $(this).addClass('warning')
@@ -388,14 +382,14 @@ var Results = {
                         },
                         function() {
                             var selectionControl = CONFIG.map.getMap().getControlsBy('id','results-select-control')[0];
-                            selectionControl.unselectAll()
-                            $(this).removeClass('warning')
-                        })
+                            selectionControl.unselectAll();
+                            $(this).removeClass('warning');
+                        });
                 }
                 ],
                 error : []
             }
-        })
+        });
     },
 	bindPlotControls : function() {
 		var container = $('<div />').addClass('container-fluid').attr('id', 'plot-controls-container');
@@ -431,7 +425,7 @@ var Results = {
 				$('.plot-ctrl-btn').click(function(event) {
 					var attribute = $(event.target).html().substring(0,3);
 					CONFIG.graph.enabled = attribute;
-					Results.updatePlot();
+					Results.createPlot();
 					$('#plot-menu-icon').popover('hide');
 				});
 			}
@@ -449,7 +443,9 @@ var Results = {
             var values = [series];
 			
 			if (uncertainty) {
-				values.push(parseFloat(Math.abs(n.data[uncertainty])));
+				values = [series, parseFloat(Math.abs(n.data[uncertainty]))];
+			} else {
+				values = series;
 			}
 			
             return [ 
@@ -473,57 +469,55 @@ var Results = {
             }
         });
         fidBreaks.each(function(i) {
-            data.insert([[null,[null, null/*, null*/]]], i);
+			var noData = null;
+			if (uncertainty) {
+				noData = [null,null];
+			}
+            data.insert([[null,noData]], i);
         });
 		
 		return data;
 	},
-	updatePlot : function() {
+    createPlot: function(args) {
 		var enabled = CONFIG.graph.enabled;
-		var plot = CONFIG.graph.plot;
-		var data = Results.preparePlotData()
-		CONFIG.graph.plot.updateOptions({
-			file : data
-		})
+		var data = Results.preparePlotData();
+		var plotDiv = $('#results-plot').get()[0];
+		var labels = ['Distance (m)', enabled];
+		var data = Results.preparePlotData();
+		
+		if (CONFIG.graph.plot) {
+			CONFIG.graph.plot.destroy();
+		}
+		
+		CONFIG.graph.plot = new Dygraph(
+				plotDiv,
+				data,
+				{
+					labels: labels,
+					errorBars: CONFIG.graph.displayMap[enabled].uncertainty ? true : false,
+					showRangeSelector: true,
+					labelsSeparateLines : true,
+					xlabel : 'Distance (m)',
+					ylabel :  CONFIG.graph.displayMap[enabled].longName,	
+					underlayCallback: function(canvas, area, dygraph) {
+						var w = $('#results-tabcontent').width() - 20;
+						var h = $('#results-tabcontent').height();
+						if (w !== dygraph.width || h !== dygraph.height) {
+							dygraph.resize(w,h);
+						}
+					},
+					highlightCallback: function(e, x, pts, row) {
+						var selectionControl = CONFIG.map.getMap().getControlsBy('id', 'results-select-control')[0];
+						selectionControl.unselectAll();
+						var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'highlight')[0].features.find(function(f) {
+							return f.attributes.base_dist === x;
+						});
+						selectionControl.select(hlFeature);
+					}
+				});
+
+		return plotDiv;
 	},
-    createPlot : function(args) {
-        var features = args.features;
-        var layer = args.layer;
-        var plotDiv = $('#results-' + layer.title + '-plot').get()[0]
-        var labels = ['Distance (m)', 'Coastal Change (m/year)'];
-		
-		CONFIG.graph.features = features;
-		
-        var data = Results.preparePlotData()
-		
-        CONFIG.graph.plot = new Dygraph(
-            plotDiv,
-            data,
-            {
-                labels : labels,
-                errorBars: true,
-                showRangeSelector : true,
-                underlayCallback : function(canvas, area, dygraph) {
-                    var w = $('#results-tabcontent').width();
-                    var h = $('#results-tabcontent').height();
-                    if (w != dygraph.width || h != dygraph.height) {
-                        dygraph.resize(w, h);
-                    }
-                },
-                highlightCallback: function(e, x, pts, row) {
-                    var selectionControl = CONFIG.map.getMap().getControlsBy('id','results-select-control')[0];
-                    selectionControl.unselectAll()
-                    var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'highlight')[0].features.find(function(f){
-                        return f.attributes.base_dist == x
-                    })
-                    selectionControl.select(hlFeature);
-                }
-            });
-				
-		
-		
-        return plotDiv;
-    },
     createTable : function(args) {
         LOG.debug('Results.js::createResultsTable:: Creating results table header');
         var columns = this.viewableResultsColumns;
@@ -580,7 +574,7 @@ var Results = {
 
         var navTabTable = $('<li />');
         var navTabPlot = $('<li />').addClass('active');
-        var navTabPlotLink = $('<a />').attr('href', '#results-' + layer.title + '-plot').attr('data-toggle', 'tab').html('LRR + LCI Rates Plot &nbsp;&nbsp;&nbsp;').append($('<i />').attr('id','plot-menu-icon').addClass('icon-cogs'));;
+        var navTabPlotLink = $('<a />').attr('href', '#results-plot').attr('data-toggle', 'tab').html('LRR + LCI Rates Plot &nbsp;&nbsp;&nbsp;').append($('<i />').attr('id','plot-menu-icon').addClass('icon-cogs'));;
         var navTabTableLink = $('<a />').attr('href', '#results-' + layer.title + '-table').attr('data-toggle', 'tab').html(layer.title + ' Table');
         
 		navTabTable.append(navTabTableLink);
@@ -589,7 +583,7 @@ var Results = {
         navTabs.append(navTabTable);
         
         LOG.debug('Results.js::createResultsTable:: Adding results table to DOM');
-        var tabContentPlotDiv = $('<div />').addClass('tab-pane').addClass('active plot-container').attr('id', 'results-' + layer.title + '-plot');
+        var tabContentPlotDiv = $('<div />').addClass('tab-pane').addClass('active plot-container').attr('id', 'results-plot');
         var tabContentTableDiv = $('<div />').addClass('tab-pane').attr('id', 'results-' + layer.title + '-table');
         tabContentTableDiv.append(table);
         tabContent.append(tabContentPlotDiv);
