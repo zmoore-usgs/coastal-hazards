@@ -8,6 +8,7 @@ var Calculation = {
         'manage-tab' : '',
         'upload-button' : ''
     },
+			
     appInit : function() {
     },
     
