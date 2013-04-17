@@ -907,7 +907,7 @@ var Results = {
 						var propertyNames = describeFeatureResponse.featureTypes[0].properties.map(function(ft) {
 							return ft.name;
 						});
-						var propertyNamesToExclude = ['the_geom'];
+						var propertyNamesToExclude = ['the_geom', 'NSD'];
 
 						//remove each excluded attribute name from the array
 						propertyNamesToExclude.each(function(nameToExclude) {

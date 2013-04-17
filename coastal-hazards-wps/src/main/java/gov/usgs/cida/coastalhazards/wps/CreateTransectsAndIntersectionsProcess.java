@@ -293,6 +293,8 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
          * Gives direction to point transects as long as baseline is good
          * This is pretty much just hacked up at this point
          * Any better way of doing this would be smart
+         * 
+         * Use Shoreward orientation so distances are positive (otherwise we should use absolute distance)
          * @param baseline
          * @param shorelines
          * @return 
@@ -306,45 +308,53 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             if (n > 2) {
                 m = new LineSegment(coordinates[(int)n/2], coordinates[(int)n/2+1]);
             }
-            int[] counts = new int[] { 0, 0 };
-            Transect vector =
-                    Transect.generatePerpendicularVector(coordinates[0], a, Orientation.UNKNOWN, 0, "0", Double.NaN, Angle.CLOCKWISE);
-            counts[0] += countIntersections(vector);
-            vector.rotate180Deg();
-            counts[1] += countIntersections(vector);
             
-            vector = Transect.generatePerpendicularVector(coordinates[n-1], b, Orientation.UNKNOWN, 0, "0", Double.NaN, Angle.COUNTERCLOCKWISE);
-            counts[0] += countIntersections(vector);
+            double[] averages = new double[] { 0d, 0d };
+            Transect vector =
+                    Transect.generatePerpendicularVector(coordinates[0], a, Orientation.SHOREWARD, 0, "0", Double.NaN, Angle.CLOCKWISE);
+            averages[0] = averageDistance(vector);
             vector.rotate180Deg();
-            counts[1] += countIntersections(vector);
+            averages[1] = averageDistance(vector);
+            
+            vector = Transect.generatePerpendicularVector(coordinates[n-1], b, Orientation.SHOREWARD, 0, "0", Double.NaN, Angle.COUNTERCLOCKWISE);
+            double currentAvg = averageDistance(vector);
+            averages[0] = (averages[0] < currentAvg) ? averages[0] : currentAvg;
+            vector.rotate180Deg();
+            currentAvg = averageDistance(vector);
+            averages[1] = (averages[1] < currentAvg) ? averages[1] : currentAvg;
             
             if (m != null) {
-                vector = Transect.generatePerpendicularVector(coordinates[(int)n/2], m, Orientation.UNKNOWN, 0, "0", Double.NaN, Angle.CLOCKWISE);
-                counts[0] += countIntersections(vector);
+                vector = Transect.generatePerpendicularVector(coordinates[(int)n/2], m, Orientation.SHOREWARD, 0, "0", Double.NaN, Angle.CLOCKWISE);
+                currentAvg = averageDistance(vector);
+                averages[0] = (averages[0] < currentAvg) ? averages[0] : currentAvg;
                 vector.rotate180Deg();
-                counts[1] += countIntersections(vector);
+                currentAvg = averageDistance(vector);
+                averages[1] = (averages[1] < currentAvg) ? averages[1] : currentAvg;
             }
             
-            if (counts[0] > counts[1]) {
+            if (averages[0] < averages[1]) {
                 return Angle.CLOCKWISE;
             }
-            else if (counts[0] < counts[1]) {
+            else if (averages[0] > averages[1]) {
                 return Angle.COUNTERCLOCKWISE;
             }
             throw new PoorlyDefinedBaselineException("Baseline is ambiguous, transect direction cannot be determined");
         }
         
-        private int countIntersections(Transect transect) {
+        private double averageDistance(Transect transect) {
+            double average = Double.MAX_VALUE;
             transect.setLength(maxTransectLength);
             LineString line = transect.getLineString();
-            int count = 0;
-            List<ShorelineFeature> possibleIntersections = strTree.query(line.getEnvelopeInternal());
-            for (ShorelineFeature shoreline : possibleIntersections) {
-                if (shoreline.segment.intersects(line)) {
-                    count++;
-                }
+            double total = 0d;
+            AttributeGetter getter = new AttributeGetter(intersectionFeatureType);
+            Map<DateTime, Intersection> intersections = Intersection.calculateIntersections(transect, strTree, useFarthest, getter);
+            for (Intersection point : intersections.values()) {
+                total += point.getDistance();
             }
-            return count;
+            if (intersections.size() > 0) {
+                average = total / intersections.size();
+            }
+            return average;
         }
     }
     
