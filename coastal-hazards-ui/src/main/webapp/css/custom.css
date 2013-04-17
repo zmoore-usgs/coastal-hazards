@@ -114,6 +114,9 @@ select option.session-layer{
 .baseLayersDiv > .labelSpan {
 	display : inline;
 }
+.dataLayersDiv > .labelSpan {
+	display : inline;
+}
 
 /* ---------------------------------------------------------------------- Shorelines */
 .shoreline-feature-table {

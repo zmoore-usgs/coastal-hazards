@@ -73,6 +73,30 @@ var Map = function() {
                 wrapDateLine: true
             }
     ));	
+	me.map.addLayer(new OpenLayers.Layer.ArcGIS93Rest("Boundaries",
+            "http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer/export",
+            {
+				layers: '0', 
+				numZoomLevels: 13,
+				transparent : true,
+				displayInLayerSwitcher : true
+			},{
+				visibility : false,
+				isBaseLayer : false
+			}
+    ));	
+	me.map.addLayer(new OpenLayers.Layer.ArcGIS93Rest("World Reference",
+            "http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer/export",
+            {
+				layers: '0', 
+				numZoomLevels: 14,
+				transparent : true,
+				displayInLayerSwitcher : true
+			},{
+				visibility : false,
+				isBaseLayer : false
+			}
+    ));	
     
     me.map.addLayer(new OpenLayers.Layer.Markers('marker-layer',{
 		displayInLayerSwitcher : false
