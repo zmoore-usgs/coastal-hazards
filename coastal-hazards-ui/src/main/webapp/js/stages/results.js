@@ -361,7 +361,7 @@ var Results = {
                         table : resultsTable
                     })
                     
-					CONFIG.graph.features = features
+					CONFIG.graph.features = features;
                     Results.createPlot({
                         layer : result
                     })
@@ -424,7 +424,9 @@ var Results = {
 				
 				$('.plot-ctrl-btn').click(function(event) {
 					var attribute = $(event.target).html().substring(0,3);
+					var fullAttribute = $(event.target).html();
 					CONFIG.graph.enabled = attribute;
+					$('#tab-stat-description').html(fullAttribute);
 					Results.createPlot();
 					$('#plot-menu-icon').popover('hide');
 				});
@@ -572,10 +574,13 @@ var Results = {
             $(tc).remove();
         });
 
-        var navTabTable = $('<li />');
         var navTabPlot = $('<li />').addClass('active');
-        var navTabPlotLink = $('<a />').attr('href', '#results-plot').attr('data-toggle', 'tab').html('LRR + LCI Rates Plot &nbsp;&nbsp;&nbsp;').append($('<i />').attr('id','plot-menu-icon').addClass('icon-cogs'));;
-        var navTabTableLink = $('<a />').attr('href', '#results-' + layer.title + '-table').attr('data-toggle', 'tab').html(layer.title + ' Table');
+        var navTabTable = $('<li />');
+        var navTabPlotLink = $('<a />').attr({
+			'href' : '#results-plot',
+			'id' : 'nav-tab-plot-link'
+		}).attr('data-toggle', 'tab').html('<span id="tab-stat-description">LRR + LCI</span> Rates Plot &nbsp;&nbsp;&nbsp;').append($('<i />').attr('id','plot-menu-icon').addClass('icon-cogs'));
+        var navTabTableLink = $('<a />').attr('href', '#results-' + layer.title + '-table').attr('data-toggle', 'tab').html('Rates Table');
         
 		navTabTable.append(navTabTableLink);
         navTabPlot.append(navTabPlotLink);
