@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.coverage.grid.GridCoordinates2D;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -60,13 +61,15 @@ public class ResultsRasterProcess implements GeoServerProcess {
     @DescribeResult(name = "coverage", description = "coverage")
     public GridCoverage2D execute(
             @DescribeParameter(name = "features", min = 1, max = 1) SimpleFeatureCollection features,
-            @DescribeParameter(name = "attribute", min = 1, max = 1) String attribute,
+            @DescribeParameter(name = "attribute", min = 0, max = 1) String attribute,
             @DescribeParameter(name = "bbox", min = 0, max = 1) ReferencedEnvelope bbox,
             @DescribeParameter(name = "width", min = 1, max = 1) Integer width,
             @DescribeParameter(name = "height", min = 1, max = 1) Integer height,
             @DescribeParameter(name = "invert", min = 0, max = 1) Boolean invert) throws Exception {
 
-        return new Process(features, attribute, bbox, width, height, invert == null ? false : invert).execute();
+            if (StringUtils.isBlank(attribute)) { attribute = "LRR"; } 
+            if (invert == null) { invert = (attribute.equalsIgnoreCase("LRR")); }
+        return new Process(features, attribute, bbox, width, height, invert).execute();
 
     }
 

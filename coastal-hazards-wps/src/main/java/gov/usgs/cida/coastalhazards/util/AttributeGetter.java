@@ -55,10 +55,21 @@ public class AttributeGetter {
             else if (isOther(desc, Constants.LRR_ATTR)) {
                 attrMap.put(Constants.LRR_ATTR, desc.getName());
             }
+            else if (isOther(desc, Constants.WLR_ATTR)) {
+                attrMap.put(Constants.WLR_ATTR, desc.getName());
+            }
+            else if (isOther(desc, Constants.WCI_ATTR)) {
+                attrMap.put(Constants.WCI_ATTR, desc.getName());
+            }
             else if (isOther(desc, Constants.SCE_ATTR)) {
                 attrMap.put(Constants.SCE_ATTR, desc.getName());
             }
-            
+            else if (isOther(desc, Constants.NSM_ATTR)) {
+                attrMap.put(Constants.NSM_ATTR, desc.getName());
+            }
+            else if (isOther(desc, Constants.EPR_ATTR)) {
+                attrMap.put(Constants.EPR_ATTR, desc.getName());
+            }
         }
     }
     
@@ -76,6 +87,14 @@ public class AttributeGetter {
         Name name = attrMap.get(guess);
         PropertyDescriptor descriptor = type.getDescriptor(name);
         return (descriptor != null);
+    }
+    
+    public boolean exists(Collection<String> guesses) {
+        boolean allExist = true;
+        for (String guess : guesses) {
+            allExist = (allExist && exists(guess));
+        }
+        return allExist;
     }
     
     public boolean matches(Name actual, String guess) {
