@@ -8,8 +8,9 @@ var Map = function() {
         projection : "EPSG:900913",
         displayProjection : new OpenLayers.Projection("EPSG:900913")
     });
-    LOG.debug('Map.js::constructor:Creating base layer');
-    me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
+	
+    LOG.debug('Map.js::constructor:Creating base layers');
+    me.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
             "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
             {
                 sphericalMercator: true,
@@ -18,15 +19,73 @@ var Map = function() {
                 wrapDateLine: true
             }
     ));
+	me.map.addLayer(new OpenLayers.Layer.XYZ("Street",
+            "http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}",
+            {
+                sphericalMercator: true,
+                isBaseLayer: true,
+                numZoomLevels: 20,
+                wrapDateLine: true
+            }
+    ));	
+	me.map.addLayer(new OpenLayers.Layer.XYZ("Topo",
+            "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}",
+            {
+                sphericalMercator: true,
+                isBaseLayer: true,
+                numZoomLevels: 20,
+                wrapDateLine: true
+            }
+    ));	
+	me.map.addLayer(new OpenLayers.Layer.XYZ("Terrain",
+            "http://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/${z}/${y}/${x}",
+            {
+                sphericalMercator: true,
+                isBaseLayer: true,
+                numZoomLevels: 14,
+                wrapDateLine: true
+            }
+    ));	
+	me.map.addLayer(new OpenLayers.Layer.XYZ("Shaded Relief",
+            "http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}",
+            {
+                sphericalMercator: true,
+                isBaseLayer: true,
+                numZoomLevels: 14,
+                wrapDateLine: true
+            }
+    ));	
+	me.map.addLayer(new OpenLayers.Layer.XYZ("Physical",
+            "http://services.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/${z}/${y}/${x}",
+            {
+                sphericalMercator: true,
+                isBaseLayer: true,
+                numZoomLevels: 9,
+                wrapDateLine: true
+            }
+    ));	
+	me.map.addLayer(new OpenLayers.Layer.XYZ("Ocean",
+            "http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/${z}/${y}/${x}",
+            {
+                sphericalMercator: true,
+                isBaseLayer: true,
+                numZoomLevels: 17,
+                wrapDateLine: true
+            }
+    ));	
     
-    me.map.addLayer(new OpenLayers.Layer.Markers('marker-layer'));
+    me.map.addLayer(new OpenLayers.Layer.Markers('marker-layer',{
+		displayInLayerSwitcher : false
+	}));
     
     LOG.debug('Map.js::constructor:Adding ontrols to map');
     me.map.addControl(new OpenLayers.Control.MousePosition());
     me.map.addControl(new OpenLayers.Control.ScaleLine({
         geodesic : true
     }));
-    
+	me.map.addControl(new OpenLayers.Control.LayerSwitcher({
+		roundedCorner : true
+	}));    
     LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
     me.map.zoomToExtent(initialExtent, true);
     
