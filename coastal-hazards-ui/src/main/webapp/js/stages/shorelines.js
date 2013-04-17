@@ -647,31 +647,33 @@ var Shorelines = {
                     
                     var idControl = Shorelines.getShorelineIdControl();
                     var controlLayerIndex = idControl.layers.indexOf(layer);
-                    if (controlLayerIndex != -1) {
+                    if (controlLayerIndex !== -1) {
                         idControl.layers = idControl.layers.removeAt(controlLayerIndex);
                     }
-                })
+                });
             }
         });
             
-        var layerInfos = []
+        var layerInfos = [];
         var stage = CONFIG.tempSession.getStage(Shorelines.stage);
         stage.viewing = [];
-        $("#shorelines-list option:selected").each(function (index, option) {
-            LOG.debug('Shorelines.js::shorelineSelected: A shoreline ('+option.text+') was selected from the select list');
-            var layerFullName = option.value;
-            var layerNamespace = layerFullName.split(':')[0];
-            var layerTitle = layerFullName.split(':')[1];
-            var layer = CONFIG.ows.getLayerByName({
-                layerNS : layerNamespace,
-                layerName : layerTitle
-            });
-            layerInfos.push(layer);
-            stage.viewing.push(layerFullName);
-            if (layerFullName.has(CONFIG.tempSession.getCurrentSessionKey())) {
-                Shorelines.enableRemoveButton();
-            }
-        });
+		if ($("#shorelines-list option:selected").val()) {
+			$("#shorelines-list option:selected").each(function (index, option) {
+				LOG.debug('Shorelines.js::shorelineSelected: A shoreline ('+option.text+') was selected from the select list');
+				var layerFullName = option.value;
+				var layerNamespace = layerFullName.split(':')[0];
+				var layerTitle = layerFullName.split(':')[1];
+				var layer = CONFIG.ows.getLayerByName({
+					layerNS : layerNamespace,
+					layerName : layerTitle
+				});
+				layerInfos.push(layer);
+				stage.viewing.push(layerFullName);
+				if (layerFullName.has(CONFIG.tempSession.getCurrentSessionKey())) {
+					Shorelines.enableRemoveButton();
+				}
+			});
+		}
         CONFIG.tempSession.persistSession();
         
         // Provide default names for base layers and transects
@@ -680,9 +682,9 @@ var Shorelines = {
         var getSeries = function(series) {
             var skey = CONFIG.tempSession.getCurrentSessionKey();
             var startPoint = series.has(skey) ? skey.length : 0;
-            return series.substr(startPoint, series.lastIndexOf('_') - startPoint)
-        }
-        if (selectedLayers.length == 0) {
+            return series.substr(startPoint, series.lastIndexOf('_') - startPoint);
+        };
+        if (selectedLayers.length === 0) {
             derivedName += Util.getRandomLorem();
         }
         

@@ -97,9 +97,23 @@ var UI = function() {
     
     LOG.debug('UI.js::constructor: UI class initialized.');
     return $.extend(me, {
+		appInit : function() {
+			this.bindWindowResize();
+			$(window).resize();
+		},
         displayStage : function(caller) {
             $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click');
         },
+		bindWindowResize: function() {
+			$(window).resize(function() {
+				var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height() - $('#alert-row').height() - 40;
+				$('#content-row').css('min-height', contentRowHeight);
+				$('#nav-list').css('min-height', contentRowHeight);
+				$('#toolbox-span').css('min-height', contentRowHeight);
+				$('#map-span').css('min-height', contentRowHeight);
+				$('#map').css('height', contentRowHeight);
+			});
+		},
         createModalWindow : function(args) {
             var headerHtml = args.headerHtml || '';
             var bodyHtml = args.bodyHtml || '';
@@ -326,12 +340,10 @@ var UI = function() {
             $('#'+stage+'-list').children().remove();
         
             // Add a blank spot at the top of the select list
-            if (stage !== Shorelines.stage) {
-                $('#'+stage+'-list')
-                .append($("<option />")
-                    .attr("value",'')
-                    .text(''));
-            }
+			$('#'+stage+'-list')
+			.append($("<option />")
+				.attr("value",'')
+				.text(''));
         
             wmsCapabilities.keys().each(function(layerNS) {
                 var cap = wmsCapabilities[layerNS];
@@ -376,8 +388,8 @@ var UI = function() {
             LOG.debug('UI.js::populateFeaturesList: Re-binding select list');
             $('#'+stage+'-list').unbind('change');
             $('#'+stage+'-list').change(function(index, option) {
-                caller.listboxChanged(index, option)
-            }) 
+                caller.listboxChanged(index, option);
+            }) ;
             
             return  $('#'+stage+'-list');
         },
