@@ -153,51 +153,40 @@ public class ResultsRasterProcess implements GeoServerProcess {
             createImage();
 
             gridGeometry = new GridGeometry2D(new GridEnvelope2D(0, 0, coverageWidth, coverageHeight), extent);
-            
-            // NOTE!  intern() is important, using instance as synchrnization lock, need equality by reference
-            String featureCollectionId = featureCollection.getSchema().getName().getURI().intern();
-//            
-//            LOGGER.log(Level.INFO, "Using identifier {} for attribute value range map lookup", featureCollectionId);
-            /* synchronized (featureCollectionId) */ {
-//                Map<String, AttributeRange> attributeRangeMap = featureAttributeRangeMap.get(featureCollectionId);
-//                if (attributeRangeMap == null) {
-//                    attributeRangeMap = new WeakHashMap<String, AttributeRange>();
-//                    featureAttributeRangeMap.put(featureCollectionId, attributeRangeMap);
-//                    LOGGER.log(Level.INFO, "Created attribute value range map for {}", featureCollectionId);
-//                }
-//                AttributeRange attributeRange = attributeRangeMap.get(attributeName);
-                AttributeRange attributeRange = null;
-                if (attributeRange == null) {
-                    LOGGER.log(Level.INFO, "Calculating attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
-                    SimpleFeatureIterator iterator = featureCollection.features();
-                    if (iterator.hasNext()) {
-                        double value = ((Number)iterator.next().getAttribute(attributeName)).doubleValue();
-                        double minimum = value;
-                        double maximum = value;
-                        while (iterator.hasNext()) {
-                            SimpleFeature feature = iterator.next();
-                            value = ((Number)feature.getAttribute(attributeName)).doubleValue();
-                            if (value > maximum) {
-                                maximum = value;
-                            } else if (value < minimum) {
-                                minimum = value;
-                            }
-                        }
-                        attributeRange = new AttributeRange(minimum, maximum);
-//                        attributeRangeMap.put(attributeName, attributeRange);
-                        LOGGER.log(Level.INFO, "Caching attribute value range for {}:{} {}",
-                                new Object[] {
-                                    featureCollectionId, attributeName, attributeRange
-                                });
+
+            String featureCollectionId = featureCollection.getSchema().getName().getURI();
+
+            AttributeRange attributeRange = null;
+            LOGGER.log(Level.INFO, "Calculating attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
+            SimpleFeatureIterator iterator = featureCollection.features();
+            double minimum = Double.MAX_VALUE;
+            double maximum = -Double.MAX_VALUE;
+            while (iterator.hasNext()) {
+                SimpleFeature feature = iterator.next();
+                double value = ((Number)feature.getAttribute(attributeName)).doubleValue();
+                if (Math.abs(value) < 1e10) {
+                    if (value > maximum) {
+                        maximum = value;
+                    } else if (value < minimum) {
+                        minimum = value;
                     }
-                } else {
-                    LOGGER.log(Level.INFO, "Using cached attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
-                }
-                if (attributeRange != null) {
-                    colorMap = new ZeroInflectedJetColorMap(attributeRange, invert);
                 }
             }
-            
+            if (minimum < maximum) {
+                attributeRange = new AttributeRange(minimum, maximum);
+                LOGGER.log(Level.INFO, "Attribute value range for {}:{} {}",
+                        new Object[] {
+                            featureCollectionId, attributeName, attributeRange
+                        });
+            }
+            if (attributeRange != null) {
+                attributeRange = (attributeRange.min < 0) ?
+                        attributeRange.zeroInflect(invert) :
+                        invert ? 
+                            new AttributeRange(attributeRange.max, 0) :
+                            new AttributeRange(0, attributeRange.max);
+                colorMap = new JetColorMap(attributeRange);
+            }
             geometryFactory = new GeometryFactory(new PrecisionModel());
         }
 
@@ -335,26 +324,30 @@ public class ResultsRasterProcess implements GeoServerProcess {
         public String toString() {
             return new StringBuilder("range=[").append(min).append(':').append(max).append(']').toString();
         }
+        
+        public AttributeRange zeroInflect(boolean invert) {
+            double absOfMax = max < 0 ? 0 - max : max;
+            double absOfMin = min < 0 ? 0 - min : min;
+            double maxAbs = absOfMax > absOfMin ? absOfMax : absOfMin;
+            return invert ?
+                    new AttributeRange(maxAbs, 0 - maxAbs) :
+                    new AttributeRange(0 - maxAbs, maxAbs);
+        }
     }
     
     public static interface ColorMap<T> {
         Color valueToColor(T value);
     }
     
-    public static class ZeroInflectedJetColorMap implements ColorMap<Number> {
+    public static class JetColorMap implements ColorMap<Number> {
         
         public final static Color CLAMP_MIN = new Color(0f, 0f, 0.5f);
         public final static Color CLAMP_MAX = new Color(0.5f, 0f, 0f);
         
         public final AttributeRange range;
            
-        public ZeroInflectedJetColorMap(AttributeRange range, boolean invert) {
-            double absOfMax = range.max < 0 ? 0 - range.max : range.max;
-            double absOfMin = range.min < 0 ? 0 - range.min : range.min;
-            double maxAbs = absOfMax > absOfMin ? absOfMax : absOfMin;
-            this.range = invert ?
-                    new AttributeRange(maxAbs, 0 - maxAbs) :
-                    new AttributeRange(0 - maxAbs, maxAbs);
+        public JetColorMap(AttributeRange range) {
+            this.range = range;
         }
         
         @Override
