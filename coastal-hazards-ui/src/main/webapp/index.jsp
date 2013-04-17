@@ -15,8 +15,6 @@
         }
     }
     boolean development = Boolean.parseBoolean(props.getProperty("development"));
-    String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
-    String n52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
 %>
 
 <html lang="en">
@@ -385,7 +383,13 @@
                 </jsp:include>
             </div>
         </div>
-
+		
+		<%-- Stuff that isn't shown in the application but is used by JS --%>
+		<div id="plot-legend-wrapper" class="hide">
+			<div id="plot-legend-container" class="container-fluid">
+				<div id="plot-legend-row" class="row-fluid">&nbsp;</div>
+			</div>
+		</div>
         <div id="modal-window" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-window-label" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -397,6 +401,7 @@
             <div class="modal-footer"></div>
         </div>
         <iframe id="download" class="hidden"></iframe>
+		
     </body>
     <script type="text/javascript">splashUpdate("Loading Graphing Utilities...");</script>
     <jsp:include page="js/dygraphs/dygraphs.jsp">
@@ -436,88 +441,7 @@
     <jsp:include page="js/fineuploader/fineuploader.jsp">
         <jsp:param name="debug-qualifier" value="true" />
     </jsp:include>
-
-    <script type="text/javascript">
-        splashUpdate("Setting configuration...");
-        var CONFIG = Object.extended();
-        
-        CONFIG.development = <%= development%>;
-        CONFIG.geoServerEndpoint = '<%=geoserverEndpoint%>';
-        CONFIG.n52Endpoint = '<%=n52Endpoint%>';
-        CONFIG.popupHoverDelay = 1500;
-        CONFIG.namespace = Object.extended();
-        CONFIG.namespace.sample = 'gov.usgs.cida.ch.sample';
-        CONFIG.namespace.input = 'gov.usgs.cida.ch.input';
-        CONFIG.namespace.output = 'gov.usgs.cida.ch.output';
-        CONFIG.name = {};
-        CONFIG.name.published = 'sample';
-        CONFIG.dateFormat = {
-            padded : '{MM}/{dd}/{yyyy}',
-            nonPadded : '{M}/{d}/{yyyy}'
-        };
-        CONFIG.alertQueue = {
-            application : [],
-            shorelines : [],
-            baseline : [],
-            transects : [],
-            calculation : [],
-            results : []
-        };
-        CONFIG.ajaxTimeout = 300000;
-		CONFIG.graph = Object.extended();
-		CONFIG.graph.enabled = 'LRR';
-		CONFIG.graph.displayMap = {
-			'LRR': {
-				longName: 'Linear regression rate +/- LCI',
-				units: 'm yr^-1',
-				uncertainty : 'LCI',
-				invert : true
-			},
-			'WLR': {
-				longName: 'Weighted linear regression rate +/i WCI',
-				units: 'm yr^-1',
-				uncertainty : 'WCI',
-				invert : true
-			},
-			'SCE': {
-				longName: 'Shoreline change envelope',
-				units: 'm',
-				invert : false
-			},
-			'NSM': {
-				longName: 'Net shoreline movement',
-				units: 'm',
-				invert : false
-			},
-			'EPR': {
-				longName: 'End point rate',
-				units: 'm yr^-1',
-				invert : false
-			}
-		};
-            
-        JSON.stringify = JSON.stringify || function (obj) {
-            var t = typeof (obj);
-            if (t !== "object" || obj === null) {
-                // simple data type
-                if (t === "string") obj = '"'+obj+'"';
-                return String(obj);
-            }
-            else {
-                // recurse array or object
-                var n, v, json = [], arr = (obj && obj.constructor === Array);
-                for (n in obj) {
-                    v = obj[n]; t = typeof(v);
-                    if (t === "string") v = '"'+v+'"';
-                    else if (t === "object" && v !== null) v = JSON.stringify(v);
-                    json.push((arr ? "" : '"' + n + '":') + String(v));
-                }
-                return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
-            }
-        };
-
-            
-    </script>
+	<jsp:include page="components/config.jsp"></jsp:include>
     <script type="text/javascript">splashUpdate("Loading UI module...");</script>
     <script type="text/javascript" src="js/ui/ui.js"></script>
     <script type="text/javascript">splashUpdate("Loading Utilities module...");</script>
@@ -546,8 +470,8 @@
     <link type="text/css" rel="stylesheet" href="js/bootstrap-switch/static/stylesheets/bootstrapSwitch.css" />
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
 
-<script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
-<link type="text/css" rel="stylesheet" href="css/custom.css" />
-<script type="text/javascript">splashUpdate("Loading Main module...");</script>
-<script type="text/javascript" src="js/onReady.js"></script>
+	<script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
+	<link type="text/css" rel="stylesheet" href="css/custom.css" />
+	<script type="text/javascript">splashUpdate("Loading Main module...");</script>
+	<script type="text/javascript" src="js/onReady.js"></script>
 </html>

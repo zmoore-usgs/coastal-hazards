@@ -578,6 +578,7 @@ var Results = {
 				plotDiv,
 				data,
 				{
+					labelsDiv : $('#plot-legend-row').get()[0],
 					labels: labels,
 					errorBars: CONFIG.graph.displayMap[enabled].uncertainty ? true : false,
 					showRangeSelector: true,
@@ -594,6 +595,7 @@ var Results = {
 					},
 					highlightCallback: function(e, x, pts, row) {
 						var selectionControl = CONFIG.map.getMap().getControlsBy('id', 'results-select-control')[0];
+						$('#plot-legend-row').trigger('contentchanged');
 						selectionControl.unselectAll();
 						var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'highlight')[0].features.find(function(f) {
 							return f.attributes.base_dist === x;
@@ -601,8 +603,48 @@ var Results = {
 						selectionControl.select(hlFeature);
 					}
 				});
-
+		Results.bindPlotLegendDivPopover();
 		return plotDiv;
+	},
+	bindPlotLegendDivPopover: function() {
+		var contentChangedFunction = function() {
+			var data = $('#plot-legend-container').html();
+			popover.options.content = data;
+			var visible = popover && tip && tip.is(':visible');
+
+			if (visible) {
+				tip.find('.popover-content > *').html(data);
+			} else {
+				popover.show();
+			}
+		};
+		$('#results-tabcontent').popover({
+			animation: true,
+			html: true,
+			content: function() {
+				return $('#plot-legend-container').html();
+			},
+			placement: 'top',
+			trigger: 'hover',
+			container: 'body'
+		}).bind({
+			'shown': function(evt) {
+				var popover = $(evt.target).data('popover');
+				var tip = popover.tip();
+				$('#plot-legend-row').off('contentchanged');
+				$('#plot-legend-row').on('contentchanged', function() {
+					var data = $('#plot-legend-container').html();
+					popover.options.content = data;
+					var visible = popover && tip && tip.is(':visible');
+
+					if (visible) {
+						tip.find('.popover-content > *').html(data);
+					} else {
+						popover.show();
+					}
+				});
+			}
+		});
 	},
     createTable : function(args) {
         LOG.debug('Results.js::createResultsTable:: Creating results table header');
