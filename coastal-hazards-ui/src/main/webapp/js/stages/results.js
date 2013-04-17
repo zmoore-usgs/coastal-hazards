@@ -352,7 +352,8 @@ var Results = {
 				maxGetUrlLength: 2048
 			},
 			ratio: 1,
-			singleTile: true
+			singleTile: true,
+			displayInLayerSwitcher : false
 		});
 		raster.type="results";
 		return raster;
@@ -381,6 +382,7 @@ var Results = {
 				geometryName: "the_geom",
 				srsName: CONFIG.map.getMap().getProjection()
 			}),
+			displayInLayerSwitcher : false,
 			styleMap: new OpenLayers.StyleMap({
 				"default": new OpenLayers.Style({
 					strokeColor: Results.reservedColor,
