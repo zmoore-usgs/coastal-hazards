@@ -696,7 +696,7 @@ var Results = {
         return wps;
     },
     retrieveRSquigglePlotPNG : function() {
-        var val =$("#results-list option:selected")[0].value;
+        var val = $("#results-list option:selected")[0].value;
         if (val) {
             var layerName = val.split(':')[1];
             var workspaceNS = 'gov.usgs.cida.ch.' + CONFIG.tempSession.getCurrentSessionKey();
@@ -740,56 +740,63 @@ var Results = {
     retrieveResultsShapefile: function(){
         var layerName = $('#results-list').val();
         
-        if('' === layerName){
-            alert('Please select a result from the list');
-            return;
-        }
+        if(!layerName){
+			CONFIG.ui.showAlert({
+                message : 'Please select a result from the list.',
+                displayTime : 7500,
+                caller : Results
+            });
+        } else {
+			var geoserverEndpoint = CONFIG.ows.geoserverProxyEndpoint.endsWith('/') ? CONFIG.ows.geoserverProxyEndpoint : CONFIG.ows.geoserverProxyEndpoint + '/';
+			var url = geoserverEndpoint + 'wfs?' +
+			'service=wfs&'+
+			'version=2.0.0&'+
+			'request=GetFeature&'+
+			'typeName=' + escape(layerName) + '&' +
+			'outputFormat=SHAPE-ZIP';
+			window.open(url);
+		}
         
-        var geoserverEndpoint = CONFIG.ows.geoserverProxyEndpoint.endsWith('/') ? CONFIG.ows.geoserverProxyEndpoint : CONFIG.ows.geoserverProxyEndpoint + '/';
-        var url = geoserverEndpoint + 'wfs?' +
-        'service=wfs&'+
-        'version=2.0.0&'+
-        'request=GetFeature&'+
-        'typeName=' + escape(layerName) + '&' +
-        'outputFormat=SHAPE-ZIP';
-        window.open(url);
     },
     retrieveResultsSpreadsheet: function(){
         var layerName = $('#results-list').val();
         
-        if('' === layerName){
-            alert('Please select a result from the list');
-            return;
-        }
-        
-        CONFIG.ows.getDescribeFeatureType({
-            layerNS : layerName.split(':')[0],
-            layerName : layerName.split(':')[1],
-            callbacks : [
-            function(describeFeatureResponse) {
-                var propertyNames = describeFeatureResponse.featureTypes[0].properties.map(function(ft){
-                    return ft.name
-                    })
-                var propertyNamesToExclude = ['the_geom'];
-                    
-                //remove each excluded attribute name from the array
-                propertyNamesToExclude.each(function(nameToExclude){
-                    propertyNames.remove(nameToExclude);
-                });
-                    
-                var stringPropertyNames = escape(propertyNames.join(','));
+        if(!layerName){
+			CONFIG.ui.showAlert({
+                message : 'Please select a result from the list.',
+                displayTime : 7500,
+                caller : Results
+            });
+        } else {
+			CONFIG.ows.getDescribeFeatureType({
+				layerNS: layerName.split(':')[0],
+				layerName: layerName.split(':')[1],
+				callbacks: [
+					function(describeFeatureResponse) {
+						var propertyNames = describeFeatureResponse.featureTypes[0].properties.map(function(ft) {
+							return ft.name;
+						});
+						var propertyNamesToExclude = ['the_geom'];
 
-                var url = CONFIG.ows.geoserverProxyEndpoint + 'wfs?' +
-                'service=wfs&'+
-                'version=2.0.0&'+
-                'request=GetFeature&'+
-                'typeName=' + layerName + '&' +
-                'outputFormat=csv&' +
-                'propertyName=' + stringPropertyNames;
-                //reset it to blank in case the user downloads the same file again
-                $('#download').attr('src', '').attr('src', url);
-            }
-            ]
-        })
+						//remove each excluded attribute name from the array
+						propertyNamesToExclude.each(function(nameToExclude) {
+							propertyNames.remove(nameToExclude);
+						});
+
+						var stringPropertyNames = escape(propertyNames.join(','));
+
+						var url = CONFIG.ows.geoserverProxyEndpoint + 'wfs?' +
+								'service=wfs&' +
+								'version=2.0.0&' +
+								'request=GetFeature&' +
+								'typeName=' + layerName + '&' +
+								'outputFormat=csv&' +
+								'propertyName=' + stringPropertyNames;
+						//reset it to blank in case the user downloads the same file again
+						$('#download').attr('src', '').attr('src', url);
+					}
+				]
+			});
+		}
     }
-}
+};
