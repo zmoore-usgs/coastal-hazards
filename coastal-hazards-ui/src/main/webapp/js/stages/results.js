@@ -215,83 +215,38 @@ var Results = {
             var layer = CONFIG.ows.getLayerByName({
                 layerNS: selectedResultValue.split(':')[0],
                 layerName : selectedResultValue.split(':')[1]
-            })
+            });
             CONFIG.tempSession.getStage(Transects.stage).viewing = selectedResultValue;
             
             Results.addLayerToMap({
                 layer : layer
-            })
+            });
              
             Results.displayResult({
                 result : layer
-            })
+            });
             
             CONFIG.map.getMap().getLayersBy('name', layer.prefix + ':' + layer.name)[0].redraw();
         } 
         CONFIG.tempSession.persistSession();
     },
     
-    /**
+	/**
      * Uses a OWS DescribeFeatureType response to add a layer to a map,
      * pop up a plotter and table and sets highlighting rules on the layer
      * that ties into the table and plotter
-     */
+	 * 
+	 * @param {Object} args { layer : { name : String, prefix : String}  }
+	 * @returns {undefined}
+	 */
     addLayerToMap : function(args) {
         LOG.info('Results.js::addLayerToMap');
-        var layer = args.layer;
-        var layerName = layer.name;
-        var layerPrefix = layer.prefix;
         
         LOG.trace('Results.js::addLayerToMap: Creating WMS layer that will hold the heatmap style');
-        var resultsWMS = new OpenLayers.Layer.WMS(layerPrefix + ':' + layerName,
-            'geoserver/'+layerPrefix+'/wms',
-            {
-                layers : layerName,
-                transparent : true,
-                styles : 'ResultsRaster',
-                env : 'attribute:' + CONFIG.graph.enabled + ";invert:" + CONFIG.graph.displayMap[CONFIG.graph.enabled].invert
-            },
-            {
-                prefix : layerPrefix,
-                zoomToWhenAdded : true, // Include this layer when performing an aggregated zoom
-                isBaseLayer : false,
-                unsupportedBrowsers: [],
-                tileOptions: {
-                    // http://www.faqs.org/rfcs/rfc2616.html
-                    // This will cause any request larger than this many characters to be a POST
-                    maxGetUrlLength: 2048
-                },
-                ratio: 1,
-                singleTile : true
-            });
+        var resultsWMS = Results.createRasterLayer(args);
             
         LOG.trace('Results.js::addLayerToMap: Creating Vector layer that will be used for highlighting');
-        var resultsVector = new OpenLayers.Layer.Vector(layerPrefix + ':' + layerName, {
-            strategies: [new OpenLayers.Strategy.Fixed()],
-            protocol: new OpenLayers.Protocol.WFS({
-                version: '1.1.0',
-                url:  "geoserver/"+layerPrefix+"/wfs",
-                featureType: layerName, 
-                featureNS: CONFIG.namespace[layerPrefix],
-                geometryName: "the_geom",
-                srsName: CONFIG.map.getMap().getProjection()
-            }),
-            styleMap: new OpenLayers.StyleMap({
-                "default": new OpenLayers.Style({
-                    strokeColor: Results.reservedColor,
-                    strokeWidth: 2,
-                    strokeOpacity: 0
-                }),
-                "temporary": new OpenLayers.Style({
-                    strokeColor: Results.reservedColor,
-                    strokeOpacity: 1,
-                    strokeWidth: 2,
-                    fillColor: Results.reservedColor,
-                    fillOpacity: 1,
-                    cursor: "pointer"
-                })
-            })
-        });
+        var resultsVector = Results.createVectorLayer(args);
 	
         var featureHighlighted = function(event) {
             LOG.trace('Results.js::addLayerToMap: A results feature is being highlighted');
@@ -299,20 +254,19 @@ var Results = {
             
             LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the plot');
             var xPlotIdx = CONFIG.graph.plot.rawData_.findIndex(function(o){
-                return o[0] == xValue;
+                return o[0] === xValue;
             });
-            CONFIG.graph.plot.setSelection(xPlotIdx)  ; 
+            CONFIG.graph.plot.setSelection(xPlotIdx); 
             
             LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the table');
             $('#results-table tbody>tr').removeClass('warning');
             var tableRow = $('#results-table tbody>tr').toArray().find(function(tr){
-                return $(tr).data().base_dist == xValue;
+                return $(tr).data().base_dist === xValue;
             });
             
             LOG.trace('Results.js::addLayerToMap: Scrolling the table into view and highlighting the correct row');
-            //            tableRow.scrollIntoView();
             $(tableRow).addClass('warning'); // Highlight in yellow
-        }
+        };
         
         LOG.debug('Shorelines.js::addLayerToMap: (re?)-adding vector selector control for new results set');
         CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id','results-select-control')[0]);
@@ -328,16 +282,129 @@ var Results = {
         });
             
         LOG.debug('Shorelines.js::addLayerToMap: Adding results WMS layer to the map');
-        resultsWMS.type="results";
+		Results.removeRasterLayer();
         CONFIG.map.getMap().addLayer(resultsWMS);
+		
         LOG.debug('Shorelines.js::addLayerToMap: Adding results Vector layer to the map');
-        resultsVector.type="highlight";
+        Results.removeVectorLayer();
         CONFIG.map.getMap().addLayer(resultsVector);
+		
         LOG.debug('Shorelines.js::addLayerToMap: Adding select feature control to map and activating');
         CONFIG.map.getMap().addControl(selectFeatureControl);
         selectFeatureControl.activate();
     },
-    
+	/**
+	 * Removes the results raster layer, if it exists
+	 * @returns {Boolean} Removed
+	 */
+	removeRasterLayer : function() {
+		var rLayerArr = CONFIG.map.getMap().getLayersBy('type','results');
+		
+		if (rLayerArr.length) {
+			CONFIG.map.getMap().removeLayer(rLayerArr[0]);
+			return true;
+		}
+		return false;
+	},
+	/**
+	 * Removes the results vector layer, if it exists
+	 * @returns {Boolean} Removed
+	 */
+	removeVectorLayer : function() {
+		var vLayerArr = CONFIG.map.getMap().getLayersBy('type','highlight');
+		
+		if (vLayerArr.length) {
+			CONFIG.map.getMap().removeLayer(vLayerArr[0]);
+			return true;
+		}
+		return false;
+	},
+	/**
+	 * Creates a results raster layer to display on the map. Typically this 
+	 * will be a heatmap
+	 * 
+	 * @param {Object} args { layer : { name : String, prefix : String}  }
+	 * 
+	 * @returns {OpenLayers.Layer.WMS} Results raster
+	 */
+    createRasterLayer: function(args) {
+		LOG.info('Results.js::createRasterLayer');
+		var layer = args.layer;
+		var layerName = layer.name;
+		var layerPrefix = layer.prefix;
+		
+		var raster = new OpenLayers.Layer.WMS(layerPrefix + ':' + layerName,
+				'geoserver/' + layerPrefix + '/wms',
+				{
+					layers: layerName,
+					transparent: true,
+					styles: 'ResultsRaster',
+					env: 'attribute:' + CONFIG.graph.enabled + ";invert:" + CONFIG.graph.displayMap[CONFIG.graph.enabled].invert
+				},
+		{
+			prefix: layerPrefix,
+			zoomToWhenAdded: true, // Include this layer when performing an aggregated zoom
+			isBaseLayer: false,
+			unsupportedBrowsers: [],
+			tileOptions: {
+				// http://www.faqs.org/rfcs/rfc2616.html
+				// This will cause any request larger than this many characters to be a POST
+				maxGetUrlLength: 2048
+			},
+			ratio: 1,
+			singleTile: true
+		});
+		raster.type="results";
+		return raster;
+	},
+	/**
+	 * Creates a results vector layer to display on the map. Typically this 
+	 * will be the highlight later
+	 * 
+	 * @param {Object} args { layer : { name : String, prefix : String}  }
+	 * 
+	 * @returns {OpenLayers.Layer.Vector} Results raster
+	 */
+	createVectorLayer: function(args) {
+		LOG.info('Results.js::createVectorLayer');
+		var layer = args.layer;
+		var layerName = layer.name;
+		var layerPrefix = layer.prefix;
+
+		var vector = new OpenLayers.Layer.Vector(layerPrefix + ':' + layerName, {
+			strategies: [new OpenLayers.Strategy.Fixed()],
+			protocol: new OpenLayers.Protocol.WFS({
+				version: '1.1.0',
+				url: "geoserver/" + layerPrefix + "/wfs",
+				featureType: layerName,
+				featureNS: CONFIG.namespace[layerPrefix],
+				geometryName: "the_geom",
+				srsName: CONFIG.map.getMap().getProjection()
+			}),
+			styleMap: new OpenLayers.StyleMap({
+				"default": new OpenLayers.Style({
+					strokeColor: Results.reservedColor,
+					strokeWidth: 2,
+					strokeOpacity: 0
+				}),
+				"temporary": new OpenLayers.Style({
+					strokeColor: Results.reservedColor,
+					strokeOpacity: 1,
+					strokeWidth: 2,
+					fillColor: Results.reservedColor,
+					fillOpacity: 1,
+					cursor: "pointer"
+				})
+			})
+		});
+		vector.type="highlight";
+		return vector;
+	},
+	/**
+	 * 
+	 * @param {Object} args { result : { name : String, prefix : String}  }
+	 * @returns {undefined}
+	 */
     displayResult : function(args) {
         var result = args.result;
         var resultsColumns = this.viewableResultsColumns.clone();
@@ -350,33 +417,34 @@ var Results = {
             callbacks : {
                 success : [
                 function (features, scope) {
+					CONFIG.graph.features = features;
+					
                     var resultsTable = Results.createTable({
                         features : features,
                         layer : result,
                         resultsColumns : resultsColumns
-                    })
+                    });
                     
                     Results.createResultsTabs({
                         layer : result,
                         table : resultsTable
-                    })
+                    });
                     
-					CONFIG.graph.features = features;
                     Results.createPlot({
                         layer : result
-                    })
+                    });
 					
 					Results.bindPlotControls();
                     
                     $('#results-table tbody>tr').hover( 
                         function(event) {
-                            var baseDist = $(this).data().base_dist
+                            var baseDist = $(this).data().base_dist;
                             var selectionControl = CONFIG.map.getMap().getControlsBy('id','results-select-control')[0];
                             var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'highlight')[0].features.find(function(f){
                                 return f.attributes.base_dist === baseDist;
-                            })
+                            });
                             selectionControl.select(hlFeature);
-                            $(this).addClass('warning')
+                            $(this).addClass('warning');
                             event.stopImmediatePropagation();
                             
                         },
@@ -426,13 +494,29 @@ var Results = {
 					var attribute = $(event.target).html().substring(0,3);
 					var fullAttribute = $(event.target).html();
 					CONFIG.graph.enabled = attribute;
+					
+					// Change the tab title
 					$('#tab-stat-description').html(fullAttribute);
+					
+					// Show the plot
 					Results.createPlot();
+					
+					// Display a new heatmap
+					Results.removeRasterLayer();
+					var selectedLayer = $('#results-list :selected').val();
+					var resultsWMS = Results.createRasterLayer({
+						layer : {
+							prefix : selectedLayer.split(':')[0],
+							name : selectedLayer.split(':')[1]
+						}
+					});
+					CONFIG.map.getMap().addLayer(resultsWMS);
+					
+					// Hide the popover
 					$('#plot-menu-icon').popover('hide');
 				});
 			}
 		});
-		
 	},
 	preparePlotData : function() {
 		var features = CONFIG.graph.features;
@@ -482,9 +566,8 @@ var Results = {
 	},
     createPlot: function(args) {
 		var enabled = CONFIG.graph.enabled;
-		var data = Results.preparePlotData();
 		var plotDiv = $('#results-plot').get()[0];
-		var labels = ['Distance (m)', enabled];
+		var labels = ['Distance', enabled];
 		var data = Results.preparePlotData();
 		
 		if (CONFIG.graph.plot) {
@@ -500,7 +583,8 @@ var Results = {
 					showRangeSelector: true,
 					labelsSeparateLines : true,
 					xlabel : 'Distance (m)',
-					ylabel :  CONFIG.graph.displayMap[enabled].longName,	
+					xLabelHeight: 18,
+					ylabel :  CONFIG.graph.displayMap[enabled].longName + '<br />(' + CONFIG.graph.displayMap[enabled].units + ')',	
 					underlayCallback: function(canvas, area, dygraph) {
 						var w = $('#results-tabcontent').width() - 20;
 						var h = $('#results-tabcontent').height();
@@ -523,8 +607,8 @@ var Results = {
     createTable : function(args) {
         LOG.debug('Results.js::createResultsTable:: Creating results table header');
         var columns = this.viewableResultsColumns;
-        var features = args.features;
-        var tableDiv = $('<div />').attr('id','results-table-container')
+        var features = args.features || CONFIG.graph.features;
+        var tableDiv = $('<div />').attr('id','results-table-container');
         var table = $('<table />').addClass('table table-bordered table-condensed tablesorter results-table').attr('id','results-table');
         var thead = $('<thead />');
         var theadRow = $('<tr />');
@@ -534,7 +618,7 @@ var Results = {
             if (features[0].attributes[c]) {
                 theadRow.append($('<td />').html(c));
             }
-        })
+        });
         thead.append(theadRow);
         table.append(thead);
         
@@ -549,9 +633,9 @@ var Results = {
                     var tbodyData = $('<td />').html(feature.data[c]);
                     tbodyRow.append(tbodyData);
                 }
-            })
+            });
             tbody.append(tbodyRow);
-        })
+        });
         table.append(tbody);
         tableDiv.append(table);
         LOG.debug('Results.js::createResultsTable:: Results table created');
