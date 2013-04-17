@@ -1,9 +1,4 @@
 /* ---------------------------------------------------------------------- UI */
-/*html body>div.container-fluid {
-    background-image:url('../images/paneBackgrounds/application_background.png');
-    background-repeat:no-repeat;
-    background-size: 100% 100%;
-}*/
 .btn {
     margin-top: .25em;
     margin-bottom: .25em;
@@ -114,6 +109,10 @@ select option.session-layer{
 }
 #map-well {
     height: 39em;
+}
+
+.baseLayersDiv > .labelSpan {
+	display : inline;
 }
 
 /* ---------------------------------------------------------------------- Shorelines */
