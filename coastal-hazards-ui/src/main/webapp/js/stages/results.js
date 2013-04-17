@@ -466,7 +466,7 @@ var Results = {
 		row.append(
 			$('<div />').addClass('btn-group').attr('data-toggle', 'buttons-radio')
 			.append($('<button />').addClass(commonButtonControls).attr('id', 'lrr-btn').html('LRR +/- LCI'))
-			.append($('<button />').addClass(commonButtonControls).attr('id', 'wlr-btn').html('WLR +/- LCI'))
+			.append($('<button />').addClass(commonButtonControls).attr('id', 'wlr-btn').html('WLR +/- WCI'))
 			.append($('<button />').addClass(commonButtonControls).attr('id', 'sce-btn').html('SCE'))
 			.append($('<button />').addClass(commonButtonControls).attr('id', 'nsm-btn').html('NSM'))
 			.append($('<button />').addClass(commonButtonControls).attr('id', 'epr-btn').html('EPR')));
