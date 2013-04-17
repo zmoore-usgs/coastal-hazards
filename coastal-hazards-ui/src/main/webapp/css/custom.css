@@ -162,6 +162,16 @@ select option.session-layer{
 }
 
 /* ---------------------------------------------------------------------- Results */
+.dygraph-xlabel {
+	line-height : 18px;
+	font-size: 14px;
+}
+
+.dygraph-ylabel {
+	line-height : 18px;
+	font-size: 14px;
+}
+
 #results-table-container {
     height: 16.25em;
 }

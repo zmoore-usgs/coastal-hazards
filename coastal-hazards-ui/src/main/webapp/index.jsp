@@ -468,13 +468,13 @@
 		CONFIG.graph.enabled = 'LRR';
 		CONFIG.graph.displayMap = {
 			'LRR': {
-				longName: 'Linear regression rate',
+				longName: 'Linear regression rate +/- LCI',
 				units: 'm yr^-1',
 				uncertainty : 'LCI',
 				invert : true
 			},
 			'WLR': {
-				longName: 'Weighted linear regression rate',
+				longName: 'Weighted linear regression rate +/i WCI',
 				units: 'm yr^-1',
 				uncertainty : 'WCI',
 				invert : true
