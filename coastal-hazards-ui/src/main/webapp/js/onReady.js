@@ -125,7 +125,8 @@ $(document).ready(function() {
     // Utility class for the user interface
     splashUpdate("Initializing User Interface...");
     CONFIG.ui = new UI();
-
+	CONFIG.ui.appInit();
+		
     // Map interaction object. Holds the map and utilities 
     splashUpdate("Initializing Map...");
     CONFIG.map = new Map();
@@ -137,6 +138,7 @@ $(document).ready(function() {
     var interrogateSessionResources = function() {
         var loadApp = function(data, textStatus, jqXHR) {
             CONFIG.ui.work_stages_objects.each(function(stage) {
+				
                 stage.appInit();
                 stage.populateFeaturesList(data, textStatus, jqXHR);
             });

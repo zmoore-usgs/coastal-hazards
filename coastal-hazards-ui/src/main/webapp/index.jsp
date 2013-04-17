@@ -53,16 +53,16 @@
         <jsp:include page="components/application-overlay.jsp"></jsp:include>
 
         <div class="container-fluid">
-            <div class="row-fluid">
+            <div class="row-fluid" id="header-row">
                 <jsp:include page="template/USGSHeader.jsp">
                     <jsp:param name="relPath" value="" />
                     <jsp:param name="header-class" value="" />
                     <jsp:param name="site-title" value="USGS Coastal Change Hazards" />
                 </jsp:include>
-            <jsp:include page="components/app-navbar.jsp"></jsp:include>
+				<jsp:include page="components/app-navbar.jsp"></jsp:include>
             </div>
             
-            <div class="row-fluid">
+            <div class="row-fluid" id="content-row">
                 <!-- NAV -->
                 <div class="span1" id='nav-list'>
                     <ul id="stage-select-tablist" class="nav nav-pills nav-stacked">
@@ -76,7 +76,7 @@
                 </div>
 
                 <!-- Toolbox -->
-                <div class="span4">
+                <div class="span4" id="toolbox-span">
                     <div id="toolbox-well" class="well well-small tab-content">
 
                         <!-- Shorelines -->
@@ -91,7 +91,7 @@
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="shorelines-view-tab">
-                                    <select id="shorelines-list" class="feature-list" multiple="multiple"></select>
+                                    <select id="shorelines-list" class="feature-list"></select>
                                         <div class="tabbable">
                                             <ul class="nav nav-tabs" id="shoreline-table-navtabs">
                                             </ul>
@@ -363,15 +363,15 @@
                 </div>
 
                 <!-- MAP -->
-                <div class="span7">
+                <div class="span7" id="map-span">
                     <div id="map-well" class="well well-small tab-content">
                         <div id="map"></div>
                     </div>
                 </div>
 
             </div>
-            <div class="row-fluid">
-                <div id="application-alert-container" class="span11"></div>
+            <div class="row-fluid" id="alert-row">
+                <div id="application-alert-container" class="span11 offset1"></div>
             </div>
 
             <div class="row-fluid" id="footer-row">

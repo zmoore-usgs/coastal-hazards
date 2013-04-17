@@ -12,10 +12,6 @@
     height: auto !important;
 }
 
-#toolbox-well {
-    height: 39em;
-}
-
 #application-spinner {
     text-align: center;
     display: none;
@@ -108,7 +104,11 @@ select option.session-layer{
     width: 100%;
 }
 #map-well {
-    height: 39em;
+    height: 100%;
+}
+
+#toolbox-well {
+	height: 100%;
 }
 
 .baseLayersDiv > .labelSpan {
@@ -122,9 +122,6 @@ select option.session-layer{
 }
 .shoreline-table-selected-head-column {
     width: 30%;
-}
-#shorelines-list {
-    height: 7.25em;
 }
 
 .wildcard-link {
