@@ -55,7 +55,8 @@ var Transects = {
                     style: {
                         strokeColor: '#A1A1A1',
                         strokeOpacity: 0.25
-                    }
+                    },
+					displayInLayerSwitcher : false
                 });
                 selectedFeature.geometry.addComponents([angleGeometry1, angleGeometry2]);
                 angleLayer.addFeatures([selectedFeature]);
@@ -130,7 +131,8 @@ var Transects = {
                     srsName: CONFIG.map.getMap().getProjection()
                 }),
                 cloneOf: oLayerName,
-                renderers: CONFIG.map.getRenderer()
+                renderers: CONFIG.map.getRenderer(),
+				displayInLayerSwitcher : false
             });
             clonedLayer.addFeatures(originalLayer.features);
             clonedLayer.styleMap.styles['default'].defaultStyle.strokeWidth = 4;
@@ -508,7 +510,8 @@ var Transects = {
                             strokeWidth: 2
                         })
                     }),
-                    type: 'transects'
+                    type: 'transects',
+					displayInLayerSwitcher : false
                 });
 
                 CONFIG.map.getMap().addLayer(transects);

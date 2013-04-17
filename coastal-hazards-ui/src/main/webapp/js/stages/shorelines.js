@@ -229,7 +229,8 @@ var Shorelines = {
                                 singleTile: true, 
                                 ratio: 1,
                                 groupByAttribute : groupingColumn,
-                                groups : groups
+                                groups : groups,
+								displayInLayerSwitcher : false
                             });
                             
                         Shorelines.getShorelineIdControl().layers.push(wmsLayer);
