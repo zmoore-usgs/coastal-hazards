@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.usgs.cida.coastalhazards</groupId>
 	<artifactId>coastal-hazards</artifactId>
-	<version>1.0.5-SNAPSHOT</version>
+	<version>1.0.5</version>
 	<packaging>pom</packaging>
 	<name>Coastal Hazards</name>
   
@@ -18,7 +18,7 @@
 	<issueManagement>
 		<system>JIRA</system>
 		<!-- This needs to be corrected -->
-		<url/>
+		<url />
 	</issueManagement>
 	
 	<url>http://cida.usgs.gov/</url>
