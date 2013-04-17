@@ -383,7 +383,13 @@
                 </jsp:include>
             </div>
         </div>
-
+		
+		<%-- Stuff that isn't shown in the application but is used by JS --%>
+		<div id="plot-legend-wrapper" class="hide">
+			<div id="plot-legend-container" class="container-fluid">
+				<div id="plot-legend-row" class="row-fluid">&nbsp;</div>
+			</div>
+		</div>
         <div id="modal-window" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-window-label" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -395,6 +401,7 @@
             <div class="modal-footer"></div>
         </div>
         <iframe id="download" class="hidden"></iframe>
+		
     </body>
     <script type="text/javascript">splashUpdate("Loading Graphing Utilities...");</script>
     <jsp:include page="js/dygraphs/dygraphs.jsp">
@@ -463,8 +470,8 @@
     <link type="text/css" rel="stylesheet" href="js/bootstrap-switch/static/stylesheets/bootstrapSwitch.css" />
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
 
-<script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
-<link type="text/css" rel="stylesheet" href="css/custom.css" />
-<script type="text/javascript">splashUpdate("Loading Main module...");</script>
-<script type="text/javascript" src="js/onReady.js"></script>
+	<script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
+	<link type="text/css" rel="stylesheet" href="css/custom.css" />
+	<script type="text/javascript">splashUpdate("Loading Main module...");</script>
+	<script type="text/javascript" src="js/onReady.js"></script>
 </html>
