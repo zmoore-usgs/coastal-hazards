@@ -604,6 +604,9 @@ var Results = {
 
 		return plotDiv;
 	},
+	bindPlotDivPopover : function() {
+		
+	},
     createTable : function(args) {
         LOG.debug('Results.js::createResultsTable:: Creating results table header');
         var columns = this.viewableResultsColumns;
