@@ -99,10 +99,13 @@ select option.session-layer{
     text-shadow: #FFFFFF 0px 0px 2px;
     color: #000000;
 }
+
 #map {
+	min-height: 32em;
     height: 100%;
     width: 100%;
 }
+
 #map-well {
     height: 100%;
 }
