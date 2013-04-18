@@ -248,6 +248,8 @@ var Results = {
         LOG.trace('Results.js::addLayerToMap: Creating Vector layer that will be used for highlighting');
         var resultsVector = Results.createVectorLayer(args);
 	
+		// TODO - Figure out a way to bind scrolling across the vector features and 
+		// highlight it in the plotter
         var featureHighlighted = function(event) {
             LOG.trace('Results.js::addLayerToMap: A results feature is being highlighted');
             var xValue = event.feature.attributes.base_dist;
@@ -260,8 +262,6 @@ var Results = {
 					return o[0] === parseFloat(xValue);
 				});
 				CONFIG.graph.plot.setSelection(xPlotIdx);
-//				$('#results-plot').trigger('hover').delay(2000).trigger('mouseleave');
-//				$('#plot-legend-row').trigger('contentchanged');
 			} else if (activeTab === 'nav-tab-table-link') { // User is looking @ table
 				 LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the table');
 				$('#results-table tbody>tr').removeClass('warning');
