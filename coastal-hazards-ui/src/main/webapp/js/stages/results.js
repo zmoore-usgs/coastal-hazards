@@ -24,31 +24,31 @@ var Results = {
                     message : 'Confidence Interval needs to be numeric.',
                     displayTime : 3000,
                     caller : Calculation
-                })
+                });
             } else if (ciNum < 50 || ciNum > 100) {
                 CONFIG.ui.showAlert({
                     message : 'Confidence Interval needs to be in range 50 - 100.',
                     displayTime : 3000,
                     caller : Calculation
-                })
+                });
             } else {
                 Results.calcResults();
             }
-        })
+        });
         $('#download-shapefile-btn').click(Results.retrieveResultsShapefile);
         $('#download-spreadsheet-btn').click(Results.retrieveResultsSpreadsheet);
         $('#download-plot-btn').click(Results.retrieveRSquigglePlotPNG);
     },
     leaveStage : function() {
         LOG.debug('Results.js::leaveStage');
-        CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id','results-select-control')[0])
+        CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id','results-select-control')[0]);
     },
     enterStage : function() {
         LOG.debug('Results.js::enterStage');
         CONFIG.ui.switchTab({
             caller : Results,
             tab : 'view'
-        })
+        });
     },
     populateFeaturesList : function() {
         CONFIG.ui.populateFeaturesList({
@@ -62,7 +62,7 @@ var Results = {
                 message : 'Missing transects or intersections.',
                 displayTime : 7500,
                 caller : Calculation
-            })
+            });
             return;
         }
         Results.clear();
@@ -252,22 +252,28 @@ var Results = {
             LOG.trace('Results.js::addLayerToMap: A results feature is being highlighted');
             var xValue = event.feature.attributes.base_dist;
             
-            LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the plot');
-            var xPlotIdx = CONFIG.graph.plot.rawData_.findIndex(function(o){
-                return o[0] === xValue;
-            });
-            CONFIG.graph.plot.setSelection(xPlotIdx); 
-            
-            LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the table');
-            $('#results-table tbody>tr').removeClass('warning');
-            var tableRow = $('#results-table tbody>tr').toArray().find(function(tr){
-                return $(tr).data().base_dist === xValue;
-            });
-            
-            LOG.trace('Results.js::addLayerToMap: Scrolling the table into view and highlighting the correct row');
-            $(tableRow).addClass('warning'); // Highlight in yellow
+			// Figure out which tab the user is looking at
+			var activeTab = $('#results-table-navtabs li[class=active] a').attr('id');
+			if (activeTab === 'nav-tab-plot-link') { // User is looking @ plot
+				LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the plot');
+				var xPlotIdx = CONFIG.graph.plot.rawData_.findIndex(function(o){
+					return o[0] === parseFloat(xValue);
+				});
+				CONFIG.graph.plot.setSelection(xPlotIdx);
+//				$('#results-plot').trigger('hover').delay(2000).trigger('mouseleave');
+//				$('#plot-legend-row').trigger('contentchanged');
+			} else if (activeTab === 'nav-tab-table-link') { // User is looking @ table
+				 LOG.trace('Results.js::addLayerToMap: Highlighting the feature in the table');
+				$('#results-table tbody>tr').removeClass('warning');
+				var tableRow = $('#results-table tbody>tr').toArray().find(function(tr){
+					return $(tr).data().base_dist === parseFloat(xValue);
+				});
+
+				LOG.trace('Results.js::addLayerToMap: Scrolling the table into view and highlighting the correct row');
+				$(tableRow).addClass('warning'); // Highlight in yellow
+			}
         };
-        
+		
         LOG.debug('Shorelines.js::addLayerToMap: (re?)-adding vector selector control for new results set');
         CONFIG.map.getMap().removeControl(CONFIG.map.getMap().getControlsBy('id','results-select-control')[0]);
         var selectFeatureControl = new OpenLayers.Control.SelectFeature(resultsVector, {
@@ -596,11 +602,11 @@ var Results = {
 						}
 					},
 					highlightCallback: function(e, x, pts, row) {
-						var selectionControl = CONFIG.map.getMap().getControlsBy('id', 'results-select-control')[0];
 						$('#plot-legend-row').trigger('contentchanged');
+						var selectionControl = CONFIG.map.getMap().getControlsBy('id', 'results-select-control')[0];
 						selectionControl.unselectAll();
 						var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'highlight')[0].features.find(function(f) {
-							return f.attributes.base_dist === x;
+							return parseFloat(f.attributes.base_dist) === x;
 						});
 						selectionControl.select(hlFeature);
 					}
@@ -609,18 +615,7 @@ var Results = {
 		return plotDiv;
 	},
 	bindPlotLegendDivPopover: function() {
-		var contentChangedFunction = function() {
-			var data = $('#plot-legend-container').html();
-			popover.options.content = data;
-			var visible = popover && tip && tip.is(':visible');
-
-			if (visible) {
-				tip.find('.popover-content > *').html(data);
-			} else {
-				popover.show();
-			}
-		};
-		$('#results-tabcontent').popover({
+		$('#results-plot').popover({
 			animation: true,
 			html: true,
 			content: function() {
@@ -667,19 +662,28 @@ var Results = {
         table.append(thead);
         
         LOG.debug('Results.js::createResultsTable:: Creating results table body');
-        features.each(function(feature) {
-            var tbodyRow = $('<tr />')
-            .data({
-                base_dist : feature.attributes.base_dist
-            });
-            columns.each(function(c) {
-                if (feature.attributes[c]) {
-                    var tbodyData = $('<td />').html(feature.data[c]);
-                    tbodyRow.append(tbodyData);
-                }
-            });
-            tbody.append(tbodyRow);
-        });
+		features.each(function(feature) {
+			var tbodyRow = $('<tr />')
+					.data({
+				base_dist: feature.attributes.base_dist
+			});
+			columns.each(function(c) {
+				if (feature.attributes[c]) {
+					var tbodyData;
+					var data = feature.data[c];
+					if (c === 'base_dist') {
+						tbodyData = $('<td />').html(data);
+					} else {
+						var floatData = parseFloat(data);
+						var fixedFloatData = floatData.toPrecision(3);
+						tbodyData = $('<td />').html(fixedFloatData);
+
+					}
+					tbodyRow.append(tbodyData);
+				}
+			});
+			tbody.append(tbodyRow);
+		});
         table.append(tbody);
         tableDiv.append(table);
         LOG.debug('Results.js::createResultsTable:: Results table created');
@@ -708,7 +712,10 @@ var Results = {
 			'href' : '#results-plot',
 			'id' : 'nav-tab-plot-link'
 		}).attr('data-toggle', 'tab').html('<span id="tab-stat-description">LRR + LCI</span> Rates Plot &nbsp;&nbsp;&nbsp;').append($('<i />').attr('id','plot-menu-icon').addClass('icon-cogs'));
-        var navTabTableLink = $('<a />').attr('href', '#results-' + layer.title + '-table').attr('data-toggle', 'tab').html('Rates Table');
+        var navTabTableLink = $('<a />').attr({
+			'id' : 'nav-tab-table-link',
+			'href' : '#results-' + layer.title + '-table'
+		}).attr('data-toggle', 'tab').html('Rates Table');
         
 		navTabTable.append(navTabTableLink);
         navTabPlot.append(navTabPlotLink);
