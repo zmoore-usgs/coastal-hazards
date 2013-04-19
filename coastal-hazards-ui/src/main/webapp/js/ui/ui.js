@@ -8,7 +8,11 @@ var UI = function() {
     me.base_name = undefined;//init to undefined. Update in baselines
     
     $('#manage-sessions-btn').on('click', CONFIG.tempSession.createSessionManagementModalWindow);
-    
+	$('#nav-menu-intro').on('click', function() {
+//		introJs().start();
+		bootstro.start();
+	});
+	
     $('.collapsibleHelp').accordion({
         collapsible: true,
         heightStyle: 'content'
@@ -23,42 +27,6 @@ var UI = function() {
     
     // Setup of popovers
     me.work_stages_objects.each(function(stage) {
-        if (stage.description.stage) {
-            $('#nav-list a[href="#'+stage.stage+'"]').parent().popover({
-                title : '<h3>' + stage.stage.capitalize() + '</h3>',
-                content : $('<div />').attr('id', stage.stage + '-description').addClass('stage-icon-description').html(stage.description.stage),
-                html : true,
-                placement : 'right',
-                trigger : 'hover'
-            });
-        }
-        
-        if (stage.description['view-tab']) {
-            $('#'+stage.stage+' [href="#'+stage.stage+'-view-tab"]').popover({
-                title : stage.stage.capitalize() + ' View',
-                content :stage.description['view-tab'],
-                html : true,
-                placement : 'top',
-                trigger : 'hover',
-                delay : {
-                    show : CONFIG.popupHoverDelay
-                }
-            });
-        }
-            
-        if (stage.description['manage-tab']) {
-            $('#'+stage.stage+' [href="#'+stage.stage+'-manage-tab"]').popover({
-                title : stage.stage.capitalize() + ' Manage',
-                content : stage.description['manage-tab'],
-                html : true,
-                placement : 'top',
-                trigger : 'hover',
-                delay : {
-                    show : CONFIG.popupHoverDelay
-                }
-            });
-        }
-            
         if (stage.description['upload-button']) {
             $('#'+stage.stage+'-triggerbutton').popover({
                 title : stage.stage.capitalize() + ' Resource Upload',
@@ -71,34 +39,13 @@ var UI = function() {
                 }
             });
         }
-    
-        $('.feature-list').popover({
-            title : 'Layer Selection',
-            content : $('<div />')
-            .append($('<div />').css({
-                'color': '#661111',
-                'text-shadow' : '0px 0px 1px #ffffff',
-                'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
-            }).html('Published (read-only)'))
-            .append($('<div />').css({
-                'color' : '#116611',
-                'text-shadow' : '0px 0px 1px #ffffff',
-                'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
-            }).html('Yours'))
-            .html(),
-            html : true,
-            placement : 'bottom',
-            trigger : 'hover',
-            delay : {
-                show : CONFIG.popupHoverDelay
-            }
-        });
     });
     
     LOG.debug('UI.js::constructor: UI class initialized.');
     return $.extend(me, {
 		appInit : function() {
 			this.bindWindowResize();
+			this.addIntroContent();
 			$(window).resize();
 		},
         displayStage : function(caller) {
@@ -945,6 +892,153 @@ var UI = function() {
                 }
 
             });
-        }        
+        },
+		bindBootstroPrevNextButtons: function() {
+			bootstro.onStepFunc = function() {
+				var step = $('.popover .label').html() ? parseInt($('.popover .label').html().split('/')[0]) : 0;
+
+				switch (step) {
+					case 4 :
+						$('#stage-select-tablist >li a[href=#shorelines]').click();
+						break;
+					case 5 :
+						$('#action-shorelines-tablist > li a[href=#shorelines-view-tab]').click();
+						break
+					case 6 :
+						$('#action-shorelines-tablist > li a[href=#shorelines-manage-tab]').click();
+						break
+					case 7 :
+						$('#action-shorelines-tablist > li a[href=#shorelines-view-tab]').click();
+						$('#shorelines-list').click();
+						break
+					case 8 :
+						$('#stage-select-tablist >li a[href=#baseline]').click();
+						break
+					case 9 :
+						$('#action-baseline-tablist > li a[href=#baseline-view-tab]').click();
+						break
+					case 10 :
+						$('#action-baseline-tablist > li a[href=#baseline-manage-tab]').click();
+						break
+				}
+			};
+		},
+		addIntroContent: function() {
+			// bootstro content
+			this.bindBootstroPrevNextButtons();
+			$('#app-navbar-container').addClass('bootstro').attr({
+				'data-bootstro-title': 'Welcome to USGS Coastal Change Hazards',
+				'data-bootstro-content': 'This web-based Digital Shoreline Analysis System (DSASweb) is a software application that enables a user to calculate shoreline rate-of-change statistics from multiple historical shoreline positions.' +
+						'<br /><br />A user-friendly interface of simple buttons and menus guides the user through the major steps of shoreline change analysis.' +
+						'<br /><br />You can use our current database of shorelines, or upload your own.' +
+						'<br /><br />DSASweb is a convenient, web-based version of the original USGS DSAS analysis tool.',
+				'data-bootstro-placement': 'bottom',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 0
+			});
+			
+			$('#stage-select-tablist').addClass('bootstro').attr({
+				'data-bootstro-title': 'Stage Selection',
+				'data-bootstro-content': 'Each stage in the DSASweb workflow can be accessed by clicking one of these navigation buttons.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 1
+			});
+			
+			$('#toolbox-well').addClass('bootstro').attr({
+				'data-bootstro-title': 'Toolbox',
+				'data-bootstro-content': 'The workspace for the active stage is designed to allow users to edit, define parameters, and interact with various DSASweb selection options.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 2
+			});
+
+			$('#map-span').addClass('bootstro').attr({
+				'data-bootstro-title': 'Map',
+				'data-bootstro-content': 'The map view provides an interactive view of active DSASweb geospatial elements.<br />These elements include shorelines, baselines, transects, intersections, and results.<br /><br />' +
+						'Use the +/- buttons  in the upper left to change the zoom level of the map, or double click to zoom in.<br />To quickly zoom in, draw a bounding box with the mouse by holding down the shift key on your keyboard.',
+				'data-bootstro-placement': 'left',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 3
+			});
+			
+			$('#stage-select-tablist >li a[href=#shorelines]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Shorelines',
+				'data-bootstro-content': 'Shorelines are geospatial polylines which represent the location of the shoreline at different times.<br />DSASweb uses the difference between these shorelines to calculate metrics of shoreline change.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 4
+			});
+			
+			$('#action-shorelines-tablist > li a[href=#shorelines-view-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Shorelines View',
+				'data-bootstro-content': 'A existing set of shorelines selected from the view menu will be added to the active workspace.' + 
+						'Use the visibility toggles, or click on shorelines in the map to disable shorelines.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 5
+			});
+			
+			$('#action-shorelines-tablist > li a[href=#shorelines-manage-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Shorelines Manage',
+				'data-bootstro-content': 'A set of shorelines can be added or removed from the view menu using the manage menu.',
+				'data-bootstro-placement': 'top',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 6
+			});
+			
+			$('#shorelines-list').addClass('bootstro').attr({
+				'data-bootstro-title': 'Individual Shorelines',
+				'data-bootstro-content': 'Individual shorelines can be disabled, which will result in those shorelines being ignored during DSASweb calculations. ',
+				'data-bootstro-placement': 'top',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 7
+			});
+			
+			$('#stage-select-tablist >li a[href=#baseline]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Baseline',
+				'data-bootstro-content': 'The baseline provides a local frame of reference for calculating metrics of shoreline change.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 8
+			});
+			
+			$('#action-baseline-tablist > li a[href=#baseline-view-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Baseline View',
+				'data-bootstro-content': 'A baseline selected from the view menu will be added to the active workspace.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 9
+			});
+			
+			$('#action-baseline-tablist > li a[href=#baseline-manage-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Baseline Manage',
+				'data-bootstro-content': '<p>A baseline can be added or removed from the view menu using the manage menu. <br />The manage tab also provides tools to draw new baselines or clone and edit existing baselines.</p><img src="images/workflow_figures/BaselineDraw.gif" />',
+				'data-bootstro-placement': 'bottom',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 10
+			});
+
+
+
+			// intro content
+			$('#app-navbar-container').attr({
+				'data-intro': 'This web-based Digital Shoreline Analysis System (DSASweb) is a software application that enables a user to calculate shoreline rate-of-change statistics from multiple historical shoreline positions.' +
+						'<br /><br />A user-friendly interface of simple buttons and menus guides the user through the major steps of shoreline change analysis.' +
+						'<br /><br />You can use our current database of shorelines, or upload your own.' +
+						'<br /><br />DSASweb is a convenient, web-based version of the original USGS DSAS analysis tool.',
+				'data-step': 1
+			});
+
+			$('#stage-select-tablist').attr({
+				'data-intro': 'Each stage in the DSASweb workflow can be accessed by clicking one of these navigation buttons.',
+				'data-step': 2
+			});
+			
+			$('#toolbox-well').attr({
+				'data-intro': 'The workspace for the active stage is designed to allow users to edit, define parameters, and interact with various DSASweb selection options.',
+				'data-step': 3
+			});
+		}
     });
 };
