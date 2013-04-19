@@ -165,6 +165,10 @@
         <servlet-name>ExportService</servlet-name>
         <servlet-class>gov.usgs.cida.coastalhazards.service.ExportService</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ConsumerServlet</servlet-name>
+        <servlet-class>gov.usgs.cida.coastalhazards.service.ConsumerServlet</servlet-class>
+    </servlet>
     
     <!-- MAPPING -->
     <servlet-mapping>
@@ -190,5 +194,9 @@
     <servlet-mapping>
         <servlet-name>ExportService</servlet-name>
         <url-pattern>/service/export/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ConsumerServlet</servlet-name>
+        <url-pattern>/consumer</url-pattern>
     </servlet-mapping>
 </web-app>
