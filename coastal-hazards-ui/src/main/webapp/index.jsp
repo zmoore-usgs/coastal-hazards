@@ -53,7 +53,7 @@
         <jsp:include page="components/application-overlay.jsp"></jsp:include>
 
         <div class="container-fluid">
-            <div class="row-fluid" id="header-row" data-intro="Welcome to the USGS Coastal Change Hazards application!" data-step='1'>
+            <div class="row-fluid" id="header-row">
                 <jsp:include page="template/USGSHeader.jsp">
                     <jsp:param name="relPath" value="" />
                     <jsp:param name="header-class" value="" />
@@ -64,19 +64,19 @@
             
             <div class="row-fluid" id="content-row">
                 <!-- NAV -->
-                <div class="span1" id='nav-list'  data-intro="This area represents stages that you work through in order to... [NEED TEXT HERE]" data-step='2'>
+                <div class="span1" id='nav-list'>
                     <ul id="stage-select-tablist" class="nav nav-pills nav-stacked">
-                        <li class="active" data-intro="Shorelines -- [NEED TEXT HERE]" data-step='4'><a href="#shorelines" data-toggle="tab"><img id="shorelines_img" src="images/workflow_figures/shorelines.png" title="Display Shorelines"/></a></li>
-                        <li><a href="#baseline" data-toggle="tab" data-intro="Baseline -- [NEED TEXT HERE]" data-step='5'><img id="baseline_img" src="images/workflow_figures/baseline_future.png" title="Display Baseline"/></a></li>
-                        <li><a href="#transects" data-toggle="tab" data-intro="Transects -- [NEED TEXT HERE]" data-step='6'><img id="transects_img" src="images/workflow_figures/transects_future.png" title="Calculate Transects"/></a></li>
-                        <li><a href="#calculation" data-toggle="tab" data-intro="Calculation -- [NEED TEXT HERE]" data-step='7'><img id="calculation_img" src="images/workflow_figures/calculation_future.png" title="Show Calculation"/></a></li>
-                        <li><a href="#results" data-toggle="tab" data-intro="Results -- [NEED TEXT HERE]" data-step='8'><img id="results_img" src="images/workflow_figures/results_future.png" title="Display Results"/></a></li>
+                        <li class="active"><a href="#shorelines" data-toggle="tab"><img id="shorelines_img" src="images/workflow_figures/shorelines.png" title="Display Shorelines"/></a></li>
+                        <li><a href="#baseline" data-toggle="tab"><img id="baseline_img" src="images/workflow_figures/baseline_future.png" title="Display Baseline"/></a></li>
+                        <li><a href="#transects" data-toggle="tab"><img id="transects_img" src="images/workflow_figures/transects_future.png" title="Calculate Transects"/></a></li>
+                        <li><a href="#calculation" data-toggle="tab"><img id="calculation_img" src="images/workflow_figures/calculation_future.png" title="Show Calculation"/></a></li>
+                        <li><a href="#results" data-toggle="tab"><img id="results_img" src="images/workflow_figures/results_future.png" title="Display Results"/></a></li>
                     </ul>
                     <div id="application-spinner"><img src="images/spinner/spinner3.gif" /></div>
                 </div>
 
                 <!-- Toolbox -->
-                <div class="span4" id="toolbox-span" data-intro="This area represents your primary workspace... [NEED TEXT HERE]" data-step='3'>
+                <div class="span4" id="toolbox-span">
                     <div id="toolbox-well" class="well well-small tab-content">
 
                         <!-- Shorelines -->
@@ -363,7 +363,7 @@
                 </div>
 
                 <!-- MAP -->
-                <div class="span7" id="map-span" data-intro="This area represents the map view... [NEED TEXT HERE]" data-step='9'>
+                <div class="span7" id="map-span">
                     <div id="map-well" class="well well-small tab-content">
                         <div id="map"></div>
                     </div>
@@ -470,9 +470,14 @@
     <link type="text/css" rel="stylesheet" href="js/bootstrap-switch/static/stylesheets/bootstrapSwitch.css" />
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
 	<script type="text/javascript">splashUpdate("Loading Intro Module...");</script>
-    <jsp:include page="js/introjs/intro.jsp">
+    <jsp:include page="js/bootstro/bootstro.jsp">
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
+	<%--
+	<jsp:include page="js/introjs/intro.jsp">
+        <jsp:param name="debug-qualifier" value="<%= development%>" />
+    </jsp:include>
+	--%>
 	<script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
 	<link type="text/css" rel="stylesheet" href="css/custom.css" />
 	<script type="text/javascript">splashUpdate("Loading Main module...");</script>
