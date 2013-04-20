@@ -79,6 +79,11 @@
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-question-sign icon-white"></i> Help<b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="#" id='nav-menu-intro'>Introduction</a></li>
+								<li><a href="#" id='nav-menu-shorelines'>Shorelines</a></li>
+								<li><a href="#" id='nav-menu-baseline'>Baseline</a></li>
+								<li><a href="#" id='nav-menu-transects'>Transects</a></li>
+								<li><a href="#" id='nav-menu-calculation'>Calculation</a></li>
+								<li><a href="#" id='nav-menu-results'>Results</a></li>
                             </ul>
                         </li>
                     </ul>
