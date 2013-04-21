@@ -118,6 +118,11 @@ var Map = function() {
         map : me.map
     });
     
+	$('.olControlZoom').attr({
+		'data-intro': 'Use these buttons to change the zoom level of the map, or double click to zoom in.<br />To quickly zoom in, draw a bounding box with the mouse by holding down the shift key on your keyboard.',
+		'data-step': 5
+	});
+	
     LOG.debug('Map.js::constructor: Map class initialized.');
     return $.extend(me, {
         getMap : function() {

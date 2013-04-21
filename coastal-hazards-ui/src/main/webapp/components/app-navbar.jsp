@@ -78,12 +78,17 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-question-sign icon-white"></i> Help<b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#" onclick="introJs().start();">Introduction</a></li>
+                                <li><a href="#" id='nav-menu-intro'>Introduction</a></li>
+								<li><a href="#" id='nav-menu-shorelines'>Shorelines</a></li>
+								<li><a href="#" id='nav-menu-baseline'>Baseline</a></li>
+								<li><a href="#" id='nav-menu-transects'>Transects</a></li>
+								<li><a href="#" id='nav-menu-calculation'>Calculation</a></li>
+								<li><a href="#" id='nav-menu-results'>Results</a></li>
                             </ul>
                         </li>
                     </ul>
 
-                    <form id="app-navbar-search-form" class="navbar-search pull-right" action="javascript:void(0);"  data-intro="Enter any type of location here... [NEED TEXT HERE]" data-step='10'>
+                    <form id="app-navbar-search-form" class="navbar-search pull-right" action="javascript:void(0);">
                         <i id="app-navbar-search-icon" class="icon-search"></i><input id="app-navbar-search-input" type="text" class="search-query span2" placeholder="Location Search">
                     </form>
 

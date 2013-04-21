@@ -534,25 +534,17 @@ var Results = {
 		var data = features.map(function(n){
             var baseDist = parseFloat(n.data['base_dist']);
             var series = parseFloat(n.data[enabled]);
-            var values = [series];
-			
 			if (uncertainty) {
-				values = [series, parseFloat(Math.abs(n.data[uncertainty]))];
+				// Include error bars [distance, [series, ABS(error bars)], error bars]
+				return [baseDist, [series, parseFloat(Math.abs(n.data[uncertainty]))], [parseFloat(n.data[uncertainty]), null]];
 			} else {
-				values = series;
+				return [baseDist, series];
 			}
-			
-            return [ 
-            // X axis values
-            baseDist, 
-            // [Value, Error bars]
-            values
-            ];
         }).sortBy(function(n) {
             return n[0];
         });
         
-        // Find 
+        // Find missing data
         var fidBreaks = [];
         features.each(function(feature, index, features) {
             if (index !== 0) {
@@ -566,43 +558,64 @@ var Results = {
 			var noData = null;
 			if (uncertainty) {
 				noData = [null,null];
+				data.insert([[null, noData, [null, null]]], i);
+			} else {
+				data.insert([[null,noData]], i);
 			}
-            data.insert([[null,noData]], i);
         });
 		
 		return data;
 	},
-    createPlot: function(args) {
+    createPlot: function() {
 		var enabled = CONFIG.graph.enabled;
+		var uncertaintyText = CONFIG.graph.displayMap[enabled].uncertainty;
+		var uncertainty =  uncertaintyText ? true : false;
 		var plotDiv = $('#results-plot').get()[0];
-		var labels = ['Distance', enabled];
+		var plotLegendDiv =  $('#results-plot-legend').get()[0];
+		var labels = ['D', enabled];
+		var xLabel = 'Distance (m)';
+		var yLabel = CONFIG.graph.displayMap[enabled].longName + '<br />(' + CONFIG.graph.displayMap[enabled].units + ')';
 		var data = Results.preparePlotData();
+		var seriesOptions = {
+			strokeWidth: 1.0
+		};
+		seriesOptions[enabled] = {
+			strokeWidth: 1.0,
+			highlightCircleSize: 3
+		};
+		
+		if (uncertainty) {
+			labels.push(uncertaintyText);
+			seriesOptions[uncertaintyText] = {
+				strokeWidth: 0.0,
+				highlightCircleSize: 0,
+				fillAlpha : 0.5
+			};
+		}
 		
 		if (CONFIG.graph.plot) {
+			LOG.debug('results.js:createPlot():: Removing previous plot');
 			CONFIG.graph.plot.destroy();
 		}
 		
-		CONFIG.graph.plot = new Dygraph(
-				plotDiv,
-				data,
-				{
-					labelsDiv : $('#plot-legend-row').get()[0],
+		var options = Object.extended({
+					labelsDiv : plotLegendDiv,
 					labels: labels,
-					errorBars: CONFIG.graph.displayMap[enabled].uncertainty ? true : false,
+					errorBars: uncertainty,
 					showRangeSelector: true,
 					labelsSeparateLines : true,
-					xlabel : 'Distance (m)',
-					xLabelHeight: 18,
-					ylabel :  CONFIG.graph.displayMap[enabled].longName + '<br />(' + CONFIG.graph.displayMap[enabled].units + ')',	
+					xlabel : xLabel,
+					ylabel :  yLabel,	
+					legend : 'always',
+					colors : ['#00AA00', '#00AA00'],
 					underlayCallback: function(canvas, area, dygraph) {
 						var w = $('#results-tabcontent').width() - 20;
-						var h = $('#results-tabcontent').height();
+						var h = $('#results-tabcontent').height() - 31;
 						if (w !== dygraph.width || h !== dygraph.height) {
 							dygraph.resize(w,h);
 						}
 					},
 					highlightCallback: function(e, x, pts, row) {
-						$('#plot-legend-row').trigger('contentchanged');
 						var selectionControl = CONFIG.map.getMap().getControlsBy('id', 'results-select-control')[0];
 						selectionControl.unselectAll();
 						var hlFeature = CONFIG.map.getMap().getLayersBy('type', 'highlight')[0].features.find(function(f) {
@@ -611,37 +624,10 @@ var Results = {
 						selectionControl.select(hlFeature);
 					}
 				});
-		Results.bindPlotLegendDivPopover();
+		options.merge(seriesOptions);
+		
+		CONFIG.graph.plot = new Dygraph(plotDiv, data, options);
 		return plotDiv;
-	},
-	bindPlotLegendDivPopover: function() {
-		$('#results-plot').popover({
-			animation: true,
-			html: true,
-			content: function() {
-				return $('#plot-legend-container').html();
-			},
-			placement: 'top',
-			trigger: 'hover',
-			container: 'body'
-		}).bind({
-			'shown': function(evt) {
-				var popover = $(evt.target).data('popover');
-				var tip = popover.tip();
-				$('#plot-legend-row').off('contentchanged');
-				$('#plot-legend-row').on('contentchanged', function() {
-					var data = $('#plot-legend-container').html();
-					popover.options.content = data;
-					var visible = popover && tip && tip.is(':visible');
-
-					if (visible) {
-						tip.find('.popover-content > *').html(data);
-					} else {
-						popover.show();
-					}
-				});
-			}
-		});
 	},
     createTable : function(args) {
         LOG.debug('Results.js::createResultsTable:: Creating results table header');
@@ -721,10 +707,16 @@ var Results = {
         navTabPlot.append(navTabPlotLink);
         navTabs.append(navTabPlot);
         navTabs.append(navTabTable);
-        
+		
+		var plotContainer = $('<div />').addClass('container-fluid').attr('id', 'results-plot-container');//.attr('id', 'results-plot');
+        var plotRow = $('<div />').addClass('row-fluid').attr('id', 'results-plot');
+		var plotLegendRow = $('<div />').addClass('row-fluid').attr('id', 'results-plot-legend');
+		plotContainer.append(plotRow).append(plotLegendRow);
+		
         LOG.debug('Results.js::createResultsTable:: Adding results table to DOM');
-        var tabContentPlotDiv = $('<div />').addClass('tab-pane').addClass('active plot-container').attr('id', 'results-plot');
+        var tabContentPlotDiv = $('<div />').addClass('tab-pane active').attr('id', 'results-plot-tabpane');
         var tabContentTableDiv = $('<div />').addClass('tab-pane').attr('id', 'results-' + layer.title + '-table');
+		tabContentPlotDiv.append(plotContainer);
         tabContentTableDiv.append(table);
         tabContent.append(tabContentPlotDiv);
         tabContent.append(tabContentTableDiv);
