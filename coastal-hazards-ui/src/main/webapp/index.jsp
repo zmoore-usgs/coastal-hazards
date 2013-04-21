@@ -465,9 +465,9 @@
     <link type="text/css" rel="stylesheet" href="js/bootstrap-switch/static/stylesheets/bootstrapSwitch.css" />
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
 	<script type="text/javascript">splashUpdate("Loading Intro Module...");</script>
-	<%-- TODO: Modularize --%>
+	<%-- For now, stick with full version. Minified version seems gimped --%>
     <jsp:include page="js/bootstro/bootstro.jsp">
-        <jsp:param name="debug-qualifier" value="<%= development%>" />
+        <jsp:param name="debug-qualifier" value="true" />
     </jsp:include>
 	<script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
 	<link type="text/css" rel="stylesheet" href="css/custom.css" />
