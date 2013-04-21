@@ -873,7 +873,7 @@ var UI = function() {
         },
 		bindBootstroPrevNextButtons: function() {
 			bootstro.onStepFunc = function(args) {
-				switch (args.step) {
+				switch (args.idx) {
 					case 4 :
 					case 5 :
 						$('#stage-select-tablist >li a[href=#shorelines]').click();
