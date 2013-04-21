@@ -872,14 +872,9 @@ var UI = function() {
             });
         },
 		bindBootstroPrevNextButtons: function() {
-			bootstro.onStepFunc = function() {
-				var step = $('.popover .label').html() ? parseInt($('.popover .label').html().split('/')[0]) : 0;
-
+			bootstro.onStepFunc = function(step) {
 				switch (step) {
 					case 4 :
-						$('#stage-select-tablist >li a[href=#shorelines]').click();
-						$('#action-shorelines-tablist > li a[href=#shorelines-view-tab]').click();
-						break;
 					case 5 :
 						$('#stage-select-tablist >li a[href=#shorelines]').click();
 						$('#action-shorelines-tablist > li a[href=#shorelines-view-tab]').click();
@@ -891,12 +886,8 @@ var UI = function() {
 					case 7 :
 						$('#stage-select-tablist >li a[href=#shorelines]').click();
 						$('#action-shorelines-tablist > li a[href=#shorelines-view-tab]').click();
-						$('#shorelines-list').click();
 						break
 					case 8 :
-						$('#stage-select-tablist >li a[href=#baseline]').click();
-						$('#action-baseline-tablist > li a[href=#baseline-view-tab]').click();
-						break
 					case 9 :
 						$('#stage-select-tablist >li a[href=#baseline]').click();
 						$('#action-baseline-tablist > li a[href=#baseline-view-tab]').click();
@@ -906,9 +897,6 @@ var UI = function() {
 						$('#action-baseline-tablist > li a[href=#baseline-manage-tab]').click();
 						break
 					case 11 :
-						$('#stage-select-tablist >li a[href=#transects]').click();
-						$('#action-transects-tablist > li a[href=#transects-view-tab]').click();
-						break
 					case 12 :
 						$('#stage-select-tablist >li a[href=#transects]').click();
 						$('#action-transects-tablist > li a[href=#transects-view-tab]').click();
@@ -918,9 +906,6 @@ var UI = function() {
 						$('#action-transects-tablist > li a[href=#transects-manage-tab]').click();
 						break
 					case 14 :
-						$('#stage-select-tablist >li a[href=#calculation]').click();
-						$('#action-calculation-tablist > li a[href=#calculation-view-tab]').click();
-						break
 					case 15 :
 						$('#stage-select-tablist >li a[href=#calculation]').click();
 						$('#action-calculation-tablist > li a[href=#calculation-view-tab]').click();
@@ -930,9 +915,6 @@ var UI = function() {
 						$('#action-calculation-tablist > li a[href=#calculation-manage-tab]').click();
 						break
 					case 17 :
-						$('#stage-select-tablist >li a[href=#results]').click();
-						$('#action-results-tablist > li a[href=#results-view-tab]').click();
-						break
 					case 18 :
 						$('#stage-select-tablist >li a[href=#results]').click();
 						$('#action-results-tablist > li a[href=#results-view-tab]').click();
