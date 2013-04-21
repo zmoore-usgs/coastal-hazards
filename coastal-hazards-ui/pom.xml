@@ -301,6 +301,11 @@
 			<groupId>org.webjars</groupId>
 			<artifactId>font-awesome</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>gov.usgs.cida.jslibs</groupId>
+			<artifactId>bootstrojs</artifactId>
+			<type>war</type>
+		</dependency>
 	</dependencies>
 
 	<build>
