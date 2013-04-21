@@ -518,9 +518,9 @@ var UI = function() {
             var caller = args.caller;
             var stage = caller ? caller.stage : args.stage || '';
             var tab = args.tab;
-            if (tab == 'view') {
+            if (tab === 'view') {
                 $('#action-'+stage+'-tablist a[href="#'+stage+'-view-tab"]').trigger('click');
-            } else if (tab == 'manage') {
+            } else if (tab === 'manage') {
                 $('#action-'+stage+'-tablist a[href="#'+stage+'-manage-tab"]').trigger('click');
             }
         },

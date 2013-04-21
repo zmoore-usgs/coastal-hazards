@@ -695,7 +695,7 @@ var Results = {
         var navTabPlot = $('<li />').addClass('active');
         var navTabTable = $('<li />');
         var navTabPlotLink = $('<a />').attr({
-			'href' : '#results-plot',
+			'href' : '#results-plot-tabpane',
 			'id' : 'nav-tab-plot-link'
 		}).attr('data-toggle', 'tab').html('<span id="tab-stat-description">LRR + LCI</span> Rates Plot &nbsp;&nbsp;&nbsp;').append($('<i />').attr('id','plot-menu-icon').addClass('icon-cogs'));
         var navTabTableLink = $('<a />').attr({
