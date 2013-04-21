@@ -385,11 +385,6 @@
         </div>
 		
 		<%-- Stuff that isn't shown in the application but is used by JS --%>
-		<div id="plot-legend-wrapper" class="hide">
-			<div id="plot-legend-container" class="container-fluid">
-				<div id="plot-legend-row" class="row-fluid">&nbsp;</div>
-			</div>
-		</div>
         <div id="modal-window" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-window-label" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -470,14 +465,10 @@
     <link type="text/css" rel="stylesheet" href="js/bootstrap-switch/static/stylesheets/bootstrapSwitch.css" />
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
 	<script type="text/javascript">splashUpdate("Loading Intro Module...");</script>
+	<%-- TODO: Modularize --%>
     <jsp:include page="js/bootstro/bootstro.jsp">
         <jsp:param name="debug-qualifier" value="<%= development%>" />
     </jsp:include>
-	<%--
-	<jsp:include page="js/introjs/intro.jsp">
-        <jsp:param name="debug-qualifier" value="<%= development%>" />
-    </jsp:include>
-	--%>
 	<script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
 	<link type="text/css" rel="stylesheet" href="css/custom.css" />
 	<script type="text/javascript">splashUpdate("Loading Main module...");</script>
