@@ -872,8 +872,8 @@ var UI = function() {
             });
         },
 		bindBootstroPrevNextButtons: function() {
-			bootstro.onStepFunc = function(step) {
-				switch (step) {
+			bootstro.onStepFunc = function(args) {
+				switch (args.step) {
 					case 4 :
 					case 5 :
 						$('#stage-select-tablist >li a[href=#shorelines]').click();
