@@ -581,7 +581,9 @@ var Results = {
 		};
 		seriesOptions[enabled] = {
 			strokeWidth: 1.0,
-			highlightCircleSize: 3
+			highlightCircleSize: 3,
+			rangeSelectorPlotStrokeColor : '#00AA00'
+			
 		};
 		
 		if (uncertainty) {
@@ -609,8 +611,8 @@ var Results = {
 					legend : 'always',
 					colors : ['#00AA00', '#00AA00'],
 					underlayCallback: function(canvas, area, dygraph) {
-						var w = $('#results-tabcontent').width() - 20;
-						var h = $('#results-tabcontent').height() - 31;
+						var w = $('#results-plot-container').width();
+						var h = $('#results-plot').height();
 						if (w !== dygraph.width || h !== dygraph.height) {
 							dygraph.resize(w,h);
 						}
@@ -695,7 +697,7 @@ var Results = {
         var navTabPlot = $('<li />').addClass('active');
         var navTabTable = $('<li />');
         var navTabPlotLink = $('<a />').attr({
-			'href' : '#results-plot',
+			'href' : '#results-plot-tabpane',
 			'id' : 'nav-tab-plot-link'
 		}).attr('data-toggle', 'tab').html('<span id="tab-stat-description">LRR + LCI</span> Rates Plot &nbsp;&nbsp;&nbsp;').append($('<i />').attr('id','plot-menu-icon').addClass('icon-cogs'));
         var navTabTableLink = $('<a />').attr({
