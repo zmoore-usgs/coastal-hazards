@@ -6,7 +6,20 @@ var UI = function() {
     me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
     me.work_stages_objects = [Shorelines, Baseline, Transects, Calculation, Results];
     me.base_name = undefined;//init to undefined. Update in baselines
-    
+    me.precachedImages = [
+			'images/introduction_images/BaselineDraw.gif',
+			'images/introduction_images/EditTransects.gif',
+			'images/workflow_figures/baseline.png',
+			'images/workflow_figures/baseline_past.png',
+			'images/workflow_figures/calculation.png',
+			'images/workflow_figures/calculation_past.png',
+			'images/workflow_figures/transects.png',
+			'images/workflow_figures/transects_past.png',
+			'images/workflow_figures/results.png',
+			'images/workflow_figures/results_past.png',
+			'images/workflow_figures/shorelines_future.png',
+			'images/workflow_figures/shorelines_past.png'
+		];
     $('#manage-sessions-btn').on('click', CONFIG.tempSession.createSessionManagementModalWindow);
 	
     $('.collapsibleHelp').accordion({
@@ -33,13 +46,26 @@ var UI = function() {
         },
 		bindWindowResize: function() {
 			$(window).resize(function() {
+				var mapViewport = $(CONFIG.map.getMap().getViewport());
 				var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height() - $('#alert-row').height() - 40;
 				$('#content-row').css('min-height', contentRowHeight);
 				$('#nav-list').css('min-height', contentRowHeight);
 				$('#toolbox-span').css('min-height', contentRowHeight);
 				$('#map-span').css('min-height', contentRowHeight);
 				$('#map').css('height', contentRowHeight);
+				
+				// Move the zoom control over to the right
+				$('.olControlZoom').css('left', mapViewport.width() - $('.olControlZoom').width() - 20);
+				// Move the layer switcher control down a bit to make room for zoom control
+				$('.olControlLayerSwitcher').css('top', 60);
 			});
+		},
+		precacheImages : function() {
+		var tempImage = [];
+		for (var x=0;x<this.precachedImages.length;x++) {
+			var tempImage = new Image();
+			tempImage.src = this.precachedImages[x];
+		}
 		},
         createModalWindow : function(args) {
             var headerHtml = args.headerHtml || '';
@@ -1064,7 +1090,7 @@ var UI = function() {
 
 			$('#action-baseline-tablist > li a[href=#baseline-manage-tab]').addClass('bootstro').attr({
 				'data-bootstro-title': 'Baseline Manage',
-				'data-bootstro-content': '<p>A baseline can be added or removed from the view menu using the manage menu. <br />The manage tab also provides tools to draw new baselines or clone and edit existing baselines.</p><img src="images/workflow_figures/BaselineDraw.gif" />',
+				'data-bootstro-content': '<div><div style="float:left;">A baseline can be added or removed<br />from the view menu using the manage menu.<br /><br />The manage tab also provides tools to draw <br />new baselines or clone and edit existing baselines.</div><img src="images/introduction_images/BaselineDraw.gif" /></div>',
 				'data-bootstro-placement': 'bottom',
 				'data-bootstro-html': true,
 				'data-bootstro-step': 10
@@ -1088,7 +1114,7 @@ var UI = function() {
 
 			$('#action-transects-tablist > li a[href=#transects-manage-tab]').addClass('bootstro').attr({
 				'data-bootstro-title': 'Transects Manage',
-				'data-bootstro-content': 'A set of transects can be added or removed from the view menu using the manage menu. The manage tab also provides tools to cast new transects at user defined intervals or to edit existing transects. </p><img src="images/workflow_figures/EditTransects.gif" />',
+				'data-bootstro-content': '<div><div style="float:left">A set of transects can be added<br />or removed from the view menu using the manage menu.<br /><br />The manage tab also provides tools to cast new transects<br />at user defined intervals or to edit existing transects.</div><img src="images/introduction_images/EditTransects.gif" /></div>',
 				'data-bootstro-placement': 'bottom',
 				'data-bootstro-html': true,
 				'data-bootstro-step': 13

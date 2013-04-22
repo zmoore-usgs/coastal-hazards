@@ -12,6 +12,10 @@
     height: auto !important;
 }
 
+.lazy {
+	display: none;
+}
+
 #application-spinner {
     text-align: center;
     display: none;
