@@ -6,7 +6,20 @@ var UI = function() {
     me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
     me.work_stages_objects = [Shorelines, Baseline, Transects, Calculation, Results];
     me.base_name = undefined;//init to undefined. Update in baselines
-    
+    me.precachedImages = [
+			'images/workflow_figures/BaselineDraw.gif',
+			'images/workflow_figures/EditTransects.gif',
+			'images/workflow_figures/baseline.png',
+			'images/workflow_figures/baseline_past.png',
+			'images/workflow_figures/calculation.png',
+			'images/workflow_figures/calculation_past.png',
+			'images/workflow_figures/transects.png',
+			'images/workflow_figures/transects_past.png',
+			'images/workflow_figures/results.png',
+			'images/workflow_figures/results_past.png',
+			'images/workflow_figures/shorelines_future.png',
+			'images/workflow_figures/shorelines_past.png'
+		];
     $('#manage-sessions-btn').on('click', CONFIG.tempSession.createSessionManagementModalWindow);
 	
     $('.collapsibleHelp').accordion({
@@ -40,6 +53,13 @@ var UI = function() {
 				$('#map-span').css('min-height', contentRowHeight);
 				$('#map').css('height', contentRowHeight);
 			});
+		},
+		precacheImages : function() {
+		var tempImage = [];
+		for (var x=0;x<this.precachedImages.length;x++) {
+			var tempImage = new Image();
+			tempImage.src = this.precachedImages[x];
+		}
 		},
         createModalWindow : function(args) {
             var headerHtml = args.headerHtml || '';

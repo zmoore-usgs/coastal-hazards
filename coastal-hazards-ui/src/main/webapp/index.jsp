@@ -473,6 +473,4 @@
 	<link type="text/css" rel="stylesheet" href="css/custom.css" />
 	<script type="text/javascript">splashUpdate("Loading Main module...");</script>
 	<script type="text/javascript" src="js/onReady.js"></script>
-	<img class='lazy' src='images/workflow_figures/BaselineDraw.gif' />
-	<img class='lazy' src='images/workflow_figures/EditTransects.gif' />
 </html>

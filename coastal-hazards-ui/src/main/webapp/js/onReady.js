@@ -180,6 +180,7 @@ $(document).ready(function() {
                 function() {
                     LOG.debug('OnReady.js:: WMS Capabilities retrieved for sample workspace');
                     interrogateSessionResources();
+					CONFIG.ui.precacheImages();
                     //                setupAjaxError();
                 }
             ],
@@ -190,6 +191,7 @@ $(document).ready(function() {
                         bodyHtml: 'The application could not interrogate the OWS server to get published layers.'
                     });
                     interrogateSessionResources();
+					CONFIG.ui.precacheImages();
                     //                setupAjaxError();
                 }
             ]
