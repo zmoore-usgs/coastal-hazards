@@ -290,7 +290,7 @@
                         <!-- Calculation -->
                         <div class="tab-pane  container-fluid" id="calculation">
                             <div class="row-fluid">
-                                <div class="span4"><h3>Calculation</h3></div>
+                                <div class="span4"><h3>Review/Calculate</h3></div>
                                 <div class="span8" id="calculation-alert-container"></div>
                             </div>
                             <ul class="nav nav-tabs" id="action-intersections-tablist">

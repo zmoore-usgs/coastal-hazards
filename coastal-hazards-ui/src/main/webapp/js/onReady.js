@@ -138,7 +138,6 @@ $(document).ready(function() {
     var interrogateSessionResources = function() {
         var loadApp = function(data, textStatus, jqXHR) {
             CONFIG.ui.work_stages_objects.each(function(stage) {
-				
                 stage.appInit();
                 stage.populateFeaturesList(data, textStatus, jqXHR);
             });
