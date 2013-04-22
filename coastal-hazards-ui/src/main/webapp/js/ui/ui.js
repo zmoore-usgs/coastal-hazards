@@ -7,8 +7,8 @@ var UI = function() {
     me.work_stages_objects = [Shorelines, Baseline, Transects, Calculation, Results];
     me.base_name = undefined;//init to undefined. Update in baselines
     me.precachedImages = [
-			'images/workflow_figures/BaselineDraw.gif',
-			'images/workflow_figures/EditTransects.gif',
+			'images/introduction_images/BaselineDraw.gif',
+			'images/introduction_images/EditTransects.gif',
 			'images/workflow_figures/baseline.png',
 			'images/workflow_figures/baseline_past.png',
 			'images/workflow_figures/calculation.png',
@@ -1084,7 +1084,7 @@ var UI = function() {
 
 			$('#action-baseline-tablist > li a[href=#baseline-manage-tab]').addClass('bootstro').attr({
 				'data-bootstro-title': 'Baseline Manage',
-				'data-bootstro-content': '<p>A baseline can be added or removed from the view menu using the manage menu. <br />The manage tab also provides tools to draw new baselines or clone and edit existing baselines.</p><img src="images/workflow_figures/BaselineDraw.gif" />',
+				'data-bootstro-content': '<div><div style="float:left;">A baseline can be added or removed<br />from the view menu using the manage menu.<br /><br />The manage tab also provides tools to draw <br />new baselines or clone and edit existing baselines.</div><img src="images/introduction_images/BaselineDraw.gif" /></div>',
 				'data-bootstro-placement': 'bottom',
 				'data-bootstro-html': true,
 				'data-bootstro-step': 10
@@ -1108,7 +1108,7 @@ var UI = function() {
 
 			$('#action-transects-tablist > li a[href=#transects-manage-tab]').addClass('bootstro').attr({
 				'data-bootstro-title': 'Transects Manage',
-				'data-bootstro-content': 'A set of transects can be added or removed from the view menu using the manage menu. The manage tab also provides tools to cast new transects at user defined intervals or to edit existing transects. </p><img src="images/workflow_figures/EditTransects.gif" />',
+				'data-bootstro-content': '<div><div style="float:left">A set of transects can be added<br />or removed from the view menu using the manage menu.<br /><br />The manage tab also provides tools to cast new transects<br />at user defined intervals or to edit existing transects.</div><img src="images/introduction_images/EditTransects.gif" /></div>',
 				'data-bootstro-placement': 'bottom',
 				'data-bootstro-html': true,
 				'data-bootstro-step': 13
