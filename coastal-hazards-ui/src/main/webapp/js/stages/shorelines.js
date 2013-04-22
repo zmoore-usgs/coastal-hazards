@@ -22,14 +22,41 @@ var Shorelines = {
             vendorParams : {
                 radius : 3
             }
-        })
+        });
         Shorelines.initializeUploader();
         getShorelineIdControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
         CONFIG.map.addControl(getShorelineIdControl);
         
-        $('#shorelines-remove-btn').on('click', Shorelines.removeResource)
+        $('#shorelines-remove-btn').on('click', Shorelines.removeResource);
         
         Shorelines.enterStage();
+		
+		var boxLayer = CONFIG.map.getShorelineBoxLayer();
+		CONFIG.ows.wmsCapabilities.sample.capability.layers.findAll(function(l) {
+			return l.prefix === 'sample' && l.name.has('shoreline');
+		}).each(function(l) {
+			var bounds = OpenLayers.Bounds.fromArray(l.bbox['EPSG:900913'].bbox);
+			var box = new OpenLayers.Marker.Box(bounds);
+			box.setBorder('#FF0000', 1);
+			box.events.register('click', box, function() {
+				$("#shorelines-list").val(l.prefix + ':' + l.name).trigger('change');
+			});
+			box.events.register('mouseover', box, function() {
+				box.setBorder('#00FF00', 2);
+				$(box.div).css({
+					'cursor' : 'pointer',
+					'border-style' : 'dotted'
+				});
+			});
+			box.events.register('mouseout', box, function() {
+				box.setBorder('#FF0000', 1);
+				$(box.div).css({
+					'cursor' :'default'
+				});
+			});
+			boxLayer.addMarker(box);
+		});
+		
     },
     
     enterStage : function() {
@@ -637,7 +664,7 @@ var Shorelines = {
     },
     listboxChanged : function() {
         LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
-        
+        CONFIG.map.getShorelineBoxLayer().setVisibility(true);
         Shorelines.disableRemoveButton();
         LOG.debug('Shorelines.js::listboxChanged: Removing all shorelines from map that were not selected');
         $("#shorelines-list option:not(:selected)").each(function (index, option) {
@@ -659,6 +686,7 @@ var Shorelines = {
         var stage = CONFIG.tempSession.getStage(Shorelines.stage);
         stage.viewing = [];
 		if ($("#shorelines-list option:selected").val()) {
+			CONFIG.map.getShorelineBoxLayer().setVisibility(false);
 			$("#shorelines-list option:selected").each(function (index, option) {
 				LOG.debug('Shorelines.js::shorelineSelected: A shoreline ('+option.text+') was selected from the select list');
 				var layerFullName = option.value;
@@ -677,6 +705,8 @@ var Shorelines = {
 		}
         CONFIG.tempSession.persistSession();
         
+		CONFIG.map.getShorelineBoxLayer().setZIndex(1000);
+		
         // Provide default names for base layers and transects
         var derivedName = '';
         var selectedLayers = stage.viewing;

@@ -349,8 +349,10 @@ var UI = function() {
         showShorelineInfo : function(event) {
             LOG.info('UI.js::showShorelineInfo');
             LOG.debug('UI.js::showShorelineInfo: The map was clicked and a response from the OWS resource was received');
+			
             Shorelines.closeShorelineIdWindows();
-            if (event.features.length) {
+            
+			if (event.features.length) {
                 LOG.debug('UI.js::showShorelineInfo: Features were returned from the OWS resource. Parsing and creating table to display');
                 
                 LOG.debug('UI.js::showShorelineInfo: Creating table for ' + event.features.length + ' features');
@@ -366,7 +368,7 @@ var UI = function() {
                     v.click();
                 }); 
                 
-                var layerTitle = event.features[0].fid.split('.')[0]
+                var layerTitle = event.features[0].fid.split('.')[0];
                 var layerName = event.features[0].gml.featureNSPrefix + ':' + layerTitle;
                 var shorelineIdContainer = $('<div />').attr('id', layerName + '-id-container').addClass('shoreline-id-container');
                 var shorelineIdTable = $('<table />').attr('id', layerName + '-id-table').addClass('shoreline-id-table table table-striped table-condensed');
@@ -780,8 +782,8 @@ var UI = function() {
             var locAttr = currentLocation.feature.attributes;
             var select = $('<select />').attr('id', 'alt-location-list');
 
-            // Build Market
-            var markerLayer = CONFIG.map.getMarkerLayer();
+            // Build Marker
+            var markerLayer = CONFIG.map.getGeocodingMarkerLayer();
             var iconSize = new OpenLayers.Size(32, 32);
             var icon = new OpenLayers.Icon('js/openlayers/img/BulbGrey.png', iconSize, new OpenLayers.Pixel(-(iconSize.w / 2), -iconSize.h));
             var marker = new OpenLayers.Marker(new OpenLayers.LonLat(x, y), icon);

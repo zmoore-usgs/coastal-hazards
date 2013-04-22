@@ -98,10 +98,17 @@ var Map = function() {
 			}
     ));	
     
-    me.map.addLayer(new OpenLayers.Layer.Markers('marker-layer',{
+    me.map.addLayer(new OpenLayers.Layer.Markers('geocoding-marker-layer',{
 		displayInLayerSwitcher : false
 	}));
-    
+	
+	var boxLayer = new OpenLayers.Layer.Boxes('shoreline-box-layer', {
+		displayInLayerSwitcher : false
+	});
+	
+	me.map.addLayer(boxLayer);
+	boxLayer.setZIndex(1000);
+	
     LOG.debug('Map.js::constructor:Adding ontrols to map');
     me.map.addControl(new OpenLayers.Control.MousePosition());
     me.map.addControl(new OpenLayers.Control.ScaleLine({
@@ -189,8 +196,11 @@ var Map = function() {
             renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
             return renderer;
         },
-        getMarkerLayer: function() {
-            return me.map.getLayersByName('marker-layer')[0];
-        }
+        getGeocodingMarkerLayer: function() {
+			return me.map.getLayersByName('geocoding-marker-layer')[0];
+		},
+		getShorelineBoxLayer: function() {
+			return me.map.getLayersByName('shoreline-box-layer')[0];
+		}
     });
 };
