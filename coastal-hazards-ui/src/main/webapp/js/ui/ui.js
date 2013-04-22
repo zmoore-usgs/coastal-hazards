@@ -46,12 +46,18 @@ var UI = function() {
         },
 		bindWindowResize: function() {
 			$(window).resize(function() {
+				var mapViewport = $(CONFIG.map.getMap().getViewport());
 				var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height() - $('#alert-row').height() - 40;
 				$('#content-row').css('min-height', contentRowHeight);
 				$('#nav-list').css('min-height', contentRowHeight);
 				$('#toolbox-span').css('min-height', contentRowHeight);
 				$('#map-span').css('min-height', contentRowHeight);
 				$('#map').css('height', contentRowHeight);
+				
+				// Move the zoom control over to the right
+				$('.olControlZoom').css('left', mapViewport.width() - $('.olControlZoom').width() - 20);
+				// Move the layer switcher control down a bit to make room for zoom control
+				$('.olControlLayerSwitcher').css('top', 60);
 			});
 		},
 		precacheImages : function() {
