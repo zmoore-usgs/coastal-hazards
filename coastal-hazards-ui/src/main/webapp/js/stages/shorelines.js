@@ -22,14 +22,41 @@ var Shorelines = {
             vendorParams : {
                 radius : 3
             }
-        })
+        });
         Shorelines.initializeUploader();
         getShorelineIdControl.events.register("getfeatureinfo", this, CONFIG.ui.showShorelineInfo);
         CONFIG.map.addControl(getShorelineIdControl);
         
-        $('#shorelines-remove-btn').on('click', Shorelines.removeResource)
+        $('#shorelines-remove-btn').on('click', Shorelines.removeResource);
         
         Shorelines.enterStage();
+		
+		var boxLayer = CONFIG.map.getShorelineBoxLayer();
+		CONFIG.ows.wmsCapabilities.sample.capability.layers.findAll(function(l) {
+			return l.prefix === 'sample' && l.name.has('shoreline');
+		}).each(function(l) {
+			var bounds = OpenLayers.Bounds.fromArray(l.bbox['EPSG:900913'].bbox);
+			var box = new OpenLayers.Marker.Box(bounds);
+			box.setBorder('#FF0000', 1);
+			box.events.register('click', box, function() {
+				$("#shorelines-list").val(l.prefix + ':' + l.name).trigger('change');
+			});
+			box.events.register('mouseover', box, function() {
+				box.setBorder('#00FF00', 2);
+				$(box.div).css({
+					'cursor' : 'pointer',
+					'border-style' : 'dotted'
+				});
+			});
+			box.events.register('mouseout', box, function() {
+				box.setBorder('#FF0000', 1);
+				$(box.div).css({
+					'cursor' :'default'
+				});
+			});
+			boxLayer.addMarker(box);
+		});
+		
     },
     
     enterStage : function() {
@@ -229,7 +256,8 @@ var Shorelines = {
                                 singleTile: true, 
                                 ratio: 1,
                                 groupByAttribute : groupingColumn,
-                                groups : groups
+                                groups : groups,
+								displayInLayerSwitcher : false
                             });
                             
                         Shorelines.getShorelineIdControl().layers.push(wmsLayer);
@@ -636,7 +664,7 @@ var Shorelines = {
     },
     listboxChanged : function() {
         LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
-        
+        CONFIG.map.getShorelineBoxLayer().setVisibility(true);
         Shorelines.disableRemoveButton();
         LOG.debug('Shorelines.js::listboxChanged: Removing all shorelines from map that were not selected');
         $("#shorelines-list option:not(:selected)").each(function (index, option) {
@@ -647,42 +675,47 @@ var Shorelines = {
                     
                     var idControl = Shorelines.getShorelineIdControl();
                     var controlLayerIndex = idControl.layers.indexOf(layer);
-                    if (controlLayerIndex != -1) {
+                    if (controlLayerIndex !== -1) {
                         idControl.layers = idControl.layers.removeAt(controlLayerIndex);
                     }
-                })
+                });
             }
         });
             
-        var layerInfos = []
+        var layerInfos = [];
         var stage = CONFIG.tempSession.getStage(Shorelines.stage);
         stage.viewing = [];
-        $("#shorelines-list option:selected").each(function (index, option) {
-            LOG.debug('Shorelines.js::shorelineSelected: A shoreline ('+option.text+') was selected from the select list');
-            var layerFullName = option.value;
-            var layerNamespace = layerFullName.split(':')[0];
-            var layerTitle = layerFullName.split(':')[1];
-            var layer = CONFIG.ows.getLayerByName({
-                layerNS : layerNamespace,
-                layerName : layerTitle
-            });
-            layerInfos.push(layer);
-            stage.viewing.push(layerFullName);
-            if (layerFullName.has(CONFIG.tempSession.getCurrentSessionKey())) {
-                Shorelines.enableRemoveButton();
-            }
-        });
+		if ($("#shorelines-list option:selected").val()) {
+			CONFIG.map.getShorelineBoxLayer().setVisibility(false);
+			$("#shorelines-list option:selected").each(function (index, option) {
+				LOG.debug('Shorelines.js::shorelineSelected: A shoreline ('+option.text+') was selected from the select list');
+				var layerFullName = option.value;
+				var layerNamespace = layerFullName.split(':')[0];
+				var layerTitle = layerFullName.split(':')[1];
+				var layer = CONFIG.ows.getLayerByName({
+					layerNS : layerNamespace,
+					layerName : layerTitle
+				});
+				layerInfos.push(layer);
+				stage.viewing.push(layerFullName);
+				if (layerFullName.has(CONFIG.tempSession.getCurrentSessionKey())) {
+					Shorelines.enableRemoveButton();
+				}
+			});
+		}
         CONFIG.tempSession.persistSession();
         
+		CONFIG.map.getShorelineBoxLayer().setZIndex(1000);
+		
         // Provide default names for base layers and transects
         var derivedName = '';
         var selectedLayers = stage.viewing;
         var getSeries = function(series) {
             var skey = CONFIG.tempSession.getCurrentSessionKey();
             var startPoint = series.has(skey) ? skey.length : 0;
-            return series.substr(startPoint, series.lastIndexOf('_') - startPoint)
-        }
-        if (selectedLayers.length == 0) {
+            return series.substr(startPoint, series.lastIndexOf('_') - startPoint);
+        };
+        if (selectedLayers.length === 0) {
             derivedName += Util.getRandomLorem();
         }
         

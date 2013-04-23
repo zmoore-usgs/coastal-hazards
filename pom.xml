@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.usgs.cida.coastalhazards</groupId>
 	<artifactId>coastal-hazards</artifactId>
-	<version>1.0.5-SNAPSHOT</version>
+	<version>1.0.8-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Coastal Hazards</name>
   
@@ -18,7 +18,7 @@
 	<issueManagement>
 		<system>JIRA</system>
 		<!-- This needs to be corrected -->
-		<url/>
+		<url />
 	</issueManagement>
 	
 	<url>http://cida.usgs.gov/</url>
@@ -193,6 +193,12 @@
 				<groupId>gov.usgs.cida.jslibs</groupId>
 				<artifactId>openlayers</artifactId>
 				<version>2.12-2</version>
+				<type>war</type>
+			</dependency>
+			<dependency>
+				<groupId>gov.usgs.cida.jslibs</groupId>
+				<artifactId>bootstrojs</artifactId>
+				<version>2013.20.4-2-SNAPSHOT</version>
 				<type>war</type>
 			</dependency>
 			<dependency>

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>gov.usgs.cida.coastalhazards</groupId>
-        <artifactId>coastal-hazards</artifactId>
-        <version>1.0.5-SNAPSHOT</version>
-    </parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>gov.usgs.cida.coastalhazards</groupId>
+		<artifactId>coastal-hazards</artifactId>
+		<version>1.0.8-SNAPSHOT</version>
+	</parent>
 
     <artifactId>coastal-hazards-ui</artifactId>
     <packaging>war</packaging>
@@ -274,7 +275,6 @@
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
         </dependency>
-        
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -318,7 +318,12 @@
             <groupId>org.openid4java</groupId>
             <artifactId>openid4java</artifactId>
         </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>gov.usgs.cida.jslibs</groupId>
+			<artifactId>bootstrojs</artifactId>
+			<type>war</type>
+		</dependency>
+	</dependencies>
 
     <build>
         <plugins>

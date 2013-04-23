@@ -73,11 +73,42 @@ var Map = function() {
                 wrapDateLine: true
             }
     ));	
+	me.map.addLayer(new OpenLayers.Layer.ArcGIS93Rest("Boundaries",
+            "http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer/export",
+            {
+				layers: '0', 
+				numZoomLevels: 13,
+				transparent : true,
+				displayInLayerSwitcher : true
+			},{
+				visibility : false,
+				isBaseLayer : false
+			}
+    ));	
+	me.map.addLayer(new OpenLayers.Layer.ArcGIS93Rest("World Reference",
+            "http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer/export",
+            {
+				layers: '0', 
+				numZoomLevels: 14,
+				transparent : true,
+				displayInLayerSwitcher : true
+			},{
+				visibility : false,
+				isBaseLayer : false
+			}
+    ));	
     
-    me.map.addLayer(new OpenLayers.Layer.Markers('marker-layer',{
+    me.map.addLayer(new OpenLayers.Layer.Markers('geocoding-marker-layer',{
 		displayInLayerSwitcher : false
 	}));
-    
+	
+	var boxLayer = new OpenLayers.Layer.Boxes('shoreline-box-layer', {
+		displayInLayerSwitcher : false
+	});
+	
+	me.map.addLayer(boxLayer);
+	boxLayer.setZIndex(1000);
+	
     LOG.debug('Map.js::constructor:Adding ontrols to map');
     me.map.addControl(new OpenLayers.Control.MousePosition());
     me.map.addControl(new OpenLayers.Control.ScaleLine({
@@ -94,6 +125,11 @@ var Map = function() {
         map : me.map
     });
     
+	$('.olControlZoom').attr({
+		'data-intro': 'Use these buttons to change the zoom level of the map, or double click to zoom in.<br />To quickly zoom in, draw a bounding box with the mouse by holding down the shift key on your keyboard.',
+		'data-step': 5
+	});
+	
     LOG.debug('Map.js::constructor: Map class initialized.');
     return $.extend(me, {
         getMap : function() {
@@ -160,8 +196,11 @@ var Map = function() {
             renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
             return renderer;
         },
-        getMarkerLayer: function() {
-            return me.map.getLayersByName('marker-layer')[0];
-        }
+        getGeocodingMarkerLayer: function() {
+			return me.map.getLayersByName('geocoding-marker-layer')[0];
+		},
+		getShorelineBoxLayer: function() {
+			return me.map.getLayersByName('shoreline-box-layer')[0];
+		}
     });
 };

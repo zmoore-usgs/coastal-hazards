@@ -196,7 +196,8 @@ var Baseline = {
                         renderers: CONFIG.map.getRenderer(),
                         styleMap: new OpenLayers.StyleMap(style),
                         type : Baseline.stage,
-                        projection : CONFIG.map.getMap().getProjection()
+                        projection : CONFIG.map.getMap().getProjection(),
+						displayInLayerSwitcher : false
                     });
         
                     LOG.trace('Baseline.js::addLayerToMap: Replacing baseline layer');
@@ -417,6 +418,8 @@ var Baseline = {
                 }),
                 cloneOf: originalLayer.name,
                 renderers: CONFIG.map.getRenderer(),
+				displayInLayerSwitcher : false,
+				
                 // Use this for features we draw, not those that already exist
                 onFeatureInsert: function(feature) {
                     if (!feature.attributes['Orient']) {

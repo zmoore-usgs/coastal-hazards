@@ -125,7 +125,7 @@ $(document).ready(function() {
     // Utility class for the user interface
     splashUpdate("Initializing User Interface...");
     CONFIG.ui = new UI();
-
+		
     // Map interaction object. Holds the map and utilities 
     splashUpdate("Initializing Map...");
     CONFIG.map = new Map();
@@ -134,6 +134,7 @@ $(document).ready(function() {
     splashUpdate("Initializing OWS services...");
     CONFIG.ows = new OWS();
 
+	CONFIG.ui.appInit();
     var interrogateSessionResources = function() {
         var loadApp = function(data, textStatus, jqXHR) {
             CONFIG.ui.work_stages_objects.each(function(stage) {
@@ -142,10 +143,8 @@ $(document).ready(function() {
             });
 
             $('.qq-upload-button').addClass('btn btn-success');
-            $('#application-overlay').fadeOut({
-                complete : function() {
+            $('#application-overlay').fadeOut(2000,function() {
                     $('#application-overlay').remove();
-                }
             });
         };
 
@@ -178,6 +177,7 @@ $(document).ready(function() {
                 function() {
                     LOG.debug('OnReady.js:: WMS Capabilities retrieved for sample workspace');
                     interrogateSessionResources();
+					CONFIG.ui.precacheImages();
                     //                setupAjaxError();
                 }
             ],
@@ -188,6 +188,7 @@ $(document).ready(function() {
                         bodyHtml: 'The application could not interrogate the OWS server to get published layers.'
                     });
                     interrogateSessionResources();
+					CONFIG.ui.precacheImages();
                     //                setupAjaxError();
                 }
             ]

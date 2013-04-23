@@ -12,8 +12,8 @@
     height: auto !important;
 }
 
-#toolbox-well {
-    height: 39em;
+.lazy {
+	display: none;
 }
 
 #application-spinner {
@@ -103,15 +103,25 @@ select option.session-layer{
     text-shadow: #FFFFFF 0px 0px 2px;
     color: #000000;
 }
+
 #map {
+	min-height: 32em;
     height: 100%;
     width: 100%;
 }
+
 #map-well {
-    height: 39em;
+    height: 100%;
+}
+
+#toolbox-well {
+	height: 100%;
 }
 
 .baseLayersDiv > .labelSpan {
+	display : inline;
+}
+.dataLayersDiv > .labelSpan {
 	display : inline;
 }
 
@@ -122,9 +132,6 @@ select option.session-layer{
 }
 .shoreline-table-selected-head-column {
     width: 30%;
-}
-#shorelines-list {
-    height: 7.25em;
 }
 
 .wildcard-link {
