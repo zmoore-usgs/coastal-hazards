@@ -15,8 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openid4java.OpenIDException;
 import org.openid4java.association.AssociationSessionType;
 import org.openid4java.consumer.ConsumerManager;
@@ -38,9 +36,12 @@ import org.openid4java.message.sreg.SRegRequest;
 import org.openid4java.message.sreg.SRegResponse;
 import org.openid4java.util.HttpClientFactory;
 import org.openid4java.util.ProxyProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sutra Zhou
+ * Borrowed from example for openid4java
  */
 public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 
@@ -50,7 +51,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 	private static final long serialVersionUID = -5998885243419513055L;
 	private static final String OPTIONAL_VALUE = "0";
 	private static final String REQUIRED_VALUE = "1";
-	private static final Log LOG = LogFactory.getLog(ConsumerServlet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ConsumerServlet.class);
 
 	private ServletContext context;
 	private ConsumerManager manager;
@@ -156,7 +157,6 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 				return null;
 			} else {
 				// Option 2: HTML FORM Redirection (Allows payloads >2048 bytes)
-
 				RequestDispatcher dispatcher = getServletContext()
 						.getRequestDispatcher("/formredirection.jsp");
 				httpReq.setAttribute("prameterMap", httpReq.getParameterMap());
