@@ -60,6 +60,22 @@ var UI = function() {
 				$('.olControlLayerSwitcher').css('top', 60);
 			});
 		},
+		bindSignInImageMouseEvents : function() {
+			$('#sign-in-img').on({
+				'mouseenter' : function() {
+					$('#sign-in-img').attr('src', 'images/OpenID/White-signin_Medium_hover_44dp.png');
+				},
+				'mouseleave' : function() {
+					$('#sign-in-img').attr('src', 'images/OpenID/White-signin_Medium_base_44dp.png');
+				},
+				'mousedown' : function() {
+					$('#sign-in-img').attr('src', 'images/OpenID/White-signin_Medium_press_44dp.png');
+				},
+				'mouseup' : function() {
+					$('#sign-in-img').attr('src', 'images/OpenID/White-signin_Medium_base_44dp.png');
+				}
+			})
+		},
 		precacheImages : function() {
 		var tempImage = [];
 		for (var x=0;x<this.precachedImages.length;x++) {

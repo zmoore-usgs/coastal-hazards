@@ -92,6 +92,14 @@ select option.session-layer{
    background-image:url('../images/paneBackgrounds/results_tutorial.png');
 }
 
+#session-login-link {
+	padding: 3px;
+}
+
+#sign-in-img {
+	height: 2.75em;
+}
+
 
 /* ---------------------------------------------------------------------- Map */
 /* Add a drop shadow effect to scale and mouse position so they can be seen against a dark background */
