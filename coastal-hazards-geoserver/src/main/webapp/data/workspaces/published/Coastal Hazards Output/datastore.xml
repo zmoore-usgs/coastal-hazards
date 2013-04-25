@@ -14,8 +14,8 @@
     <entry key="charset">ISO-8859-1</entry>
     <entry key="filetype">shapefile</entry>
     <entry key="cache and reuse memory maps">true</entry>
-    <entry key="url">file:workspaces/sample/Output_Data</entry>
-    <entry key="namespace">gov.usgs.cida.ch.sample</entry>
+    <entry key="url">file:workspaces/published/Output_Data</entry>
+    <entry key="namespace">gov.usgs.cida.ch.published</entry>
   </connectionParameters>
   <__default>false</__default>
 </dataStore>

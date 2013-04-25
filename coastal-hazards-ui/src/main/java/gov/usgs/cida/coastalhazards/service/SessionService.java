@@ -69,7 +69,7 @@ public class SessionService extends HttpServlet {
 					RequestResponseHelper.sendErrorResponse(response, responseMap);
 					return;
 				}
-			} else if ("remove-layer".equals(action.trim().toLowerCase()) && !"sample".equals(workspace.trim().toLowerCase())) {
+			} else if ("remove-layer".equals(action.trim().toLowerCase()) && !"published".equals(workspace.trim().toLowerCase())) {
 				try {
 					geoserverHandler.removeLayer(geoserverDataDir, workspace, store, layer);
 				} catch (MalformedURLException ex) {

@@ -32,8 +32,8 @@ var Shorelines = {
         Shorelines.enterStage();
 		
 		var boxLayer = CONFIG.map.getShorelineBoxLayer();
-		CONFIG.ows.wmsCapabilities.sample.capability.layers.findAll(function(l) {
-			return l.prefix === 'sample' && l.name.has('shoreline');
+		CONFIG.ows.wmsCapabilities.published.capability.layers.findAll(function(l) {
+			return l.prefix === CONFIG.name.published && l.name.has('shoreline');
 		}).each(function(l) {
 			var bounds = OpenLayers.Bounds.fromArray(l.bbox['EPSG:900913'].bbox);
 			var box = new OpenLayers.Marker.Box(bounds);
