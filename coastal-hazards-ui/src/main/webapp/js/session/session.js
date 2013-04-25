@@ -314,8 +314,7 @@ var Session = function(name, isPerm) {
                 append($('<b />').addClass('caret'));
             container.append(menuNavBar.append(innerNavBar.append(navBarItem.append(sessionDropDown.append(sessionDropDownLink)))));
 			
-			var loginLink = $('<ul />').addClass('pull-right nav').append($('<li />').append($('<a />').attr({
-				'href' : '#',
+			var loginLink = $('<ul />').addClass('pull-right nav').append($('<li />').attr('id','login-list-item').append($('<div />').attr({
 				'id' : 'session-login-link'
 			}).html('<img id="sign-in-img" src="images/OpenID/White-signin_Medium_base_44dp.png"></img>')));
             container.append(menuNavBar.append(innerNavBar.append(loginLink)));
@@ -427,12 +426,8 @@ var Session = function(name, isPerm) {
                         $('#session-menu-item-set-metadata').on('click', function() {
                             CONFIG.tempSession.createMetadataEntryForm();
                         });
-						$('#session-login-link').on('click', function() {
-							if (CONFIG.window) {
-								CONFIG.window.close();
-							}
-							CONFIG.window = window.open('components/OpenID/oid-login.jsp', 'login', 'fullscreen=no,directories=no,location=no,resizable=yes,menubar=no,status=no,titlebar=no,toolbar=no', true);
-						});
+						
+						CONFIG.tempSession.bindLoginLink();
                     },
                     function() {
                         var sessionList = $('#session-management-session-list');
@@ -464,10 +459,46 @@ var Session = function(name, isPerm) {
                     }]
             })
         },
-		finishLogin : function(args) {
+		bindLoginLink: function() {
+			$('#session-login-link').on('click', function() {
+				if (CONFIG.window) {
+					CONFIG.window.close();
+				}
+				CONFIG.window = window.open('components/OpenID/oid-login.jsp', 'login', 'width=1000,height=550,fullscreen=no', true);
+			});
+		},
+		finishLogin: function(args) {
 			CONFIG.window.close();
 			CONFIG.window = null;
-			$('#session-login-link').html(args.firstname + ' ' + args.lastname + ' (' + args.email + ')');
+			var loginListItem = $('#login-list-item');
+			loginListItem.html('');
+			var dropdownItem = $('<a />').addClass('dropdown-toggle').attr({
+				'data-toggle': 'dropdown',
+				'role': 'button',
+				'href': '#',
+				'id': 'login-menu-dropdown'
+			}).html(args.firstname + ' ' + args.lastname + ' (' + args.email + ')');
+			dropdownItem.append($('<b />').addClass('caret'));
+			loginListItem.addClass('dropdown');
+			loginListItem.append(dropdownItem);
+
+			var logoutMenuItem = $('<ul />').addClass('dropdown-menu').attr('aria-labelledby', 'login-menu-dropdown');
+			var listItem = $('<li />').attr('role', 'presentation');
+			var logoutLink = $('<a />').attr({
+				'id': 'login-menu-item-logout',
+				'tabindex': '-1',
+				'role': 'menuitem'
+			}).html('Log Out');
+			loginListItem.append(logoutMenuItem.append(listItem.append(logoutLink)));
+			$('#login-menu-item-logout').on('click', function(data) {
+				$.get('logout', function() {
+					loginListItem.html('');
+					loginListItem.append($('<div />').attr({
+						'id': 'session-login-link'
+					}).html('<img id="sign-in-img" src="images/OpenID/White-signin_Medium_base_44dp.png"></img>'))
+					CONFIG.tempSession.bindLoginLink();
+				});
+			});
 		},
         createMetadataEntryForm : function() {
             var sessionId = $('#session-management-session-list :selected').val();

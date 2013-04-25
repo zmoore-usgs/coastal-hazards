@@ -872,8 +872,6 @@ var UI = function() {
                     });
                 }
             });
-            // map.zoomToScale(300000, true);
-
         },
         bindSearchInput: function() {
             $('#app-navbar-search-form').submit(function(evt) {

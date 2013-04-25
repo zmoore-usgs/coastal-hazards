@@ -4,15 +4,11 @@ import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
-import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +33,7 @@ public class SessionService extends HttpServlet {
     private static String GEOSERVER_USER_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.username";
     private static String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
     private static String GEOSERVER_DATA_DIR_KEY = "coastal-hazards.geoserver.datadir";
+	private static final long serialVersionUID = 1L;
 
     @Override
     public void init() throws ServletException {
