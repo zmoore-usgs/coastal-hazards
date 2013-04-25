@@ -175,7 +175,7 @@ $(document).ready(function() {
         callbacks: {
             success: [
                 function() {
-                    LOG.debug('OnReady.js:: WMS Capabilities retrieved for sample workspace');
+                    LOG.debug('OnReady.js:: WMS Capabilities retrieved for published workspace');
                     interrogateSessionResources();
 					CONFIG.ui.precacheImages();
                     //                setupAjaxError();

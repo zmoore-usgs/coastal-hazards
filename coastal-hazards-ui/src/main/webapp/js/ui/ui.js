@@ -324,7 +324,7 @@ var UI = function() {
                     var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
                     var title = layer.title;
             
-                    // Add the option to the list only if it's from the sample namespace or
+                    // Add the option to the list only if it's from the published namespace or
                     // if it's from the input namespace and in the current session
                     if (layerNS === CONFIG.name.published || layerNS === currentSessionKey) {
                         var type = title.substr(title.lastIndexOf('_'));
@@ -343,7 +343,7 @@ var UI = function() {
                             .attr({
                                 "value" : layerNS + ':' + layer.name
                             })
-                            .addClass(layerNS === 'sample' ? publishedLayerClass : sessionLayerClass)
+                            .addClass(layerNS === CONFIG.name.published ? publishedLayerClass : sessionLayerClass)
                             .text(layer.name);
                             
                             $('#'+stage+'-list')
