@@ -5,6 +5,9 @@ $(document).ready(function() {
 	initializeLogging({
 		LOG4JS_LOG_THRESHOLD: CONFIG.development ? 'debug' : 'info'
 	});
+	
+	splashUpdate("Initializing Session...");
+	CONFIG.session = new Session();
 
 	splashUpdate("Initializing UI...");
 	CONFIG.ui = new UI();

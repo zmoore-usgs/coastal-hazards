@@ -2,7 +2,9 @@
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page import="org.slf4j.Logger"%>
 <%@page import="org.slf4j.LoggerFactory"%>
+
 <!DOCTYPE html>
+
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
 	{
@@ -14,6 +16,7 @@
 	}
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 %>
+
 <html lang="en">
     <head>
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" />
@@ -157,10 +160,15 @@
                 </jsp:include>
             </div>
         </div>
+
         <jsp:include page="js/openlayers/openlayers.jsp"> 
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
         </jsp:include>
-        <script type="text/javascript" src="js/components/map/map.js"></script>
-        <script type="text/javascript" src="js/components/common/ui.js"></script>
-        <script type="text/javascript" src="js/components/common/onready.js"></script>
+
+		<jsp:include page="css/css.jsp" />
+
+        <script type="text/javascript" src="js/components/session/Session.js"></script>
+        <script type="text/javascript" src="js/components/map/Map.js"></script>
+        <script type="text/javascript" src="js/components/common/UI.js"></script>
+        <script type="text/javascript" src="js/components/common/OnReady.js"></script>
     </body>
