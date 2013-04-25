@@ -99,7 +99,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 			if (identifier != null) {
 				this.authRequest(identifier, req, resp);
 			} else {
-				this.getServletContext().getRequestDispatcher("/verify.jsp")
+				this.getServletContext().getRequestDispatcher("/components/OpenID/oid-verify.jsp")
 						.forward(req, resp);
 			}
 		}
@@ -110,12 +110,10 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 		Identifier identifier = this.verifyResponse(req);
 		LOG.debug("identifier: " + identifier);
 		if (identifier == null) {
-			this.getServletContext().getRequestDispatcher("/login.jsp")
-					.forward(req, resp);
+			this.getServletContext().getRequestDispatcher("/components/OpenID/oid-login.jsp").forward(req, resp);
 		} else {
 			req.setAttribute("identifier", identifier.getIdentifier());
-			this.getServletContext().getRequestDispatcher("/verify.jsp")
-					.forward(req, resp);
+			this.getServletContext().getRequestDispatcher("/components/OpenID/oid-verify.jsp").forward(req, resp);
 		}
 	}
 
@@ -157,8 +155,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 				return null;
 			} else {
 				// Option 2: HTML FORM Redirection (Allows payloads >2048 bytes)
-				RequestDispatcher dispatcher = getServletContext()
-						.getRequestDispatcher("/formredirection.jsp");
+				RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/components/OpenID/oid-formredirection.jsp");
 				httpReq.setAttribute("prameterMap", httpReq.getParameterMap());
 				httpReq.setAttribute("message", authReq);
 				// httpReq.setAttribute("destinationUrl", httpResp

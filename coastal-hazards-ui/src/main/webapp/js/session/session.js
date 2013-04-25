@@ -17,25 +17,25 @@ var Session = function(name, isPerm) {
         $.ajax('service/session?action=prepare&workspace=' + randID, 
         {
             success : function(data, textStatus, jqXHR) {
-                LOG.info('Session.js::init: A workspace has been prepared on the OWS server with the name of ' + randID)
+                LOG.info('Session.js::init: A workspace has been prepared on the OWS server with the name of ' + randID);
                 CONFIG.ui.showAlert({
                     message : 'No session could be found. A new session has been created',
                     displayTime : 5000,
                     style: {
                         classes : ['alert-info']
                     }
-                })
+                });
             },
             error : function(data, textStatus, jqXHR) {
-                LOG.error('Session.js::init: A workspace could not be created on the OWS server with the name of ' + randID)
+                LOG.error('Session.js::init: A workspace could not be created on the OWS server with the name of ' + randID);
                 CONFIG.ui.showAlert({
                     message : 'No session could be found. A new session could not be created on server. This application may not function correctly.',
                     style: {
                         classes : ['alert-error']
                     }
-                })
+                });
             }
-        })
+        });
         
         var newSession = Object.extended();
         newSession.sessions = [];
@@ -92,7 +92,7 @@ var Session = function(name, isPerm) {
         
         LOG.info('Session.js::constructor:Saving new temp session');
         me.session = CONFIG.permSession.session.sessions.find(function(session) {
-            return session.id == CONFIG.permSession.session.currentSession
+            return session.id === CONFIG.permSession.session.currentSession;
         });
         
         me.sessionObject.setItem(me.name, JSON.stringify(me.session));
@@ -106,7 +106,7 @@ var Session = function(name, isPerm) {
             LOG.info('Session.js::persistSession: Persisting temp session to perm session');
             var permSession = CONFIG.permSession; 
             var sessionIndex = permSession.session.sessions.findIndex(function(session){
-                return session.id == me.session.id;
+                return session.id === me.session.id;
             });
                 
             permSession.session.currentSession = me.session.id;
@@ -122,7 +122,7 @@ var Session = function(name, isPerm) {
         
         me.getStage = function(stage) {
             return me.session.stage[stage];
-        }
+        };
         
         me.setStage = function(args) {
             if (!args) {
@@ -152,8 +152,8 @@ var Session = function(name, isPerm) {
             me.session[stage][config.name] = config;
             me.persistSession();
             return me.session[stage][config.name];
-        }
-        
+        };        
+		
         me.updateLayersFromWMS = function(args) {
             LOG.info('Session.js::updateLayersFromWMS');
             
@@ -161,8 +161,8 @@ var Session = function(name, isPerm) {
             var data = args.data; 
             var jqXHR = args.jqXHR;
             
-            if (jqXHR.status != 200) {
-                LOG.warn('Session.js::updateLayersFromWMS: Client was unable to attain WMS capabilities')
+            if (jqXHR.status !== 200) {
+                LOG.warn('Session.js::updateLayersFromWMS: Client was unable to attain WMS capabilities');
             }
             
             if (wmsCapabilities && wmsCapabilities.capability.layers.length) {
@@ -171,16 +171,16 @@ var Session = function(name, isPerm) {
                 var wmsLayers = wmsCapabilities.capability.layers;
                 var namespace = wmsLayers[0].prefix;
                 var sessionLayers = me.session.layers.filter(function(n) {
-                    return n.prefix == namespace
+                    return n.prefix === namespace;
                 });
             
-                if (namespace == me.getCurrentSessionKey()) {
+                if (namespace === me.getCurrentSessionKey()) {
                     LOG.debug('Session.js::updateLayersFromWMS: Scanning session for expired/missing layers in the ' + namespace + ' prefix');
                     sessionLayers.each(function(sessionLayer, index) {
                         if (sessionLayer.name.indexOf(me.getCurrentSessionKey() > -1)) {
                             var foundLayer = wmsLayers.find(function(wmsLayer) {
-                                return wmsLayer.name === sessionLayer.name
-                            })
+                                return wmsLayer.name === sessionLayer.name;
+                            });
                         
                             if (!foundLayer) {
                                 LOG.debug('Session.js::updateLayersFromWMS: Removing layer ' + sessionLayer.name + ' from session object. This layer is not found on the OWS server');
@@ -273,10 +273,10 @@ var Session = function(name, isPerm) {
             if (!me.session.stage[Shorelines.stage][shoreline]) {
                 me.session.stage[Shorelines.stage][shoreline] = Object.extended({
                     'dates-disabled' : []
-                })
+                });
             }
-            return me.session.stage[Shorelines.stage][shoreline]['dates-disabled']
-        }
+            return me.session.stage[Shorelines.stage][shoreline]['dates-disabled'];
+        };
         
     }
 
@@ -289,7 +289,7 @@ var Session = function(name, isPerm) {
                 addClass('nav').
                 attr({
                 'role' : 'navigation'
-            })
+            });
             var fileDropDown = $('<li />').addClass('dropdown');
             var fileDropDownLink = $('<a />').attr({
                 'id' : 'file-drop-down',
@@ -299,7 +299,7 @@ var Session = function(name, isPerm) {
             }).
                 html('File').
                 addClass('dropdown-toggle').
-                append($('<b />').addClass('caret'))
+                append($('<b />').addClass('caret'));
             container.append(menuNavBar.append(innerNavBar.append(navBarItem.append(fileDropDown.append(fileDropDownLink)))));
             
             var sessionDropDown = $('<li />').addClass('dropdown');
@@ -311,29 +311,33 @@ var Session = function(name, isPerm) {
             }).
                 html('Session').
                 addClass('dropdown-toggle').
-                append($('<b />').addClass('caret'))
+                append($('<b />').addClass('caret'));
             container.append(menuNavBar.append(innerNavBar.append(navBarItem.append(sessionDropDown.append(sessionDropDownLink)))));
-            
+			
+			var loginLink = $('<ul />').addClass('pull-right nav').append($('<li />').attr('id','login-list-item').append($('<div />').attr({
+				'id' : 'session-login-link'
+			}).html('<img id="sign-in-img" src="images/OpenID/White-signin_Medium_base_44dp.png"></img>')));
+            container.append(menuNavBar.append(innerNavBar.append(loginLink)));
             
             var fileDropDownList = $('<ul />').
                 addClass('dropdown-menu').
                 attr({
                 'aria-labelledby' : 'file-drop-down'
-            })
+            });
             
             var importli = $('<li />').attr('role', 'presentation').
                 append($('<a />').attr({
                 'tabindex' : '-1',
                 'role' : 'menuitem',
                 'id' : 'file-menu-item-import'
-            }).html('Import'))
+            }).html('Import'));
             
             var exportli = $('<li />').attr('role', 'presentation').
                 append($('<a />').attr({
                 'tabindex' : '-1',
                 'role' : 'menuitem',
                 'id' : 'file-menu-item-export'
-            }).html('Export'))
+            }).html('Export'));
             fileDropDownList.append(importli, exportli);
             fileDropDown.append(fileDropDownList);
             
@@ -341,34 +345,34 @@ var Session = function(name, isPerm) {
                 addClass('dropdown-menu').
                 attr({
                 'aria-labelledby' : 'session-drop-down'
-            })
+            });
             var createli = $('<li />').attr('role', 'presentation').
                 append($('<a />').attr({
                 'tabindex' : '-1',
                 'role' : 'menuitem',
                 'id' : 'session-menu-item-create'
-            }).html('Create New'))
+            }).html('Create New'));
             var clearAllli = $('<li />').attr('role', 'presentation').
                 append($('<a />').attr({
                 'tabindex' : '-1',
                 'role' : 'menuitem',
                 'id' : 'session-menu-item-clear-all'
-            }).html('Clear All'))
+            }).html('Clear All'));
             var setCurrentli = $('<li />').attr('role', 'presentation').
                 append($('<a />').attr({
                 'tabindex' : '-1',
                 'role' : 'menuitem',
                 'id' : 'session-menu-item-set-current'
-            }).html('Set Current'))
+            }).html('Set Current'));
             var setMetadatatli = $('<li />').attr('role', 'presentation').
                 append($('<a />').attr({
                 'tabindex' : '-1',
                 'role' : 'menuitem',
                 'id' : 'session-menu-item-set-metadata'
-            }).html('Provide Metadata'))
+            }).html('Provide Metadata'));
             sessionDropDownList.append(createli, clearAllli, setCurrentli, setMetadatatli);
-            sessionDropDown.append(sessionDropDownList)
-            
+            sessionDropDown.append(sessionDropDownList);
+			
             var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
             var explanationWell = $('<div />').addClass('well well-small').attr('id', 'explanation-well');
             var explanationDiv = $('<div />').html('In the session management section, you are able to maniupulate your current session set, export single sessions and import a new session set<br />While it isn\'t mandatory to do so, it is strongly suggested to reload the application after swithing sessions or creating a new session')
@@ -397,6 +401,8 @@ var Session = function(name, isPerm) {
                 bodyHtml : container.html(),
                 callbacks : [
                     function() {
+						CONFIG.ui.bindSignInImageMouseEvents();
+						
                         $('#file-menu-item-import').on('click', function() {
                             CONFIG.tempSession.importSession();
                         })
@@ -409,17 +415,19 @@ var Session = function(name, isPerm) {
                             CONFIG.permSession.session.currentSession = session.id;
                             CONFIG.permSession.save();
                             CONFIG.tempSession.createSessionManagementModalWindow();
-                        })
-                        $('#session-menu-item-clear-all').on('click', CONFIG.tempSession.clearSessions)
+                        });
+                        $('#session-menu-item-clear-all').on('click', CONFIG.tempSession.clearSessions);
                         $('#session-menu-item-set-current').on('click', function() {
                             var id = $('#session-management-session-list').val();
                             CONFIG.permSession.session.currentSession = id;
                             CONFIG.permSession.save();
                             CONFIG.tempSession.createSessionManagementModalWindow();
-                        })
+                        });
                         $('#session-menu-item-set-metadata').on('click', function() {
                             CONFIG.tempSession.createMetadataEntryForm();
-                        })
+                        });
+						
+						CONFIG.tempSession.bindLoginLink();
                     },
                     function() {
                         var sessionList = $('#session-management-session-list');
@@ -451,10 +459,51 @@ var Session = function(name, isPerm) {
                     }]
             })
         },
+		bindLoginLink: function() {
+			$('#session-login-link').on('click', function() {
+				if (CONFIG.window) {
+					CONFIG.window.close();
+				}
+				CONFIG.window = window.open('components/OpenID/oid-login.jsp', 'login', 'width=1000,height=550,fullscreen=no', true);
+			});
+		},
+		finishLogin: function(args) {
+			CONFIG.window.close();
+			CONFIG.window = null;
+			var loginListItem = $('#login-list-item');
+			loginListItem.html('');
+			var dropdownItem = $('<a />').addClass('dropdown-toggle').attr({
+				'data-toggle': 'dropdown',
+				'role': 'button',
+				'href': '#',
+				'id': 'login-menu-dropdown'
+			}).html(args.firstname + ' ' + args.lastname + ' (' + args.email + ')');
+			dropdownItem.append($('<b />').addClass('caret'));
+			loginListItem.addClass('dropdown');
+			loginListItem.append(dropdownItem);
+
+			var logoutMenuItem = $('<ul />').addClass('dropdown-menu').attr('aria-labelledby', 'login-menu-dropdown');
+			var listItem = $('<li />').attr('role', 'presentation');
+			var logoutLink = $('<a />').attr({
+				'id': 'login-menu-item-logout',
+				'tabindex': '-1',
+				'role': 'menuitem'
+			}).html('Log Out');
+			loginListItem.append(logoutMenuItem.append(listItem.append(logoutLink)));
+			$('#login-menu-item-logout').on('click', function(data) {
+				$.get('logout', function() {
+					loginListItem.html('');
+					loginListItem.append($('<div />').attr({
+						'id': 'session-login-link'
+					}).html('<img id="sign-in-img" src="images/OpenID/White-signin_Medium_base_44dp.png"></img>'))
+					CONFIG.tempSession.bindLoginLink();
+				});
+			});
+		},
         createMetadataEntryForm : function() {
             var sessionId = $('#session-management-session-list :selected').val();
             var session = CONFIG.permSession.session.sessions.find(function(s) {
-                return s.id == sessionId
+                return s.id == sessionId;
             })
                         
             var container = $('<div />').addClass('container-fluid');

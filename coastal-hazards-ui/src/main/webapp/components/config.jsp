@@ -18,7 +18,7 @@
 <script type="text/javascript">
 	splashUpdate("Setting configuration...");
 	var CONFIG = Object.extended();
-
+	CONFIG.window = null;
 	CONFIG.development = <%= development%>;
 	CONFIG.geoServerEndpoint = '<%=geoserverEndpoint%>';
 	CONFIG.n52Endpoint = '<%=n52Endpoint%>';
