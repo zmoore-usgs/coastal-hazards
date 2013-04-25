@@ -1,6 +1,7 @@
 package gov.usgs.cida.coastalhazards.service;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -59,6 +60,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 
@@ -82,6 +84,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		doPost(req, resp);
@@ -90,6 +93,7 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		if ("true".equals(req.getParameter("is_return"))) {
@@ -236,34 +240,39 @@ public class ConsumerServlet extends javax.servlet.http.HttpServlet {
 		try {
 			// extract the parameters from the authentication response
 			// (which comes in as a HTTP request from the OpenID provider)
-			ParameterList response = new ParameterList(httpReq
-					.getParameterMap());
+			ParameterList response = new ParameterList(httpReq.getParameterMap());
 
 			// retrieve the previously stored discovery information
-			DiscoveryInformation discovered = (DiscoveryInformation) httpReq
-					.getSession().getAttribute("openid-disc");
+			DiscoveryInformation discovered = (DiscoveryInformation) httpReq.getSession().getAttribute("openid-disc");
 
 			// extract the receiving URL from the HTTP request
 			StringBuffer receivingURL = httpReq.getRequestURL();
 			String queryString = httpReq.getQueryString();
-			if (queryString != null && queryString.length() > 0)
+			if (queryString != null && queryString.length() > 0) {
 				receivingURL.append("?").append(httpReq.getQueryString());
+			}
 
 			// verify the response; ConsumerManager needs to be the same
 			// (static) instance used to place the authentication request
-			VerificationResult verification = manager.verify(receivingURL
-					.toString(), response, discovered);
+			VerificationResult verification = manager.verify(receivingURL.toString(), response, discovered);
 
 			// examine the verification result and extract the verified
 			// identifier
 			Identifier verified = verification.getVerifiedId();
 			if (verified != null) {
-				AuthSuccess authSuccess = (AuthSuccess) verification
-						.getAuthResponse();
+				AuthSuccess authSuccess = (AuthSuccess) verification.getAuthResponse();
 
 				receiveSimpleRegistration(httpReq, authSuccess);
 
 				receiveAttributeExchange(httpReq, authSuccess);
+				
+				Map<String, String> oidInfoMap = new HashMap<String, String>();
+				oidInfoMap.put("oid-firstname", response.getParameter("openid.ext1.value.firstname").getValue());
+				oidInfoMap.put("oid-lastname", response.getParameter("openid.ext1.value.lastname").getValue());
+				oidInfoMap.put("oid-country", response.getParameter("openid.ext1.value.country").getValue());
+				oidInfoMap.put("oid-language", response.getParameter("openid.ext1.value.language").getValue());
+				oidInfoMap.put("oid-email", response.getParameter("openid.ext1.value.email").getValue());
+				httpReq.getSession().setAttribute("oid-info", oidInfoMap);
 
 				return verified; // success
 			}
