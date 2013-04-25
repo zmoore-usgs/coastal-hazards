@@ -14,7 +14,7 @@
 				<c:forEach items="${attributes}" var="attribute">
 				returnAttributes['${attribute.key}'] = '${attribute.value}';
 				</c:forEach>
-				window.opener.CONFIG.tempSession.finishLogin(returnAttributes);
+				window.opener.CONFIG.ui.createLoginMenuItem();
 		</script>
 	</body>
 </html>

@@ -281,223 +281,190 @@ var Session = function(name, isPerm) {
     }
 
     return $.extend(me, {
-        createSessionManagementModalWindow : function() {
-            var container = $('<div />').addClass('container-fluid');
-            var menuNavBar = $('<div />').addClass('navbar navbar-static');
-            var innerNavBar = $('<div />').addClass('navbar-inner');
-            var navBarItem = $('<ul />').
-                addClass('nav').
-                attr({
-                'role' : 'navigation'
-            });
-            var fileDropDown = $('<li />').addClass('dropdown');
-            var fileDropDownLink = $('<a />').attr({
-                'id' : 'file-drop-down',
-                'data-toggle': 'dropdown',
-                'role' : 'button',
-                'href' : '#'
-            }).
-                html('File').
-                addClass('dropdown-toggle').
-                append($('<b />').addClass('caret'));
-            container.append(menuNavBar.append(innerNavBar.append(navBarItem.append(fileDropDown.append(fileDropDownLink)))));
-            
-            var sessionDropDown = $('<li />').addClass('dropdown');
-            var sessionDropDownLink = $('<a />').attr({
-                'id' : 'session-drop-down',
-                'data-toggle': 'dropdown',
-                'role' : 'button',
-                'href' : '#'
-            }).
-                html('Session').
-                addClass('dropdown-toggle').
-                append($('<b />').addClass('caret'));
-            container.append(menuNavBar.append(innerNavBar.append(navBarItem.append(sessionDropDown.append(sessionDropDownLink)))));
-			
-			var loginLink = $('<ul />').addClass('pull-right nav').append($('<li />').attr('id','login-list-item').append($('<div />').attr({
-				'id' : 'session-login-link'
-			}).html('<img id="sign-in-img" src="images/OpenID/White-signin_Medium_base_44dp.png"></img>')));
-            container.append(menuNavBar.append(innerNavBar.append(loginLink)));
-            
-            var fileDropDownList = $('<ul />').
-                addClass('dropdown-menu').
-                attr({
-                'aria-labelledby' : 'file-drop-down'
-            });
-            
-            var importli = $('<li />').attr('role', 'presentation').
-                append($('<a />').attr({
-                'tabindex' : '-1',
-                'role' : 'menuitem',
-                'id' : 'file-menu-item-import'
-            }).html('Import'));
-            
-            var exportli = $('<li />').attr('role', 'presentation').
-                append($('<a />').attr({
-                'tabindex' : '-1',
-                'role' : 'menuitem',
-                'id' : 'file-menu-item-export'
-            }).html('Export'));
-            fileDropDownList.append(importli, exportli);
-            fileDropDown.append(fileDropDownList);
-            
-            var sessionDropDownList = $('<ul />').
-                addClass('dropdown-menu').
-                attr({
-                'aria-labelledby' : 'session-drop-down'
-            });
-            var createli = $('<li />').attr('role', 'presentation').
-                append($('<a />').attr({
-                'tabindex' : '-1',
-                'role' : 'menuitem',
-                'id' : 'session-menu-item-create'
-            }).html('Create New'));
-            var clearAllli = $('<li />').attr('role', 'presentation').
-                append($('<a />').attr({
-                'tabindex' : '-1',
-                'role' : 'menuitem',
-                'id' : 'session-menu-item-clear-all'
-            }).html('Clear All'));
-            var setCurrentli = $('<li />').attr('role', 'presentation').
-                append($('<a />').attr({
-                'tabindex' : '-1',
-                'role' : 'menuitem',
-                'id' : 'session-menu-item-set-current'
-            }).html('Set Current'));
-            var setMetadatatli = $('<li />').attr('role', 'presentation').
-                append($('<a />').attr({
-                'tabindex' : '-1',
-                'role' : 'menuitem',
-                'id' : 'session-menu-item-set-metadata'
-            }).html('Provide Metadata'));
-            sessionDropDownList.append(createli, clearAllli, setCurrentli, setMetadatatli);
-            sessionDropDown.append(sessionDropDownList);
-			
-            var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
-            var explanationWell = $('<div />').addClass('well well-small').attr('id', 'explanation-well');
-            var explanationDiv = $('<div />').html('In the session management section, you are able to maniupulate your current session set, export single sessions and import a new session set<br />While it isn\'t mandatory to do so, it is strongly suggested to reload the application after swithing sessions or creating a new session')
-            container.append(explanationWell.append(explanationRow.append(explanationDiv)));
-            
-            var sessionListWell = $('<div />').addClass('well well-small');
-            var sessionListRow = $('<div />').attr('id', 'session-management-session-list-row').addClass('row-fluid');
-            var sessionList = $('<select />').attr({
-                'style' : 'width:100%;',
-                'id' : 'session-management-session-list'
-            })
-            CONFIG.permSession.session.sessions.each(function(session) {
-                sessionList.append(
-                $('<option />').attr({
-                    'value' : session.id
-                }).html(session.id))
-            })
-            container.append(sessionListWell.append(sessionListRow.append(sessionList)));
-            
-            var importDescriptionWell = $('<div />').addClass('well well-small');
-            var importDescriptionRow = $('<div />').attr('id', 'session-management-session-description-row').addClass('row-fluid');
-            container.append(importDescriptionWell.append(importDescriptionRow))
-            
-            CONFIG.ui.createModalWindow({
-                headerHtml : 'Session Management',
-                bodyHtml : container.html(),
-                callbacks : [
-                    function() {
-						CONFIG.ui.bindSignInImageMouseEvents();
-						
-                        $('#file-menu-item-import').on('click', function() {
-                            CONFIG.tempSession.importSession();
-                        })
-                        $('#file-menu-item-export').on('click', function() {
-                            CONFIG.tempSession.exportSession();
-                        })
-                        $('#session-menu-item-create').on('click', function() {
-                            var session = CONFIG.tempSession.createNewSession().sessions[0];
-                            CONFIG.permSession.session.sessions.push(session);
-                            CONFIG.permSession.session.currentSession = session.id;
-                            CONFIG.permSession.save();
-                            CONFIG.tempSession.createSessionManagementModalWindow();
-                        });
-                        $('#session-menu-item-clear-all').on('click', CONFIG.tempSession.clearSessions);
-                        $('#session-menu-item-set-current').on('click', function() {
-                            var id = $('#session-management-session-list').val();
-                            CONFIG.permSession.session.currentSession = id;
-                            CONFIG.permSession.save();
-                            CONFIG.tempSession.createSessionManagementModalWindow();
-                        });
-                        $('#session-menu-item-set-metadata').on('click', function() {
-                            CONFIG.tempSession.createMetadataEntryForm();
-                        });
-						
-						CONFIG.tempSession.bindLoginLink();
-                    },
-                    function() {
-                        var sessionList = $('#session-management-session-list');
-                        sessionList.on('change', function() {
-                            var key = this.value;
-                            var importDescriptionRow = $('#session-management-session-description-row');
-                            importDescriptionRow.html('');
-                            var session = CONFIG.permSession.session.sessions.find(function(s){
-                                return s.id == key
-                            })
-                            var sessionLayers = CONFIG.permSession.session.sessions.find(function(s){
-                                return s.id == key
-                            }).layers.filter(function(l){
-                                return l.prefix == key
-                            })
-                            var html = 'Session Information' + 
-                                '<br />Name: ' + (session.name || '') + 
-                                '<br />Created: ' + session.created + 
-                                '<br />Is Current: ' + (key == CONFIG.permSession.session.currentSession ? 'true' : 'false') + 
-                                '<br />Layers: ' + sessionLayers.length + 
-                                '<br />Results: ' + Object.values(session.results).length + 
-                                '<br />Metadata: ' + (session.metadata || '');
-                    
-                            importDescriptionRow.html(html);
-                        
-                        })
-                        sessionList.val(CONFIG.permSession.session.currentSession);
-                        sessionList.trigger('change');
-                    }]
-            })
-        },
-		bindLoginLink: function() {
-			$('#session-login-link').on('click', function() {
-				if (CONFIG.window) {
-					CONFIG.window.close();
-				}
-				CONFIG.window = window.open('components/OpenID/oid-login.jsp', 'login', 'width=1000,height=550,fullscreen=no', true);
-			});
-		},
-		finishLogin: function(args) {
-			CONFIG.window.close();
-			CONFIG.window = null;
-			var loginListItem = $('#login-list-item');
-			loginListItem.html('');
-			var dropdownItem = $('<a />').addClass('dropdown-toggle').attr({
-				'data-toggle': 'dropdown',
-				'role': 'button',
-				'href': '#',
-				'id': 'login-menu-dropdown'
-			}).html(args.firstname + ' ' + args.lastname + ' (' + args.email + ')');
-			dropdownItem.append($('<b />').addClass('caret'));
-			loginListItem.addClass('dropdown');
-			loginListItem.append(dropdownItem);
-
-			var logoutMenuItem = $('<ul />').addClass('dropdown-menu').attr('aria-labelledby', 'login-menu-dropdown');
-			var listItem = $('<li />').attr('role', 'presentation');
-			var logoutLink = $('<a />').attr({
-				'id': 'login-menu-item-logout',
-				'tabindex': '-1',
-				'role': 'menuitem'
-			}).html('Log Out');
-			loginListItem.append(logoutMenuItem.append(listItem.append(logoutLink)));
-			$('#login-menu-item-logout').on('click', function(data) {
-				$.get('logout', function() {
-					loginListItem.html('');
-					loginListItem.append($('<div />').attr({
-						'id': 'session-login-link'
-					}).html('<img id="sign-in-img" src="images/OpenID/White-signin_Medium_base_44dp.png"></img>'))
-					CONFIG.tempSession.bindLoginLink();
+		/**
+		 * Creates the session management window. Makes a call to the server to get 
+		 * OpenID session information.
+		 * 
+		 * @returns {undefined}
+		 */
+        createSessionManagementModalWindow: function() {
+				var container = $('<div />').addClass('container-fluid');
+				var menuNavBar = $('<div />').addClass('navbar navbar-static');
+				var innerNavBar = $('<div />').addClass('navbar-inner');
+				var navBarItem = $('<ul />').
+						addClass('nav').
+						attr({
+					'role': 'navigation'
 				});
+				var fileDropDown = $('<li />').addClass('dropdown');
+				var fileDropDownLink = $('<a />').attr({
+					'id': 'file-drop-down',
+					'data-toggle': 'dropdown',
+					'role': 'button',
+					'href': '#'
+				}).
+						html('File').
+						addClass('dropdown-toggle').
+						append($('<b />').addClass('caret'));
+				container.append(menuNavBar.append(innerNavBar.append(navBarItem.append(fileDropDown.append(fileDropDownLink)))));
+
+				var sessionDropDown = $('<li />').addClass('dropdown');
+				var sessionDropDownLink = $('<a />').attr({
+					'id': 'session-drop-down',
+					'data-toggle': 'dropdown',
+					'role': 'button',
+					'href': '#'
+				}).
+						html('Session').
+						addClass('dropdown-toggle').
+						append($('<b />').addClass('caret'));
+				container.append(menuNavBar.append(innerNavBar.append(navBarItem.append(sessionDropDown.append(sessionDropDownLink)))));
+
+				CONFIG.ui.createLoginMenuItem();
+
+				var loginLink = $('<ul />').addClass('pull-right nav').append($('<li />').attr('id', 'login-list-item').append($('<div />').attr({
+					'id': 'session-login-link'
+				}).html('<img id="sign-in-img" src="images/OpenID/White-signin_Medium_base_44dp.png"></img>')));
+				container.append(menuNavBar.append(innerNavBar.append(loginLink)));
+
+				var fileDropDownList = $('<ul />').
+						addClass('dropdown-menu').
+						attr({
+					'aria-labelledby': 'file-drop-down'
+				});
+
+				var importli = $('<li />').attr('role', 'presentation').
+						append($('<a />').attr({
+					'tabindex': '-1',
+					'role': 'menuitem',
+					'id': 'file-menu-item-import'
+				}).html('Import'));
+
+				var exportli = $('<li />').attr('role', 'presentation').
+						append($('<a />').attr({
+					'tabindex': '-1',
+					'role': 'menuitem',
+					'id': 'file-menu-item-export'
+				}).html('Export'));
+				fileDropDownList.append(importli, exportli);
+				fileDropDown.append(fileDropDownList);
+
+				var sessionDropDownList = $('<ul />').
+						addClass('dropdown-menu').
+						attr({
+					'aria-labelledby': 'session-drop-down',
+					'id' : 'session-drop-down-list'
+				});
+				var createli = $('<li />').attr('role', 'presentation').
+						append($('<a />').attr({
+					'tabindex': '-1',
+					'role': 'menuitem',
+					'id': 'session-menu-item-create'
+				}).html('Create New'));
+				var clearAllli = $('<li />').attr('role', 'presentation').
+						append($('<a />').attr({
+					'tabindex': '-1',
+					'role': 'menuitem',
+					'id': 'session-menu-item-clear-all'
+				}).html('Clear All'));
+				var setCurrentli = $('<li />').attr('role', 'presentation').
+						append($('<a />').attr({
+					'tabindex': '-1',
+					'role': 'menuitem',
+					'id': 'session-menu-item-set-current'
+				}).html('Set Current'));
+				var setMetadatatli = $('<li />').attr('role', 'presentation').
+						append($('<a />').attr({
+					'tabindex': '-1',
+					'role': 'menuitem',
+					'id': 'session-menu-item-set-metadata'
+				}).html('Provide Metadata'));
+				sessionDropDownList.append(createli, clearAllli, setCurrentli, setMetadatatli);
+				sessionDropDown.append(sessionDropDownList);
+
+				var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
+				var explanationWell = $('<div />').addClass('well well-small').attr('id', 'explanation-well');
+				var explanationDiv = $('<div />').html('In the session management section, you are able to maniupulate your current session set, export single sessions and import a new session set<br />While it isn\'t mandatory to do so, it is strongly suggested to reload the application after swithing sessions or creating a new session');
+				container.append(explanationWell.append(explanationRow.append(explanationDiv)));
+
+				var sessionListWell = $('<div />').addClass('well well-small');
+				var sessionListRow = $('<div />').attr('id', 'session-management-session-list-row').addClass('row-fluid');
+				var sessionList = $('<select />').attr({
+					'style': 'width:100%;',
+					'id': 'session-management-session-list'
+				});
+				CONFIG.permSession.session.sessions.each(function(session) {
+					sessionList.append(
+							$('<option />').attr({
+						'value': session.id
+					}).html(session.id));
+				});
+				container.append(sessionListWell.append(sessionListRow.append(sessionList)));
+
+				var importDescriptionWell = $('<div />').addClass('well well-small');
+				var importDescriptionRow = $('<div />').attr('id', 'session-management-session-description-row').addClass('row-fluid');
+				container.append(importDescriptionWell.append(importDescriptionRow))
+
+				CONFIG.ui.createModalWindow({
+					headerHtml: 'Session Management',
+					bodyHtml: container.html(),
+					callbacks: [
+						function() {
+							CONFIG.ui.bindSignInImageMouseEvents();
+
+							$('#file-menu-item-import').on('click', function() {
+								CONFIG.tempSession.importSession();
+							})
+							$('#file-menu-item-export').on('click', function() {
+								CONFIG.tempSession.exportSession();
+							})
+							$('#session-menu-item-create').on('click', function() {
+								var session = CONFIG.tempSession.createNewSession().sessions[0];
+								CONFIG.permSession.session.sessions.push(session);
+								CONFIG.permSession.session.currentSession = session.id;
+								CONFIG.permSession.save();
+								CONFIG.tempSession.createSessionManagementModalWindow();
+							});
+							$('#session-menu-item-clear-all').on('click', CONFIG.tempSession.clearSessions);
+							$('#session-menu-item-set-current').on('click', function() {
+								var id = $('#session-management-session-list').val();
+								CONFIG.permSession.session.currentSession = id;
+								CONFIG.permSession.save();
+								CONFIG.tempSession.createSessionManagementModalWindow();
+							});
+							$('#session-menu-item-set-metadata').on('click', function() {
+								CONFIG.tempSession.createMetadataEntryForm();
+							});
+
+						},
+						function() {
+							var sessionList = $('#session-management-session-list');
+							sessionList.on('change', function() {
+								var key = this.value;
+								var importDescriptionRow = $('#session-management-session-description-row');
+								importDescriptionRow.html('');
+								var session = CONFIG.permSession.session.sessions.find(function(s) {
+									return s.id == key
+								})
+								var sessionLayers = CONFIG.permSession.session.sessions.find(function(s) {
+									return s.id == key
+								}).layers.filter(function(l) {
+									return l.prefix == key
+								})
+								var html = 'Session Information' +
+										'<br />Name: ' + (session.name || '') +
+										'<br />Created: ' + session.created +
+										'<br />Is Current: ' + (key == CONFIG.permSession.session.currentSession ? 'true' : 'false') +
+										'<br />Layers: ' + sessionLayers.length +
+										'<br />Results: ' + Object.values(session.results).length +
+										'<br />Metadata: ' + (session.metadata || '');
+
+								importDescriptionRow.html(html);
+
+							})
+							sessionList.val(CONFIG.permSession.session.currentSession);
+							sessionList.trigger('change');
+						}]
 			});
 		},
         createMetadataEntryForm : function() {
