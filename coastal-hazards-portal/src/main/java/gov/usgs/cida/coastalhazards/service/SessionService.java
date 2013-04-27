@@ -1,17 +1,40 @@
 package gov.usgs.cida.coastalhazards.service;
 
+import gov.usgs.cida.coastalhazards.session.io.SessionFileIO;
+import gov.usgs.cida.coastalhazards.session.io.SessionIO;
+import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
+import gov.usgs.cida.config.DynamicReadOnlyProperties;
+import gov.usgs.cida.utilities.communication.RequestResponseHelper;
+import gov.usgs.cida.utilities.properties.JNDISingleton;
+import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author isuftin
  */
 public class SessionService extends HttpServlet {
+
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SessionService.class);
+	private static final long serialVersionUID = 1L;
+	private static DynamicReadOnlyProperties props = null;
+	private String fileRepoLocation = null;
+
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		props = JNDISingleton.getInstance();
+		fileRepoLocation = props.getProperty("", FileUtils.getTempDirectoryPath());
+	}
 
 	/**
 	 * Processes requests for both HTTP
@@ -25,22 +48,22 @@ public class SessionService extends HttpServlet {
 	 */
 	protected void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		response.setContentType("text/html;charset=UTF-8");
-		PrintWriter out = response.getWriter();
-		try {
-			/* TODO output your page here. You may use following sample code. */
-			out.println("<!DOCTYPE html>");
-			out.println("<html>");
-			out.println("<head>");
-			out.println("<title>Servlet SessionService</title>");			
-			out.println("</head>");
-			out.println("<body>");
-			out.println("<h1>Servlet SessionService at " + request.getContextPath() + "</h1>");
-			out.println("</body>");
-			out.println("</html>");
-		} finally {			
-			out.close();
+		String action = request.getParameter("action");
+		Map<String, String> responseMap = new HashMap<String, String>();
+		if (StringUtils.isNotBlank(action)) {
+			if (action.toLowerCase().equals("write")) {
+				saveSession(request, responseMap, response);
+				RequestResponseHelper.sendSuccessResponse(response, responseMap);
+			} else if (action.toLowerCase().equals("read")) {
+				loadSession(request, responseMap, response);
+				RequestResponseHelper.sendSuccessResponse(response, responseMap);
+			}
+		} else {
+			responseMap.put("message", "parameter 'action' may not be missing or blank");
+			RequestResponseHelper.sendErrorResponse(response, responseMap);
 		}
+
+		
 	}
 
 	// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -83,4 +106,42 @@ public class SessionService extends HttpServlet {
 	public String getServletInfo() {
 		return "Short description";
 	}// </editor-fold>
+
+	protected void saveSession(HttpServletRequest request, Map<String, String> responseMap, HttpServletResponse response) {
+		String session = request.getParameter("session");
+		if (StringUtils.isBlank(session)) {
+			responseMap.put("message", "parameter 'session' may not be missing or blank");
+			RequestResponseHelper.sendErrorResponse(response, responseMap);
+		} else {
+			SessionIO sessionIo = new SessionFileIO(new File(this.fileRepoLocation).toURI());
+			String id = null;
+			try {
+				id = sessionIo.save(session);
+			} catch (SessionIOException ex) {
+				responseMap.put("message", ex.getMessage());
+				RequestResponseHelper.sendErrorResponse(response, responseMap);
+			}
+			responseMap.put("id", id);
+			RequestResponseHelper.sendSuccessResponse(response, responseMap);
+		}
+	}
+
+	protected void loadSession(HttpServletRequest request, Map<String, String> responseMap, HttpServletResponse response) {
+		String sessionId = request.getParameter("id");
+		if (StringUtils.isBlank(sessionId)) {
+			responseMap.put("message", "parameter 'id' may not be missing or blank");
+			RequestResponseHelper.sendErrorResponse(response, responseMap);
+		} else {
+			SessionIO sessionIo = new SessionFileIO(new File(this.fileRepoLocation).toURI());
+			String session = null;
+			try {
+				session = sessionIo.load(sessionId);
+			} catch (SessionIOException ex) {
+				responseMap.put("message", ex.getMessage());
+				RequestResponseHelper.sendErrorResponse(response, responseMap);
+			}
+			responseMap.put("session", session);
+			RequestResponseHelper.sendSuccessResponse(response, responseMap);
+		}
+	}
 }
