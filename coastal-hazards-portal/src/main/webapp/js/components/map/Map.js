@@ -9,6 +9,25 @@ var Map = function() {
 		displayProjection: new OpenLayers.Projection("EPSG:900913")
 	});
 
+	me.map.events.on({
+		'moveend': function(evt) {
+			var map = evt.object;
+			var sessionMap = CONFIG.session.getMap();
+			
+			sessionMap.baselayer = map.baseLayer.name;
+			sessionMap.center = {
+				lat: map.center.lat,
+				lon: map.center.lon
+			};
+			sessionMap.scale = map.getScale();
+			sessionMap.extent = map.getExtent().toArray();
+		},
+		'changelayer': function() {
+
+		}
+	});
+
+
 	LOG.debug('Map.js::constructor:Creating base layer');
 	me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
 			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",

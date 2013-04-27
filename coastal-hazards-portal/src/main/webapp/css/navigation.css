@@ -1,0 +1,112 @@
+#app-navbar {
+    margin-bottom: 0px;
+}
+
+
+.accordion-group-item {
+	color: #858585;
+}
+
+.accordion-group-item:hover{
+	color: #333333;
+	cursor: pointer;
+}
+
+.accordion-group-item > i {
+	font-size: 200%;
+}
+
+.accordion-heading-text {
+	font-size: 100%;
+}
+
+.nav-stacked li.active a img {
+    height: 3.5em;
+    width: 4.5em;
+}
+.nav-stacked li a img {
+    height: 2.5em;
+    width: 3.5em;
+}
+.nav-pills.nav-stacked > li > a {
+    text-align: center;
+}
+
+#nav {
+	text-align: center;
+}
+
+#nav a:hover {
+	text-decoration: none;
+}
+
+#nav .accordion-toggle {
+	color : #333333;
+}
+
+#nav .accordion-toggle i{
+	font-size: 400%;
+}
+
+#nav .accordion-body .accordion-group-item{
+	padding-bottom: 1em;
+}
+
+#app-navbar-container {
+	width: auto;
+}
+
+#app-navbar-brand {
+	color: #FFFFFF;
+	padding-right: 15px;
+}
+
+#inner-navbar-container {
+	padding-left: 2px;
+}
+
+#inner-navbar-container .nav > li > a {
+	color : #FFFFFF;
+	text-shadow: none;
+}
+
+#inner-navbar-container .nav > li > a:hover {
+	color : #DDDDDD;
+	text-shadow: none;
+}
+
+#inner-navbar-container .nav li.dropdown.open > .dropdown-toggle,
+#inner-navbar-container .nav li.dropdown.open.active > .dropdown-toggle {
+	background-color : #48638D;
+	text-shadow: none;
+}
+
+#inner-navbar-container .nav li.dropdown.open .dropdown-menu {
+	z-index: 1006;
+}
+
+#app-navbar-inner {
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	border-radius: 0;
+	background-color: #345280;
+	background-image: none;
+	background-repeat: no-repeat;
+	border: none;
+	box-shadow: none;
+	padding-left: 2px;
+}
+
+#app-navbar-brand {
+	float: left;
+}
+
+#app-navbar-search-icon {
+	margin-right: 5px;
+	color: white;
+	font-size: 18px;
+}
+
+#app-navbar-search-input {
+	width : 200px;
+}
