@@ -23,7 +23,7 @@
 	CONFIG.geoServerEndpoint = '<%=geoserverEndpoint%>';
 	CONFIG.popupHoverDelay = 1500;
 	CONFIG.ajaxTimeout = 300000;
-
+	
 	JSON.stringify = JSON.stringify || function(obj) {
 		var t = typeof (obj);
 		if (t !== "object" || obj === null) {

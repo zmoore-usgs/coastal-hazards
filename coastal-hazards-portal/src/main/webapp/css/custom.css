@@ -9,10 +9,6 @@ body, html {
     display: none;
 }
 
-#app-navbar {
-    margin-bottom: 0px;
-}
-
 .block-element {
     width: 100%;
 }
@@ -27,60 +23,10 @@ body, html {
     width: 100%;
 }
 
-#nav {
-	text-align: center;
-	/*width: 7.8em;*/
-}
-
-#nav a:hover {
-	text-decoration: none;
-}
-
-#nav .accordion-toggle {
-	color : #333333;
-}
-
-#nav .accordion-toggle i{
-	font-size: 400%;
-}
-
-.accordion-group-item {
-	color: #858585;
-}
-
-.accordion-group-item:hover{
-	color: #333333;
-	cursor: pointer;
-}
-
-.accordion-group-item > i {
-	font-size: 200%;
-}
-
-#nav .accordion-body .accordion-group-item{
-	padding-bottom: 1em;
-}
-
-.accordion-heading-text {
-	font-size: 100%;
-}
-
 #site-title {
     line-height: 20px;
 }
 
-/* Left Nav Bar Image Sizing */
-.nav-stacked li.active a img {
-    height: 3.5em;
-    width: 4.5em;
-}
-.nav-stacked li a img {
-    height: 2.5em;
-    width: 3.5em;
-}
-.nav-pills.nav-stacked > li > a {
-    text-align: center;
-}
 /* Because of a conflict between twitter bootstrap and openlayers */
 img { 
     max-width: none !important; 

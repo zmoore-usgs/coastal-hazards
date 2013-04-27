@@ -1220,6 +1220,21 @@ var UI = function() {
 						}
 						CONFIG.window.login = window.open('components/OpenID/oid-login.jsp', 'login', 'width=1000,height=550,fullscreen=no', true);
 					});
+					
+					$('#sign-in-img').on({
+						'mouseenter' : function() {
+							$(this).attr('src', 'images/OpenID/White-signin_Medium_hover_44dp.png');
+						},
+						'mouseleave' : function() {
+							$(this).attr('src', 'images/OpenID/White-signin_Medium_base_44dp.png');
+						},
+						'mousedown' : function() {
+							$(this).attr('src', 'images/OpenID/White-signin_Medium_press_44dp.png');
+						},
+						'mouseup' : function() {
+							$(this).attr('src', 'images/OpenID/White-signin_Medium_base_44dp.png');
+						}
+					})
 				};
 
 				var createLoggedInMenu = function() {
