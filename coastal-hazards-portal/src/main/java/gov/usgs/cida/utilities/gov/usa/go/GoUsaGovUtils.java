@@ -91,7 +91,7 @@ public class GoUsaGovUtils {
 		return response;
 	}
 
-	public static String clicks(final URL endpoint) throws URISyntaxException, IOException {
+	public static String clicks(final String endpoint) throws URISyntaxException, IOException {
 		String response = null;
 		if (StringUtils.isBlank(usagovEndpoint)) {
 			throw new MissingResourceException("Missing 'usagovEndpoint'", "GoUsaGovUtils", endpointyParam);

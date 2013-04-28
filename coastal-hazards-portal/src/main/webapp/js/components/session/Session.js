@@ -21,14 +21,17 @@ var Session = function(args) {
 	return {
 		toString: function() {
 			var stringifyObject = {
-				map: CONFIG.session.getMap()
+				map: this.getMap()
 			}
 			return JSON.stringify(stringifyObject);
 		},
 		getMap: function() {
 			return me.map;
 		},
-		getSession: function(id, callbacks) {
+		getSession: function(agrs) {
+			var id = args.id;
+			var callbacks = args.callbacks || [];
+			var context = args.context;
 			$.ajax('service/session', {
 				type: 'POST',
 				data: {
@@ -42,18 +45,20 @@ var Session = function(args) {
 						});
 						if (callbacks && callbacks.length > 0) {
 							callbacks.each(function(callback) {
-								callback.call(undefined, session);
-							})
+								callback.call(context, session);
+							});
 						}
 					}
 				}
-			})
+			});
 		},
-		getIdentifier: function(callbacks) {
+		getIdentifier: function(args) {
+			var context = args.context;
+			var callbacks = args.callbacks || [];
 			$.ajax('service/session', {
 				type: 'POST',
 				data: {
-					'session': CONFIG.session.toString(),
+					'session': this.toString(),
 					'action': 'write'
 				},
 				success: function(data, textStatus, jqXHR) {
@@ -61,12 +66,37 @@ var Session = function(args) {
 						var id = data.id;
 						if (callbacks && callbacks.length > 0) {
 							callbacks.each(function(callback) {
-								callback.call(undefined, id);
+								callback.call(context, id);
 							});
 						}
 					}
 				}
 			});
+		},
+		getEndpoint: function(args) {
+			var callbacks = args.callbacks || [];
+			var context = args.context;
+			this.getIdentifier({
+				context : context,
+				callbacks : callbacks
+			});
+		},
+		getMinifiedEndpoint: function(args) {
+			var location = window.location.href;
+			
+			this.getEndpoint({
+				context: this,
+				callbacks: [
+					function(id) {
+						$.ajax('service/minifier', {
+							data : '',
+							success : {
+								
+							}
+						})
+					}
+				]
+			})
 		}
 	};
 };
