@@ -10,12 +10,15 @@ var UI = function() {
 			this.bindSubmenuButtons();
 			$(window).resize();
 		},
+				
 		showSpinner: function() {
 			$("#application-spinner").fadeIn();
 		},
+				
 		hideSpinner: function() {
 			$("#application-spinner").fadeOut();
 		},
+				
 		bindWindowResize: function() {
 			$(window).resize(function() {
 				var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
@@ -24,6 +27,7 @@ var UI = function() {
 				$('#map').css('height', contentRowHeight);
 			});
 		},
+				
 		bindSubmenuButtons: function() {
 			['storms', 'vulnerability', 'historical'].each(function(item) {
 				$('#accordion-group-' + item + '-view').popover({
@@ -39,16 +43,16 @@ var UI = function() {
 					}
 				});
 
-				$('#accordion-group-' + item + '-share').popover({
-					html: true,
-					placement: 'right',
-					trigger: 'click',
-					title: 'Share ' + item.capitalize(),
-					container: 'body',
-					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
-				});
+//				$('#accordion-group-' + item + '-share').popover({
+//					html: true,
+//					placement: 'right',
+//					trigger: 'click',
+//					title: 'Share ' + item.capitalize(),
+//					container: 'body',
+//					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
+//				});
 
-				$('#accordion-group-storms-learn').popover({
+				$('#accordion-group-' + item + '-learn').popover({
 					html: true,
 					placement: 'right',
 					trigger: 'click',
@@ -57,10 +61,8 @@ var UI = function() {
 					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
 				});
 			});
-			
-			
-
 		},
+
 		bindSearchInput: function() {
 			$('#app-navbar-search-form').submit(function(evt) {
 				var query = $('#app-navbar-search-input').val();

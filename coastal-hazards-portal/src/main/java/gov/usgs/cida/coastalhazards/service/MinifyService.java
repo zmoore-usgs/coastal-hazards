@@ -1,6 +1,5 @@
 package gov.usgs.cida.coastalhazards.service;
 
-import ch.qos.logback.core.encoder.Encoder;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.gov.usa.go.GoUsaGovUtils;
@@ -15,7 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.slf4j.LoggerFactory;
 
 /**
