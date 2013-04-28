@@ -1,11 +1,13 @@
 package gov.usgs.cida.coastalhazards.service;
 
+import ch.qos.logback.core.encoder.Encoder;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.gov.usa.go.GoUsaGovUtils;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -38,6 +41,9 @@ public class MinifyService extends HttpServlet {
 		Map<String, String> responseMap = new HashMap<String, String>();
 		if (StringUtils.isNotBlank(action)) {
 			if (StringUtils.isNotBlank(url)) {
+				
+				url = URLEncoder.encode(url, "UTF-8");
+				
 				if (action.toLowerCase().equals("minify")) {
 					try {
 						responseMap.put("response", GoUsaGovUtils.minify(url));
