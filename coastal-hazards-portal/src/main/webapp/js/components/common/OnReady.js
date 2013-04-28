@@ -41,4 +41,6 @@ $(document).ready(function() {
 	});
 
 	CONFIG.ui.bindSearchInput();
+
+	CONFIG.session.updateFromServer();
 });

@@ -43,15 +43,6 @@ var UI = function() {
 					}
 				});
 
-//				$('#accordion-group-' + item + '-share').popover({
-//					html: true,
-//					placement: 'right',
-//					trigger: 'click',
-//					title: 'Share ' + item.capitalize(),
-//					container: 'body',
-//					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
-//				});
-
 				$('#accordion-group-' + item + '-learn').popover({
 					html: true,
 					placement: 'right',

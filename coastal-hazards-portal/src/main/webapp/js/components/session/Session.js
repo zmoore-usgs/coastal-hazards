@@ -1,56 +1,79 @@
 var Session = function(args) {
 	LOG.info('Session.js::constructor: Session class is initializing.');
 	var me = (this === window) ? {} : this;
-	var args = args ? args : {};
+	args = args ? args : {};
 
-
-	if (args.map) {
-		$.extend(true, me.map, args.map);
-	} else {
-		me.map = Object.extended({
+	me.objects = Object.extended({
+		map : Object.extended({
 			baselayer: 'Not Yet Initialized',
 			scale: 0,
-			extent: [],
+			extent: [0, 0],
 			center: {
 				lat: 0,
 				lon: 0
 			}
-		});
-	}
+		})
+	});
 
 	return $.extend(me, {
 		toString: function() {
 			var stringifyObject = {
-				map: this.getMap()
-			}
+				objects : this.objects
+			};
 			return JSON.stringify(stringifyObject);
 		},
-		getMap: function() {
-			return me.map;
+		getObjects: function() {
+			return me.objects;
 		},
-		getSession: function(agrs) {
+		getMap: function() {
+			return me.objects.map;
+		},
+		updateFromServer: function() {
+			var sid = CONFIG.session.getIncomingSid();
+			if (sid) {
+				LOG.info("Will try to load session '" + sid + "' from server");
+				this.getSession({
+					sid: sid,
+					callbacks: [
+						function(session) {
+							if (session) {
+								LOG.info("Session found on server. Updating current session.");
+								$.extend(true, me.objects, JSON.parse(session).objects);
+							} else {
+								LOG.info("Session not found on server.");
+							}
+						}
+					]
+				});
+			}
+		},
+		getSession: function(args) {
 			var sid = args.sid;
 			var callbacks = args.callbacks || [];
 			var context = args.context;
-			$.ajax('service/session', {
-				type: 'POST',
-				data: {
-					'sid': sid,
-					'action': 'read'
-				},
-				success: function(data, textStatus, jqXHR) {
-					if (data.success === 'true') {
-						var session = new Session({
-							'map': JSON.parse(data.session).map
-						});
+
+			if (sid) {
+				$.ajax('service/session', {
+					type: 'POST',
+					data: {
+						'sid': sid,
+						'action': 'read'
+					},
+					success: function(data, textStatus, jqXHR) {
+						var session = null;
+						if (data.success === 'true') {
+							session = data.session;
+						}
+
 						if (callbacks && callbacks.length > 0) {
 							callbacks.each(function(callback) {
 								callback.call(context, session);
 							});
 						}
+
 					}
-				}
-			});
+				});
+			}
 		},
 		getIdentifier: function(args) {
 			var context = args.context;
@@ -82,10 +105,10 @@ var Session = function(args) {
 			});
 		},
 		getMinifiedEndpoint: function(args) {
-			var location = window.location.href;
+			var location = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
 			var callbacks = args.callbacks || [];
 			var context = args.context;
-			
+
 			this.getEndpoint({
 				context: this,
 				callbacks: [
@@ -93,14 +116,14 @@ var Session = function(args) {
 						var url = location + '?sid=' + sid;
 						$.ajax('service/minify', {
 							data: {
-								action : 'minify',
-								url : url
+								action: 'minify',
+								url: url
 							},
-							success: function(data, textStatus, jqXHR){
+							success: function(data, textStatus, jqXHR) {
 								callbacks.each(function(callback) {
-									callback.call(context, { 
-										response : data,
-										url : url
+									callback.call(context, {
+										response: data,
+										url: url
 									});
 								});
 							}
@@ -108,6 +131,16 @@ var Session = function(args) {
 					}
 				]
 			});
+		},
+		getIncomingSid: function() {
+			var sidItem = window.location.search.substr(1).split('&').find(function(s) {
+				return s.substring(0, 3).toLowerCase() === 'sid'
+			});
+			var sid = '';
+			if (sidItem) {
+				sid = sidItem.substr(4);
+			}
+			return sid;
 		}
 	});
 };
