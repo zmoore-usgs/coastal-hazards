@@ -121,13 +121,13 @@ public class SessionService extends HttpServlet {
 				responseMap.put("message", ex.getMessage());
 				RequestResponseHelper.sendErrorResponse(response, responseMap);
 			}
-			responseMap.put("id", id);
+			responseMap.put("sid", id);
 			RequestResponseHelper.sendSuccessResponse(response, responseMap);
 		}
 	}
 
 	protected void loadSession(HttpServletRequest request, Map<String, String> responseMap, HttpServletResponse response) {
-		String sessionId = request.getParameter("id");
+		String sessionId = request.getParameter("sid");
 		if (StringUtils.isBlank(sessionId)) {
 			responseMap.put("message", "parameter 'id' may not be missing or blank");
 			RequestResponseHelper.sendErrorResponse(response, responseMap);

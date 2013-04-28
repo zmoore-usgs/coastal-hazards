@@ -31,3 +31,7 @@ body, html {
 img { 
     max-width: none !important; 
 }
+
+.popover {
+	max-width : 2000px !important;
+}

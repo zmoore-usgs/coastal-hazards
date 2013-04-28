@@ -1,10 +1,11 @@
-var Map = function() {
+var Map = function(args) {
 	LOG.info('Map.js::constructor:Map class is initializing.');
+	var mapDivId = args.mapDiv;
 	var me = (this === window) ? {} : this;
 	var initialExtent = [-15381395.046388, 4320929.1906812, -5969245.1327744, 7060432.2840406];
 
 	LOG.debug('Map.js::constructor:Loading Map object');
-	me.map = new OpenLayers.Map('map', {
+	me.map = new OpenLayers.Map(mapDivId, {
 		projection: "EPSG:900913",
 		displayProjection: new OpenLayers.Projection("EPSG:900913")
 	});

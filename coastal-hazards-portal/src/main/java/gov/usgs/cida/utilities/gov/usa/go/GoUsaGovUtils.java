@@ -37,61 +37,18 @@ public class GoUsaGovUtils {
 	}
 
 	public static String minify(final String endpoint) throws IOException, URISyntaxException {
-		String response = null;
-		if (StringUtils.isBlank(usagovEndpoint)) {
-			throw new MissingResourceException("Missing 'usagovEndpoint'", "GoUsaGovUtils", endpointyParam);
-		}
-		if (StringUtils.isBlank(login)) {
-			throw new MissingResourceException("Missing 'login'", "GoUsaGovUtils", loginParam);
-		}
-		if (StringUtils.isBlank(apiKey)) {
-			throw new MissingResourceException("Missing 'apiKey'", "GoUsaGovUtils", apiKeyParam);
-		}
-		
-		HttpClient httpclient = new DefaultHttpClient();
-        try {
-			String serviceEndpoint = usagovEndpoint + "shorten.json?login=" + login + "&apiKey=" + apiKey + "&longUrl=" + endpoint;
-			URI serviceEndpointUri = new URI(serviceEndpoint);
-			HttpGet httpGet = new HttpGet(serviceEndpointUri);
-			
-            ResponseHandler<String> responseHandler = new BasicResponseHandler();
-            response = httpclient.execute(httpGet, responseHandler);
-		} finally {
-            httpclient.getConnectionManager().shutdown();
-        }
-		
-		return response;
+		return executeCall("minify", endpoint);
 	}
 
 	public static String expand(final String endpoint) throws URISyntaxException, IOException {
-		String response = null;
-		if (StringUtils.isBlank(usagovEndpoint)) {
-			throw new MissingResourceException("Missing 'usagovEndpoint'", "GoUsaGovUtils", endpointyParam);
-		}
-		if (StringUtils.isBlank(login)) {
-			throw new MissingResourceException("Missing 'login'", "GoUsaGovUtils", loginParam);
-		}
-		if (StringUtils.isBlank(apiKey)) {
-			throw new MissingResourceException("Missing 'apiKey'", "GoUsaGovUtils", apiKeyParam);
-		}
-		
-		HttpClient httpclient = new DefaultHttpClient();
-        try {
-			String serviceEndpoint = usagovEndpoint + "expand.json?login=" + login + "&apiKey=" + apiKey + "&shortUrl=" + endpoint;
-			URI serviceEndpointUri = new URI(serviceEndpoint);
-			HttpGet httpGet = new HttpGet(serviceEndpointUri);
-			
-            ResponseHandler<String> responseHandler = new BasicResponseHandler();
-            response = httpclient.execute(httpGet, responseHandler);
-		} finally {
-            httpclient.getConnectionManager().shutdown();
-        }
-		
-		return response;
+		return executeCall("expand", endpoint);
 	}
 
 	public static String clicks(final String endpoint) throws URISyntaxException, IOException {
-		String response = null;
+		return executeCall("cilck", endpoint);
+	}
+
+	private static String executeCall(String command, String endpoint) throws URISyntaxException, IOException {
 		if (StringUtils.isBlank(usagovEndpoint)) {
 			throw new MissingResourceException("Missing 'usagovEndpoint'", "GoUsaGovUtils", endpointyParam);
 		}
@@ -101,20 +58,27 @@ public class GoUsaGovUtils {
 		if (StringUtils.isBlank(apiKey)) {
 			throw new MissingResourceException("Missing 'apiKey'", "GoUsaGovUtils", apiKeyParam);
 		}
-		
+
+		String response = null;
 		HttpClient httpclient = new DefaultHttpClient();
-        try {
-			String serviceEndpoint = usagovEndpoint + "clicks.json?login=" + login + "&apiKey=" + apiKey + "&shortUrl=" + endpoint;
-			URI serviceEndpointUri = new URI(serviceEndpoint);
-			HttpGet httpGet = new HttpGet(serviceEndpointUri);
-			
-            ResponseHandler<String> responseHandler = new BasicResponseHandler();
-            response = httpclient.execute(httpGet, responseHandler);
+		String serviceEndpoint = "";
+		ResponseHandler<String> responseHandler = new BasicResponseHandler();
+
+		if (command.equals("minify")) {
+			serviceEndpoint = usagovEndpoint + "shorten.json?login=" + login + "&apiKey=" + apiKey + "&longUrl=" + endpoint;
+		} else if (command.equals("expand")) {
+			serviceEndpoint = usagovEndpoint + "expand.json?login=" + login + "&apiKey=" + apiKey + "&shortUrl=" + endpoint;
+		} else if (command.equals("click")) {
+			serviceEndpoint = usagovEndpoint + "clicks.json?login=" + login + "&apiKey=" + apiKey + "&shortUrl=" + endpoint;
+		}
+
+		HttpGet httpGet = new HttpGet(new URI(serviceEndpoint));
+		try {
+			response = httpclient.execute(httpGet, responseHandler);
 		} finally {
-            httpclient.getConnectionManager().shutdown();
-        }
-		
+			httpclient.getConnectionManager().shutdown();
+		}
+
 		return response;
 	}
-	
 }

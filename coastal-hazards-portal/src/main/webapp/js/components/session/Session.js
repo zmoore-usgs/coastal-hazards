@@ -18,7 +18,7 @@ var Session = function(args) {
 		});
 	}
 
-	return {
+	return $.extend(me, {
 		toString: function() {
 			var stringifyObject = {
 				map: this.getMap()
@@ -29,13 +29,13 @@ var Session = function(args) {
 			return me.map;
 		},
 		getSession: function(agrs) {
-			var id = args.id;
+			var sid = args.sid;
 			var callbacks = args.callbacks || [];
 			var context = args.context;
 			$.ajax('service/session', {
 				type: 'POST',
 				data: {
-					'id': id,
+					'sid': sid,
 					'action': 'read'
 				},
 				success: function(data, textStatus, jqXHR) {
@@ -63,10 +63,10 @@ var Session = function(args) {
 				},
 				success: function(data, textStatus, jqXHR) {
 					if (data.success === 'true') {
-						var id = data.id;
+						var sid = data.sid;
 						if (callbacks && callbacks.length > 0) {
 							callbacks.each(function(callback) {
-								callback.call(context, id);
+								callback.call(context, sid);
 							});
 						}
 					}
@@ -77,26 +77,37 @@ var Session = function(args) {
 			var callbacks = args.callbacks || [];
 			var context = args.context;
 			this.getIdentifier({
-				context : context,
-				callbacks : callbacks
+				context: context,
+				callbacks: callbacks
 			});
 		},
 		getMinifiedEndpoint: function(args) {
 			var location = window.location.href;
+			var callbacks = args.callbacks || [];
+			var context = args.context;
 			
 			this.getEndpoint({
 				context: this,
 				callbacks: [
-					function(id) {
-						$.ajax('service/minifier', {
-							data : '',
-							success : {
-								
+					function(sid) {
+						var url = location + '?sid=' + sid;
+						$.ajax('service/minify', {
+							data: {
+								action : 'minify',
+								url : url
+							},
+							success: function(data, textStatus, jqXHR){
+								callbacks.each(function(callback) {
+									callback.call(context, { 
+										response : data,
+										url : url
+									});
+								});
 							}
-						})
+						});
 					}
 				]
-			})
+			});
 		}
-	};
+	});
 };
