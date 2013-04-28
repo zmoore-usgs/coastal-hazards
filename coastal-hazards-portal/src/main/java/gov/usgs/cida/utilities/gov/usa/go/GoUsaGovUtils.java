@@ -5,7 +5,6 @@ import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.MissingResourceException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
@@ -33,8 +32,8 @@ public class GoUsaGovUtils {
 	static {
 		props = JNDISingleton.getInstance();
 		usagovEndpoint = props.getProperty(endpointyParam, "http://go.usa.gov/api/");
-		login = props.getProperty(loginParam, "Ivan%20Suftin");
-		apiKey = props.getProperty(apiKeyParam, "62222b5dac4cf691f6434bdcb2cd0c2e");
+		login = props.getProperty(loginParam);
+		apiKey = props.getProperty(apiKeyParam);
 	}
 
 	public static String minify(final String endpoint) throws IOException, URISyntaxException {
