@@ -9,20 +9,22 @@ var Map = function(args) {
 		projection: "EPSG:900913",
 		displayProjection: new OpenLayers.Projection("EPSG:900913")
 	});
-
-	me.map.events.on({
-		'moveend': function(evt) {
+	
+	me.moveendCallback = function(evt) {
 			var map = evt.object;
-			var sessionMap = CONFIG.session.getMap();
+			var sMap = CONFIG.session.getMap();
 			
-			sessionMap.baselayer = map.baseLayer.name;
-			sessionMap.center = {
+			sMap.baselayer = map.baseLayer.name;
+			sMap.center = {
 				lat: map.center.lat,
 				lon: map.center.lon
 			};
-			sessionMap.scale = map.getScale();
-			sessionMap.extent = map.getExtent().toArray();
-		},
+			sMap.scale = map.getScale();
+			sMap.extent = map.getExtent().toArray();
+		}
+	
+	me.map.events.on({
+		'moveend': me.moveendCallback,
 		'changelayer': function() {
 
 		}
@@ -55,6 +57,13 @@ var Map = function(args) {
 	return $.extend(me, {
 		getMap: function() {
 			return me.map;
+		},
+		updateFromSession: function() {
+			me.map.events.un({'moveend' : me.moveendCallback});
+			var mapConfig = CONFIG.session.objects.map;
+			this.getMap().setCenter([mapConfig.center.lon, mapConfig.center.lat]);
+			this.getMap().zoomToScale(mapConfig.scale);
+			me.map.events.on({'moveend' : me.moveendCallback});
 		},
 		buildGeocodingPopup: function(args) {
 			var map = me.map;

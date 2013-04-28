@@ -42,5 +42,11 @@ $(document).ready(function() {
 
 	CONFIG.ui.bindSearchInput();
 
-	CONFIG.session.updateFromServer();
+	CONFIG.session.updateFromServer({
+		callbacks : [
+			function() {
+				CONFIG.map.updateFromSession();
+			}
+		]
+	});
 });

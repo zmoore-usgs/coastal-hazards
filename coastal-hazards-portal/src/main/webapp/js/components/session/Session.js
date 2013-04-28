@@ -4,7 +4,7 @@ var Session = function(args) {
 	args = args ? args : {};
 
 	me.objects = Object.extended({
-		map : Object.extended({
+		map: Object.extended({
 			baselayer: 'Not Yet Initialized',
 			scale: 0,
 			extent: [0, 0],
@@ -18,7 +18,7 @@ var Session = function(args) {
 	return $.extend(me, {
 		toString: function() {
 			var stringifyObject = {
-				objects : this.objects
+				objects: this.objects
 			};
 			return JSON.stringify(stringifyObject);
 		},
@@ -28,13 +28,15 @@ var Session = function(args) {
 		getMap: function() {
 			return me.objects.map;
 		},
-		updateFromServer: function() {
+		updateFromServer: function(args) {
 			var sid = CONFIG.session.getIncomingSid();
 			if (sid) {
+				var callbacks = args.callbacks || [];
 				LOG.info("Will try to load session '" + sid + "' from server");
 				this.getSession({
 					sid: sid,
 					callbacks: [
+						// Update the session from the server
 						function(session) {
 							if (session) {
 								LOG.info("Session found on server. Updating current session.");
@@ -43,7 +45,7 @@ var Session = function(args) {
 								LOG.info("Session not found on server.");
 							}
 						}
-					]
+					].union(callbacks)
 				});
 			}
 		},
