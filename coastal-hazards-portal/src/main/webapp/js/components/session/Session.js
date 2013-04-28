@@ -1,37 +1,46 @@
 var Session = function(args) {
 	LOG.info('Session.js::constructor: Session class is initializing.');
 	var me = (this === window) ? {} : this;
-	var args = args ? args : {};
+	args = args ? args : {};
 
-	me.map = Object.extended({
-		baselayer: 'Not Yet Initialized',
-		scale: 0,
-		extent: [0, 0],
-		center: {
-			lat: 0,
-			lon: 0
-		}
+	me.objects = Object.extended({
+		map : Object.extended({
+			baselayer: 'Not Yet Initialized',
+			scale: 0,
+			extent: [0, 0],
+			center: {
+				lat: 0,
+				lon: 0
+			}
+		})
 	});
 
 	return $.extend(me, {
 		toString: function() {
 			var stringifyObject = {
-				map: this.getMap()
-			}
+				objects : this.objects
+			};
 			return JSON.stringify(stringifyObject);
 		},
+		getObjects: function() {
+			return me.objects;
+		},
 		getMap: function() {
-			return me.map;
+			return me.objects.map;
 		},
 		updateFromServer: function() {
 			var sid = CONFIG.session.getIncomingSid();
 			if (sid) {
+				LOG.info("Will try to load session '" + sid + "' from server");
 				this.getSession({
 					sid: sid,
 					callbacks: [
 						function(session) {
 							if (session) {
-								$.extend(true, this.map, session.map);
+								LOG.info("Session found on server. Updating current session.");
+								$.extend(true, me.objects, JSON.parse(session).objects);
+							} else {
+								LOG.info("Session not found on server.");
 							}
 						}
 					]
@@ -53,9 +62,7 @@ var Session = function(args) {
 					success: function(data, textStatus, jqXHR) {
 						var session = null;
 						if (data.success === 'true') {
-							session = new Session({
-								'map': JSON.parse(data.session).map
-							});
+							session = data.session;
 						}
 
 						if (callbacks && callbacks.length > 0) {

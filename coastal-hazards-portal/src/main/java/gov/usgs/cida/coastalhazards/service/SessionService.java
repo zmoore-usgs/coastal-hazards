@@ -63,7 +63,7 @@ public class SessionService extends HttpServlet {
 			RequestResponseHelper.sendErrorResponse(response, responseMap);
 		}
 
-		
+
 	}
 
 	// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -140,8 +140,13 @@ public class SessionService extends HttpServlet {
 				responseMap.put("message", ex.getMessage());
 				RequestResponseHelper.sendErrorResponse(response, responseMap);
 			}
-			responseMap.put("session", session);
-			RequestResponseHelper.sendSuccessResponse(response, responseMap);
+			if (session != null) {
+				responseMap.put("session", session);
+				RequestResponseHelper.sendSuccessResponse(response, responseMap);
+			} else {
+				responseMap.put("message", "Session does not exist");
+				RequestResponseHelper.sendErrorResponse(response, responseMap);
+			}
 		}
 	}
 }
