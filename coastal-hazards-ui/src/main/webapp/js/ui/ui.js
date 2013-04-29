@@ -40,6 +40,47 @@ var UI = function() {
 			this.bindWindowResize();
 			this.addIntroContent();
 			$(window).resize();
+			splashUpdate("Checking for browser compatibility...");
+			if (﻿$.browser.msie && parseInt($.browser.version) < ﻿ 9) {
+				var modal = $('<div />')
+						.addClass('modal fade')
+						.attr('id', 'browser-incompatibility-modal')
+						.append(
+						$('<div />')
+						.addClass('modal-header')
+						.append($('<button />')
+						.attr({
+					type: 'button',
+					'data-dismiss': 'modal',
+					'aria-hidden': 'true'
+				})
+						.html('&times;')
+						.addClass('close'))
+						.append($('<h3 />').html('Browser Compatibility Warning')))
+						.append($('<div />').addClass('modal-body')
+						.append('<p />')
+						.html(
+						'We have detected that you may be using a browser that is not ' +
+						'compatible with this application. This application can not be ' +
+						'garuanteed to work with your browser. The following browsers are ' +
+						'known to work with this application: ' +
+						'<ul>' +
+						'<li>Internet Explorer 9+</li>' +
+						'<li>Mozilla Firefox</li>' +
+						'<li>Google Chrome</li>' +
+						'<li>Safari</li>' +
+						'<li>Opera</li>' +
+						'</ul>'
+						))
+						.append($('<div />').addClass('modal-footer')
+						.append($('<a />').attr({
+					'href': '#',
+					'data-dismiss': 'modal',
+					'aria-hidden': 'true'
+				}).addClass('btn').html('Close')));
+				$('body').append(modal);
+				$('#browser-incompatibility-modal').modal('show');
+			}
 		},
         displayStage : function(caller) {
             $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click');
