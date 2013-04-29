@@ -1,6 +1,7 @@
 package gov.usgs.cida.utilities.gov.usa.go;
 
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
+import gov.usgs.cida.utilities.communication.HttpClientSingleton;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.IOException;
 import java.net.URI;
@@ -11,7 +12,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -60,7 +60,7 @@ public class GoUsaGovUtils {
 		}
 
 		String response = null;
-		HttpClient httpclient = new DefaultHttpClient();
+		HttpClient httpclient = HttpClientSingleton.getInstance();
 		String serviceEndpoint = "";
 		ResponseHandler<String> responseHandler = new BasicResponseHandler();
 
