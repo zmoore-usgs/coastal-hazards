@@ -53,6 +53,7 @@ var UI = function() {
 				$('#toolbox-span').css('min-height', contentRowHeight);
 				$('#map-span').css('min-height', contentRowHeight);
 				$('#map').css('height', contentRowHeight);
+				CONFIG.map.getMap().updateSize();
 				
 				// Move the zoom control over to the right
 				$('.olControlZoom').css('left', mapViewport.width() - $('.olControlZoom').width() - 20);
