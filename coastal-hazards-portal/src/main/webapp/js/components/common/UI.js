@@ -24,6 +24,30 @@ var UI = function() {
 				$('#map').css('height', contentRowHeight);
 			});
 		},
+		popoverClickHandler: function(e) {
+			var container = $(this);
+			if (!CONFIG.popupHandling.isVisible) {
+				$(container).popover('show');
+				CONFIG.popupHandling.clickedAway = false;
+				CONFIG.popupHandling.isVisible = true;
+				e.preventDefault();
+			}
+		},
+		popoverShowHandler: function() {
+			var container = $(this);
+			var closePopovers = function(e) {
+				if (CONFIG.popupHandling.isVisible && CONFIG.popupHandling.clickedAway && !$(e.target.offsetParent).hasClass('popover')) {
+					$(document).off('click', closePopovers);
+					$(container).popover('hide');
+					CONFIG.popupHandling.isVisible = false;
+					CONFIG.popupHandling.clickedAway = false;
+				} else {
+					CONFIG.popupHandling.clickedAway = true;
+				}
+			};
+			$(document).off('click', closePopovers);
+			$(document).on('click', closePopovers);
+		},
 		bindSubmenuButtons: function() {
 			['storms', 'vulnerability', 'historical'].each(function(item) {
 				$('#accordion-group-' + item + '-view').popover({
@@ -34,30 +58,8 @@ var UI = function() {
 					container: 'body',
 					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
 				}).on({
-					click: function(e) {
-						var container = $(this);
-						if (!CONFIG.popupHandling.isVisible) {
-							$(container).popover('show');
-							CONFIG.popupHandling.clickedAway = false;
-							CONFIG.popupHandling.isVisible = true;
-							e.preventDefault();
-						}
-					},
-					shown: function() {
-						var container = $(this);
-						var closePopovers = function(e) {
-							if (CONFIG.popupHandling.isVisible && CONFIG.popupHandling.clickedAway && !$(e.target.offsetParent).hasClass('popover')) {
-								$(document).off('click', closePopovers);
-								$(container).popover('hide');
-								CONFIG.popupHandling.isVisible = false;
-								CONFIG.popupHandling.clickedAway = false;
-							} else {
-								CONFIG.popupHandling.clickedAway = true;
-							}
-						};
-						$(document).off('click', closePopovers);
-						$(document).on('click', closePopovers);
-					}
+					click: CONFIG.ui.popoverClickHandler,
+					shown: CONFIG.ui.popoverShowHandler
 				});
 
 				$('#accordion-group-' + item + '-learn').popover({
@@ -68,27 +70,8 @@ var UI = function() {
 					container: 'body',
 					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
 				}).on({
-					click: function(e) {
-						$(this).popover('show');
-						CONFIG.clickedAway = false;
-						CONFIG.isVisible = true;
-						e.preventDefault();
-					},
-					shown: function() {
-						var container = $(this);
-						var closePopovers = function(e) {
-							if (CONFIG.popupHandling.isVisible && CONFIG.popupHandling.clickedAway && !$(e.target.offsetParent).hasClass('popover')) {
-								$(document).off('click', closePopovers);
-								$(container).popover('hide');
-								CONFIG.popupHandling.isVisible = false;
-								CONFIG.popupHandling.clickedAway = false;
-							} else {
-								CONFIG.popupHandling.clickedAway = true;
-							}
-						};
-						$(document).off('click', closePopovers);
-						$(document).on('click', closePopovers);
-					}
+					click: CONFIG.ui.popoverClickHandler,
+					shown: CONFIG.ui.popoverShowHandler
 				});
 			});
 		},

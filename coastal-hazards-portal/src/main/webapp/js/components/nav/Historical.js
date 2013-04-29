@@ -17,15 +17,7 @@ var Historical = function(args) {
 				container: 'body',
 				content: "<div class='container-fluid' id='prepare-container'><div>Preparing session export...</div></div>"
 			}).on({
-				'click': function(e) {
-					var container = this;
-					if (!CONFIG.popupHandling.isVisible) {
-						$(container).popover('show');
-						CONFIG.popupHandling.clickedAway = false;
-						CONFIG.popupHandling.isVisible = true;
-						e.preventDefault();
-					}
-				},
+				'click': CONFIG.ui.popoverClickHandler,
 				'shown': function() {
 					CONFIG.session.getMinifiedEndpoint({
 						callbacks: [
@@ -50,20 +42,7 @@ var Historical = function(args) {
 							}
 						]
 					});
-
-					var container = $(this);
-					var closePopovers = function(e) {
-						if (CONFIG.popupHandling.isVisible && CONFIG.popupHandling.clickedAway && !$(e.target.offsetParent).hasClass('popover')) {
-							$(document).off('click', closePopovers);
-							$(container).popover('hide');
-							CONFIG.popupHandling.isVisible = false;
-							CONFIG.popupHandling.clickedAway = false;
-						} else {
-							CONFIG.popupHandling.clickedAway = true;
-						}
-					};
-					$(document).off('click', closePopovers);
-					$(document).on('click', closePopovers);
+					CONFIG.ui.popoverShowHandler.call(this);
 				}
 			});
 		}
