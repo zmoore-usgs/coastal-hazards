@@ -35,23 +35,27 @@ var UI = function() {
 					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
 				}).on({
 					click: function(e) {
-						$(this).popover('show');
-						CONFIG.clickedAway = false;
-						CONFIG.isVisible = true;
-						e.preventDefault();
+						var container = $(this);
+						if (!CONFIG.popupHandling.isVisible) {
+							$(container).popover('show');
+							CONFIG.popupHandling.clickedAway = false;
+							CONFIG.popupHandling.isVisible = true;
+							e.preventDefault();
+						}
 					},
 					shown: function() {
 						var container = $(this);
-						var closePopovers = function() {
-							if (CONFIG.isVisible && CONFIG.clickedAway) {
+						var closePopovers = function(e) {
+							if (CONFIG.popupHandling.isVisible && CONFIG.popupHandling.clickedAway && !$(e.target.offsetParent).hasClass('popover')) {
 								$(document).off('click', closePopovers);
 								$(container).popover('hide');
-								CONFIG.isVisible = false;
-								CONFIG.clickedAway = false;
+								CONFIG.popupHandling.isVisible = false;
+								CONFIG.popupHandling.clickedAway = false;
 							} else {
-								CONFIG.clickedAway = true;
+								CONFIG.popupHandling.clickedAway = true;
 							}
 						};
+						$(document).off('click', closePopovers);
 						$(document).on('click', closePopovers);
 					}
 				});
@@ -72,13 +76,14 @@ var UI = function() {
 					},
 					shown: function() {
 						var container = $(this);
-						var closePopovers = function() {
-							if (CONFIG.isVisible && CONFIG.clickedAway) {
+						var closePopovers = function(e) {
+							if (CONFIG.popupHandling.isVisible && CONFIG.popupHandling.clickedAway && !$(e.target.offsetParent).hasClass('popover')) {
+								$(document).off('click', closePopovers);
 								$(container).popover('hide');
-								CONFIG.isVisible = false;
-								CONFIG.clickedAway = false;
+								CONFIG.popupHandling.isVisible = false;
+								CONFIG.popupHandling.clickedAway = false;
 							} else {
-								CONFIG.clickedAway = true;
+								CONFIG.popupHandling.clickedAway = true;
 							}
 						};
 						$(document).off('click', closePopovers);

@@ -18,10 +18,13 @@ var Historical = function(args) {
 				content: "<div class='container-fluid' id='prepare-container'><div>Preparing session export...</div></div>"
 			}).on({
 				'click': function(e) {
-					$(this).popover('show');
-					CONFIG.clickedAway = false;
-					CONFIG.isVisible = true;
-					e.preventDefault();
+					var container = this;
+					if (!CONFIG.popupHandling.isVisible) {
+						$(container).popover('show');
+						CONFIG.popupHandling.clickedAway = false;
+						CONFIG.popupHandling.isVisible = true;
+						e.preventDefault();
+					}
 				},
 				'shown': function() {
 					CONFIG.session.getMinifiedEndpoint({
@@ -49,14 +52,14 @@ var Historical = function(args) {
 					});
 
 					var container = $(this);
-					var closePopovers = function() {
-						if (CONFIG.isVisible && CONFIG.clickedAway) {
+					var closePopovers = function(e) {
+						if (CONFIG.popupHandling.isVisible && CONFIG.popupHandling.clickedAway && !$(e.target.offsetParent).hasClass('popover')) {
 							$(document).off('click', closePopovers);
 							$(container).popover('hide');
-							CONFIG.isVisible = false;
-							CONFIG.clickedAway = false;
+							CONFIG.popupHandling.isVisible = false;
+							CONFIG.popupHandling.clickedAway = false;
 						} else {
-							CONFIG.clickedAway = true;
+							CONFIG.popupHandling.clickedAway = true;
 						}
 					};
 					$(document).off('click', closePopovers);
