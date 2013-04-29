@@ -10,15 +10,12 @@ var UI = function() {
 			this.bindSubmenuButtons();
 			$(window).resize();
 		},
-				
 		showSpinner: function() {
 			$("#application-spinner").fadeIn();
 		},
-				
 		hideSpinner: function() {
 			$("#application-spinner").fadeOut();
 		},
-				
 		bindWindowResize: function() {
 			$(window).resize(function() {
 				var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
@@ -27,33 +24,69 @@ var UI = function() {
 				$('#map').css('height', contentRowHeight);
 			});
 		},
-				
 		bindSubmenuButtons: function() {
 			['storms', 'vulnerability', 'historical'].each(function(item) {
 				$('#accordion-group-' + item + '-view').popover({
 					html: true,
 					placement: 'right',
-					trigger: 'click',
+					trigger: 'manual',
 					title: 'View ' + item.capitalize(),
 					container: 'body',
 					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
 				}).on({
-					show : function() {
-						LOG.debug('shown')
+					click: function(e) {
+						$(this).popover('show');
+						CONFIG.clickedAway = false;
+						CONFIG.isVisible = true;
+						e.preventDefault();
+					},
+					shown: function() {
+						var container = $(this);
+						var closePopovers = function() {
+							if (CONFIG.isVisible && CONFIG.clickedAway) {
+								$(container).popover('hide');
+								CONFIG.isVisible = false;
+								CONFIG.clickedAway = false;
+							} else {
+								CONFIG.clickedAway = true;
+							}
+						};
+						$(document).off('click', closePopovers);
+						$(document).on('click', closePopovers);
 					}
 				});
 
 				$('#accordion-group-' + item + '-learn').popover({
 					html: true,
 					placement: 'right',
-					trigger: 'click',
+					trigger: 'manual',
 					title: 'Learn About ' + item.capitalize(),
 					container: 'body',
 					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
+				}).on({
+					click: function(e) {
+						$(this).popover('show');
+						CONFIG.clickedAway = false;
+						CONFIG.isVisible = true;
+						e.preventDefault();
+					},
+					shown: function() {
+						var container = $(this);
+						var closePopovers = function() {
+							if (CONFIG.isVisible && CONFIG.clickedAway) {
+								$(container).popover('hide');
+								CONFIG.isVisible = false;
+								CONFIG.clickedAway = false;
+							} else {
+								CONFIG.clickedAway = true;
+							}
+						};
+						$(document).off('click', closePopovers);
+						$(document).on('click', closePopovers);
+					}
 				});
 			});
 		},
-
 		bindSearchInput: function() {
 			$('#app-navbar-search-form').submit(function(evt) {
 				var query = $('#app-navbar-search-input').val();

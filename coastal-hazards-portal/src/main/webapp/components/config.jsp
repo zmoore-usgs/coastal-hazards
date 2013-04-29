@@ -17,7 +17,7 @@
 %>
 <script type="text/javascript">
 	splashUpdate("Setting configuration...");
-	var CONFIG = Object.extended();
+	var CONFIG = {};
 
 	CONFIG.development = <%= development%>;
 	CONFIG.geoServerEndpoint = '<%=geoserverEndpoint%>';
