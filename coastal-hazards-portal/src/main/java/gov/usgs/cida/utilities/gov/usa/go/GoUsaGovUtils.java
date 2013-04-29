@@ -1,17 +1,19 @@
 package gov.usgs.cida.utilities.gov.usa.go;
 
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
+import gov.usgs.cida.utilities.communication.HttpClientSingleton;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.MissingResourceException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -59,11 +61,7 @@ public class GoUsaGovUtils {
 			throw new MissingResourceException("Missing 'apiKey'", "GoUsaGovUtils", apiKeyParam);
 		}
 
-		String response = null;
-		HttpClient httpclient = new DefaultHttpClient();
 		String serviceEndpoint = "";
-		ResponseHandler<String> responseHandler = new BasicResponseHandler();
-
 		if (command.equals("minify")) {
 			serviceEndpoint = usagovEndpoint + "shorten.json?login=" + login + "&apiKey=" + apiKey + "&longUrl=" + endpoint;
 		} else if (command.equals("expand")) {
@@ -73,12 +71,7 @@ public class GoUsaGovUtils {
 		}
 
 		HttpGet httpGet = new HttpGet(new URI(serviceEndpoint));
-		try {
-			response = httpclient.execute(httpGet, responseHandler);
-		} finally {
-			httpclient.getConnectionManager().shutdown();
-		}
-
-		return response;
+		HttpClient httpClient = HttpClientSingleton.getInstance();
+		return httpClient.execute(httpGet, new BasicResponseHandler());
 	}
 }
