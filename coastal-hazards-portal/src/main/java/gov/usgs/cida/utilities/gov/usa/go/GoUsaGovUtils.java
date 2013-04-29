@@ -25,9 +25,9 @@ public class GoUsaGovUtils {
 	private static String login = null;
 	private static String apiKey = null;
 	private static DynamicReadOnlyProperties props = null;
-	private static final String loginParam = "login.go.usa.gov";
-	private static final String apiKeyParam = "api.go.usa.gov";
-	private static final String endpointyParam = "endpoint.go.usa.gov";
+	private static final String loginParam = "coastal-hazards.go.usa.gov.login";
+	private static final String apiKeyParam = "coastal-hazards.go.usa.gov.apikey";
+	private static final String endpointyParam = "coastal-hazards.go.usa.gov.endpoint";
 
 	static {
 		props = JNDISingleton.getInstance();
