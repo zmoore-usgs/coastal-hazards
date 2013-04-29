@@ -8,9 +8,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.MissingResourceException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.slf4j.LoggerFactory;
 
@@ -59,11 +61,7 @@ public class GoUsaGovUtils {
 			throw new MissingResourceException("Missing 'apiKey'", "GoUsaGovUtils", apiKeyParam);
 		}
 
-		String response = null;
-		HttpClient httpclient = HttpClientSingleton.getInstance();
 		String serviceEndpoint = "";
-		ResponseHandler<String> responseHandler = new BasicResponseHandler();
-
 		if (command.equals("minify")) {
 			serviceEndpoint = usagovEndpoint + "shorten.json?login=" + login + "&apiKey=" + apiKey + "&longUrl=" + endpoint;
 		} else if (command.equals("expand")) {
@@ -73,12 +71,7 @@ public class GoUsaGovUtils {
 		}
 
 		HttpGet httpGet = new HttpGet(new URI(serviceEndpoint));
-		try {
-			response = httpclient.execute(httpGet, responseHandler);
-		} finally {
-			httpclient.getConnectionManager().shutdown();
-		}
-
-		return response;
+		HttpClient httpClient = HttpClientSingleton.getInstance();
+		return httpClient.execute(httpGet, new BasicResponseHandler());
 	}
 }
