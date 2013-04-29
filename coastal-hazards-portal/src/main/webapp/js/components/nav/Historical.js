@@ -12,11 +12,17 @@ var Historical = function(args) {
 			me.shareMenuDiv.popover({
 				html: true,
 				placement: 'right',
-				trigger: 'click',
+				trigger: 'manual',
 				title: 'Share Session',
 				container: 'body',
 				content: "<div class='container-fluid' id='prepare-container'><div>Preparing session export...</div></div>"
-			}).bind({
+			}).on({
+				'click': function(e) {
+					$(this).popover('show');
+					CONFIG.clickedAway = false;
+					CONFIG.isVisible = true;
+					e.preventDefault();
+				},
 				'shown': function() {
 					CONFIG.session.getMinifiedEndpoint({
 						callbacks: [
@@ -30,21 +36,33 @@ var Historical = function(args) {
 								var controlSetDiv = $('<div />');
 								container.append(row.append(controlSetDiv));
 								$('#prepare-container').replaceWith(container);
-								
-								
+
+
 								var goUsaResponse = JSON.parse(response.response);
 								if (goUsaResponse.response.statusCode.toLowerCase() === 'error') {
 									controlSetDiv.html('Use the following URL to share your current view<br /><br /><b>' + url + '</b>');
 								} else {
-									
+
 								}
 							}
 						]
 					});
+
+					var container = $(this);
+					var closePopovers = function() {
+						if (CONFIG.isVisible && CONFIG.clickedAway) {
+							$(document).off('click', closePopovers);
+							$(container).popover('hide');
+							CONFIG.isVisible = false;
+							CONFIG.clickedAway = false;
+						} else {
+							CONFIG.clickedAway = true;
+						}
+					};
+					$(document).off('click', closePopovers);
+					$(document).on('click', closePopovers);
 				}
 			});
-
-
 		}
 	});
 };

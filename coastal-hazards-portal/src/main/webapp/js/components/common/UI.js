@@ -44,6 +44,7 @@ var UI = function() {
 						var container = $(this);
 						var closePopovers = function() {
 							if (CONFIG.isVisible && CONFIG.clickedAway) {
+								$(document).off('click', closePopovers);
 								$(container).popover('hide');
 								CONFIG.isVisible = false;
 								CONFIG.clickedAway = false;
@@ -51,7 +52,6 @@ var UI = function() {
 								CONFIG.clickedAway = true;
 							}
 						};
-						$(document).off('click', closePopovers);
 						$(document).on('click', closePopovers);
 					}
 				});
