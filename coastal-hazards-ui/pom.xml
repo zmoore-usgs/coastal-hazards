@@ -18,140 +18,41 @@
 		<slf4j.version>1.7.2</slf4j.version>
 	</properties>
 
-	<dependencyManagement>
-		<dependencies>
-			<!-- CIDA JAVA LIBS -->
-			<dependency>
-				<groupId>it.geosolutions</groupId>
-				<artifactId>geoserver-manager</artifactId>
-				<version>1.5</version>
-			</dependency>
-			<dependency>
-				<groupId>gov.usgs.cida</groupId>
-				<artifactId>wps-n52</artifactId>
-				<version>1.0.1</version>
-				<type>war</type>
-			</dependency>
-			<dependency>
-				<groupId>gov.usgs.cida.owsutils</groupId>
-				<artifactId>cida-owsutils-geoserver</artifactId>
-				<version>1.0.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.n52.wps</groupId>
-				<artifactId>52n-wps-io</artifactId>
-				<version>3.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.n52.wps</groupId>
-				<artifactId>52n-wps-r</artifactId>
-				<version>3.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.geotools</groupId>
-				<artifactId>gt-main</artifactId>
-				<version>${gt.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.codehaus.woodstox</groupId>
-				<artifactId>woodstox-core-lgpl</artifactId>
-				<version>4.1.2</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>2.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.openid4java</groupId>
-				<artifactId>openid4java</artifactId>
-				<version>0.9.7</version>
-			</dependency>
-			<!-- JS Templates -->
-			<dependency>
-				<groupId>gov.usgs.cida.jslibs</groupId>
-				<artifactId>dygraphs-core</artifactId>
-				<version>20121127-1</version>
-				<type>war</type>
-			</dependency>
-			<dependency>
-				<groupId>gov.usgs.cida.jslibs</groupId>
-				<artifactId>jquery-fineuploader</artifactId>
-				<version>3.4.0-3</version>
-				<type>war</type>
-			</dependency>
-			<dependency>
-				<groupId>gov.usgs.cida.jslibs</groupId>
-				<artifactId>jquery-tablesorter</artifactId>
-				<version>2.7.6-1</version>
-				<type>war</type>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpcore</artifactId>
-				<version>4.2</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpclient</artifactId>
-				<version>4.2</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-fileupload</groupId>
-				<artifactId>commons-fileupload</artifactId>
-				<version>1.2.2</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>2.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.geotools</groupId>
-				<artifactId>gt-api</artifactId>
-				<version>${gt.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.geotools</groupId>
-				<artifactId>gt-data</artifactId>
-				<version>${gt.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.geotools</groupId>
-				<artifactId>gt-opengis</artifactId>
-				<version>${gt.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.geotools</groupId>
-				<artifactId>gt-shapefile</artifactId>
-				<version>${gt.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.geoserver.extension</groupId>
-				<artifactId>wps-core</artifactId>
-				<version>2.2.2</version>
-			</dependency>
-			<dependency>
-				<groupId>joda-time</groupId>
-				<artifactId>joda-time</artifactId>
-				<version>2.1</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
-        
 		<dependency>
 			<groupId>it.geosolutions</groupId>
 			<artifactId>geoserver-manager</artifactId>
+			<version>1.5</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jcl-over-slf4j</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida</groupId>
 			<artifactId>tomcat-filters</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-lang</artifactId>
+					<groupId>commons-lang</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<artifactId>proxy-utils</artifactId>
 			<groupId>gov.usgs.cida</groupId>
+			<exclusions>
+				<exclusion>
+					<artifactId>jcl-over-slf4j</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>commons-lang</artifactId>
+					<groupId>commons-lang</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida</groupId>
@@ -206,16 +107,19 @@
 		<dependency>
 			<groupId>gov.usgs.cida.jslibs</groupId>
 			<artifactId>dygraphs-core</artifactId>
+			<version>20121127-1</version>
 			<type>war</type>
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida.jslibs</groupId>
 			<artifactId>jquery-fineuploader</artifactId>
+			<version>3.4.0-3</version>
 			<type>war</type>
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida.jslibs</groupId>
 			<artifactId>jquery-tablesorter</artifactId>
+			<version>2.7.6-1</version>
 			<type>war</type>
 		</dependency>
 		<dependency>
@@ -227,18 +131,22 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
+			<version>4.2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
+			<version>4.2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -247,6 +155,13 @@
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-shapefile</artifactId>
+			<version>${gt.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>gt-referencing</artifactId>
+					<groupId>org.geotools</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida.coastalhazards</groupId>
@@ -254,7 +169,13 @@
 			<version>${parent.version}</version>
 			<type>jar</type>
 		</dependency>
-		<dependency>
+	 <dependency>
+	  <groupId>commons-lang</groupId>
+	  <artifactId>commons-lang</artifactId>
+	  <version>2.6</version>
+	  <type>jar</type>
+	 </dependency>
+	 <dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
 			<scope>provided</scope>
@@ -290,14 +211,27 @@
 		<dependency>
 			<groupId>gov.usgs.cida.owsutils</groupId>
 			<artifactId>cida-owsutils-geoserver</artifactId>
+			<version>1.0.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-lang</artifactId>
+					<groupId>commons-lang</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>gt-referencing</artifactId>
+					<groupId>org.geotools</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>font-awesome</artifactId>
+			<version>3.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openid4java</groupId>
 			<artifactId>openid4java</artifactId>
+			<version>0.9.7</version>
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida.jslibs</groupId>
