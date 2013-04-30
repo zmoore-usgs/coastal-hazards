@@ -48,7 +48,7 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-		<script type="text/javascript" src="webjars/jquery/1.8.3/jquery<%= development ? "" : ".min"%>.js"></script>
+		<script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
     </head>
     <body>
         <jsp:include page="components/application-overlay.jsp"></jsp:include>
@@ -167,6 +167,7 @@
         <script type="text/javascript" src="js/components/nav/Historical.js"></script>
         <script type="text/javascript" src="js/components/session/Session.js"></script>
         <script type="text/javascript" src="js/components/map/Map.js"></script>
+        <script type="text/javascript" src="js/components/common/OWS.js"></script>
         <script type="text/javascript" src="js/components/common/UI.js"></script>
         <script type="text/javascript" src="js/components/common/OnReady.js"></script>
 		

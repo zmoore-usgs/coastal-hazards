@@ -9,20 +9,20 @@ var Map = function(args) {
 		projection: "EPSG:900913",
 		displayProjection: new OpenLayers.Projection("EPSG:900913")
 	});
-	
+
 	me.moveendCallback = function(evt) {
-			var map = evt.object;
-			var sMap = CONFIG.session.getMap();
-			
-			sMap.baselayer = map.baseLayer.name;
-			sMap.center = {
-				lat: map.center.lat,
-				lon: map.center.lon
-			};
-			sMap.scale = map.getScale();
-			sMap.extent = map.getExtent().toArray();
-		}
-	
+		var map = evt.object;
+		var sMap = CONFIG.session.getMap();
+
+		sMap.baselayer = map.baseLayer.name;
+		sMap.center = {
+			lat: map.center.lat,
+			lon: map.center.lon
+		};
+		sMap.scale = map.getScale();
+		sMap.extent = map.getExtent().toArray();
+	}
+
 	me.map.events.on({
 		'moveend': me.moveendCallback,
 		'changelayer': function() {
@@ -59,11 +59,11 @@ var Map = function(args) {
 			return me.map;
 		},
 		updateFromSession: function() {
-			me.map.events.un({'moveend' : me.moveendCallback});
+			me.map.events.un({'moveend': me.moveendCallback});
 			var mapConfig = CONFIG.session.objects.map;
 			this.getMap().setCenter([mapConfig.center.lon, mapConfig.center.lat]);
 			this.getMap().zoomToScale(mapConfig.scale);
-			me.map.events.on({'moveend' : me.moveendCallback});
+			me.map.events.on({'moveend': me.moveendCallback});
 		},
 		buildGeocodingPopup: function(args) {
 			var map = me.map;
@@ -152,6 +152,22 @@ var Map = function(args) {
 						locations: locations
 					});
 				}
+			});
+		},
+				
+		/**
+		 * Removes a layer from the map based on the layer's name. If more
+		 * than one layer with the same name exists in the map, removes
+		 * all layers with that name
+		 * 
+		 * @param {type} featureName
+		 * @returns {undefined}
+		 */
+		removeLayersByName: function(featureName) {
+			LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + featureName);
+			var layers = me.map.getLayersByName(featureName) || [];
+			layers.each(function(layer) {
+				me.map.removeLayer(layer);
 			});
 		}
 	});
