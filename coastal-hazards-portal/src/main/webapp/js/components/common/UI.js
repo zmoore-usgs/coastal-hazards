@@ -49,7 +49,7 @@ var UI = function() {
 			$(document).on('click', closePopovers);
 		},
 		bindSubmenuButtons: function() {
-			['storms', 'vulnerability', 'historical'].each(function(item) {
+			['storms', 'vulnerability'].each(function(item) {
 				$('#accordion-group-' + item + '-view').popover({
 					html: true,
 					placement: 'right',

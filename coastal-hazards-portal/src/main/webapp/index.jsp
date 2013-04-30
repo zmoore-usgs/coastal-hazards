@@ -167,6 +167,7 @@
         <script type="text/javascript" src="js/components/nav/Historical.js"></script>
         <script type="text/javascript" src="js/components/session/Session.js"></script>
         <script type="text/javascript" src="js/components/map/Map.js"></script>
+        <script type="text/javascript" src="js/components/common/OWS.js"></script>
         <script type="text/javascript" src="js/components/common/UI.js"></script>
         <script type="text/javascript" src="js/components/common/OnReady.js"></script>
 		

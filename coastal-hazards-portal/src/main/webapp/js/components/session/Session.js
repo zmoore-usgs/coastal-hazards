@@ -3,8 +3,11 @@ var Session = function(args) {
 	var me = (this === window) ? {} : this;
 	args = args ? args : {};
 
-	me.objects = Object.extended({
-		map: Object.extended({
+	me.objects = {
+		view: {
+			activeParentMenu : 'storms'
+		},
+		map: {
 			baselayer: 'Not Yet Initialized',
 			scale: 0,
 			extent: [0, 0],
@@ -12,8 +15,8 @@ var Session = function(args) {
 				lat: 0,
 				lon: 0
 			}
-		})
-	});
+		}
+	};
 
 	return $.extend(me, {
 		toString: function() {
@@ -136,7 +139,7 @@ var Session = function(args) {
 		},
 		getIncomingSid: function() {
 			var sidItem = window.location.search.substr(1).split('&').find(function(s) {
-				return s.substring(0, 3).toLowerCase() === 'sid'
+				return s.substring(0, 3).toLowerCase() === 'sid';
 			});
 			var sid = '';
 			if (sidItem) {
