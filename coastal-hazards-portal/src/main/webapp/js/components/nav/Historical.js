@@ -83,6 +83,9 @@ var Historical = function(args) {
 			var layerCt = availableLayers.length;
 			if (layerCt) {
 				LOG.debug('Historical.js::displayAvailableData(): Found ' + layerCt + ' shoreline layers to display');
+
+				var bounds = new OpenLayers.Bounds();
+
 				availableLayers.each(function(layer) {
 					var layerBounds = OpenLayers.Bounds.fromArray(layer.bbox['EPSG:900913'].bbox);
 					var box = new OpenLayers.Marker.Box(layerBounds);
@@ -130,7 +133,13 @@ var Historical = function(args) {
 
 					LOG.debug('Historical.js:: Adding box marker to map');
 					me.boxLayer.addMarker(box);
+					
+					LOG.trace('Historical.js::displayAvailableData(): Adding current box bounds to overall layer set bounds.');
+					bounds.extend(box.bounds);
 				});
+				
+				LOG.debug('Historical.js::displayAvailableData(): Zooming to combined bounds of all layers.');
+				CONFIG.map.getMap().zoomToExtent(bounds);
 			}
 		}
 	});
