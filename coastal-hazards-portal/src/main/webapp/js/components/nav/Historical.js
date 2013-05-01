@@ -5,7 +5,8 @@ var Historical = function(args) {
 	me.collapseDiv = args.collapseDiv;
 	me.shareMenuDiv = args.shareMenuDiv;
 	me.viewMenuDiv = args.viewMenuDiv;
-	me.boxLayer = new OpenLayers.Layer.Boxes('shoreline-box-layer', {
+	me.boxLayerName = 'shoreline-box-layer';
+	me.boxLayer = new OpenLayers.Layer.Boxes(me.boxLayerName, {
 		displayInLayerSwitcher: false
 	});
 
@@ -24,16 +25,22 @@ var Historical = function(args) {
 		},
 		leaveSection: function() {
 			LOG.debug('Historical.js::displayAvailableData(): Removing box layer from map');
-			CONFIG.map.removeLayersByName('shoreline-box-layer');
+			CONFIG.map.removeLayersByName(me.boxLayerName);
 		},
 		bindParentMenu: function() {
-			$('#accordion-group-historical-collapse').on({
-				'show': function() {
-					CONFIG.session.objects.view.activeParentMenu = me.name;
-					me.enterSection();
+			me.collapseDiv.on({
+				'show': function(e) {
+					if (e.target.className !== 'accordion-group-item') {
+						LOG.debug('Historical.js:: Entering historical section.');
+						CONFIG.session.objects.view.activeParentMenu = me.name;
+						me.enterSection();
+					}
 				},
-				'hide': function() {
-					me.leaveSection();
+				'hide': function(e) {
+					if (e.target.className !== 'accordion-group-item') {
+						LOG.debug('Historical.js:: Leaving historical section.');
+						me.leaveSection();
+					}
 				}
 			});
 		},
@@ -113,11 +120,15 @@ var Historical = function(args) {
 					var layerBounds = OpenLayers.Bounds.fromArray(layer.bbox['EPSG:900913'].bbox);
 					var box = new OpenLayers.Marker.Box(layerBounds);
 					box.setBorder('#FF0000', 1);
+
 					box.events.register('click', box, function() {
+						LOG.debug('Historical.js:: Box marker clicked. Zooming to shoreline');
 						var olBounds = new OpenLayers.Bounds(this.bounds.left, this.bounds.bottom, this.bounds.right, this.bounds.top);
 						CONFIG.map.getMap().zoomToExtent(olBounds);
 					});
+
 					box.events.register('mouseover', box, function(event) {
+						LOG.debug('Historical.js:: Box marker rolled over with mouse. Displaying popup');
 						box.setBorder('#00FF00', 2);
 						$(box.div).css({
 							'cursor': 'pointer',
@@ -137,7 +148,9 @@ var Historical = function(args) {
 
 						CONFIG.map.getMap().addPopup(this.popup, true);
 					});
+
 					box.events.register('mouseout', box, function() {
+						LOG.debug('Historical.js:: Box marker rolled off with mouse. Displaying popup');
 						box.setBorder('#FF0000', 1);
 						$(box.div).css({
 							'cursor': 'default'
@@ -148,6 +161,7 @@ var Historical = function(args) {
 
 					box.layerObject = layer;
 
+					LOG.debug('Historical.js:: Adding box marker to map');
 					me.boxLayer.addMarker(box);
 				});
 			}

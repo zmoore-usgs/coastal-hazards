@@ -27,7 +27,7 @@ $(document).ready(function() {
 	});
 
 	CONFIG.historical = new Historical({
-		collapseDiv: $('#accordion-group-historical-collapse'),
+		collapseDiv: $('#accordion-group-historical'),
 		shareMenuDiv: $('#accordion-group-historical-share'),
 		viewMenuDiv: $('#accordion-group-historical-view')
 	});
