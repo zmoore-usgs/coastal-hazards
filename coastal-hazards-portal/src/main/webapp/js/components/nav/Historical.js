@@ -20,7 +20,7 @@ var Historical = function(args) {
 			LOG.debug('Historical.js::displayAvailableData(): Adding box layer to map');
 			CONFIG.map.getMap().addLayer(me.boxLayer);
 
-			me.displayAvailableData();
+			me.displayShorelineBoxMarkers();
 		},
 		leaveSection: function() {
 			LOG.debug('Historical.js::displayAvailableData(): Removing box layer from map');
@@ -104,12 +104,51 @@ var Historical = function(args) {
 			});
 			return shorelineLayers;
 		},
-				
-		displayAvailableData: function() {
+		displayShorelineBoxMarkers: function() {
 			var availableLayers = me.getShorelineLayerInfoArray();
 			var layerCt = availableLayers.length;
 			if (layerCt) {
 				LOG.debug('Historical.js::displayAvailableData(): Found ' + layerCt + ' shoreline layers to display');
+				availableLayers.each(function(layer) {
+					var layerBounds = OpenLayers.Bounds.fromArray(layer.bbox['EPSG:900913'].bbox);
+					var box = new OpenLayers.Marker.Box(layerBounds);
+					box.setBorder('#FF0000', 1);
+					box.events.register('click', box, function() {
+
+					});
+					box.events.register('mouseover', box, function(event) {
+						box.setBorder('#00FF00', 2);
+						$(box.div).css({
+							'cursor': 'pointer',
+							'border-style': 'dotted'
+						});
+
+						if (!this.popup) {
+							this.popup = new OpenLayers.Popup.FramedCloud(
+									this.layerObject.title + '_boxid',
+									this.bounds.getCenterLonLat(),
+									null,
+									this.layerObject.title,
+									null,
+									false,
+									null);
+						}
+
+						CONFIG.map.getMap().addPopup(this.popup, true);
+					});
+					box.events.register('mouseout', box, function() {
+						box.setBorder('#FF0000', 1);
+						$(box.div).css({
+							'cursor': 'default'
+						});
+
+						CONFIG.map.getMap().removePopup(this.popup);
+					});
+
+					box.layerObject = layer;
+
+					me.boxLayer.addMarker(box);
+				});
 			}
 		}
 	});
