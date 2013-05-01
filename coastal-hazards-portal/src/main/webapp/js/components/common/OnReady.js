@@ -21,17 +21,16 @@ $(document).ready(function() {
 	CONFIG.storms = new Storms({
 		shareMenuDiv: $('#accordion-group-storms-share')
 	});
-	CONFIG.storms.init();
 
 	CONFIG.vulnerability = new Vulnerability({
 		shareMenuDiv: $('#accordion-group-vulnerability-share')
 	});
-	CONFIG.vulnerability.init();
 
 	CONFIG.historical = new Historical({
-		shareMenuDiv: $('#accordion-group-historical-share')
+		collapseDiv: $('#accordion-group-historical'),
+		shareMenuDiv: $('#accordion-group-historical-share'),
+		viewMenuDiv: $('#accordion-group-historical-view')
 	});
-	CONFIG.historical.init();
 
 	splashUpdate("Starting Application...");
 	splashUpdate = undefined;
@@ -42,11 +41,33 @@ $(document).ready(function() {
 
 	CONFIG.ui.bindSearchInput();
 
-	CONFIG.session.updateFromServer({
-		callbacks : [
-			function() {
-				CONFIG.map.updateFromSession();
-			}
-		]
+	CONFIG.ows = new OWS();
+
+	LOG.info('OnReady.js:: Application initialized. Preparing call to server for spatial data');
+	CONFIG.ows.getWMSCapabilities({
+		callbacks: {
+			success: [
+				function(data, textStatus, jqXHR) {
+					LOG.info('OnReady.js:: Initial spatial data retrieved from server.');
+					CONFIG.session.updateFromServer({
+						callbacks: [
+							function() {
+								CONFIG.map.updateFromSession();
+							}
+						]
+					});
+				},
+				function() {
+					[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
+						item.init();
+					});
+				}
+			],
+			error: [
+				function(data, textStatus, jqXHR) {
+					LOG.error('OnReady.js:: Got an error while getting WMS GetCapabilities from server');
+				}
+			]
+		}
 	});
 });

@@ -4,7 +4,7 @@ var Storms = function(args) {
 	LOG.debug('Storms.js::constructor: Storms class initialized.');
 
 	me.shareMenuDiv = args.shareMenuDiv;
-
+	me.viewMenuDiv = args.viewMenuDiv;
 	return $.extend(me, {
 		init: function() {
 			this.bindShareMenu();
@@ -13,11 +13,12 @@ var Storms = function(args) {
 			me.shareMenuDiv.popover({
 				html: true,
 				placement: 'right',
-				trigger: 'click',
+				trigger: 'manual',
 				title: 'Share Session',
 				container: 'body',
 				content: "<div class='container-fluid' id='prepare-container'><div>Preparing session export...</div></div>"
-			}).bind({
+			}).on({
+				'click': CONFIG.ui.popoverClickHandler,
 				'shown': function() {
 					CONFIG.session.getMinifiedEndpoint({
 						callbacks: [
@@ -31,22 +32,20 @@ var Storms = function(args) {
 								var controlSetDiv = $('<div />');
 								container.append(row.append(controlSetDiv));
 								$('#prepare-container').replaceWith(container);
-								
-								
+
+
 								var goUsaResponse = JSON.parse(response.response);
-								if (!goUsaResponse.response.errorMessage) {
-									url = goUsaResponse.response.data.entry[0].short_url;
+								if (goUsaResponse.response.statusCode.toLowerCase() === 'error') {
+									controlSetDiv.html('Use the following URL to share your current view<br /><br /><b>' + url + '</b>');
 								} else {
-									LOG.warn('Could not attain URL from go.usa.gov: ' + response.response);
+
 								}
-								controlSetDiv.html('Use the following URL to share your current view<br /><br /><b>' + url + '</b>');
 							}
 						]
 					});
+					CONFIG.ui.popoverShowHandler.call(this);
 				}
 			});
-
-
 		}
 	});
 };
