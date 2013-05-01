@@ -114,7 +114,8 @@ var Historical = function(args) {
 					var box = new OpenLayers.Marker.Box(layerBounds);
 					box.setBorder('#FF0000', 1);
 					box.events.register('click', box, function() {
-
+						var olBounds = new OpenLayers.Bounds(this.bounds.left, this.bounds.bottom, this.bounds.right, this.bounds.top);
+						CONFIG.map.getMap().zoomToExtent(olBounds);
 					});
 					box.events.register('mouseover', box, function(event) {
 						box.setBorder('#00FF00', 2);
