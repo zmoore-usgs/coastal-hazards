@@ -6,6 +6,8 @@ var Historical = function(args) {
 	me.shareMenuDiv = args.shareMenuDiv;
 	me.viewMenuDiv = args.viewMenuDiv;
 	me.boxLayerName = 'shoreline-box-layer';
+	me.boxBorderColor = '#FF0000';
+	me.highlightedBorderColor = '#00FF00';
 	me.boxLayer = new OpenLayers.Layer.Boxes(me.boxLayerName, {
 		displayInLayerSwitcher: false
 	});
@@ -20,12 +22,11 @@ var Historical = function(args) {
 		enterSection: function() {
 			LOG.debug('Historical.js::displayAvailableData(): Adding box layer to map');
 			CONFIG.map.getMap().addLayer(me.boxLayer);
-
 			me.displayShorelineBoxMarkers();
 		},
 		leaveSection: function() {
 			LOG.debug('Historical.js::displayAvailableData(): Removing box layer from map');
-			CONFIG.map.removeLayersByName(me.boxLayerName);
+			me.removeShorelineBoxMarkers();
 		},
 		bindParentMenu: function() {
 			me.collapseDiv.on({
@@ -78,6 +79,12 @@ var Historical = function(args) {
 			});
 			return shorelineLayers;
 		},
+		/**
+		 * Lays out a set of box markers on the map that shows the user where we
+		 * have active data sets
+		 * 
+		 * @returns {undefined}
+		 */
 		displayShorelineBoxMarkers: function() {
 			var availableLayers = me.getShorelineLayerInfoArray();
 			var layerCt = availableLayers.length;
@@ -89,17 +96,21 @@ var Historical = function(args) {
 				availableLayers.each(function(layer) {
 					var layerBounds = OpenLayers.Bounds.fromArray(layer.bbox['EPSG:900913'].bbox);
 					var box = new OpenLayers.Marker.Box(layerBounds);
-					box.setBorder('#FF0000', 1);
+					box.setBorder(me.boxBorderColor, 1);
 
 					box.events.register('click', box, function() {
 						LOG.debug('Historical.js:: Box marker clicked. Zooming to shoreline');
 						var olBounds = new OpenLayers.Bounds(this.bounds.left, this.bounds.bottom, this.bounds.right, this.bounds.top);
 						CONFIG.map.getMap().zoomToExtent(olBounds);
+						me.removeShorelineBoxMarkers();
+						me.displayShoreline({
+							'name': this.layerObject.name
+						});
 					});
 
 					box.events.register('mouseover', box, function(event) {
 						LOG.debug('Historical.js:: Box marker rolled over with mouse. Displaying popup');
-						box.setBorder('#00FF00', 2);
+						box.setBorder(me.highlightedBorderColor, 2);
 						$(box.div).css({
 							'cursor': 'pointer',
 							'border-style': 'dotted'
@@ -121,7 +132,7 @@ var Historical = function(args) {
 
 					box.events.register('mouseout', box, function() {
 						LOG.debug('Historical.js:: Box marker rolled off with mouse. Displaying popup');
-						box.setBorder('#FF0000', 1);
+						box.setBorder(me.boxBorderColor, 1);
 						$(box.div).css({
 							'cursor': 'default'
 						});
@@ -133,13 +144,71 @@ var Historical = function(args) {
 
 					LOG.debug('Historical.js:: Adding box marker to map');
 					me.boxLayer.addMarker(box);
-					
+
 					LOG.trace('Historical.js::displayAvailableData(): Adding current box bounds to overall layer set bounds.');
 					bounds.extend(box.bounds);
 				});
-				
+
 				LOG.debug('Historical.js::displayAvailableData(): Zooming to combined bounds of all layers.');
 				CONFIG.map.getMap().zoomToExtent(bounds);
+			}
+		},
+		/**
+		 * Removes all box markers from the map
+		 * 
+		 * @returns {undefined}
+		 */
+		removeShorelineBoxMarkers: function() {
+			var map = CONFIG.map.getMap();
+			map.popups.each(function(p) {
+				map.removePopup(p);
+			});
+			CONFIG.map.removeLayersByName(me.boxLayerName);
+
+		},
+		/**
+		 *	Displays one or all shorelines on the map
+		 *  
+		 * @param {type} args
+		 * @returns {undefined}
+		 */
+		displayShoreline: function(args) {
+			var name = args.name;
+
+			if (name) {
+				var prefix = name.split(':')[0];
+				var title = name.split(':')[1];
+				var wmsLayer = new OpenLayers.Layer.Shorelines(
+						title,
+						'geoserver/' + prefix + '/wms',
+						{
+							layers: [name],
+							transparent: true,
+//							sld_body: sldBody,
+							format: "image/png"
+						},
+				{
+					prefix: prefix,
+					zoomToWhenAdded: true, // Include this layer when performing an aggregated zoom
+					isBaseLayer: false,
+					unsupportedBrowsers: [],
+//					colorGroups: colorDatePairings,
+//					describedFeatures: features,
+					tileOptions: {
+						// http://www.faqs.org/rfcs/rfc2616.html
+						// This will cause any request larger than this many characters to be a POST
+						maxGetUrlLength: 2048
+					},
+					singleTile: true,
+					ratio: 1,
+//					groupByAttribute: groupingColumn,
+//					groups: groups,
+					displayInLayerSwitcher: false
+				});
+				CONFIG.map.getMap().addLayer(wmsLayer);
+				wmsLayer.redraw(true);
+			} else {
+
 			}
 		}
 	});

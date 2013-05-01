@@ -162,6 +162,7 @@
 
 		<jsp:include page="css/css.jsp" />
 
+        <script type="text/javascript" src="js/openlayers/lib/OpenLayers/Layer/Shorelines.js"></script>
         <script type="text/javascript" src="js/components/nav/Storms.js"></script>
         <script type="text/javascript" src="js/components/nav/Vulnerability.js"></script>
         <script type="text/javascript" src="js/components/nav/Historical.js"></script>
