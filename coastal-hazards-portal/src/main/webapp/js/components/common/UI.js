@@ -114,6 +114,46 @@ var UI = function() {
 				}
 
 			});
+		},
+		bindShareMenu: function(args) {
+			var menuItem = args.menuItem;
+			menuItem.popover({
+				html: true,
+				placement: 'right',
+				trigger: 'manual',
+				title: 'Share Session',
+				container: 'body',
+				content: "<div class='container-fluid' id='prepare-container'><div>Preparing session export...</div></div>"
+			}).on({
+				'click': CONFIG.ui.popoverClickHandler,
+				'shown': function() {
+					CONFIG.session.getMinifiedEndpoint({
+						callbacks: [
+							function(args) {
+								var response = args.response;
+								var url = args.url;
+
+								// URL controlset
+								var container = $('<div />').addClass('container-fluid');
+								var row = $('<div />').addClass('row-fluid');
+								var controlSetDiv = $('<div />');
+								container.append(row.append(controlSetDiv));
+								$('#prepare-container').replaceWith(container);
+
+
+								var goUsaResponse = JSON.parse(response.response);
+								if (goUsaResponse.response.statusCode.toLowerCase() === 'error') {
+									LOG.warn(response.response);
+								} else {
+									url = goUsaResponse.response.data.entry.short_url;
+								}
+								controlSetDiv.html('Use the following URL to share your current view<br /><br /><b>' + url + '</b>');
+							}
+						]
+					});
+					CONFIG.ui.popoverShowHandler.call(this);
+				}
+			});
 		}
 	});
 };
