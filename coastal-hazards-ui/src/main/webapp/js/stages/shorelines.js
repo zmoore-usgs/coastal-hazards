@@ -104,37 +104,37 @@ var Shorelines = {
                                 style: {
                                     classes : ['alert-error']
                                 }
-                            })
+                            });
                         }
                         
                         var layerColumns = Util.createLayerUnionAttributeMap({
                             caller : Shorelines,
                             attributes : attributes
-                        })
+                        });
                         
                         var foundAll = true;
                         Shorelines.mandatoryColumns.each(function(mc){
                             if (!layerColumns.values().find(mc)) {
                                 foundAll = false;
                             }
-                        })
+                        });
                         
-                        if (layerPrefix != CONFIG.name.published && !foundAll) {
+                        if (layerPrefix !== CONFIG.name.published && !foundAll) {
                             CONFIG.ui.buildColumnMatchingModalWindow({
                                 layerName : layerName,
                                 columns : layerColumns,
                                 caller : Shorelines
-                            })
+                            });
                         } else {
                             Shorelines.addLayerToMap({
                                 layer : layer,
                                 describeFeaturetypeRespone : describeFeaturetypeRespone
-                            })
+                            });
                         }
                     }
                     ]
-                })
-            }
+                });
+            };
             
             CONFIG.ows.getUTMZoneCount({
                 layerPrefix : layer.prefix,
@@ -148,20 +148,20 @@ var Shorelines = {
                                 message : 'Shoreline spans ' + data + ' UTM zones',
                                 caller : Shorelines,
                                 displayTime : 5000
-                            })
+                            });
                         }
                         addToMap(data, textStatus, jqXHR);
-                    },
+                    }
                     ],
                     error : [
                     function(data, textStatus, jqXHR) {
                         LOG.warn('Shorelines.js::addShorelines: Could not retrieve UTM count for this resource. It is unknown whether or not this shoreline resource crosses more than 1 UTM zone. This could cause problems later.');
                         addToMap(data, textStatus, jqXHR);
-                    },
+                    }
                     ]
                 }
-            })
-        })
+            });
+        });
     },
     
     /**

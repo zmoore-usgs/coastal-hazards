@@ -1,6 +1,9 @@
-var UI = function() {
+var UI = function(args) {
 	LOG.info('UI.js::constructor: UI class is initializing.');
 	var me = (this === window) ? {} : this;
+	me.spinner = args.spinner;
+	me.searchbar = args.searchbar;
+	me.mapdiv = args.mapdiv;
 	LOG.debug('UI.js::constructor: UI class initialized.');
 
 	return $.extend(me, {
@@ -11,17 +14,17 @@ var UI = function() {
 			$(window).resize();
 		},
 		showSpinner: function() {
-			$("#application-spinner").fadeIn();
+			me.spinner.fadeIn();
 		},
 		hideSpinner: function() {
-			$("#application-spinner").fadeOut();
+			me.spinner.fadeOut();
 		},
 		bindWindowResize: function() {
 			$(window).resize(function() {
 				var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
 				$('#content-row').css('min-height', contentRowHeight);
 				$('#map-wrapper').css('min-height', contentRowHeight);
-				$('#map').css('height', contentRowHeight);
+				me.mapdiv.css('height', contentRowHeight);
 			});
 		},
 		popoverClickHandler: function(e) {
@@ -76,7 +79,7 @@ var UI = function() {
 			});
 		},
 		bindSearchInput: function() {
-			$('#app-navbar-search-form').submit(function(evt) {
+			me.searchbar.submit(function(evt) {
 				var query = $('#app-navbar-search-input').val();
 				if (query) {
 					$.ajax({
@@ -142,10 +145,10 @@ var UI = function() {
 
 
 								var goUsaResponse = JSON.parse(response.response);
-								if (goUsaResponse.response.statusCode.toLowerCase() === 'error') {
+								if (goUsaResponse.response.statusCode && goUsaResponse.response.statusCode.toLowerCase() === 'error') {
 									LOG.warn(response.response);
 								} else {
-									url = goUsaResponse.response.data.entry.short_url;
+									url = goUsaResponse.response.data.entry[0].short_url;
 								}
 								controlSetDiv.html('Use the following URL to share your current view<br /><br /><b>' + url + '</b>');
 							}

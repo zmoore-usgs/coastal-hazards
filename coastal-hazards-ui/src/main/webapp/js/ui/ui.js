@@ -1309,7 +1309,7 @@ var UI = function() {
 					}).html('Publish');
 					$('#session-drop-down-list').append(publishListItem.append(publishLink));
 					publishLink.on('click', function() {
-						// This space for rent
+						CONFIG.tempSession.createMetadataUploadForm();
 					});
 
 					// BIND the log out menu item
