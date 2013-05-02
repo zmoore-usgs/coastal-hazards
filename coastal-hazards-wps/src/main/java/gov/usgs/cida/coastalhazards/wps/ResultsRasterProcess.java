@@ -13,6 +13,8 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -29,7 +31,6 @@ import org.geotools.coverage.grid.InvalidGridGeometryException;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.jts.Geometries;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.factory.DescribeParameter;
@@ -39,7 +40,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
@@ -94,6 +94,8 @@ public class ResultsRasterProcess implements GeoServerProcess {
         
         GeometryFactory geometryFactory;
         
+        Map<Integer, LinkedList<SimpleFeature>> baselineFeaturesMap;
+        
         private Process(SimpleFeatureCollection featureCollection,
                 String className,
                 ReferencedEnvelope coverageEnvelope,
@@ -117,13 +119,8 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 return null;
             }
 
-            SimpleFeatureIterator featureIterator = featureCollection.features();
-            try {
-                while (featureIterator.hasNext()) {
-                    processFeature(featureIterator.next(), attributeName);
-                }
-            } finally {
-                featureIterator.close();
+            for (LinkedList<SimpleFeature> baselineFeatures : baselineFeaturesMap.values()) {
+                processBaselineFeatures(baselineFeatures);
             }
 
             GridCoverageFactory gcf = new GridCoverageFactory();
@@ -153,31 +150,51 @@ public class ResultsRasterProcess implements GeoServerProcess {
             createImage();
 
             gridGeometry = new GridGeometry2D(new GridEnvelope2D(0, 0, coverageWidth, coverageHeight), extent);
+            
+            geometryFactory = new GeometryFactory(new PrecisionModel());
 
             String featureCollectionId = featureCollection.getSchema().getName().getURI();
 
+            baselineFeaturesMap = new LinkedHashMap<Integer, LinkedList<SimpleFeature>>();
+            
             AttributeRange attributeRange = null;
+            
             LOGGER.log(Level.INFO, "Calculating attribute value range for {}:{}", new Object[] {featureCollectionId, attributeName});
-            SimpleFeatureIterator iterator = featureCollection.features();
-            double minimum = Double.MAX_VALUE;
-            double maximum = -Double.MAX_VALUE;
-            while (iterator.hasNext()) {
-                SimpleFeature feature = iterator.next();
-                double value = ((Number)feature.getAttribute(attributeName)).doubleValue();
-                if (Math.abs(value) < 1e10) {
-                    if (value > maximum) {
-                        maximum = value;
-                    } else if (value < minimum) {
-                        minimum = value;
+            SimpleFeatureIterator iterator = null;
+            try {
+                iterator = featureCollection.features();
+                double minimum = Double.MAX_VALUE;
+                double maximum = -Double.MAX_VALUE;
+                while (iterator.hasNext()) {
+                    SimpleFeature feature = iterator.next();
+                    double value = ((Number)feature.getAttribute(attributeName)).doubleValue();
+                    if (Math.abs(value) < 1e10) {
+                        if (value > maximum) {
+                            maximum = value;
+                        } else if (value < minimum) {
+                            minimum = value;
+                        }
                     }
+
+                    Integer baselineId = (Integer)feature.getAttribute(Constants.BASELINE_ID_ATTR);
+                    LinkedList<SimpleFeature> baselineFeatures = baselineFeaturesMap.get(baselineId);
+                    if (baselineFeatures == null) {
+                        baselineFeatures = new LinkedList<SimpleFeature>();
+                        baselineFeaturesMap.put(baselineId, baselineFeatures);
+                    }
+                    baselineFeatures.add(feature);
                 }
-            }
-            if (minimum < maximum) {
-                attributeRange = new AttributeRange(minimum, maximum);
-                LOGGER.log(Level.INFO, "Attribute value range for {}:{} {}",
-                        new Object[] {
-                            featureCollectionId, attributeName, attributeRange
-                        });
+                if (minimum < maximum) {
+                    attributeRange = new AttributeRange(minimum, maximum);
+                    LOGGER.log(Level.INFO, "Attribute value range for {}:{} {}",
+                            new Object[] {
+                                featureCollectionId, attributeName, attributeRange
+                            });
+                }
+            } finally {
+                if (iterator != null) {
+                    iterator.close();
+                }
             }
             if (attributeRange != null) {
                 attributeRange = (attributeRange.min < 0) ?
@@ -187,70 +204,64 @@ public class ResultsRasterProcess implements GeoServerProcess {
                             new AttributeRange(0, attributeRange.max);
                 colorMap = new JetColorMap(attributeRange);
             }
-            geometryFactory = new GeometryFactory(new PrecisionModel());
         }
 
-        private LineSegment segmentLast;
-        private Object idObjectLast;
-        private void processFeature(SimpleFeature feature, String attributeName) throws Exception {
+        private void processBaselineFeatures(LinkedList<SimpleFeature> baselineFeatures) throws Exception {
 
-            Geometry geometry = (Geometry) feature.getDefaultGeometry();
-            Object attributeValue = feature.getAttribute(attributeName);
-            if (!(attributeValue instanceof Number)) {
-                return;
-            }
-            
-            Object sceObject = feature.getAttribute(Constants.SCE_ATTR);
-            Object nsdObject = feature.getAttribute(Constants.NSD_ATTR);
-            Object idObject = feature.getAttribute(Constants.BASELINE_ID_ATTR);
-            
-            if (!(sceObject instanceof Number)) {
-                return;
-            }
-            
-            if (idObject == null) {
-                return;
-            }
-            
-            if (!((geometry instanceof LineString) || (geometry instanceof MultiLineString)) ) {
-                return;
-            }
-            
-            if (geometry.getNumGeometries() != 1 || geometry.getNumPoints() != 2) {
-                return;
-            }
-            
-            double sce = ((Number)sceObject).doubleValue();
-            double nsd = nsdObject instanceof Number ? ((Number)nsdObject).doubleValue() : Double.NaN;
-
-            Coordinate[] coordinates = geometry.getCoordinates();
-            LineSegment transect = new LineSegment(coordinates[0], coordinates[1]);
-            double tl = transect.getLength();
-            
-            LineSegment segment = Double.isNaN(nsd) ?
-                    new LineSegment(transect.pointAlong(1d - (sce / tl)), transect.p1) :
-                    new LineSegment(transect.pointAlong(nsd / tl), transect.pointAlong((nsd + sce ) / tl));
-            
-            if (featureToRasterTransform != null) {
-                JTS.transform(segment.p0, segment.p0, featureToRasterTransform);
-                JTS.transform(segment.p1, segment.p1, featureToRasterTransform);
-            }
-           
-            if (segmentLast != null && idObject.equals(idObjectLast))  {
-                
-                
-
-                
-                if ( extent.contains(segment.p0) || extent.contains(segment.p1) ||
-                     extent.contains(segmentLast.p0) || extent.contains(segmentLast.p1) ) {
-                    graphics.setColor(colorMap.valueToColor(((Number)attributeValue)));
-                    drawPolygon(segment.p0, segment.p1, segmentLast.p1, segmentLast.p0);
+            LineSegment segmentLast = null;
+            for (SimpleFeature feature : baselineFeatures) {
+                Geometry geometry = (Geometry) feature.getDefaultGeometry();
+                Object attributeValue = feature.getAttribute(attributeName);
+                if (!(attributeValue instanceof Number)) {
+                    return;
                 }
 
+                Object sceObject = feature.getAttribute(Constants.SCE_ATTR);
+                Object nsdObject = feature.getAttribute(Constants.NSD_ATTR);
+                Object idObject = feature.getAttribute(Constants.BASELINE_ID_ATTR);
+
+                if (!(sceObject instanceof Number)) {
+                    return;
+                }
+
+                if (idObject == null) {
+                    return;
+                }
+
+                if (!((geometry instanceof LineString) || (geometry instanceof MultiLineString)) ) {
+                    return;
+                }
+
+                if (geometry.getNumGeometries() != 1 || geometry.getNumPoints() != 2) {
+                    return;
+                }
+
+                double sce = ((Number)sceObject).doubleValue();
+                double nsd = nsdObject instanceof Number ? ((Number)nsdObject).doubleValue() : Double.NaN;
+
+                Coordinate[] coordinates = geometry.getCoordinates();
+                LineSegment transect = new LineSegment(coordinates[0], coordinates[1]);
+                double tl = transect.getLength();
+
+                LineSegment segment = Double.isNaN(nsd) ?
+                        new LineSegment(transect.pointAlong(1d - (sce / tl)), transect.p1) :
+                        new LineSegment(transect.pointAlong(nsd / tl), transect.pointAlong((nsd + sce ) / tl));
+
+                if (featureToRasterTransform != null) {
+                    JTS.transform(segment.p0, segment.p0, featureToRasterTransform);
+                    JTS.transform(segment.p1, segment.p1, featureToRasterTransform);
+                }
+
+                if (segmentLast != null)  {
+                    if ( extent.contains(segment.p0) || extent.contains(segment.p1) ||
+                         extent.contains(segmentLast.p0) || extent.contains(segmentLast.p1) ) {
+                        graphics.setColor(colorMap.valueToColor(((Number)attributeValue)));
+                        drawPolygon(segment.p0, segment.p1, segmentLast.p1, segmentLast.p0);
+                    }
+                }
+
+                segmentLast = segment;
             }
-            
-            idObjectLast = idObject;
-            segmentLast = segment;
         }
 
         private void setBounds(SimpleFeatureCollection features, ReferencedEnvelope requestBounds) throws TransformException {
