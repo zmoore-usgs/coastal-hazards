@@ -21,7 +21,7 @@ var Map = function(args) {
 		};
 		sMap.scale = map.getScale();
 		sMap.extent = map.getExtent().toArray();
-	}
+	};
 
 	me.map.events.on({
 		'moveend': me.moveendCallback,

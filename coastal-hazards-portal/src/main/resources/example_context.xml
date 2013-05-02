@@ -1,0 +1,12 @@
+<!-- Sets logging and script types that are loaded --> 
+<Environment name="development" type="java.lang.String" value="true" />
+
+<!-- URL Forwarding Configuration -->
+<Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/coastal-hazards-geoserver" />
+<Environment name="coastal-hazards.stpetearcserver.endpoint" type="java.lang.String" value="http://olga.er.usgs.gov/stpgis/services" />
+
+<!-- Coastal hazards interacts with go.usa.gov for url minification -->
+<Environment name="coastal-hazards.go.usa.gov.login" type="java.lang.String" value="Your URL-Encoded Login Here - Example Ivan%20Suftin" />
+<Environment name="coastal-hazards.go.usa.gov.apikey" type="java.lang.String" value="Your API Key Here" />
+<Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="http://go.usa.gov/api/" />
+

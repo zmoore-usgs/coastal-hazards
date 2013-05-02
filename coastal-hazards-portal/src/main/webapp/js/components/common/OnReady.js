@@ -10,7 +10,11 @@ $(document).ready(function() {
 	CONFIG.session = new Session();
 
 	splashUpdate("Initializing UI...");
-	CONFIG.ui = new UI();
+	CONFIG.ui = new UI({
+		spinner : $("#application-spinner"),
+		searchbar : $('#app-navbar-search-form'),
+		mapdiv : $('#map')
+	});
 	CONFIG.ui.init();
 
 	splashUpdate("Initializing Map...");

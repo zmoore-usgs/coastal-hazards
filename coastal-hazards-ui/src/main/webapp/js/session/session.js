@@ -241,18 +241,18 @@ var Session = function(name, isPerm) {
                 prefix : args.prefix || layer.prefix,
                 bbox : args.bbox || layer.bbox,
                 keywords : args.keywords || layer.keywords
-            })
+            });
             
             var lIndex = me.session.layers.findIndex(function(l) {
-                return l.name == sessionLayer.name
-            })
+                return l.name === sessionLayer.name;
+            });
             
-            if (lIndex != -1) {
+            if (lIndex !== -1) {
                 me.session.layers[lIndex] = sessionLayer;
             } else {
                 me.session.layers.push(sessionLayer);
             }
-        }
+        };
         
         /**
          * Replace the current temp session with 
@@ -264,10 +264,10 @@ var Session = function(name, isPerm) {
             } else {
                 me.session = CONFIG.permSession.session.sessions.find(function(session) {
                     return session.id == CONFIG.permSession.session.currentSession
-                })
+                });
             }
             me.save();
-        }
+        };
         
         me.getDisabledDatesForShoreline = function(shoreline) {
             if (!me.session.stage[Shorelines.stage][shoreline]) {
@@ -465,6 +465,76 @@ var Session = function(name, isPerm) {
 							sessionList.val(CONFIG.permSession.session.currentSession);
 							sessionList.trigger('change');
 						}]
+			});
+		},
+		createMetadataUploadForm : function() {
+			var container = $('<div />').addClass('container-fluid');
+			
+			var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'md-explanation-row');
+			var explanationWell = $('<div />').addClass('well well-small').attr('id', 'md-explanation-well');
+			var explanationDiv = $('<div />').html('Using the metadata upload functionality you are able to quickly enter metadata associated with published resources');
+			container.append(explanationWell.append(explanationRow.append(explanationDiv)));
+			
+			var formRow = $('<div />').addClass('row-fluid').attr('id', 'md-form-row');
+			var formWell = $('<div />').addClass('well well-small').attr('id', 'md-form-well');
+			var form = $('<form />').attr({
+				id: 'md-form',
+				action : 'service/publish',
+				method : 'post',
+				enctype : 'multipart/form-data',
+				target : '#'
+			});
+			
+			form.append($('<input />').attr({
+				'type': 'radio',
+				'group': 'stage',
+				'name': 'stage',
+				'value': 'shorelines'
+			}).after(' Shorelines ').after('<br />'))
+					.append($('<input />').attr({
+				'type': 'radio',
+				'group': 'stage',
+				'name': 'stage',
+				'value': 'baseline'
+			}).after(' Baseline ').after('<br />'))
+					.append($('<input />').attr({
+				'type': 'radio',
+				'group': 'stage',
+				'name': 'stage',
+				'value': 'transects'
+			}).after(' Transects ').after('<br />'))
+					.append($('<input />').attr({
+				'type': 'radio',
+				'group': 'stage',
+				'name': 'stage',
+				'value': 'intersects'
+			}).after(' Intersections ').after('<br />'))
+					.append($('<input />').attr({
+				'type': 'radio',
+				'group': 'stage',
+				'name': 'stage',
+				'value': 'results'
+			}).after(' Results ').after('<br /><hr />'))
+					.append('Metadata XML ').append($('<input />').attr({
+				'type': 'file',
+				'name': 'metadata',
+				'size': '40'
+			}).after('<br />'));
+			
+			container.append(formRow.append(formWell.append(form)));
+			
+			CONFIG.ui.createModalWindow({
+				headerHtml: 'Metadata Publish',
+				doneButtonText: 'Cancel',
+				buttons: [{
+						text: 'Submit',
+						callback: function() {
+							$('#md-form').submit();
+						}
+					}
+				],
+				bodyHtml: container.html(),
+				callbacks: []
 			});
 		},
         createMetadataEntryForm : function() {
