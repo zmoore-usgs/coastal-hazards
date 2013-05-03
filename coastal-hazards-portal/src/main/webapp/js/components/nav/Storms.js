@@ -24,6 +24,7 @@ var Storms = function(args) {
 		},
 		enterSection: function(args) {
 			LOG.debug('Storms.js::enterSection():Adding box layer to map');
+			args = args || {};
 			CONFIG.map.getMap().addLayer(me.boxLayer);
 			me.isActive = true;
 			var callbacks = args.callbacks || {
@@ -34,7 +35,7 @@ var Storms = function(args) {
 				],
 				error: [
 					function(data, textStatus, jqXHR) {
-						LOG.error('OnReady.js:: Got an error while getting WMS GetCapabilities from server');
+						LOG.error('Storms.js:: Got an error while getting WMS GetCapabilities from server');
 					}
 				]
 			};
@@ -60,6 +61,10 @@ var Storms = function(args) {
 		},
 		updateFromSession: function() {
 			if (CONFIG.session.objects.view.activeParentMenu === me.name) {
+				if (!me.collapseDiv.find('>:last-child').hasClass('in')) {
+					me.collapseDiv.find('>:last-child').addClass('in');
+					me.collapseDiv.find('>:last-child').attr('style', 'height:auto');
+				}
 				me.enterSection({
 					callbacks: {
 						success: [
@@ -69,7 +74,7 @@ var Storms = function(args) {
 									me.removeBoxLayer();
 									var bounds = new OpenLayers.Bounds();
 									activeLayers.each(function(layer) {
-										var wmsLayer = CONFIG.ows.servers['stpete-arcserver-vulnerability-se-erosion'].data.wms.capabilities.object.capability.layers.find(function(l){
+										var wmsLayer = CONFIG.ows.servers[me.serverName].data.wms.capabilities.object.capability.layers.find(function(l) {
 											return l.title === layer.title;
 										});
 										me.displayData({
@@ -91,6 +96,11 @@ var Storms = function(args) {
 						]
 					}
 				});
+			} else {
+				if (me.collapseDiv.find('>:last-child').hasClass('in')) {
+					me.collapseDiv.find('>:last-child').removeClass('in');
+					me.collapseDiv.find('>:last-child').removeAttr('style');
+				}
 			}
 		},
 		bindParentMenu: function() {
@@ -254,8 +264,11 @@ var Storms = function(args) {
 						'</sld:StyledLayerDescriptor>';
 				CONFIG.map.getMap().addLayer(layer);
 				layer.redraw(true);
+
 				CONFIG.session.objects.view.storms.activeLayers = [{title: title, name: name, layers: layers}];
-				me.visibleLayers.push(layer);
+				if (me.visibleLayers.indexOf(layer) === -1) {
+					me.visibleLayers.push(layer);
+				}
 			}
 		}
 	});
