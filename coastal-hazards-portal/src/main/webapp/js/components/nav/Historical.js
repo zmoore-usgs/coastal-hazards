@@ -5,7 +5,7 @@ var Historical = function(args) {
 	me.collapseDiv = args.collapseDiv;
 	me.shareMenuDiv = args.shareMenuDiv;
 	me.viewMenuDiv = args.viewMenuDiv;
-	me.boxLayerName = 'shoreline-box-layer';
+	me.boxLayerName = 'historical-box-layer';
 	me.boxBorderColor = '#FF0000';
 	me.highlightedBorderColor = '#00FF00';
 	me.boxLayer = new OpenLayers.Layer.Boxes(me.boxLayerName, {
@@ -20,13 +20,32 @@ var Historical = function(args) {
 			me.bindShareMenu();
 		},
 		enterSection: function() {
-			LOG.debug('Historical.js::displayAvailableData(): Adding box layer to map');
+			LOG.debug('Historical.js:: Adding box layer to map');
 			CONFIG.map.getMap().addLayer(me.boxLayer);
-			me.displayShorelineBoxMarkers();
+			if (!CONFIG.ows.servers['cida-geoserver'].data.wms.object) {
+				CONFIG.ows.getWMSCapabilities({
+					server : 'cida-geoserver',
+					callbacks: {
+						success: [
+							function(data, textStatus, jqXHR) {
+								me.displayBoxMarkers();
+							}
+						],
+						error: [
+							function(data, textStatus, jqXHR) {
+								LOG.error('OnReady.js:: Got an error while getting WMS GetCapabilities from server');
+							}
+						]
+					}
+				});
+			} else {
+				me.displayBoxMarkers();
+			}
+
 		},
 		leaveSection: function() {
 			LOG.debug('Historical.js::displayAvailableData(): Removing box layer from map');
-			me.removeShorelineBoxMarkers();
+			me.removeBoxMarkers();
 		},
 		bindParentMenu: function() {
 			me.collapseDiv.on({
@@ -69,8 +88,8 @@ var Historical = function(args) {
 		 * 
 		 * @returns Array of shoreline info objects
 		 */
-		getShorelineLayerInfoArray: function() {
-			var allLayerArray = CONFIG.ows.wmsCapabilities.ows.capability.layers;
+		getLayerInfoArray: function() {
+			var allLayerArray = CONFIG.ows.servers['cida-geoserver'].data.wms.capabilities.object.capability.layers;
 			var publishedLayers = allLayerArray.findAll(function(l) {
 				return l.name.toLowerCase().startsWith(CONFIG.name.published);
 			});
@@ -85,11 +104,11 @@ var Historical = function(args) {
 		 * 
 		 * @returns {undefined}
 		 */
-		displayShorelineBoxMarkers: function() {
-			var availableLayers = me.getShorelineLayerInfoArray();
+		displayBoxMarkers: function() {
+			var availableLayers = me.getLayerInfoArray();
 			var layerCt = availableLayers.length;
 			if (layerCt) {
-				LOG.debug('Historical.js::displayAvailableData(): Found ' + layerCt + ' shoreline layers to display');
+				LOG.debug('Historical.js::displayBoxMarkers(): Found ' + layerCt + ' shoreline layers to display');
 
 				var bounds = new OpenLayers.Bounds();
 
@@ -100,10 +119,9 @@ var Historical = function(args) {
 
 					box.events.register('click', box, function() {
 						LOG.debug('Historical.js:: Box marker clicked. Zooming to shoreline');
-						var olBounds = new OpenLayers.Bounds(this.bounds.left, this.bounds.bottom, this.bounds.right, this.bounds.top);
-						CONFIG.map.getMap().zoomToExtent(olBounds);
-						me.removeShorelineBoxMarkers();
-						me.displayShoreline({
+						CONFIG.map.getMap().zoomToExtent(this.bounds);
+						me.removeBoxMarkers();
+						me.displayData({
 							'name': this.layerObject.name
 						});
 					});
@@ -118,7 +136,7 @@ var Historical = function(args) {
 
 						if (!this.popup) {
 							this.popup = new OpenLayers.Popup.FramedCloud(
-									this.layerObject.title + '_boxid',
+									null,
 									this.bounds.getCenterLonLat(),
 									null,
 									this.layerObject.title,
@@ -158,7 +176,7 @@ var Historical = function(args) {
 		 * 
 		 * @returns {undefined}
 		 */
-		removeShorelineBoxMarkers: function() {
+		removeBoxMarkers: function() {
 			var map = CONFIG.map.getMap();
 			map.popups.each(function(p) {
 				map.removePopup(p);
@@ -172,7 +190,7 @@ var Historical = function(args) {
 		 * @param {type} args
 		 * @returns {undefined}
 		 */
-		displayShoreline: function(args) {
+		displayData: function(args) {
 			var name = args.name;
 
 			if (name) {

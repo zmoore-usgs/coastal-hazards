@@ -14,7 +14,6 @@
 	<name>Coastal Hazards UI</name>
 
 	<properties>
-		<gt.version>8.5</gt.version>
 		<slf4j.version>1.7.2</slf4j.version>
 	</properties>
 
@@ -141,7 +140,6 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-fileupload</groupId>
@@ -155,11 +153,11 @@
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-shapefile</artifactId>
-			<version>${gt.version}</version>
+			<version>8.6</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>gt-referencing</artifactId>
-					<groupId>org.geotools</groupId>
+					<artifactId>xercesImpl</artifactId>
+					<groupId>xerces</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -169,13 +167,13 @@
 			<version>${parent.version}</version>
 			<type>jar</type>
 		</dependency>
-	 <dependency>
-	  <groupId>commons-lang</groupId>
-	  <artifactId>commons-lang</artifactId>
-	  <version>2.6</version>
-	  <type>jar</type>
-	 </dependency>
-	 <dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
 			<scope>provided</scope>
@@ -211,22 +209,17 @@
 		<dependency>
 			<groupId>gov.usgs.cida.owsutils</groupId>
 			<artifactId>cida-owsutils-geoserver</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-lang</artifactId>
 					<groupId>commons-lang</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>gt-referencing</artifactId>
-					<groupId>org.geotools</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>font-awesome</artifactId>
-			<version>3.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openid4java</groupId>
