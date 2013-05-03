@@ -42,7 +42,7 @@ var Map = function(args) {
 			}
 	));
 
-	me.map.addLayer(new OpenLayers.Layer.Markers('marker-layer'));
+	me.map.addLayer(new OpenLayers.Layer.Markers('geocoding-marker-layer'));
 
 	LOG.debug('Map.js::constructor:Adding ontrols to map');
 	me.map.addControl(new OpenLayers.Control.MousePosition());
@@ -80,7 +80,7 @@ var Map = function(args) {
 			var select = $('<select />').attr('id', 'alt-location-list');
 
 			// Build Market
-			var markerLayer = map.getLayersByName('marker-layer')[0];
+			var markerLayer = map.getLayersByName('geocoding-marker-layer')[0];
 			var iconSize = new OpenLayers.Size(32, 32);
 			var icon = new OpenLayers.Icon('js/openlayers/img/BulbGrey.png', iconSize, new OpenLayers.Pixel(-(iconSize.w / 2), -iconSize.h));
 			var marker = new OpenLayers.Marker(new OpenLayers.LonLat(x, y), icon);
