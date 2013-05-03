@@ -52,6 +52,7 @@ var Map = function(args) {
 
 	LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
 	me.map.zoomToExtent(initialExtent, true);
+	$('.olControlZoom').css('left', $('#' + mapDivId).width() - $('.olControlZoom').width() - 20);
 
 	LOG.debug('Map.js::constructor: Map class initialized.');
 	return $.extend(me, {
