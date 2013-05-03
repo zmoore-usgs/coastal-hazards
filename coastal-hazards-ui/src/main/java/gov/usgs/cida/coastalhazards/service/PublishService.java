@@ -1,7 +1,8 @@
 package gov.usgs.cida.coastalhazards.service;
 
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
-import gov.usgs.cida.utilities.communication.UploadHandler;
+import gov.usgs.cida.utilities.file.FileHelper;
+import gov.usgs.cida.coastalhazards.metadata.MetadataValidator;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -10,8 +11,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -33,15 +40,30 @@ public class PublishService extends HttpServlet {
 			throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 		File tempFile = File.createTempFile("metadata", ".xml");
-		String layer = request.getParameter("md-layers-select");
+		String layer = ""; //request.getParameter("md-layers-select");
+        
 		Map<String, String> responseMap = new HashMap<String, String>();
 		if (tempFile.exists()) {
 			tempFile.delete();
 		}
 		try {
-			UploadHandler.saveFileFromRequest(request, "metadata", tempFile);
-			
-			// Do you stuff here
+            if (ServletFileUpload.isMultipartContent(request)) {
+                FileItemFactory factory = new DiskFileItemFactory();
+                ServletFileUpload upload = new ServletFileUpload(factory);
+                FileItemIterator iter = upload.getItemIterator(request);
+                while (iter.hasNext()) {
+                    FileItemStream item = iter.next();
+                    if (item.isFormField()) {
+                        if ("md-layers-select".equals(item.getFieldName())) {
+                            layer = IOUtils.toString(item.openStream());
+                        }
+                    } else {
+                        FileHelper.saveFileFromInputStream(item.openStream(), tempFile);
+                    }
+                }
+            }
+            // Do you stuff here
+            MetadataValidator validator = new MetadataValidator(tempFile);
 			
 			RequestResponseHelper.sendSuccessResponse(response, responseMap);
 		} catch (FileUploadException ex) {
