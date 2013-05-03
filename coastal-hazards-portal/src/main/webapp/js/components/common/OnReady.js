@@ -11,9 +11,9 @@ $(document).ready(function() {
 
 	splashUpdate("Initializing UI...");
 	CONFIG.ui = new UI({
-		spinner : $("#application-spinner"),
-		searchbar : $('#app-navbar-search-form'),
-		mapdiv : $('#map')
+		spinner: $("#application-spinner"),
+		searchbar: $('#app-navbar-search-form'),
+		mapdiv: $('#map')
 	});
 	CONFIG.ui.init();
 
@@ -23,7 +23,9 @@ $(document).ready(function() {
 	});
 
 	CONFIG.storms = new Storms({
-		shareMenuDiv: $('#accordion-group-storms-share')
+		collapseDiv: $('#accordion-group-storms'),
+		shareMenuDiv: $('#accordion-group-storms-share'),
+		viewMenuDiv: $('#accordion-group-storms-view')
 	});
 
 	CONFIG.vulnerability = new Vulnerability({
@@ -47,31 +49,31 @@ $(document).ready(function() {
 
 	CONFIG.ows = new OWS();
 
-	LOG.info('OnReady.js:: Application initialized. Preparing call to server for spatial data');
-	CONFIG.ows.getWMSCapabilities({
-		callbacks: {
-			success: [
-				function(data, textStatus, jqXHR) {
-					LOG.info('OnReady.js:: Initial spatial data retrieved from server.');
-					CONFIG.session.updateFromServer({
-						callbacks: [
+	var sid = CONFIG.session.getIncomingSid();
+	if (sid) {
+		LOG.info('OnReady.js:: Application initialized. Preparing call to server for spatial data');
+		CONFIG.session.updateFromServer({
+			sid: sid,
+			callbacks: {
+				success:
+						[
 							function() {
 								CONFIG.map.updateFromSession();
+								[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
+									item.init();
+								});
 							}
 						]
-					});
-				},
-				function() {
-					[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
-						item.init();
-					});
-				}
-			],
-			error: [
-				function(data, textStatus, jqXHR) {
-					LOG.error('OnReady.js:: Got an error while getting WMS GetCapabilities from server');
-				}
-			]
-		}
-	});
+						,
+				error: []
+			}
+		});
+	} else {
+		[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
+			item.init();
+		});
+	}
+
+
+
 });
