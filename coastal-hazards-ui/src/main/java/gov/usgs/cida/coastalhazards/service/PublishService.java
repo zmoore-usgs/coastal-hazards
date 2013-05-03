@@ -33,7 +33,7 @@ public class PublishService extends HttpServlet {
 			throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 		File tempFile = File.createTempFile("metadata", ".xml");
-		String stage = request.getParameter("stage");
+		String layer = request.getParameter("md-layers-select");
 		Map<String, String> responseMap = new HashMap<String, String>();
 		if (tempFile.exists()) {
 			tempFile.delete();
