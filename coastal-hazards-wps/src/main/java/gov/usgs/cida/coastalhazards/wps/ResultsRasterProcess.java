@@ -81,9 +81,9 @@ public class ResultsRasterProcess implements GeoServerProcess {
         private final ReferencedEnvelope coverageEnvelope;
         private final int coverageWidth;
         private final int coverageHeight;
+        
         private final boolean invert;
         
-        private ReferencedEnvelope extent;
         private GridGeometry2D gridGeometry;
         private MathTransform featureToRasterTransform;
         
@@ -126,7 +126,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
             GridCoverageFactory gcf = new GridCoverageFactory();
             return gcf.create(
                     getClass().getSimpleName() + "-" + UUID.randomUUID().toString(),
-                    image, extent);
+                    image, coverageEnvelope);
         }
 
         private void initialize() {
@@ -142,14 +142,14 @@ public class ResultsRasterProcess implements GeoServerProcess {
             }
 
             try {
-                setBounds(featureCollection, coverageEnvelope);
+                checkTransform();
             } catch (TransformException ex) {
                 throw new RuntimeException(ex);
             }
 
             createImage();
 
-            gridGeometry = new GridGeometry2D(new GridEnvelope2D(0, 0, coverageWidth, coverageHeight), extent);
+            gridGeometry = new GridGeometry2D(new GridEnvelope2D(0, 0, coverageWidth, coverageHeight), coverageEnvelope);
             
             geometryFactory = new GeometryFactory(new PrecisionModel());
 
@@ -253,32 +253,18 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 }
 
                 if (segmentLast != null)  {
-                    if ( extent.contains(segment.p0) || extent.contains(segment.p1) ||
-                         extent.contains(segmentLast.p0) || extent.contains(segmentLast.p1) ) {
                         graphics.setColor(colorMap.valueToColor(((Number)attributeValue)));
                         drawPolygon(segment.p0, segment.p1, segmentLast.p1, segmentLast.p0);
-                    }
                 }
 
                 segmentLast = segment;
             }
         }
 
-        private void setBounds(SimpleFeatureCollection features, ReferencedEnvelope requestBounds) throws TransformException {
+        private void checkTransform() throws TransformException {
 
-            ReferencedEnvelope featureBounds = features.getBounds();
-            if (featureBounds.getCoordinateReferenceSystem() == null) {
-                // bug in GeoTools where ReprojectFeatureStore.getBounds() doesn't include CRS
-                featureBounds = new ReferencedEnvelope(featureBounds, features.getSchema().getCoordinateReferenceSystem());
-            }
-            if (requestBounds == null) {
-                requestBounds = featureBounds;
-            }
-            
-            extent = requestBounds;
-
-            CoordinateReferenceSystem featuresCRS = featureBounds.getCoordinateReferenceSystem();
-            CoordinateReferenceSystem requestCRS = requestBounds.getCoordinateReferenceSystem();
+            CoordinateReferenceSystem featuresCRS = featureCollection.getSchema().getCoordinateReferenceSystem();
+            CoordinateReferenceSystem requestCRS = coverageEnvelope.getCoordinateReferenceSystem();
 
             if (featuresCRS != null && requestCRS != null && !CRS.equalsIgnoreMetadata(requestCRS, featuresCRS)) {
                 try {
@@ -304,8 +290,8 @@ public class ResultsRasterProcess implements GeoServerProcess {
             graphics = image.createGraphics();
         }
 
-        int[] px = new int[4];
-        int[] py = new int[4];
+        private final int[] px = new int[4];
+        private final int[] py = new int[4];
         private void worldToGrid(Coordinate c, int i) throws InvalidGridGeometryException, TransformException {
             DirectPosition2D world = new DirectPosition2D(c.x, c.y);
             GridCoordinates2D grid = gridGeometry.worldToGrid(world);
