@@ -22,58 +22,62 @@ $(document).ready(function() {
 		mapDiv: 'map'
 	});
 
+	splashUpdate("Initializing Storms View...");
 	CONFIG.storms = new Storms({
 		collapseDiv: $('#accordion-group-storms'),
 		shareMenuDiv: $('#accordion-group-storms-share'),
 		viewMenuDiv: $('#accordion-group-storms-view')
 	});
 
+	splashUpdate("Initializing Vulnerability View...");
 	CONFIG.vulnerability = new Vulnerability({
+		collapseDiv: $('#accordion-group-vulnerability'),
 		shareMenuDiv: $('#accordion-group-vulnerability-share')
 	});
 
+	splashUpdate("Initializing Historical View...");
 	CONFIG.historical = new Historical({
 		collapseDiv: $('#accordion-group-historical'),
 		shareMenuDiv: $('#accordion-group-historical-share'),
 		viewMenuDiv: $('#accordion-group-historical-view')
 	});
 
-	splashUpdate("Starting Application...");
-	splashUpdate = undefined;
-
-	$('#application-overlay').fadeOut(2000, function() {
-		$('#application-overlay').remove();
-	});
-
-	CONFIG.ui.bindSearchInput();
-
+	splashUpdate("Initializing OWS Services");
 	CONFIG.ows = new OWS();
 
+	var initAllStages = function() {
+		splashUpdate("Initializing Application sections...");
+		[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
+			item.init();
+		});
+	};
 	var sid = CONFIG.session.getIncomingSid();
 	if (sid) {
-		LOG.info('OnReady.js:: Application initialized. Preparing call to server for spatial data');
+		splashUpdate("Reading session information from server...");
 		CONFIG.session.updateFromServer({
 			sid: sid,
 			callbacks: {
 				success:
 						[
 							function() {
-								CONFIG.map.updateFromSession();
-								[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
-									item.init();
+								splashUpdate("Applying session information to application...");
+								initAllStages();
+								[CONFIG.map, CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
+									item.updateFromSession();
 								});
 							}
-						]
-						,
+						],
 				error: []
 			}
 		});
 	} else {
-		[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
-			item.init();
-		});
+		initAllStages();
+		CONFIG.storms.enterSection();
 	}
 
-
-
+	splashUpdate("Starting Application...");
+	$('#application-overlay').fadeOut(2000, function() {
+		$('#application-overlay').remove();
+		splashUpdate = undefined;
+	});
 });

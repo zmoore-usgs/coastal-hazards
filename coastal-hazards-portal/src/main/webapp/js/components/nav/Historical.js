@@ -1,7 +1,9 @@
 var Historical = function(args) {
 	LOG.info('Historical.js::constructor: Historical class is initializing.');
 	var me = (this === window) ? {} : this;
+	
 	me.name = 'historical';
+	me.isActive = false;
 	me.collapseDiv = args.collapseDiv;
 	me.shareMenuDiv = args.shareMenuDiv;
 	me.viewMenuDiv = args.viewMenuDiv;
@@ -15,16 +17,19 @@ var Historical = function(args) {
 	LOG.debug('Historical.js::constructor: Historical class initialized.');
 	return $.extend(me, {
 		init: function() {
+			LOG.debug('Historical.js::init()');
 			me.bindParentMenu();
 			me.bindViewMenu();
 			me.bindShareMenu();
 		},
 		enterSection: function() {
-			LOG.debug('Historical.js:: Adding box layer to map');
+			LOG.debug('Historical.js::enterSection(): Adding box layer to map');
 			CONFIG.map.getMap().addLayer(me.boxLayer);
-			if (!CONFIG.ows.servers['cida-geoserver'].data.wms.object) {
+			me.isActive = true;
+			var serverName = 'cida-geoserver';
+			if (!CONFIG.ows.servers[serverName].data.wms.capabilities.object.capability) {
 				CONFIG.ows.getWMSCapabilities({
-					server : 'cida-geoserver',
+					server: serverName,
 					callbacks: {
 						success: [
 							function(data, textStatus, jqXHR) {
@@ -44,8 +49,14 @@ var Historical = function(args) {
 
 		},
 		leaveSection: function() {
-			LOG.debug('Historical.js::displayAvailableData(): Removing box layer from map');
-			me.removeBoxMarkers();
+			LOG.debug('Historical.js::leaveSection(): Removing box layer from map');
+			me.removeBoxLayer();
+			me.isActive = false;
+		},
+		updateFromSession : function() {
+			if (CONFIG.session.objects.view.activeParentMenu === me.name) {
+				
+			}
 		},
 		bindParentMenu: function() {
 			me.collapseDiv.on({
@@ -176,7 +187,7 @@ var Historical = function(args) {
 		 * 
 		 * @returns {undefined}
 		 */
-		removeBoxMarkers: function() {
+		removeBoxLayer: function() {
 			var map = CONFIG.map.getMap();
 			map.popups.each(function(p) {
 				map.removePopup(p);

@@ -167,7 +167,7 @@ var Map = function(args) {
 			LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + featureName);
 			var layers = me.map.getLayersByName(featureName) || [];
 			layers.each(function(layer) {
-				me.map.removeLayer(layer);
+				me.map.removeLayer(layer, false);
 			});
 		}
 	});

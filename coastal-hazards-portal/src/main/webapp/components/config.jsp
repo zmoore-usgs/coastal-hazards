@@ -18,30 +18,31 @@
 %>
 <script type="text/javascript">
 	splashUpdate("Setting configuration...");
-	var CONFIG = {};
-
-	CONFIG.popupHandling = {
-		isVisible: false,
-		clickedAway: false
-	};
-	CONFIG.development = <%= development%>;
-	CONFIG.popupHoverDelay = 1500;
-	CONFIG.ajaxTimeout = 300000;
-	CONFIG.name = {
-		'published': 'published'
-	};
-	CONFIG.data = {
-		sources: {
-			'cida-geoserver': {
-				'endpoint': '<%=geoserverEndpoint%>',
-				'proxy': 'geoserver/'
-			},
-			'stpete-arcserver': {
-				'endpoint': '<%=stPeteArcServerEndpoint%>',
-				'proxy': 'stpgis/'
+	var CONFIG = {
+		development: <%= development%>,
+		ajaxTimeout: 300000,
+		popupHandling: {
+			isVisible: false,
+			clickedAway: false,
+			hoverDelay: 1500
+		},
+		name: {
+			'published': 'published'
+		},
+		data: {
+			sources: {
+				'cida-geoserver': {
+					'endpoint': '<%=geoserverEndpoint%>',
+					'proxy': 'geoserver/'
+				},
+				'stpete-arcserver': {
+					'endpoint': '<%=stPeteArcServerEndpoint%>',
+					'proxy': 'stpgis/'
+				}
 			}
 		}
-	}
+	};
+
 	JSON.stringify = JSON.stringify || function(obj) {
 		var t = typeof (obj);
 		if (t !== "object" || obj === null) {
