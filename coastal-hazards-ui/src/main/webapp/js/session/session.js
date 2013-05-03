@@ -129,8 +129,8 @@ var Session = function(name, isPerm) {
                 return null;
             }
             var stage = args.stage;
-            me.session[stage] = args.obj
-        }
+            me.session[stage] = args.obj;
+        };
         
         me.getConfig = function(args) {
             if (!args) {
@@ -141,7 +141,7 @@ var Session = function(name, isPerm) {
             var config = me.getStage(stage);
             
             return config;
-        }
+        };
         
         me.setConfig = function(args) {
             if (!args) {
@@ -187,16 +187,16 @@ var Session = function(name, isPerm) {
                                 me.session.layers[index] = null;
                             }
                         }
-                    })
+                    });
             
                     // Removes all undefined or null from the layers array
                     me.session.layers = me.session.layers.compact();
             
                     LOG.debug('Session.js::updateLayersFromWMS: Scanning layers on server for layers in this session');
                     var ioLayers = wmsLayers.findAll(function(wmsLayer) {
-                        return (wmsLayer.prefix == 'ch-input' || wmsLayer.prefix == 'ch-output') &&
-                            wmsLayer.name.indexOf(me.getCurrentSessionKey() != -1);
-                    })
+                        return (wmsLayer.prefix === 'ch-input' || wmsLayer.prefix === 'ch-output') &&
+                            wmsLayer.name.indexOf(me.getCurrentSessionKey() !== -1);
+                    });
             
                     $(ioLayers).each(function(index, layer) {
                         LOG.debug('Session.js::updateLayersFromWMS: Remote layer found. Adding it to current session');
@@ -205,13 +205,13 @@ var Session = function(name, isPerm) {
                             title : layer.title,
                             prefix : layer.prefix,
                             bbox : layer.bbox
-                        }
+                        };
                     
                         var foundLayerAtIndex = me.session.layers.findIndex(function(l) {
-                            return l.name === layer.name
-                        })
+                            return l.name === layer.name;
+                        });
                     
-                        if (foundLayerAtIndex != -1) {
+                        if (foundLayerAtIndex !== -1) {
                             LOG.debug('Session.js::updateLayersFromWMS: Layer ' + 
                                 'provided by WMS GetCapabilities response already in session layers. ' +
                                 'Updating session layers with latest info.');
@@ -220,9 +220,9 @@ var Session = function(name, isPerm) {
                             LOG.debug('Session.js::updateLayersFromWMS: Layer ' + 
                                 'provided by WMS GetCapabilities response not in session layers. ' +
                                 'Adding layer to session layers.');
-                            me.addLayerToSession(incomingLayer)
+                            me.addLayerToSession(incomingLayer);
                         }
-                    })
+                    });
                     me.persistSession();
                 }
             } else {
@@ -230,7 +230,7 @@ var Session = function(name, isPerm) {
                 
                 me.persistSession();
             }
-        }
+        };
         
         me.addLayerToSession = function(args) {
             LOG.debug('Session.js::addLayerToSession:Adding layer to session');
@@ -255,8 +255,11 @@ var Session = function(name, isPerm) {
         };
         
         /**
-         * Replace the current temp session with 
-         */
+		 * Replace the current temp session 
+		 * @param {type} key
+		 * @param {type} session
+		 * @returns {undefined}
+		 */
         me.setCurrentSession = function(key, session) {
             LOG.info('Replacing current session');
             if (session) {
@@ -403,7 +406,7 @@ var Session = function(name, isPerm) {
 
 				var importDescriptionWell = $('<div />').addClass('well well-small');
 				var importDescriptionRow = $('<div />').attr('id', 'session-management-session-description-row').addClass('row-fluid');
-				container.append(importDescriptionWell.append(importDescriptionRow))
+				container.append(importDescriptionWell.append(importDescriptionRow));
 
 				CONFIG.ui.createModalWindow({
 					headerHtml: 'Session Management',
@@ -414,10 +417,10 @@ var Session = function(name, isPerm) {
 
 							$('#file-menu-item-import').on('click', function() {
 								CONFIG.tempSession.importSession();
-							})
+							});
 							$('#file-menu-item-export').on('click', function() {
 								CONFIG.tempSession.exportSession();
-							})
+							});
 							$('#session-menu-item-create').on('click', function() {
 								var session = CONFIG.tempSession.createNewSession().sessions[0];
 								CONFIG.permSession.session.sessions.push(session);
@@ -444,13 +447,13 @@ var Session = function(name, isPerm) {
 								var importDescriptionRow = $('#session-management-session-description-row');
 								importDescriptionRow.html('');
 								var session = CONFIG.permSession.session.sessions.find(function(s) {
-									return s.id == key
-								})
+									return s.id == key;
+								});
 								var sessionLayers = CONFIG.permSession.session.sessions.find(function(s) {
-									return s.id == key
+									return s.id == key;
 								}).layers.filter(function(l) {
-									return l.prefix == key
-								})
+									return l.prefix == key;
+								});
 								var html = 'Session Information' +
 										'<br />Name: ' + (session.name || '') +
 										'<br />Created: ' + session.created +
@@ -460,8 +463,7 @@ var Session = function(name, isPerm) {
 										'<br />Metadata: ' + (session.metadata || '');
 
 								importDescriptionRow.html(html);
-
-							})
+							});
 							sessionList.val(CONFIG.permSession.session.currentSession);
 							sessionList.trigger('change');
 						}]
@@ -485,41 +487,18 @@ var Session = function(name, isPerm) {
 				target : '#'
 			});
 			
-			form.append($('<input />').attr({
-				'type': 'radio',
-				'group': 'stage',
-				'name': 'stage',
-				'value': 'shorelines'
-			}).after(' Shorelines ').after('<br />'))
-					.append($('<input />').attr({
-				'type': 'radio',
-				'group': 'stage',
-				'name': 'stage',
-				'value': 'baseline'
-			}).after(' Baseline ').after('<br />'))
-					.append($('<input />').attr({
-				'type': 'radio',
-				'group': 'stage',
-				'name': 'stage',
-				'value': 'transects'
-			}).after(' Transects ').after('<br />'))
-					.append($('<input />').attr({
-				'type': 'radio',
-				'group': 'stage',
-				'name': 'stage',
-				'value': 'intersects'
-			}).after(' Intersections ').after('<br />'))
-					.append($('<input />').attr({
-				'type': 'radio',
-				'group': 'stage',
-				'name': 'stage',
-				'value': 'results'
-			}).after(' Results ').after('<br /><hr />'))
-					.append('Metadata XML ').append($('<input />').attr({
-				'type': 'file',
-				'name': 'metadata',
-				'size': '40'
-			}).after('<br />'));
+			var select = $('<select />').attr({
+				'id' : 'md-layers-select',
+				'name' : 'md-layers-select'
+			});
+			form.append(select);
+			
+			var options = $('.feature-list option[class="session-layer"]').toArray();
+			for (var oIdx = 0; oIdx < options.length; oIdx++) {
+				$(select).append(options[oIdx]);
+			}
+			
+			form.after('<br />');
 			
 			container.append(formRow.append(formWell.append(form)));
 			
@@ -541,7 +520,7 @@ var Session = function(name, isPerm) {
             var sessionId = $('#session-management-session-list :selected').val();
             var session = CONFIG.permSession.session.sessions.find(function(s) {
                 return s.id == sessionId;
-            })
+            });
                         
             var container = $('<div />').addClass('container-fluid');
             var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
@@ -579,7 +558,7 @@ var Session = function(name, isPerm) {
                 'rows': '10',
                 'placeholder' : session.metadata
             });
-            container.append(metadataRow.append(metadataWell.append(metadataInputLabel, metadataInput)))
+            container.append(metadataRow.append(metadataWell.append(metadataInputLabel, metadataInput)));
                         
             CONFIG.ui.createModalWindow({
                 bodyHtml : container.html(),
@@ -601,10 +580,10 @@ var Session = function(name, isPerm) {
                     function() {
                         $('#cancel-button').on('click', function() {
                             CONFIG.tempSession.createSessionManagementModalWindow();
-                        })
+                        });
                     }
                 ]
-            })
+            });
         },
         importSession : function() {
             if (window.File && window.FileReader) {
@@ -620,7 +599,7 @@ var Session = function(name, isPerm) {
                     'id' : 'file-upload-input',
                     'name' : 'file-upload-input',
                     'type' : 'file'
-                })
+                });
                 container.append(selectionRow.append(uploadForm.append(fileInput)));
                 
                 var importWell = $('<div />').addClass('well').attr('id', 'import-well');
@@ -636,7 +615,7 @@ var Session = function(name, isPerm) {
                                 var fileObject = event.target.files[0];
                                 if (fileObject.type.match('json')) {
                                     var reader = new FileReader();
-                                    var importWell = $('#import-well')
+                                    var importWell = $('#import-well');
                                     var importRow = $('#import-row');
                                     var resultObject;
                                     importRow.empty();
@@ -652,17 +631,17 @@ var Session = function(name, isPerm) {
                                 
                                             var session = resultObject.sessions.find(function(s){
                                                 return s.id == currentId
-                                            })
+                                            });
                                             if (!session) {
                                                 importRow.html('Imported session has a nonexistent session marked as current');
                                                 return;
                                             }
                                 
-                                            importDisplay.append('Session File Information')
+                                            importDisplay.append('Session File Information');
                                             importDisplay.append('<br />Sessions found: ' + resultObject.sessions.length);
-                                            importDisplay.append('<br />Current session key: ' + currentId)
-                                            importDisplay.append('<br />Session created: ' + session.created)
-                                            importDisplay.append('<br />Layers found: ' + session.layers.length + '<br />')
+                                            importDisplay.append('<br />Current session key: ' + currentId);
+                                            importDisplay.append('<br />Session created: ' + session.created);
+                                            importDisplay.append('<br />Layers found: ' + session.layers.length + '<br />');
                                             importDisplay.append(
                                             //                                            $('<button />').
                                             //                                            attr('id', 'import-current-session-button').
@@ -671,7 +650,7 @@ var Session = function(name, isPerm) {
                                             $('<button />').
                                                 attr('id', 'import-all-session-button').
                                                 addClass('btn btn-success span6').
-                                                html('Import Sessions'))
+                                                html('Import Sessions'));
                                         
                                             importRow.append(importDisplay);
                                             importWell.append(importRow);
@@ -689,22 +668,22 @@ var Session = function(name, isPerm) {
                                                 var chObj = JSON.parse(localStorage.getItem('coastal-hazards'));
                                                 resultObject.sessions.each(function(ros) {
                                                     var foundSession = chObj.sessions.find(function(s){ 
-                                                        return s.id == ros.id
-                                                    })
+                                                        return s.id == ros.id;
+                                                    });
                                                     if (!foundSession) {
                                                         chObj.sessions.push(ros);
                                                         CONFIG.permSession.session.sessions.push(ros);
                                                     }
-                                                })
+                                                });
                                             
-                                                localStorage.setItem('coastal-hazards', JSON.stringify(chObj)) //TODO- This will not work with IE8 and below. No JSON object
+                                                localStorage.setItem('coastal-hazards', JSON.stringify(chObj)); //TODO- This will not work with IE8 and below. No JSON object
                                                 CONFIG.tempSession.createSessionManagementModalWindow();
-                                            })
+                                            });
                                         } catch (ex) {
                                             importRow.html('Your file could not be read: ' + ex);
                                             return;
                                         }
-                                    }
+                                    };
                                 
                                     try {
                                         reader.readAsText(fileObject);
@@ -714,18 +693,18 @@ var Session = function(name, isPerm) {
                                     }
                                 } else {
                                     // Not a json file
-                                    $('#file-upload-input').val('')
+                                    $('#file-upload-input').val('');
                                     importRow = $('#import-row');
                                     importRow.html('Your file could not be read: ' + ex);
                                 }
-                            })
+                            });
                         }
                     ]
-                })
+                });
             } else {
                 CONFIG.ui.showAlert({
                     message : 'Functionality not yet supported for non-HTML5 browsers'
-                })
+                });
             }  
         },
         exportSession : function() {
