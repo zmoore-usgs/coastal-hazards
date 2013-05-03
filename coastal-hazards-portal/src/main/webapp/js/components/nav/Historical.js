@@ -1,13 +1,17 @@
 var Historical = function(args) {
 	LOG.info('Historical.js::constructor: Historical class is initializing.');
 	var me = (this === window) ? {} : this;
+
 	me.name = 'historical';
+	me.isActive = false;
 	me.collapseDiv = args.collapseDiv;
 	me.shareMenuDiv = args.shareMenuDiv;
 	me.viewMenuDiv = args.viewMenuDiv;
 	me.boxLayerName = 'historical-box-layer';
+	me.serverName = 'cida-geoserver';
 	me.boxBorderColor = '#FF0000';
 	me.highlightedBorderColor = '#00FF00';
+	me.visibleLayers = [];
 	me.boxLayer = new OpenLayers.Layer.Boxes(me.boxLayerName, {
 		displayInLayerSwitcher: false
 	});
@@ -15,20 +19,76 @@ var Historical = function(args) {
 	LOG.debug('Historical.js::constructor: Historical class initialized.');
 	return $.extend(me, {
 		init: function() {
+			LOG.debug('Historical.js::init()');
 			me.bindParentMenu();
 			me.bindViewMenu();
 			me.bindShareMenu();
 		},
-		enterSection: function() {
-			LOG.debug('Historical.js:: Adding box layer to map');
+		enterSection: function(args) {
+			LOG.debug('Historical.js::enterSection(): Adding box layer to map');
+			args = args || {};
 			CONFIG.map.getMap().addLayer(me.boxLayer);
-			if (!CONFIG.ows.servers['cida-geoserver'].data.wms.object) {
+			me.isActive = true;
+			var callbacks = args.callbacks || {
+				success: [
+					function(data, textStatus, jqXHR) {
+						me.displayBoxMarkers();
+					}
+				],
+				error: [
+					function(data, textStatus, jqXHR) {
+						LOG.error('Historical.js:: Got an error while getting WMS GetCapabilities from server');
+					}
+				]
+			};
+			if (!CONFIG.ows.servers[me.serverName].data.wms.capabilities.object.capability) {
 				CONFIG.ows.getWMSCapabilities({
-					server : 'cida-geoserver',
+					server: me.serverName,
+					callbacks: callbacks
+				});
+			} else {
+				me.displayBoxMarkers();
+			}
+
+		},
+		leaveSection: function() {
+			LOG.debug('Historical.js::leaveSection(): Removing box layer from map');
+			me.removeBoxLayer();
+			me.isActive = false;
+			me.visibleLayers.each(function(layer) {
+				CONFIG.map.getMap().removeLayer(layer);
+			});
+			me.visibleLayers = [];
+		},
+		updateFromSession: function() {
+			if (CONFIG.session.objects.view.activeParentMenu === me.name) {
+				if (!me.collapseDiv.find('>:last-child').hasClass('in')) {
+					me.collapseDiv.find('>:last-child').addClass('in');
+					me.collapseDiv.find('>:last-child').attr('style', 'height:auto')
+				}
+
+				me.enterSection({
 					callbacks: {
 						success: [
 							function(data, textStatus, jqXHR) {
-								me.displayBoxMarkers();
+								var activeLayers = CONFIG.session.objects.view.historical.activeLayers;
+								if (activeLayers.length) {
+									me.removeBoxLayer();
+									var bounds = new OpenLayers.Bounds();
+									activeLayers.each(function(layer) {
+										var layer = CONFIG.ows.servers[me.serverName].data.wms.capabilities.object.capability.layers.find(function(l) {
+											return l.name === layer.name;
+										});
+										me.displayData({
+											'title': layer.title,
+											'name': layer.name,
+											'layers': layer.layers
+										});
+										bounds.extend(new OpenLayers.Bounds(layer.bbox['EPSG:900913'].bbox));
+									});
+									CONFIG.map.getMap().zoomToExtent(bounds);
+
+								}
 							}
 						],
 						error: [
@@ -39,13 +99,11 @@ var Historical = function(args) {
 					}
 				});
 			} else {
-				me.displayBoxMarkers();
+				if (me.collapseDiv.find('>:last-child').hasClass('in')) {
+					me.collapseDiv.find('>:last-child').removeClass('in');
+					me.collapseDiv.find('>:last-child').removeAttr('style');
+				}
 			}
-
-		},
-		leaveSection: function() {
-			LOG.debug('Historical.js::displayAvailableData(): Removing box layer from map');
-			me.removeBoxMarkers();
 		},
 		bindParentMenu: function() {
 			me.collapseDiv.on({
@@ -120,7 +178,7 @@ var Historical = function(args) {
 					box.events.register('click', box, function() {
 						LOG.debug('Historical.js:: Box marker clicked. Zooming to shoreline');
 						CONFIG.map.getMap().zoomToExtent(this.bounds);
-						me.removeBoxMarkers();
+						me.removeBoxLayer();
 						me.displayData({
 							'name': this.layerObject.name
 						});
@@ -176,13 +234,13 @@ var Historical = function(args) {
 		 * 
 		 * @returns {undefined}
 		 */
-		removeBoxMarkers: function() {
+		removeBoxLayer: function() {
 			var map = CONFIG.map.getMap();
 			map.popups.each(function(p) {
 				map.removePopup(p);
 			});
+			me.boxLayer.clearMarkers();
 			CONFIG.map.removeLayersByName(me.boxLayerName);
-
 		},
 		/**
 		 *	Displays one or all shorelines on the map
@@ -196,7 +254,7 @@ var Historical = function(args) {
 			if (name) {
 				var prefix = name.split(':')[0];
 				var title = name.split(':')[1];
-				var wmsLayer = new OpenLayers.Layer.Shorelines(
+				var layer = new OpenLayers.Layer.Shorelines(
 						title,
 						'geoserver/' + prefix + '/wms',
 						{
@@ -207,11 +265,8 @@ var Historical = function(args) {
 						},
 				{
 					prefix: prefix,
-					zoomToWhenAdded: true, // Include this layer when performing an aggregated zoom
 					isBaseLayer: false,
 					unsupportedBrowsers: [],
-//					colorGroups: colorDatePairings,
-//					describedFeatures: features,
 					tileOptions: {
 						// http://www.faqs.org/rfcs/rfc2616.html
 						// This will cause any request larger than this many characters to be a POST
@@ -219,14 +274,14 @@ var Historical = function(args) {
 					},
 					singleTile: true,
 					ratio: 1,
-//					groupByAttribute: groupingColumn,
-//					groups: groups,
 					displayInLayerSwitcher: false
 				});
-				CONFIG.map.getMap().addLayer(wmsLayer);
-				wmsLayer.redraw(true);
-			} else {
-
+				CONFIG.map.getMap().addLayer(layer);
+				layer.redraw(true);
+				CONFIG.session.objects.view.historical.activeLayers = [{name: name}];
+				if (me.visibleLayers.indexOf(layer) === -1) {
+					me.visibleLayers.push(layer);
+				}
 			}
 		}
 	});

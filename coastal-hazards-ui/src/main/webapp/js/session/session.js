@@ -469,6 +469,12 @@ var Session = function(name, isPerm) {
 						}]
 			});
 		},
+		/**
+		 * A user wishes to publish metadata. Create the form that allows the 
+		 * uploading of this metadata
+		 * 
+		 * @returns {undefined}
+		 */
 		createMetadataUploadForm : function() {
 			var container = $('<div />').addClass('container-fluid');
 			
@@ -497,6 +503,12 @@ var Session = function(name, isPerm) {
 			for (var oIdx = 0; oIdx < options.length; oIdx++) {
 				$(select).append(options[oIdx]);
 			}
+			
+			form.append('Metadata XML ').append($('<input />').attr({
+				'type': 'file',
+				'name': 'metadata',
+				'size': '40'
+			}));
 			
 			form.after('<br />');
 			
