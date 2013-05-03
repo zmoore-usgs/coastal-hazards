@@ -3,31 +3,90 @@ var Storms = function(args) {
 	var me = (this === window) ? {} : this;
 	LOG.debug('Storms.js::constructor: Storms class initialized.');
 
+	me.name = 'storms';
+	me.isActive = false;
 	me.collapseDiv = args.collapseDiv;
 	me.shareMenuDiv = args.shareMenuDiv;
 	me.viewMenuDiv = args.viewMenuDiv;
 	me.boxBorderColor = '#FF0000';
 	me.highlightedBorderColor = '#00FF00';
 	me.boxLayerName = 'storms-box-layer';
+	me.serverName = 'stpete-arcserver-vulnerability-se-erosion';
 	me.boxLayer = new OpenLayers.Layer.Boxes(me.boxLayerName, {
 		displayInLayerSwitcher: false
 	});
+	me.visibleLayers = [];
 	return $.extend(me, {
 		init: function() {
+			LOG.debug('Storms.js::init()');
 			me.bindParentMenu();
 			me.bindShareMenu();
 		},
-		enterSection: function() {
-			LOG.debug('Storms.js:: Adding box layer to map');
+		enterSection: function(args) {
+			LOG.debug('Storms.js::enterSection():Adding box layer to map');
+			args = args || {};
 			CONFIG.map.getMap().addLayer(me.boxLayer);
+			me.isActive = true;
+			var callbacks = args.callbacks || {
+				success: [
+					function(data, textStatus, jqXHR) {
+						me.displayBoxMarkers();
+					}
+				],
+				error: [
+					function(data, textStatus, jqXHR) {
+						LOG.error('Storms.js:: Got an error while getting WMS GetCapabilities from server');
+					}
+				]
+			};
 
-			if (!CONFIG.ows.servers['stpete-arcserver-vulnerability-se-erosion'].data.wms.object) {
+			if (!CONFIG.ows.servers[me.serverName].data.wms.capabilities.object.capability) {
 				CONFIG.ows.getWMSCapabilities({
-					server: 'stpete-arcserver-vulnerability-se-erosion',
+					server: me.serverName,
+					callbacks: callbacks
+				});
+			} else {
+				me.displayBoxMarkers();
+			}
+
+		},
+		leaveSection: function() {
+			LOG.debug('Storms.js::leaveSection(): Removing box layer from map');
+			me.removeBoxLayer();
+			me.isActive = false;
+			me.visibleLayers.each(function(layer) {
+				CONFIG.map.getMap().removeLayer(layer);
+			});
+			me.visibleLayers = [];
+		},
+		updateFromSession: function() {
+			if (CONFIG.session.objects.view.activeParentMenu === me.name) {
+				if (!me.collapseDiv.find('>:last-child').hasClass('in')) {
+					me.collapseDiv.find('>:last-child').addClass('in');
+					me.collapseDiv.find('>:last-child').attr('style', 'height:auto');
+				}
+				me.enterSection({
 					callbacks: {
 						success: [
 							function(data, textStatus, jqXHR) {
-								me.displayBoxMarkers();
+								var activeLayers = CONFIG.session.objects.view.storms.activeLayers;
+								if (activeLayers.length) {
+									me.removeBoxLayer();
+									var bounds = new OpenLayers.Bounds();
+									activeLayers.each(function(layer) {
+										var wmsLayer = CONFIG.ows.servers[me.serverName].data.wms.capabilities.object.capability.layers.find(function(l) {
+											return l.title === layer.title;
+										});
+										me.displayData({
+											'title': layer.title,
+											'name': layer.name,
+											'layers': layer.layers
+										});
+										bounds.extend(new OpenLayers.Bounds(wmsLayer.bbox['EPSG:3857'].bbox));
+									});
+									CONFIG.map.getMap().zoomToExtent(bounds);
+
+								}
 							}
 						],
 						error: [
@@ -38,13 +97,11 @@ var Storms = function(args) {
 					}
 				});
 			} else {
-				me.displayBoxMarkers();
+				if (me.collapseDiv.find('>:last-child').hasClass('in')) {
+					me.collapseDiv.find('>:last-child').removeClass('in');
+					me.collapseDiv.find('>:last-child').removeAttr('style');
+				}
 			}
-
-		},
-		leaveSection: function() {
-			LOG.debug('Historical.js::displayAvailableData(): Removing box layer from map');
-			me.removeBoxMarkers();
 		},
 		bindParentMenu: function() {
 			me.collapseDiv.on({
@@ -99,9 +156,11 @@ var Storms = function(args) {
 					box.events.register('click', box, function() {
 						LOG.debug('Storms.js:: Box marker clicked. Zooming to storm data');
 						CONFIG.map.getMap().zoomToExtent(this.bounds);
-						me.removeBoxMarkers();
+						me.removeBoxLayer();
 						me.displayData({
-							'name': this.layerObject.name
+							'title': this.layerObject.title,
+							'name': this.layerObject.name,
+							'layers': [0]
 						});
 					});
 
@@ -155,23 +214,24 @@ var Storms = function(args) {
 		 * 
 		 * @returns {undefined}
 		 */
-		removeBoxMarkers: function() {
+		removeBoxLayer: function() {
 			var map = CONFIG.map.getMap();
 			map.popups.each(function(p) {
 				map.removePopup(p);
 			});
+			me.boxLayer.clearMarkers();
 			CONFIG.map.removeLayersByName(me.boxLayerName);
-
 		},
 		displayData: function(args) {
 			var name = args.name;
-
+			var layers = args.layers;
+			var title = args.title;
 			if (name) {
 				var layer = new OpenLayers.Layer.WMS(
-						name,
-						CONFIG.ows.servers['stpete-arcserver-vulnerability-se-erosion'].endpoints.wmsGetImageUrl,
+						title,
+						CONFIG.ows.servers[me.serverName].endpoints.wmsGetImageUrl,
 						{
-							layers: '0',
+							layers: layers.join(','),
 							format: 'img/png',
 							transparent: true
 						},
@@ -180,32 +240,35 @@ var Storms = function(args) {
 					isBaseLayer: false
 
 				});
-				
+
 				layer.params.STYLES = 'lineSymbolizer';
 				layer.params.SLD_BODY = '<sld:StyledLayerDescriptor xmlns="http://www.opengis.net/ogc" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">' +
-						'<sld:NamedLayer>' + 
-						'<sld:Name>0</sld:Name>' + 
-						'<sld:UserStyle>' + 
-						'<sld:Name>lineSymbolizer</sld:Name>' + 
+						'<sld:NamedLayer>' +
+						'<sld:Name>0</sld:Name>' +
+						'<sld:UserStyle>' +
+						'<sld:Name>lineSymbolizer</sld:Name>' +
 						'<sld:Title>lineSymbolizer</sld:Title>' +
-						'<sld:FeatureTypeStyle>' + 
-						'<sld:Rule>' + 
-						'<sld:LineSymbolizer>' + 
-						'<sld:Stroke>' + 
-						'<sld:CssParameter name="stroke">#00FF00</sld:CssParameter>' + 
-						'<sld:CssParameter name="stroke-opacity">1</sld:CssParameter>' + 
-						'<sld:CssParameter name="stroke-width">2</sld:CssParameter>' + 
-						'</sld:Stroke>' + 
-						'</sld:LineSymbolizer>' + 
-						'</sld:Rule>' + 
-						'</sld:FeatureTypeStyle>' + 
-						'</sld:UserStyle>' + 
-						'</sld:NamedLayer>' + 
+						'<sld:FeatureTypeStyle>' +
+						'<sld:Rule>' +
+						'<sld:LineSymbolizer>' +
+						'<sld:Stroke>' +
+						'<sld:CssParameter name="stroke">#00FF00</sld:CssParameter>' +
+						'<sld:CssParameter name="stroke-opacity">1</sld:CssParameter>' +
+						'<sld:CssParameter name="stroke-width">2</sld:CssParameter>' +
+						'</sld:Stroke>' +
+						'</sld:LineSymbolizer>' +
+						'</sld:Rule>' +
+						'</sld:FeatureTypeStyle>' +
+						'</sld:UserStyle>' +
+						'</sld:NamedLayer>' +
 						'</sld:StyledLayerDescriptor>';
 				CONFIG.map.getMap().addLayer(layer);
 				layer.redraw(true);
-			} else {
 
+				CONFIG.session.objects.view.storms.activeLayers = [{title: title, name: name, layers: layers}];
+				if (me.visibleLayers.indexOf(layer) === -1) {
+					me.visibleLayers.push(layer);
+				}
 			}
 		}
 	});

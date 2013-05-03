@@ -2,7 +2,7 @@ var Map = function(args) {
 	LOG.info('Map.js::constructor:Map class is initializing.');
 	var mapDivId = args.mapDiv;
 	var me = (this === window) ? {} : this;
-	var initialExtent = [-15381395.046388, 4320929.1906812, -5969245.1327744, 7060432.2840406];
+	var initialExtent = [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826];
 
 	LOG.debug('Map.js::constructor:Loading Map object');
 	me.map = new OpenLayers.Map(mapDivId, {
@@ -42,7 +42,7 @@ var Map = function(args) {
 			}
 	));
 
-	me.map.addLayer(new OpenLayers.Layer.Markers('marker-layer'));
+	me.map.addLayer(new OpenLayers.Layer.Markers('geocoding-marker-layer'));
 
 	LOG.debug('Map.js::constructor:Adding ontrols to map');
 	me.map.addControl(new OpenLayers.Control.MousePosition());
@@ -80,7 +80,7 @@ var Map = function(args) {
 			var select = $('<select />').attr('id', 'alt-location-list');
 
 			// Build Market
-			var markerLayer = map.getLayersByName('marker-layer')[0];
+			var markerLayer = map.getLayersByName('geocoding-marker-layer')[0];
 			var iconSize = new OpenLayers.Size(32, 32);
 			var icon = new OpenLayers.Icon('js/openlayers/img/BulbGrey.png', iconSize, new OpenLayers.Pixel(-(iconSize.w / 2), -iconSize.h));
 			var marker = new OpenLayers.Marker(new OpenLayers.LonLat(x, y), icon);
@@ -167,7 +167,7 @@ var Map = function(args) {
 			LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + featureName);
 			var layers = me.map.getLayersByName(featureName) || [];
 			layers.each(function(layer) {
-				me.map.removeLayer(layer);
+				me.map.removeLayer(layer, false);
 			});
 		}
 	});
