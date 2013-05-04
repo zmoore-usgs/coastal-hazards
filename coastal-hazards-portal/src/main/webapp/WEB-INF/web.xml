@@ -17,13 +17,24 @@
 	</filter-mapping>
 	
 	<!-- SERVLET -->
-	<!-- AlternateProxy -->
 	<servlet>
 		<servlet-name>GeoServerServlet</servlet-name>
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
 			<param-name>forward-url-param</param-name>
 			<param-value>coastal-hazards.geoserver.endpoint</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+	<servlet>
+		<servlet-name>StPeteArcServerServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url-param</param-name>
+			<param-value>coastal-hazards.stpetearcserver.endpoint</param-value>
 		</init-param>
 		<init-param>
 			<param-name>readTimeout</param-name>
@@ -43,6 +54,10 @@
 	<servlet-mapping>
 		<servlet-name>GeoServerServlet</servlet-name>
 		<url-pattern>/geoserver/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>StPeteArcServerServlet</servlet-name>
+		<url-pattern>/stpgis/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>SessionService</servlet-name>

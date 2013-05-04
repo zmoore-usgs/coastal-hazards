@@ -14,22 +14,35 @@
 	}
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 	String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
+	String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
 %>
 <script type="text/javascript">
 	splashUpdate("Setting configuration...");
-	var CONFIG = {};
+	var CONFIG = {
+		development: <%= development%>,
+		ajaxTimeout: 300000,
+		popupHandling: {
+			isVisible: false,
+			clickedAway: false,
+			hoverDelay: 1500
+		},
+		name: {
+			'published': 'published'
+		},
+		data: {
+			sources: {
+				'cida-geoserver': {
+					'endpoint': '<%=geoserverEndpoint%>',
+					'proxy': 'geoserver/'
+				},
+				'stpete-arcserver': {
+					'endpoint': '<%=stPeteArcServerEndpoint%>',
+					'proxy': 'stpgis/'
+				}
+			}
+		}
+	};
 
-	CONFIG.popupHandling = {
-		isVisible : false,
-		clickedAway : false
-	};
-	CONFIG.development = <%= development%>;
-	CONFIG.geoServerEndpoint = '<%=geoserverEndpoint%>';
-	CONFIG.popupHoverDelay = 1500;
-	CONFIG.ajaxTimeout = 300000;
-	CONFIG.name = {
-		'published' : 'published'
-	};
 	JSON.stringify = JSON.stringify || function(obj) {
 		var t = typeof (obj);
 		if (t !== "object" || obj === null) {

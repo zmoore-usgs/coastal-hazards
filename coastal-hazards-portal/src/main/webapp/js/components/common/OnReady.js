@@ -11,9 +11,9 @@ $(document).ready(function() {
 
 	splashUpdate("Initializing UI...");
 	CONFIG.ui = new UI({
-		spinner : $("#application-spinner"),
-		searchbar : $('#app-navbar-search-form'),
-		mapdiv : $('#map')
+		spinner: $("#application-spinner"),
+		searchbar: $('#app-navbar-search-form'),
+		mapdiv: $('#map')
 	});
 	CONFIG.ui.init();
 
@@ -22,56 +22,63 @@ $(document).ready(function() {
 		mapDiv: 'map'
 	});
 
+	splashUpdate("Initializing Storms View...");
 	CONFIG.storms = new Storms({
-		shareMenuDiv: $('#accordion-group-storms-share')
+		collapseDiv: $('#accordion-group-storms'),
+		shareMenuDiv: $('#accordion-group-storms-share'),
+		viewMenuDiv: $('#accordion-group-storms-view')
 	});
 
+	splashUpdate("Initializing Vulnerability View...");
 	CONFIG.vulnerability = new Vulnerability({
+		collapseDiv: $('#accordion-group-vulnerability'),
 		shareMenuDiv: $('#accordion-group-vulnerability-share')
 	});
 
+	splashUpdate("Initializing Historical View...");
 	CONFIG.historical = new Historical({
 		collapseDiv: $('#accordion-group-historical'),
 		shareMenuDiv: $('#accordion-group-historical-share'),
 		viewMenuDiv: $('#accordion-group-historical-view')
 	});
 
-	splashUpdate("Starting Application...");
-	splashUpdate = undefined;
-
-	$('#application-overlay').fadeOut(2000, function() {
-		$('#application-overlay').remove();
-	});
-
-	CONFIG.ui.bindSearchInput();
-
+	splashUpdate("Initializing OWS Services");
 	CONFIG.ows = new OWS();
 
-	LOG.info('OnReady.js:: Application initialized. Preparing call to server for spatial data');
-	CONFIG.ows.getWMSCapabilities({
-		callbacks: {
-			success: [
-				function(data, textStatus, jqXHR) {
-					LOG.info('OnReady.js:: Initial spatial data retrieved from server.');
-					CONFIG.session.updateFromServer({
-						callbacks: [
+	var initAllStages = function() {
+		splashUpdate("Initializing Application sections...");
+		[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
+			item.init();
+		});
+	};
+	var sid = CONFIG.session.getIncomingSid();
+	if (sid) {
+		splashUpdate("Reading session information from server...");
+		CONFIG.session.updateFromServer({
+			sid: sid,
+			callbacks: {
+				success:
+						[
 							function() {
-								CONFIG.map.updateFromSession();
+								splashUpdate("Applying session information to application...");
+								initAllStages();
+								[CONFIG.map, CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
+									item.updateFromSession();
+								});
 							}
-						]
-					});
-				},
-				function() {
-					[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
-						item.init();
-					});
-				}
-			],
-			error: [
-				function(data, textStatus, jqXHR) {
-					LOG.error('OnReady.js:: Got an error while getting WMS GetCapabilities from server');
-				}
-			]
-		}
+						],
+				error: []
+			}
+		});
+	} else {
+		initAllStages();
+		CONFIG.storms.enterSection();
+	}
+
+	splashUpdate("Starting Application...");
+	$('#application-overlay').fadeOut(2000, function() {
+		$('#application-overlay').remove();
+		splashUpdate = undefined;
 	});
+	
 });
