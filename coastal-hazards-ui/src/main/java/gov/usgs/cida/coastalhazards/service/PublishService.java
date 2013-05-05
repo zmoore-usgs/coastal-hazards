@@ -31,11 +31,11 @@ public class PublishService extends HttpServlet {
 	private static String geoserverEndpoint = null;
 	private static String geoserverUsername = null;
 	private static String geoserverPassword = null;
-	private static String geoserverDataDir = null;
+	private static String publishedWorkspaceName = null;
 	private static String GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.endpoint";
 	private static String GEOSERVER_USER_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.username";
 	private static String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
-	private static String GEOSERVER_DATA_DIR_KEY = "coastal-hazards.geoserver.datadir";
+	private static String PUBLISHED_WS_PARAM_CONFIG_KEY = "coastal-hazards.workspace.published";
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -45,7 +45,7 @@ public class PublishService extends HttpServlet {
 		geoserverEndpoint = props.getProperty(GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY);
 		geoserverUsername = props.getProperty(GEOSERVER_USER_PARAM_CONFIG_KEY);
 		geoserverPassword = props.getProperty(GEOSERVER_PASS_PARAM_CONFIG_KEY);
-		geoserverDataDir = props.getProperty(GEOSERVER_DATA_DIR_KEY);
+		publishedWorkspaceName = props.getProperty(PUBLISHED_WS_PARAM_CONFIG_KEY, "published");
 		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
 	}
 
@@ -125,7 +125,7 @@ public class PublishService extends HttpServlet {
 				.append("<wps:Input>")
 				.append("<ows:Identifier>target-workspace</ows:Identifier>")
 				.append("<wps:Data>")
-				.append("<wps:LiteralData>published</wps:LiteralData>")
+				.append("<wps:LiteralData>").append(publishedWorkspaceName).append("</wps:LiteralData>")
 				.append("</wps:Data>")
 				.append("</wps:Input>")
 				.append("<wps:Input>")
