@@ -2,17 +2,14 @@ package gov.usgs.cida.coastalhazards.wps;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.PrecisionModel;
 import gov.usgs.cida.coastalhazards.util.Constants;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -85,14 +82,12 @@ public class ResultsRasterProcess implements GeoServerProcess {
         private final boolean invert;
         
         private GridGeometry2D gridGeometry;
-        private MathTransform featureToRasterTransform;
+        private LineSegmentTransform lineSegmentTransform;
         
         private BufferedImage image;
         private Graphics2D graphics;
 
         private ColorMap<Number> colorMap;
-        
-        GeometryFactory geometryFactory;
         
         Map<Integer, LinkedList<SimpleFeature>> baselineFeaturesMap;
         
@@ -144,14 +139,12 @@ public class ResultsRasterProcess implements GeoServerProcess {
             try {
                 checkTransform();
             } catch (TransformException ex) {
-                throw new RuntimeException(ex);
+                throw new RuntimeException("Unable to transform", ex);
             }
 
             createImage();
 
             gridGeometry = new GridGeometry2D(new GridEnvelope2D(0, 0, coverageWidth, coverageHeight), coverageEnvelope);
-            
-            geometryFactory = new GeometryFactory(new PrecisionModel());
 
             String featureCollectionId = featureCollection.getSchema().getName().getURI();
 
@@ -171,12 +164,15 @@ public class ResultsRasterProcess implements GeoServerProcess {
                     if (Math.abs(value) < 1e10) {
                         if (value > maximum) {
                             maximum = value;
-                        } else if (value < minimum) {
+                        }
+                        if (value < minimum) {
                             minimum = value;
                         }
                     }
 
-                    Integer baselineId = (Integer)feature.getAttribute(Constants.BASELINE_ID_ATTR);
+                    Object baselineIdObject = feature.getAttribute(Constants.BASELINE_ID_ATTR);
+                    // this is need for older files w/o baseline ID, null is a valid map key
+                    Integer baselineId = baselineIdObject instanceof Number ? ((Number)baselineIdObject).intValue() : null;
                     LinkedList<SimpleFeature> baselineFeatures = baselineFeaturesMap.get(baselineId);
                     if (baselineFeatures == null) {
                         baselineFeatures = new LinkedList<SimpleFeature>();
@@ -205,62 +201,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 colorMap = new JetColorMap(attributeRange);
             }
         }
-
-        private void processBaselineFeatures(LinkedList<SimpleFeature> baselineFeatures) throws Exception {
-
-            LineSegment segmentLast = null;
-            for (SimpleFeature feature : baselineFeatures) {
-                Geometry geometry = (Geometry) feature.getDefaultGeometry();
-                Object attributeValue = feature.getAttribute(attributeName);
-                if (!(attributeValue instanceof Number)) {
-                    return;
-                }
-
-                Object sceObject = feature.getAttribute(Constants.SCE_ATTR);
-                Object nsdObject = feature.getAttribute(Constants.NSD_ATTR);
-                Object idObject = feature.getAttribute(Constants.BASELINE_ID_ATTR);
-
-                if (!(sceObject instanceof Number)) {
-                    return;
-                }
-
-                if (idObject == null) {
-                    return;
-                }
-
-                if (!((geometry instanceof LineString) || (geometry instanceof MultiLineString)) ) {
-                    return;
-                }
-
-                if (geometry.getNumGeometries() != 1 || geometry.getNumPoints() != 2) {
-                    return;
-                }
-
-                double sce = ((Number)sceObject).doubleValue();
-                double nsd = nsdObject instanceof Number ? ((Number)nsdObject).doubleValue() : Double.NaN;
-
-                Coordinate[] coordinates = geometry.getCoordinates();
-                LineSegment transect = new LineSegment(coordinates[0], coordinates[1]);
-                double tl = transect.getLength();
-
-                LineSegment segment = Double.isNaN(nsd) ?
-                        new LineSegment(transect.pointAlong(1d - (sce / tl)), transect.p1) :
-                        new LineSegment(transect.pointAlong(nsd / tl), transect.pointAlong((nsd + sce ) / tl));
-
-                if (featureToRasterTransform != null) {
-                    JTS.transform(segment.p0, segment.p0, featureToRasterTransform);
-                    JTS.transform(segment.p1, segment.p1, featureToRasterTransform);
-                }
-
-                if (segmentLast != null)  {
-                        graphics.setColor(colorMap.valueToColor(((Number)attributeValue)));
-                        drawPolygon(segment.p0, segment.p1, segmentLast.p1, segmentLast.p0);
-                }
-
-                segmentLast = segment;
-            }
-        }
-
+        
         private void checkTransform() throws TransformException {
 
             CoordinateReferenceSystem featuresCRS = featureCollection.getSchema().getCoordinateReferenceSystem();
@@ -268,10 +209,12 @@ public class ResultsRasterProcess implements GeoServerProcess {
 
             if (featuresCRS != null && requestCRS != null && !CRS.equalsIgnoreMetadata(requestCRS, featuresCRS)) {
                 try {
-                    featureToRasterTransform = CRS.findMathTransform(featuresCRS, requestCRS, true);
+                    lineSegmentTransform = new JTSTransform(CRS.findMathTransform(featuresCRS, requestCRS, true));
                 } catch (Exception ex) {
                     throw new TransformException("Unable to transform features into output coordinate reference system", ex);
                 }
+            } else {
+                lineSegmentTransform = new PassThroughTransform();
             }
         }
 
@@ -290,6 +233,86 @@ public class ResultsRasterProcess implements GeoServerProcess {
             graphics = image.createGraphics();
         }
 
+        private void processBaselineFeatures(LinkedList<SimpleFeature> baselineFeatures) throws Exception {
+
+            Iterator<SimpleFeature> iterator = baselineFeatures.iterator();
+            
+            SimpleFeature featureCurrent = iterator.next();
+            LineSegment segmentLast = extractShorelineInterect(featureCurrent);
+            LineSegment segmentLastTransformed = lineSegmentTransform.transform(segmentLast);
+            Color colorLast = extractColor(featureCurrent);
+            
+            while (iterator.hasNext()) {
+                
+                featureCurrent = iterator.next();
+                
+                LineSegment segmentCurrent = extractShorelineInterect(featureCurrent);
+                LineSegment segmentCurrentTransformed = lineSegmentTransform.transform(segmentCurrent);
+                Color colorCurrent = extractColor(featureCurrent);
+                
+                LineSegment midpointSegment = new LineSegment(
+                        new LineSegment(segmentCurrent.p0, segmentLast.p0).pointAlong(0.5),
+                        new LineSegment(segmentCurrent.p1, segmentLast.p1).pointAlong(0.5));
+                LineSegment midpointSegmentTransformed = lineSegmentTransform.transform(midpointSegment);
+                
+                if (colorLast != null) {
+                    graphics.setColor(colorLast);
+                    drawPolygon(segmentLastTransformed, midpointSegmentTransformed);
+                }
+                if (colorCurrent != null) {
+                   graphics.setColor(colorCurrent);
+                   drawPolygon(midpointSegmentTransformed, segmentCurrentTransformed);
+                }
+
+                segmentLast = segmentCurrent;
+                segmentLastTransformed = segmentCurrentTransformed;
+                colorLast = colorCurrent;
+            }
+        }
+        
+        private LineSegment extractShorelineInterect(SimpleFeature feature) {
+
+            Object sceObject = ((Double)feature.getAttribute(Constants.SCE_ATTR));
+            Object nsdObject = feature.getAttribute(Constants.NSD_ATTR);
+            
+            Geometry geometry = (Geometry) feature.getDefaultGeometry();
+            Coordinate[] coordinates = geometry.getCoordinates();
+            LineSegment segment = new LineSegment(coordinates[0], coordinates[1]);
+            
+            double length = segment.getLength();
+            
+            double sce = sceObject instanceof Number ? ((Number)sceObject).doubleValue() : Double.NaN;
+            double nsd = nsdObject instanceof Number ? ((Number)nsdObject).doubleValue() : Double.NaN;
+            
+            if (sce == sce && nsd == nsd) {
+                 return extractShorelineInterect(segment, nsd, sce);
+            } else {
+                if (sce != sce && nsd != nsd) {
+                    return segment;
+                }
+                if (sce != sce) {
+                    sce = length - nsd;
+                } else /* if nsd != nsd */ {
+                    nsd = length - sce;
+                }
+                return extractShorelineInterect(segment, nsd, sce);
+            }
+        }
+        
+        private LineSegment extractShorelineInterect(LineSegment transect, double nsd, double sce) {
+            double length = transect.getLength();
+            return new LineSegment(
+                         transect.pointAlong(nsd / length),
+                         transect.pointAlong((nsd + sce ) / length));
+        }
+        
+        private Color extractColor(SimpleFeature feature) {
+            Object valueObject = feature.getAttribute(attributeName);
+            return valueObject instanceof Number ? 
+                    colorMap.valueToColor(((Number)valueObject).doubleValue()) :
+                    null;
+        }
+
         private final int[] px = new int[4];
         private final int[] py = new int[4];
         private void worldToGrid(Coordinate c, int i) throws InvalidGridGeometryException, TransformException {
@@ -298,14 +321,37 @@ public class ResultsRasterProcess implements GeoServerProcess {
             px[i] = grid.x ; py[i] = grid.y;
         }
         
-        private void drawPolygon(Coordinate c0, Coordinate c1, Coordinate c2, Coordinate c3) throws TransformException {
-            worldToGrid(c0, 0);
-            worldToGrid(c1, 1);
-            worldToGrid(c2, 2);
-            worldToGrid(c3, 3);            
+        private void drawPolygon(LineSegment s0, LineSegment s1) throws TransformException {
+            worldToGrid(s0.p0, 0);
+            worldToGrid(s0.p1, 1);
+            worldToGrid(s1.p1, 2);
+            worldToGrid(s1.p0, 3);            
             graphics.fillPolygon(px, py, 4);
         }
 
+    }
+    
+    public interface LineSegmentTransform {
+        LineSegment transform(LineSegment in) throws TransformException;
+    }
+    
+    public class PassThroughTransform implements LineSegmentTransform {
+        @Override public LineSegment transform(LineSegment in) {
+            return in;
+        }
+    }
+    
+    public class JTSTransform implements LineSegmentTransform {
+        private final MathTransform transform;
+        public JTSTransform(MathTransform transform) {
+            this.transform = transform;
+        }
+        @Override public LineSegment transform(LineSegment in) throws TransformException {
+            LineSegment out = new LineSegment();
+            JTS.transform(in.p0, out.p0, transform);
+            JTS.transform(in.p1, out.p1, transform);
+            return out;
+        }
     }
     
     public static class AttributeRange {
