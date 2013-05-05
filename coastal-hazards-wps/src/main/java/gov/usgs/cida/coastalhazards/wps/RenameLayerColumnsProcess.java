@@ -38,17 +38,15 @@ import org.opengis.feature.type.Name;
  * @author isuftin
  */
 @DescribeProcess(
-        title = "Renames Columns In A Layer",
+        title = "Rename Layer Columns",
 description = "Given a layer and a set of column name to column name mappings, will rename a set of columns",
 version = "1.0.0")
 public class RenameLayerColumnsProcess implements GeoServerProcess {
 
     private Catalog catalog;
-    private LayerImportUtil importer;
     private ImportProcess importProcess;
     public RenameLayerColumnsProcess(ImportProcess importer, Catalog catalog) {
         this.catalog = catalog;
-        this.importer = new LayerImportUtil(catalog, importer);
         this.importProcess = importer;
     }
 
