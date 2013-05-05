@@ -5,7 +5,17 @@ var Session = function(args) {
 
 	me.objects = {
 		view: {
-			activeParentMenu : 'storms'
+			activeParentMenu: 'storms',
+			storms: {
+				activeLayers: []
+			},
+			vulnerability: {
+				activeLayers: []
+			},
+			historical: {
+				activeLayers: []
+			}
+
 		},
 		map: {
 			baselayer: 'Not Yet Initialized',
@@ -32,13 +42,15 @@ var Session = function(args) {
 			return me.objects.map;
 		},
 		updateFromServer: function(args) {
-			var sid = CONFIG.session.getIncomingSid();
-			if (sid) {
-				var callbacks = args.callbacks || [];
-				LOG.info("Will try to load session '" + sid + "' from server");
-				this.getSession({
-					sid: sid,
-					callbacks: [
+			var sid = args.sid;
+			var callbacks = args.callbacks || {};
+			var successCallbacks = callbacks.success || [];
+			var errorCallbacks = callbacks.error || [];
+			LOG.info("Will try to load session '" + sid + "' from server");
+			me.getSession({
+				sid: sid,
+				callbacks: {
+					success: [
 						// Update the session from the server
 						function(session) {
 							if (session) {
@@ -48,13 +60,16 @@ var Session = function(args) {
 								LOG.info("Session not found on server.");
 							}
 						}
-					].union(callbacks)
-				});
-			}
+					].union(successCallbacks),
+					error: errorCallbacks
+				}
+			});
 		},
 		getSession: function(args) {
 			var sid = args.sid;
-			var callbacks = args.callbacks || [];
+			var callbacks = args.callbacks || {};
+			var successCallbacks = callbacks.success || [];
+			var errorCallbacks = callbacks.error || [];
 			var context = args.context;
 
 			if (sid) {
@@ -70,12 +85,18 @@ var Session = function(args) {
 							session = data.session;
 						}
 
-						if (callbacks && callbacks.length > 0) {
-							callbacks.each(function(callback) {
+						if (successCallbacks && successCallbacks.length > 0) {
+							successCallbacks.each(function(callback) {
 								callback.call(context, session);
 							});
 						}
-
+					},
+					error: function(data, textStatus, jqXHR) {
+						if (errorCallbacks && errorCallbacks.length > 0) {
+							errorCallbacks.each(function(callback) {
+								callback.call(context, null);
+							});
+						}
 					}
 				});
 			}
