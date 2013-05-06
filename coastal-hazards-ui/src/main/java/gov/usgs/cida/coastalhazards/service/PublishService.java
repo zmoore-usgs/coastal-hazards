@@ -5,7 +5,9 @@ import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.file.FileHelper;
 import gov.usgs.cida.coastalhazards.metadata.MetadataValidator;
+import gov.usgs.cida.utilities.communication.CSWHandler;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
+import gov.usgs.cida.utilities.xml.XMLUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -14,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.xpath.XPathExpressionException;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
@@ -24,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Node;
 
 /**
  *
@@ -34,14 +38,17 @@ public class PublishService extends HttpServlet {
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(PublishService.class);
 	private static DynamicReadOnlyProperties props = null;
 	private static GeoserverHandler geoserverHandler = null;
+    private static CSWHandler cswHandler = null;
 	private static String geoserverEndpoint = null;
 	private static String geoserverUsername = null;
 	private static String geoserverPassword = null;
 	private static String publishedWorkspaceName = null;
+    private static String cswEndpoint = null;
 	private static String GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.endpoint";
 	private static String GEOSERVER_USER_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.username";
 	private static String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
 	private static String PUBLISHED_WS_PARAM_CONFIG_KEY = "coastal-hazards.workspace.published";
+    private static String CSW_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.csw.endpoint";
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -53,6 +60,9 @@ public class PublishService extends HttpServlet {
 		geoserverPassword = props.getProperty(GEOSERVER_PASS_PARAM_CONFIG_KEY);
 		publishedWorkspaceName = props.getProperty(PUBLISHED_WS_PARAM_CONFIG_KEY, "published");
 		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
+        
+        cswEndpoint = props.getProperty(CSW_ENDPOINT_PARAM_CONFIG_KEY, "http://localhost/pycsw-wsgi");
+        cswHandler = new CSWHandler(cswEndpoint);
 	}
 
 	/**
@@ -93,28 +103,50 @@ public class PublishService extends HttpServlet {
             }
             // Do you stuff here
             MetadataValidator validator = new MetadataValidator(tempFile);
-			// Validate ...
-			// Do CSW stuff here ...
-			
-			// Time to publish ...
-			String workspaceName = layer.split(":")[0];
-			String layerName = layer.split(":")[1];
-			String storeName = layerName.toLowerCase().contains("result") ? "ch-output" : "ch-input";
-			HttpResponse wpsResponse = geoserverHandler.sendWPSRequest(createPublishRequest(workspaceName, storeName, layerName));
+            if (validator.validateFGDC()) {
+                // Do CSW stuff here ...
+                HttpResponse cswResponse = cswHandler.sendRequest("application/xml", createInsertRequest(IOUtils.toString(tempFile.toURI())));
+                String insertResponseContent = IOUtils.toString(cswResponse.getEntity().getContent());
+                
+                Node totalInserted = XMLUtils.createNodeUsingXPathExpression("//*[local-name()='totalInserted']/text()", insertResponseContent);
+                String nodeValue = totalInserted.getNodeValue();
+                if ("1".equals(nodeValue)) {
+                    // Time to publish ...
+                    String workspaceName = layer.split(":")[0];
+                    String layerName = layer.split(":")[1];
+                    String storeName = layerName.toLowerCase().contains("result") ? "ch-output" : "ch-input";
+                    HttpResponse wpsResponse = geoserverHandler.sendWPSRequest(createPublishRequest(workspaceName, storeName, layerName));
 
-			String httpResponse = IOUtils.toString(wpsResponse.getEntity().getContent());
+                    String httpResponse = IOUtils.toString(wpsResponse.getEntity().getContent());
 
-			responseMap.put("response", httpResponse);
-			if (httpResponse.toLowerCase().contains("exception")) {
-				RequestResponseHelper.sendErrorResponse(response, responseMap);
-			} else {
-				RequestResponseHelper.sendSuccessResponse(response, responseMap);
-			}
+                    responseMap.put("response", httpResponse);
+                    if (httpResponse.toLowerCase().contains("exception")) {
+                        RequestResponseHelper.sendErrorResponse(response, responseMap);
+                    } else {
+                        RequestResponseHelper.sendSuccessResponse(response, responseMap);
+                    }
+                }
+                else {
+                    responseMap.put("message", "Failed to insert metadata");
+                    RequestResponseHelper.sendErrorResponse(response, responseMap);
+                }
+            }
+            else {
+                responseMap.put("message", "Not a valid FGDC document");
+                RequestResponseHelper.sendErrorResponse(response, responseMap);
+            }
 
 		} catch (FileUploadException ex) {
 			responseMap.put("message", ex.getMessage());
 			RequestResponseHelper.sendErrorResponse(response, responseMap);
-		} finally {
+		} catch (IOException ex) {
+            responseMap.put("message", ex.getMessage());
+			RequestResponseHelper.sendErrorResponse(response, responseMap);
+        } catch (XPathExpressionException ex) {
+            responseMap.put("message", ex.getMessage());
+            RequestResponseHelper.sendErrorResponse(response, responseMap);
+        }
+        finally {
 			FileUtils.deleteQuietly(tempFile);
 		}
 
@@ -153,7 +185,6 @@ public class PublishService extends HttpServlet {
 				.append("<wps:Input>")
 				.append("<ows:Identifier>target-store</ows:Identifier>")
 				.append("<wps:Data>")
-				.append("<wps:Data>")
 				.append("<wps:LiteralData>").append(store.equals("ch-input") ? "Coastal Hazards Input" : "Coastal Hazards Output").append("</wps:LiteralData>")
 				.append("</wps:Data>")
 				.append("</wps:Input>")
@@ -166,6 +197,24 @@ public class PublishService extends HttpServlet {
 				.append("</wps:Execute>");
 		return response.toString();
 	}
+    
+    /**
+     * Will eventually want to run FGDC through xslt and insert modified ISO metadata
+     * 
+     * @param metadata FGDC metadata record for the time being
+     * @return 
+     */
+    private String createInsertRequest(String metadata) {
+        String insertThis = metadata.replaceAll("<\\?xml.*\\?>", "");
+        
+        StringBuilder response = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+                .append("<csw:Transaction xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:dc=\"http://www.purl.org/dc/elements/1.1/\" service=\"CSW\" version=\"2.0.2\">")
+                .append("<csw:Insert>")
+                .append(insertThis)
+                .append("</csw:Insert>")
+                .append("</csw:Transaction>");
+        return response.toString();
+    }
 
 	// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 	/**
