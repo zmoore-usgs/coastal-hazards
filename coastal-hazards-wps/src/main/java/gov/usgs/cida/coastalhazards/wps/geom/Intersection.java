@@ -203,6 +203,10 @@ public class Intersection {
     public int getTransectId() {
         return transectId;
     }
+    
+    public double getDistance() {
+        return distance;
+    }
 
     /**
      * Returns the desired intersection

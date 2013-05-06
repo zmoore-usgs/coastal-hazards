@@ -4,48 +4,6 @@ $(document).ready(function() {
         LOG4JS_LOG_THRESHOLD: CONFIG.development ? 'debug' : 'info'
     });
 
-    splashUpdate("Checking for browser compatibility...");
-    if (﻿$.browser.msie && parseInt($.browser.version) < ﻿ 9) {
-        var modal = $('<div />')
-                .addClass('modal fade')
-                .attr('id', 'browser-incompatibility-modal')
-                .append(
-                $('<div />')
-                .addClass('modal-header')
-                .append($('<button />')
-                .attr({
-            type: 'button',
-            'data-dismiss': 'modal',
-            'aria-hidden': 'true'
-        })
-                .html('&times;')
-                .addClass('close'))
-                .append($('<h3 />').html('Browser Compatibility Warning')))
-                .append($('<div />').addClass('modal-body')
-                .append('<p />')
-                .html(
-                'We have detected that you may be using a browser that is not ' +
-                'compatible with this application. This application can not be ' +
-                'garuanteed to work with your browser. The following browsers are ' +
-                'known to work with this application: ' +
-                '<ul>' +
-                '<li>Internet Explorer 9+</li>' +
-                '<li>Mozilla Firefox</li>' +
-                '<li>Google Chrome</li>' +
-                '<li>Safari</li>' +
-                '<li>Opera</li>' +
-                '</ul>'
-                ))
-                .append($('<div />').addClass('modal-footer')
-                .append($('<a />').attr({
-            'href': '#',
-            'data-dismiss': 'modal',
-            'aria-hidden': 'true'
-        }).addClass('btn').html('Close')));
-        $('body').append(modal);
-        $('#browser-incompatibility-modal').modal('show');
-    }
-
     $(document).ajaxStart(function() {
         LOG.trace('AJAX Call Started');
         $("#application-spinner").fadeIn();
@@ -125,7 +83,7 @@ $(document).ready(function() {
     // Utility class for the user interface
     splashUpdate("Initializing User Interface...");
     CONFIG.ui = new UI();
-
+		
     // Map interaction object. Holds the map and utilities 
     splashUpdate("Initializing Map...");
     CONFIG.map = new Map();
@@ -134,6 +92,7 @@ $(document).ready(function() {
     splashUpdate("Initializing OWS services...");
     CONFIG.ows = new OWS();
 
+	CONFIG.ui.appInit();
     var interrogateSessionResources = function() {
         var loadApp = function(data, textStatus, jqXHR) {
             CONFIG.ui.work_stages_objects.each(function(stage) {
@@ -142,10 +101,8 @@ $(document).ready(function() {
             });
 
             $('.qq-upload-button').addClass('btn btn-success');
-            $('#application-overlay').fadeOut({
-                complete : function() {
+            $('#application-overlay').fadeOut(2000,function() {
                     $('#application-overlay').remove();
-                }
             });
         };
 
@@ -176,9 +133,10 @@ $(document).ready(function() {
         callbacks: {
             success: [
                 function() {
-                    LOG.debug('OnReady.js:: WMS Capabilities retrieved for sample workspace');
+                    LOG.debug('OnReady.js:: WMS Capabilities retrieved for published workspace');
                     interrogateSessionResources();
-                    //                setupAjaxError();
+					CONFIG.ui.precacheImages();
+					setupAjaxError();
                 }
             ],
             error: [
@@ -188,6 +146,7 @@ $(document).ready(function() {
                         bodyHtml: 'The application could not interrogate the OWS server to get published layers.'
                     });
                     interrogateSessionResources();
+					CONFIG.ui.precacheImages();
                     //                setupAjaxError();
                 }
             ]

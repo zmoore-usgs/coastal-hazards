@@ -8,6 +8,7 @@ var Calculation = {
         'manage-tab' : '',
         'upload-button' : ''
     },
+			
     appInit : function() {
     },
     
@@ -71,7 +72,8 @@ var Calculation = {
                     maxGetUrlLength: 2048
                 },
                 singleTile: true, 
-                ratio: 1
+                ratio: 1,
+				displayInLayerSwitcher : false
             });
         intersections.type="intersections";	
         CONFIG.map.getMap().addLayer(intersections);

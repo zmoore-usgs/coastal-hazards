@@ -116,11 +116,11 @@ var Util =  {
         })
         .each(function(property) {
             layerColumns[property] = '';
-        })
+        });
                 
         layerColumns.keys(function(columnName) {
             var eqColName = caller.mandatoryColumns.find(function(column) {
-                return column.toLowerCase() == columnName.toLowerCase()
+                return column.toLowerCase() == columnName.toLowerCase();
             })
             if (eqColName) {
                 layerColumns[columnName] = eqColName;

@@ -53,16 +53,16 @@
         <jsp:include page="components/application-overlay.jsp"></jsp:include>
 
         <div class="container-fluid">
-            <div class="row-fluid">
+            <div class="row-fluid" id="header-row">
                 <jsp:include page="template/USGSHeader.jsp">
                     <jsp:param name="relPath" value="" />
                     <jsp:param name="header-class" value="" />
                     <jsp:param name="site-title" value="USGS Coastal Change Hazards" />
                 </jsp:include>
-            <jsp:include page="components/app-navbar.jsp"></jsp:include>
+				<jsp:include page="components/app-navbar.jsp"></jsp:include>
             </div>
             
-            <div class="row-fluid">
+            <div class="row-fluid" id="content-row">
                 <!-- NAV -->
                 <div class="span1" id='nav-list'>
                     <ul id="stage-select-tablist" class="nav nav-pills nav-stacked">
@@ -76,7 +76,7 @@
                 </div>
 
                 <!-- Toolbox -->
-                <div class="span4">
+                <div class="span4" id="toolbox-span">
                     <div id="toolbox-well" class="well well-small tab-content">
 
                         <!-- Shorelines -->
@@ -91,7 +91,7 @@
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="shorelines-view-tab">
-                                    <select id="shorelines-list" class="feature-list" multiple="multiple"></select>
+                                    <select id="shorelines-list" class="feature-list"></select>
                                         <div class="tabbable">
                                             <ul class="nav nav-tabs" id="shoreline-table-navtabs">
                                             </ul>
@@ -290,7 +290,7 @@
                         <!-- Calculation -->
                         <div class="tab-pane  container-fluid" id="calculation">
                             <div class="row-fluid">
-                                <div class="span4"><h3>Calculation</h3></div>
+                                <div class="span4"><h3>Review/Calculate</h3></div>
                                 <div class="span8" id="calculation-alert-container"></div>
                             </div>
                             <ul class="nav nav-tabs" id="action-intersections-tablist">
@@ -363,15 +363,15 @@
                 </div>
 
                 <!-- MAP -->
-                <div class="span7">
+                <div class="span7" id="map-span">
                     <div id="map-well" class="well well-small tab-content">
                         <div id="map"></div>
                     </div>
                 </div>
 
             </div>
-            <div class="row-fluid">
-                <div id="application-alert-container" class="span11"></div>
+            <div class="row-fluid" id="alert-row">
+                <div id="application-alert-container" class="span11 offset1"></div>
             </div>
 
             <div class="row-fluid" id="footer-row">
@@ -385,11 +385,6 @@
         </div>
 		
 		<%-- Stuff that isn't shown in the application but is used by JS --%>
-		<div id="plot-legend-wrapper" class="hide">
-			<div id="plot-legend-container" class="container-fluid">
-				<div id="plot-legend-row" class="row-fluid">&nbsp;</div>
-			</div>
-		</div>
         <div id="modal-window" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-window-label" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -469,7 +464,11 @@
     <script type="text/javascript">splashUpdate("Loading Toggle plugin...");</script>
     <link type="text/css" rel="stylesheet" href="js/bootstrap-switch/static/stylesheets/bootstrapSwitch.css" />
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
-
+	<script type="text/javascript">splashUpdate("Loading Intro Module...");</script>
+	<%-- For now, stick with full version. Minified version seems gimped --%>
+    <jsp:include page="js/bootstro/bootstro.jsp">
+        <jsp:param name="debug-qualifier" value="true" />
+    </jsp:include>
 	<script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
 	<link type="text/css" rel="stylesheet" href="css/custom.css" />
 	<script type="text/javascript">splashUpdate("Loading Main module...");</script>
