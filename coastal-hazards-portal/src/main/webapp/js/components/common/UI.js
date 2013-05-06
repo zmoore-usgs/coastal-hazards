@@ -25,6 +25,11 @@ var UI = function(args) {
 				$('#content-row').css('min-height', contentRowHeight);
 				$('#map-wrapper').css('min-height', contentRowHeight);
 				me.mapdiv.css('height', contentRowHeight);
+
+				// Move the zoom control over to the right
+				$('.olControlZoom').css('left', me.mapdiv.width() - $('.olControlZoom').width() - 20);
+				// Move the layer switcher control down a bit to make room for zoom control
+				$('.olControlLayerSwitcher').css('top', 60);
 			});
 		},
 		popoverClickHandler: function(e) {

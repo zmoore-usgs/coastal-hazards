@@ -35,3 +35,11 @@ img {
 .popover {
 	max-width : 2000px !important;
 }
+
+.baseLayersDiv > .labelSpan {
+	display : inline;
+}
+.dataLayersDiv > .labelSpan {
+	display : inline;
+}
+

@@ -498,7 +498,12 @@ public class GeoserverHandler {
 
         return baos.toString();
     }
+	
 
+    public HttpResponse sendWPSRequest(String content) throws FileNotFoundException, IOException {
+		return sendRequest("/wps", "POST", "application/xml", content);
+	}
+	
     HttpResponse sendRequest(String path, String requestMethod, String contentType, File content) throws FileNotFoundException, IOException {
         HttpPost post;
         HttpClient httpClient = new DefaultHttpClient();
@@ -522,7 +527,7 @@ public class GeoserverHandler {
         }
     }
 
-    HttpResponse sendRequest(String path, String requestMethod, String contentType, String content)
+    public HttpResponse sendRequest(String path, String requestMethod, String contentType, String content)
             throws IOException {
 
         String fullURL = url + path;

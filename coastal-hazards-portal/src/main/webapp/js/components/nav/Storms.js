@@ -237,7 +237,8 @@ var Storms = function(args) {
 						},
 				{
 					projection: 'EPSG:3857',
-					isBaseLayer: false
+					isBaseLayer: false,
+					displayInLayerSwitcher: false
 
 				});
 

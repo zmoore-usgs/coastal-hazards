@@ -80,4 +80,5 @@ $(document).ready(function() {
 		$('#application-overlay').remove();
 		splashUpdate = undefined;
 	});
+	
 });
