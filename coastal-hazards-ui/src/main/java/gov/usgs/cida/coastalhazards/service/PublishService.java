@@ -185,7 +185,6 @@ public class PublishService extends HttpServlet {
 				.append("<wps:Input>")
 				.append("<ows:Identifier>target-store</ows:Identifier>")
 				.append("<wps:Data>")
-				.append("<wps:Data>")
 				.append("<wps:LiteralData>").append(store.equals("ch-input") ? "Coastal Hazards Input" : "Coastal Hazards Output").append("</wps:LiteralData>")
 				.append("</wps:Data>")
 				.append("</wps:Input>")
