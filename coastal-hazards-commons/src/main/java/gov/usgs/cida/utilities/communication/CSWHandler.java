@@ -13,6 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
@@ -24,7 +25,7 @@ public class CSWHandler {
     private String url;
     
     public CSWHandler(String url) {
-        this.url = fixURL(url);
+        this.url = url;
     }
     
     public HttpResponse sendRequest(String contentType, String content) throws FileNotFoundException, IOException {
@@ -32,34 +33,11 @@ public class CSWHandler {
         HttpClient httpClient = new DefaultHttpClient();
 
         post = new HttpPost(url);
+        AbstractHttpEntity entity = new StringEntity(content);
+        
+        post.setEntity(entity);
+        HttpResponse response = httpClient.execute(post);
 
-        ByteArrayInputStream wpsRequestInputStream = null;
-        try {
-            wpsRequestInputStream = new ByteArrayInputStream(content.getBytes());
-
-            AbstractHttpEntity entity = new InputStreamEntity(wpsRequestInputStream, content.length());
-
-            post.setEntity(entity);
-
-            HttpResponse response = httpClient.execute(post);
-
-            return response;
-
-        } finally {
-            IOUtils.closeQuietly(wpsRequestInputStream);
-        }
-    }
-    
-    /**
-     * Ensure url ends with a '/'
-     */
-    static String fixURL(String url) {
-        String localUrl = "";
-        Matcher matcher = Pattern.compile("/$").matcher(url);
-        if (!matcher.matches()) {
-            localUrl = url + "/";
-        }
-
-        return localUrl;
+        return response;
     }
 }

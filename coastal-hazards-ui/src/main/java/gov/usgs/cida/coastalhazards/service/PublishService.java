@@ -108,7 +108,7 @@ public class PublishService extends HttpServlet {
                 HttpResponse cswResponse = cswHandler.sendRequest("application/xml", createInsertRequest(IOUtils.toString(tempFile.toURI())));
                 String insertResponseContent = IOUtils.toString(cswResponse.getEntity().getContent());
                 
-                Node totalInserted = XMLUtils.createNodeUsingXPathExpression("/TransactionResponse/TransactionSummary/totalInserted", insertResponseContent);
+                Node totalInserted = XMLUtils.createNodeUsingXPathExpression("//*[local-name()='totalInserted']/text()", insertResponseContent);
                 String nodeValue = totalInserted.getNodeValue();
                 if ("1".equals(nodeValue)) {
                     // Time to publish ...
@@ -206,10 +206,12 @@ public class PublishService extends HttpServlet {
      * @return 
      */
     private String createInsertRequest(String metadata) {
+        String insertThis = metadata.replaceAll("<\\?xml.*\\?>", "");
+        
         StringBuilder response = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
                 .append("<csw:Transaction xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:dc=\"http://www.purl.org/dc/elements/1.1/\" service=\"CSW\" version=\"2.0.2\">")
                 .append("<csw:Insert>")
-                .append(metadata)
+                .append(insertThis)
                 .append("</csw:Insert>")
                 .append("</csw:Transaction>");
         return response.toString();
