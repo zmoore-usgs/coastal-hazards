@@ -560,7 +560,7 @@ public class GeoserverHandler {
             request.addHeader("Content-Type", contentType);
         }
 
-        if (StringUtils.isBlank(content) && request instanceof HttpEntityEnclosingRequestBase) {
+        if (StringUtils.isNotBlank(content) && request instanceof HttpEntityEnclosingRequestBase) {
             StringEntity contentEntity = new StringEntity(content);
             ((HttpEntityEnclosingRequestBase) request).setEntity(contentEntity);
         }
