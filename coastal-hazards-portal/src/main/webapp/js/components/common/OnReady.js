@@ -62,7 +62,7 @@ $(document).ready(function() {
 							function() {
 								splashUpdate("Applying session information to application...");
 								initAllStages();
-								[CONFIG.map, CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
+								[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical, CONFIG.map].each(function(item) {
 									item.updateFromSession();
 								});
 							}

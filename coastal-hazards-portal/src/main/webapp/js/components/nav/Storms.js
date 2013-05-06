@@ -60,6 +60,7 @@ var Storms = function(args) {
 			me.visibleLayers = [];
 		},
 		updateFromSession: function() {
+			LOG.info('Storms.js::updateFromSession()');
 			if (CONFIG.session.objects.view.activeParentMenu === me.name) {
 				if (!me.collapseDiv.find('>:last-child').hasClass('in')) {
 					me.collapseDiv.find('>:last-child').addClass('in');
@@ -72,20 +73,13 @@ var Storms = function(args) {
 								var activeLayers = CONFIG.session.objects.view.storms.activeLayers;
 								if (activeLayers.length) {
 									me.removeBoxLayer();
-									var bounds = new OpenLayers.Bounds();
 									activeLayers.each(function(layer) {
-										var wmsLayer = CONFIG.ows.servers[me.serverName].data.wms.capabilities.object.capability.layers.find(function(l) {
-											return l.title === layer.title;
-										});
 										me.displayData({
 											'title': layer.title,
 											'name': layer.name,
 											'layers': layer.layers
 										});
-										bounds.extend(new OpenLayers.Bounds(wmsLayer.bbox['EPSG:3857'].bbox));
 									});
-									CONFIG.map.getMap().zoomToExtent(bounds);
-
 								}
 							}
 						],
