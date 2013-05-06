@@ -465,25 +465,39 @@ public class DbaseFileWriter {
             }       
         }
         
-        public String getFieldString(int size, int decimalPlaces, Number n) {
-            buffer.delete(0, buffer.length());
-
-            if (n != null) {
-                numFormat.setMaximumFractionDigits(decimalPlaces);
-                numFormat.setMinimumFractionDigits(decimalPlaces);
-                numFormat.format(n, buffer, new FieldPosition(
-                        NumberFormat.INTEGER_FIELD));
+        public String getFieldString(int size, int decimalPlaces /* ignored */, Number n) {
+            double d = n.doubleValue();
+            double da = d < 0d ? 0d - d : d;
+            int precision = size;
+            if (d < 0) {
+                precision -= 1; // negative sign
             }
-
-            int diff = size - buffer.length();
-            if (diff >= 0) {
-                while (diff-- > 0) {
-                    buffer.insert(0, ' ');
+            boolean scientificNotation = (da >= Math.pow(10, precision - 2) || da <= 1e-4 /*Math.pow(10, -4)*/);
+            if (scientificNotation) {
+                precision -= 2; // e.g. leading [1-9].
+                precision -= 2; // e.g. trainling [Ee][+-]
+                if (da < 1d) {
+                    if (da >= 1E-99) {
+                        precision -= 2;
+                    } else {
+                        precision -= 3;
+                    } 
+                } else {
+                     if (da < 1E100) {
+                        precision -= 2;
+                    } else {
+                        precision -= 3;
+                    }
                 }
+
             } else {
-                buffer.setLength(size);
+                precision -= (int)Math.max(2, Math.floor(Math.log10(da)) + 2);
             }
-            return buffer.toString();
+            return String.format(
+                    scientificNotation ? 
+                        String.format("%%%d.%de", size, precision) :
+                        String.format("%%%d.%df", size, precision),
+                    d);
         }
     }
 
