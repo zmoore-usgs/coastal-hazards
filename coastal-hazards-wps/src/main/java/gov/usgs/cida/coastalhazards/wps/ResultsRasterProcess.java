@@ -7,7 +7,9 @@ import gov.usgs.cida.coastalhazards.util.Constants;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
+import java.awt.Point;
 import java.awt.Transparency;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -62,11 +64,13 @@ public class ResultsRasterProcess implements GeoServerProcess {
             @DescribeParameter(name = "bbox", min = 0, max = 1) ReferencedEnvelope bbox,
             @DescribeParameter(name = "width", min = 1, max = 1) Integer width,
             @DescribeParameter(name = "height", min = 1, max = 1) Integer height,
-            @DescribeParameter(name = "invert", min = 0, max = 1) Boolean invert) throws Exception {
+            @DescribeParameter(name = "invert", min = 0, max = 1) Boolean invert,
+            @DescribeParameter(name = "minimum-length-pixels", min = 0, max = 1) Integer minimumLengthPixels) throws Exception {
 
             if (StringUtils.isBlank(attribute)) { attribute = "LRR"; } 
             if (invert == null) { invert = (attribute.equalsIgnoreCase("LRR")); }
-        return new Process(features, attribute, bbox, width, height, invert).execute();
+            if (minimumLengthPixels == null) { minimumLengthPixels = 3; }
+        return new Process(features, attribute, bbox, width, height, invert, minimumLengthPixels).execute();
 
     }
 
@@ -80,6 +84,9 @@ public class ResultsRasterProcess implements GeoServerProcess {
         private final int coverageHeight;
         
         private final boolean invert;
+        
+        private final int mimimumLengthPixels;
+        private double minimumLengthMeters;
         
         private GridGeometry2D gridGeometry;
         private LineSegmentTransform lineSegmentTransform;
@@ -96,13 +103,15 @@ public class ResultsRasterProcess implements GeoServerProcess {
                 ReferencedEnvelope coverageEnvelope,
                 int coverageWidth,
                 int coverageHeight,
-                boolean invert) {
+                boolean invert,
+                int minimumLengthPixels) {
             this.featureCollection = featureCollection;
             this.attributeName = className;
             this.coverageEnvelope = coverageEnvelope;
             this.coverageWidth = coverageWidth;
             this.coverageHeight = coverageHeight;
             this.invert = invert;
+            this.mimimumLengthPixels = minimumLengthPixels;
         }
 
         private GridCoverage2D execute() throws Exception {
@@ -138,13 +147,26 @@ public class ResultsRasterProcess implements GeoServerProcess {
 
             try {
                 checkTransform();
+                
+                gridGeometry = new GridGeometry2D(new GridEnvelope2D(0, 0, coverageWidth, coverageHeight), coverageEnvelope);
+                
+                // NOTE:  assumes transformation results in equal length scales across both axes!
+                if (mimimumLengthPixels > 0) {
+                    Point2D s0 = new Point(0, 0);
+                    Point2D d0 = gridGeometry.getGridToCRS2D().transform(s0, null);
+                    Point2D s1 = new Point(mimimumLengthPixels, 0);
+                    Point2D d1 = gridGeometry.getGridToCRS2D().transform(s1, null);
+                    minimumLengthMeters = d1.distance(d0);
+                } else {
+                    minimumLengthMeters = -1;
+                }
+                
             } catch (TransformException ex) {
                 throw new RuntimeException("Unable to transform", ex);
             }
 
             createImage();
 
-            gridGeometry = new GridGeometry2D(new GridEnvelope2D(0, 0, coverageWidth, coverageHeight), coverageEnvelope);
 
             String featureCollectionId = featureCollection.getSchema().getName().getURI();
 
@@ -171,7 +193,7 @@ public class ResultsRasterProcess implements GeoServerProcess {
                     }
 
                     Object baselineIdObject = feature.getAttribute(Constants.BASELINE_ID_ATTR);
-                    // this is need for older files w/o baseline ID, null is a valid map key
+                    // this is needed for older files w/o baseline ID, null is a valid map key
                     Integer baselineId = baselineIdObject instanceof Number ? ((Number)baselineIdObject).intValue() : null;
                     LinkedList<SimpleFeature> baselineFeatures = baselineFeaturesMap.get(baselineId);
                     if (baselineFeatures == null) {
@@ -285,25 +307,33 @@ public class ResultsRasterProcess implements GeoServerProcess {
             double nsd = nsdObject instanceof Number ? ((Number)nsdObject).doubleValue() : Double.NaN;
             
             if (sce == sce && nsd == nsd) {
-                 return extractShorelineInterect(segment, nsd, sce);
+                 return extractShorelineInterectAndCheckLength(segment, nsd, sce);
             } else {
                 if (sce != sce && nsd != nsd) {
-                    return segment;
+                    return extractShorelineInterectAndCheckLength(segment, 0, length);
                 }
                 if (sce != sce) {
                     sce = length - nsd;
                 } else /* if nsd != nsd */ {
                     nsd = length - sce;
                 }
-                return extractShorelineInterect(segment, nsd, sce);
+                return extractShorelineInterectAndCheckLength(segment, nsd, sce);
             }
         }
         
-        private LineSegment extractShorelineInterect(LineSegment transect, double nsd, double sce) {
-            double length = transect.getLength();
-            return new LineSegment(
-                         transect.pointAlong(nsd / length),
-                         transect.pointAlong((nsd + sce ) / length));
+        private LineSegment extractShorelineInterectAndCheckLength(LineSegment transect, double nsd, double sce) {
+            double tl = transect.getLength();
+            LineSegment shorelineIntersect =  new LineSegment(
+                     transect.pointAlong(nsd / tl),
+                     transect.pointAlong((nsd + sce ) / tl));
+            double shorelineIntersectLength = shorelineIntersect.getLength();
+            if (minimumLengthMeters > 0 && shorelineIntersectLength < minimumLengthMeters) {
+                double halfRatio = (minimumLengthMeters / shorelineIntersectLength) / 2;
+                shorelineIntersect = new LineSegment(
+                        shorelineIntersect.pointAlong(0 - halfRatio),
+                        shorelineIntersect.pointAlong(1 + halfRatio));
+            }
+            return shorelineIntersect;
         }
         
         private Color extractColor(SimpleFeature feature) {
