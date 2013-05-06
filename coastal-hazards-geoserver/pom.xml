@@ -75,6 +75,11 @@
             <version>${gs.version}-1</version>
             <type>war</type>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+        </dependency>
     </dependencies>
 
     <build>
