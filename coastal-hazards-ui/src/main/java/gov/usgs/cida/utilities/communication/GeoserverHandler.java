@@ -501,7 +501,7 @@ public class GeoserverHandler {
 	
 
     public HttpResponse sendWPSRequest(String content) throws FileNotFoundException, IOException {
-		return sendRequest("/wps", "POST", "application/xml", content);
+		return sendRequest("wps", "POST", "application/xml", content);
 	}
 	
     HttpResponse sendRequest(String path, String requestMethod, String contentType, File content) throws FileNotFoundException, IOException {
