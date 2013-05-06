@@ -61,6 +61,7 @@ var Historical = function(args) {
 			me.visibleLayers = [];
 		},
 		updateFromSession: function() {
+			LOG.info('Historical.js::updateFromSession()');
 			if (CONFIG.session.objects.view.activeParentMenu === me.name) {
 				if (!me.collapseDiv.find('>:last-child').hasClass('in')) {
 					me.collapseDiv.find('>:last-child').addClass('in');
@@ -74,7 +75,6 @@ var Historical = function(args) {
 								var activeLayers = CONFIG.session.objects.view.historical.activeLayers;
 								if (activeLayers.length) {
 									me.removeBoxLayer();
-									var bounds = new OpenLayers.Bounds();
 									activeLayers.each(function(layer) {
 										var layer = CONFIG.ows.servers[me.serverName].data.wms.capabilities.object.capability.layers.find(function(l) {
 											return l.name === layer.name;
@@ -84,9 +84,7 @@ var Historical = function(args) {
 											'name': layer.name,
 											'layers': layer.layers
 										});
-										bounds.extend(new OpenLayers.Bounds(layer.bbox['EPSG:900913'].bbox));
 									});
-									CONFIG.map.getMap().zoomToExtent(bounds);
 
 								}
 							}

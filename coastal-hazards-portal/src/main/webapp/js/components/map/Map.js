@@ -155,6 +155,7 @@ var Map = function(args) {
 			return me.map;
 		},
 		updateFromSession: function() {
+			LOG.info('Map.js::updateFromSession()');
 			me.map.events.un({'moveend': me.moveendCallback});
 			var mapConfig = CONFIG.session.objects.map;
 			this.getMap().setCenter([mapConfig.center.lon, mapConfig.center.lat]);
