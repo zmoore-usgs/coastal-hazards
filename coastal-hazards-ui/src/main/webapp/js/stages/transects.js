@@ -794,7 +794,7 @@ var Transects = {
 									LOG.error(errorText);
 									
 									// This is a dopey way of doing this...
-									if (errorText.toLowerCase().contains('baselines cannot intersect shorelines')) {
+									if (errorText.toLowerCase().has('baselines cannot intersect shorelines')) {
 										msg = 'Transect calculation failed. Baselines cannot intersect shorelines.';
 									}
 									
