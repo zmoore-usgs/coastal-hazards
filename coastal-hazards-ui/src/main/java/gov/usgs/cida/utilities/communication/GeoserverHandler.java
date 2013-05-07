@@ -65,8 +65,8 @@ public class GeoserverHandler {
     private static final String PARAM_TEXT_XML = "text/xml";
     private static final String PARAM_DOT_XML = ".xml";
     private static final String PARAM_DATASTORES = "/datastores/";
-	private static final String INPUT_STORE_NAME = "ch_input";
-	private static final String OUTPUT_STORE_NAME = "ch_output";
+	private static final String INPUT_STORE_NAME = "ch-input";
+	private static final String OUTPUT_STORE_NAME = "ch-output";
     private static final int PARAM_SERVER_OK = 200;
     private static final int PARAM_SERVER_NOT_FOUND = 404;
     private String url;
@@ -488,16 +488,14 @@ public class GeoserverHandler {
 
         HttpResponse response = sendRequest(path, PARAM_GET, null, "");
 
-        ByteArrayOutputStream baos = null;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            baos = new ByteArrayOutputStream();
-
             HttpEntity entity = response.getEntity();
             entity.writeTo(baos);
         } finally {
-            baos.close();
+			IOUtils.closeQuietly(baos);
         }
-
+		
         return baos.toString();
     }
 	
@@ -769,7 +767,7 @@ public class GeoserverHandler {
         //TODO- Either copy the projection files to the shapefile directory or create them programatically
         // using Geotools
         String googlePrj = "PROJCS[\"WGS84 / Google Mercator\",  GEOGCS[\"WGS 84\",  DATUM[\"World Geodetic System 1984\",  SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]],  AUTHORITY[\"EPSG\",\"6326\"]],  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]],  UNIT[\"degree\", 0.017453292519943295],  AXIS[\"Longitude\", EAST],  AXIS[\"Latitude\", NORTH],  AUTHORITY[\"EPSG\",\"4326\"]],  PROJECTION[\"Mercator_1SP\"],  PARAMETER[\"semi_minor\", 6378137.0],  PARAMETER[\"latitude_of_origin\", 0.0],  PARAMETER[\"central_meridian\", 0.0],  PARAMETER[\"scale_factor\", 1.0],  PARAMETER[\"false_easting\", 0.0],  PARAMETER[\"false_northing\", 0.0],  UNIT[\"m\", 1.0],  AXIS[\"x\", EAST],  AXIS[\"y\", NORTH],  AUTHORITY[\"EPSG\",\"900913\"]]";
-        String wgs84Prj = "GEOGCS[\"GCS_WGS_1984\",  DATUM[\"D_WGS_1984\",  SPHEROID[\"WGS_1984\", 6378137.0, 298.257223563]],  PRIMEM[\"Greenwich\", 0.0],  UNIT[\"degree\", 0.017453292519943295],  AXIS[\"Longitude\", EAST],  AXIS[\"Latitude\", NORTH]]";
+//        String wgs84Prj = "GEOGCS[\"GCS_WGS_1984\",  DATUM[\"D_WGS_1984\",  SPHEROID[\"WGS_1984\", 6378137.0, 298.257223563]],  PRIMEM[\"Greenwich\", 0.0],  UNIT[\"degree\", 0.017453292519943295],  AXIS[\"Longitude\", EAST],  AXIS[\"Latitude\", NORTH]]";
         IOUtils.write(googlePrj, prjFileOutputStream, "UTF-8");
         prjFileOutputStream.close();
 
