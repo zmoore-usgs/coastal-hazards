@@ -50,9 +50,9 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.NodeList;
 
 /**
- * Manage GeoServer with its REST interface.
+ * Manage GeoServer 
  *
- * @see http://docs.geoserver.org/latest/en/user/restconfig/rest-config-api.html
+ * @author isuftin, jiwalker
  */
 public class GeoserverHandler {
 
@@ -65,6 +65,8 @@ public class GeoserverHandler {
     private static final String PARAM_TEXT_XML = "text/xml";
     private static final String PARAM_DOT_XML = ".xml";
     private static final String PARAM_DATASTORES = "/datastores/";
+	private static final String INPUT_STORE_NAME = "ch_input";
+	private static final String OUTPUT_STORE_NAME = "ch_output";
     private static final int PARAM_SERVER_OK = 200;
     private static final int PARAM_SERVER_NOT_FOUND = 404;
     private String url;
@@ -501,7 +503,7 @@ public class GeoserverHandler {
 	
 
     public HttpResponse sendWPSRequest(String content) throws FileNotFoundException, IOException {
-		return sendRequest("wps", "POST", "application/xml", content);
+		return sendRequest("wps", PARAM_POST, PARAM_TEXT_XML, content);
 	}
 	
     HttpResponse sendRequest(String path, String requestMethod, String contentType, File content) throws FileNotFoundException, IOException {
@@ -634,13 +636,11 @@ public class GeoserverHandler {
         GeoServerRESTPublisher publisher = gsrm.getPublisher();
         GeoServerRESTDatastoreManager dsm = gsrm.getDatastoreManager();
 
-        String inputStorename = "ch-input";
-        String outputStorename = "ch-output";
         String workspaceLocation = geoserverDataDir + "/workspaces/" + workspace;
 
         File workspaceDirectory = new File(workspaceLocation);
-        File chInputDirectory = new File(workspaceDirectory, inputStorename);
-        File chOutputDirectory = new File(workspaceDirectory, outputStorename);
+        File chInputDirectory = new File(workspaceDirectory, INPUT_STORE_NAME);
+        File chOutputDirectory = new File(workspaceDirectory, OUTPUT_STORE_NAME);
         List<String> workspaceNames = reader.getWorkspaceNames();
         boolean workspaceExists = workspaceNames.contains(workspace);
 
@@ -651,8 +651,8 @@ public class GeoserverHandler {
         if (!workspaceExists) {
             URI namespaceURI = new URI("gov.usgs.cida.ch." + workspace);
             publisher.createWorkspace(workspace, namespaceURI);
-            dsm.create(workspace, new GSShapefileDatastoreEncoder(inputStorename, chInputDirectory.toURI().toURL()));
-            dsm.create(workspace, new GSShapefileDatastoreEncoder(outputStorename, chOutputDirectory.toURI().toURL()));
+            dsm.create(workspace, new GSShapefileDatastoreEncoder(INPUT_STORE_NAME, chInputDirectory.toURI().toURL()));
+            dsm.create(workspace, new GSShapefileDatastoreEncoder(OUTPUT_STORE_NAME, chOutputDirectory.toURI().toURL()));
         }
     }
 
@@ -780,9 +780,8 @@ public class GeoserverHandler {
         GeoServerRESTManager gsrm = new GeoServerRESTManager(new URL(this.url), this.user, this.password);
         GeoServerRESTPublisher publisher = gsrm.getPublisher();
         boolean success = publisher.unpublishFeatureType(workspace, store, layer);
-        boolean storeReloaded = false;
         if (success) {
-            storeReloaded = publisher.reloadStore(workspace, store, GeoServerRESTPublisher.StoreType.DATASTORES);
+            publisher.reloadStore(workspace, store, GeoServerRESTPublisher.StoreType.DATASTORES);
         }
         return success;
     }

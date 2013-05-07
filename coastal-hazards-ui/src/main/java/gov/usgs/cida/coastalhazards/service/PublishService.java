@@ -31,7 +31,7 @@ import org.w3c.dom.Node;
 
 /**
  *
- * @author isuftin
+ * @author isuftin, jiwalker
  */
 public class PublishService extends HttpServlet {
 
@@ -44,11 +44,11 @@ public class PublishService extends HttpServlet {
 	private static String geoserverPassword = null;
 	private static String publishedWorkspaceName = null;
     private static String cswEndpoint = null;
-	private static String GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.endpoint";
-	private static String GEOSERVER_USER_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.username";
-	private static String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
-	private static String PUBLISHED_WS_PARAM_CONFIG_KEY = "coastal-hazards.workspace.published";
-    private static String CSW_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.csw.endpoint";
+	private static final String GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.endpoint";
+	private static final String GEOSERVER_USER_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.username";
+	private static final String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
+	private static final String PUBLISHED_WS_PARAM_CONFIG_KEY = "coastal-hazards.workspace.published";
+    private static final String CSW_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.csw.endpoint";
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -60,7 +60,6 @@ public class PublishService extends HttpServlet {
 		geoserverPassword = props.getProperty(GEOSERVER_PASS_PARAM_CONFIG_KEY);
 		publishedWorkspaceName = props.getProperty(PUBLISHED_WS_PARAM_CONFIG_KEY, "published");
 		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
-        
         cswEndpoint = props.getProperty(CSW_ENDPOINT_PARAM_CONFIG_KEY, "http://localhost/pycsw-wsgi");
         cswHandler = new CSWHandler(cswEndpoint);
 	}
@@ -149,8 +148,6 @@ public class PublishService extends HttpServlet {
         finally {
 			FileUtils.deleteQuietly(tempFile);
 		}
-
-
 	}
 
 	private String createPublishRequest(String workspace, String store, String layer) {
