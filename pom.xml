@@ -219,6 +219,11 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.4</version>
+            </dependency>
 			<dependency>
 				<groupId>gov.usgs.cida.jslibs</groupId>
 				<artifactId>usgs-template</artifactId>
