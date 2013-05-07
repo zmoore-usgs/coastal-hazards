@@ -6,10 +6,6 @@
 	<bean id="nearestPointOnLine" class="gov.usgs.cida.coastalhazards.wps.NearestPointOnLineProcess" />
 	<bean id="plainTextPPIO" class="gov.usgs.cida.coastalhazards.wps.ppio.PlainTextPPIO" />
 	
-	<bean id="sweeper" class="gov.usgs.cida.coastalhazards.util.GeoserverSweeperStartupListener">
-		<constructor-arg index="0" ref="catalog"/>
-	</bean>
-	
 	<bean id="generateTransects" class="gov.usgs.cida.coastalhazards.wps.CreateTransectsAndIntersectionsProcess">
 		<constructor-arg index="0" ref="importProcess"/>
 		<constructor-arg index="1" ref="catalog"/>
@@ -38,5 +34,9 @@
 		<constructor-arg index="0" ref="catalog"/>
 		<constructor-arg index="1" ref="importProcess"/>
 	</bean>
+<!--	
+	<bean id="sweeper" class="gov.usgs.cida.coastalhazards.util.GeoserverSweeperStartupListener">
+		<constructor-arg index="0" ref="catalog"/>
+	</bean>-->
     
 </beans>
