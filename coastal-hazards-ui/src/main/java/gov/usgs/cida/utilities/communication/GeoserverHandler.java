@@ -50,9 +50,9 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.NodeList;
 
 /**
- * Manage GeoServer with its REST interface.
+ * Manage GeoServer 
  *
- * @see http://docs.geoserver.org/latest/en/user/restconfig/rest-config-api.html
+ * @author isuftin, jiwalker
  */
 public class GeoserverHandler {
 
@@ -65,6 +65,8 @@ public class GeoserverHandler {
     private static final String PARAM_TEXT_XML = "text/xml";
     private static final String PARAM_DOT_XML = ".xml";
     private static final String PARAM_DATASTORES = "/datastores/";
+	private static final String INPUT_STORE_NAME = "ch-input";
+	private static final String OUTPUT_STORE_NAME = "ch-output";
     private static final int PARAM_SERVER_OK = 200;
     private static final int PARAM_SERVER_NOT_FOUND = 404;
     private String url;
@@ -486,22 +488,20 @@ public class GeoserverHandler {
 
         HttpResponse response = sendRequest(path, PARAM_GET, null, "");
 
-        ByteArrayOutputStream baos = null;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            baos = new ByteArrayOutputStream();
-
             HttpEntity entity = response.getEntity();
             entity.writeTo(baos);
         } finally {
-            baos.close();
+			IOUtils.closeQuietly(baos);
         }
-
+		
         return baos.toString();
     }
 	
 
     public HttpResponse sendWPSRequest(String content) throws FileNotFoundException, IOException {
-		return sendRequest("wps", "POST", "application/xml", content);
+		return sendRequest("wps", PARAM_POST, PARAM_TEXT_XML, content);
 	}
 	
     HttpResponse sendRequest(String path, String requestMethod, String contentType, File content) throws FileNotFoundException, IOException {
@@ -634,13 +634,11 @@ public class GeoserverHandler {
         GeoServerRESTPublisher publisher = gsrm.getPublisher();
         GeoServerRESTDatastoreManager dsm = gsrm.getDatastoreManager();
 
-        String inputStorename = "ch-input";
-        String outputStorename = "ch-output";
         String workspaceLocation = geoserverDataDir + "/workspaces/" + workspace;
 
         File workspaceDirectory = new File(workspaceLocation);
-        File chInputDirectory = new File(workspaceDirectory, inputStorename);
-        File chOutputDirectory = new File(workspaceDirectory, outputStorename);
+        File chInputDirectory = new File(workspaceDirectory, INPUT_STORE_NAME);
+        File chOutputDirectory = new File(workspaceDirectory, OUTPUT_STORE_NAME);
         List<String> workspaceNames = reader.getWorkspaceNames();
         boolean workspaceExists = workspaceNames.contains(workspace);
 
@@ -651,8 +649,8 @@ public class GeoserverHandler {
         if (!workspaceExists) {
             URI namespaceURI = new URI("gov.usgs.cida.ch." + workspace);
             publisher.createWorkspace(workspace, namespaceURI);
-            dsm.create(workspace, new GSShapefileDatastoreEncoder(inputStorename, chInputDirectory.toURI().toURL()));
-            dsm.create(workspace, new GSShapefileDatastoreEncoder(outputStorename, chOutputDirectory.toURI().toURL()));
+            dsm.create(workspace, new GSShapefileDatastoreEncoder(INPUT_STORE_NAME, chInputDirectory.toURI().toURL()));
+            dsm.create(workspace, new GSShapefileDatastoreEncoder(OUTPUT_STORE_NAME, chOutputDirectory.toURI().toURL()));
         }
     }
 
@@ -769,7 +767,7 @@ public class GeoserverHandler {
         //TODO- Either copy the projection files to the shapefile directory or create them programatically
         // using Geotools
         String googlePrj = "PROJCS[\"WGS84 / Google Mercator\",  GEOGCS[\"WGS 84\",  DATUM[\"World Geodetic System 1984\",  SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]],  AUTHORITY[\"EPSG\",\"6326\"]],  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]],  UNIT[\"degree\", 0.017453292519943295],  AXIS[\"Longitude\", EAST],  AXIS[\"Latitude\", NORTH],  AUTHORITY[\"EPSG\",\"4326\"]],  PROJECTION[\"Mercator_1SP\"],  PARAMETER[\"semi_minor\", 6378137.0],  PARAMETER[\"latitude_of_origin\", 0.0],  PARAMETER[\"central_meridian\", 0.0],  PARAMETER[\"scale_factor\", 1.0],  PARAMETER[\"false_easting\", 0.0],  PARAMETER[\"false_northing\", 0.0],  UNIT[\"m\", 1.0],  AXIS[\"x\", EAST],  AXIS[\"y\", NORTH],  AUTHORITY[\"EPSG\",\"900913\"]]";
-        String wgs84Prj = "GEOGCS[\"GCS_WGS_1984\",  DATUM[\"D_WGS_1984\",  SPHEROID[\"WGS_1984\", 6378137.0, 298.257223563]],  PRIMEM[\"Greenwich\", 0.0],  UNIT[\"degree\", 0.017453292519943295],  AXIS[\"Longitude\", EAST],  AXIS[\"Latitude\", NORTH]]";
+//        String wgs84Prj = "GEOGCS[\"GCS_WGS_1984\",  DATUM[\"D_WGS_1984\",  SPHEROID[\"WGS_1984\", 6378137.0, 298.257223563]],  PRIMEM[\"Greenwich\", 0.0],  UNIT[\"degree\", 0.017453292519943295],  AXIS[\"Longitude\", EAST],  AXIS[\"Latitude\", NORTH]]";
         IOUtils.write(googlePrj, prjFileOutputStream, "UTF-8");
         prjFileOutputStream.close();
 
@@ -780,9 +778,8 @@ public class GeoserverHandler {
         GeoServerRESTManager gsrm = new GeoServerRESTManager(new URL(this.url), this.user, this.password);
         GeoServerRESTPublisher publisher = gsrm.getPublisher();
         boolean success = publisher.unpublishFeatureType(workspace, store, layer);
-        boolean storeReloaded = false;
         if (success) {
-            storeReloaded = publisher.reloadStore(workspace, store, GeoServerRESTPublisher.StoreType.DATASTORES);
+            publisher.reloadStore(workspace, store, GeoServerRESTPublisher.StoreType.DATASTORES);
         }
         return success;
     }

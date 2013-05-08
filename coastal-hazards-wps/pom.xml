@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>gov.usgs.cida.coastalhazards</groupId>
-        <artifactId>coastal-hazards</artifactId>
-        <version>1.0.8-SNAPSHOT</version>
-    </parent>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>gov.usgs.cida.coastalhazards</groupId>
+		<artifactId>coastal-hazards</artifactId>
+		<version>1.0.8-SNAPSHOT</version>
+	</parent>
     
-    <artifactId>coastal-hazards-wps</artifactId>
-    <packaging>jar</packaging>
+	<artifactId>coastal-hazards-wps</artifactId>
+	<packaging>jar</packaging>
     
-    <name>Coastal Hazards WPS Processes</name>
+	<name>Coastal Hazards WPS Processes</name>
 
 	<properties>
 		<gs.version>2.2.5</gs.version>
 		<gt.version>8.7</gt.version>
 	</properties>
 
-    <repositories>
-        <repository>
-            <id>cida-thirdparty</id>
-            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-thirdparty</url>
-        </repository>
-        <repository>
-            <id>cida-releases</id>
-            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-releases</url>
-        </repository>
-        <repository>
-            <id>osgeo</id>
-            <url>http://download.osgeo.org/webdav/geotools/</url>
-        </repository>
-        <repository>
-            <id>geoserver</id>
-            <url>http://repo.opengeo.org/</url>
-        </repository>
+	<repositories>
+		<repository>
+			<id>cida-thirdparty</id>
+			<url>http://internal.cida.usgs.gov/maven/content/repositories/cida-thirdparty</url>
+		</repository>
+		<repository>
+			<id>cida-releases</id>
+			<url>http://internal.cida.usgs.gov/maven/content/repositories/cida-releases</url>
+		</repository>
+		<repository>
+			<id>osgeo</id>
+			<url>http://download.osgeo.org/webdav/geotools/</url>
+		</repository>
+		<repository>
+			<id>geoserver</id>
+			<url>http://repo.opengeo.org/</url>
+		</repository>
 	</repositories>
 	
 	<dependencyManagement>
@@ -55,55 +55,52 @@
 		</dependencies>
 	</dependencyManagement>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.geoserver.extension</groupId>
-            <artifactId>wps-core</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-shapefile</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geoserver.extension</groupId>
+			<artifactId>wps-core</artifactId>
 			<version>${gs.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
 			<version>2.1</version>
-        </dependency>
+		</dependency>
 
-        <!-- TESTING -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-            <version>4.10</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-            <scope>test</scope>
-            <version>1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-shapefile</artifactId>
+		<!-- TESTING -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 			<scope>test</scope>
-        </dependency>
-    </dependencies>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-all</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-        </plugins>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
 		
-    </build>
+	</build>
 </project>

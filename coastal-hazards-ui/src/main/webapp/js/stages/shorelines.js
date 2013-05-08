@@ -35,7 +35,8 @@ var Shorelines = {
 		CONFIG.ows.wmsCapabilities.published.capability.layers.findAll(function(l) {
 			return l.prefix === CONFIG.name.published && l.name.has('shoreline');
 		}).each(function(l) {
-			var bounds = OpenLayers.Bounds.fromArray(l.bbox['EPSG:900913'].bbox);
+			var lbbox = l.bbox['EPSG:3857'] ? l.bbox['EPSG:3857'].bbox : l.bbox['EPSG:900913'].bbox; 
+			var bounds = OpenLayers.Bounds.fromArray(lbbox);
 			var box = new OpenLayers.Marker.Box(bounds);
 			box.setBorder('#FF0000', 1);
 			box.events.register('click', box, function() {
@@ -383,7 +384,8 @@ var Shorelines = {
                     layerName : layerName
                     });
                 if (mapLayer) {
-                    bounds.extend(new OpenLayers.Bounds(mapLayer.bbox["EPSG:900913"].bbox));
+					var lbbox = mapLayer.bbox['EPSG:3857'] ? mapLayer.bbox['EPSG:3857'].bbox : mapLayer.bbox['EPSG:900913'].bbox; 
+                    bounds.extend(new OpenLayers.Bounds(lbbox));
 
                     if (layer.events.listeners.loadend.length) {
                         layer.events.unregister('added', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);
