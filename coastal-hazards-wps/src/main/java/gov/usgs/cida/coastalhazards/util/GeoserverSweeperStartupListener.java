@@ -1,7 +1,12 @@
 package gov.usgs.cida.coastalhazards.util;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
@@ -60,7 +65,8 @@ public class GeoserverSweeperStartupListener implements InitializingBean {
 //			this.runEveryMs = 3600000;
 		} catch (NamingException ex) {
 			// Init parameter run ever ms was not set, set it for 3600000 (1h)
-			this.runEveryMs = 3600000l;
+			this.runEveryMs = 10000l;
+//			this.runEveryMs = 3600000l;
 		}
 
 		// Get the workspaces we do not touch
@@ -95,9 +101,11 @@ public class GeoserverSweeperStartupListener implements InitializingBean {
 
 					// Get a cleaned list of workspaces
 					List<WorkspaceInfo> workspaceInfoList = catalog.getWorkspaces();
-					for (WorkspaceInfo wsInfo : workspaceInfoList) {
+					Iterator<WorkspaceInfo> it = workspaceInfoList.iterator();
+					while (it.hasNext()) {
+						WorkspaceInfo wsInfo = it.next();
 						if (java.util.Arrays.asList(readOnlyWorkspaces).contains(wsInfo.getName())) {
-							workspaceInfoList.remove(wsInfo);
+							it.remove();
 						}
 					}
 
@@ -105,12 +113,30 @@ public class GeoserverSweeperStartupListener implements InitializingBean {
 						List<DataStoreInfo> dataStoreInfoList = catalog.getDataStoresByWorkspace(wsInfo);
 						for (DataStoreInfo dsInfo : dataStoreInfoList) {
 							try {
+								Map<String, Serializable> params = dsInfo.getConnectionParameters();
+								File directory = null;
+								for (Map.Entry<String, Serializable> e : params.entrySet()) {
+									if (e.getValue() instanceof File) {
+										directory = (File) e.getValue();
+									} else if (e.getValue() instanceof URL) {
+										directory = new File(((URL) e.getValue()).getFile());
+									}
+									if (directory != null && !"directory".equals(e.getKey())) {
+										directory = directory.getParentFile();
+									}
+
+									if (directory != null) {
+										break;
+									}
+								}
+
 								DataAccess<? extends FeatureType, ? extends Feature> da = dsInfo.getDataStore(new DefaultProgressListener());
 								List<Name> resourceNames = da.getNames();
 								for (Name resourceName : resourceNames) {
 									FeatureSource<? extends FeatureType, ? extends Feature> featureSource = da.getFeatureSource(resourceName);
 									LayerInfo layerInfo = catalog.getLayerByName(resourceName);
-									
+
+
 								}
 							} catch (IOException ex) {
 								Logger.getLogger(GeoserverSweeperStartupListener.class.getName()).log(Level.SEVERE, null, ex);

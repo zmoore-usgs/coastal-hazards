@@ -25,6 +25,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -38,17 +39,17 @@ public class PublishService extends HttpServlet {
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(PublishService.class);
 	private static DynamicReadOnlyProperties props = null;
 	private static GeoserverHandler geoserverHandler = null;
-    private static CSWHandler cswHandler = null;
+	private static CSWHandler cswHandler = null;
 	private static String geoserverEndpoint = null;
 	private static String geoserverUsername = null;
 	private static String geoserverPassword = null;
 	private static String publishedWorkspaceName = null;
-    private static String cswEndpoint = null;
+	private static String cswEndpoint = null;
 	private static final String GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.endpoint";
 	private static final String GEOSERVER_USER_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.username";
 	private static final String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
 	private static final String PUBLISHED_WS_PARAM_CONFIG_KEY = "coastal-hazards.workspace.published";
-    private static final String CSW_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.csw.endpoint";
+	private static final String CSW_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.csw.endpoint";
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -60,8 +61,8 @@ public class PublishService extends HttpServlet {
 		geoserverPassword = props.getProperty(GEOSERVER_PASS_PARAM_CONFIG_KEY);
 		publishedWorkspaceName = props.getProperty(PUBLISHED_WS_PARAM_CONFIG_KEY, "published");
 		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
-        cswEndpoint = props.getProperty(CSW_ENDPOINT_PARAM_CONFIG_KEY, "http://localhost/pycsw-wsgi");
-        cswHandler = new CSWHandler(cswEndpoint);
+		cswEndpoint = props.getProperty(CSW_ENDPOINT_PARAM_CONFIG_KEY, "http://localhost/pycsw-wsgi");
+		cswHandler = new CSWHandler(cswEndpoint);
 	}
 
 	/**
@@ -79,78 +80,75 @@ public class PublishService extends HttpServlet {
 		response.setContentType("text/html;charset=UTF-8");
 		File tempFile = File.createTempFile("metadata", ".xml");
 		String layer = ""; //request.getParameter("md-layers-select");
-        
+
 		Map<String, String> responseMap = new HashMap<String, String>();
 		if (tempFile.exists()) {
 			tempFile.delete();
 		}
 		try {
-            if (ServletFileUpload.isMultipartContent(request)) {
-                FileItemFactory factory = new DiskFileItemFactory();
-                ServletFileUpload upload = new ServletFileUpload(factory);
-                FileItemIterator iter = upload.getItemIterator(request);
-                while (iter.hasNext()) {
-                    FileItemStream item = iter.next();
-                    if (item.isFormField()) {
-                        if ("md-layers-select".equals(item.getFieldName())) {
-                            layer = IOUtils.toString(item.openStream());
-                        }
-                    } else {
-                        FileHelper.saveFileFromInputStream(item.openStream(), tempFile);
-                    }
-                }
-            }
-            // Do you stuff here
-            MetadataValidator validator = new MetadataValidator(tempFile);
-            if (validator.validateFGDC()) {
-                // Do CSW stuff here ...
-                HttpResponse cswResponse = cswHandler.sendRequest("application/xml", createInsertRequest(IOUtils.toString(tempFile.toURI())));
-                String insertResponseContent = IOUtils.toString(cswResponse.getEntity().getContent());
-                
-                Node totalInserted = XMLUtils.createNodeUsingXPathExpression("//*[local-name()='totalInserted']/text()", insertResponseContent);
-                String nodeValue = totalInserted.getNodeValue();
-                if ("1".equals(nodeValue)) {
-                    // Time to publish ...
-                    String workspaceName = layer.split(":")[0];
-                    String layerName = layer.split(":")[1];
-                    String storeName = layerName.toLowerCase().contains("result") ? "ch-output" : "ch-input";
-                    HttpResponse wpsResponse = geoserverHandler.sendWPSRequest(createPublishRequest(workspaceName, storeName, layerName));
+			if (ServletFileUpload.isMultipartContent(request)) {
+				FileItemFactory factory = new DiskFileItemFactory();
+				ServletFileUpload upload = new ServletFileUpload(factory);
+				FileItemIterator iter = upload.getItemIterator(request);
+				while (iter.hasNext()) {
+					FileItemStream item = iter.next();
+					if (item.isFormField()) {
+						if ("md-layers-select".equals(item.getFieldName())) {
+							layer = IOUtils.toString(item.openStream());
+						}
+					} else {
+						FileHelper.saveFileFromInputStream(item.openStream(), tempFile);
+					}
+				}
+			}
+			// Do you stuff here
+			MetadataValidator validator = new MetadataValidator(tempFile);
+			if (validator.validateFGDC()) {
+				// Do CSW stuff here ...
+				HttpResponse cswResponse = cswHandler.sendRequest("application/xml", createInsertRequest(IOUtils.toString(tempFile.toURI())));
+				String insertResponseContent = IOUtils.toString(cswResponse.getEntity().getContent());
 
-                    String httpResponse = IOUtils.toString(wpsResponse.getEntity().getContent());
+				Node totalInserted = XMLUtils.createNodeUsingXPathExpression("//*[local-name()='totalInserted']/text()", insertResponseContent);
+				String nodeValue = totalInserted.getNodeValue();
+				if ("1".equals(nodeValue)) {
+					// Time to publish ...
+					String workspaceName = layer.split(":")[0];
+					String layerName = layer.split(":")[1];
+					String storeName = layerName.toLowerCase().contains("result") ? "ch-output" : "ch-input";
+					HttpResponse wpsResponse = geoserverHandler.sendWPSRequest(createPublishRequest(workspaceName, storeName, layerName, "EPSG:3857"));
 
-                    responseMap.put("response", httpResponse);
-                    if (httpResponse.toLowerCase().contains("exception")) {
-                        RequestResponseHelper.sendErrorResponse(response, responseMap);
-                    } else {
-                        RequestResponseHelper.sendSuccessResponse(response, responseMap);
-                    }
-                }
-                else {
-                    responseMap.put("message", "Failed to insert metadata");
-                    RequestResponseHelper.sendErrorResponse(response, responseMap);
-                }
-            }
-            else {
-                responseMap.put("message", "Not a valid FGDC document");
-                RequestResponseHelper.sendErrorResponse(response, responseMap);
-            }
+					String httpResponse = IOUtils.toString(wpsResponse.getEntity().getContent());
+
+					responseMap.put("response", httpResponse);
+					if (httpResponse.toLowerCase().contains("exception")) {
+						RequestResponseHelper.sendErrorResponse(response, responseMap);
+					} else {
+						RequestResponseHelper.sendSuccessResponse(response, responseMap);
+					}
+				} else {
+					responseMap.put("message", "Failed to insert metadata");
+					RequestResponseHelper.sendErrorResponse(response, responseMap);
+				}
+			} else {
+				responseMap.put("message", "Not a valid FGDC document");
+				RequestResponseHelper.sendErrorResponse(response, responseMap);
+			}
 
 		} catch (FileUploadException ex) {
 			responseMap.put("message", ex.getMessage());
 			RequestResponseHelper.sendErrorResponse(response, responseMap);
 		} catch (IOException ex) {
-            responseMap.put("message", ex.getMessage());
+			responseMap.put("message", ex.getMessage());
 			RequestResponseHelper.sendErrorResponse(response, responseMap);
-        } catch (XPathExpressionException ex) {
-            responseMap.put("message", ex.getMessage());
-            RequestResponseHelper.sendErrorResponse(response, responseMap);
-        }
-        finally {
+		} catch (XPathExpressionException ex) {
+			responseMap.put("message", ex.getMessage());
+			RequestResponseHelper.sendErrorResponse(response, responseMap);
+		} finally {
 			FileUtils.deleteQuietly(tempFile);
 		}
 	}
 
-	private String createPublishRequest(String workspace, String store, String layer) {
+	private String createPublishRequest(String workspace, String store, String layer, String declaredSRS) {
 		StringBuilder response = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
 				.append("<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">")
 				.append("<ows:Identifier>gs:CopyLayer</ows:Identifier>")
@@ -183,9 +181,17 @@ public class PublishService extends HttpServlet {
 				.append("<ows:Identifier>target-store</ows:Identifier>")
 				.append("<wps:Data>")
 				.append("<wps:LiteralData>").append(store.equals("ch-input") ? "Coastal Hazards Input" : "Coastal Hazards Output").append("</wps:LiteralData>")
-				.append("</wps:Data>")
-				.append("</wps:Input>")
-				.append("</wps:DataInputs>")
+				.append("</wps:Data>");
+		if (StringUtils.isNotBlank(declaredSRS)) {
+			response.append("</wps:Input>")
+					.append("<wps:Input>")
+					.append("<ows:Identifier>declared-srs</ows:Identifier>")
+					.append("<wps:Data>")
+					.append("<wps:LiteralData>").append(declaredSRS).append("</wps:LiteralData>")
+					.append("</wps:Data>")
+					.append("</wps:Input>");
+		}
+		response.append("</wps:DataInputs>")
 				.append("<wps:ResponseForm>")
 				.append("<wps:RawDataOutput>")
 				.append("<ows:Identifier>String</ows:Identifier>")
@@ -194,24 +200,25 @@ public class PublishService extends HttpServlet {
 				.append("</wps:Execute>");
 		return response.toString();
 	}
-    
-    /**
-     * Will eventually want to run FGDC through xslt and insert modified ISO metadata
-     * 
-     * @param metadata FGDC metadata record for the time being
-     * @return 
-     */
-    private String createInsertRequest(String metadata) {
-        String insertThis = metadata.replaceAll("<\\?xml.*\\?>", "");
-        
-        StringBuilder response = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-                .append("<csw:Transaction xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:dc=\"http://www.purl.org/dc/elements/1.1/\" service=\"CSW\" version=\"2.0.2\">")
-                .append("<csw:Insert>")
-                .append(insertThis)
-                .append("</csw:Insert>")
-                .append("</csw:Transaction>");
-        return response.toString();
-    }
+
+	/**
+	 * Will eventually want to run FGDC through xslt and insert modified ISO
+	 * metadata
+	 *
+	 * @param metadata FGDC metadata record for the time being
+	 * @return
+	 */
+	private String createInsertRequest(String metadata) {
+		String insertThis = metadata.replaceAll("<\\?xml.*\\?>", "");
+
+		StringBuilder response = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+				.append("<csw:Transaction xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:dc=\"http://www.purl.org/dc/elements/1.1/\" service=\"CSW\" version=\"2.0.2\">")
+				.append("<csw:Insert>")
+				.append(insertThis)
+				.append("</csw:Insert>")
+				.append("</csw:Transaction>");
+		return response.toString();
+	}
 
 	// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 	/**
