@@ -34,9 +34,9 @@
 		<constructor-arg index="0" ref="catalog"/>
 		<constructor-arg index="1" ref="importProcess"/>
 	</bean>
-	
+<!--	
 	<bean id="sweeper" class="gov.usgs.cida.coastalhazards.util.GeoserverSweeperStartupListener">
 		<constructor-arg index="0" ref="catalog"/>
 	</bean>
-    
+    -->
 </beans>
