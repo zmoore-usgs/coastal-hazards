@@ -1226,12 +1226,13 @@ var UI = function() {
 				'data-bootstro-step': 19
 			});
 		},
-				/**
+		/**
 		 * After requesting session information from the server, either makes
 		 * a link allowing a user to log in using OpenID or if already logged
 		 * in, creates a drop down menu with log-in info and a log-out option.
 		 * 
 		 * Also creates a "Publish" menu item under the Session drop-down menu.
+		 * The publish menu only appears if the incoming email is a usgs address
 		 * 
 		 * @returns {undefined}
 		 */
@@ -1276,7 +1277,7 @@ var UI = function() {
 						'mouseup' : function() {
 							$(this).attr('src', 'images/OpenID/White-signin_Medium_base_44dp.png');
 						}
-					})
+					});
 				};
 
 				var createLoggedInMenu = function() {
@@ -1300,17 +1301,20 @@ var UI = function() {
 					}).html('Log Out');
 					loginListItem.append(logoutMenuItem.append(listItem.append(logoutLink)));
 
-					// APPEND the publish menu item to the menu
-					var publishListItem = $('<li />').attr('role', 'presentation');
-					var publishLink = $('<a />').attr({
-						'id' : 'session-menu-item-publish',
-						'tabindex' : '-1',
-						'role' : 'menuitem'
-					}).html('Publish');
-					$('#session-drop-down-list').append(publishListItem.append(publishLink));
-					publishLink.on('click', function() {
-						CONFIG.tempSession.createMetadataUploadForm();
-					});
+
+					if (email.toLowerCase().endsWith('usgs.gov')) {
+						// APPEND the publish menu item to the menu
+						var publishListItem = $('<li />').attr('role', 'presentation');
+						var publishLink = $('<a />').attr({
+							'id': 'session-menu-item-publish',
+							'tabindex': '-1',
+							'role': 'menuitem'
+						}).html('Publish');
+						$('#session-drop-down-list').append(publishListItem.append(publishLink));
+						publishLink.on('click', function() {
+							CONFIG.tempSession.createMetadataUploadForm();
+						});
+					}
 
 					// BIND the log out menu item
 					logoutLink.on('click', function() {
