@@ -1227,6 +1227,153 @@ var UI = function() {
 			});
 		},
 		/**
+		 * A user wishes to publish metadata. Create the form that allows the 
+		 * uploading of this metadata
+		 * 
+		 * @returns {undefined}
+		 */
+		createMetadataUploadForm : function() {
+			var container = $('<div />').addClass('container-fluid');
+			
+			var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'md-explanation-row');
+			var explanationWell = $('<div />').addClass('well well-small').attr('id', 'md-explanation-well');
+			var explanationDiv = $('<div />').html('Using the metadata upload functionality you are able to quickly enter metadata associated with published resources');
+			container.append(explanationWell.append(explanationRow.append(explanationDiv)));
+			
+			var formRow = $('<div />').addClass('row-fluid').attr('id', 'md-form-row');
+			var formWell = $('<div />').addClass('well well-small').attr('id', 'md-form-well');
+			var form = $('<form />').attr({
+				id: 'md-form',
+				action : 'service/publish',
+				method : 'post',
+				enctype : 'multipart/form-data',
+				target : ''
+			});
+			
+			var select = $('<select />').attr({
+				'id' : 'md-layers-select',
+				'name' : 'md-layers-select'
+			});
+			form.append(select);
+			
+			var options = $('.feature-list option[class="session-layer"]').toArray();
+			for (var oIdx = 0; oIdx < options.length; oIdx++) {
+				$(select).append(options[oIdx]);
+			}
+			
+			form.append('Metadata XML ').append($('<input />').attr({
+				'id' : 'form-file-input',
+				'type': 'file',
+				'name': 'metadata',
+				'size': '40'
+			}));
+			
+			form.after('<br />');
+			
+			container.append(formRow.append(formWell.append(form)));
+			
+			CONFIG.ui.createModalWindow({
+				headerHtml: 'Metadata Publish',
+				doneButtonText: 'Cancel',
+				buttons: [{
+						text: 'Submit',
+						callback: function() {
+							var data = new FormData();
+							data.append('md-layers-select', $('#md-layers-select').val());
+							data.append('metadata', $('#form-file-input').val());
+							$.each($('#form-file-input')[0].files, function(i, file) {
+								data.append('metadata', file);
+							})
+							$.ajax({
+								type : 'POST',
+								url : 'service/publish',
+								cache : false,
+								contentType : false,
+								processData : false,
+								data : data,
+								dataType : 'json',
+								success : function(data) {
+									LOG.debug(JSON.stringify(data));
+								}
+							})
+								
+						}
+					}
+				],
+				bodyHtml: container.html(),
+				callbacks: []
+			});
+		},
+        createMetadataEntryForm : function() {
+            var sessionId = $('#session-management-session-list :selected').val();
+            var session = CONFIG.permSession.session.sessions.find(function(s) {
+                return s.id === sessionId;
+            });
+                        
+            var container = $('<div />').addClass('container-fluid');
+            var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
+            var explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well');
+            explanationWell.html('Provide a name and some optional metadata for this session<br /><br />Session: ' + session.id);
+            container.append(explanationRow.append(explanationWell));
+                        
+            var nameRow = $('<div />').addClass('row-fluid').attr('id', 'name-row');
+            var nameWell = $('<div />').addClass('well').attr('id', 'name-well');
+            var nameInputLabel = $('<label />').attr({
+                'id' : 'name-input-label',
+                'for' : 'name-input'
+            }).html('Name:');
+            var nameInput = $('<input>').attr({
+                'id' : 'name-input',
+                'name' : 'name-input',
+                'type' : 'text',
+                'style' : 'width:100%;',
+                'placeholder' : session.name
+            });
+            container.append(nameRow.append(nameWell.append(nameInputLabel, nameInput)));
+                        
+            var metadataRow = $('<div />').addClass('row-fluid').attr('id', 'metadata-row');
+            var metadataWell = $('<div />').addClass('well').attr('id', 'metadata-well');
+            var metadataInputLabel = $('<label />').attr({
+                'id' : 'metadata-input-label',
+                'for' : 'metadata-input'
+            }).html('Metadata:');
+            var metadataInput = $('<input>').attr({
+                'id' : 'metadata-input',
+                'name' : 'metadata-input',
+                'type' : 'textarea',
+                'style' : 'width:100%;height:5em;',
+                'maxLength' : '4000',
+                'rows': '10',
+                'placeholder' : session.metadata
+            });
+            container.append(metadataRow.append(metadataWell.append(metadataInputLabel, metadataInput)));
+                        
+            CONFIG.ui.createModalWindow({
+                bodyHtml : container.html(),
+                buttons : [{
+                        id : 'save-metadata-button',
+                        type : 'btn-success',
+                        text : 'Save',
+                        callback : function() {
+                            var name = $('#name-input').val();
+                            var metadata = $('#metadata-input').val();
+                            session.name = name;
+                            session.metadata = metadata;
+                            CONFIG.permSession.save();
+                            CONFIG.tempSession.persistSession();
+                            CONFIG.tempSession.createSessionManagementModalWindow();
+                        }
+                    }],
+                callbacks : [
+                    function() {
+                        $('#cancel-button').on('click', function() {
+                            CONFIG.tempSession.createSessionManagementModalWindow();
+                        });
+                    }
+                ]
+            });
+        },
+		/**
 		 * After requesting session information from the server, either makes
 		 * a link allowing a user to log in using OpenID or if already logged
 		 * in, creates a drop down menu with log-in info and a log-out option.
@@ -1312,7 +1459,7 @@ var UI = function() {
 						}).html('Publish');
 						$('#session-drop-down-list').append(publishListItem.append(publishLink));
 						publishLink.on('click', function() {
-							CONFIG.tempSession.createMetadataUploadForm();
+							CONFIG.ui.createMetadataUploadForm();
 						});
 					}
 
