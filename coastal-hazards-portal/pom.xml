@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>gov.usgs.cida.coastalhazards</groupId>
 		<artifactId>coastal-hazards</artifactId>
-		<version>1.0.8-SNAPSHOT</version>
+		<version>1.0.9-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>coastal-hazards-portal</artifactId>
@@ -16,7 +16,7 @@
 		<dependency>
 			<groupId>gov.usgs.cida.coastalhazards</groupId>
 			<artifactId>coastal-hazards-commons</artifactId>
-			<version>${project.parent.version}</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>

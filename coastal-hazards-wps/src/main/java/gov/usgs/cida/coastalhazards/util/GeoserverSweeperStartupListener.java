@@ -1,15 +1,15 @@
 package gov.usgs.cida.coastalhazards.util;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-import java.net.URL;
+import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -18,7 +18,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.data.DataAccess;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.FileDataStore;
 import org.geotools.util.DefaultProgressListener;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -32,6 +31,14 @@ import org.springframework.jndi.JndiTemplate;
  */
 public class GeoserverSweeperStartupListener implements InitializingBean {
 
+	protected static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("gov.usgs.cida.coastalhazards.util");
+	private static final Long DEFAULT_MAX_LAYER_AGE = 2592000000l; // 30d
+	private static final Long DEFAULT_RUN_EVER_MS = 3600000l; // 1h
+	private static final Boolean DEFAULT_DELETE_EMPTY_STORES = Boolean.FALSE;
+	private static final Boolean DEFAULT_DELETE_EMPTY_WORKSPACES = Boolean.FALSE;
+	private static final String DEFAULT_READ_ONLY_WORKSPACES = "published";
+	private Boolean deleteEmptyStores;
+	private Boolean deleteEmptyWorkspaces;
 	private Long maxAge;
 	private Long runEveryMs;
 	private Catalog catalog;
@@ -43,61 +50,91 @@ public class GeoserverSweeperStartupListener implements InitializingBean {
 	}
 
 	public void destroy() throws Exception {
+		LOGGER.log(Level.INFO, "Sweeper thread is shutting down");
 		this.sweeperThread.interrupt();
 		this.sweeperThread.join(this.runEveryMs + 60000);
-		// Done
+		LOGGER.log(Level.INFO, "Sweeper thread is shut down");
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		JndiTemplate template = new JndiTemplate();
 
-		// Get the maximum age that a layer can be
 		try {
 			this.maxAge = template.lookup("java:comp/env/coastal-hazards.geoserver.layer.age.maximum", Long.class);
 		} catch (NamingException ex) {
-			// Init parameter max-age was not set. Setting max-age to 604800000 (7d)
-			this.maxAge = 604800000l;
+			this.maxAge = DEFAULT_MAX_LAYER_AGE;
+			LOGGER.log(Level.INFO, "Init parameter 'coastal-hazards.geoserver.layer.age.maximum' was not set. Maximum layer age set to {0}ms", this.maxAge);
 		}
 
 		try {
-			this.runEveryMs = template.lookup("java:comp/env/coastal-hazards.geoserver.sweeper.run.every.ms", Long.class);
-//			this.runEveryMs = 3600000;
+			this.runEveryMs = template.lookup("java:comp/env/coastal-hazards.geoserver.sweeper.run.period", Long.class);
 		} catch (NamingException ex) {
-			// Init parameter run ever ms was not set, set it for 3600000 (1h)
-			this.runEveryMs = 10000l;
-//			this.runEveryMs = 3600000l;
+			this.runEveryMs = DEFAULT_RUN_EVER_MS;
+			LOGGER.log(Level.INFO, "Init parameter 'coastal-hazards.geoserver.sweeper.run.period' was not set. Sweeper will run every {0}ms", this.runEveryMs);
 		}
 
-		// Get the workspaces we do not touch
-		String permWorkspaces = "published";
-//		String permWorkspaces = template.lookup("java:comp/env/coastal-hazards.geoserver.workspaces.permanent", String.class);
-		if (StringUtils.isNotBlank(permWorkspaces)) {
-			this.readOnlyWorkspaces = permWorkspaces.split(",");
-			this.sweeperThread = new Thread(new Sweeper(this.catalog, this.maxAge, this.readOnlyWorkspaces, this.runEveryMs), "sweeper-thread");
+		try {
+			this.deleteEmptyStores = template.lookup("java:comp/env/coastal-hazards.geoserver.sweeper.stores.empty.delete", Boolean.class);
+		} catch (NamingException ex) {
+			this.deleteEmptyStores = DEFAULT_DELETE_EMPTY_STORES;
+			LOGGER.log(Level.INFO, "Init parameter coastal-hazards.geoserver.sweeper.stores.empty.delete was not set. Empty stores set to be deleted: {0}", this.deleteEmptyStores);
+		}
+
+		try {
+			this.deleteEmptyWorkspaces = template.lookup("java:comp/env/coastal-hazards.geoserver.sweeper.workspaces.empty.delete", Boolean.class);
+		} catch (NamingException ex) {
+			this.deleteEmptyWorkspaces = DEFAULT_DELETE_EMPTY_WORKSPACES;
+			LOGGER.log(Level.INFO, "Init parameter coastal-hazards.geoserver.sweeper.workspaces.empty.delete was not set. Empty stores set to be deleted: {0}", this.deleteEmptyStores);
+		}
+
+		String roWorkspaces;
+		try {
+			roWorkspaces = template.lookup("java:comp/env/coastal-hazards.geoserver.sweeper.workspaces.read-only", String.class);
+		} catch (NamingException ex) {
+			roWorkspaces = DEFAULT_READ_ONLY_WORKSPACES;
+			LOGGER.log(Level.INFO, "Init parameter coastal-hazards.geoserver.sweeper.workspaces.read-only was not set. Read only workspaces set to: {0}", roWorkspaces);
+		}
+
+		if (StringUtils.isNotBlank(roWorkspaces)) {
+			this.readOnlyWorkspaces = roWorkspaces.split(",");
+		}
+
+		if (this.readOnlyWorkspaces.length != 0) {
+			this.sweeperThread = new Thread(new Sweeper(this.catalog, this.maxAge, this.readOnlyWorkspaces, this.runEveryMs, this.deleteEmptyStores, this.deleteEmptyWorkspaces), "sweeper-thread");
 			this.sweeperThread.start();
+		} else {
+			// Failsafe
+			LOGGER.log(Level.INFO, "Because there were no workspaces set to read-only, sweeper will not run. If this is a mistake, set the parameter 'coastal-hazards.geoserver.sweeper.workspaces.read-only' to any workspace. The workspace does not need to actually exist.");
 		}
 	}
 
 	private class Sweeper implements Runnable {
 
+		private Boolean deleteEmptyStores;
+		private Boolean deleteEmptyWorkspaces;
 		private Long maxAge;
 		private Long runEveryMs;
 		private String[] readOnlyWorkspaces;
 		private Catalog catalog;
 
-		public Sweeper(Catalog catalog, Long maxAge, String[] readOnlyWorkspaces, Long runEveryMs) {
+		public Sweeper(Catalog catalog, Long maxAge, String[] readOnlyWorkspaces, Long runEveryMs, Boolean deleteEmptyStores, Boolean deleteEmptyWorkspaces) {
 			this.catalog = catalog;
 			this.maxAge = maxAge;
 			this.readOnlyWorkspaces = readOnlyWorkspaces;
 			this.runEveryMs = runEveryMs;
+			this.deleteEmptyStores = deleteEmptyStores;
+			this.deleteEmptyWorkspaces = deleteEmptyWorkspaces;
 		}
 
 		@Override
 		public void run() {
-			try {
-				while (!Thread.interrupted()) {
-					GeoserverUtils gsUtils = new GeoserverUtils(this.catalog);
+
+			while (!Thread.interrupted()) {
+				try {
+					LOGGER.log(Level.FINE, "Running a layer sweep");
+					Long currentTime = new Date().getTime();
+					CatalogBuilder cBuilder = new CatalogBuilder(catalog);
 
 					// Get a cleaned list of workspaces
 					List<WorkspaceInfo> workspaceInfoList = catalog.getWorkspaces();
@@ -110,47 +147,57 @@ public class GeoserverSweeperStartupListener implements InitializingBean {
 					}
 
 					for (WorkspaceInfo wsInfo : workspaceInfoList) {
-						List<DataStoreInfo> dataStoreInfoList = catalog.getDataStoresByWorkspace(wsInfo);
-						for (DataStoreInfo dsInfo : dataStoreInfoList) {
-							try {
-								Map<String, Serializable> params = dsInfo.getConnectionParameters();
-								File directory = null;
-								for (Map.Entry<String, Serializable> e : params.entrySet()) {
-									if (e.getValue() instanceof File) {
-										directory = (File) e.getValue();
-									} else if (e.getValue() instanceof URL) {
-										directory = new File(((URL) e.getValue()).getFile());
-									}
-									if (directory != null && !"directory".equals(e.getKey())) {
-										directory = directory.getParentFile();
-									}
+						List<DataStoreInfo> dsInfoList = catalog.getDataStoresByWorkspace(wsInfo);
 
-									if (directory != null) {
-										break;
-									}
-								}
-
+						if (!dsInfoList.isEmpty()) {
+							for (DataStoreInfo dsInfo : dsInfoList) {
 								DataAccess<? extends FeatureType, ? extends Feature> da = dsInfo.getDataStore(new DefaultProgressListener());
 								List<Name> resourceNames = da.getNames();
-								for (Name resourceName : resourceNames) {
-									FeatureSource<? extends FeatureType, ? extends Feature> featureSource = da.getFeatureSource(resourceName);
-									LayerInfo layerInfo = catalog.getLayerByName(resourceName);
+								if (!resourceNames.isEmpty()) {
+									for (Name resourceName : resourceNames) {
+										FeatureSource<? extends FeatureType, ? extends Feature> featureSource = da.getFeatureSource(resourceName);
+										File featureSourceFile = new File(featureSource.getDataStore().getInfo().getSource());
+										Long fileAge = featureSourceFile.lastModified();
 
-
+										if (currentTime - fileAge > this.maxAge) {
+											LayerInfo layerInfo = catalog.getLayerByName(resourceName);
+											catalog.detach(layerInfo);
+											catalog.remove(layerInfo);
+											String filePrefix = featureSourceFile.getName().substring(0, featureSourceFile.getName().lastIndexOf("."));
+											Collection<File> fileList = FileUtils.listFiles(featureSourceFile.getParentFile(), FileFilterUtils.prefixFileFilter(filePrefix), null);
+											for (File file : fileList) {
+												if (FileUtils.deleteQuietly(file)) {
+													LOGGER.log(Level.INFO, "Expired layer file removed @ {0}", file.getPath());
+												}
+											}
+										}
+										// If the store is empty now, it will be deleted in the next pass
+									}
+								} else if (this.deleteEmptyStores) {
+									LOGGER.log(Level.INFO, "Found empty store '{0}'. Store will be removed", dsInfo.getName());
+									cBuilder.removeStore(dsInfo, true);
+									// If the workspace is empty now, it will be deleted in the next pass
 								}
-							} catch (IOException ex) {
-								Logger.getLogger(GeoserverSweeperStartupListener.class.getName()).log(Level.SEVERE, null, ex);
 							}
+						} else if (this.deleteEmptyWorkspaces) {
+							LOGGER.log(Level.INFO, "Found empty workspace '{0}'. Workspace will be removed", wsInfo.getName());
+							cBuilder.removeWorkspace(wsInfo, true);
 						}
 					}
 
-					Thread.sleep(runEveryMs);
+				} catch (Exception ex) {
+					LOGGER.log(Level.WARNING, "An error has occurred during execution of sweep", ex);
+				} finally {
+					// Clean up
 				}
-			} catch (InterruptedException ex) {
-				// Handle exeption
-			} finally {
-				// Clean up
+				try {
+					// TODO: Use ThreadPoolExecutor to do this - ( http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ThreadPoolExecutor.html ) 
+					Thread.sleep(runEveryMs);
+				} catch (InterruptedException ex) {
+					LOGGER.log(Level.INFO, "Sweeper thread is shutting down");
+				}
 			}
+
 		}
 	}
 }
