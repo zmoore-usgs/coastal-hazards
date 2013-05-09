@@ -45,6 +45,11 @@
 		<servlet-name>SessionService</servlet-name>
 		<servlet-class>gov.usgs.cida.coastalhazards.service.SessionService</servlet-class>
 	</servlet>
+    <servlet>
+        <servlet-name>PopularityQueueService</servlet-name>
+        <servlet-class>gov.usgs.cida.coastalhazards.service.PopularityQueueService</servlet-class>
+    </servlet>
+        
 	
 	<!-- MAPPING -->
 	<servlet-mapping>
@@ -67,4 +72,8 @@
 		<servlet-name>MinifyService</servlet-name>
 		<url-pattern>/service/minify</url-pattern>
 	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PopularityQueueService</servlet-name>
+        <url-pattern>/service/popularity</url-pattern>
+    </servlet-mapping>
 </web-app>
