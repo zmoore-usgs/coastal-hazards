@@ -44,7 +44,24 @@ $(document).ready(function() {
 
 	splashUpdate("Initializing OWS Services");
 	CONFIG.ows = new OWS();
-	CONFIG.popularity.populate();
+	CONFIG.popularity.populate({
+		callbacks: {
+			success: [
+				function() {
+					var results = CONFIG.popularity.results.sortBy(function(result) {
+						return parseInt(result.hotness);
+					}, true);
+					
+					results.each(function(result) {
+						var item = CONFIG.ui.buildDescription({
+							'cswId' : result.id
+						});
+						$('#description').append(item);
+					})
+				}
+			]
+		}
+	});
 			
 	var initAllStages = function() {
 		splashUpdate("Initializing Application sections...");

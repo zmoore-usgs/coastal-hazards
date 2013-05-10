@@ -134,9 +134,9 @@ var UI = function(args) {
 				} else if (item.type === 'vulnerability') {
 					imageClass += 'icon-globe';
 				} else {
-					imageClass += 'icon-historical';
+					imageClass += 'icon-calendar';
 				}
-				imageColumn.append($('<i />').addClass(imageClass));
+				imageColumn.append($('<h2 />').append($('<i />').addClass(imageClass).html('&nbsp;')));
 				
 				var titleColumn = $('<div />').addClass('description-title-column span11').append($('<p />').addClass('lead').html(item.name));
 				
