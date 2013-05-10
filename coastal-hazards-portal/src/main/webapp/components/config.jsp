@@ -38,6 +38,9 @@
 				'stpete-arcserver': {
 					'endpoint': '<%=stPeteArcServerEndpoint%>',
 					'proxy': 'stpgis/'
+				},
+				'popularity': {
+					'endpoint' : 'service/popularity'
 				}
 			}
 		}
