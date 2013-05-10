@@ -44,7 +44,8 @@ $(document).ready(function() {
 
 	splashUpdate("Initializing OWS Services");
 	CONFIG.ows = new OWS();
-
+	CONFIG.popularity.populate();
+			
 	var initAllStages = function() {
 		splashUpdate("Initializing Application sections...");
 		[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
