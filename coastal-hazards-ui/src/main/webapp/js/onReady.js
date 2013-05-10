@@ -111,17 +111,9 @@ $(document).ready(function() {
             callbacks: {
                 success: [
                     CONFIG.tempSession.updateLayersFromWMS,
-                    loadApp,
-                    function() {
-                        LOG.debug('OnReady.js:: WMS Capabilities retrieved for your session');
-                    }
-                ],
-                error: [
-                    loadApp,
-                    function() {
-                        LOG.warn('OnReady.js:: There was an error in retrieving the WMS capabilities for your session. This is probably be due to a new session. Subsequent loads should not see this error');
-                    }
-                ]
+                    loadApp
+				],
+                error: [loadApp]
             }
         });
     };

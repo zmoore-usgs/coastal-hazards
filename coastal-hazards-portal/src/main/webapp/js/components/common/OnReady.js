@@ -22,25 +22,25 @@ $(document).ready(function() {
 		mapDiv: 'map'
 	});
 
-	splashUpdate("Initializing Storms View...");
-	CONFIG.storms = new Storms({
-		collapseDiv: $('#accordion-group-storms'),
-		shareMenuDiv: $('#accordion-group-storms-share'),
-		viewMenuDiv: $('#accordion-group-storms-view')
-	});
-
-	splashUpdate("Initializing Vulnerability View...");
-	CONFIG.vulnerability = new Vulnerability({
-		collapseDiv: $('#accordion-group-vulnerability'),
-		shareMenuDiv: $('#accordion-group-vulnerability-share')
-	});
-
-	splashUpdate("Initializing Historical View...");
-	CONFIG.historical = new Historical({
-		collapseDiv: $('#accordion-group-historical'),
-		shareMenuDiv: $('#accordion-group-historical-share'),
-		viewMenuDiv: $('#accordion-group-historical-view')
-	});
+//	splashUpdate("Initializing Storms View...");
+//	CONFIG.storms = new Storms({
+//		collapseDiv: $('#accordion-group-storms'),
+//		shareMenuDiv: $('#accordion-group-storms-share'),
+//		viewMenuDiv: $('#accordion-group-storms-view')
+//	});
+//
+//	splashUpdate("Initializing Vulnerability View...");
+//	CONFIG.vulnerability = new Vulnerability({
+//		collapseDiv: $('#accordion-group-vulnerability'),
+//		shareMenuDiv: $('#accordion-group-vulnerability-share')
+//	});
+//
+//	splashUpdate("Initializing Historical View...");
+//	CONFIG.historical = new Historical({
+//		collapseDiv: $('#accordion-group-historical'),
+//		shareMenuDiv: $('#accordion-group-historical-share'),
+//		viewMenuDiv: $('#accordion-group-historical-view')
+//	});
 
 	splashUpdate("Initializing OWS Services");
 	CONFIG.ows = new OWS();
@@ -62,18 +62,18 @@ $(document).ready(function() {
 						[
 							function() {
 								splashUpdate("Applying session information to application...");
-								initAllStages();
-								[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical, CONFIG.map].each(function(item) {
-									item.updateFromSession();
-								});
+//								initAllStages();
+//								[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical, CONFIG.map].each(function(item) {
+//									item.updateFromSession();
+//								});
 							}
 						],
 				error: []
 			}
 		});
 	} else {
-		initAllStages();
-		CONFIG.storms.enterSection();
+//		initAllStages();
+//		CONFIG.storms.enterSection();
 	}
 
 	splashUpdate("Starting Application...");

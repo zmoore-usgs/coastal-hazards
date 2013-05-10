@@ -108,20 +108,46 @@ var UI = function(args) {
 								});
 
 							} else {
-//								CONFIG.ui.showAlert({
-//									close: false,
-//									message: query + ' not found',
-//									displayTime: 1000,
-//									style: {
-//										classes: ['alert-info']
-//									}
-//								});
 							}
 						}
 					});
 				}
 
 			});
+		},
+		buildDescription : function(args) {
+			var size = args.size;
+			var cswId = args.cswId;
+			var item = CONFIG.popularity.getById({
+				'id' : cswId
+			});
+			
+			if (item) {
+				var containerDiv = $('<div />').addClass('description-container container-fluid');
+				var titleRow = $('<div />').addClass('description-title-row row-fluid');
+				var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
+				
+				var imageColumn = $('<div />').addClass('description-image-column span1');
+				var imageClass = 'muted ';
+				if (item.type === 'storms') {
+					imageClass += 'icon-bolt';
+				} else if (item.type === 'vulnerability') {
+					imageClass += 'icon-globe';
+				} else {
+					imageClass += 'icon-historical';
+				}
+				imageColumn.append($('<i />').addClass(imageClass));
+				
+				var titleColumn = $('<div />').addClass('description-title-column span11').append($('<p />').addClass('lead').html(item.name));
+				
+				titleRow.append(imageColumn, titleColumn);
+				
+				descriptionRow.append($('<p />').html(item.summary.abstract));
+				
+				containerDiv.append(titleRow, descriptionRow);
+			}
+			
+			return containerDiv;
 		},
 		bindShareMenu: function(args) {
 			var menuItem = args.menuItem;
