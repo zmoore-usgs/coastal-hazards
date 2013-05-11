@@ -43,3 +43,7 @@ img {
 	display : inline;
 }
 
+#description-wrapper {
+	overflow: auto;
+}
+
