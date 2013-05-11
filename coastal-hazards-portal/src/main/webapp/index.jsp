@@ -163,6 +163,9 @@
         <jsp:include page="js/openlayers/openlayers.jsp"> 
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
         </jsp:include>
+		<jsp:include page="js/FlexSlider/flexslider.jsp"> 
+            <jsp:param name="debug-qualifier" value="<%= development%>" /> 
+        </jsp:include>
 
 		<jsp:include page="css/css.jsp" />
 
