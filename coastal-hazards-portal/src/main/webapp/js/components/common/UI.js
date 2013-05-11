@@ -4,6 +4,7 @@ var UI = function(args) {
 	me.spinner = args.spinner;
 	me.searchbar = args.searchbar;
 	me.mapdiv = args.mapdiv;
+	me.descriptionDiv = args.descriptionDiv;
 	LOG.debug('UI.js::constructor: UI class initialized.');
 
 	return $.extend(me, {
@@ -25,11 +26,7 @@ var UI = function(args) {
 				$('#content-row').css('min-height', contentRowHeight);
 				$('#map-wrapper').css('min-height', contentRowHeight);
 				me.mapdiv.css('height', contentRowHeight);
-
-				// Move the zoom control over to the right
-				$('.olControlZoom').css('left', me.mapdiv.width() - $('.olControlZoom').width() - 20);
-				// Move the layer switcher control down a bit to make room for zoom control
-				$('.olControlLayerSwitcher').css('top', 60);
+				me.descriptionDiv.css('height', contentRowHeight);
 			});
 		},
 		popoverClickHandler: function(e) {

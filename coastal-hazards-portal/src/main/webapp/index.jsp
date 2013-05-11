@@ -147,7 +147,7 @@
                     <div id="map-wrapper" class="span7">
 						<div id="map"></div>
                     </div>
-					<div id="description" class="span5"></div>
+					<div id="description-wrapper" class="span5"></div>
                 </div>	
 
                 <div  id="footer-row"  class="row-fluid">

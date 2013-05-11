@@ -13,7 +13,8 @@ $(document).ready(function() {
 	CONFIG.ui = new UI({
 		spinner: $("#application-spinner"),
 		searchbar: $('#app-navbar-search-form'),
-		mapdiv: $('#map')
+		mapdiv: $('#map'),
+		descriptionDiv: $('#description-wrapper')
 	});
 	CONFIG.ui.init();
 
@@ -56,8 +57,8 @@ $(document).ready(function() {
 						var item = CONFIG.ui.buildDescription({
 							'cswId' : result.id
 						});
-						$('#description').append(item);
-					})
+						$('#description-wrapper').append(item);
+					});
 				}
 			]
 		}
