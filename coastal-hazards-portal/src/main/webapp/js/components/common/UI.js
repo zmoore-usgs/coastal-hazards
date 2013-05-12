@@ -10,7 +10,6 @@ var UI = function(args) {
 	me.previousWidth = $(window).width();
 	me.currentSizing = '';
 	LOG.debug('UI.js::constructor: UI class initialized.');
-
 	return $.extend(me, {
 		init: function() {
 			this.bindSearchInput();
@@ -26,12 +25,6 @@ var UI = function(args) {
 
 			$(window).resize();
 		},
-		showSpinner: function() {
-			me.spinner.fadeIn();
-		},
-		hideSpinner: function() {
-			me.spinner.fadeOut();
-		},
 		bindWindowResize: function() {
 			$(window).resize(function() {
 				var currWidth = $(window).width();
@@ -44,11 +37,15 @@ var UI = function(args) {
 				if (me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) {
 					LOG.debug('resize-small');
 					me.currentSizing = 'small';
-					$.event.trigger('resize-small');
+					$.event.trigger('bootstrap-resize', {
+						'resize' : 'resize-small'
+					});
 				} else if (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber) {
 					LOG.debug('resize-large');
 					me.currentSizing = 'large';
-					$.event.trigger('resize-large');
+					$.event.trigger('bootstrap-resize', {
+						'resize' : 'resize-large'
+					});
 				}
 
 				if (me.currentSizing === 'small') {
@@ -58,7 +55,7 @@ var UI = function(args) {
 					}
 					me.descriptionDiv.css('height', descriptionHeight + 'px');
 					me.mapdiv.css('height', (contentRowHeight - descriptionHeight) + 'px');
-					
+
 				} else if (me.currentSizing === 'large') {
 					me.mapdiv.css('height', contentRowHeight + 'px');
 					me.descriptionDiv.css('height', contentRowHeight + 'px');
@@ -222,6 +219,107 @@ var UI = function(args) {
 					CONFIG.ui.popoverShowHandler.call(this);
 				}
 			});
+		},
+		showSpinner: function() {
+			me.spinner.fadeIn();
+		},
+		hideSpinner: function() {
+			me.spinner.fadeOut();
+		},
+		createSlideshow: function(args) {
+			args = args || {};
+			var results = args.results || CONFIG.popularity.results.sortBy(function(result) {
+				return parseInt(result.hotness);
+			}, true);
+			
+			$('#iosslider-container').detach();
+			var sliderContainer = $('<div />').addClass('iosSlider').attr('id', 'iosslider-container');
+			var sliderUl = $('<div />').addClass('slider').attr('id', 'iosslider-slider');
+			sliderContainer.append(sliderUl);
+
+			$('#description-wrapper').append(sliderContainer);
+
+			results.each(function(result) {
+				var item = CONFIG.ui.buildDescription({
+					'cswId': result.id
+				});
+
+				var slide = $('<div />').addClass('slide well').append(item);
+				$('#iosslider-slider').append(slide);
+			});
+
+			if (CONFIG.ui.currentSizing === 'large') {
+				sliderContainer.iosSliderVertical({
+					desktopClickDrag: true,
+					snapToChildren: true,
+					snapSlideCenter: true,
+					unselectableSelector: $('.unselectable'),
+					onSliderLoaded: function(event) {
+						$('.slide').each(function(index, slide) {
+							$(slide).addClass('slider-vertical-slide-inactive');
+							$(slide).css({
+								'max-height': event.sliderContainerObject.height()
+							});
+							$(slide).find('.description-description-row').css({
+								'max-height': $(slide).height() - $(slide).find('.description-title-row').height(),
+								'min-height': '150px'
+							});
+						});
+
+						event.currentSlideObject.removeClass('slider-vertical-slide-inactive');
+						event.currentSlideObject.removeClass('slider-vertical-slide-active');
+
+					},
+					onSliderResize: function(event) {
+						event.sliderContainerObject.css('width', $('#description-wrapper').width() + 'px');
+						event.sliderContainerObject.css('height', $('#description-wrapper').height() + 'px');
+
+						event.sliderObject.css('width', event.sliderContainerObject.width() + 'px');
+						event.sliderObject.css('height', event.sliderContainerObject.height() + 'px');
+
+						$('.slide').each(function(index, slide) {
+							$(slide).css({
+								'max-height': event.sliderContainerObject.height()
+							});
+							$(slide).find('.description-description-row').css({
+								'max-height': $(slide).height() - $(slide).find('.description-title-row').height()
+							});
+						});
+					},
+					onSlideChange: function(event) {
+						$('.slide').each(function(i, slide) {
+							$(slide).removeClass('slider-vertical-slide-active');
+							$(slide).addClass('slider-vertical-slide-inactive');
+						});
+
+						event.currentSlideObject.removeClass('slider-vertical-slide-inactive');
+						event.currentSlideObject.addClass('slider-vertical-slide-active');
+					}
+				});
+			} else if (CONFIG.ui.currentSizing === 'small') {
+				sliderContainer.iosSlider({
+					desktopClickDrag: true,
+					snapToChildren: true,
+					snapSlideCenter: true,
+					unselectableSelector: $('.unselectable'),
+					onSliderResize: function(event) {
+						event.sliderContainerObject.css('width', $('#description-wrapper').width() + 'px');
+						event.sliderContainerObject.css('height', $('#description-wrapper').height() + 'px');
+
+						event.sliderObject.css('width', event.sliderContainerObject.width() + 'px');
+						event.sliderObject.css('height', event.sliderContainerObject.height() + 'px');
+
+						$('.slide').each(function(index, slide) {
+							$(slide).css({
+								'height': event.sliderContainerObject.height()
+							});
+							$(slide).find('.description-description-row').css({
+								'height': $(slide).height() - $(slide).find('.description-title-row').height() - 40
+							});
+						});
+					}
+				});
+			}
 		}
 	});
 };
