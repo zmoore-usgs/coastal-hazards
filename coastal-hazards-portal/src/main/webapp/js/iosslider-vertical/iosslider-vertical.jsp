@@ -22,5 +22,13 @@
 		filter: alpha(opacity=40);
 		overflow : hidden;
 	}
+	
+	.description-title-stage-label {
+		font-size : 500%;
+	}
+	
+	.description-title-stage-container {
+		display: inline-block;
+	}
 
 </style>

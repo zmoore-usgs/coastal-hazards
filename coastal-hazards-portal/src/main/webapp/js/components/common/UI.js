@@ -23,10 +23,13 @@ var UI = function(args) {
 		bindWindowResize: function() {
 			$(window).resize(function() {
 				var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
-				$('#content-row').css('min-height', contentRowHeight);
-				$('#map-wrapper').css('min-height', contentRowHeight);
-				me.mapdiv.css('height', contentRowHeight);
-				me.descriptionDiv.css('height', contentRowHeight);
+				
+				if (contentRowHeight < 150) {
+					contentRowHeight = 150;
+				}
+				
+				me.mapdiv.css('height', contentRowHeight + 'px');
+				me.descriptionDiv.css('height', contentRowHeight + 'px');
 			});
 		},
 		popoverClickHandler: function(e) {
@@ -132,9 +135,9 @@ var UI = function(args) {
 				} else {
 					imageClass += 'icon-calendar';
 				}
-				imageColumn.append($('<h2 />').append($('<i />').addClass(imageClass)));
+				imageColumn.append($('<div />').addClass('description-title-stage-container span2').append($('<i />').addClass(imageClass + ' description-title-stage-label')));
 				
-				var titleColumn = $('<div />').addClass('description-title-column span11').append($('<p />').addClass('lead').html(item.name));
+				var titleColumn = $('<div />').addClass('description-title-column span10 offset1').append($('<p />').addClass('lead').html(item.name));
 				
 				titleRow.append(imageColumn, titleColumn);
 				

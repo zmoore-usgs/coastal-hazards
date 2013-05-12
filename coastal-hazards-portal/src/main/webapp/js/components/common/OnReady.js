@@ -82,28 +82,39 @@ $(document).ready(function() {
 								snapSlideCenter: true,
 								unselectableSelector: $('.unselectable'),
 								onSliderLoaded: function(event) {
-									
+
 									$('.slide').each(function(index, slide) {
 										$(slide).addClass('slider-vertical-slide-inactive');
-										$(slide).css('max-height', event.sliderContainerObject.height());
-										$(slide).find('.description-description-row').css('max-height', $(slide).height() - $(slide).find('.description-title-row').height());
+										$(slide).css({
+											'max-height': event.sliderContainerObject.height()
+										});
+										$(slide).find('.description-description-row').css({
+											'max-height' : $(slide).height() - $(slide).find('.description-title-row').height(),
+											'min-height' : '150px'	
+										});
 									});
-									
+
 									event.currentSlideObject.removeClass('slider-vertical-slide-inactive');
 									event.currentSlideObject.removeClass('slider-vertical-slide-active');
 
 								},
 								onSliderResize: function(event) {
-									$('.slide').each(function(index, slide) {
-										$(slide).css('max-height', event.sliderContainerObject.height());
-										$(slide).find('.description-description-row').css('max-height', $(slide).height() - $(slide).find('.description-title-row').height());
-									});
-									
 									$('#iosslider-container').css('width', $('#description-wrapper').width() + 'px');
 									$('#iosslider-container').css('height', $('#description-wrapper').height() + 'px');
-									
+
 									$('#iosslider-slider').css('width', $('#iosslider-container').width() + 'px');
 									$('#iosslider-slider').css('height', $('#iosslider-container').height() + 'px');
+
+									$('.slide').each(function(index, slide) {
+										$(slide).css({
+											'max-height': event.sliderContainerObject.height(),
+											'height': '40%',
+											'width' : '100%'
+										});
+										$(slide).find('.description-description-row').css({
+											'max-height': $(slide).height() - $(slide).find('.description-title-row').height()
+										});
+									});
 								},
 								onSlideChange: function(event) {
 									$('.slide').each(function(i, slide) {
