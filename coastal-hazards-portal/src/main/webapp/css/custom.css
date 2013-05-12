@@ -42,8 +42,3 @@ img {
 .dataLayersDiv > .labelSpan {
 	display : inline;
 }
-
-#description-wrapper {
-	overflow: auto;
-}
-

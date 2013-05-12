@@ -113,7 +113,6 @@ var UI = function(args) {
 			});
 		},
 		buildDescription : function(args) {
-			var size = args.size;
 			var cswId = args.cswId;
 			var item = CONFIG.popularity.getById({
 				'id' : cswId
@@ -133,13 +132,13 @@ var UI = function(args) {
 				} else {
 					imageClass += 'icon-calendar';
 				}
-				imageColumn.append($('<h2 />').append($('<i />').addClass(imageClass).html('&nbsp;')));
+				imageColumn.append($('<h2 />').append($('<i />').addClass(imageClass)));
 				
 				var titleColumn = $('<div />').addClass('description-title-column span11').append($('<p />').addClass('lead').html(item.name));
 				
 				titleRow.append(imageColumn, titleColumn);
 				
-				descriptionRow.append($('<p />').html(item.summary.abstract));
+				descriptionRow.append($('<p />').addClass('slide-vertical-description unselectable').html(item.summary.abstract));
 				
 				containerDiv.append(titleRow, descriptionRow);
 			}

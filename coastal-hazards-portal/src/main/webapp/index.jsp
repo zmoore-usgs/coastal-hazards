@@ -161,12 +161,19 @@
         </div>
 
         <jsp:include page="js/openlayers/openlayers.jsp"> 
+            <jsp:param name="debug-qualifier" value="<%= false%>" /> 
+        </jsp:include>
+		<%--
+	<jsp:include page="js/FlexSlider/flexslider.jsp"> 
+		<jsp:param name="debug-qualifier" value="<%= development%>" /> 
+	</jsp:include> 
+		--%>
+		<jsp:include page="js/iosslider/iosslider.jsp"> 
+            <jsp:param name="debug-qualifier" value="<%= development%>" /> 
+		</jsp:include>
+		<jsp:include page="js/iosslider-vertical/iosslider-vertical.jsp"> 
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
         </jsp:include>
-		<jsp:include page="js/FlexSlider/flexslider.jsp"> 
-            <jsp:param name="debug-qualifier" value="<%= development%>" /> 
-        </jsp:include>
-
 		<jsp:include page="css/css.jsp" />
 
         <script type="text/javascript" src="js/openlayers/lib/OpenLayers/Layer/Shorelines.js"></script>
