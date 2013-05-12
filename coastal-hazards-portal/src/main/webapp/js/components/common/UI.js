@@ -34,12 +34,15 @@ var UI = function(args) {
 					contentRowHeight = me.minimumHeight;
 				}
 
+				var updated = false;
 				if (me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) {
 					LOG.debug('resize-small');
 					me.currentSizing = 'small';
+					updated = true;
 				} else if (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber) {
 					LOG.debug('resize-large');
 					me.currentSizing = 'large';
+					updated = true;
 				}
 
 				if (me.currentSizing === 'small') {
@@ -53,6 +56,10 @@ var UI = function(args) {
 				} else if (me.currentSizing === 'large') {
 					me.mapdiv.height(contentRowHeight);
 					me.descriptionDiv.height(contentRowHeight);
+				}
+				
+				if (updated) {
+					CONFIG.ui.createSlideshow()
 				}
 
 				me.previousWidth = currWidth;
@@ -299,15 +306,17 @@ var UI = function(args) {
 						event.currentSlideObject.addClass('slider-vertical-slide-active');
 					}
 				});
-
-				$(window).on('orientationchange', function(event) {
+				var orientationChange = function(event) {
 					setTimeout(function() {
 //						$('.iosSlider').iosSliderVertical('update');
 						$('#iosslider-container').iosSliderVertical('destroy');
 						$('#iosslider-container').remove();
 						CONFIG.ui.createSlideshow();
 					}, 1000);
-				});
+				}
+
+				$(window).off('orientationchange', orientationChange)
+				$(window).on('orientationchange', orientationChange);
 			} else if (CONFIG.ui.currentSizing === 'small') {
 				sliderContainer.iosSlider({
 					desktopClickDrag: true,
