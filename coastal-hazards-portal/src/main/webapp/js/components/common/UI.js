@@ -57,7 +57,7 @@ var UI = function(args) {
 					me.mapdiv.height(contentRowHeight);
 					me.descriptionDiv.height(contentRowHeight);
 				}
-				
+
 				if (updated) {
 					CONFIG.ui.createSlideshow()
 				}
@@ -257,9 +257,9 @@ var UI = function(args) {
 					desktopClickDrag: true,
 					snapToChildren: true,
 					snapSlideCenter: true,
-					keyboardControls : true,
-					autoSlide : true,
-					autoSlideTransTimer : 1500,
+					keyboardControls: true,
+					autoSlide: true,
+					autoSlideTransTimer: 1500,
 					unselectableSelector: $('.unselectable'),
 					onSliderLoaded: function(event) {
 						$('.slide').each(function(index, slide) {
@@ -309,25 +309,14 @@ var UI = function(args) {
 						event.currentSlideObject.addClass('slider-slide-active');
 					}
 				});
-				var orientationChange = function(event) {
-					setTimeout(function() {
-//						$('.iosSlider').iosSliderVertical('update');
-						$('.iosSlider').iosSliderVertical('destroy');
-						$('.iosSlider').remove();
-						CONFIG.ui.createSlideshow();
-					}, 1000);
-				}
-
-				$(window).off('orientationchange', orientationChange)
-				$(window).on('orientationchange', orientationChange);
 			} else if (CONFIG.ui.currentSizing === 'small') {
 				sliderContainer.iosSlider({
 					desktopClickDrag: true,
 					snapToChildren: true,
 					snapSlideCenter: true,
-					keyboardControls : true,
-					autoSlide : true,
-					autoSlideTransTimer : 1500,
+					keyboardControls: true,
+					autoSlide: true,
+					autoSlideTransTimer: 1500,
 					unselectableSelector: $('.unselectable'),
 					onSliderResize: function(event) {
 						if (event) {
@@ -358,6 +347,15 @@ var UI = function(args) {
 					}
 				});
 			}
+
+			var orientationChange = function(event) {
+				setTimeout(function() {
+					CONFIG.ui.createSlideshow();
+				}, 1000);
+			};
+
+			$(window).off('orientationchange', orientationChange);
+			$(window).on('orientationchange', orientationChange);
 		}
 	});
 };
