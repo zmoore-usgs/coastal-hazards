@@ -5,17 +5,6 @@
 <script type="text/javascript" src="${param['relPath']}js/iosslider-vertical/jquery.iosslider-vertical<%= debug%>.js"></script>
 <style type="text/css">
 
-	.slider-vertical-slide-active {
-		opacity: 1;
-		filter: alpha(opacity=100);
-	}
-
-	.slider-vertical-slide-inactive {
-		opacity: 0.4;
-		filter: alpha(opacity=40);
-		overflow : hidden;
-	}
-	
 	.description-title-stage-label {
 		font-size : 500%;
 	}

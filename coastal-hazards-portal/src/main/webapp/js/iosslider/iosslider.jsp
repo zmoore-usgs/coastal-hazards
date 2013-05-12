@@ -35,4 +35,16 @@
 		overflow: auto;
 		max-width: 100%;
 	}
+	
+	.slider-slide-active {
+		opacity: 1;
+		filter: alpha(opacity=100);
+	}
+
+	.slider-slide-inactive {
+		opacity: 0.4;
+		filter: alpha(opacity=40);
+		overflow : hidden;
+	}
+
 </style>
