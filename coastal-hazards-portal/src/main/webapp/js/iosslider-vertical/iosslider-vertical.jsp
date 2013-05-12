@@ -4,13 +4,6 @@
 %>
 <script type="text/javascript" src="${param['relPath']}js/iosslider-vertical/jquery.iosslider-vertical<%= debug%>.js"></script>
 <style type="text/css">
-	.description-description-row {
-		overflow : auto;
-	}
-
-	#description-wrapper {
-		overflow: auto;
-	}
 
 	.slider-vertical-slide-active {
 		opacity: 1;

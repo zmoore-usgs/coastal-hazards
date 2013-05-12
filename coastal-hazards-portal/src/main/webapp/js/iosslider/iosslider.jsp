@@ -26,4 +26,12 @@
 		float: left;
 		position: relative;
 	}
+
+	.description-description-row {
+		overflow : auto;
+	}
+
+	#description-wrapper {
+		overflow: auto;
+	}
 </style>

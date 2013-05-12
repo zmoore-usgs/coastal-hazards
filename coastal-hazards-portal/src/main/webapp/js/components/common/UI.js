@@ -5,6 +5,10 @@ var UI = function(args) {
 	me.searchbar = args.searchbar;
 	me.mapdiv = args.mapdiv;
 	me.descriptionDiv = args.descriptionDiv;
+	me.magicResizeNumber = 767;
+	me.minimumHeight = args.minimumHeight || 480;
+	me.previousWidth = $(window).width();
+	me.currentSizing = '';
 	LOG.debug('UI.js::constructor: UI class initialized.');
 
 	return $.extend(me, {
@@ -12,6 +16,14 @@ var UI = function(args) {
 			this.bindSearchInput();
 			this.bindWindowResize();
 			this.bindSubmenuButtons();
+
+			var currWidth = me.previousWidth;
+			if (currWidth <= me.magicResizeNumber) {
+				me.currentSizing = 'small';
+			} else if (currWidth > me.magicResizeNumber) {
+				me.currentSizing = 'large';
+			}
+
 			$(window).resize();
 		},
 		showSpinner: function() {
@@ -22,14 +34,37 @@ var UI = function(args) {
 		},
 		bindWindowResize: function() {
 			$(window).resize(function() {
+				var currWidth = $(window).width();
 				var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
-				
-				if (contentRowHeight < 150) {
-					contentRowHeight = 150;
+
+				if (contentRowHeight < me.minimumHeight) {
+					contentRowHeight = me.minimumHeight;
 				}
-				
-				me.mapdiv.css('height', contentRowHeight + 'px');
-				me.descriptionDiv.css('height', contentRowHeight + 'px');
+
+				if (me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) {
+					LOG.debug('resize-small');
+					me.currentSizing = 'small';
+					$.event.trigger('resize-small');
+				} else if (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber) {
+					LOG.debug('resize-large');
+					me.currentSizing = 'large';
+					$.event.trigger('resize-large');
+				}
+
+				if (me.currentSizing === 'small') {
+					var descriptionHeight = Math.round(contentRowHeight * .30);
+					if (descriptionHeight < 280) {
+						descriptionHeight = 280;
+					}
+					me.descriptionDiv.css('height', descriptionHeight + 'px');
+					me.mapdiv.css('height', (contentRowHeight - descriptionHeight) + 'px');
+					
+				} else if (me.currentSizing === 'large') {
+					me.mapdiv.css('height', contentRowHeight + 'px');
+					me.descriptionDiv.css('height', contentRowHeight + 'px');
+				}
+
+				me.previousWidth = currWidth;
 			});
 		},
 		popoverClickHandler: function(e) {
@@ -115,18 +150,18 @@ var UI = function(args) {
 
 			});
 		},
-		buildDescription : function(args) {
+		buildDescription: function(args) {
 			var cswId = args.cswId;
 			var item = CONFIG.popularity.getById({
-				'id' : cswId
+				'id': cswId
 			});
-			
+
 			if (item) {
 				var containerDiv = $('<div />').addClass('description-container container-fluid');
 				var titleRow = $('<div />').addClass('description-title-row row-fluid');
 				var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
-				
-				var imageColumn = $('<div />').addClass('description-image-column span1');
+
+				var imageColumn = $('<div />').addClass('description-image-column span1 hidden-phone');
 				var imageClass = 'muted ';
 				if (item.type === 'storms') {
 					imageClass += 'icon-bolt';
@@ -136,16 +171,16 @@ var UI = function(args) {
 					imageClass += 'icon-calendar';
 				}
 				imageColumn.append($('<div />').addClass('description-title-stage-container span2').append($('<i />').addClass(imageClass + ' description-title-stage-label')));
-				
+
 				var titleColumn = $('<div />').addClass('description-title-column span10 offset1').append($('<p />').addClass('lead').html(item.name));
-				
+
 				titleRow.append(imageColumn, titleColumn);
-				
+
 				descriptionRow.append($('<p />').addClass('slide-vertical-description unselectable').html(item.summary.abstract));
-				
+
 				containerDiv.append(titleRow, descriptionRow);
 			}
-			
+
 			return containerDiv;
 		},
 		bindShareMenu: function(args) {
