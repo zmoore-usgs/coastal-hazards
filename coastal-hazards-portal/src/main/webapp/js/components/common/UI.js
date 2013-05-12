@@ -37,15 +37,9 @@ var UI = function(args) {
 				if (me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) {
 					LOG.debug('resize-small');
 					me.currentSizing = 'small';
-//					$.event.trigger('bootstrap-resize', {
-//						'resize': 'resize-small'
-//					});
 				} else if (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber) {
 					LOG.debug('resize-large');
 					me.currentSizing = 'large';
-//					$.event.trigger('bootstrap-resize', {
-//						'resize': 'resize-large'
-//					});
 				}
 
 				if (me.currentSizing === 'small') {
@@ -53,12 +47,12 @@ var UI = function(args) {
 					if (descriptionHeight < 280) {
 						descriptionHeight = 280;
 					}
-					me.descriptionDiv.css('height', descriptionHeight + 'px');
-					me.mapdiv.css('height', (contentRowHeight - descriptionHeight) + 'px');
+					me.descriptionDiv.height(descriptionHeight);
+					me.mapdiv.height(contentRowHeight - descriptionHeight);
 
 				} else if (me.currentSizing === 'large') {
-					me.mapdiv.css('height', contentRowHeight + 'px');
-					me.descriptionDiv.css('height', contentRowHeight + 'px');
+					me.mapdiv.height(contentRowHeight);
+					me.descriptionDiv.height(contentRowHeight);
 				}
 
 				me.previousWidth = currWidth;
@@ -268,27 +262,29 @@ var UI = function(args) {
 
 						event.currentSlideObject.removeClass('slider-vertical-slide-inactive');
 						event.currentSlideObject.removeClass('slider-vertical-slide-active');
-
 					},
 					onSliderResize: function(event) {
 						if (event) {
-							event.sliderContainerObject.css('width', $('#description-wrapper').width() + 'px');
-							event.sliderContainerObject.css('height', $('#description-wrapper').height() + 'px');
-
-							event.sliderObject.css('width', event.sliderContainerObject.width() + 'px');
-							event.sliderObject.css('height', event.sliderContainerObject.height() + 'px');
+							event.sliderContainerObject.css({
+								'width': $('#description-wrapper').width() + 'px',
+								'height': $('#description-wrapper').height() + 'px'
+							})
+							event.sliderObject.css({
+								'width': event.sliderContainerObject.width() + 'px',
+								'height': event.sliderContainerObject.height() + 'px'
+							})
 
 							$('.slide').each(function(index, slide) {
 								var title = $(slide).find('.description-title-row');
 								var descr = $(slide).find('.description-description-row');
 								var slider = $(this.parentNode);
 								$(slide).css({
-									'max-height': event.sliderContainerObject.height(),
-									'height' : title.height() + descr.height()
+									'max-height': event.sliderContainerObject.height() + 'px',
+									'height': title.height() + descr.height() + 'px'
 								});
+
 								$(slide).find('.description-description-row').css({
-									'max-height': $(slide).height() - $(slide).find('.description-title-row').height(),
-									'min-height': '150px'
+									'max-height': $(slide).height() - $(slide).find('.description-title-row').height() + 'px'
 								});
 							});
 						}
@@ -302,6 +298,15 @@ var UI = function(args) {
 						event.currentSlideObject.removeClass('slider-vertical-slide-inactive');
 						event.currentSlideObject.addClass('slider-vertical-slide-active');
 					}
+				});
+
+				$(window).on('orientationchange', function(event) {
+					setTimeout(function() {
+//						$('.iosSlider').iosSliderVertical('update');
+						$('#iosslider-container').iosSliderVertical('destroy');
+						$('#iosslider-container').remove();
+						CONFIG.ui.createSlideshow();
+					}, 1000);
 				});
 			} else if (CONFIG.ui.currentSizing === 'small') {
 				sliderContainer.iosSlider({

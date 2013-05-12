@@ -949,7 +949,7 @@
 			}
 			
 			this.settings = settings;
-			this.data = $(node).parent().data('iosslider');
+			this.data = $(node).parent().data('iosSliderVertical');
 			this.sliderObject = node;
 			this.sliderContainerObject = $(node).parent();
 
@@ -2375,7 +2375,7 @@
 					clearTimeout(scrollTimeouts[i]);
 				}
 	    		
-	    		$this.removeData('iosslider');
+	    		$this.removeData('iosSliderVertical');
 	    		$this.removeData('args');
 		    	
 			});
