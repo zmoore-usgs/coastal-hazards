@@ -88,7 +88,13 @@ var OWS = function(endpoint) {
             var callbacks = args.callbacks || {};
             var sucessCallbacks = callbacks.success || [];
             var errorCallbacks = callbacks.error || [];
-            
+            sucessCallbacks.push(function() {
+				LOG.debug('OnReady.js:: WMS Capabilities retrieved for your session');
+			});
+			errorCallbacks.push(function() {
+				LOG.warn('OnReady.js:: There was an error in retrieving the WMS capabilities for your session. This is probably be due to a new session. Subsequent loads should not see this error');
+			});
+			
             LOG.debug('OWS.js::getWMSCapabilities: A request is being made for GetCapabilities for the namespace: ' + namespace);
             $.ajax(url, {
                 context: args,

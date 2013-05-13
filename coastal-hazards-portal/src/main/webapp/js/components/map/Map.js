@@ -131,8 +131,8 @@ var Map = function(args) {
 			}
 	));
 
-	me.map.addLayer(new OpenLayers.Layer.Markers('geocoding-marker-layer',{
-		displayInLayerSwitcher : false
+	me.map.addLayer(new OpenLayers.Layer.Markers('geocoding-marker-layer', {
+		displayInLayerSwitcher: false
 	}));
 
 	LOG.debug('Map.js::constructor:Adding ontrols to map');
@@ -144,10 +144,19 @@ var Map = function(args) {
 		roundedCorner: true
 	}));
 
+	var panel = new OpenLayers.Control.Panel();
+	panel.id = 'ol-custom-panel';
+	panel.addControls([
+		new OpenLayers.Control.MousePosition()
+	]);
+	me.map.addControl(panel);
+
 	LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
 	me.map.zoomToExtent(initialExtent, true);
-	$('.olControlZoom').css('left', $('#' + mapDivId).width() - $('.olControlZoom').width() - 20);
-	$('.olControlLayerSwitcher').css('top', 60);
+	
+	var zoomControlDiv = me.map.getControlsByClass("OpenLayers.Control.Zoom")[0].div;
+	var panelTop = zoomControlDiv.offsetTop + zoomControlDiv.offsetHeight + 40;
+	$('#ol-custom-panel').css('top', panelTop);
 
 	LOG.debug('Map.js::constructor: Map class initialized.');
 	return $.extend(me, {
