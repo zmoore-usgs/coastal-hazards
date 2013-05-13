@@ -303,12 +303,11 @@ var UI = function(args) {
 							}
 
 							$(slide).css({
-								'max-height': event.sliderContainerObject.height() + 'px',
-								'height': slideHeight + 'px'
+								'height': slideHeight - 30 + 'px'
 							});
 
 							descr.css({
-								'max-height': $(slide).height() - buttons.height() - title.height() + 'px'
+								'height': $(slide).height() - buttons.height() - title.height() + 'px'
 							});
 						});
 					};
@@ -337,12 +336,10 @@ var UI = function(args) {
 							var descr = $(slide).find('.description-description-row');
 
 							$(slide).css({
-								'max-height': event.sliderContainerObject.height() - 20 + 'px',
 								'height': event.sliderContainerObject.height() - 20 + 'px'
 							});
 							
 							descr.css({
-								'max-height': event.sliderContainerObject.height() - buttons.height() - title.height() - 20 + 'px',
 								'height': event.sliderContainerObject.height() - buttons.height() - title.height() - 20 + 'px'
 							});
 						});
