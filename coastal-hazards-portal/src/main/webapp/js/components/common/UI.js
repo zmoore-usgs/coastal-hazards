@@ -188,6 +188,11 @@ var UI = function(args) {
 				descriptionRow.append($('<p />').addClass('slide-vertical-description unselectable').html(item.summary.abstract));
 
 				containerDiv.append(titleRow, descriptionRow);
+				if (CONFIG.ui.currentSizing === 'large') {
+					containerDiv.addClass('description-container-large');
+				} else if (CONFIG.ui.currentSizing === 'small') {
+					containerDiv.addClass('description-container-small');
+				}
 			}
 
 			return containerDiv;
@@ -264,39 +269,6 @@ var UI = function(args) {
 					$('#iosslider-slider').append(slide);
 				});
 
-				var resize = function(event) {
-					toggleClassForActiveSlide(event);
-					
-					event.sliderContainerObject.css({
-						'width': $('#description-wrapper').width() + 'px',
-						'height': $('#description-wrapper').height() + 'px'
-					});
-					event.sliderObject.css({
-						'width': event.sliderContainerObject.width() + 'px',
-						'height': event.sliderContainerObject.height() + 'px'
-					});
-
-					$('.slide').each(function(index, slide) {
-						var buttons = $(slide).find('.description-button-row');
-						var title = $(slide).find('.description-title-row');
-						var descr = $(slide).find('.description-description-row');
-
-						var slideHeight = buttons.height() + title.height() + descr.height();
-						if (slideHeight > event.sliderContainerObject.height()) {
-							slideHeight = event.sliderContainerObject.height();
-						}
-
-						$(slide).css({
-							'max-height': event.sliderContainerObject.height() + 'px',
-							'height' : slideHeight + 'px'
-						});
-
-						descr.css({
-							'max-height': $(slide).height() - buttons.height() - title.height() + 'px'
-						});
-					});
-				};
-
 				var toggleClassForActiveSlide = function(event) {
 					$('.slide').each(function(i, slide) {
 						$(slide).removeClass('slider-slide-active');
@@ -308,6 +280,39 @@ var UI = function(args) {
 				};
 
 				if (CONFIG.ui.currentSizing === 'large') {
+					var resize = function(event) {
+						toggleClassForActiveSlide(event);
+
+						event.sliderContainerObject.css({
+							'width': $('#description-wrapper').width() + 'px',
+							'height': $('#description-wrapper').height() + 'px'
+						});
+						event.sliderObject.css({
+							'width': event.sliderContainerObject.width() + 'px',
+							'height': event.sliderContainerObject.height() + 'px'
+						});
+
+						$('.slide').each(function(index, slide) {
+							var buttons = $(slide).find('.description-button-row');
+							var title = $(slide).find('.description-title-row');
+							var descr = $(slide).find('.description-description-row');
+
+							var slideHeight = buttons.height() + title.height() + descr.height();
+							if (slideHeight > event.sliderContainerObject.height()) {
+								slideHeight = event.sliderContainerObject.height();
+							}
+
+							$(slide).css({
+								'max-height': event.sliderContainerObject.height() + 'px',
+								'height': slideHeight + 'px'
+							});
+
+							descr.css({
+								'max-height': $(slide).height() - buttons.height() - title.height() + 'px'
+							});
+						});
+					};
+					
 					sliderContainer.iosSliderVertical({
 						desktopClickDrag: true,
 						snapToChildren: true,
@@ -321,16 +326,24 @@ var UI = function(args) {
 						onSlideChange: toggleClassForActiveSlide
 					});
 				} else if (CONFIG.ui.currentSizing === 'small') {
-					var resize = function(event) {
-						var containerHeight = $(event.sliderContainerObject).parent();
-						event.sliderContainerObject.css('height', containerHeight.height() + 'px');
-						event.sliderObject.css('height', containerHeight.height() + 'px');
+					var resizeSmall = function(event) {
+						var container = $(event.sliderContainerObject).parent();
+						event.sliderContainerObject.css('height', (container.height()) + 'px');
+						event.sliderObject.css('height', (container.height()) + 'px');
+						
 						$('.slide').each(function(index, slide) {
+							var buttons = $(slide).find('.description-button-row');
+							var title = $(slide).find('.description-title-row');
+							var descr = $(slide).find('.description-description-row');
+
 							$(slide).css({
-								'height': event.sliderContainerObject.height + 'px'
+								'max-height': event.sliderContainerObject.height() - 20 + 'px',
+								'height': event.sliderContainerObject.height() - 20 + 'px'
 							});
-							$(slide).find('.description-description-row').css({
-								'height': $(slide).height() - $(slide).find('.description-title-row').height() - 40 + 'px'
+							
+							descr.css({
+								'max-height': event.sliderContainerObject.height() - buttons.height() - title.height() - 20 + 'px',
+								'height': event.sliderContainerObject.height() - buttons.height() - title.height() - 20 + 'px'
 							});
 						});
 					};
@@ -343,8 +356,8 @@ var UI = function(args) {
 						autoSlide: true,
 						autoSlideTransTimer: 1500,
 						unselectableSelector: $('.unselectable'),
-						onSliderLoaded: resize,
-						onSliderResize: resize,
+						onSliderLoaded: resizeSmall,
+						onSliderResize: resizeSmall,
 						onSlideChange: toggleClassForActiveSlide
 					});
 				}
@@ -355,8 +368,7 @@ var UI = function(args) {
 
 				$(window).off('orientationchange', orientationChange);
 				$(window).on('orientationchange', orientationChange);
-			}, 1000)
-
+			}, 1000);
 		}
 	});
 };

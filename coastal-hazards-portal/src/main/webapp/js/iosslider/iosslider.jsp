@@ -29,7 +29,6 @@
 
 	.description-description-row {
 		overflow : auto;
-		min-height: 150px;
 	}
 
 	#description-wrapper {
@@ -48,8 +47,16 @@
 		overflow : hidden;
 	}
 
-	.slider-slide-inactive .description-button-row { 
+	.slider-slide-inactive .description-container-large .description-button-row { 
 		display: none;
+	}
+	
+	.description-container-small btn {
+		height: auto;
+	}
+	
+	.description-container-small i {
+		font-size: 0.65em;
 	}
 
 </style>
