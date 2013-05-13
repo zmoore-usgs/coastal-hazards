@@ -116,7 +116,7 @@ var UI = function() {
 				'mouseup' : function() {
 					$('#sign-in-img').attr('src', 'images/OpenID/White-signin_Medium_base_44dp.png');
 				}
-			})
+			});
 		},
 		precacheImages : function() {
 		var tempImage = [];
@@ -179,12 +179,12 @@ var UI = function() {
         switchStage : function (stage) {
             LOG.info('UI.js::switchImage: Changing application context to ' + me.work_stages[stage]);
             
-            var caller = me.work_stages_objects[stage]
+            var caller = me.work_stages_objects[stage];
             me.work_stages_objects.filter(function(stage) {
-                return stage != caller
+                return stage !== caller;
             }).each(function(stage) {
                 stage.leaveStage();
-            })
+            });
             
             caller.enterStage();
             
@@ -193,7 +193,7 @@ var UI = function() {
                 var imgId = '#' + workStage + '_img';
                 if (stageIndex < stage) {
                     $(imgId).attr('src', 'images/workflow_figures/' + workStage + '_past.png');
-                } else if (stageIndex == stage) {
+                } else if (stageIndex === stage) {
                     $(imgId).attr('src', 'images/workflow_figures/' + workStage + '.png');
                 } else {
                     $(imgId).attr('src', 'images/workflow_figures/' + workStage + '_future.png');
@@ -444,12 +444,12 @@ var UI = function() {
                     var tbodyTr = $('<tr />');
                     
                     $(Object.values(feature.attributes)).each(function(aInd, aVal) {
-                        tbodyTr.append($('<td />').append(aVal))
-                    })
+                        tbodyTr.append($('<td />').append(aVal));
+                    });
                     
                     var config =  CONFIG.tempSession.getStage(Shorelines.stage);
                     var date = new Date(feature.attributes[groupingColumn]).format(config.dateFormat);
-                    var isVisible = CONFIG.tempSession.getDisabledDatesForShoreline(layerName).indexOf(date) == -1;
+                    var isVisible = CONFIG.tempSession.getDisabledDatesForShoreline(layerName).indexOf(date) === -1;
                     var  disableButton = $('<button />')
                     .addClass('btn btn-year-toggle')
                     .attr({
@@ -465,7 +465,7 @@ var UI = function() {
                         disableButton.addClass('btn-danger');
                     }
                     
-                    tbodyTr.append($('<td />').append(disableButton))
+                    tbodyTr.append($('<td />').append(disableButton));
                     tbody.append(tbodyTr);
                 });
                 
@@ -486,8 +486,8 @@ var UI = function() {
                 $('.btn-year-toggle').click(function(event) {
                     var date = $(event.target).attr('date');
                     var toggle = $('#shoreline-table-tabcontent>#'+$(event.target).attr('layer').split(':')[1]+' .feature-toggle').filter(function() {
-                        return Date.parse($(this).data('date')) == Date.parse(date)
-                    })
+                        return Date.parse($(this).data('date')) === Date.parse(date);
+                    });
                     
                     var allButtonsOfSameYear = $('.btn-year-toggle[date="'+date+'"]');
                     if (toggle.bootstrapSwitch('status')) {
@@ -543,7 +543,7 @@ var UI = function() {
                     var close = nextMessageObj.close;
                     var message = nextMessageObj.message;
                     var displayTime = nextMessageObj.displayTime;
-                    var createAlertFn = args.createAlertFn
+                    var createAlertFn = args.createAlertFn;
                     var queueLength = CONFIG.alertQueue[args.caller.stage].length;
                     
                     alertDom.addClass('alert fade in');
@@ -597,7 +597,7 @@ var UI = function() {
                     alertContainer : alertContainer,
                     createAlertFn : createAlert,
                     caller : caller
-                })
+                });
             }
         },
         switchTab : function(args) {
@@ -820,12 +820,35 @@ var UI = function() {
                 }]
             });
         },
+		
+		/**
+		 * Displays the AJAX animated spinner graphic
+		 * 
+		 * @returns {undefined}
+		 */
         showSpinner: function() {
             $("#application-spinner").fadeIn();
         },
+				
+		/**
+		 * Hides the AJAX animated spinner graphic
+		 * 
+		 * @returns {undefined}
+		 */
         hideSpinner: function() {
             $("#application-spinner").fadeOut();
         },
+				
+		/**
+		 * Given the response from the geocoding service, build the popup on the map
+		 * to display the results
+		 * 
+		 * @param {Object} {
+		 *		"currentLocationIndex" : 0, // An index into the locations dropdown 
+		 *		"locations" : $('#location-container').data('locations')
+		 *	}
+		 * @returns {undefined}
+		 */
         buildGeocodingPopup: function(args) {
             var map = CONFIG.map.getMap();
             var currentLocationIndex = args.currentLocationIndex || 0;
@@ -915,8 +938,15 @@ var UI = function() {
                 }
             });
         },
+				
+		/**
+		 * Binds the search input text box to submit a query to the geolocation
+		 * service and handle the response
+		 * 
+		 * @returns {undefined}
+		 */
         bindSearchInput: function() {
-            $('#app-navbar-search-form').submit(function(evt) {
+            $('#app-navbar-search-form').submit(function() {
                 var query = $('#app-navbar-search-input').val();
                 if (query) {
                     $.ajax({
@@ -934,11 +964,9 @@ var UI = function() {
                         dataType: 'jsonp',
                         success: function(json) {
                             if (json.locations[0]) {
-                                
                                 CONFIG.ui.buildGeocodingPopup({
                                     locations: json.locations
                                 });
-
                             } else {
                                 CONFIG.ui.showAlert({
                                     close: false,
@@ -955,7 +983,14 @@ var UI = function() {
 
             });
         },
-		bindBootstroPrevNextButtons: function() {
+		
+		/**
+		 * Special handling is required for the previous/next steps. Binds the steps 
+		 * to what stage/view should be opened at each one
+		 * 
+		 * @returns {undefined}
+		 */
+		bindIntroPrevNextButtons: function() {
 			bootstro.onStepFunc = function(args) {
 				switch (args.idx) {
 					case 4 :
@@ -1010,6 +1045,12 @@ var UI = function() {
 				}
 			};
 		},
+				
+		/**
+		 * Binds the introductory menu items to the click event
+		 * 
+		 * @returns {undefined}
+		 */
 		bindIntroMenuItems : function() {
 			$('#nav-menu-intro').on('click', function() {
 				bootstro.start(undefined, {
@@ -1057,8 +1098,13 @@ var UI = function() {
 				bootstro.go_to(17);
 			});
 		},
+				
+		/**
+		 * Adds content to the introductory sections
+		 * @returns {undefined}
+		 */
 		addIntroContent: function() {
-			this.bindBootstroPrevNextButtons();
+			this.bindIntroPrevNextButtons();
 			this.bindIntroMenuItems();
 
 			$('#app-navbar-container').addClass('bootstro').attr({
@@ -1278,25 +1324,39 @@ var UI = function() {
 				buttons: [{
 						text: 'Submit',
 						callback: function() {
-							var data = new FormData();
-							data.append('md-layers-select', $('#md-layers-select').val());
-							data.append('metadata', $('#form-file-input').val());
+							var formData = new FormData();
+							formData.append('md-layers-select', $('#md-layers-select').val());
+							formData.append('metadata', $('#form-file-input').val());
 							$.each($('#form-file-input')[0].files, function(i, file) {
-								data.append('metadata', file);
-							})
+								formData.append('metadata', file);
+							});
 							$.ajax({
 								type : 'POST',
 								url : 'service/publish',
 								cache : false,
 								contentType : false,
 								processData : false,
-								data : data,
+								data : formData,
 								dataType : 'json',
-								success : function(data) {
-									LOG.debug(JSON.stringify(data));
+								success : function() {
+									CONFIG.ows.getWMSCapabilities({
+										callbacks: {
+											success: [
+												CONFIG.tempSession.updateLayersFromWMS,
+												function(data, textStatus, jqXHR) {
+													CONFIG.ui.work_stages_objects.each(function(stage) {
+														stage.appInit();
+														stage.populateFeaturesList(data, textStatus, jqXHR);
+													});
+												}
+											],
+											error: [
+												// TODO: What do we do no error here?
+											]
+										}
+									});
 								}
-							})
-								
+							});
 						}
 					}
 				],
@@ -1448,7 +1508,7 @@ var UI = function() {
 					}).html('Log Out');
 					loginListItem.append(logoutMenuItem.append(listItem.append(logoutLink)));
 
-
+					// IF it is a USGS address
 					if (email.toLowerCase().endsWith('usgs.gov')) {
 						// APPEND the publish menu item to the menu
 						var publishListItem = $('<li />').attr('role', 'presentation');
