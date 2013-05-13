@@ -59,7 +59,7 @@ var UI = function(args) {
 				}
 
 				if (updated) {
-					CONFIG.ui.createSlideshow()
+					CONFIG.ui.createSlideshow();
 				}
 
 				me.previousWidth = currWidth;

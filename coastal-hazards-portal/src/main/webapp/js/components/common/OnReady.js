@@ -41,12 +41,6 @@ $(document).ready(function() {
 		}
 	});
 
-	var initAllStages = function() {
-		splashUpdate("Initializing Application sections...");
-		[CONFIG.storms, CONFIG.vulnerability, CONFIG.historical].each(function(item) {
-			item.init();
-		});
-	};
 	var sid = CONFIG.session.getIncomingSid();
 	if (sid) {
 		splashUpdate("Reading session information from server...");
@@ -63,11 +57,10 @@ $(document).ready(function() {
 			}
 		});
 	}
-
+	
 	splashUpdate("Starting Application...");
 	$('#application-overlay').fadeOut(2000, function() {
 		$('#application-overlay').remove();
 		splashUpdate = undefined;
 	});
-
 });

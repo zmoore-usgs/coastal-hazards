@@ -33,3 +33,13 @@ img {
 .dataLayersDiv > .labelSpan {
 	display : inline;
 }
+
+.olControlPanel div { 
+	display:block;
+	width:  48px;
+	height: 48px;
+	margin: 5px;
+	background-color: #00008B;
+    -moz-border-radius: 1em 0 0 0;
+	border-radius:  1em;
+}
