@@ -425,9 +425,7 @@
     <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.0.2/css/font-awesome<%= development ? ".min" : "" %>.css" />
 
     <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
-    <jsp:include page="js/openlayers/openlayers.jsp">
-        <jsp:param name="debug-qualifier" value="<%= development%>" />
-    </jsp:include>
+    <script type="text/javascript" src="webjars/openlayers/2.12/OpenLayers<%= development ? ".debug" : "" %>.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading JS Utilities...");</script>
     <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min" %>.js"></script>
