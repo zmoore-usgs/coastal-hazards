@@ -143,13 +143,13 @@ var Map = function(args) {
 	me.map.addControl(new OpenLayers.Control.LayerSwitcher({
 		roundedCorner: true
 	}));
-
-	var panel = new OpenLayers.Control.Panel();
-	panel.id = 'ol-custom-panel';
-	panel.addControls([
-		new OpenLayers.Control.MousePosition()
-	]);
-	me.map.addControl(panel);
+//
+//	var panel = new OpenLayers.Control.Panel();
+//	panel.id = 'ol-custom-panel';
+//	panel.addControls([
+//		new OpenLayers.Control.MousePosition()
+//	]);
+//	me.map.addControl(panel);
 
 	LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
 	me.map.zoomToExtent(initialExtent, true);

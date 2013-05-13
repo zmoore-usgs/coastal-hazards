@@ -29,13 +29,14 @@
 
 	.description-description-row {
 		overflow : auto;
+		min-height: 150px;
 	}
 
 	#description-wrapper {
 		overflow: auto;
 		max-width: 100%;
 	}
-	
+
 	.slider-slide-active {
 		opacity: 1;
 		filter: alpha(opacity=100);
@@ -45,6 +46,10 @@
 		opacity: 0.4;
 		filter: alpha(opacity=40);
 		overflow : hidden;
+	}
+
+	.slider-slide-inactive .description-button-row { 
+		display: none;
 	}
 
 </style>

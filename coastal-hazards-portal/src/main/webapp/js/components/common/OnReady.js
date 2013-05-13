@@ -31,10 +31,6 @@ $(document).ready(function() {
 				function() {
 					if (CONFIG.popularity.results) {
 						CONFIG.ui.createSlideshow();
-						$('#iosslider-container').resize();
-						$(window).on('bootstrap-resize', function(){
-							CONFIG.ui.createSlideshow();
-						});
 					}
 				}
 			]
