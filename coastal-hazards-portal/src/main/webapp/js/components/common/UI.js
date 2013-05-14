@@ -118,7 +118,7 @@ var UI = function(args) {
 		},
 		bindSearchInput: function() {
 			me.searchbar.submit(function(evt) {
-				var query = $('#app-navbar-search-input').val();
+				var query = $('.search-query').val();
 				if (query) {
 					$.ajax({
 						type: 'GET',
@@ -161,12 +161,11 @@ var UI = function(args) {
 				var buttonGroup = $('<div />').addClass('btn-group');
 				var titleRow = $('<div />').addClass('description-title-row row-fluid');
 				var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
-				var buttons = [
-					$('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('icon-zoom-in slide-button muted')),
-					$('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('icon-twitter slide-button muted')),
-					$('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('icon-pause slide-button muted')),
-					$('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('icon-fast-backward slide-button muted'))
-				]
+				var info = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-zoom-in icon-zoom-in slide-button muted'));
+				var tweet = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-twitter icon-twitter slide-button muted'));
+				var pause = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-pause icon-pause slide-button muted'));
+				var back = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-fast-backward icon-fast-backward slide-button muted'));
+				var buttons = [info, tweet, pause, back];
 				
 				buttons.each(function(btn) {
 					$(btn).on('mouseover', function() {

@@ -10,17 +10,17 @@
                 </a>
 
 				
-                <span id="app-navbar-brand" class="visible-desktop visible-tablet hidden-phone"><h4>USGS Coastal Hazards Portal</h4></span>
-                <span id="app-navbar-brand" class="hidden-desktop hidden-tablet visible-phone"><h4>USGS CCH</h4></span>
+                <span class="app-navbar-brand visible-desktop visible-tablet hidden-phone"><h4>USGS Coastal Hazards Portal</h4></span>
+                <span class="app-navbar-brand hidden-desktop hidden-tablet visible-phone"><h4>USGS CCH</h4></span>
 				
 				
-				<form id="app-navbar-search-form" class="navbar-search pull-right visible-tablet visible-desktop hidden-phone" action="javascript:void(0);">
-					<i id="app-navbar-search-icon" class="icon-search"></i><input id="app-navbar-search-input" type="text" class="search-query span2" placeholder="Location Search">
+				<form class="app-navbar-search-form navbar-search pull-right visible-tablet visible-desktop hidden-phone" action="javascript:void(0);">
+					<i class="app-navbar-search-icon icon-search"></i><input id="app-navbar-search-input-1" type="text" class="search-query span2" placeholder="Location Search">
 				</form>
 				
                 <div class="nav-collapse hidden-tablet hidden-desktop visible-phone">
-					<form id="app-navbar-search-form" class="navbar-search pull-right" action="javascript:void(0);">
-						<i id="app-navbar-search-icon" class="icon-search"></i><input id="app-navbar-search-input" type="text" class="search-query span2" placeholder="Location Search">
+					<form class="app-navbar-search-form navbar-search pull-right" action="javascript:void(0);">
+						<i class="app-navbar-search-icon icon-search"></i><input id="app-navbar-search-input-2" type="text" class="search-query span2" placeholder="Location Search">
 					</form>
 
                 </div>

@@ -34,7 +34,11 @@ img {
 	display : inline;
 }
 
-.olControlPanel div { 
+.slide-menu-icon-twitter {
+	color : #7EB3CD;
+}
+
+/*.olControlPanel div { 
 	display:block;
 	width:  48px;
 	height: 48px;
@@ -42,4 +46,4 @@ img {
 	background-color: #00008B;
     -moz-border-radius: 1em 0 0 0;
 	border-radius:  1em;
-}
+}*/

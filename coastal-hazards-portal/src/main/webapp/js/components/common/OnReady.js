@@ -12,7 +12,7 @@ $(document).ready(function() {
 	splashUpdate("Initializing UI...");
 	CONFIG.ui = new UI({
 		spinner: $("#application-spinner"),
-		searchbar: $('#app-navbar-search-form'),
+		searchbar: $('.app-navbar-search-form'),
 		mapdiv: $('#map'),
 		descriptionDiv: $('#description-wrapper')
 	});
