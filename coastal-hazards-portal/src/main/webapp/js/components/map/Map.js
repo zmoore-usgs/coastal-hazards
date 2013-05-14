@@ -178,17 +178,33 @@ var Map = function(args) {
 				layerBounds.transform(new OpenLayers.Projection(fromProjection), new OpenLayers.Projection("EPSG:900913"));
 			}
 
-			var box = me.boxLayer.markers.find(function(marker) {
+			var marker = me.boxLayer.markers.find(function(marker) {
 				return  marker.bounds.toString() === layerBounds.toString();
 			});
-			if (box) {
-				me.boxLayer.removeMarker(box);
+			if (marker) {
+				me.boxLayer.removeMarker(marker);
 			}
-			me.boxLayer.addMarker(new OpenLayers.Marker.Box(layerBounds));
+			marker = new OpenLayers.Marker.Box(layerBounds);
+			me.boxLayer.addMarker(marker);
+			var markerDiv = $(marker.div);
+			markerDiv.css({
+				'border-color': '#00CCFF',
+				'background-color': 'rgba(0,102,255, 0.5)'
+			});
+			var originalHeight = markerDiv.height();
+			var originalWidth = markerDiv.width();
+			markerDiv.animate({
+				height : originalHeight * 5,
+				width : originalWidth * 5
+			}, 1000).animate({
+				height : originalHeight,
+				width : originalWidth
+			}, 1000);
+
 			var markerCt = me.boxLayer.markers.length;
 			for (var mInd = markerCt; mInd > 0; mInd--) {
 				var marker = me.boxLayer.markers[mInd - 1];
-				var opacity =Math.round((mInd / markerCt) * 10) / 10;;
+				var opacity = Math.round((mInd / markerCt) * 10) / 10;
 				$(marker.div).css({
 					'opacity': opacity
 				});
