@@ -6,7 +6,7 @@
             name: 'Shorelines of the eastern coastal region of Kauai, Hawaii, from Papaa to Nawiliwili, used in shoreline change analysis',
             type: 'historical',
             hotness: '101',
-            bbox: [-153.35, 21.96, -159.29, 22.17],
+            bbox: [-159.35, 21.96, -159.29, 22.17],
             summary: {
                 abstract: 'Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.'
             }
@@ -16,7 +16,7 @@
             name: 'Shorelines of the northern coastal region of Kauai, Hawaii, from Haena to Moloaa, used in shoreline change analysis',
             type: 'historical',
             hotness: '3',
-            bbox: [-153.59, 22.19, -159.33, 22.23],
+            bbox: [-159.59, 22.19, -159.33, 22.23],
             summary: {
                 abstract: 'Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.'
             }
@@ -26,7 +26,7 @@
             name: 'Shorelines of the southern coastal region of Kauai, Hawaii, from Waimea to Kipu Kai, used in shoreline change analysis',
             type: 'historical',
             hotness: '17',
-            bbox: [-153.69, 21.87, -159.38, 21.96],
+            bbox: [-159.69, 21.87, -159.38, 21.96],
             summary: {
                 abstract: 'Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.'
             }
