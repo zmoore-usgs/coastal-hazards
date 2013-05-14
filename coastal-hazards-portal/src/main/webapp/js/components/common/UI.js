@@ -194,7 +194,7 @@ var UI = function(args) {
 					containerDiv.addClass('description-container-small');
 				}
 			}
-
+			containerDiv.data('popItem', item);
 			return containerDiv;
 		},
 		bindShareMenu: function(args) {
@@ -277,6 +277,11 @@ var UI = function(args) {
 
 					event.currentSlideObject.removeClass('slider-slide-inactive');
 					event.currentSlideObject.addClass('slider-slide-active');
+					
+					CONFIG.map.addBoundingBoxMarker({
+						bbox : $(event.currentSlideObject[0].firstChild).data('popItem').bbox,
+						fromProjection : 'EPSG:4326'
+					})
 				};
 
 				if (CONFIG.ui.currentSizing === 'large') {
