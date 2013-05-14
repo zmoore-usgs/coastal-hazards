@@ -131,9 +131,15 @@ var Map = function(args) {
 			}
 	));
 
-	me.map.addLayer(new OpenLayers.Layer.Markers('geocoding-marker-layer', {
+	me.markerLayer = new OpenLayers.Layer.Markers('geocoding-marker-layer', {
 		displayInLayerSwitcher: false
-	}));
+	});
+	me.map.addLayer(me.markerLayer);
+
+	me.boxLayer = new OpenLayers.Layer.Boxes('map-boxlayer', {
+		displayInLayerSwitcher: false
+	});
+	me.map.addLayer(me.boxLayer);
 
 	LOG.debug('Map.js::constructor:Adding ontrols to map');
 	me.map.addControl(new OpenLayers.Control.MousePosition());
@@ -143,25 +149,67 @@ var Map = function(args) {
 	me.map.addControl(new OpenLayers.Control.LayerSwitcher({
 		roundedCorner: true
 	}));
-
-	var panel = new OpenLayers.Control.Panel();
-	panel.id = 'ol-custom-panel';
-	panel.addControls([
-		new OpenLayers.Control.MousePosition()
-	]);
-	me.map.addControl(panel);
+//
+//	var panel = new OpenLayers.Control.Panel();
+//	panel.id = 'ol-custom-panel';
+//	panel.addControls([
+//		new OpenLayers.Control.MousePosition()
+//	]);
+//	me.map.addControl(panel);
 
 	LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
 	me.map.zoomToExtent(initialExtent, true);
-	
-	var zoomControlDiv = me.map.getControlsByClass("OpenLayers.Control.Zoom")[0].div;
-	var panelTop = zoomControlDiv.offsetTop + zoomControlDiv.offsetHeight + 40;
-	$('#ol-custom-panel').css('top', panelTop);
+
+//	var zoomControlDiv = me.map.getControlsByClass("OpenLayers.Control.Zoom")[0].div;
+//	var panelTop = zoomControlDiv.offsetTop + zoomControlDiv.offsetHeight + 40;
+//	$('#ol-custom-panel').css('top', panelTop);
 
 	LOG.debug('Map.js::constructor: Map class initialized.');
 	return $.extend(me, {
 		getMap: function() {
 			return me.map;
+		},
+		addBoundingBoxMarker: function(args) {
+			args = args || {};
+			var bbox = args.bbox;
+			var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913");
+			var layerBounds = OpenLayers.Bounds.fromArray(bbox);
+			if (fromProjection) {
+				layerBounds.transform(new OpenLayers.Projection(fromProjection), new OpenLayers.Projection("EPSG:900913"));
+			}
+
+			var marker = me.boxLayer.markers.find(function(marker) {
+				return  marker.bounds.toString() === layerBounds.toString();
+			});
+			if (marker) {
+				me.boxLayer.removeMarker(marker);
+			}
+			marker = new OpenLayers.Marker.Box(layerBounds);
+			me.boxLayer.addMarker(marker);
+			var markerDiv = $(marker.div);
+			markerDiv.css({
+				'border-color': '#00CCFF',
+				'background-color': 'rgba(0,102,255, 0.5)'
+			});
+			var originalHeight = markerDiv.height();
+			var originalWidth = markerDiv.width();
+			markerDiv.animate({
+				height : originalHeight * 5,
+				width : originalWidth * 5
+			}, 1000).animate({
+				height : originalHeight,
+				width : originalWidth
+			}, 1000);
+
+			var markerCt = me.boxLayer.markers.length;
+			for (var mInd = markerCt; mInd > 0; mInd--) {
+				var marker = me.boxLayer.markers[mInd - 1];
+				var opacity = Math.round((mInd / markerCt) * 10) / 10;
+				$(marker.div).css({
+					'opacity': opacity
+				});
+			}
+
 		},
 		updateFromSession: function() {
 			LOG.info('Map.js::updateFromSession()');

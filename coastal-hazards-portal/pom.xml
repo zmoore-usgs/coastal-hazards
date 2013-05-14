@@ -67,9 +67,8 @@
 			<artifactId>sugar</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>gov.usgs.cida.jslibs</groupId>
+			<groupId>org.webjars</groupId>
 			<artifactId>openlayers</artifactId>
-			<type>war</type>
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida.jslibs</groupId>
