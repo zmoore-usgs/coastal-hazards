@@ -161,14 +161,26 @@ var UI = function(args) {
 				var buttonGroup = $('<div />').addClass('btn-group');
 				var titleRow = $('<div />').addClass('description-title-row row-fluid');
 				var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
-				var expandButton = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('icon-plus-sign slide-button muted'));
-				var pauseButton = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('icon-pause slide-button muted'));
-				var reverseButton = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('icon-fast-backward slide-button muted'));
+				var buttons = [
+					$('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('icon-zoom-in slide-button muted')),
+					$('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('icon-twitter slide-button muted')),
+					$('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('icon-pause slide-button muted')),
+					$('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('icon-fast-backward slide-button muted'))
+				]
+				
+				buttons.each(function(btn) {
+					$(btn).on('mouseover', function() {
+						$(this).find('i').removeClass('muted');
+					});
+					$(btn).on('mouseout', function() {
+						$(this).find('i').addClass('muted');
+					});
+				});
 
 				containerDiv.append(toolbarRow);
 				toolbarRow.append(buttonToolbar);
 				buttonToolbar.append(buttonGroup);
-				buttonGroup.append(expandButton, pauseButton, reverseButton);
+				buttonGroup.append(buttons);
 
 				var imageColumn = $('<div />').addClass('description-image-column span1 hidden-phone');
 				var imageClass = 'muted ';
