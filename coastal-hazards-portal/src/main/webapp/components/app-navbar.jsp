@@ -10,7 +10,8 @@
                 </a>
 
 				
-                <span class="app-navbar-brand visible-desktop visible-tablet hidden-phone"><h4>USGS Coastal Hazards Portal</h4></span>
+                <span class="app-navbar-brand visible-desktop hidden-tablet hidden-phone"><h4>USGS Coastal Hazards Portal</h4></span>
+                <span class="app-navbar-brand hidden-desktop visible-tablet hidden-phone"><h4>Coastal Hazards Portal</h4></span>
                 <span class="app-navbar-brand hidden-desktop hidden-tablet visible-phone"><h4>USGS CCH</h4></span>
 				
 				
