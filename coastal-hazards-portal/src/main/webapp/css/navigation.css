@@ -55,9 +55,10 @@
 	width: auto;
 }
 
-#app-navbar-brand {
+.app-navbar-brand {
 	color: #FFFFFF;
 	padding-right: 15px;
+	float: left;
 }
 
 #inner-navbar-container {
@@ -96,16 +97,16 @@
 	padding-left: 2px;
 }
 
-#app-navbar-brand {
-	float: left;
-}
-
-#app-navbar-search-icon {
+.app-navbar-search-icon {
 	margin-right: 5px;
 	color: white;
 	font-size: 18px;
 }
 
-#app-navbar-search-input {
+#app-navbar-search-input-1 {
+	width : 200px;
+}
+
+#app-navbar-search-input-2 {
 	width : 200px;
 }
