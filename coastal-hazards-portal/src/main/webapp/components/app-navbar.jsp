@@ -23,7 +23,6 @@
 					<form class="app-navbar-search-form navbar-search pull-right" action="javascript:void(0);">
 						<i class="app-navbar-search-icon icon-search"></i><input id="app-navbar-search-input-2" type="text" class="search-query span2" placeholder="Location Search">
 					</form>
-
                 </div>
             </div>
         </div>

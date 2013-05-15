@@ -49,11 +49,11 @@ var UI = function(args) {
 					$('body').css({
 						'padding-left': '0px',
 						'padding-right': '0px'
-					})
+					});
 					$('#application-container').css({
 						'padding-left': '0px',
 						'padding-right': '0px'
-					})
+					});
 					var descriptionHeight = Math.round(contentRowHeight * .30);
 					if (descriptionHeight < 280) {
 						descriptionHeight = 280;
