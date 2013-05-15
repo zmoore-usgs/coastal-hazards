@@ -163,10 +163,10 @@ var UI = function(args) {
 				var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
 				var info = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-zoom-in icon-zoom-in slide-button muted'));
 				var tweet = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-twitter icon-twitter slide-button muted'));
-				var pause = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-pause icon-pause slide-button muted'));
+				var pause = $('<button />').addClass('btn btn-pause-play').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-pause-play icon-pause slide-button muted'));
 				var back = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-fast-backward icon-fast-backward slide-button muted'));
 				var buttons = [info, tweet, pause, back];
-				
+
 				buttons.each(function(btn) {
 					$(btn).on('mouseover', function() {
 						$(this).find('i').removeClass('muted');
@@ -288,11 +288,35 @@ var UI = function(args) {
 
 					event.currentSlideObject.removeClass('slider-slide-inactive');
 					event.currentSlideObject.addClass('slider-slide-active');
-					
-					CONFIG.map.addBoundingBoxMarker({
-						bbox : $(event.currentSlideObject[0].firstChild).data('popItem').bbox,
-						fromProjection : 'EPSG:4326'
-					})
+
+
+					CONFIG.map.boxLayer.markers.each(function(mrk) {
+						$(mrk.div).removeClass('marker-active');
+						$(mrk.div).addClass('marker-inactive');
+					});
+
+					var marker = CONFIG.map.addBoundingBoxMarker({
+						bbox: $(event.currentSlideObject[0].firstChild).data('popItem').bbox,
+						fromProjection: 'EPSG:4326'
+					});
+
+					$(marker.div).data('slideOrder', event.currentSlideNumber);
+					$(marker.div).on({
+						click: function(evt) {
+							var target = $(evt.target);
+							var slideOrder = target.data('slideOrder');
+							var iosslider;
+							if (CONFIG.ui.currentSizing === 'large') {
+								iosslider = $('.iosSlider').iosSliderVertical;
+							} else if (CONFIG.ui.currentSizing === 'small') {
+								iosslider = $('.iosSlider').iosSlider;
+							}
+							iosslider.apply($('.iosSlider'), ['goToSlide', slideOrder]);
+							iosslider.apply($('.iosSlider'), ['autoSlidePause']);
+							$('.slide-menu-icon-pause-play').removeClass('icon-pause').addClass('icon-play');
+
+						}
+					});
 				};
 
 				if (CONFIG.ui.currentSizing === 'large') {
@@ -312,22 +336,27 @@ var UI = function(args) {
 							var buttons = $(slide).find('.description-button-row');
 							var title = $(slide).find('.description-title-row');
 							var descr = $(slide).find('.description-description-row');
+							var descrDiv = $(descr).find('p');
 
-							var slideHeight = buttons.height() + title.height() + descr.height();
-							if (slideHeight > event.sliderContainerObject.height()) {
-								slideHeight = event.sliderContainerObject.height();
+							var slideHeight = buttons.height() + title.height() + descrDiv.height();
+							if (slideHeight > (event.sliderContainerObject.height() - 30)) {
+								slideHeight = event.sliderContainerObject.height() - 30;
 							}
 
 							$(slide).css({
-								'height': slideHeight - 30 + 'px'
+								'height': slideHeight + 'px'
 							});
 
 							descr.css({
-								'height': $(slide).height() - buttons.height() - title.height() + 'px'
+								'max-height': slideHeight - buttons.height() - title.height() + 'px'
 							});
+
+							descrDiv.css({
+								'height': descr.height()
+							})
 						});
 					};
-					
+
 					sliderContainer.iosSliderVertical({
 						desktopClickDrag: true,
 						snapToChildren: true,
@@ -345,18 +374,23 @@ var UI = function(args) {
 						var container = $(event.sliderContainerObject).parent();
 						event.sliderContainerObject.css('height', (container.height()) + 'px');
 						event.sliderObject.css('height', (container.height()) + 'px');
-						
+
 						$('.slide').each(function(index, slide) {
 							var buttons = $(slide).find('.description-button-row');
 							var title = $(slide).find('.description-title-row');
 							var descr = $(slide).find('.description-description-row');
+							var descrDiv = $(descr).find('p');
 
 							$(slide).css({
-								'height': event.sliderContainerObject.height() - 20 + 'px'
+								'height': event.sliderContainerObject.height() + 'px'
 							});
-							
+
 							descr.css({
 								'height': event.sliderContainerObject.height() - buttons.height() - title.height() - 20 + 'px'
+							});
+
+							descrDiv.css({
+								'max-height': descr.height()
 							});
 						});
 					};

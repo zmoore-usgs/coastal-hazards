@@ -169,6 +169,12 @@ var Map = function(args) {
 		getMap: function() {
 			return me.map;
 		},
+		/**
+		 * Given a bounding box, adds a bbox marker to the map 
+		 * 
+		 * @param {{ bbox : Array.number, [fromProjection="EPSG:900913"] : String }} args
+		 * @return {OpenLayers.Marker.Box} The marker placed on the map
+		 */
 		addBoundingBoxMarker: function(args) {
 			args = args || {};
 			var bbox = args.bbox;
@@ -178,38 +184,51 @@ var Map = function(args) {
 				layerBounds.transform(new OpenLayers.Projection(fromProjection), new OpenLayers.Projection("EPSG:900913"));
 			}
 
+			// If the marker is already in the map, remove it. We will re-add it 
+			// to the end of the map's marker layer's marker array
 			var marker = me.boxLayer.markers.find(function(marker) {
 				return  marker.bounds.toString() === layerBounds.toString();
 			});
 			if (marker) {
 				me.boxLayer.removeMarker(marker);
 			}
+
+			// Create a new marker, add it to the map.
 			marker = new OpenLayers.Marker.Box(layerBounds);
 			me.boxLayer.addMarker(marker);
+
+			// Alter the marker visually 
 			var markerDiv = $(marker.div);
-			markerDiv.css({
-				'border-color': '#00CCFF',
-				'background-color': 'rgba(0,102,255, 0.5)'
-			});
 			var originalHeight = markerDiv.height();
 			var originalWidth = markerDiv.width();
-			markerDiv.animate({
-				height : originalHeight * 5,
-				width : originalWidth * 5
-			}, 1000).animate({
-				height : originalHeight,
-				width : originalWidth
-			}, 1000);
+			markerDiv.addClass('marker-active');
+			markerDiv.on({
+				'mouseover' : function() {
+					$(this).addClass('marker-hover');
+				},
+				'mouseout' : function() {
+					$(this).removeClass('marker-hover');
+				}
+			});
+//			markerDiv.animate({
+//				height: originalHeight * 5,
+//				width: originalWidth * 5
+//			}, 1000).animate({
+//				height: originalHeight,
+//				width: originalWidth
+//			}, 1000);
 
+			// Fade older markers out
 			var markerCt = me.boxLayer.markers.length;
 			for (var mInd = markerCt; mInd > 0; mInd--) {
-				var marker = me.boxLayer.markers[mInd - 1];
+				var markerItem = me.boxLayer.markers[mInd - 1];
 				var opacity = Math.round((mInd / markerCt) * 10) / 10;
-				$(marker.div).css({
+				$(markerItem.div).css({
 					'opacity': opacity
 				});
 			}
-
+			
+			return marker;
 		},
 		updateFromSession: function() {
 			LOG.info('Map.js::updateFromSession()');
