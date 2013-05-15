@@ -254,6 +254,16 @@ var UI = function(args) {
 		hideSpinner: function() {
 			me.spinner.fadeOut();
 		},
+		slider: function() {
+			var iosslider = $('.iosSlider');
+			var sliderFunct;
+			if (CONFIG.ui.currentSizing === 'large') {
+				sliderFunct = iosslider.iosSliderVertical;
+			} else if (CONFIG.ui.currentSizing === 'small') {
+				sliderFunct = iosslider.iosSlider;
+			}
+			return sliderFunct.apply(iosslider, arguments);
+		},
 		createSlideshow: function(args) {
 			setTimeout(function(args) {
 				args = args || {};
@@ -261,8 +271,7 @@ var UI = function(args) {
 					return parseInt(result.hotness);
 				}, true);
 
-				$('.iosSlider').iosSlider('destroy');
-				$('.iosSlider').iosSliderVertical('destroy');
+				CONFIG.ui.slider('destroy');
 				$('.iosSlider').remove();
 
 				var sliderContainer = $('<div />').addClass('iosSlider').attr('id', 'iosslider-container');
@@ -305,15 +314,14 @@ var UI = function(args) {
 						click: function(evt) {
 							var target = $(evt.target);
 							var slideOrder = target.data('slideOrder');
-							var iosslider;
-							if (CONFIG.ui.currentSizing === 'large') {
-								iosslider = $('.iosSlider').iosSliderVertical;
-							} else if (CONFIG.ui.currentSizing === 'small') {
-								iosslider = $('.iosSlider').iosSlider;
-							}
-							iosslider.apply($('.iosSlider'), ['goToSlide', slideOrder]);
-							iosslider.apply($('.iosSlider'), ['autoSlidePause']);
-							$('.slide-menu-icon-pause-play').removeClass('icon-pause').addClass('icon-play');
+							CONFIG.ui.slider('goToSlide', slideOrder);
+							CONFIG.ui.slider('autoSlidePause');
+							$('.slide-menu-icon-pause-play').removeClass('icon-pause').addClass('icon-play').parent().on({
+								'click': function(evt) {
+									CONFIG.ui.slider('autoSlidePlay');
+									$('.slide-menu-icon-pause-play').removeClass('icon-play').addClass('icon-pause');
+								}
+							});
 
 						}
 					});
@@ -408,6 +416,18 @@ var UI = function(args) {
 						onSlideChange: toggleClassForActiveSlide
 					});
 				}
+
+				$('.slide-menu-icon-pause-play').parent().on({
+					'click': function(evt) {
+						CONFIG.ui.slider('autoSlidePause');
+						$('.slide-menu-icon-pause-play').removeClass('icon-pause').addClass('icon-play').parent().on({
+							'click': function(evt) {
+								CONFIG.ui.slider('autoSlidePlay');
+								$('.slide-menu-icon-pause-play').removeClass('icon-play').addClass('icon-pause');
+							}
+						});
+					}
+				});
 
 				var orientationChange = function(event) {
 					CONFIG.ui.createSlideshow();
