@@ -104,9 +104,11 @@
 }
 
 #app-navbar-search-input-1 {
-	width : 200px;
+	width : 190px;
 }
-
 #app-navbar-search-input-2 {
-	width : 200px;
+	width : 170px;
+}
+#app-navbar-search-input-3 {
+	width : 155px;
 }
