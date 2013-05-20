@@ -2,11 +2,10 @@ package gov.usgs.cida.coastalhazards.rest;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 
 /**
@@ -41,8 +40,10 @@ public class TestResource {
      * @param content representation for the resource
      * @return an HTTP response with content of the updated or created resource.
      */
-    @PUT
+    @POST
     @Consumes("text/plain")
-    public void putText(String content) {
+    @Produces("text/plain")
+    public String echo(String content) {
+        return content;
     }
 }

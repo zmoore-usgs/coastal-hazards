@@ -1,6 +1,5 @@
 package gov.usgs.cida.coastalhazards.rest;
 
-import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.session.io.SessionFileIO;
 import gov.usgs.cida.coastalhazards.session.io.SessionIO;
 import gov.usgs.cida.coastalhazards.session.io.SessionIOException;

@@ -38,6 +38,9 @@ public class CardResource {
             @DefaultValue("10") @QueryParam("count") int count,
             @DefaultValue("") @QueryParam("bbox") String bbox
             ) {
+        // hook this up to the database and do the search
+        // since it is the same database as csw, we can use those
+        // tables if we like (probably shouldn't)
         return null;
     }
 }

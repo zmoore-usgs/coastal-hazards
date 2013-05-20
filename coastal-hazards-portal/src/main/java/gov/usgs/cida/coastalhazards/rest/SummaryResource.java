@@ -8,6 +8,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 /**
  * REST Web Service
@@ -17,33 +18,28 @@ import javax.ws.rs.Produces;
 @Path("summaries")
 public class SummaryResource {
 
-    @Context
-    private UriInfo context;
-
-    /**
-     * Creates a new instance of TestResource
-     */
-    public SummaryResource() {
-    }
-
-    /**
-     * Retrieves representation of an instance of gov.usgs.cida.coastalhazards.rest.TestResource
-     * @return an instance of java.lang.String
-     */
     @GET
-    @Path("{id}")
-    @Produces("text/plain")
-    public String getText() {
-        return "hi";
+    @Path("tiny/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getTinySummary(@PathParam("id") String id) {
+        // make sure this is only 140 characters
+        return null;
     }
-
-    /**
-     * PUT method for updating or creating an instance of TestResource
-     * @param content representation for the resource
-     * @return an HTTP response with content of the updated or created resource.
-     */
-    @PUT
-    @Consumes("text/plain")
-    public void putText(String content) {
+    
+    @GET
+    @Path("medium/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getMediumSummary(@PathParam("id") String id) {
+        // this should fit into the card view
+        return null;
+    }
+    
+    @GET
+    @Path("long/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getLongSummary(@PathParam("id") String id) {
+        // this is the full blown summary, we need to come up with a data structure
+        // that represents all the different possible views
+        return null;
     }
 }
