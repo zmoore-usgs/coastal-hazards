@@ -22,7 +22,15 @@ public class SummaryResource {
     @Path("tiny/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public String getTinySummary(@PathParam("id") String id) {
-        // make sure this is only 140 characters
+        // make sure this is only 140 characters - hashtag - tinygov
+        // start with storms
+        // storm name
+        // real time info
+        // category?
+        // Storm template: {typename {class} {name}} is projected to {something} go.usa.gov/xxxx #icanhazards
+        // Historical template: Average rate of change for {name} is {avg/period} go.usa.gov/xxxx #icanhazards
+        // Vulnerability template: Average vulnerability of {stat} is {avg} for {name} go.usa.gov/xxxx #icanhazards
+        // General template: See my coastal hazards assessment of {storm?} ,/and {vulnerability?} ,and? {historical?} go.usa.gov/xxxx #icanhazards
         return null;
     }
     
