@@ -14,6 +14,7 @@
 		<module>coastal-hazards-geoserver</module>
 		<module>coastal-hazards-portal</module>
 		<module>coastal-hazards-commons</module>
+        <module>coastal-hazards-liquibase</module>
 	</modules>
   
 	<issueManagement>
