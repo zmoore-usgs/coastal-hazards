@@ -4,7 +4,8 @@
 # input is unique identifier for WPS, is a variable in R (will contain all parser text)
 # xml is for WPS side of things, tells WPS how input should be formatted
 
-localRun <- FALSE
+localRun <- TRUE
+dropVal <-  1e38
 # comment this out for WPS!!!
 if (localRun){
   shortName <- "NSM"
@@ -39,6 +40,8 @@ RT_i = grep(shortName,names(rateVals)) # rate index
 rwBD <- rateVals[,BD_i]/1000
 rwID <- rateVals[,ID_i]
 rwRT <- rateVals[,RT_i]
+nanI  <-  which(abs(rwRT)>=dropVal)
+rwRT[nanI] <- NA
 
 if (shortName=="LRR" | shortName=="WLR"){
   rwCI <- rateVals[,RT_i+1]
@@ -53,8 +56,8 @@ numBase <- sum(!baseL)
 indx <- seq(1,nLines)
 dropI <- c(indx[!baseL],nLines)
 
-mxY <- max(rwRT+rwCI)
-mnY <- min(rwRT-rwCI)
+mxY <- max(rwRT+rwCI,na.rm = TRUE)
+mnY <- min(rwRT-rwCI,na.rm = TRUE)
 
 # resort values
 output = "output.png"
@@ -72,8 +75,9 @@ for (p in 1:numBase){
   rate <- rwRT[indx_1:indx_2]
   CI_up <- rate+rwCI[indx_1:indx_2]
   CI_dn <- rate-rwCI[indx_1:indx_2]
-  
-  polygon(c(dist,rev(dist)),c(CI_up,rev(CI_dn)),col="grey",border=NA)
+  if (shortName=="LRR" | shortName=="WLR"){
+    polygon(c(dist,rev(dist)),c(CI_up,rev(CI_dn)),col="grey",border=NA)
+  }
   
   lines(dist,rate,lwd=2.5)
 }
