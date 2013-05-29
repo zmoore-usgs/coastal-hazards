@@ -88,7 +88,13 @@ var OWS = function(endpoint) {
             var callbacks = args.callbacks || {};
             var sucessCallbacks = callbacks.success || [];
             var errorCallbacks = callbacks.error || [];
-            
+            sucessCallbacks.push(function() {
+				LOG.debug('OnReady.js:: WMS Capabilities retrieved for your session');
+			});
+			errorCallbacks.push(function() {
+				LOG.warn('OnReady.js:: There was an error in retrieving the WMS capabilities for your session. This is probably be due to a new session. Subsequent loads should not see this error');
+			});
+			
             LOG.debug('OWS.js::getWMSCapabilities: A request is being made for GetCapabilities for the namespace: ' + namespace);
             $.ajax(url, {
                 context: args,
@@ -384,7 +390,7 @@ var OWS = function(endpoint) {
             '<ows:Identifier>features</ows:Identifier>' + 
             '<wps:Reference mimeType="text/xml; subtype=wfs-collection/1.0" xlink:href="http://geoserver/wfs" method="POST">' + 
             '<wps:Body>' + 
-            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:sample="gov.usgs.cida.ch.sample">' + 
+            '<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:'+CONFIG.name.published+'="'+CONFIG.namespace.published+'">' + 
             '<wfs:Query typeName="'+originalLayer+'"/>' + 
             '</wfs:GetFeature>' + 
             '</wps:Body>' + 

@@ -1,3 +1,5 @@
+<%@page import="java.io.File"%>
+<%@page import="java.net.URL"%>
 <%@page import="org.slf4j.Logger"%>
 <%@page import="org.slf4j.LoggerFactory"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
@@ -5,18 +7,19 @@
 <!DOCTYPE html>
 
 <%!    
-    protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
+    
+    protected DynamicReadOnlyProperties props = null;
 
     {
         try {
+            File propsFile = new File(getClass().getClassLoader().getResource("application.properties").toURI());
+            props = new DynamicReadOnlyProperties(propsFile);
             props = props.addJNDIContexts(new String[0]);
         } catch (Exception e) {
             LoggerFactory.getLogger("index.jsp").error("Could not find JNDI - Application will probably not function correctly");
         }
     }
     boolean development = Boolean.parseBoolean(props.getProperty("development"));
-    String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
-    String n52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
 %>
 
 <html lang="en">
@@ -55,16 +58,16 @@
         <jsp:include page="components/application-overlay.jsp"></jsp:include>
 
         <div class="container-fluid">
-            <div class="row-fluid">
+            <div class="row-fluid" id="header-row">
                 <jsp:include page="template/USGSHeader.jsp">
                     <jsp:param name="relPath" value="" />
                     <jsp:param name="header-class" value="" />
                     <jsp:param name="site-title" value="USGS Coastal Change Hazards" />
                 </jsp:include>
-            <jsp:include page="components/app-navbar.jsp"></jsp:include>
+				<jsp:include page="components/app-navbar.jsp"></jsp:include>
             </div>
             
-            <div class="row-fluid">
+            <div class="row-fluid" id="content-row">
                 <!-- NAV -->
                 <div class="span1" id='nav-list'>
                     <ul id="stage-select-tablist" class="nav nav-pills nav-stacked">
@@ -78,7 +81,7 @@
                 </div>
 
                 <!-- Toolbox -->
-                <div class="span4">
+                <div class="span4" id="toolbox-span">
                     <div id="toolbox-well" class="well well-small tab-content">
 
                         <!-- Shorelines -->
@@ -93,7 +96,7 @@
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="shorelines-view-tab">
-                                    <select id="shorelines-list" class="feature-list" multiple="multiple"></select>
+                                    <select id="shorelines-list" class="feature-list"></select>
                                         <div class="tabbable">
                                             <ul class="nav nav-tabs" id="shoreline-table-navtabs">
                                             </ul>
@@ -292,7 +295,7 @@
                         <!-- Calculation -->
                         <div class="tab-pane  container-fluid" id="calculation">
                             <div class="row-fluid">
-                                <div class="span4"><h3>Calculation</h3></div>
+                                <div class="span4"><h3>Review/Calculate</h3></div>
                                 <div class="span8" id="calculation-alert-container"></div>
                             </div>
                             <ul class="nav nav-tabs" id="action-intersections-tablist">
@@ -365,15 +368,15 @@
                 </div>
 
                 <!-- MAP -->
-                <div class="span7">
+                <div class="span7" id="map-span">
                     <div id="map-well" class="well well-small tab-content">
                         <div id="map"></div>
                     </div>
                 </div>
 
             </div>
-            <div class="row-fluid">
-                <div id="application-alert-container" class="span11"></div>
+            <div class="row-fluid" id="alert-row">
+                <div id="application-alert-container" class="span11 offset1"></div>
             </div>
 
             <div class="row-fluid" id="footer-row">
@@ -383,9 +386,11 @@
                     <jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
                     <jsp:param name="contact-info" value="<a href='mailto:jread@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Jordan Read</a>" />
                 </jsp:include>
+                <p id="footer-page-version-info">Application Version: <%= props.get("application.version") %></p>
             </div>
         </div>
-
+		
+		<%-- Stuff that isn't shown in the application but is used by JS --%>
         <div id="modal-window" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-window-label" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -397,6 +402,7 @@
             <div class="modal-footer"></div>
         </div>
         <iframe id="download" class="hidden"></iframe>
+		
     </body>
     <script type="text/javascript">splashUpdate("Loading Graphing Utilities...");</script>
     <jsp:include page="js/dygraphs/dygraphs.jsp">
@@ -425,9 +431,7 @@
     <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.0.2/css/font-awesome<%= development ? ".min" : "" %>.css" />
 
     <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
-    <jsp:include page="js/openlayers/openlayers.jsp">
-        <jsp:param name="debug-qualifier" value="<%= development%>" />
-    </jsp:include>
+    <script type="text/javascript" src="webjars/openlayers/2.12/OpenLayers<%= development ? ".debug" : "" %>.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading JS Utilities...");</script>
     <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min" %>.js"></script>
@@ -436,88 +440,7 @@
     <jsp:include page="js/fineuploader/fineuploader.jsp">
         <jsp:param name="debug-qualifier" value="true" />
     </jsp:include>
-
-    <script type="text/javascript">
-        splashUpdate("Setting configuration...");
-        var CONFIG = Object.extended();
-        
-        CONFIG.development = <%= development%>;
-        CONFIG.geoServerEndpoint = '<%=geoserverEndpoint%>';
-        CONFIG.n52Endpoint = '<%=n52Endpoint%>';
-        CONFIG.popupHoverDelay = 1500;
-        CONFIG.namespace = Object.extended();
-        CONFIG.namespace.sample = 'gov.usgs.cida.ch.sample';
-        CONFIG.namespace.input = 'gov.usgs.cida.ch.input';
-        CONFIG.namespace.output = 'gov.usgs.cida.ch.output';
-        CONFIG.name = {};
-        CONFIG.name.published = 'sample';
-        CONFIG.dateFormat = {
-            padded : '{MM}/{dd}/{yyyy}',
-            nonPadded : '{M}/{d}/{yyyy}'
-        };
-        CONFIG.alertQueue = {
-            application : [],
-            shorelines : [],
-            baseline : [],
-            transects : [],
-            calculation : [],
-            results : []
-        };
-        CONFIG.ajaxTimeout = 300000;
-		CONFIG.graph = Object.extended();
-		CONFIG.graph.enabled = 'LRR';
-		CONFIG.graph.displayMap = {
-			'LRR': {
-				longName: 'Linear regression rate',
-				units: 'm yr^-1',
-				uncertainty : 'LCI',
-				invert : true
-			},
-			'WLR': {
-				longName: 'Weighted linear regression rate',
-				units: 'm yr^-1',
-				uncertainty : 'WCI',
-				invert : true
-			},
-			'SCE': {
-				longName: 'Shoreline change envelope',
-				units: 'm',
-				invert : false
-			},
-			'NSM': {
-				longName: 'Net shoreline movement',
-				units: 'm',
-				invert : false
-			},
-			'EPR': {
-				longName: 'End point rate',
-				units: 'm yr^-1',
-				invert : false
-			}
-		};
-            
-        JSON.stringify = JSON.stringify || function (obj) {
-            var t = typeof (obj);
-            if (t !== "object" || obj === null) {
-                // simple data type
-                if (t === "string") obj = '"'+obj+'"';
-                return String(obj);
-            }
-            else {
-                // recurse array or object
-                var n, v, json = [], arr = (obj && obj.constructor === Array);
-                for (n in obj) {
-                    v = obj[n]; t = typeof(v);
-                    if (t === "string") v = '"'+v+'"';
-                    else if (t === "object" && v !== null) v = JSON.stringify(v);
-                    json.push((arr ? "" : '"' + n + '":') + String(v));
-                }
-                return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
-            }
-        };
-
-            
-    </script>
+	<jsp:include page="components/config.jsp"></jsp:include>
     <script type="text/javascript">splashUpdate("Loading UI module...");</script>
     <script type="text/javascript" src="js/ui/ui.js"></script>
     <script type="text/javascript">splashUpdate("Loading Utilities module...");</script>
@@ -545,9 +468,13 @@
     <script type="text/javascript">splashUpdate("Loading Toggle plugin...");</script>
     <link type="text/css" rel="stylesheet" href="js/bootstrap-switch/static/stylesheets/bootstrapSwitch.css" />
     <script type="text/javascript" src="js/bootstrap-switch/static/js/bootstrapSwitch.js"/></script>
-
-<script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
-<link type="text/css" rel="stylesheet" href="css/custom.css" />
-<script type="text/javascript">splashUpdate("Loading Main module...");</script>
-<script type="text/javascript" src="js/onReady.js"></script>
+	<script type="text/javascript">splashUpdate("Loading Intro Module...");</script>
+	<%-- For now, stick with full version. Minified version seems gimped --%>
+    <jsp:include page="js/bootstro/bootstro.jsp">
+        <jsp:param name="debug-qualifier" value="true" />
+    </jsp:include>
+	<script type="text/javascript">splashUpdate("Loading Application-specific CSS...");</script>
+	<link type="text/css" rel="stylesheet" href="css/custom.css" />
+	<script type="text/javascript">splashUpdate("Loading Main module...");</script>
+	<script type="text/javascript" src="js/onReady.js"></script>
 </html>

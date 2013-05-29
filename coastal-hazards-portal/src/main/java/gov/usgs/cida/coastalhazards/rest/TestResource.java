@@ -1,0 +1,49 @@
+package gov.usgs.cida.coastalhazards.rest;
+
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Path;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
+
+/**
+ * REST Web Service
+ *
+ * @author jordan
+ */
+@Path("test")
+public class TestResource {
+
+    @Context
+    private UriInfo context;
+
+    /**
+     * Creates a new instance of TestResource
+     */
+    public TestResource() {
+    }
+
+    /**
+     * Retrieves representation of an instance of gov.usgs.cida.coastalhazards.rest.TestResource
+     * @return an instance of java.lang.String
+     */
+    @GET
+    @Produces("text/plain")
+    public String getText() {
+        return "hi";
+    }
+
+    /**
+     * PUT method for updating or creating an instance of TestResource
+     * @param content representation for the resource
+     * @return an HTTP response with content of the updated or created resource.
+     */
+    @POST
+    @Consumes("text/plain")
+    @Produces("text/plain")
+    public String echo(String content) {
+        return content;
+    }
+}

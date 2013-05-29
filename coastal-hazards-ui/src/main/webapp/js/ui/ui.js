@@ -6,9 +6,22 @@ var UI = function() {
     me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
     me.work_stages_objects = [Shorelines, Baseline, Transects, Calculation, Results];
     me.base_name = undefined;//init to undefined. Update in baselines
-    
+    me.precachedImages = [
+			'images/introduction_images/BaselineDraw.gif',
+			'images/introduction_images/EditTransects.gif',
+			'images/workflow_figures/baseline.png',
+			'images/workflow_figures/baseline_past.png',
+			'images/workflow_figures/calculation.png',
+			'images/workflow_figures/calculation_past.png',
+			'images/workflow_figures/transects.png',
+			'images/workflow_figures/transects_past.png',
+			'images/workflow_figures/results.png',
+			'images/workflow_figures/results_past.png',
+			'images/workflow_figures/shorelines_future.png',
+			'images/workflow_figures/shorelines_past.png'
+		];
     $('#manage-sessions-btn').on('click', CONFIG.tempSession.createSessionManagementModalWindow);
-    
+	
     $('.collapsibleHelp').accordion({
         collapsible: true,
         heightStyle: 'content'
@@ -21,85 +34,97 @@ var UI = function() {
         });
     });
     
-    // Setup of popovers
-    me.work_stages_objects.each(function(stage) {
-        if (stage.description.stage) {
-            $('#nav-list a[href="#'+stage.stage+'"]').parent().popover({
-                title : '<h3>' + stage.stage.capitalize() + '</h3>',
-                content : $('<div />').attr('id', stage.stage + '-description').addClass('stage-icon-description').html(stage.description.stage),
-                html : true,
-                placement : 'right',
-                trigger : 'hover'
-            });
-        }
-        
-        if (stage.description['view-tab']) {
-            $('#'+stage.stage+' [href="#'+stage.stage+'-view-tab"]').popover({
-                title : stage.stage.capitalize() + ' View',
-                content :stage.description['view-tab'],
-                html : true,
-                placement : 'top',
-                trigger : 'hover',
-                delay : {
-                    show : CONFIG.popupHoverDelay
-                }
-            });
-        }
-            
-        if (stage.description['manage-tab']) {
-            $('#'+stage.stage+' [href="#'+stage.stage+'-manage-tab"]').popover({
-                title : stage.stage.capitalize() + ' Manage',
-                content : stage.description['manage-tab'],
-                html : true,
-                placement : 'top',
-                trigger : 'hover',
-                delay : {
-                    show : CONFIG.popupHoverDelay
-                }
-            });
-        }
-            
-        if (stage.description['upload-button']) {
-            $('#'+stage.stage+'-triggerbutton').popover({
-                title : stage.stage.capitalize() + ' Resource Upload',
-                content : stage.description['upload-button'],
-                html : true,
-                placement : 'bottom',
-                trigger : 'hover',
-                delay : {
-                    show : CONFIG.popupHoverDelay
-                }
-            });
-        }
-    
-        $('.feature-list').popover({
-            title : 'Layer Selection',
-            content : $('<div />')
-            .append($('<div />').css({
-                'color': '#661111',
-                'text-shadow' : '0px 0px 1px #ffffff',
-                'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
-            }).html('Published (read-only)'))
-            .append($('<div />').css({
-                'color' : '#116611',
-                'text-shadow' : '0px 0px 1px #ffffff',
-                'filter' : 'dropshadow(color=#ffffff, offx=0, offy=0);'
-            }).html('Yours'))
-            .html(),
-            html : true,
-            placement : 'bottom',
-            trigger : 'hover',
-            delay : {
-                show : CONFIG.popupHoverDelay
-            }
-        });
-    });
-    
     LOG.debug('UI.js::constructor: UI class initialized.');
     return $.extend(me, {
+		appInit : function() {
+			this.bindWindowResize();
+			this.addIntroContent();
+			$(window).resize();
+			splashUpdate("Checking for browser compatibility...");
+			if (﻿$.browser.msie && parseInt($.browser.version) < ﻿ 9) {
+				var modal = $('<div />')
+						.addClass('modal fade')
+						.attr('id', 'browser-incompatibility-modal')
+						.append(
+						$('<div />')
+						.addClass('modal-header')
+						.append($('<button />')
+						.attr({
+					type: 'button',
+					'data-dismiss': 'modal',
+					'aria-hidden': 'true'
+				})
+						.html('&times;')
+						.addClass('close'))
+						.append($('<h3 />').html('Browser Compatibility Warning')))
+						.append($('<div />').addClass('modal-body')
+						.append('<p />')
+						.html(
+						'We have detected that you may be using a browser that is not ' +
+						'compatible with this application. This application can not be ' +
+						'garuanteed to work with your browser. The following browsers are ' +
+						'known to work with this application: ' +
+						'<ul>' +
+						'<li>Internet Explorer 9+</li>' +
+						'<li>Mozilla Firefox</li>' +
+						'<li>Google Chrome</li>' +
+						'<li>Safari</li>' +
+						'<li>Opera</li>' +
+						'</ul>'
+						))
+						.append($('<div />').addClass('modal-footer')
+						.append($('<a />').attr({
+					'href': '#',
+					'data-dismiss': 'modal',
+					'aria-hidden': 'true'
+				}).addClass('btn').html('Close')));
+				$('body').append(modal);
+				$('#browser-incompatibility-modal').modal('show');
+			}
+		},
         displayStage : function(caller) {
             $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click');
         },
+		bindWindowResize: function() {
+			$(window).resize(function() {
+				var mapViewport = $(CONFIG.map.getMap().getViewport());
+				var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height() - $('#alert-row').height() - 40;
+				$('#content-row').css('min-height', contentRowHeight);
+				$('#nav-list').css('min-height', contentRowHeight);
+				$('#toolbox-span').css('min-height', contentRowHeight);
+				$('#map-span').css('min-height', contentRowHeight);
+				$('#map').css('height', contentRowHeight);
+				CONFIG.map.getMap().updateSize();
+				
+				// Move the zoom control over to the right
+				$('.olControlZoom').css('left', mapViewport.width() - $('.olControlZoom').width() - 20);
+				// Move the layer switcher control down a bit to make room for zoom control
+				$('.olControlLayerSwitcher').css('top', 60);
+			});
+		},
+		bindSignInImageMouseEvents : function() {
+			$('#sign-in-img').on({
+				'mouseenter' : function() {
+					$('#sign-in-img').attr('src', 'images/OpenID/White-signin_Medium_hover_44dp.png');
+				},
+				'mouseleave' : function() {
+					$('#sign-in-img').attr('src', 'images/OpenID/White-signin_Medium_base_44dp.png');
+				},
+				'mousedown' : function() {
+					$('#sign-in-img').attr('src', 'images/OpenID/White-signin_Medium_press_44dp.png');
+				},
+				'mouseup' : function() {
+					$('#sign-in-img').attr('src', 'images/OpenID/White-signin_Medium_base_44dp.png');
+				}
+			});
+		},
+		precacheImages : function() {
+		var tempImage = [];
+		for (var x=0;x<this.precachedImages.length;x++) {
+			var tempImage = new Image();
+			tempImage.src = this.precachedImages[x];
+		}
+		},
         createModalWindow : function(args) {
             var headerHtml = args.headerHtml || '';
             var bodyHtml = args.bodyHtml || '';
@@ -152,14 +177,14 @@ var UI = function() {
             $('#create-transects-input-name').val(name).trigger('change');
         },
         switchStage : function (stage) {
-            LOG.info('UI.js::switchImage: Changing application context to ' + me.work_stages[stage])
+            LOG.info('UI.js::switchImage: Changing application context to ' + me.work_stages[stage]);
             
-            var caller = me.work_stages_objects[stage]
+            var caller = me.work_stages_objects[stage];
             me.work_stages_objects.filter(function(stage) {
-                return stage != caller
+                return stage !== caller;
             }).each(function(stage) {
                 stage.leaveStage();
-            })
+            });
             
             caller.enterStage();
             
@@ -168,7 +193,7 @@ var UI = function() {
                 var imgId = '#' + workStage + '_img';
                 if (stageIndex < stage) {
                     $(imgId).attr('src', 'images/workflow_figures/' + workStage + '_past.png');
-                } else if (stageIndex == stage) {
+                } else if (stageIndex === stage) {
                     $(imgId).attr('src', 'images/workflow_figures/' + workStage + '.png');
                 } else {
                     $(imgId).attr('src', 'images/workflow_figures/' + workStage + '_future.png');
@@ -326,12 +351,10 @@ var UI = function() {
             $('#'+stage+'-list').children().remove();
         
             // Add a blank spot at the top of the select list
-            if (stage !== Shorelines.stage) {
-                $('#'+stage+'-list')
-                .append($("<option />")
-                    .attr("value",'')
-                    .text(''));
-            }
+			$('#'+stage+'-list')
+			.append($("<option />")
+				.attr("value",'')
+				.text(''));
         
             wmsCapabilities.keys().each(function(layerNS) {
                 var cap = wmsCapabilities[layerNS];
@@ -343,7 +366,7 @@ var UI = function() {
                     var currentSessionKey = CONFIG.tempSession.getCurrentSessionKey();
                     var title = layer.title;
             
-                    // Add the option to the list only if it's from the sample namespace or
+                    // Add the option to the list only if it's from the published namespace or
                     // if it's from the input namespace and in the current session
                     if (layerNS === CONFIG.name.published || layerNS === currentSessionKey) {
                         var type = title.substr(title.lastIndexOf('_'));
@@ -362,7 +385,7 @@ var UI = function() {
                             .attr({
                                 "value" : layerNS + ':' + layer.name
                             })
-                            .addClass(layerNS === 'sample' ? publishedLayerClass : sessionLayerClass)
+                            .addClass(layerNS === CONFIG.name.published ? publishedLayerClass : sessionLayerClass)
                             .text(layer.name);
                             
                             $('#'+stage+'-list')
@@ -376,57 +399,57 @@ var UI = function() {
             LOG.debug('UI.js::populateFeaturesList: Re-binding select list');
             $('#'+stage+'-list').unbind('change');
             $('#'+stage+'-list').change(function(index, option) {
-                caller.listboxChanged(index, option)
-            }) 
+                caller.listboxChanged(index, option);
+            }) ;
             
             return  $('#'+stage+'-list');
         },
         showShorelineInfo : function(event) {
             LOG.info('UI.js::showShorelineInfo');
             LOG.debug('UI.js::showShorelineInfo: The map was clicked and a response from the OWS resource was received');
+			
             Shorelines.closeShorelineIdWindows();
-            if (event.features.length) {
+            
+			if (event.features.length) {
                 LOG.debug('UI.js::showShorelineInfo: Features were returned from the OWS resource. Parsing and creating table to display');
                 
                 LOG.debug('UI.js::showShorelineInfo: Creating table for ' + event.features.length + ' features');
-                var groupingColumn = CONFIG.tempSession.getStage(Shorelines.stage).groupingColumn
+                var groupingColumn = CONFIG.tempSession.getStage(Shorelines.stage).groupingColumn;
                 var uniqueFeatures = event.features.unique(function(feature) {
                     return feature.data[groupingColumn];
                 }).sortBy(function(feature) {
                     return Date.parse(feature.data[groupingColumn]);
-                })
+                });
                 
                 LOG.trace('UI.js::showShorelineInfo: Closing any other open identify windows');
                 $('.olPopupCloseBox').each(function(i,v){
                     v.click();
-                }) 
+                }); 
                 
-                var layerTitle = event.features[0].fid.split('.')[0]
+                var layerTitle = event.features[0].fid.split('.')[0];
                 var layerName = event.features[0].gml.featureNSPrefix + ':' + layerTitle;
                 var shorelineIdContainer = $('<div />').attr('id', layerName + '-id-container').addClass('shoreline-id-container');
                 var shorelineIdTable = $('<table />').attr('id', layerName + '-id-table').addClass('shoreline-id-table table table-striped table-condensed');
                 var thead = $('<thead />');
                 var theadTr = $('<tr />');
                 var tbody = $('<tbody />');
-                thead.append($('<caption />').append($('<h3 />').append(layerTitle)))
+                thead.append($('<caption />').append($('<h3 />').append(layerTitle)));
                 
                 $(Object.keys(event.features[0].attributes)).each(function(i,v) {
-                    theadTr.append($('<th />').append(v))
+                    theadTr.append($('<th />').append(v));
                 });
                 thead.append(theadTr);
-                
-                
                 
                 uniqueFeatures.each(function(feature) {
                     var tbodyTr = $('<tr />');
                     
                     $(Object.values(feature.attributes)).each(function(aInd, aVal) {
-                        tbodyTr.append($('<td />').append(aVal))
-                    })
+                        tbodyTr.append($('<td />').append(aVal));
+                    });
                     
                     var config =  CONFIG.tempSession.getStage(Shorelines.stage);
                     var date = new Date(feature.attributes[groupingColumn]).format(config.dateFormat);
-                    var isVisible = CONFIG.tempSession.getDisabledDatesForShoreline(layerName).indexOf(date) == -1;
+                    var isVisible = CONFIG.tempSession.getDisabledDatesForShoreline(layerName).indexOf(date) === -1;
                     var  disableButton = $('<button />')
                     .addClass('btn btn-year-toggle')
                     .attr({
@@ -442,7 +465,7 @@ var UI = function() {
                         disableButton.addClass('btn-danger');
                     }
                     
-                    tbodyTr.append($('<td />').append(disableButton))
+                    tbodyTr.append($('<td />').append(disableButton));
                     tbody.append(tbodyTr);
                 });
                 
@@ -463,8 +486,8 @@ var UI = function() {
                 $('.btn-year-toggle').click(function(event) {
                     var date = $(event.target).attr('date');
                     var toggle = $('#shoreline-table-tabcontent>#'+$(event.target).attr('layer').split(':')[1]+' .feature-toggle').filter(function() {
-                        return Date.parse($(this).data('date')) == Date.parse(date)
-                    })
+                        return Date.parse($(this).data('date')) === Date.parse(date);
+                    });
                     
                     var allButtonsOfSameYear = $('.btn-year-toggle[date="'+date+'"]');
                     if (toggle.bootstrapSwitch('status')) {
@@ -520,7 +543,7 @@ var UI = function() {
                     var close = nextMessageObj.close;
                     var message = nextMessageObj.message;
                     var displayTime = nextMessageObj.displayTime;
-                    var createAlertFn = args.createAlertFn
+                    var createAlertFn = args.createAlertFn;
                     var queueLength = CONFIG.alertQueue[args.caller.stage].length;
                     
                     alertDom.addClass('alert fade in');
@@ -574,16 +597,16 @@ var UI = function() {
                     alertContainer : alertContainer,
                     createAlertFn : createAlert,
                     caller : caller
-                })
+                });
             }
         },
         switchTab : function(args) {
             var caller = args.caller;
             var stage = caller ? caller.stage : args.stage || '';
             var tab = args.tab;
-            if (tab == 'view') {
+            if (tab === 'view') {
                 $('#action-'+stage+'-tablist a[href="#'+stage+'-view-tab"]').trigger('click');
-            } else if (tab == 'manage') {
+            } else if (tab === 'manage') {
                 $('#action-'+stage+'-tablist a[href="#'+stage+'-manage-tab"]').trigger('click');
             }
         },
@@ -797,12 +820,35 @@ var UI = function() {
                 }]
             });
         },
+		
+		/**
+		 * Displays the AJAX animated spinner graphic
+		 * 
+		 * @returns {undefined}
+		 */
         showSpinner: function() {
             $("#application-spinner").fadeIn();
         },
+				
+		/**
+		 * Hides the AJAX animated spinner graphic
+		 * 
+		 * @returns {undefined}
+		 */
         hideSpinner: function() {
             $("#application-spinner").fadeOut();
         },
+				
+		/**
+		 * Given the response from the geocoding service, build the popup on the map
+		 * to display the results
+		 * 
+		 * @param {Object} {
+		 *		"currentLocationIndex" : 0, // An index into the locations dropdown 
+		 *		"locations" : $('#location-container').data('locations')
+		 *	}
+		 * @returns {undefined}
+		 */
         buildGeocodingPopup: function(args) {
             var map = CONFIG.map.getMap();
             var currentLocationIndex = args.currentLocationIndex || 0;
@@ -817,8 +863,8 @@ var UI = function() {
             var locAttr = currentLocation.feature.attributes;
             var select = $('<select />').attr('id', 'alt-location-list');
 
-            // Build Market
-            var markerLayer = CONFIG.map.getMarkerLayer();
+            // Build Marker
+            var markerLayer = CONFIG.map.getGeocodingMarkerLayer();
             var iconSize = new OpenLayers.Size(32, 32);
             var icon = new OpenLayers.Icon('js/openlayers/img/BulbGrey.png', iconSize, new OpenLayers.Pixel(-(iconSize.w / 2), -iconSize.h));
             var marker = new OpenLayers.Marker(new OpenLayers.LonLat(x, y), icon);
@@ -891,11 +937,16 @@ var UI = function() {
                     });
                 }
             });
-            // map.zoomToScale(300000, true);
-
         },
+				
+		/**
+		 * Binds the search input text box to submit a query to the geolocation
+		 * service and handle the response
+		 * 
+		 * @returns {undefined}
+		 */
         bindSearchInput: function() {
-            $('#app-navbar-search-form').submit(function(evt) {
+            $('#app-navbar-search-form').submit(function() {
                 var query = $('#app-navbar-search-input').val();
                 if (query) {
                     $.ajax({
@@ -913,11 +964,9 @@ var UI = function() {
                         dataType: 'jsonp',
                         success: function(json) {
                             if (json.locations[0]) {
-                                
                                 CONFIG.ui.buildGeocodingPopup({
                                     locations: json.locations
                                 });
-
                             } else {
                                 CONFIG.ui.showAlert({
                                     close: false,
@@ -933,6 +982,567 @@ var UI = function() {
                 }
 
             });
-        }        
+        },
+		
+		/**
+		 * Special handling is required for the previous/next steps. Binds the steps 
+		 * to what stage/view should be opened at each one
+		 * 
+		 * @returns {undefined}
+		 */
+		bindIntroPrevNextButtons: function() {
+			bootstro.onStepFunc = function(args) {
+				switch (args.idx) {
+					case 4 :
+					case 5 :
+						$('#stage-select-tablist >li a[href=#shorelines]').click();
+						$('#action-shorelines-tablist > li a[href=#shorelines-view-tab]').click();
+						break
+					case 6 :
+						$('#stage-select-tablist >li a[href=#shorelines]').click();
+						$('#action-shorelines-tablist > li a[href=#shorelines-manage-tab]').click();
+						break
+					case 7 :
+						$('#stage-select-tablist >li a[href=#shorelines]').click();
+						$('#action-shorelines-tablist > li a[href=#shorelines-view-tab]').click();
+						break
+					case 8 :
+					case 9 :
+						$('#stage-select-tablist >li a[href=#baseline]').click();
+						$('#action-baseline-tablist > li a[href=#baseline-view-tab]').click();
+						break
+					case 10 :
+						$('#stage-select-tablist >li a[href=#baseline]').click();
+						$('#action-baseline-tablist > li a[href=#baseline-manage-tab]').click();
+						break
+					case 11 :
+					case 12 :
+						$('#stage-select-tablist >li a[href=#transects]').click();
+						$('#action-transects-tablist > li a[href=#transects-view-tab]').click();
+						break
+					case 13 :
+						$('#stage-select-tablist >li a[href=#transects]').click();
+						$('#action-transects-tablist > li a[href=#transects-manage-tab]').click();
+						break
+					case 14 :
+					case 15 :
+						$('#stage-select-tablist >li a[href=#calculation]').click();
+						$('#action-calculation-tablist > li a[href=#calculation-view-tab]').click();
+						break
+					case 16 :
+						$('#stage-select-tablist >li a[href=#calculation]').click();
+						$('#action-calculation-tablist > li a[href=#calculation-manage-tab]').click();
+						break
+					case 17 :
+					case 18 :
+						$('#stage-select-tablist >li a[href=#results]').click();
+						$('#action-results-tablist > li a[href=#results-view-tab]').click();
+						break
+					case 19 :
+						$('#stage-select-tablist >li a[href=#results]').click();
+						$('#action-results-tablist > li a[href=#results-manage-tab]').click();
+						break
+				}
+			};
+		},
+				
+		/**
+		 * Binds the introductory menu items to the click event
+		 * 
+		 * @returns {undefined}
+		 */
+		bindIntroMenuItems : function() {
+			$('#nav-menu-intro').on('click', function() {
+				bootstro.start(undefined, {
+					finishButton: '<button class="btn btn-mini btn-success bootstro-finish-btn"><i class="icon-ok" ></i> Finish</button>'
+				});
+			});
+			$('#nav-menu-shorelines').on('click', function() {
+				bootstro.start(undefined, {
+					finishButton: '<button class="btn btn-mini btn-success bootstro-finish-btn"><i class="icon-ok" ></i> Finish</button>'
+				});
+				$('#stage-select-tablist >li a[href=#shorelines]').click();
+				$('#action-shorelines-tablist > li a[href=#shorelines-view-tab]').click();
+				bootstro.go_to(4);
+			});
+			$('#nav-menu-baseline').on('click', function() {
+				bootstro.start(undefined, {
+					finishButton: '<button class="btn btn-mini btn-success bootstro-finish-btn"><i class="icon-ok" ></i> Finish</button>'
+				});
+				$('#stage-select-tablist >li a[href=#baseline]').click();
+				$('#action-baseline-tablist > li a[href=#baseline-view-tab]').click();
+				bootstro.go_to(8);
+			});
+			$('#nav-menu-transects').on('click', function() {
+				bootstro.start(undefined, {
+					finishButton: '<button class="btn btn-mini btn-success bootstro-finish-btn"><i class="icon-ok" ></i> Finish</button>'
+				});
+				$('#stage-select-tablist >li a[href=#transects]').click();
+				$('#action-transects-tablist > li a[href=#transects-view-tab]').click();
+				bootstro.go_to(11);
+			});
+			$('#nav-menu-calculation').on('click', function() {
+				bootstro.start(undefined, {
+					finishButton: '<button class="btn btn-mini btn-success bootstro-finish-btn"><i class="icon-ok" ></i> Finish</button>'
+				});
+				$('#stage-select-tablist >li a[href=#calculation]').click();
+				$('#action-calculation-tablist > li a[href=#calculation-view-tab]').click();
+				bootstro.go_to(14);
+			});
+			$('#nav-menu-results').on('click', function() {
+				bootstro.start(undefined, {
+					finishButton: '<button class="btn btn-mini btn-success bootstro-finish-btn"><i class="icon-ok" ></i> Finish</button>'
+				});
+				$('#stage-select-tablist >li a[href=#results]').click();
+				$('#action-results-tablist > li a[href=#results-view-tab]').click();
+				bootstro.go_to(17);
+			});
+		},
+				
+		/**
+		 * Adds content to the introductory sections
+		 * @returns {undefined}
+		 */
+		addIntroContent: function() {
+			this.bindIntroPrevNextButtons();
+			this.bindIntroMenuItems();
+
+			$('#app-navbar-container').addClass('bootstro').attr({
+				'data-bootstro-title': 'Welcome to USGS Coastal Change Hazards',
+				'data-bootstro-content': 'This web-based Digital Shoreline Analysis System (DSASweb) is a software application that enables a user to calculate shoreline rate-of-change statistics from multiple historical shoreline positions.' +
+						'<br /><br />A user-friendly interface of simple buttons and menus guides the user through the major steps of shoreline change analysis.' +
+						'<br /><br />You can use our current database of shorelines, or upload your own.' +
+						'<br /><br />DSASweb is a convenient, web-based version of the original USGS DSAS analysis tool.',
+				'data-bootstro-placement': 'bottom',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 0
+			});
+
+			$('#stage-select-tablist').addClass('bootstro').attr({
+				'data-bootstro-title': 'Stage Selection',
+				'data-bootstro-content': 'Each stage in the DSASweb workflow can be accessed by clicking one of these navigation buttons.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 1
+			});
+
+			$('#toolbox-well').addClass('bootstro').attr({
+				'data-bootstro-title': 'Toolbox',
+				'data-bootstro-content': 'The workspace for the active stage is designed to allow users to edit, define parameters, and interact with various DSASweb selection options.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 2
+			});
+
+			$('#map-span').addClass('bootstro').attr({
+				'data-bootstro-title': 'Map',
+				'data-bootstro-content': 'The map view provides an interactive view of active DSASweb geospatial elements.<br />These elements include shorelines, baselines, transects, intersections, and results.<br /><br />' +
+						'Use the +/- buttons  in the upper left to change the zoom level of the map, or double click to zoom in.<br />To quickly zoom in, draw a bounding box with the mouse by holding down the shift key on your keyboard.',
+				'data-bootstro-placement': 'left',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 3
+			});
+
+			$('#stage-select-tablist >li a[href=#shorelines]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Shorelines',
+				'data-bootstro-content': 'Shorelines are geospatial polylines which represent the location of the shoreline at different times.<br />DSASweb uses the difference between these shorelines to calculate metrics of shoreline change.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 4
+			});
+
+			$('#action-shorelines-tablist > li a[href=#shorelines-view-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Shorelines View',
+				'data-bootstro-content': 'A existing set of shorelines selected from the view menu will be added to the active workspace.' +
+						'Use the visibility toggles, or click on shorelines in the map to disable shorelines.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 5
+			});
+
+			$('#action-shorelines-tablist > li a[href=#shorelines-manage-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Shorelines Manage',
+				'data-bootstro-content': 'A set of shorelines can be added or removed from the view menu using the manage menu.',
+				'data-bootstro-placement': 'top',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 6
+			});
+
+			$('#shorelines-list').addClass('bootstro').attr({
+				'data-bootstro-title': 'Individual Shorelines',
+				'data-bootstro-content': 'Individual shorelines can be disabled, which will result in those shorelines being ignored during DSASweb calculations. ',
+				'data-bootstro-placement': 'top',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 7
+			});
+
+			$('#stage-select-tablist >li a[href=#baseline]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Baseline',
+				'data-bootstro-content': 'The baseline provides a local frame of reference for calculating metrics of shoreline change.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 8
+			});
+
+			$('#action-baseline-tablist > li a[href=#baseline-view-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Baseline View',
+				'data-bootstro-content': 'A baseline selected from the view menu will be added to the active workspace.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 9
+			});
+
+			$('#action-baseline-tablist > li a[href=#baseline-manage-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Baseline Manage',
+				'data-bootstro-content': '<div><div style="float:left;">A baseline can be added or removed<br />from the view menu using the manage menu.<br /><br />The manage tab also provides tools to draw <br />new baselines or clone and edit existing baselines.</div><img src="images/introduction_images/BaselineDraw.gif" /></div>',
+				'data-bootstro-placement': 'bottom',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 10
+			});
+
+			$('#stage-select-tablist >li a[href=#transects]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Transects',
+				'data-bootstro-content': 'Transects are cast perpendicular to the workspace baseline, and their intersections with shorelines are used to calculate metrics of shoreline change.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 11
+			});
+
+			$('#action-transects-tablist > li a[href=#transects-view-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Transects View',
+				'data-bootstro-content': 'An existing set of transects selected from the view menu will be added to the active workspace.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 12
+			});
+
+			$('#action-transects-tablist > li a[href=#transects-manage-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Transects Manage',
+				'data-bootstro-content': '<div><div style="float:left">A set of transects can be added<br />or removed from the view menu using the manage menu.<br /><br />The manage tab also provides tools to cast new transects<br />at user defined intervals or to edit existing transects.</div><img src="images/introduction_images/EditTransects.gif" /></div>',
+				'data-bootstro-placement': 'bottom',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 13
+			});
+
+			$('#stage-select-tablist >li a[href=#calculation]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Review/Calculation',
+				'data-bootstro-content': ' Review the workspace elements and specify parameters for the calculations. Calculate metrics of shoreline change.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 14
+			});
+
+			$('#action-intersections-tablist > li a[href=#intersections-view-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Review/Calculation View',
+				'data-bootstro-content': ' An existing set of intersections can be selected from the view menu will be added to the active workspace.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 15
+			});
+
+			$('#action-intersections-tablist > li a[href=#intersections-manage-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Review/Calculation  Manage',
+				'data-bootstro-content': 'Specify parameters for calculations, and begin DSASweb calculation algorithms. ',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 16
+			});
+
+			$('#stage-select-tablist >li a[href=#results]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Results',
+				'data-bootstro-content': 'Visualize and/or download metrics of shoreline change resulting from processing of DSASweb workspace elements as defined by the user.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 17
+			});
+
+			$('#action-result-tablist > li a[href=#results-view-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Results View',
+				'data-bootstro-content': 'An existing set of rates can be selected from the view menu will be added to the active workspace.<br />View the interactive plot for metrics of shoreline change.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 18
+			});
+
+			$('#action-result-tablist > li a[href=#results-manage-tab]').addClass('bootstro').attr({
+				'data-bootstro-title': 'Results Manage',
+				'data-bootstro-content': 'Download images, csv files, or shapefiles for the DSASweb calculation results.',
+				'data-bootstro-placement': 'right',
+				'data-bootstro-html': true,
+				'data-bootstro-step': 19
+			});
+		},
+		/**
+		 * A user wishes to publish metadata. Create the form that allows the 
+		 * uploading of this metadata
+		 * 
+		 * @returns {undefined}
+		 */
+		createMetadataUploadForm : function() {
+			var container = $('<div />').addClass('container-fluid');
+			
+			var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'md-explanation-row');
+			var explanationWell = $('<div />').addClass('well well-small').attr('id', 'md-explanation-well');
+			var explanationDiv = $('<div />').html('Using the metadata upload functionality you are able to quickly enter metadata associated with published resources');
+			container.append(explanationWell.append(explanationRow.append(explanationDiv)));
+			
+			var formRow = $('<div />').addClass('row-fluid').attr('id', 'md-form-row');
+			var formWell = $('<div />').addClass('well well-small').attr('id', 'md-form-well');
+			var form = $('<form />').attr({
+				id: 'md-form',
+				action : 'service/publish',
+				method : 'post',
+				enctype : 'multipart/form-data',
+				target : ''
+			});
+			
+			var select = $('<select />').attr({
+				'id' : 'md-layers-select',
+				'name' : 'md-layers-select'
+			});
+			form.append(select);
+			
+			var options = $('.feature-list option[class="session-layer"]').toArray();
+			for (var oIdx = 0; oIdx < options.length; oIdx++) {
+				$(select).append(options[oIdx]);
+			}
+			
+			form.append('Metadata XML ').append($('<input />').attr({
+				'id' : 'form-file-input',
+				'type': 'file',
+				'name': 'metadata',
+				'size': '40'
+			}));
+			
+			form.after('<br />');
+			
+			container.append(formRow.append(formWell.append(form)));
+			
+			CONFIG.ui.createModalWindow({
+				headerHtml: 'Metadata Publish',
+				doneButtonText: 'Cancel',
+				buttons: [{
+						text: 'Submit',
+						callback: function() {
+							var formData = new FormData();
+							formData.append('md-layers-select', $('#md-layers-select').val());
+							formData.append('metadata', $('#form-file-input').val());
+							$.each($('#form-file-input')[0].files, function(i, file) {
+								formData.append('metadata', file);
+							});
+							$.ajax({
+								type : 'POST',
+								url : 'service/publish',
+								cache : false,
+								contentType : false,
+								processData : false,
+								data : formData,
+								dataType : 'json',
+								success : function() {
+									CONFIG.ows.getWMSCapabilities({
+										callbacks: {
+											success: [
+												CONFIG.tempSession.updateLayersFromWMS,
+												function(data, textStatus, jqXHR) {
+													CONFIG.ui.work_stages_objects.each(function(stage) {
+														stage.appInit();
+														stage.populateFeaturesList(data, textStatus, jqXHR);
+													});
+												}
+											],
+											error: [
+												// TODO: What do we do no error here?
+											]
+										}
+									});
+								}
+							});
+						}
+					}
+				],
+				bodyHtml: container.html(),
+				callbacks: []
+			});
+		},
+        createMetadataEntryForm : function() {
+            var sessionId = $('#session-management-session-list :selected').val();
+            var session = CONFIG.permSession.session.sessions.find(function(s) {
+                return s.id === sessionId;
+            });
+                        
+            var container = $('<div />').addClass('container-fluid');
+            var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
+            var explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well');
+            explanationWell.html('Provide a name and some optional metadata for this session<br /><br />Session: ' + session.id);
+            container.append(explanationRow.append(explanationWell));
+                        
+            var nameRow = $('<div />').addClass('row-fluid').attr('id', 'name-row');
+            var nameWell = $('<div />').addClass('well').attr('id', 'name-well');
+            var nameInputLabel = $('<label />').attr({
+                'id' : 'name-input-label',
+                'for' : 'name-input'
+            }).html('Name:');
+            var nameInput = $('<input>').attr({
+                'id' : 'name-input',
+                'name' : 'name-input',
+                'type' : 'text',
+                'style' : 'width:100%;',
+                'placeholder' : session.name
+            });
+            container.append(nameRow.append(nameWell.append(nameInputLabel, nameInput)));
+                        
+            var metadataRow = $('<div />').addClass('row-fluid').attr('id', 'metadata-row');
+            var metadataWell = $('<div />').addClass('well').attr('id', 'metadata-well');
+            var metadataInputLabel = $('<label />').attr({
+                'id' : 'metadata-input-label',
+                'for' : 'metadata-input'
+            }).html('Metadata:');
+            var metadataInput = $('<input>').attr({
+                'id' : 'metadata-input',
+                'name' : 'metadata-input',
+                'type' : 'textarea',
+                'style' : 'width:100%;height:5em;',
+                'maxLength' : '4000',
+                'rows': '10',
+                'placeholder' : session.metadata
+            });
+            container.append(metadataRow.append(metadataWell.append(metadataInputLabel, metadataInput)));
+                        
+            CONFIG.ui.createModalWindow({
+                bodyHtml : container.html(),
+                buttons : [{
+                        id : 'save-metadata-button',
+                        type : 'btn-success',
+                        text : 'Save',
+                        callback : function() {
+                            var name = $('#name-input').val();
+                            var metadata = $('#metadata-input').val();
+                            session.name = name;
+                            session.metadata = metadata;
+                            CONFIG.permSession.save();
+                            CONFIG.tempSession.persistSession();
+                            CONFIG.tempSession.createSessionManagementModalWindow();
+                        }
+                    }],
+                callbacks : [
+                    function() {
+                        $('#cancel-button').on('click', function() {
+                            CONFIG.tempSession.createSessionManagementModalWindow();
+                        });
+                    }
+                ]
+            });
+        },
+		/**
+		 * After requesting session information from the server, either makes
+		 * a link allowing a user to log in using OpenID or if already logged
+		 * in, creates a drop down menu with log-in info and a log-out option.
+		 * 
+		 * Also creates a "Publish" menu item under the Session drop-down menu.
+		 * The publish menu only appears if the incoming email is a usgs address
+		 * 
+		 * @returns {undefined}
+		 */
+		createLoginMenuItem: function() {
+			if (CONFIG.window.login) {
+				CONFIG.window.login.close();
+				CONFIG.window.login = null;
+			}
+
+			$.get('service/session?action=get-oid-info', function(data) {
+				var loggedIn = data.success;
+				var loginListItem = $('#login-list-item');
+				var country = '',
+						email = '',
+						firstname = '',
+						lastname = '',
+						language = '';
+
+				var createLoginLink = function() {
+					loginListItem.empty();
+					loginListItem.append($('<div />').attr({
+						'id': 'session-login-link'
+					}).html('<img id="sign-in-img" src="images/OpenID/White-signin_Medium_base_44dp.png"></img>'));
+
+					$('#session-login-link').on('click', function() {
+						if (CONFIG.window.login) {
+							CONFIG.window.login.close();
+						}
+						CONFIG.window.login = window.open('components/OpenID/oid-login.jsp', 'login', 'width=1000,height=550,fullscreen=no', true);
+					});
+					
+					$('#sign-in-img').on({
+						'mouseenter' : function() {
+							$(this).attr('src', 'images/OpenID/White-signin_Medium_hover_44dp.png');
+						},
+						'mouseleave' : function() {
+							$(this).attr('src', 'images/OpenID/White-signin_Medium_base_44dp.png');
+						},
+						'mousedown' : function() {
+							$(this).attr('src', 'images/OpenID/White-signin_Medium_press_44dp.png');
+						},
+						'mouseup' : function() {
+							$(this).attr('src', 'images/OpenID/White-signin_Medium_base_44dp.png');
+						}
+					});
+				};
+
+				var createLoggedInMenu = function() {
+					loginListItem.empty();
+					var dropdownItem = $('<a />').addClass('dropdown-toggle').attr({
+						'data-toggle': 'dropdown',
+						'role': 'button',
+						'href': '#',
+						'id': 'login-menu-dropdown'
+					}).html(firstname + ' ' + lastname + ' (' + email + ')')
+							.append($('<b />').addClass('caret'));
+					loginListItem.addClass('dropdown').append(dropdownItem);
+
+					// CREATE the log out link 
+					var logoutMenuItem = $('<ul />').addClass('dropdown-menu').attr('aria-labelledby', 'login-menu-dropdown');
+					var listItem = $('<li />').attr('role', 'presentation');
+					var logoutLink = $('<a />').attr({
+						'id': 'login-menu-item-logout',
+						'tabindex': '-1',
+						'role': 'menuitem'
+					}).html('Log Out');
+					loginListItem.append(logoutMenuItem.append(listItem.append(logoutLink)));
+
+					// IF it is a USGS address
+					if (email.toLowerCase().endsWith('usgs.gov')) {
+						// APPEND the publish menu item to the menu
+						var publishListItem = $('<li />').attr('role', 'presentation');
+						var publishLink = $('<a />').attr({
+							'id': 'session-menu-item-publish',
+							'tabindex': '-1',
+							'role': 'menuitem'
+						}).html('Publish');
+						$('#session-drop-down-list').append(publishListItem.append(publishLink));
+						publishLink.on('click', function() {
+							CONFIG.ui.createMetadataUploadForm();
+						});
+					}
+
+					// BIND the log out menu item
+					logoutLink.on('click', function() {
+						$.get('service/session?action=logout', function() {
+							createLoginLink();
+							$('#session-menu-item-publish').detach();
+						});
+					});
+				};
+				
+				if (loggedIn === 'true') {
+					country = data.country;
+					email = data.email;
+					firstname = data.firstname;
+					lastname = data.lastname;
+					language = data.language;
+					createLoggedInMenu();
+				} else {
+					createLoginLink();
+				}
+			});
+		}
     });
 };

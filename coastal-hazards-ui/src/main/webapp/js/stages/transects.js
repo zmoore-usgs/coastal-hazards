@@ -55,7 +55,8 @@ var Transects = {
                     style: {
                         strokeColor: '#A1A1A1',
                         strokeOpacity: 0.25
-                    }
+                    },
+					displayInLayerSwitcher : false
                 });
                 selectedFeature.geometry.addComponents([angleGeometry1, angleGeometry2]);
                 angleLayer.addFeatures([selectedFeature]);
@@ -130,7 +131,8 @@ var Transects = {
                     srsName: CONFIG.map.getMap().getProjection()
                 }),
                 cloneOf: oLayerName,
-                renderers: CONFIG.map.getRenderer()
+                renderers: CONFIG.map.getRenderer(),
+				displayInLayerSwitcher : false
             });
             clonedLayer.addFeatures(originalLayer.features);
             clonedLayer.styleMap.styles['default'].defaultStyle.strokeWidth = 4;
@@ -508,7 +510,8 @@ var Transects = {
                             strokeWidth: 2
                         })
                     }),
-                    type: 'transects'
+                    type: 'transects',
+					displayInLayerSwitcher : false
                 });
 
                 CONFIG.map.getMap().addLayer(transects);
@@ -748,7 +751,7 @@ var Transects = {
                         callbacks: [
                             // TODO- Error Checking for WPS process response!
                             function(data, textStatus, jqXHR, context) {
-                                if (typeof data == 'string') {
+                                if (typeof data === 'string') {
                                     var transectLayer = data.split(',')[0];
                                     var intersectionLayer = data.split(',')[1];
                                     CONFIG.ows.getWMSCapabilities({
@@ -761,10 +764,10 @@ var Transects = {
                                                 function() {
                                                     // Remove previous transects and intersection layers
                                                     if (CONFIG.map.getMap().getLayersBy('type', 'transects').length) {
-                                                        CONFIG.map.getMap().removeLayer(CONFIG.map.getMap().getLayersBy('type', 'transects')[0])
+                                                        CONFIG.map.getMap().removeLayer(CONFIG.map.getMap().getLayersBy('type', 'transects')[0]);
                                                     }
                                                     if (CONFIG.map.getMap().getLayersBy('type', 'intersects').length) {
-                                                        CONFIG.map.getMap().removeLayer(CONFIG.map.getMap().getLayersBy('type', 'intersects')[0])
+                                                        CONFIG.map.getMap().removeLayer(CONFIG.map.getMap().getLayersBy('type', 'intersects')[0]);
                                                     }
 
                                                     $('#transects-list').val(transectLayer);
@@ -780,21 +783,29 @@ var Transects = {
                                                         style: {
                                                             classes: ['alert-success']
                                                         }
-                                                    })
+                                                    });
                                                 }
                                             ]
                                         }
-                                    })
+                                    });
                                 } else {
-                                    LOG.error($(data).find('ows\\:ExceptionText').first().text());
+									var errorText = $(data).find('ows\\:ExceptionText').first().text();
+                                    var msg = 'Transect calculation failed. Check logs.';
+									LOG.error(errorText);
+									
+									// This is a dopey way of doing this...
+									if (errorText.toLowerCase().has('baselines cannot intersect shorelines')) {
+										msg = 'Transect calculation failed. Baselines cannot intersect shorelines.';
+									}
+									
                                     CONFIG.ui.showAlert({
-                                        message: 'Transect calculation failed. Check logs.',
+                                        message: msg,
                                         displayTime: 7500,
                                         caller: Transects,
                                         style: {
                                             classes: ['alert-error']
                                         }
-                                    })
+                                    });
                                 }
                             }
                         ]

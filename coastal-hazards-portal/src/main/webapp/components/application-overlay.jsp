@@ -10,18 +10,9 @@
         </div>
         <!-- start slipsum code -->
 
-<p>Maecenas eu placerat ante. Fusce ut neque justo, et aliquet enim. In hac habitasse platea dictumst. <br />
-	Nullam commodo neque erat, vitae facilisis erat. Cras at mauris ut tortor vestibulum fringilla vel sed metus. Donec interdum purus a justo feugiat rutrum. <br />
-	Sed ac neque ut neque dictum accumsan. Cras lacinia rutrum risus, id viverra metus dictum sit amet. </p>
-
-<p>Integer elementum massa at nulla placerat varius. Suspendisse in libero risus, in interdum massa. <br />
-	Vestibulum ac leo vitae metus faucibus gravida ac in neque. Nullam est eros, suscipit sed dictum quis, accumsan a ligula. In sit amet justo lectus. <br />
-	Etiam feugiat dolor ac elit suscipit in elementum orci fringilla. Aliquam in felis eros. Praesent hendrerit lectus sit amet turpis tempus hendrerit.</p>
-
-<p>Maecenas eu placerat ante. Fusce ut neque justo, et aliquet enim. In hac habitasse platea dictumst. <br />
-	Nullam commodo neque erat, vitae facilisis erat. Cras at mauris ut tortor vestibulum fringilla vel sed metus. Donec interdum purus a justo feugiat rutrum. <br />
-	Sed ac neque ut neque dictum accumsan. Cras lacinia rutrum risus, id viverra metus dictum sit amet. Fusce venenatis, urna eget cursus placerat, dui nisl fringilla purus.</p>
-
+		<p>Maecenas eu placerat ante. Fusce ut neque justo, et aliquet enim. In hac habitasse platea dictumst. <br />
+			Nullam commodo neque erat, vitae facilisis erat. Cras at mauris ut tortor vestibulum fringilla vel sed metus. Donec interdum purus a justo feugiat rutrum. <br />
+			Sed ac neque ut neque dictum accumsan. Cras lacinia rutrum risus, id viverra metus dictum sit amet. </p>
         <div style="text-align:center;">
             <div id="splash-status-update"></div>
             <img src="images/spinner/spinner3.gif" />
@@ -29,8 +20,8 @@
     </div>
 </div>
 <script type="text/javascript">
-    var splashUpdate = function(message) {
-        $('#splash-status-update').html(message);
-    };
-    splashUpdate("Loading application...");
+	var splashUpdate = function(message) {
+		$('#splash-status-update').html(message);
+	};
+	splashUpdate("Loading application...");
 </script>

@@ -178,12 +178,6 @@ stopCluster(c1)
 
 statsout <- data.frame("transect_ID"=blckNm,LRR,LCI,WLR,WCI,SCE,NSM,EPR)
 
-for (i in 2:ncol(statsout)){
-  statShortName <- names(statsout)[i]
-  names(statsout)[i] = paste(statShortName,"|",statLongNames[statShortName][[1]],"|",
-    statUnits[statShortName][[1]],sep="")
-}
-
 if (localRun){
   Rprof(NULL)
   summaryRprof(filename = "DSAS_profiler.txt",chunksize=5000)

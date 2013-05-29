@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.usgs.cida.coastalhazards</groupId>
         <artifactId>coastal-hazards</artifactId>
-        <version>1.0.5-SNAPSHOT</version>
+        <version>1.0.10-SNAPSHOT</version>
     </parent>
 
     <artifactId>coastal-hazards-geoserver</artifactId>
@@ -74,6 +74,15 @@
             <artifactId>geoserver</artifactId>
             <version>${gs.version}-1</version>
             <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-shapefile</artifactId>
+            <type>jar</type>
         </dependency>
     </dependencies>
 

@@ -85,6 +85,7 @@ public class Constants {
         UNKNOWN("unknown", 0);
         
         private final String orientation;
+        /* Sign is negative to indicate erosion, positive for accretion */
         private final int sign;
         
         Orientation(String value, int sign) {

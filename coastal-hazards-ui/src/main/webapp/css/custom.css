@@ -1,9 +1,4 @@
 /* ---------------------------------------------------------------------- UI */
-/*html body>div.container-fluid {
-    background-image:url('../images/paneBackgrounds/application_background.png');
-    background-repeat:no-repeat;
-    background-size: 100% 100%;
-}*/
 .btn {
     margin-top: .25em;
     margin-bottom: .25em;
@@ -17,8 +12,8 @@
     height: auto !important;
 }
 
-#toolbox-well {
-    height: 39em;
+.lazy {
+	display: none;
 }
 
 #application-spinner {
@@ -97,6 +92,10 @@ select option.session-layer{
    background-image:url('../images/paneBackgrounds/results_tutorial.png');
 }
 
+#sign-in-img {
+	height: 2.75em;
+}
+
 
 /* ---------------------------------------------------------------------- Map */
 /* Add a drop shadow effect to scale and mouse position so they can be seen against a dark background */
@@ -108,12 +107,26 @@ select option.session-layer{
     text-shadow: #FFFFFF 0px 0px 2px;
     color: #000000;
 }
+
 #map {
+	min-height: 32em;
     height: 100%;
     width: 100%;
 }
+
 #map-well {
-    height: 39em;
+    height: 100%;
+}
+
+#toolbox-well {
+	height: 100%;
+}
+
+.baseLayersDiv > .labelSpan {
+	display : inline;
+}
+.dataLayersDiv > .labelSpan {
+	display : inline;
 }
 
 /* ---------------------------------------------------------------------- Shorelines */
@@ -123,9 +136,6 @@ select option.session-layer{
 }
 .shoreline-table-selected-head-column {
     width: 30%;
-}
-#shorelines-list {
-    height: 7.25em;
 }
 
 .wildcard-link {
@@ -162,6 +172,16 @@ select option.session-layer{
 }
 
 /* ---------------------------------------------------------------------- Results */
+.dygraph-xlabel {
+	line-height : 18px;
+	font-size: 14px;
+}
+
+.dygraph-ylabel {
+	line-height : 18px;
+	font-size: 14px;
+}
+
 #results-table-container {
     height: 16.25em;
 }
