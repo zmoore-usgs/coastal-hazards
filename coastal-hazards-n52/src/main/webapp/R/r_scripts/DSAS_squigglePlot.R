@@ -5,9 +5,10 @@
 # xml is for WPS side of things, tells WPS how input should be formatted
 
 localRun <- FALSE
+dropVal <-  1e38
 # comment this out for WPS!!!
 if (localRun){
-  shortName <- "NSM"
+  shortName <- "LRR"
   input <- "squiggleOut.tsv"
   ptm <- proc.time() # for time of process
 }
@@ -39,6 +40,13 @@ RT_i = grep(shortName,names(rateVals)) # rate index
 rwBD <- rateVals[,BD_i]/1000
 rwID <- rateVals[,ID_i]
 rwRT <- rateVals[,RT_i]
+nanI  <-  which(abs(rwRT)>=dropVal)
+rwRT[nanI] <- NA
+# for each NA, increment baselineID (separate segment)
+if (length(nanI)>0){for (blk in 1:length(nanI)){
+  stI <- nanI[blk]
+  rwID[stI:length(rwID)] <- rwID[stI:length(rwID)]+1 # create break
+}}
 
 if (shortName=="LRR" | shortName=="WLR"){
   rwCI <- rateVals[,RT_i+1]
@@ -53,8 +61,8 @@ numBase <- sum(!baseL)
 indx <- seq(1,nLines)
 dropI <- c(indx[!baseL],nLines)
 
-mxY <- max(rwRT+rwCI)
-mnY <- min(rwRT-rwCI)
+mxY <- max(rwRT+rwCI,na.rm = TRUE)
+mnY <- min(rwRT-rwCI,na.rm = TRUE)
 
 # resort values
 output = "output.png"
@@ -72,8 +80,15 @@ for (p in 1:numBase){
   rate <- rwRT[indx_1:indx_2]
   CI_up <- rate+rwCI[indx_1:indx_2]
   CI_dn <- rate-rwCI[indx_1:indx_2]
-  
-  polygon(c(dist,rev(dist)),c(CI_up,rev(CI_dn)),col="grey",border=NA)
+  usI <- which(!is.na(rate))
+  if (shortName=="LRR" | shortName=="WLR"){
+    
+    polygon(c(dist[usI],
+              rev(dist[usI])),
+              c(CI_up[usI],
+                rev(CI_dn[usI])),
+              col="grey",border=NA)
+  }
   
   lines(dist,rate,lwd=2.5)
 }
