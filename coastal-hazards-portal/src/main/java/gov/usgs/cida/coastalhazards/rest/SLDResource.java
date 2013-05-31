@@ -25,15 +25,17 @@ public class SLDResource {
             @PathParam("attr") String attr) {
         String result = "";
         
-        float[] thresholds = makeSteps(0.0f, 100.0f, NUMBER_OF_BINS);
-        String[] colors = makeColors("#FFFFFF", "#FF0000", NUMBER_OF_BINS-1);
+        float[] thresholds = makeSteps(0.0f, 100.0f, NUMBER_OF_BINS+1);
+        String[] colors = makeColors("#FFFFFF", "#FF0000", NUMBER_OF_BINS);
         
         StringBuilder sld = new StringBuilder();
-        sld.append("<sld:StyledLayerDescriptor")
+        sld.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+            .append("<sld:StyledLayerDescriptor")
             .append(" xmlns=\"http://www.opengis.net/ogc\"")
             .append(" xmlns:sld=\"http://www.opengis.net/sld\"")
             .append(" xmlns:ogc=\"http://www.opengis.net/ogc\"")
             .append(" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"")
+            .append(" xmlns:xlink=\"http://www.w3.org/1999/xlink\"")
             .append(" version=\"1.0.0\"")
             .append(" xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd\">")
 
@@ -46,9 +48,10 @@ public class SLDResource {
             .append("<sld:Title>Red to White ColorMap</sld:Title>")
             .append("<sld:FeatureTypeStyle>");
         
-       for (int i=0; i<NUMBER_OF_BINS-1; i++) {
+       for (int i=0; i<NUMBER_OF_BINS; i++) {
             sld.append("<sld:Rule>")
-            .append("<sld:Filter>")
+            .append("<ogc:Filter>")
+            .append("<ogc:And>")
             .append("<ogc:PropertyIsGreaterThanOrEqualTo>")
             .append("<ogc:PropertyName>")
                 .append(attr)
@@ -65,7 +68,8 @@ public class SLDResource {
                 .append(thresholds[i+1])
             .append("</ogc:Literal>")
             .append("</ogc:PropertyIsLessThan>")
-            .append("</sld:Filter>")
+            .append("</ogc:And>")
+            .append("</ogc:Filter>")
             .append("<sld:LineSymbolizer>")
             .append("<sld:Stroke>")
             .append("<sld:CssParameter name=\"stroke\">")
@@ -73,6 +77,9 @@ public class SLDResource {
             .append("</sld:CssParameter>")
             .append("<sld:CssParameter name=\"stroke-width\">")
                 .append(STROKE_WIDTH)
+            .append("</sld:CssParameter>")
+            .append("<sld:CssParameter name=\"stroke-opacity\">")
+                .append(1)
             .append("</sld:CssParameter>")
             .append("</sld:Stroke>")
             .append("</sld:LineSymbolizer>")
