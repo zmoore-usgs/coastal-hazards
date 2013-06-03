@@ -1,7 +1,7 @@
 var OWS = function() {
 	LOG.info('OWS.js::constructor: OWS class is initializing.');
 	var me = (this === window) ? {} : this;
-
+    me.visibleLayers = [];
 	
 	me.servers = {
 		'cida-geoserver': {
@@ -152,6 +152,38 @@ var OWS = function() {
 					})
 				}
 			})
+		},
+        displayData: function(args) {
+            // may want to do this first: CONFIG.map.removeLayersByName(me.visibleLayers);
+			var item = args.item;
+			if (item) {
+				var layer = new OpenLayers.Layer.WMS(
+						item.name,
+                        item.service.wms.endpoint,
+						{
+							layers: item.service.wms.layers,
+							format: 'img/png',
+							transparent: true
+						},
+				{
+					projection: 'EPSG:3857',
+					isBaseLayer: false,
+					displayInLayerSwitcher: false
+
+				});
+
+				layer.params.STYLES = 'redwhite';
+                // SLD will probably only work with one layer
+                // also TODO: figure out best way to get public mapping (context.xml or document.location ??
+				layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/rest/sld/redwhite/' + item.service.wms.layers + '/' + item.attr;
+				CONFIG.map.getMap().addLayer(layer);
+				layer.redraw(true);
+
+				CONFIG.session.objects.view.storms.activeLayers = [{title: item.name, name: item.name, layers: item.service.wms.layers}];
+				if (me.visibleLayers.indexOf(layer) === -1) {
+					me.visibleLayers.push(layer);
+				}
+			}
 		}
 	});
 };

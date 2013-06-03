@@ -191,6 +191,12 @@ var UI = function(args) {
 						$(this).find('i').addClass('muted');
 					});
 				});
+                info.on({
+                    'click': function(evt) {
+                        CONFIG.ui.slider('autoSlidePause');
+                        CONFIG.ows.displayData({ "item": item });
+                    }
+                });
 
 				containerDiv.append(toolbarRow);
 				toolbarRow.append(buttonToolbar);
@@ -384,9 +390,10 @@ var UI = function(args) {
 						$(mrk.div).removeClass('marker-active');
 						$(mrk.div).addClass('marker-inactive');
 					});
-
-					var marker = CONFIG.map.addBoundingBoxMarker({
-						bbox: $(event.currentSlideObject[0].firstChild).data('popItem').bbox,
+                    
+                    var item = $(event.currentSlideObject[0].firstChild).data('popItem');
+                    var marker = CONFIG.map.addBoundingBoxMarker({
+						bbox: item.bbox,
 						fromProjection: 'EPSG:4326'
 					});
 
