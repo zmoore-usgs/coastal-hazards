@@ -44,9 +44,6 @@ CONFIG.popularity = {
 	},
 	getById: function(args) {
 		var id = args.id;
-		if (!id.has('urn:uuid:')) {
-			id += 'urn:uuid:';
-		};
 		return this.results.find(function(result) {
 			return result.id === id;
 		});

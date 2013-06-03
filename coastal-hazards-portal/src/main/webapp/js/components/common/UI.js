@@ -165,9 +165,9 @@ var UI = function(args) {
 			});
 		},
 		buildSlide: function(args) {
-			var cswId = args.cswId;
+			var itemId = args.itemId;
 			var item = CONFIG.popularity.getById({
-				'id': cswId
+				'id': itemId
 			});
 
 			if (item) {
@@ -212,7 +212,8 @@ var UI = function(args) {
 
 				titleRow.append(imageColumn, titleColumn);
 
-				descriptionRow.append($('<p />').addClass('slide-vertical-description unselectable').html(item.summary.abstract));
+                // TODO description should come from summary service (URL in item)
+				descriptionRow.append($('<p />').addClass('slide-vertical-description unselectable').html(item.summary.medium));
 
 				containerDiv.append(titleRow, descriptionRow);
 				if (CONFIG.ui.currentSizing === 'large') {
@@ -299,7 +300,7 @@ var UI = function(args) {
 
 				results.each(function(result) {
 					var item = CONFIG.ui.buildSlide({
-						'cswId': result.id
+						'itemId': result.id
 					});
 
 					var slide = $('<div />').addClass('slide well well-small').append(item);
