@@ -3,7 +3,7 @@
         {
             "id": "BzNRvCU",
             "url": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5b45af0-b8d9-11e2-83d8-0050569544e0",
-            "name": "Shorelines of the eastern coastal region of Kauai, Hawaii, from Papaa to Nawiliwili, used in shoreline change analysis",
+            "name": "Linear Regression Rate of shorelines in eastern Kauai, HI",
             "type": "historical",
             "attr": "LRR",
             "hotness": "101",
@@ -17,7 +17,7 @@
         },{
             "id": "tdQmyp9",
             "url": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5c614fc-b8d9-11e2-a3ac-0050569544e0",
-            "name": "Shorelines of the northern coastal region of Kauai, Hawaii, from Haena to Moloaa, used in shoreline change analysis",
+            "name": "Linear Regression Rate of shorelines in northern Kauai, HI",
             "type": "historical",
             "attr": "LRR",
             "hotness": "3",
@@ -31,7 +31,7 @@
         },{
             "id": "TI7t3Pp",
             "url": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5d48cc6-b8d9-11e2-8a16-0050569544e0",
-            "name": "Shorelines of the southern coastal region of Kauai, Hawaii, from Waimea to Kipu Kai, used in shoreline change analysis",
+            "name": "Linear Regression Rate of shorelines in southern Kauai, HI",
             "type": "historical",
             "attr": "LRR",
             "hotness": "17",
@@ -45,7 +45,7 @@
         },{
             "id": "BCzzXsI",
             "url": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5e1b96e-b8d9-11e2-9cf4-0050569544e0",
-            "name": "Shorelines of the Kihei coastal region of Maui, Hawaii, from Maalaea to Makena, used in shoreline change analysis",
+            "name": "Linear Regression Rate of shorelines in the Kihei coastal region of Maui, HI",
             "type": "historical",
             "attr": "LRR",
             "hotness": "91",
@@ -59,7 +59,7 @@
         },{
             "id": "VGz79MZ",
             "url": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5ef27d4-b8d9-11e2-83d8-0050569544e0",
-            "name": "Shorelines of the northern coastal region of Maui, Hawaii, from Waihee to Kuau, used in shoreline change analysis",
+            "name": "Linear Regression Rate of shorelines in northern Maui, HI",
             "type": "historical",
             "attr": "LRR",
             "hotness": "31",
@@ -73,7 +73,7 @@
         },{
             "id": "o3sjkQk",
             "url": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5fc8fbe-b8d9-11e2-a3ac-0050569544e0",
-            "name": "Shorelines of the western coastal region of Maui, Hawaii, from Ukumehame to Honolua, used in shoreline change analysis",
+            "name": "Linear Regression Rate of shorelines in western Maui, HI",
             "type": "historical",
             "attr": "LRR",
             "hotness": "19",
@@ -87,7 +87,7 @@
         },{
             "id": "0m2uQP7",
             "url": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c6098fde-b8d9-11e2-8a16-0050569544e0",
-            "name": "Shorelines of the New Jersey North coastal region used in shoreline change analysis from Sandy Hook to Little Egg Inlet, New Jersey",
+            "name": "Linear Regression Rate of shorelines in northern NJ",
             "type": "historical",
             "attr": "LRR",
             "hotness": "2",
@@ -101,7 +101,7 @@
         },{
             "id": "Sah1qwk",
             "url": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c616c1ae-b8d9-11e2-9cf4-0050569544e0",
-            "name": "Shorelines of the eastern coastal region of Oahu, Hawaii, from Kahuku to Makapuu, used in shoreline change analysis",
+            "name": "Linear Regression Rate of shorelines in eastern Oahu, HI",
             "type": "historical",
             "attr": "LRR",
             "hotness": "11",
@@ -115,7 +115,7 @@
         },{
             "id": "Dy26qZ0",
             "url": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c6240238-b8d9-11e2-83d8-0050569544e0",
-            "name": "Shorelines of the northern coastal region of Oahu, Hawaii, from Camp Erdman to Kahuku, used in shoreline change analysis",
+            "name": "Linear Regression Rate of shorelines in northern Oahu, HI",
             "type": "historical",
             "attr": "LRR",
             "hotness": "80",
@@ -129,7 +129,7 @@
         },{
             "id": "ZqRI7Rh",
             "url": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c6326648-b8d9-11e2-a3ac-0050569544e0",
-            "name": "Shorelines of the southern coastal region of Oahu, Hawaii, from Barbers Point to Sandy Beach, used in shoreline change analysis",
+            "name": "Linear Regression Rate of shorelines in southern Oahu, HI",
             "type": "historical",
             "attr": "LRR",
             "hotness": "17",
@@ -143,7 +143,7 @@
         },{
             "id": "BIJ4eT2",
             "url": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c63ff312-b8d9-11e2-8a16-0050569544e0",
-            "name": "Shorelines of the western coastal region of Oahu, Hawaii, from Yokohama to Tracks Beach, used in shoreline change analysis",
+            "name": "Linear Regression Rate of shorelines in western Oahu, HI",
             "type": "historical",
             "attr": "LRR",
             "hotness": "66",
