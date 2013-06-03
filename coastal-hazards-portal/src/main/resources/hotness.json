@@ -160,7 +160,7 @@
             "name": "Linear Regression Rate of shorelines in northern NJ",
             "type": "historical",
             "attr": "LRR",
-            "hotness": "2",
+            "hotness": "26",
             "bbox": [-74.31, 39.49, -73.97, 40.48],
             "summary": {
                 "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
@@ -208,7 +208,7 @@
             "name": "Linear Regression Rate of shorelines in northern Oahu, HI",
             "type": "historical",
             "attr": "LRR",
-            "hotness": "80",
+            "hotness": "8",
             "bbox": [-158.24, 21.58, -157.97, 21.71],
             "summary": {
                 "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
@@ -256,7 +256,7 @@
             "name": "Linear Regression Rate of shorelines in western Oahu, HI",
             "type": "historical",
             "attr": "LRR",
-            "hotness": "66",
+            "hotness": "2",
             "bbox": [-158.25, 21.35, -158.13, 21.55],
             "summary": {
                 "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
@@ -280,7 +280,7 @@
             "name": "Probability of storm-induced collision during a category 1 storm in southeast U.S.",
             "type": "vulnerability",
             "attr": "PCOL1",
-            "hotness": "66",
+            "hotness": "1",
             "bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -304,7 +304,7 @@
             "name": "Probability of storm-induced collision during a category 5 storm in southeast U.S.",
             "type": "vulnerability",
             "attr": "PCOL5",
-            "hotness": "66",
+            "hotness": "0",
             "bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -328,7 +328,7 @@
             "name": "Probability of storm-induced inundation during a category 1 storm in southeast U.S.",
             "type": "vulnerability",
             "attr": "PIND1",
-            "hotness": "66",
+            "hotness": "0",
             "bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -352,7 +352,7 @@
             "name": "Probability of storm-induced inundation during a category 5 storm in southeast U.S.",
             "type": "vulnerability",
             "attr": "PIND5",
-            "hotness": "66",
+            "hotness": "1",
             "bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -376,7 +376,7 @@
             "name": "Probability of storm-induced overwash during a category 1 storm in southeast U.S.",
             "type": "vulnerability",
             "attr": "POVW1",
-            "hotness": "66",
+            "hotness": "1",
             "bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -400,7 +400,7 @@
             "name": "Probability of storm-induced overwash during a category 5 storm in southeast U.S.",
             "type": "vulnerability",
             "attr": "POVW5",
-            "hotness": "66",
+            "hotness": "4",
             "bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -424,7 +424,7 @@
             "name": "Probability of storm-induced collision during a category 1 storm in mid-Atlantic U.S.",
             "type": "vulnerability",
             "attr": "PCOL1",
-            "hotness": "66",
+            "hotness": "2",
             "bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -448,7 +448,7 @@
             "name": "Probability of storm-induced collision during a category 5 storm in mid-Atlantic U.S.",
             "type": "vulnerability",
             "attr": "PCOL5",
-            "hotness": "66",
+            "hotness": "12",
             "bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -472,7 +472,7 @@
             "name": "Probability of storm-induced inundation during a category 1 storm in mid-Atlantic U.S.",
             "type": "vulnerability",
             "attr": "PIND1",
-            "hotness": "66",
+            "hotness": "54",
             "bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -496,7 +496,7 @@
             "name": "Probability of storm-induced inundation during a category 5 storm in mid-Atlantic U.S.",
             "type": "vulnerability",
             "attr": "PIND5",
-            "hotness": "66",
+            "hotness": "1",
             "bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -520,7 +520,7 @@
             "name": "Probability of storm-induced overwash during a category 1 storm in mid-Atlantic U.S.",
             "type": "vulnerability",
             "attr": "POVW1",
-            "hotness": "66",
+            "hotness": "2",
             "bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -544,7 +544,7 @@
             "name": "Probability of storm-induced overwash during a category 5 storm in mid-Atlantic U.S.",
             "type": "vulnerability",
             "attr": "POVW5",
-            "hotness": "66",
+            "hotness": "40",
             "bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -568,7 +568,7 @@
             "name": "Probability of storm-induced collision during a category 1 storm in Gulf of Mexico U.S.",
             "type": "vulnerability",
             "attr": "PCOL1",
-            "hotness": "66",
+            "hotness": "0",
             "bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -592,7 +592,7 @@
             "name": "Probability of storm-induced collision during a category 5 storm in Gulf of Mexico U.S.",
             "type": "vulnerability",
             "attr": "PCOL5",
-            "hotness": "66",
+            "hotness": "1",
             "bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -616,7 +616,7 @@
             "name": "Probability of storm-induced inundation during a category 1 storm in Gulf of Mexico U.S.",
             "type": "vulnerability",
             "attr": "PIND1",
-            "hotness": "66",
+            "hotness": "16",
             "bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -640,7 +640,7 @@
             "name": "Probability of storm-induced inundation during a category 5 storm in Gulf of Mexico U.S.",
             "type": "vulnerability",
             "attr": "PIND5",
-            "hotness": "66",
+            "hotness": "4",
             "bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -664,7 +664,7 @@
             "name": "Probability of storm-induced overwash during a category 1 storm in Gulf of Mexico U.S.",
             "type": "vulnerability",
             "attr": "POVW1",
-            "hotness": "66",
+            "hotness": "6",
             "bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
@@ -688,7 +688,7 @@
             "name": "Probability of storm-induced overwash during a category 5 storm in Gulf of Mexico U.S.",
             "type": "vulnerability",
             "attr": "POVW5",
-            "hotness": "66",
+            "hotness": "668",
             "bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
