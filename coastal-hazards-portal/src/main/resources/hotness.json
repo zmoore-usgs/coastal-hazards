@@ -165,7 +165,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/fa4VVJf",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -179,7 +179,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/H6nCTQL",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -193,7 +193,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/Kfokhw8",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -207,7 +207,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/tAUQglr",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -221,7 +221,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/CFlwaU2",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -235,7 +235,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/rmYSUZY",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -249,7 +249,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/Mj8X0rQ",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Altlantic U.S. region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -263,7 +263,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/oq7XE9i",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Altlantic U.S. region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -277,7 +277,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/56kxGXd",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Atlantic U.S. region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -291,7 +291,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/NR0x7G1",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Atlantic U.S. region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -305,7 +305,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/SfR4EkM",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Atlantic U.S. region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -319,7 +319,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/cziF05r",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Atlantic U.S. region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -333,7 +333,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/A0OcdQN",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -347,7 +347,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/c5zC0qg",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -361,7 +361,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/E0uAG9R",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -375,7 +375,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/Z2T9am0",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -389,7 +389,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/TfyjPZQ",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         },{
@@ -403,7 +403,7 @@
             "summary": {
                 "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
                 "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/EfpJ1Y5",
-                "medium": "XXX",
+                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
                 "full": "XXX"
             }
         }
