@@ -15,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 public class SLDResource {
     
     private static final int NUMBER_OF_BINS = 10;
-    private static final int STROKE_WIDTH = 1;
+    private static final int STROKE_WIDTH = 3;
 
     @GET
     @Path("redwhite/{id}/{attr}")
@@ -25,7 +25,7 @@ public class SLDResource {
             @PathParam("attr") String attr) {
         String result = "";
         
-        float[] thresholds = makeSteps(0.0f, 100.0f, NUMBER_OF_BINS+1);
+        float[] thresholds = makeSteps(0.0f, 100.1f, NUMBER_OF_BINS+1);
         String[] colors = makeColors("#FFFFFF", "#FF0000", NUMBER_OF_BINS);
         
         StringBuilder sld = new StringBuilder();
@@ -44,7 +44,7 @@ public class SLDResource {
                 .append(id)
             .append("</sld:Name>")
             .append("<sld:UserStyle>")
-            .append("<sld:Name>redWhiteMap</sld:Name>")
+            .append("<sld:Name>redwhite</sld:Name>")
             .append("<sld:Title>Red to White ColorMap</sld:Title>")
             .append("<sld:FeatureTypeStyle>");
         
