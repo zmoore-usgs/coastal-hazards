@@ -231,9 +231,10 @@ var Map = function(args) {
 			return marker;
 		},
         clearBoundingBoxMarkers: function() {
-            $.each(me.boxLayer.markers, function(index, value) {
-                me.boxLayer.removeMarker(value);
-            });
+            var markerCt = me.boxLayer.markers.length;
+            for (var mInd=markerCt; mInd>0; mInd--) {
+                me.boxLayer.removeMarker(me.boxLayer.markers[mInd-1]);
+            }
         },
         zoomToBoundingBox: function(args) {
             args = args || {};
