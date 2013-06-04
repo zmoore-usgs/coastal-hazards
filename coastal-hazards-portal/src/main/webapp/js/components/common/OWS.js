@@ -156,13 +156,14 @@ var OWS = function() {
         displayData: function(args) {
             // may want to do this first: CONFIG.map.removeLayersByName(me.visibleLayers);
 			var item = args.item;
+            var type = args.type;
 			if (item) {
 				var layer = new OpenLayers.Layer.WMS(
 						item.name,
                         item.service.wms.endpoint,
 						{
 							layers: item.service.wms.layers,
-							format: 'img/png',
+							format: 'image/png',
 							transparent: true
 						},
 				{
@@ -171,11 +172,16 @@ var OWS = function() {
 					displayInLayerSwitcher: false
 
 				});
-
-				layer.params.STYLES = 'redwhite';
-                // SLD will probably only work with one layer
-                // also TODO: figure out best way to get public mapping (context.xml or document.location ??
-				layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/rest/sld/redwhite/' + item.service.wms.layers + '/' + item.attr;
+                
+                if (type === "vulnerability") {
+                    layer.params.STYLES = 'redwhite';
+                    // SLD will probably only work with one layer
+                    // also TODO: figure out best way to get public mapping (context.xml or document.location ??
+                    layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/rest/sld/redwhite/' + item.service.wms.layers + '/' + item.attr;
+                } else {
+                    layer.params.STYLES = 'line';
+                }
+                
 				CONFIG.map.getMap().addLayer(layer);
 				layer.redraw(true);
 
