@@ -230,6 +230,21 @@ var Map = function(args) {
 			
 			return marker;
 		},
+        clearBoundingBoxMarkers: function() {
+            $.each(me.boxLayer.markers, function(index, value) {
+                me.boxLayer.removeMarker(value);
+            });
+        },
+        zoomToBoundingBox: function(args) {
+            args = args || {};
+            var bbox = args.bbox;
+            var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913")
+            var layerBounds = OpenLayers.Bounds.fromArray(bbox);
+			if (fromProjection) {
+				layerBounds.transform(new OpenLayers.Projection(fromProjection), new OpenLayers.Projection("EPSG:900913"));
+			}
+            me.map.zoomToExtent(layerBounds, false);
+        },
 		updateFromSession: function() {
 			LOG.info('Map.js::updateFromSession()');
 			me.map.events.un({'moveend': me.moveendCallback});

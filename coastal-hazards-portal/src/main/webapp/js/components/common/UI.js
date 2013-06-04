@@ -194,7 +194,15 @@ var UI = function(args) {
                 info.on({
                     'click': function(evt) {
                         CONFIG.ui.slider('autoSlidePause');
-                        CONFIG.ows.displayData({ "item": item });
+                        CONFIG.map.clearBoundingBoxMarkers();
+                        CONFIG.map.zoomToBoundingBox({
+                            "bbox": item.bbox,
+                            "fromProjection": "EPSG:4326"
+                        });
+                        CONFIG.ows.displayData({
+                            "item": item,
+                            "type": item.type
+                        });
                     }
                 });
 
