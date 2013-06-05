@@ -18,6 +18,11 @@
 	</properties>
 
 	<dependencies>
+        <dependency>
+			<groupId>gov.usgs.cida.coastalhazards</groupId>
+			<artifactId>coastal-hazards-commons</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>it.geosolutions</groupId>
 			<artifactId>geoserver-manager</artifactId>
@@ -26,16 +31,6 @@
 				<exclusion>
 					<artifactId>jcl-over-slf4j</artifactId>
 					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>gov.usgs.cida</groupId>
-			<artifactId>tomcat-filters</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-lang</artifactId>
-					<groupId>commons-lang</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -76,8 +71,7 @@
 		<dependency>
 			<groupId>javax.servlet.jsp.jstl</groupId>
 			<artifactId>jstl-api</artifactId>
-			<version>1.2</version>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
 		<!-- JS Templates -->
 		<dependency>
@@ -105,21 +99,18 @@
 		<dependency>
 			<groupId>gov.usgs.cida.jslibs</groupId>
 			<artifactId>dygraphs-core</artifactId>
-			<version>20121127-1</version>
-			<type>war</type>
+            <type>war</type>
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida.jslibs</groupId>
 			<artifactId>jquery-fineuploader</artifactId>
-			<version>3.4.0-3</version>
-			<type>war</type>
+            <type>war</type>
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida.jslibs</groupId>
 			<artifactId>jquery-tablesorter</artifactId>
-			<version>2.7.6-1</version>
-			<type>war</type>
-		</dependency>
+            <type>war</type>
+        </dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>sugar</artifactId>
@@ -133,7 +124,6 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
-			<version>4.2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -142,34 +132,30 @@
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
-			<version>1.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-shapefile</artifactId>
-			<version>8.6</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>xercesImpl</artifactId>
-					<groupId>xerces</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>gov.usgs.cida.coastalhazards</groupId>
-			<artifactId>coastal-hazards-commons</artifactId>
-			<version>${project.version}</version>
-			<type>jar</type>
-		</dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-shapefile</artifactId>
+            <version>8.6</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xercesImpl</artifactId>
+                    <groupId>xerces</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.11.0</version>
+        </dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>javax</groupId>
@@ -207,13 +193,6 @@
 		<dependency>
 			<groupId>gov.usgs.cida.owsutils</groupId>
 			<artifactId>cida-owsutils-geoserver</artifactId>
-			<version>1.0.1</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-lang</artifactId>
-					<groupId>commons-lang</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
@@ -222,12 +201,11 @@
 		<dependency>
 			<groupId>org.openid4java</groupId>
 			<artifactId>openid4java</artifactId>
-			<version>0.9.7</version>
 		</dependency>
 		<dependency>
 			<groupId>gov.usgs.cida.jslibs</groupId>
 			<artifactId>bootstrojs</artifactId>
-			<type>war</type>
+            <type>war</type>
 		</dependency>
 	</dependencies>
 
