@@ -93,7 +93,6 @@
 		<jsp:include page="js/iosslider-vertical/iosslider-vertical.jsp"> 
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
         </jsp:include>
-		<jsp:include page="css/css.jsp" />
 
         <script type="text/javascript" src="js/openlayers/lib/OpenLayers/Layer/Shorelines.js"></script>
         <script type="text/javascript" src="js/components/nav/Storms.js"></script>
