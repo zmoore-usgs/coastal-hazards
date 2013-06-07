@@ -1,0 +1,72 @@
+/* ---------------------------------------------------------------------- UI */
+/* Because of a conflict between twitter bootstrap and openlayers */
+img { 
+    max-width: none !important; 
+}
+
+#application-container {
+	min-width : 320px !important;
+}
+
+#application-spinner {
+    text-align: center;
+    display: none;
+}
+
+#header #banner-area {
+    background-image: url("../images/banner/banner.png");
+}
+
+
+#map-wrapper {
+	min-height : 150px;
+}
+
+#site-title {
+    line-height: 20px;
+}
+
+.popover {
+	max-width : 2000px !important;
+}
+
+.baseLayersDiv > .labelSpan {
+	display : inline;
+}
+.dataLayersDiv > .labelSpan {
+	display : inline;
+}
+
+.slide-menu-icon-twitter {
+	color : #7EB3CD;
+}
+
+.description-description-row {
+	min-height : 100px;
+}
+
+.marker-active {
+	border-color: #00CCFF !important;
+	background-color: rgba(0,102,255, 0.5);
+}
+
+.marker-inactive {
+	border-color: #00A3CC !important;
+	background-color: rgba(0,102,255, 0.5);
+}
+
+.marker-hover {
+	border-color: #8CE8FF !important;
+	background-color: rgba(0,102,255, 0.5);
+	opacity : 1.0 !important;
+}
+
+/*.olControlPanel div { 
+	display:block;
+	width:  48px;
+	height: 48px;
+	margin: 5px;
+	background-color: #00008B;
+    -moz-border-radius: 1em 0 0 0;
+	border-radius:  1em;
+}*/
