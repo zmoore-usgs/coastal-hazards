@@ -7,14 +7,14 @@
 
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
-	{
-		try {
-			props = props.addJNDIContexts(new String[0]);
-		} catch (Exception e) {
-			LoggerFactory.getLogger("index.jsp").error("Could not find JNDI - Application will probably not function correctly");
-		}
-	}
-	boolean development = Boolean.parseBoolean(props.getProperty("development"));
+    {
+        try {
+            props = props.addJNDIContexts(new String[0]);
+        } catch (Exception e) {
+            LoggerFactory.getLogger("index.jsp").error("Could not find JNDI - Application will probably not function correctly");
+        }
+    }
+    boolean development = Boolean.parseBoolean(props.getProperty("development"));
 %>
 
 <html lang="en">
@@ -44,16 +44,13 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="<%= development%>" />
         </jsp:include>
-        <jsp:include page="js/log4javascript/log4javascript.jsp">
-            <jsp:param name="relPath" value="" />
-            <jsp:param name="debug-qualifier" value="<%= development%>" />
-        </jsp:include>
-		<script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
-		<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap<%= development ? "" : ".min"%>.css" />
+        <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
+        <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? "" : ".min"%>.css" />
         <script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
     </head>
     <body>
+
         <jsp:include page="components/application-overlay.jsp"></jsp:include>
             <div id="application-container" class="container-fluid">
 
@@ -71,9 +68,9 @@
 
                 <div id="content-row" class="row-fluid">
                     <div id="map-wrapper" class="span7">
-						<div id="map"></div>
+                        <div id="map"></div>
                     </div>
-					<div id="description-wrapper" class="span5"></div>
+                    <div id="description-wrapper" class="span5"></div>
                 </div>	
 
                 <div  id="footer-row"  class="row-fluid">
@@ -86,21 +83,26 @@
             </div>
         </div>
 
-        <script type="text/javascript" src="webjars/openlayers/2.12/OpenLayers<%= development ? ".debug" : "" %>.js"></script>
-		<jsp:include page="js/iosslider/iosslider.jsp"> 
+        <script type="text/javascript" src="webjars/openlayers/2.12/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
+        <jsp:include page="js/iosslider/iosslider.jsp"> 
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
-		</jsp:include>
-		<jsp:include page="js/iosslider-vertical/iosslider-vertical.jsp"> 
+        </jsp:include>
+        <jsp:include page="js/iosslider-vertical/iosslider-vertical.jsp"> 
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
         </jsp:include>
 
+        <%-- TODO: Refactor log4javascript to take the log4js script from webjars --%>
+        <jsp:include page="js/log4javascript/log4javascript.jsp">
+            <jsp:param name="relPath" value="" />
+            <jsp:param name="debug-qualifier" value="<%= development%>" />
+        </jsp:include>
         <script type="text/javascript" src="js/openlayers/lib/OpenLayers/Layer/Shorelines.js"></script>
         <script type="text/javascript" src="js/components/nav/Storms.js"></script>
         <script type="text/javascript" src="js/components/nav/Vulnerability.js"></script>
         <script type="text/javascript" src="js/components/nav/Historical.js"></script>
         <script type="text/javascript" src="js/components/session/Session.js"></script>
         <script type="text/javascript" src="js/components/map/Map.js"></script>
-		<script type="text/javascript" src="js/components/common/Popularity.js"></script>
+        <script type="text/javascript" src="js/components/common/Popularity.js"></script>
         <script type="text/javascript" src="js/components/common/OWS.js"></script>
         <script type="text/javascript" src="js/components/common/UI.js"></script>
         <script type="text/javascript" src="js/components/common/OnReady.js"></script>
@@ -108,7 +110,7 @@
         <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.0.2/css/font-awesome<%= development ? "" : ".min"%>.css" />
 
-		<script type="text/javascript">
-			$('#footer > .content').addClass('visible-desktop hidden-phone hidden-tablet');
-		</script>
+        <script type="text/javascript">
+            $('#footer > .content').addClass('visible-desktop hidden-phone hidden-tablet');
+        </script>
     </body>
