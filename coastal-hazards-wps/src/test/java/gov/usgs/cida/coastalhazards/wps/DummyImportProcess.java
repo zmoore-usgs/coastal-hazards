@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wps.gs.ImportProcess;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -92,7 +93,7 @@ public class DummyImportProcess extends ImportProcess {
      * @throws ProcessException
      */
     @Override
-    public String execute(SimpleFeatureCollection features, String workspace, String store, String name, CoordinateReferenceSystem srs, ProjectionPolicy srsHandling, String styleName) throws ProcessException {
+    public String execute(SimpleFeatureCollection features, GridCoverage2D coverage, String workspace, String store, String name, CoordinateReferenceSystem srs, ProjectionPolicy srsHandling, String styleName) throws ProcessException {
         if (shpfile != null) {
             ShapefileDataStoreFactory dsFactory = new ShapefileDataStoreFactory();
             Map<String, Serializable> params = new HashMap<String, Serializable>();

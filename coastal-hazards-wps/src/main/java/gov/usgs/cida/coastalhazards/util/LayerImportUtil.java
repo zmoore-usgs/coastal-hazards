@@ -92,7 +92,7 @@ public class LayerImportUtil {
             CoordinateReferenceSystem nativeCrs,
             ProjectionPolicy policy) {
         checkIfLayerExists(workspace, layerName);
-        return importProcess.execute(collection, workspace, store, layerName, nativeCrs, policy, null);
+        return importProcess.execute(collection, null, workspace, store, layerName, nativeCrs, policy, null);
     }
     
 }
