@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -52,7 +53,7 @@ public class UTMFinderTest {
     @Test
     public void testZone1N() throws Exception {
         
-        SimpleFeatureCollection fc = FeatureCollections.newCollection();
+        DefaultFeatureCollection fc = new DefaultFeatureCollection();
         fc.add(createLine(-177, 23, -177, 10));
         fc.add(createLine(-176, 13, -175, 33));
         fc.add(createLine(-177, 9, -176, 22));
@@ -65,7 +66,7 @@ public class UTMFinderTest {
     
     @Test
     public void testZone31S() throws Exception {
-        SimpleFeatureCollection fc = FeatureCollections.newCollection();
+        DefaultFeatureCollection fc = new DefaultFeatureCollection();
         fc.add(createLine(3, -3, 3, -4));    
         
         CoordinateReferenceSystem expResult = CRS.decode("EPSG:32731");
@@ -75,7 +76,7 @@ public class UTMFinderTest {
     
     @Test
     public void testIncorrect() throws Exception {
-        SimpleFeatureCollection fc = FeatureCollections.newCollection();
+        DefaultFeatureCollection fc = new DefaultFeatureCollection();
         fc.add(createLine(3, -3, 3, -4));    
         
         CoordinateReferenceSystem expResult = CRS.decode("EPSG:4326");
