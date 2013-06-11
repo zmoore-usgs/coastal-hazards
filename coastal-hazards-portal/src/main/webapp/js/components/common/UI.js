@@ -75,7 +75,7 @@ CCH.UI = function(args) {
 				}
 
 				if (updated) {
-					CONFIG.ui.createSlideshow();
+					CCH.CONFIG.ui.createSlideshow();
 				}
 
 				me.previousWidth = currWidth;
@@ -165,77 +165,15 @@ CCH.UI = function(args) {
 			});
 		},
 		buildSlide: function(args) {
-			var itemId = args.itemId;
 			var item = CCH.CONFIG.popularity.getById({
-				'id': itemId
+				'id': args.itemId
 			});
 
-			if (item) {
-				var containerDiv = $('<div />').addClass('description-container container-fluid');
-				var toolbarRow = $('<div />').addClass('row-fluid description-button-row text-center');
-				var buttonToolbar = $('<div />').addClass('btn-toolbar');
-				var buttonGroup = $('<div />').addClass('btn-group');
-				var titleRow = $('<div />').addClass('description-title-row row-fluid');
-				var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
-				var info = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-zoom-in icon-zoom-in slide-button muted'));
-				var tweet = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-twitter icon-twitter slide-button muted'));
-				var pause = $('<button />').addClass('btn btn-pause-play').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-pause-play icon-pause slide-button muted'));
-				var back = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-fast-backward icon-fast-backward slide-button muted'));
-				var buttons = [info, tweet, pause, back];
-
-				buttons.each(function(btn) {
-					$(btn).on('mouseover', function() {
-						$(this).find('i').removeClass('muted');
-					});
-					$(btn).on('mouseout', function() {
-						$(this).find('i').addClass('muted');
-					});
-				});
-                info.on({
-                    'click': function(evt) {
-                        CCH.CONFIG.ui.slider('autoSlidePause');
-                        CCH.CONFIG.map.clearBoundingBoxMarkers();
-                        CCH.CONFIG.map.zoomToBoundingBox({
-                            "bbox": item.bbox,
-                            "fromProjection": "EPSG:4326"
-                        });
-                        CCH.CONFIG.ows.displayData({
-                            "item": item,
-                            "type": item.type
-                        });
-                    }
-                });
-
-				containerDiv.append(toolbarRow);
-				toolbarRow.append(buttonToolbar);
-				buttonToolbar.append(buttonGroup);
-				buttonGroup.append(buttons);
-
-				var imageColumn = $('<div />').addClass('description-image-column span1 hidden-phone');
-				if (item.type === 'storms') {
-					containerDiv.addClass('description-container-storms');
-				} else if (item.type === 'vulnerability') {
-					containerDiv.addClass('description-container-vulnerability');
-				} else {
-					containerDiv.addClass('description-container-historical');
-				}
-				
-				var titleColumn = $('<div />').addClass('description-title-column').append($('<p />').addClass('description-title').html(item.name));
-
-				titleRow.append(titleColumn);
-
-                // TODO description should come from summary service (URL in item)
-				descriptionRow.append($('<p />').addClass('slide-vertical-description unselectable').html(item.summary.medium));
-
-				containerDiv.append(titleRow, descriptionRow);
-				if (CCH.CONFIG.ui.currentSizing === 'large') {
-					containerDiv.addClass('description-container-large');
-				} else if (CCH.CONFIG.ui.currentSizing === 'small') {
-					containerDiv.addClass('description-container-small');
-				}
-			}
-			containerDiv.data('popItem', item);
-			return containerDiv;
+			var card = new CCH.Card({
+				item : item
+			});
+			
+			return card.create();
 		},
 		bindShareMenu: function(args) {
 			var menuItem = args.menuItem;
@@ -397,9 +335,9 @@ CCH.UI = function(args) {
 						$(mrk.div).addClass('marker-inactive');
 					});
                     
-                    var item = $(event.currentSlideObject[0].firstChild).data('popItem');
+                    var card = $(event.currentSlideObject[0].firstChild).data('card');
                     var marker = CCH.CONFIG.map.addBoundingBoxMarker({
-						bbox: item.bbox,
+						bbox: card.bbox,
 						fromProjection: 'EPSG:4326'
 					});
 
