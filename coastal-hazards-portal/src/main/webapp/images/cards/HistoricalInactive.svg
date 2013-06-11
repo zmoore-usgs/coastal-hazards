@@ -8,13 +8,13 @@
 <sodipodi:namedview  id="base" inkscape:current-layer="layer1" inkscape:window-y="24" inkscape:window-x="0" inkscape:window-width="1280" inkscape:window-height="753" inkscape:pageshadow="2" inkscape:pageopacity="0.0" inkscape:cy="146.85244" inkscape:cx="13.47127" pagecolor="#ffffff" borderopacity="1.0" inkscape:zoom="0.98994949" bordercolor="#666666" showgrid="false" fit-margin-left="0" fit-margin-top="0" inkscape:window-maximized="1" fit-margin-bottom="0" fit-margin-right="0" inkscape:document-units="px">
 	</sodipodi:namedview>
 <g id="layer1" transform="translate(-215.71875,-364.21875)" inkscape:label="Ebene 1" inkscape:groupmode="layer">
-	<path id="path4324" inkscape:connector-curvature="0" sodipodi:nodetypes="cccc" fill="#F5F5F5" d="M273.752,473.545
+	<path id="path4324" inkscape:connector-curvature="0" sodipodi:nodetypes="cccc" fill="#E1E1E1" d="M273.752,473.545
 		c62.629,24.244,82.832,22.223,149.502-1.01l-76.771,71.721L273.752,473.545z"/>
-	<path id="path4326" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccc" fill="#F5F5F5" d="M233.345,698.809
-		c113.137-93.943,113.137-93.943,225.264,0l8.081,34.346H226.274L233.345,698.809z"/>
+	<path id="path4326" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccc" fill="#E1E1E1" d="M233.345,698.809
+		c113.137-93.942,113.137-93.942,225.264,0l8.081,34.347H226.274L233.345,698.809z"/>
 	
-		<path id="path3814" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccc" fill="none" stroke="#F0F0F0" stroke-width="20" d="
-		M225.715,732.362h240c1.01-191.424-239.856-191.478-238.847-358.153h239.05C466.927,540.884,225.715,542.454,225.715,732.362
-		L225.715,732.362z"/>
+		<path id="path3814" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccc" fill="none" stroke="#CDCDCD" stroke-width="20" d="
+		M225.715,732.361h240c1.011-191.423-239.855-191.478-238.847-358.152h239.05C466.927,540.884,225.715,542.454,225.715,732.361
+		L225.715,732.361z"/>
 </g>
 </svg>
