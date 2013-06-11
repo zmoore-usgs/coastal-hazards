@@ -13,15 +13,16 @@ public class Session implements Serializable {
 	
 	private transient SessionIO sessionIo;
 	
-	private SessionMap map;
+	private SessionMap sessionMap;
+	private ViewMap viewMap;
 	
 	public Session() {
 		this.sessionIo = new SessionFileIO();
-		this.map = null;
+		this.sessionMap = null;
 	}
 	
-	public Session(SessionMap map) {
-		this.map = map;
+	public Session(SessionMap sessionMap) {
+		this.sessionMap = sessionMap;
 	}
 	
 	/**
@@ -31,7 +32,11 @@ public class Session implements Serializable {
 	boolean isValid() {
 		boolean isValid = true;
 		
-		if (this.map == null || !this.map.isValid()) {
+		if (this.sessionMap == null || !this.sessionMap.isValid()) {
+			isValid = false;
+		}
+		
+		if (this.viewMap == null || !this.viewMap.isValid()) {
 			isValid = false;
 		}
 		
@@ -39,11 +44,19 @@ public class Session implements Serializable {
 	}
 
 	public SessionMap getMap() {
-		return map;
+		return sessionMap;
 	}
 
 	public void setMap(SessionMap map) {
-		this.map = map;
+		this.sessionMap = map;
+	}
+	
+	public ViewMap getView() {
+		return viewMap;
+	}
+	
+	public void setView(ViewMap viewMap) {
+		this.viewMap = viewMap;
 	}
 	
 }

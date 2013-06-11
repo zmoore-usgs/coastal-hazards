@@ -5,17 +5,7 @@ var Session = function(args) {
 
 	me.objects = {
 		view: {
-			activeParentMenu: 'storms',
-			storms: {
-				activeLayers: []
-			},
-			vulnerability: {
-				activeLayers: []
-			},
-			historical: {
-				activeLayers: []
-			}
-
+			itemIds : []
 		},
 		map: {
 			baselayer: 'Not Yet Initialized',
