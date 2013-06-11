@@ -1,0 +1,3 @@
+CCH.Card = function(args) {
+	
+}

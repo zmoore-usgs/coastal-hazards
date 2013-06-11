@@ -1,5 +1,5 @@
-var Session = function(args) {
-	LOG.info('Session.js::constructor: Session class is initializing.');
+CCH.Session = function(args) {
+	CCH.LOG.info('Session.js::constructor: Session class is initializing.');
 	var me = (this === window) ? {} : this;
 	args = args ? args : {};
 
@@ -36,7 +36,7 @@ var Session = function(args) {
 			var callbacks = args.callbacks || {};
 			var successCallbacks = callbacks.success || [];
 			var errorCallbacks = callbacks.error || [];
-			LOG.info("Will try to load session '" + sid + "' from server");
+			CCH.LOG.info("Will try to load session '" + sid + "' from server");
 			me.getSession({
 				sid: sid,
 				callbacks: {
@@ -44,10 +44,10 @@ var Session = function(args) {
 						// Update the session from the server
 						function(session) {
 							if (session) {
-								LOG.info("Session found on server. Updating current session.");
+								CCH.LOG.info("Session found on server. Updating current session.");
 								$.extend(true, me.objects, JSON.parse(session).objects);
 							} else {
-								LOG.info("Session not found on server.");
+								CCH.LOG.info("Session not found on server.");
 							}
 						}
 					].union(successCallbacks),

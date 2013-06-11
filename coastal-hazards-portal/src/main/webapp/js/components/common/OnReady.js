@@ -3,44 +3,46 @@ $(document).ready(function() {
 
 	splashUpdate("Initializing Logging...");
 	initializeLogging({
-		LOG4JS_LOG_THRESHOLD: CONFIG.development ? 'debug' : 'info'
+		LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
 	});
 
+	CCH.LOG = LOG;
+	
 	splashUpdate("Initializing Session...");
-	CONFIG.session = new Session();
+	CCH.CONFIG.session = new CCH.Session();
 
 	splashUpdate("Initializing UI...");
-	CONFIG.ui = new UI({
+	CCH.CONFIG.ui = new CCH.UI({
 		spinner: $("#application-spinner"),
 		searchbar: $('.app-navbar-search-form'),
 		mapdiv: $('#map'),
 		descriptionDiv: $('#description-wrapper')
 	});
-	CONFIG.ui.init();
+	CCH.CONFIG.ui.init();
 
 	splashUpdate("Initializing Map...");
-	CONFIG.map = new Map({
+	CCH.CONFIG.map = new CCH.Map({
 		mapDiv: 'map'
 	});
 
 	splashUpdate("Initializing OWS Services");
-	CONFIG.ows = new OWS();
-	CONFIG.popularity.populate({
+	CCH.CONFIG.ows = new CCH.OWS();
+	CCH.CONFIG.popularity.populate({
 		callbacks: {
 			success: [
 				function() {
-					if (CONFIG.popularity.results) {
-						CONFIG.ui.createSlideshow();
+					if (CCH.CONFIG.popularity.results) {
+						CCH.CONFIG.ui.createSlideshow();
 					}
 				}
 			]
 		}
 	});
 
-	var sid = CONFIG.session.getIncomingSid();
+	var sid = CCH.CONFIG.session.getIncomingSid();
 	if (sid) {
 		splashUpdate("Reading session information from server...");
-		CONFIG.session.updateFromServer({
+		CCH.CONFIG.session.updateFromServer({
 			sid: sid,
 			callbacks: {
 				success:
