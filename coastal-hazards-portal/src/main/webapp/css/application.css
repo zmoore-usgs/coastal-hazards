@@ -45,6 +45,29 @@ img {
 	min-height : 100px;
 }
 
+.description-title-column > .description-title {
+	font-size : 1.2em;
+	font-weight: bold;
+}
+
+.description-container {
+	background-size: auto 80%;
+	background-repeat: no-repeat;
+	background-position: center top;
+}
+
+.description-container-storms {
+	background-image : url("../images/cards/storm.svg");
+}
+.description-container-vulnerability {
+	background-image : url("../images/cards/globe.svg");
+}
+.description-container-historical {
+	background-image : url("../images/cards/hourglass.svg");
+}
+
+
+
 .marker-active {
 	border-color: #00CCFF !important;
 	background-color: rgba(0,102,255, 0.5);
