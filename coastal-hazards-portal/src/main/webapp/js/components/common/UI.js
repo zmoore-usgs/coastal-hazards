@@ -214,15 +214,19 @@ var UI = function(args) {
 				var imageColumn = $('<div />').addClass('description-image-column span1 hidden-phone');
 				var imageClass = 'muted ';
 				if (item.type === 'storms') {
+					containerDiv.addClass('description-container-storms');
 					imageClass += 'icon-bolt';
 				} else if (item.type === 'vulnerability') {
+					containerDiv.addClass('description-container-vulnerability');
 					imageClass += 'icon-globe';
 				} else {
+					containerDiv.addClass('description-container-historical');
 					imageClass += 'icon-calendar';
 				}
+				
 				imageColumn.append($('<div />').addClass('description-title-stage-container span2').append($('<i />').addClass(imageClass + ' description-title-stage-label')));
 
-				var titleColumn = $('<div />').addClass('description-title-column span10 offset1').append($('<p />').addClass('lead').html(item.name));
+				var titleColumn = $('<div />').addClass('description-title-column span10 offset1').append($('<p />').addClass('description-title').html(item.name));
 
 				titleRow.append(imageColumn, titleColumn);
 
