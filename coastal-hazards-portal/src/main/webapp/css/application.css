@@ -53,14 +53,20 @@ img {
 .description-container {
 	background-size: auto 80%;
 	background-repeat: no-repeat;
-	background-position: center top;
+	background-position: right top;
 }
 
-.description-container-storms {
-	background-image : url("../images/cards/storm.svg");
+.slider-slide-active .description-container-storms {
+	background-image : url("../images/cards/StormsActive.svg");
 }
-.description-container-vulnerability {
-	background-image : url("../images/cards/globe.svg");
+.slider-slide-inactive .description-container-storms {
+	background-image : url("../images/cards/StormsInactive.svg");
+}
+.slider-slide-active .description-container-vulnerability {
+	background-image : url("../images/cards/VulnerabilityActive.svg");
+}
+.slider-slide-inactive .description-container-vulnerability {
+	background-image : url("../images/cards/VulnerabilityInactive.svg");
 }
 .description-container-historical {
 	background-image : url("../images/cards/hourglass.svg");
