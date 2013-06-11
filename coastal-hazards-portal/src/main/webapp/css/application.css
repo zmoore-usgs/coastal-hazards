@@ -68,11 +68,12 @@ img {
 .slider-slide-inactive .description-container-vulnerability {
 	background-image : url("../images/cards/VulnerabilityInactive.svg");
 }
-.description-container-historical {
-	background-image : url("../images/cards/hourglass.svg");
+.slider-slide-active .description-container-historical {
+	background-image : url("../images/cards/HistoricalActive.svg");
 }
-
-
+.slider-slide-inactive .description-container-historical {
+	background-image : url("../images/cards/HistoricalInactive.svg");
+}
 
 .marker-active {
 	border-color: #00CCFF !important;

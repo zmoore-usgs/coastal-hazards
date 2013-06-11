@@ -1,5 +1,5 @@
 CCH.UI = function(args) {
-	CCH.info('UI.js::constructor: UI class is initializing.');
+	CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 	var me = (this === window) ? {} : this;
 	me.spinner = args.spinner;
 	me.searchbar = args.searchbar;
