@@ -44,6 +44,7 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="<%= development%>" />
         </jsp:include>
+		<script type="text/javascript">var CCH = {};</script>
         <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? "" : ".min"%>.css" />
@@ -96,12 +97,14 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+		
         <script type="text/javascript" src="js/openlayers/lib/OpenLayers/Layer/Shorelines.js"></script>
-        <script type="text/javascript" src="js/components/nav/Storms.js"></script>
+<!--        <script type="text/javascript" src="js/components/nav/Storms.js"></script>
         <script type="text/javascript" src="js/components/nav/Vulnerability.js"></script>
-        <script type="text/javascript" src="js/components/nav/Historical.js"></script>
+        <script type="text/javascript" src="js/components/nav/Historical.js"></script>-->
         <script type="text/javascript" src="js/components/session/Session.js"></script>
         <script type="text/javascript" src="js/components/map/Map.js"></script>
+        <script type="text/javascript" src="js/components/common/Card.js"></script>
         <script type="text/javascript" src="js/components/common/Popularity.js"></script>
         <script type="text/javascript" src="js/components/common/OWS.js"></script>
         <script type="text/javascript" src="js/components/common/UI.js"></script>

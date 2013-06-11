@@ -1,5 +1,5 @@
-var UI = function(args) {
-	LOG.info('UI.js::constructor: UI class is initializing.');
+CCH.UI = function(args) {
+	CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 	var me = (this === window) ? {} : this;
 	me.spinner = args.spinner;
 	me.searchbar = args.searchbar;
@@ -9,7 +9,7 @@ var UI = function(args) {
 	me.minimumHeight = args.minimumHeight || 480;
 	me.previousWidth = $(window).width();
 	me.currentSizing = '';
-	LOG.debug('UI.js::constructor: UI class initialized.');
+	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
 		init: function() {
 			this.bindSearchInput();
@@ -36,11 +36,11 @@ var UI = function(args) {
 
 				var updated = false;
 				if (me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) {
-					LOG.debug('resize-small');
+					CCH.LOG.debug('resize-small');
 					me.currentSizing = 'small';
 					updated = true;
 				} else if (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber) {
-					LOG.debug('resize-large');
+					CCH.LOG.debug('resize-large');
 					me.currentSizing = 'large';
 					updated = true;
 				}
@@ -115,8 +115,8 @@ var UI = function(args) {
 					container: 'body',
 					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
 				}).on({
-					click: CONFIG.ui.popoverClickHandler,
-					shown: CONFIG.ui.popoverShowHandler
+					click: CCH.CONFIG.ui.popoverClickHandler,
+					shown: CCH.CONFIG.ui.popoverShowHandler
 				});
 
 				$('#accordion-group-' + item + '-learn').popover({
@@ -127,8 +127,8 @@ var UI = function(args) {
 					container: 'body',
 					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
 				}).on({
-					click: CONFIG.ui.popoverClickHandler,
-					shown: CONFIG.ui.popoverShowHandler
+					click: CCH.CONFIG.ui.popoverClickHandler,
+					shown: CCH.CONFIG.ui.popoverShowHandler
 				});
 			});
 		},
@@ -152,7 +152,7 @@ var UI = function(args) {
 						success: function(json) {
 							if (json.locations[0]) {
 
-								CONFIG.map.buildGeocodingPopup({
+								CCH.CONFIG.map.buildGeocodingPopup({
 									locations: json.locations
 								});
 
@@ -166,7 +166,7 @@ var UI = function(args) {
 		},
 		buildSlide: function(args) {
 			var itemId = args.itemId;
-			var item = CONFIG.popularity.getById({
+			var item = CCH.CONFIG.popularity.getById({
 				'id': itemId
 			});
 
@@ -193,13 +193,13 @@ var UI = function(args) {
 				});
                 info.on({
                     'click': function(evt) {
-                        CONFIG.ui.slider('autoSlidePause');
-                        CONFIG.map.clearBoundingBoxMarkers();
-                        CONFIG.map.zoomToBoundingBox({
+                        CCH.CONFIG.ui.slider('autoSlidePause');
+                        CCH.CONFIG.map.clearBoundingBoxMarkers();
+                        CCH.CONFIG.map.zoomToBoundingBox({
                             "bbox": item.bbox,
                             "fromProjection": "EPSG:4326"
                         });
-                        CONFIG.ows.displayData({
+                        CCH.CONFIG.ows.displayData({
                             "item": item,
                             "type": item.type
                         });
@@ -228,9 +228,9 @@ var UI = function(args) {
 				descriptionRow.append($('<p />').addClass('slide-vertical-description unselectable').html(item.summary.medium));
 
 				containerDiv.append(titleRow, descriptionRow);
-				if (CONFIG.ui.currentSizing === 'large') {
+				if (CCH.CONFIG.ui.currentSizing === 'large') {
 					containerDiv.addClass('description-container-large');
-				} else if (CONFIG.ui.currentSizing === 'small') {
+				} else if (CCH.CONFIG.ui.currentSizing === 'small') {
 					containerDiv.addClass('description-container-small');
 				}
 			}
@@ -247,9 +247,9 @@ var UI = function(args) {
 				container: 'body',
 				content: "<div class='container-fluid' id='prepare-container'><div>Preparing session export...</div></div>"
 			}).on({
-				'click': CONFIG.ui.popoverClickHandler,
+				'click': CCH.CONFIG.ui.popoverClickHandler,
 				'shown': function() {
-					CONFIG.session.getMinifiedEndpoint({
+					CCH.CONFIG.session.getMinifiedEndpoint({
 						callbacks: [
 							function(args) {
 								var response = args.response;
@@ -265,7 +265,7 @@ var UI = function(args) {
 
 								var goUsaResponse = JSON.parse(response.response);
 								if (goUsaResponse.response.statusCode && goUsaResponse.response.statusCode.toLowerCase() === 'error') {
-									LOG.warn(response.response);
+									CCH.LOG.warn(response.response);
 								} else {
 									url = goUsaResponse.response.data.entry[0].short_url;
 								}
@@ -273,7 +273,7 @@ var UI = function(args) {
 							}
 						]
 					});
-					CONFIG.ui.popoverShowHandler.call(this);
+					CCH.CONFIG.ui.popoverShowHandler.call(this);
 				}
 			});
 		},
@@ -286,9 +286,9 @@ var UI = function(args) {
 		slider: function() {
 			var iosslider = $('#iosslider-container');
 			var sliderFunct;
-			if (CONFIG.ui.currentSizing === 'large') {
+			if (CCH.CONFIG.ui.currentSizing === 'large') {
 				sliderFunct = iosslider.iosSliderVertical;
-			} else if (CONFIG.ui.currentSizing === 'small') {
+			} else if (CCH.CONFIG.ui.currentSizing === 'small') {
 				sliderFunct = iosslider.iosSlider;
 			}
 			return sliderFunct.apply(iosslider, arguments);
@@ -296,7 +296,7 @@ var UI = function(args) {
 		createSlideshow: function(args) {
 			setTimeout(function(args) {
 				args = args || {};
-				var results = args.results || CONFIG.popularity.results.sortBy(function(result) {
+				var results = args.results || CCH.CONFIG.popularity.results.sortBy(function(result) {
 					return parseInt(result.hotness);
 				}, true);
 
@@ -311,7 +311,7 @@ var UI = function(args) {
 				$('#description-wrapper').append(sliderContainer);
 
 				results.each(function(result) {
-					var item = CONFIG.ui.buildSlide({
+					var item = CCH.CONFIG.ui.buildSlide({
 						'itemId': result.id
 					});
 
@@ -392,13 +392,13 @@ var UI = function(args) {
 					event.currentSlideObject.addClass('slider-slide-active');
 
 
-					CONFIG.map.boxLayer.markers.each(function(mrk) {
+					CCH.CONFIG.map.boxLayer.markers.each(function(mrk) {
 						$(mrk.div).removeClass('marker-active');
 						$(mrk.div).addClass('marker-inactive');
 					});
                     
                     var item = $(event.currentSlideObject[0].firstChild).data('popItem');
-                    var marker = CONFIG.map.addBoundingBoxMarker({
+                    var marker = CCH.CONFIG.map.addBoundingBoxMarker({
 						bbox: item.bbox,
 						fromProjection: 'EPSG:4326'
 					});
@@ -408,11 +408,11 @@ var UI = function(args) {
 						click: function(evt) {
 							var target = $(evt.target);
 							var slideOrder = target.data('slideOrder');
-							CONFIG.ui.slider('goToSlide', slideOrder);
-							CONFIG.ui.slider('autoSlidePause');
+							CCH.CONFIG.ui.slider('goToSlide', slideOrder);
+							CCH.CONFIG.ui.slider('autoSlidePause');
 							$('.slide-menu-icon-pause-play').removeClass('icon-pause').addClass('icon-play').parent().on({
 								'click': function(evt) {
-									CONFIG.ui.slider('autoSlidePlay');
+									CCH.CONFIG.ui.slider('autoSlidePlay');
 									$('.slide-menu-icon-pause-play').removeClass('icon-play').addClass('icon-pause');
 								}
 							});
@@ -421,10 +421,10 @@ var UI = function(args) {
 					});
 					$('.slide-menu-icon-pause-play').parent().on({
 						'click': function(evt) {
-							CONFIG.ui.slider('autoSlidePause');
+							CCH.CONFIG.ui.slider('autoSlidePause');
 							$('.slide-menu-icon-pause-play').removeClass('icon-pause').addClass('icon-play').parent().on({
 								'click': function(evt) {
-									CONFIG.ui.slider('autoSlidePlay');
+									CCH.CONFIG.ui.slider('autoSlidePlay');
 									$('.slide-menu-icon-pause-play').removeClass('icon-play').addClass('icon-pause');
 								}
 							});
@@ -432,7 +432,7 @@ var UI = function(args) {
 					});
 				};
 
-				if (CONFIG.ui.currentSizing === 'large') {
+				if (CCH.CONFIG.ui.currentSizing === 'large') {
 					sliderContainer.iosSliderVertical({
 						desktopClickDrag: true,
 						snapToChildren: true,
@@ -445,7 +445,7 @@ var UI = function(args) {
 						onSliderResize: resizeVertical,
 						onSlideChange: toggleClassForActiveSlide
 					});
-				} else if (CONFIG.ui.currentSizing === 'small') {
+				} else if (CCH.CONFIG.ui.currentSizing === 'small') {
 					sliderContainer.iosSlider({
 						desktopClickDrag: true,
 						snapToChildren: true,
@@ -462,7 +462,7 @@ var UI = function(args) {
 
 				var orientationChange = function(event) {
 					event.preventDefault();
-					CONFIG.ui.createSlideshow();
+					CCH.CONFIG.ui.createSlideshow();
 				};
 
 				$(window).off('orientationchange', orientationChange);

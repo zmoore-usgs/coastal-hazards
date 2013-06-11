@@ -1,16 +1,16 @@
-var Map = function(args) {
-	LOG.info('Map.js::constructor:Map class is initializing.');
+CCH.Map = function(args) {
+	CCH.LOG.info('Map.js::constructor:Map class is initializing.');
 	var mapDivId = args.mapDiv;
 	var me = (this === window) ? {} : this;
 	var initialExtent = [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826];
 
-	LOG.debug('Map.js::constructor:Loading Map object');
+	CCH.LOG.debug('Map.js::constructor:Loading Map object');
 	me.map = new OpenLayers.Map(mapDivId, {
 		projection: "EPSG:900913",
 		displayProjection: new OpenLayers.Projection("EPSG:900913")
 	});
 
-	LOG.debug('Map.js::constructor:Creating base layers');
+	CCH.LOG.debug('Map.js::constructor:Creating base layers');
 	me.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
 			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
 			{
@@ -101,7 +101,7 @@ var Map = function(args) {
 
 	me.moveendCallback = function(evt) {
 		var map = evt.object;
-		var sMap = CONFIG.session.getMap();
+		var sMap = CCH.CONFIG.session.getMap();
 
 		sMap.baselayer = map.baseLayer.name;
 		sMap.center = {
@@ -120,7 +120,7 @@ var Map = function(args) {
 	});
 
 
-	LOG.debug('Map.js::constructor:Creating base layer');
+	CCH.LOG.debug('Map.js::constructor:Creating base layer');
 	me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
 			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
 			{
@@ -141,7 +141,7 @@ var Map = function(args) {
 	});
 	me.map.addLayer(me.boxLayer);
 
-	LOG.debug('Map.js::constructor:Adding ontrols to map');
+	CCH.LOG.debug('Map.js::constructor:Adding ontrols to map');
 	me.map.addControl(new OpenLayers.Control.MousePosition());
 	me.map.addControl(new OpenLayers.Control.ScaleLine({
 		geodesic: true
@@ -157,14 +157,14 @@ var Map = function(args) {
 //	]);
 //	me.map.addControl(panel);
 
-	LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
+	CCH.LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
 	me.map.zoomToExtent(initialExtent, true);
 
 //	var zoomControlDiv = me.map.getControlsByClass("OpenLayers.Control.Zoom")[0].div;
 //	var panelTop = zoomControlDiv.offsetTop + zoomControlDiv.offsetHeight + 40;
 //	$('#ol-custom-panel').css('top', panelTop);
 
-	LOG.debug('Map.js::constructor: Map class initialized.');
+	CCH.LOG.debug('Map.js::constructor: Map class initialized.');
 	return $.extend(me, {
 		getMap: function() {
 			return me.map;
@@ -247,7 +247,7 @@ var Map = function(args) {
             me.map.zoomToExtent(layerBounds, false);
         },
 		updateFromSession: function() {
-			LOG.info('Map.js::updateFromSession()');
+			CCH.LOG.info('Map.js::updateFromSession()');
 			me.map.events.un({'moveend': me.moveendCallback});
 			var mapConfig = CONFIG.session.objects.map;
 			this.getMap().setCenter([mapConfig.center.lon, mapConfig.center.lat]);
@@ -352,7 +352,7 @@ var Map = function(args) {
 		 * @returns {undefined}
 		 */
 		removeLayersByName: function(featureName) {
-			LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + featureName);
+			CCH.LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + featureName);
 			var layers = me.map.getLayersByName(featureName) || [];
 			layers.each(function(layer) {
 				me.map.removeLayer(layer, false);
