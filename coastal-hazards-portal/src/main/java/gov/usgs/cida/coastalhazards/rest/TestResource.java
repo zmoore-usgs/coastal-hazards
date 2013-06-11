@@ -6,7 +6,10 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+import com.sun.jersey.api.view.Viewable;
 
 /**
  * REST Web Service
@@ -34,16 +37,25 @@ public class TestResource {
     public String getText() {
         return "hi";
     }
-
-    /**
-     * PUT method for updating or creating an instance of TestResource
-     * @param content representation for the resource
-     * @return an HTTP response with content of the updated or created resource.
-     */
+    
+    @GET
+    @Produces("text/html")
+    @Path("{name}")
+    public Response useJsp(@PathParam("name")String name) {
+        return Response.ok(new Viewable("/test.jsp", name)).build();
+    }
+    
     @POST
     @Consumes("text/plain")
     @Produces("text/plain")
     public String echo(String content) {
         return content;
+    }
+    
+    @POST
+    @Consumes("text/plain")
+    @Produces("text/html")
+    public Response useJspPost(String content) {
+        return Response.ok(new Viewable("/test.jsp", content)).build();
     }
 }
