@@ -1,11 +1,12 @@
-CCH.Session = function(args) {
+CCH.Objects.Session = function(args) {
 	CCH.LOG.info('Session.js::constructor: Session class is initializing.');
 	var me = (this === window) ? {} : this;
 	args = args ? args : {};
 
 	me.objects = {
 		view: {
-			itemIds: []
+			itemIds: [],
+			activeLayers: []
 		},
 		map: {
 			baselayer: 'Not Yet Initialized',
@@ -162,17 +163,17 @@ CCH.Session = function(args) {
 			var itemIds = me.objects.view.itemIds;
 			var currIdIdx = itemIds.indexOf(id);
 			var toggleOn = currIdIdx === -1;
-			
+
 			if (toggleOn) {
 				itemIds.push(id);
 			} else {
 				itemIds.removeAt(currIdIdx);
 			}
-			
+
 			$(me).trigger('session-id-toggled', {
-				'on' : toggleOn
+				'on': toggleOn
 			});
-			
+
 			return toggleOn;
 		}
 	});
