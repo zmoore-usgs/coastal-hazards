@@ -1,4 +1,4 @@
-CCH.Map = function(args) {
+CCH.Objects.Map = function(args) {
 	CCH.LOG.info('Map.js::constructor:Map class is initializing.');
 	var mapDivId = args.mapDiv;
 	var me = (this === window) ? {} : this;
@@ -74,34 +74,10 @@ CCH.Map = function(args) {
 				wrapDateLine: true
 			}
 	));
-//	me.map.addLayer(new OpenLayers.Layer.ArcGIS93Rest("Boundaries",
-//			"http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer/export",
-//			{
-//				layers: '0',
-//				numZoomLevels: 13,
-//				transparent: true,
-//				displayInLayerSwitcher: true
-//			}, {
-//		visibility: false,
-//		isBaseLayer: false
-//	}
-//	));
-//	me.map.addLayer(new OpenLayers.Layer.ArcGIS93Rest("World Reference",
-//			"http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer/export",
-//			{
-//				layers: '0',
-//				numZoomLevels: 14,
-//				transparent: true,
-//				displayInLayerSwitcher: true
-//			}, {
-//		visibility: false,
-//		isBaseLayer: false
-//	}
-//	));
 
 	me.moveendCallback = function(evt) {
 		var map = evt.object;
-		var sMap = CCH.CONFIG.session.getMap();
+		var sMap = CCH.session.getMap();
 
 		sMap.baselayer = map.baseLayer.name;
 		sMap.center = {

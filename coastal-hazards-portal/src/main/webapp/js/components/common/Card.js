@@ -1,4 +1,4 @@
-CCH.Card = function(args) {
+CCH.Objects.Card = function(args) {
 	CCH.LOG.info('Card.js::constructor:Card class is initializing.');
 	var me = (this === window) ? {} : this;
 
@@ -9,12 +9,13 @@ CCH.Card = function(args) {
 	me.name = me.item.name;
 	me.attr = me.item.attr;
 	me.service = me.item.service;
+	me.htmlEntity = null;
 	me.pinButton = null;
 	me.tweetButton = null;
 
 	return $.extend(me, {
 		create: function() {
-			var containerDiv = $('<div />').addClass('description-container container-fluid');
+			me.container = $('<div />').addClass('description-container container-fluid');
 			var titleRow = $('<div />').addClass('description-title-row row-fluid');
 			var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
 			me.pinButton = $('<button />').addClass('btn  span1').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-zoom-in icon-eye-open slide-button muted'));
@@ -44,11 +45,11 @@ CCH.Card = function(args) {
 			});
 
 			if (me.type === 'storms') {
-				containerDiv.addClass('description-container-storms');
+				me.container.addClass('description-container-storms');
 			} else if (me.type === 'vulnerability') {
-				containerDiv.addClass('description-container-vulnerability');
+				me.container.addClass('description-container-vulnerability');
 			} else {
-				containerDiv.addClass('description-container-historical');
+				me.container.addClass('description-container-historical');
 			}
 
 			var titleColumn = $('<span />').addClass('description-title span10').html(me.name);
@@ -58,15 +59,15 @@ CCH.Card = function(args) {
 			// TODO description should come from summary service (URL in item)
 			descriptionRow.append($('<p />').addClass('slide-vertical-description unselectable').html(me.summary.medium));
 
-			containerDiv.append(titleRow, descriptionRow);
-			if (CCH.CONFIG.ui.currentSizing === 'large') {
-				containerDiv.addClass('description-container-large');
-			} else if (CCH.CONFIG.ui.currentSizing === 'small') {
-				containerDiv.addClass('description-container-small');
+			me.container.append(titleRow, descriptionRow);
+			if (CCH.ui.currentSizing === 'large') {
+				me.container.addClass('description-container-large');
+			} else if (CCH.ui.currentSizing === 'small') {
+				me.container.addClass('description-container-small');
 			}
 
-			containerDiv.data('card', me);
-			return containerDiv;
+			me.container.data('card', me);
+			return me.container;
 		}
 	});
 };

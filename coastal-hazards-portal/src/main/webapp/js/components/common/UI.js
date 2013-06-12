@@ -1,4 +1,4 @@
-CCH.UI = function(args) {
+CCH.Objects.UI = function(args) {
 	CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 	var me = (this === window) ? {} : this;
 	me.spinner = args.spinner;
@@ -9,12 +9,12 @@ CCH.UI = function(args) {
 	me.minimumHeight = args.minimumHeight || 480;
 	me.previousWidth = $(window).width();
 	me.currentSizing = '';
+	me.geocodeEndoint = args.geocodeEndpoint || 'http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find';
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
 		init: function() {
 			this.bindSearchInput();
 			this.bindWindowResize();
-			this.bindSubmenuButtons();
 
 			var currWidth = me.previousWidth;
 			if (currWidth <= me.magicResizeNumber) {
@@ -75,61 +75,10 @@ CCH.UI = function(args) {
 				}
 
 				if (updated) {
-					CCH.CONFIG.ui.createSlideshow();
+					me.createSlideshow();
 				}
 
 				me.previousWidth = currWidth;
-			});
-		},
-		popoverClickHandler: function(e) {
-			var container = $(this);
-			if (!CONFIG.popupHandling.isVisible) {
-				$(container).popover('show');
-				CONFIG.popupHandling.clickedAway = false;
-				CONFIG.popupHandling.isVisible = true;
-				e.preventDefault();
-			}
-		},
-		popoverShowHandler: function() {
-			var container = $(this);
-			var closePopovers = function(e) {
-				if (CONFIG.popupHandling.isVisible && CONFIG.popupHandling.clickedAway && !$(e.target.offsetParent).hasClass('popover')) {
-					$(document).off('click', closePopovers);
-					$(container).popover('hide');
-					CONFIG.popupHandling.isVisible = false;
-					CONFIG.popupHandling.clickedAway = false;
-				} else {
-					CONFIG.popupHandling.clickedAway = true;
-				}
-			};
-			$(document).off('click', closePopovers);
-			$(document).on('click', closePopovers);
-		},
-		bindSubmenuButtons: function() {
-			['storms', 'vulnerability'].each(function(item) {
-				$('#accordion-group-' + item + '-view').popover({
-					html: true,
-					placement: 'right',
-					trigger: 'manual',
-					title: 'View ' + item.capitalize(),
-					container: 'body',
-					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
-				}).on({
-					click: CCH.CONFIG.ui.popoverClickHandler,
-					shown: CCH.CONFIG.ui.popoverShowHandler
-				});
-
-				$('#accordion-group-' + item + '-learn').popover({
-					html: true,
-					placement: 'right',
-					trigger: 'manual',
-					title: 'Learn About ' + item.capitalize(),
-					container: 'body',
-					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
-				}).on({
-					click: CCH.CONFIG.ui.popoverClickHandler,
-					shown: CCH.CONFIG.ui.popoverShowHandler
-				});
 			});
 		},
 		bindSearchInput: function() {
@@ -138,7 +87,7 @@ CCH.UI = function(args) {
 				if (query) {
 					$.ajax({
 						type: 'GET',
-						url: 'http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find',
+						url: me.geocodeEndoint,
 						data: {
 							text: query,
 							maxLocations: '20',
@@ -151,8 +100,7 @@ CCH.UI = function(args) {
 						dataType: 'jsonp',
 						success: function(json) {
 							if (json.locations[0]) {
-
-								CCH.CONFIG.map.buildGeocodingPopup({
+								CCH.map.buildGeocodingPopup({
 									locations: json.locations
 								});
 
@@ -169,7 +117,7 @@ CCH.UI = function(args) {
 				'id': args.itemId
 			});
 
-			var card = new CCH.Card({
+			var card = new CCH.Objects.Card({
 				item: item
 			});
 
@@ -185,9 +133,9 @@ CCH.UI = function(args) {
 				container: 'body',
 				content: "<div class='container-fluid' id='prepare-container'><div>Preparing session export...</div></div>"
 			}).on({
-				'click': CCH.CONFIG.ui.popoverClickHandler,
+				'click': me.popoverClickHandler,
 				'shown': function() {
-					CCH.CONFIG.session.getMinifiedEndpoint({
+					CCH.session.getMinifiedEndpoint({
 						callbacks: [
 							function(args) {
 								var response = args.response;
@@ -224,9 +172,9 @@ CCH.UI = function(args) {
 		slider: function() {
 			var iosslider = $('#iosslider-container');
 			var sliderFunct;
-			if (CCH.CONFIG.ui.currentSizing === 'large') {
+			if (me.currentSizing === 'large') {
 				sliderFunct = iosslider.iosSliderVertical;
-			} else if (CCH.CONFIG.ui.currentSizing === 'small') {
+			} else if (me.currentSizing === 'small') {
 				sliderFunct = iosslider.iosSlider;
 			}
 			return sliderFunct.apply(iosslider, arguments);
@@ -249,7 +197,7 @@ CCH.UI = function(args) {
 				$('#description-wrapper').append(sliderContainer);
 
 				results.each(function(result) {
-					var card = CCH.CONFIG.ui.buildCard({
+					var card = me.buildCard({
 						'itemId': result.id
 					});
 					var slide = $('<div />').addClass('slide well well-small').append(card);
@@ -260,17 +208,17 @@ CCH.UI = function(args) {
 						'card-button-pin-clicked': function(evt) {
 							var card = evt.currentTarget;
 							me.slider('autoSlidePause');
-							CCH.CONFIG.map.clearBoundingBoxMarkers();
-							CCH.CONFIG.map.zoomToBoundingBox({
+							CCH.map.clearBoundingBoxMarkers();
+							CCH.map.zoomToBoundingBox({
 								"bbox": card.bbox,
 								"fromProjection": "EPSG:4326"
 							});
-							CCH.CONFIG.ows.displayData({
+							CCH.ows.displayData({
 								"card": card,
 								"type": card.type
 							});
 							
-							var toggledOn = CCH.CONFIG.session.toggleId(card.item.id);
+							var toggledOn = CCH.session.toggleId(card.item.id);
 							if (toggledOn) {
 								$(card.pinButton).addClass('slider-card-pinned');
 							} else {
@@ -355,13 +303,13 @@ CCH.UI = function(args) {
 					event.currentSlideObject.addClass('slider-slide-active');
 
 
-					CCH.CONFIG.map.boxLayer.markers.each(function(mrk) {
+					CCH.map.boxLayer.markers.each(function(mrk) {
 						$(mrk.div).removeClass('marker-active');
 						$(mrk.div).addClass('marker-inactive');
 					});
 
 					var card = $(event.currentSlideObject[0].firstChild).data('card');
-					var marker = CCH.CONFIG.map.addBoundingBoxMarker({
+					var marker = CCH.map.addBoundingBoxMarker({
 						bbox: card.bbox,
 						fromProjection: 'EPSG:4326'
 					});
@@ -371,8 +319,8 @@ CCH.UI = function(args) {
 						click: function(evt) {
 							var target = $(evt.target);
 							var slideOrder = target.data('slideOrder');
-							CCH.CONFIG.ui.slider('goToSlide', slideOrder);
-							CCH.CONFIG.ui.slider('autoSlidePause');
+							me.slider('goToSlide', slideOrder);
+							me.slider('autoSlidePause');
 							$('.slide-menu-icon-pause-play').removeClass('icon-pause').addClass('icon-play').parent().on({
 								'click': function(evt) {
 									CCH.CONFIG.ui.slider('autoSlidePlay');
@@ -380,22 +328,11 @@ CCH.UI = function(args) {
 								}
 							});
 
-						}
-					});
-					$('.slide-menu-icon-pause-play').parent().on({
-						'click': function(evt) {
-							CCH.CONFIG.ui.slider('autoSlidePause');
-							$('.slide-menu-icon-pause-play').removeClass('icon-pause').addClass('icon-play').parent().on({
-								'click': function(evt) {
-									CCH.CONFIG.ui.slider('autoSlidePlay');
-									$('.slide-menu-icon-pause-play').removeClass('icon-play').addClass('icon-pause');
-								}
-							});
 						}
 					});
 				};
 
-				if (CCH.CONFIG.ui.currentSizing === 'large') {
+				if (me.currentSizing === 'large') {
 					sliderContainer.iosSliderVertical({
 						desktopClickDrag: true,
 						snapToChildren: true,
@@ -408,7 +345,7 @@ CCH.UI = function(args) {
 						onSliderResize: resizeVertical,
 						onSlideChange: toggleClassForActiveSlide
 					});
-				} else if (CCH.CONFIG.ui.currentSizing === 'small') {
+				} else if (me.currentSizing === 'small') {
 					sliderContainer.iosSlider({
 						desktopClickDrag: true,
 						snapToChildren: true,
@@ -425,7 +362,7 @@ CCH.UI = function(args) {
 
 				var orientationChange = function(event) {
 					event.preventDefault();
-					CCH.CONFIG.ui.createSlideshow();
+					me.createSlideshow();
 				};
 
 				$(window).off('orientationchange', orientationChange);

@@ -1,4 +1,4 @@
-CCH.OWS = function() {
+CCH.Objects.OWS = function() {
 	CCH.LOG.info('OWS.js::constructor: OWS class is initializing.');
 	var me = (this === window) ? {} : this;
     me.visibleLayers = [];
@@ -181,7 +181,7 @@ CCH.OWS = function() {
 				layer.params.STYLES = 'line';
 			}
 
-			CCH.CONFIG.map.getMap().addLayer(layer);
+			CCH.map.getMap().addLayer(layer);
 			layer.redraw(true);
 
 //				CCH.CONFIG.session.objects.view.storms.activeLayers = [{title: card.name, name: card.name, layers: card.service.wms.layers}];

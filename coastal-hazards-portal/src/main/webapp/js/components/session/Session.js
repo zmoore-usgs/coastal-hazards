@@ -1,4 +1,4 @@
-CCH.Session = function(args) {
+CCH.Objects.Session = function(args) {
 	CCH.LOG.info('Session.js::constructor: Session class is initializing.');
 	var me = (this === window) ? {} : this;
 	args = args ? args : {};
