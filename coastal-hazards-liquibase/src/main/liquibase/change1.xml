@@ -1,0 +1,38 @@
+
+
+<changeSet author="bheck" id="change1">
+    <createTable 
+            schemaName="public"
+            tableName="item">
+        <column name="ID" type="numeric(8,0)"/>
+        <column name="bounding_box" type="box"/>
+        <column name="title" type="varchar(140)"/>
+        <column name="keywords" type="varchar(100)"/>
+    </createTable>
+    <createTable 
+            schemaName="public"
+            tableName="session">
+        <column name="ID" type="numeric(8,0)"/>
+        <column name="session_type" type="session_type_enum"/>
+        <column name="layers" type="bytea"/>
+        <column name="map_base_layer" type="varchar(50)"/>
+        <column name="scale" type="numeric(16, 8)"/>
+        <column name="bounding_box" type="box"/>
+        <column name="center" type="point"/>
+    </createTable>
+    <createTable 
+            schemaName="public"
+            tableName="popularity">
+        <column name="ID" type="numeric(8,0)"/>
+        <column name="activity_date" type="timestamp"/>
+        <column name="popularity_type" type="popularity_type_enum"/>
+    </createTable>
+    <createTable 
+            schemaName="public"
+            tableName="authorized_users">
+        <column name="open_id" type="varchar(30)"/>
+        <column name="open_id_token" type="varchar(255)"/>
+    </createTable>
+</changeSet>
+
+
