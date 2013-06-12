@@ -144,51 +144,49 @@ CCH.OWS = function() {
 					$(callbacks.success || []).each(function(index, callback, allCallbacks) {
 						CCH.LOG.trace('OWS.js::getFilteredFeature: Executing callback ' + index);
 						callback(getFeatureResponse, this);
-					})
+					});
 				},
 				error: function(data, textStatus, jqXHR) {
 					$(callbacks.error || []).each(function(index, callback, allCallbacks) {
 						callback(data, this);
-					})
+					});
 				}
-			})
+			});
 		},
         displayData: function(args) {
             // may want to do this first: CONFIG.map.removeLayersByName(me.visibleLayers);
-			var item = args.item;
             var type = args.type;
-			if (item) {
-				var layer = new OpenLayers.Layer.WMS(
-						item.name,
-                        item.service.wms.endpoint,
-						{
-							layers: item.service.wms.layers,
-							format: 'image/png',
-							transparent: true
-						},
-				{
-					projection: 'EPSG:3857',
-					isBaseLayer: false,
-					displayInLayerSwitcher: false
+			var card = args.card;
+			var layer = new OpenLayers.Layer.WMS(
+					card.name,
+					card.service.wms.endpoint,
+					{
+						layers: card.service.wms.layers,
+						format: 'image/png',
+						transparent: true
+					},
+			{
+				projection: 'EPSG:3857',
+				isBaseLayer: false,
+				displayInLayerSwitcher: false
 
-				});
-                
-                if (type === "vulnerability") {
-                    layer.params.STYLES = 'redwhite';
-                    // SLD will probably only work with one layer
-                    // also TODO: figure out best way to get public mapping (context.xml or document.location ??
-                    layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/rest/sld/redwhite/' + item.service.wms.layers + '/' + item.attr;
-                } else {
-                    layer.params.STYLES = 'line';
-                }
-                
-				CCH.CONFIG.map.getMap().addLayer(layer);
-				layer.redraw(true);
+			});
 
-//				CCH.CONFIG.session.objects.view.storms.activeLayers = [{title: item.name, name: item.name, layers: item.service.wms.layers}];
-				if (me.visibleLayers.indexOf(layer) === -1) {
-					me.visibleLayers.push(layer);
-				}
+			if (type === "vulnerability") {
+				layer.params.STYLES = 'redwhite';
+				// SLD will probably only work with one layer
+				// also TODO: figure out best way to get public mapping (context.xml or document.location ??
+				layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/rest/sld/redwhite/' + card.service.wms.layers + '/' + card.attr;
+			} else {
+				layer.params.STYLES = 'line';
+			}
+
+			CCH.CONFIG.map.getMap().addLayer(layer);
+			layer.redraw(true);
+
+//				CCH.CONFIG.session.objects.view.storms.activeLayers = [{title: card.name, name: card.name, layers: card.service.wms.layers}];
+			if (me.visibleLayers.indexOf(layer) === -1) {
+				me.visibleLayers.push(layer);
 			}
 		}
 	});

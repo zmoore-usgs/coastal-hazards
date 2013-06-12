@@ -5,7 +5,7 @@ CCH.Session = function(args) {
 
 	me.objects = {
 		view: {
-			itemIds : []
+			itemIds: []
 		},
 		map: {
 			baselayer: 'Not Yet Initialized',
@@ -157,6 +157,23 @@ CCH.Session = function(args) {
 				sid = sidItem.substr(4);
 			}
 			return sid;
+		},
+		toggleId: function(id) {
+			var itemIds = me.objects.view.itemIds;
+			var currIdIdx = itemIds.indexOf(id);
+			var toggleOn = currIdIdx === -1;
+			
+			if (toggleOn) {
+				itemIds.push(id);
+			} else {
+				itemIds.removeAt(currIdIdx);
+			}
+			
+			$(me).trigger('session-id-toggled', {
+				'on' : toggleOn
+			});
+			
+			return toggleOn;
 		}
 	});
 };
