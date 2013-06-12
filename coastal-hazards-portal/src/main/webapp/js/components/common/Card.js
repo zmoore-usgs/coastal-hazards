@@ -1,6 +1,7 @@
 CCH.Card = function(args) {
 	CCH.LOG.info('Card.js::constructor:Card class is initializing.');
 	var me = (this === window) ? {} : this;
+
 	me.item = args.item;
 	me.bbox = me.item.bbox;
 	me.type = me.item.type;
@@ -8,48 +9,39 @@ CCH.Card = function(args) {
 	me.name = me.item.name;
 	me.attr = me.item.attr;
 	me.service = me.item.service;
+	me.pinButton = null;
+	me.tweetButton = null;
 
 	return $.extend(me, {
 		create: function() {
 			var containerDiv = $('<div />').addClass('description-container container-fluid');
-			var toolbarRow = $('<div />').addClass('row-fluid description-button-row text-center');
-			var buttonToolbar = $('<div />').addClass('btn-toolbar');
-			var buttonGroup = $('<div />').addClass('btn-group');
 			var titleRow = $('<div />').addClass('description-title-row row-fluid');
 			var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
-			var info = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-zoom-in icon-zoom-in slide-button muted'));
-			var tweet = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-twitter icon-twitter slide-button muted'));
-			var pause = $('<button />').addClass('btn btn-pause-play').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-pause-play icon-pause slide-button muted'));
-			var back = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-fast-backward icon-fast-backward slide-button muted'));
-			var buttons = [info, tweet, pause, back];
+			me.pinButton = $('<button />').addClass('btn  span1').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-zoom-in icon-eye-open slide-button muted'));
+			me.tweetButton = $('<button />').addClass('btn  span1').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-twitter icon-twitter slide-button muted'));
 
-			buttons.each(function(btn) {
-				$(btn).on('mouseover', function() {
-					$(this).find('i').removeClass('muted');
-				});
-				$(btn).on('mouseout', function() {
-					$(this).find('i').addClass('muted');
+			[me.pinButton, me.tweetButton].each(function(button) {
+				button.on({
+					'mouseover': function(evt) {
+						$(this).find('i').removeClass('muted');
+					},
+					'mouseout': function(evt) {
+						$(this).find('i').addClass('muted');
+					}
 				});
 			});
-			info.on({
+
+			me.tweetButton.on({
 				'click': function(evt) {
-					CCH.CONFIG.ui.slider('autoSlidePause');
-					CCH.CONFIG.map.clearBoundingBoxMarkers();
-					CCH.CONFIG.map.zoomToBoundingBox({
-						"bbox": me.bbox,
-						"fromProjection": "EPSG:4326"
-					});
-					CCH.CONFIG.ows.displayData({
-						"card": me,
-						"type": me.type
-					});
+					$(me).trigger('card-button-tweet-clicked');
 				}
 			});
 
-			containerDiv.append(toolbarRow);
-			toolbarRow.append(buttonToolbar);
-			buttonToolbar.append(buttonGroup);
-			buttonGroup.append(buttons);
+			me.pinButton.on({
+				'click': function() {
+					$(me).trigger('card-button-pin-clicked');
+				}
+			});
 
 			if (me.type === 'storms') {
 				containerDiv.addClass('description-container-storms');
@@ -59,9 +51,9 @@ CCH.Card = function(args) {
 				containerDiv.addClass('description-container-historical');
 			}
 
-			var titleColumn = $('<div />').addClass('description-title-column').append($('<p />').addClass('description-title').html(me.name));
+			var titleColumn = $('<span />').addClass('description-title span10').html(me.name);
 
-			titleRow.append(titleColumn);
+			titleRow.append(me.pinButton, titleColumn, me.tweetButton);
 
 			// TODO description should come from summary service (URL in item)
 			descriptionRow.append($('<p />').addClass('slide-vertical-description unselectable').html(me.summary.medium));

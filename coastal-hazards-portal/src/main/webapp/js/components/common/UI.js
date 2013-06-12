@@ -164,15 +164,15 @@ CCH.UI = function(args) {
 
 			});
 		},
-		buildSlide: function(args) {
+		buildCard: function(args) {
 			var item = CCH.CONFIG.popularity.getById({
 				'id': args.itemId
 			});
 
 			var card = new CCH.Card({
-				item : item
+				item: item
 			});
-			
+
 			return card.create();
 		},
 		bindShareMenu: function(args) {
@@ -249,14 +249,41 @@ CCH.UI = function(args) {
 				$('#description-wrapper').append(sliderContainer);
 
 				results.each(function(result) {
-					var item = CCH.CONFIG.ui.buildSlide({
+					var card = CCH.CONFIG.ui.buildCard({
 						'itemId': result.id
 					});
-
-					var slide = $('<div />').addClass('slide well well-small').append(item);
+					var slide = $('<div />').addClass('slide well well-small').append(card);
 					$('#iosslider-slider').append(slide);
+					
+					var cardObject = $(card.data('card'));
+					cardObject.on({
+						'card-button-pin-clicked': function(evt) {
+							var card = evt.currentTarget;
+							me.slider('autoSlidePause');
+							CCH.CONFIG.map.clearBoundingBoxMarkers();
+							CCH.CONFIG.map.zoomToBoundingBox({
+								"bbox": card.bbox,
+								"fromProjection": "EPSG:4326"
+							});
+							CCH.CONFIG.ows.displayData({
+								"card": card,
+								"type": card.type
+							});
+							
+							var toggledOn = CCH.CONFIG.session.toggleId(card.item.id);
+							if (toggledOn) {
+								$(card.pinButton).addClass('slider-card-pinned');
+							} else {
+								$(card.pinButton).removeClass('slider-card-pinned');
+							}
+						},
+						'card-button-tweet-clicked' : function(evt) {
+							var card = evt.currentTarget;
+							me.slider('autoSlidePause');
+						}
+					});
 				});
-				
+
 				var resizeVertical = function(event) {
 					toggleClassForActiveSlide(event);
 
@@ -268,12 +295,11 @@ CCH.UI = function(args) {
 					});
 
 					$('.slide').each(function(index, slide) {
-						var buttons = $(slide).find('.description-button-row');
 						var title = $(slide).find('.description-title-row');
 						var descr = $(slide).find('.description-description-row');
 						var descrDiv = $(descr).find('p');
 
-						var slideHeight = buttons.height() + title.height() + descrDiv.height();
+						var slideHeight = title.height() + descrDiv.height();
 						if (slideHeight > (event.sliderContainerObject.height() - 10)) {
 							slideHeight = event.sliderContainerObject.height() - 10;
 						}
@@ -283,7 +309,7 @@ CCH.UI = function(args) {
 						});
 
 						descr.css({
-							'height': slideHeight - buttons.height() - title.height() + 'px'
+							'height': slideHeight - title.height() + 'px'
 						});
 
 						descrDiv.css({
@@ -291,7 +317,7 @@ CCH.UI = function(args) {
 						});
 					});
 				};
-				
+
 				var resizeHorizontal = function(event) {
 					toggleClassForActiveSlide(event);
 					var container = $(event.sliderContainerObject).parent();
@@ -299,11 +325,10 @@ CCH.UI = function(args) {
 					event.sliderObject.css('height', (container.height()) + 'px');
 
 					$('.slide').each(function(index, slide) {
-						var buttons = $(slide).find('.description-button-row');
 						var title = $(slide).find('.description-title-row');
 						var descr = $(slide).find('.description-description-row');
 						var descrDiv = $(descr).find('p');
-						
+
 						var slideHeight = event.sliderContainerObject.height() - 10;
 
 						$(slide).css({
@@ -311,7 +336,7 @@ CCH.UI = function(args) {
 						});
 
 						descr.css({
-							'height': slideHeight - buttons.height() - title.height() + 'px'
+							'height': slideHeight - title.height() + 'px'
 						});
 
 						descrDiv.css({
@@ -334,9 +359,9 @@ CCH.UI = function(args) {
 						$(mrk.div).removeClass('marker-active');
 						$(mrk.div).addClass('marker-inactive');
 					});
-                    
-                    var card = $(event.currentSlideObject[0].firstChild).data('card');
-                    var marker = CCH.CONFIG.map.addBoundingBoxMarker({
+
+					var card = $(event.currentSlideObject[0].firstChild).data('card');
+					var marker = CCH.CONFIG.map.addBoundingBoxMarker({
 						bbox: card.bbox,
 						fromProjection: 'EPSG:4326'
 					});
