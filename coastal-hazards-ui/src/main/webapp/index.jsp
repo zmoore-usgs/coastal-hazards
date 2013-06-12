@@ -1,3 +1,5 @@
+<%@page import="java.io.File"%>
+<%@page import="java.net.URL"%>
 <%@page import="org.slf4j.Logger"%>
 <%@page import="org.slf4j.LoggerFactory"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
@@ -5,10 +7,13 @@
 <!DOCTYPE html>
 
 <%!    
-    protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
+    
+    protected DynamicReadOnlyProperties props = null;
 
     {
         try {
+            File propsFile = new File(getClass().getClassLoader().getResource("application.properties").toURI());
+            props = new DynamicReadOnlyProperties(propsFile);
             props = props.addJNDIContexts(new String[0]);
         } catch (Exception e) {
             LoggerFactory.getLogger("index.jsp").error("Could not find JNDI - Application will probably not function correctly");
@@ -381,6 +386,7 @@
                     <jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
                     <jsp:param name="contact-info" value="<a href='mailto:jread@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Jordan Read</a>" />
                 </jsp:include>
+                <p id="footer-page-version-info">Application Version: <%= props.get("application.version") %></p>
             </div>
         </div>
 		
@@ -422,7 +428,7 @@
 	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? ".min" : "" %>.css" />
 	<link type="text/css" rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
 	<script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? ".min" : "" %>.js"></script>
-    <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.0.2/css/font-awesome<%= development ? ".min" : "" %>.css" />
+    <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.1.1/css/font-awesome<%= development ? ".min" : "" %>.css" />
 
     <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
     <script type="text/javascript" src="webjars/openlayers/2.12/OpenLayers<%= development ? ".debug" : "" %>.js"></script>

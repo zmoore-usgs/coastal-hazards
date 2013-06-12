@@ -67,8 +67,11 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.opengis.feature.type.Name;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 
 /**
  *
@@ -797,6 +800,26 @@ public class DummyCatalog implements Catalog {
     @Override
     public void removeListeners(Class type) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <T extends CatalogInfo> int count(Class<T> type, Filter filter) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public <T extends CatalogInfo> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> type, Filter filter) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> type, Filter filter, Integer intgr, Integer intgr1, SortBy sortby) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -1,0 +1,107 @@
+/* ---------------------------------------------------------------------- UI */
+/* Because of a conflict between twitter bootstrap and openlayers */
+img { 
+    max-width: none !important; 
+}
+
+#application-container {
+	min-width : 320px !important;
+}
+
+#application-spinner {
+    text-align: center;
+    display: none;
+}
+
+#header #banner-area {
+    background-image: url("../images/banner/banner.png");
+}
+
+
+#map-wrapper {
+	min-height : 150px;
+}
+
+#site-title {
+    line-height: 20px;
+}
+
+.popover {
+	max-width : 2000px !important;
+}
+
+.baseLayersDiv > .labelSpan {
+	display : inline;
+}
+.dataLayersDiv > .labelSpan {
+	display : inline;
+}
+
+.slide-menu-icon-twitter {
+	color : #7EB3CD;
+}
+
+.description-description-row {
+	min-height : 100px;
+}
+
+.description-title {
+	font-size : 1.2em;
+	font-weight: bold;
+	text-align: center;
+}
+
+.description-container {
+	background-size: auto 80%;
+	background-repeat: no-repeat;
+	background-position: right top;
+}
+
+.slider-slide-active .description-container-storms {
+	background-image : url("../images/cards/StormsActive.svg");
+}
+.slider-slide-inactive .description-container-storms {
+	background-image : url("../images/cards/StormsInactive.svg");
+}
+.slider-slide-active .description-container-vulnerability {
+	background-image : url("../images/cards/VulnerabilityActive.svg");
+}
+.slider-slide-inactive .description-container-vulnerability {
+	background-image : url("../images/cards/VulnerabilityInactive.svg");
+}
+.slider-slide-active .description-container-historical {
+	background-image : url("../images/cards/HistoricalActive.svg");
+}
+.slider-slide-inactive .description-container-historical {
+	background-image : url("../images/cards/HistoricalInactive.svg");
+}
+
+.slider-card-pinned i {
+	color : #008F00; 
+}
+
+.marker-active {
+	border-color: #00CCFF !important;
+	background-color: rgba(0,102,255, 0.5);
+}
+
+.marker-inactive {
+	border-color: #00A3CC !important;
+	background-color: rgba(0,102,255, 0.5);
+}
+
+.marker-hover {
+	border-color: #8CE8FF !important;
+	background-color: rgba(0,102,255, 0.5);
+	opacity : 1.0 !important;
+}
+
+/*.olControlPanel div { 
+	display:block;
+	width:  48px;
+	height: 48px;
+	margin: 5px;
+	background-color: #00008B;
+    -moz-border-radius: 1em 0 0 0;
+	border-radius:  1em;
+}*/

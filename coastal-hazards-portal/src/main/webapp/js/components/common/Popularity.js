@@ -1,11 +1,11 @@
-CONFIG.popularity = {
+CCH.CONFIG.popularity = {
 	results: [],
 	populate: function(args) {
 		args = args ? args : {};
 		var populateResults = function(data, status, jqXHR) {
 			var success = data.success;
 			if (success === 'true') {
-				CONFIG.popularity.results = data.results;
+				CCH.CONFIG.popularity.results = data.results;
 			} else {
 				// Handle an error
 			}
@@ -31,7 +31,7 @@ CONFIG.popularity = {
 
 
 		$.ajax({
-			url: CONFIG.data.sources.popularity.endpoint,
+			url: CCH.CONFIG.data.sources.popularity.endpoint,
 			cache: false,
 			dataType: 'json',
 			data: {
@@ -44,9 +44,6 @@ CONFIG.popularity = {
 	},
 	getById: function(args) {
 		var id = args.id;
-		if (!id.has('urn:uuid:')) {
-			id += 'urn:uuid:';
-		};
 		return this.results.find(function(result) {
 			return result.id === id;
 		});

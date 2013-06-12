@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.usgs.cida.coastalhazards</groupId>
 	<artifactId>coastal-hazards</artifactId>
-	<version>1.0.9-SNAPSHOT</version>
+	<version>1.0.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Coastal Hazards</name>
   
 	<modules>
 		<module>coastal-hazards-ui</module>
-		<module>coastal-hazards-n52</module>
+		<!--<module>coastal-hazards-n52</module> pretend this doesn't exist -->
 		<module>coastal-hazards-wps</module>
 		<module>coastal-hazards-geoserver</module>
 		<module>coastal-hazards-portal</module>
@@ -106,20 +106,24 @@
 		<repository>
 			<id>cida-releases</id>
 			<name>CIDA Releases</name>
-			<url>${cida.maven.url}/content/repositories/cida-releases/</url>
+			<url>http://internal.cida.usgs.gov/maven/content/repositories/cida-releases/</url>
 		</repository>
 		<snapshotRepository>
 			<id>cida-snapshots</id>
 			<name>CIDA Snapshots</name>
-			<url>${cida.maven.url}/content/repositories/cida-snapshots/</url>
+			<url>http://internal.cida.usgs.gov/maven/content/repositories/cida-snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 	
 	<repositories>
 		<repository>
-			<id>nexus</id>
-			<name>CIDA Nexus</name>
-			<url>${cida.maven.url}/content/groups/public/</url>
+			<id>cida-public</id>
+			<name>CIDA Public Nexus</name>
+			<url>http://cida.usgs.gov/maven/cida-public/</url>
+		</repository>
+        <repository>
+			<id>opengeo</id>
+			<url>http://repo.opengeo.org/</url>
 		</repository>
 		<repository>
 			<id>geosolutions</id>
@@ -130,9 +134,9 @@
 	
 	<pluginRepositories>
 		<pluginRepository>
-			<id>plugin-nexus</id>
-			<name>CIDA Plugin repo</name>
-			<url>${cida.maven.url}/content/groups/public/</url>
+			<id>cida-public</id>
+			<name>CIDA Public Plugin repo</name>
+			<url>http://cida.usgs.gov/maven/cida-public/</url>
 		</pluginRepository>
 	</pluginRepositories>
 	
@@ -144,6 +148,11 @@
 				<version>4.2.5</version>
 				<type>jar</type>
 			</dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>4.2.4</version>
+            </dependency>
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
@@ -208,10 +217,16 @@
 				<version>1.2</version>
 				<scope>provided</scope>
 			</dependency>
+            <dependency>
+                <groupId>javax.servlet.jsp.jstl</groupId>
+                <artifactId>jstl-api</artifactId>
+                <version>1.2</version>
+                <scope>provided</scope>
+            </dependency>
 			<dependency>
 				<artifactId>proxy-utils</artifactId>
 				<groupId>gov.usgs.cida</groupId>
-				<version>1.0.2</version>
+				<version>1.0.4</version>
 				<type>jar</type>
 				<exclusions>
 					<exclusion>
@@ -220,26 +235,52 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>2.1</version>
+            </dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>2.4</version>
 			</dependency>
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.6</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>1.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>gov.usgs.cida.owsutils</groupId>
+                <artifactId>cida-owsutils-geoserver</artifactId>
+                <version>1.0.2</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>commons-lang</artifactId>
+                        <groupId>commons-lang</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.openid4java</groupId>
+                <artifactId>openid4java</artifactId>
+                <version>0.9.7</version>
+            </dependency>
 			<dependency>
 				<groupId>gov.usgs.cida.jslibs</groupId>
 				<artifactId>usgs-template</artifactId>
-				<version>2.1</version>
+				<version>2.2</version>
 				<type>war</type>
 			</dependency>
 			<dependency>
 				<groupId>gov.usgs.cida</groupId>
 				<artifactId>dynamicProperties</artifactId>
-				<version>0.0.1</version>
-			</dependency>
-			<dependency>
-				<groupId>gov.usgs.cida</groupId>
-				<artifactId>tomcat-filters</artifactId>
-				<version>1.0</version>
+				<version>1.0.1</version>
 			</dependency>
 
 			<dependency>
@@ -251,15 +292,33 @@
 			<dependency>
 				<groupId>gov.usgs.cida.jslibs</groupId>
 				<artifactId>bootstrojs</artifactId>
-				<version>2013.20.4-2</version>
+				<version>2013.20.4-3</version>
 				<type>war</type>
 			</dependency>
 			<dependency>
 				<groupId>gov.usgs.cida.jslibs</groupId>
 				<artifactId>log4js</artifactId>
-				<version>1.4.3-2</version>
+				<version>1.4.3-3</version>
 				<type>war</type>
 			</dependency>
+            <dependency>
+                <groupId>gov.usgs.cida.jslibs</groupId>
+                <artifactId>dygraphs-core</artifactId>
+                <version>20130314-2</version>
+                <type>war</type>
+            </dependency>
+            <dependency>
+                <groupId>gov.usgs.cida.jslibs</groupId>
+                <artifactId>jquery-fineuploader</artifactId>
+                <version>3.4.0-4</version>
+                <type>war</type>
+            </dependency>
+            <dependency>
+                <groupId>gov.usgs.cida.jslibs</groupId>
+                <artifactId>jquery-tablesorter</artifactId>
+                <version>2.7.6-2</version>
+                <type>war</type>
+            </dependency>
 			<dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>bootstrap</artifactId>
@@ -278,7 +337,7 @@
 			<dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>font-awesome</artifactId>
-				<version>3.0.2</version>
+				<version>3.1.1-1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
