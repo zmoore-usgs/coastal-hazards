@@ -231,11 +231,13 @@ CCH.Objects.UI = function(args) {
 							});
 
 							CCH.map.zoomToActiveLayers();
-
+							
+							me.slider('autoSlidePause');
 						},
 						'card-unpinned': function(evt) {
 							var card = evt.currentTarget;
 							var layers = CCH.map.getMap().getLayersByName(card.name);
+							
 							if (layers.length) {
 								layers.each(function(layer) {
 									CCH.map.getMap().removeLayer(layer, false);
@@ -243,6 +245,10 @@ CCH.Objects.UI = function(args) {
 							}
 							
 							CCH.map.zoomToActiveLayers();
+							
+							if (CCH.map.getMap().getLayersBy('isItemLayer', true).length === 0) {
+								me.slider('autoSlidePlay');
+							}
 						},
 						'card-button-tweet-clicked': function(evt) {
 							var card = evt.currentTarget;
