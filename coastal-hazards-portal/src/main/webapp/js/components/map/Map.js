@@ -2,7 +2,8 @@ CCH.Objects.Map = function(args) {
 	CCH.LOG.info('Map.js::constructor:Map class is initializing.');
 	var mapDivId = args.mapDiv;
 	var me = (this === window) ? {} : this;
-	var initialExtent = [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826];
+	me.initialExtent = [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826];
+
 
 	CCH.LOG.debug('Map.js::constructor:Loading Map object');
 	me.map = new OpenLayers.Map(mapDivId, {
@@ -133,8 +134,8 @@ CCH.Objects.Map = function(args) {
 //	]);
 //	me.map.addControl(panel);
 
-	CCH.LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
-	me.map.zoomToExtent(initialExtent, true);
+	CCH.LOG.debug('Map.js::constructor:Zooming to extent: ' + me.initialExtent);
+	me.map.zoomToExtent(me.initialExtent, true);
 
 //	var zoomControlDiv = me.map.getControlsByClass("OpenLayers.Control.Zoom")[0].div;
 //	var panelTop = zoomControlDiv.offsetTop + zoomControlDiv.offsetHeight + 40;
@@ -179,20 +180,13 @@ CCH.Objects.Map = function(args) {
 			var originalWidth = markerDiv.width();
 			markerDiv.addClass('marker-active');
 			markerDiv.on({
-				'mouseover' : function() {
+				'mouseover': function() {
 					$(this).addClass('marker-hover');
 				},
-				'mouseout' : function() {
+				'mouseout': function() {
 					$(this).removeClass('marker-hover');
 				}
 			});
-//			markerDiv.animate({
-//				height: originalHeight * 5,
-//				width: originalWidth * 5
-//			}, 1000).animate({
-//				height: originalHeight,
-//				width: originalWidth
-//			}, 1000);
 
 			// Fade older markers out
 			var markerCt = me.boxLayer.markers.length;
@@ -203,29 +197,45 @@ CCH.Objects.Map = function(args) {
 					'opacity': opacity
 				});
 			}
-			
+
 			return marker;
 		},
-        clearBoundingBoxMarkers: function() {
-            var markerCt = me.boxLayer.markers.length;
-            for (var mInd=markerCt; mInd>0; mInd--) {
-                me.boxLayer.removeMarker(me.boxLayer.markers[mInd-1]);
-            }
-        },
-        zoomToBoundingBox: function(args) {
-            args = args || {};
-            var bbox = args.bbox;
-            var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913")
-            var layerBounds = OpenLayers.Bounds.fromArray(bbox);
+		clearBoundingBoxMarkers: function() {
+			var markerCt = me.boxLayer.markers.length;
+			for (var mInd = markerCt; mInd > 0; mInd--) {
+				me.boxLayer.removeMarker(me.boxLayer.markers[mInd - 1]);
+			}
+		},
+		zoomToBoundingBox: function(args) {
+			args = args || {};
+			var bbox = args.bbox;
+			var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913");
+			var layerBounds = OpenLayers.Bounds.fromArray(bbox);
 			if (fromProjection) {
 				layerBounds.transform(new OpenLayers.Projection(fromProjection), new OpenLayers.Projection("EPSG:900913"));
 			}
-            me.map.zoomToExtent(layerBounds, false);
-        },
+			me.map.zoomToExtent(layerBounds, false);
+		},
+		zoomToActiveLayers: function() {
+			var activeLayers = me.map.getLayersBy('isItemLayer', true);
+			var bounds = null;
+			if (activeLayers.length) {
+				bounds = new OpenLayers.Bounds();
+				for (var lIdx = 0; lIdx < activeLayers.length; lIdx++) {
+					var activeLayer = activeLayers[lIdx];
+					var layerBounds = OpenLayers.Bounds.fromArray(activeLayer.bbox).transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection);
+					bounds.extend(layerBounds);
+				}
+			} else {
+				bounds = OpenLayers.Bounds.fromArray(me.initialExtent);
+			}
+
+			me.map.zoomToExtent(bounds, false);
+		},
 		updateFromSession: function() {
 			CCH.LOG.info('Map.js::updateFromSession()');
 			me.map.events.un({'moveend': me.moveendCallback});
-			var mapConfig = CONFIG.session.objects.map;
+			var mapConfig = CCH.session.objects.map;
 			this.getMap().setCenter([mapConfig.center.lon, mapConfig.center.lat]);
 			this.getMap().zoomToScale(mapConfig.scale);
 			me.map.events.on({'moveend': me.moveendCallback});
@@ -333,6 +343,47 @@ CCH.Objects.Map = function(args) {
 			layers.each(function(layer) {
 				me.map.removeLayer(layer, false);
 			});
+		},
+		displayData: function(args) {
+			// may want to do this first: CONFIG.map.removeLayersByName(me.visibleLayers);
+			var type = args.type;
+			var card = args.card;
+			if (me.map.getLayersByName(card.name).length !== -1) {
+				var layer = new OpenLayers.Layer.WMS(
+						card.name,
+						card.service.wms.endpoint,
+						{
+							layers: card.service.wms.layers,
+							format: 'image/png',
+							transparent: true
+						},
+				{
+					projection: 'EPSG:3857',
+					isBaseLayer: false,
+					displayInLayerSwitcher: false,
+					isItemLayer: true, // CCH specific setting
+					bbox: card.bbox
+				});
+
+				if (type === "vulnerability") {
+					// SLD will probably only work with one layer
+					// TODO - Fix with window.location.href but make sure actually works
+					layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + card.service.wms.layers + '/' + card.attr;
+					layer.params.STYLES = 'redwhite';
+				} else if (type === "historical" || type === "storms") {
+					layer.params.STYLES = 'line';
+				}
+
+				me.map.addLayer(layer);
+				layer.redraw(true);
+
+				CCH.session.objects.view.activeLayers.push = [{
+						title: card.name,
+						name: card.name,
+						layers: card.service.wms.layers,
+						type: type
+					}];
+			}
 		}
 	});
 };

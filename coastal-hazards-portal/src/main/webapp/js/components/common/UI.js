@@ -118,7 +118,8 @@ CCH.Objects.UI = function(args) {
 			});
 
 			var card = new CCH.Objects.Card({
-				item: item
+				item: item,
+				size: me.currentSizing
 			});
 
 			return card.create();
@@ -182,9 +183,6 @@ CCH.Objects.UI = function(args) {
 		createSlideshow: function(args) {
 			setTimeout(function(args) {
 				args = args || {};
-				var results = args.results || CCH.CONFIG.popularity.results.sortBy(function(result) {
-					return parseInt(result.hotness);
-				}, true);
 
 				$('#iosslider-container').iosSliderVertical('destroy');
 				$('#iosslider-container').iosSlider('destroy');
@@ -196,40 +194,66 @@ CCH.Objects.UI = function(args) {
 
 				$('#description-wrapper').append(sliderContainer);
 
+				var results = args.results || CCH.CONFIG.popularity.results.sortBy(function(result) {
+					return parseInt(result.hotness);
+				}, true);
+
 				results.each(function(result) {
-					var card = me.buildCard({
+					var cardContainer = me.buildCard({
 						'itemId': result.id
 					});
-					var slide = $('<div />').addClass('slide well well-small').append(card);
+
+					var slide = $('<div />').addClass('slide well well-small').append(cardContainer);
+
 					$('#iosslider-slider').append(slide);
-					
-					var cardObject = $(card.data('card'));
-					cardObject.on({
+
+					var card = $(cardContainer.data('card'))[0];
+					$(card).on({
 						'card-button-pin-clicked': function(evt) {
 							var card = evt.currentTarget;
 							me.slider('autoSlidePause');
+
+							var toggledOn = CCH.session.toggleId(card.item.id);
+							if (toggledOn) {
+								card.pin();
+							} else {
+								card.unpin();
+							}
+						},
+						'card-pinned': function(evt) {
+							var card = evt.currentTarget;
+
 							CCH.map.clearBoundingBoxMarkers();
-							CCH.map.zoomToBoundingBox({
-								"bbox": card.bbox,
-								"fromProjection": "EPSG:4326"
-							});
-							CCH.ows.displayData({
+
+							CCH.map.displayData({
 								"card": card,
 								"type": card.type
 							});
-							
-							var toggledOn = CCH.session.toggleId(card.item.id);
-							if (toggledOn) {
-								$(card.pinButton).addClass('slider-card-pinned');
-							} else {
-								$(card.pinButton).removeClass('slider-card-pinned');
-							}
+
+							CCH.map.zoomToActiveLayers();
+
 						},
-						'card-button-tweet-clicked' : function(evt) {
+						'card-unpinned': function(evt) {
+							var card = evt.currentTarget;
+							var layers = CCH.map.getMap().getLayersByName(card.name);
+							if (layers.length) {
+								layers.each(function(layer) {
+									CCH.map.getMap().removeLayer(layer, false);
+								});
+							}
+							
+							CCH.map.zoomToActiveLayers();
+						},
+						'card-button-tweet-clicked': function(evt) {
 							var card = evt.currentTarget;
 							me.slider('autoSlidePause');
 						}
 					});
+
+					if (CCH.session.objects.view.itemIds.indexOf(card.item.id) !== -1) {
+						card.pin();
+					}
+
 				});
 
 				var resizeVertical = function(event) {

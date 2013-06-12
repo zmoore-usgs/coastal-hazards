@@ -10,6 +10,8 @@ CCH.Objects.Card = function(args) {
 	me.attr = me.item.attr;
 	me.service = me.item.service;
 	me.htmlEntity = null;
+	me.size = args.size;
+	me.pinned = false;
 	me.pinButton = null;
 	me.tweetButton = null;
 
@@ -60,14 +62,33 @@ CCH.Objects.Card = function(args) {
 			descriptionRow.append($('<p />').addClass('slide-vertical-description unselectable').html(me.summary.medium));
 
 			me.container.append(titleRow, descriptionRow);
-			if (CCH.ui.currentSizing === 'large') {
+			if (me.size === 'large') {
 				me.container.addClass('description-container-large');
-			} else if (CCH.ui.currentSizing === 'small') {
+			} else if (me.size === 'small') {
 				me.container.addClass('description-container-small');
 			}
 
 			me.container.data('card', me);
+
 			return me.container;
+		},
+		getAllCards : function() {
+			var descriptionContainers = $('.description-container');
+			var cards = [];
+			for (var contIdx = 0;contIdx < descriptionContainers.length;contIdx++) {
+				cards.push($(descriptionContainers[contIdx]).data('card'));
+			}
+			return cards;
+		},
+		pin: function() {
+			me.pinButton.addClass('slider-card-pinned');
+			me.pinned = true;
+			$(me).trigger('card-pinned');
+		},
+		unpin: function() {
+			me.pinButton.removeClass('slider-card-pinned');
+			me.pinned = false;
+			$(me).trigger('card-unpinned');
 		}
 	});
 };
