@@ -45,9 +45,10 @@ img {
 	min-height : 100px;
 }
 
-.description-title-column > .description-title {
+.description-title {
 	font-size : 1.2em;
 	font-weight: bold;
+	text-align: center;
 }
 
 .description-container {
@@ -68,11 +69,16 @@ img {
 .slider-slide-inactive .description-container-vulnerability {
 	background-image : url("../images/cards/VulnerabilityInactive.svg");
 }
-.description-container-historical {
-	background-image : url("../images/cards/hourglass.svg");
+.slider-slide-active .description-container-historical {
+	background-image : url("../images/cards/HistoricalActive.svg");
+}
+.slider-slide-inactive .description-container-historical {
+	background-image : url("../images/cards/HistoricalInactive.svg");
 }
 
-
+.slider-card-pinned i {
+	color : #008F00; 
+}
 
 .marker-active {
 	border-color: #00CCFF !important;

@@ -58,5 +58,6 @@
 	.description-container-small i {
 		font-size: 0.65em;
 	}
+	
 
 </style>

@@ -1,5 +1,5 @@
-var UI = function(args) {
-	LOG.info('UI.js::constructor: UI class is initializing.');
+CCH.Objects.UI = function(args) {
+	CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 	var me = (this === window) ? {} : this;
 	me.spinner = args.spinner;
 	me.searchbar = args.searchbar;
@@ -9,12 +9,12 @@ var UI = function(args) {
 	me.minimumHeight = args.minimumHeight || 480;
 	me.previousWidth = $(window).width();
 	me.currentSizing = '';
-	LOG.debug('UI.js::constructor: UI class initialized.');
+	me.geocodeEndoint = args.geocodeEndpoint || 'http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find';
+	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
 		init: function() {
 			this.bindSearchInput();
 			this.bindWindowResize();
-			this.bindSubmenuButtons();
 
 			var currWidth = me.previousWidth;
 			if (currWidth <= me.magicResizeNumber) {
@@ -36,11 +36,11 @@ var UI = function(args) {
 
 				var updated = false;
 				if (me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) {
-					LOG.debug('resize-small');
+					CCH.LOG.debug('resize-small');
 					me.currentSizing = 'small';
 					updated = true;
 				} else if (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber) {
-					LOG.debug('resize-large');
+					CCH.LOG.debug('resize-large');
 					me.currentSizing = 'large';
 					updated = true;
 				}
@@ -75,61 +75,10 @@ var UI = function(args) {
 				}
 
 				if (updated) {
-					CONFIG.ui.createSlideshow();
+					me.createSlideshow();
 				}
 
 				me.previousWidth = currWidth;
-			});
-		},
-		popoverClickHandler: function(e) {
-			var container = $(this);
-			if (!CONFIG.popupHandling.isVisible) {
-				$(container).popover('show');
-				CONFIG.popupHandling.clickedAway = false;
-				CONFIG.popupHandling.isVisible = true;
-				e.preventDefault();
-			}
-		},
-		popoverShowHandler: function() {
-			var container = $(this);
-			var closePopovers = function(e) {
-				if (CONFIG.popupHandling.isVisible && CONFIG.popupHandling.clickedAway && !$(e.target.offsetParent).hasClass('popover')) {
-					$(document).off('click', closePopovers);
-					$(container).popover('hide');
-					CONFIG.popupHandling.isVisible = false;
-					CONFIG.popupHandling.clickedAway = false;
-				} else {
-					CONFIG.popupHandling.clickedAway = true;
-				}
-			};
-			$(document).off('click', closePopovers);
-			$(document).on('click', closePopovers);
-		},
-		bindSubmenuButtons: function() {
-			['storms', 'vulnerability'].each(function(item) {
-				$('#accordion-group-' + item + '-view').popover({
-					html: true,
-					placement: 'right',
-					trigger: 'manual',
-					title: 'View ' + item.capitalize(),
-					container: 'body',
-					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
-				}).on({
-					click: CONFIG.ui.popoverClickHandler,
-					shown: CONFIG.ui.popoverShowHandler
-				});
-
-				$('#accordion-group-' + item + '-learn').popover({
-					html: true,
-					placement: 'right',
-					trigger: 'manual',
-					title: 'Learn About ' + item.capitalize(),
-					container: 'body',
-					content: "<ul><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li><li>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem </li></ul>"
-				}).on({
-					click: CONFIG.ui.popoverClickHandler,
-					shown: CONFIG.ui.popoverShowHandler
-				});
 			});
 		},
 		bindSearchInput: function() {
@@ -138,7 +87,7 @@ var UI = function(args) {
 				if (query) {
 					$.ajax({
 						type: 'GET',
-						url: 'http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find',
+						url: me.geocodeEndoint,
 						data: {
 							text: query,
 							maxLocations: '20',
@@ -151,8 +100,7 @@ var UI = function(args) {
 						dataType: 'jsonp',
 						success: function(json) {
 							if (json.locations[0]) {
-
-								CONFIG.map.buildGeocodingPopup({
+								CCH.map.buildGeocodingPopup({
 									locations: json.locations
 								});
 
@@ -164,78 +112,17 @@ var UI = function(args) {
 
 			});
 		},
-		buildSlide: function(args) {
-			var itemId = args.itemId;
-			var item = CONFIG.popularity.getById({
-				'id': itemId
+		buildCard: function(args) {
+			var item = CCH.CONFIG.popularity.getById({
+				'id': args.itemId
 			});
 
-			if (item) {
-				var containerDiv = $('<div />').addClass('description-container container-fluid');
-				var toolbarRow = $('<div />').addClass('row-fluid description-button-row text-center');
-				var buttonToolbar = $('<div />').addClass('btn-toolbar');
-				var buttonGroup = $('<div />').addClass('btn-group');
-				var titleRow = $('<div />').addClass('description-title-row row-fluid');
-				var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
-				var info = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-zoom-in icon-zoom-in slide-button muted'));
-				var tweet = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-twitter icon-twitter slide-button muted'));
-				var pause = $('<button />').addClass('btn btn-pause-play').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-pause-play icon-pause slide-button muted'));
-				var back = $('<button />').addClass('btn').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-fast-backward icon-fast-backward slide-button muted'));
-				var buttons = [info, tweet, pause, back];
+			var card = new CCH.Objects.Card({
+				item: item,
+				size: me.currentSizing
+			});
 
-				buttons.each(function(btn) {
-					$(btn).on('mouseover', function() {
-						$(this).find('i').removeClass('muted');
-					});
-					$(btn).on('mouseout', function() {
-						$(this).find('i').addClass('muted');
-					});
-				});
-                info.on({
-                    'click': function(evt) {
-                        CONFIG.ui.slider('autoSlidePause');
-                        CONFIG.map.clearBoundingBoxMarkers();
-                        CONFIG.map.zoomToBoundingBox({
-                            "bbox": item.bbox,
-                            "fromProjection": "EPSG:4326"
-                        });
-                        CONFIG.ows.displayData({
-                            "item": item,
-                            "type": item.type
-                        });
-                    }
-                });
-
-				containerDiv.append(toolbarRow);
-				toolbarRow.append(buttonToolbar);
-				buttonToolbar.append(buttonGroup);
-				buttonGroup.append(buttons);
-
-				var imageColumn = $('<div />').addClass('description-image-column span1 hidden-phone');
-				if (item.type === 'storms') {
-					containerDiv.addClass('description-container-storms');
-				} else if (item.type === 'vulnerability') {
-					containerDiv.addClass('description-container-vulnerability');
-				} else {
-					containerDiv.addClass('description-container-historical');
-				}
-				
-				var titleColumn = $('<div />').addClass('description-title-column').append($('<p />').addClass('description-title').html(item.name));
-
-				titleRow.append(titleColumn);
-
-                // TODO description should come from summary service (URL in item)
-				descriptionRow.append($('<p />').addClass('slide-vertical-description unselectable').html(item.summary.medium));
-
-				containerDiv.append(titleRow, descriptionRow);
-				if (CONFIG.ui.currentSizing === 'large') {
-					containerDiv.addClass('description-container-large');
-				} else if (CONFIG.ui.currentSizing === 'small') {
-					containerDiv.addClass('description-container-small');
-				}
-			}
-			containerDiv.data('popItem', item);
-			return containerDiv;
+			return card.create();
 		},
 		bindShareMenu: function(args) {
 			var menuItem = args.menuItem;
@@ -247,9 +134,9 @@ var UI = function(args) {
 				container: 'body',
 				content: "<div class='container-fluid' id='prepare-container'><div>Preparing session export...</div></div>"
 			}).on({
-				'click': CONFIG.ui.popoverClickHandler,
+				'click': me.popoverClickHandler,
 				'shown': function() {
-					CONFIG.session.getMinifiedEndpoint({
+					CCH.session.getMinifiedEndpoint({
 						callbacks: [
 							function(args) {
 								var response = args.response;
@@ -265,7 +152,7 @@ var UI = function(args) {
 
 								var goUsaResponse = JSON.parse(response.response);
 								if (goUsaResponse.response.statusCode && goUsaResponse.response.statusCode.toLowerCase() === 'error') {
-									LOG.warn(response.response);
+									CCH.LOG.warn(response.response);
 								} else {
 									url = goUsaResponse.response.data.entry[0].short_url;
 								}
@@ -273,7 +160,7 @@ var UI = function(args) {
 							}
 						]
 					});
-					CONFIG.ui.popoverShowHandler.call(this);
+					CCH.CONFIG.ui.popoverShowHandler.call(this);
 				}
 			});
 		},
@@ -286,9 +173,9 @@ var UI = function(args) {
 		slider: function() {
 			var iosslider = $('#iosslider-container');
 			var sliderFunct;
-			if (CONFIG.ui.currentSizing === 'large') {
+			if (me.currentSizing === 'large') {
 				sliderFunct = iosslider.iosSliderVertical;
-			} else if (CONFIG.ui.currentSizing === 'small') {
+			} else if (me.currentSizing === 'small') {
 				sliderFunct = iosslider.iosSlider;
 			}
 			return sliderFunct.apply(iosslider, arguments);
@@ -296,9 +183,6 @@ var UI = function(args) {
 		createSlideshow: function(args) {
 			setTimeout(function(args) {
 				args = args || {};
-				var results = args.results || CONFIG.popularity.results.sortBy(function(result) {
-					return parseInt(result.hotness);
-				}, true);
 
 				$('#iosslider-container').iosSliderVertical('destroy');
 				$('#iosslider-container').iosSlider('destroy');
@@ -310,15 +194,74 @@ var UI = function(args) {
 
 				$('#description-wrapper').append(sliderContainer);
 
+				var results = args.results || CCH.CONFIG.popularity.results.sortBy(function(result) {
+					return parseInt(result.hotness);
+				}, true);
+
 				results.each(function(result) {
-					var item = CONFIG.ui.buildSlide({
+					var cardContainer = me.buildCard({
 						'itemId': result.id
 					});
 
-					var slide = $('<div />').addClass('slide well well-small').append(item);
+					var slide = $('<div />').addClass('slide well well-small').append(cardContainer);
+
 					$('#iosslider-slider').append(slide);
+
+					var card = $(cardContainer.data('card'))[0];
+					$(card).on({
+						'card-button-pin-clicked': function(evt) {
+							var card = evt.currentTarget;
+							me.slider('autoSlidePause');
+
+							var toggledOn = CCH.session.toggleId(card.item.id);
+							if (toggledOn) {
+								card.pin();
+							} else {
+								card.unpin();
+							}
+						},
+						'card-pinned': function(evt) {
+							var card = evt.currentTarget;
+
+							CCH.map.clearBoundingBoxMarkers();
+
+							CCH.map.displayData({
+								"card": card,
+								"type": card.type
+							});
+
+							CCH.map.zoomToActiveLayers();
+							
+							me.slider('autoSlidePause');
+						},
+						'card-unpinned': function(evt) {
+							var card = evt.currentTarget;
+							var layers = CCH.map.getMap().getLayersByName(card.name);
+							
+							if (layers.length) {
+								layers.each(function(layer) {
+									CCH.map.getMap().removeLayer(layer, false);
+								});
+							}
+							
+							CCH.map.zoomToActiveLayers();
+							
+							if (CCH.map.getMap().getLayersBy('isItemLayer', true).length === 0) {
+								me.slider('autoSlidePlay');
+							}
+						},
+						'card-button-tweet-clicked': function(evt) {
+							var card = evt.currentTarget;
+							me.slider('autoSlidePause');
+						}
+					});
+
+					if (CCH.session.objects.view.itemIds.indexOf(card.item.id) !== -1) {
+						card.pin();
+					}
+
 				});
-				
+
 				var resizeVertical = function(event) {
 					toggleClassForActiveSlide(event);
 
@@ -330,12 +273,11 @@ var UI = function(args) {
 					});
 
 					$('.slide').each(function(index, slide) {
-						var buttons = $(slide).find('.description-button-row');
 						var title = $(slide).find('.description-title-row');
 						var descr = $(slide).find('.description-description-row');
 						var descrDiv = $(descr).find('p');
 
-						var slideHeight = buttons.height() + title.height() + descrDiv.height();
+						var slideHeight = title.height() + descrDiv.height();
 						if (slideHeight > (event.sliderContainerObject.height() - 10)) {
 							slideHeight = event.sliderContainerObject.height() - 10;
 						}
@@ -345,7 +287,7 @@ var UI = function(args) {
 						});
 
 						descr.css({
-							'height': slideHeight - buttons.height() - title.height() + 'px'
+							'height': slideHeight - title.height() + 'px'
 						});
 
 						descrDiv.css({
@@ -353,7 +295,7 @@ var UI = function(args) {
 						});
 					});
 				};
-				
+
 				var resizeHorizontal = function(event) {
 					toggleClassForActiveSlide(event);
 					var container = $(event.sliderContainerObject).parent();
@@ -361,11 +303,10 @@ var UI = function(args) {
 					event.sliderObject.css('height', (container.height()) + 'px');
 
 					$('.slide').each(function(index, slide) {
-						var buttons = $(slide).find('.description-button-row');
 						var title = $(slide).find('.description-title-row');
 						var descr = $(slide).find('.description-description-row');
 						var descrDiv = $(descr).find('p');
-						
+
 						var slideHeight = event.sliderContainerObject.height() - 10;
 
 						$(slide).css({
@@ -373,7 +314,7 @@ var UI = function(args) {
 						});
 
 						descr.css({
-							'height': slideHeight - buttons.height() - title.height() + 'px'
+							'height': slideHeight - title.height() + 'px'
 						});
 
 						descrDiv.css({
@@ -392,14 +333,14 @@ var UI = function(args) {
 					event.currentSlideObject.addClass('slider-slide-active');
 
 
-					CONFIG.map.boxLayer.markers.each(function(mrk) {
+					CCH.map.boxLayer.markers.each(function(mrk) {
 						$(mrk.div).removeClass('marker-active');
 						$(mrk.div).addClass('marker-inactive');
 					});
-                    
-                    var item = $(event.currentSlideObject[0].firstChild).data('popItem');
-                    var marker = CONFIG.map.addBoundingBoxMarker({
-						bbox: item.bbox,
+
+					var card = $(event.currentSlideObject[0].firstChild).data('card');
+					var marker = CCH.map.addBoundingBoxMarker({
+						bbox: card.bbox,
 						fromProjection: 'EPSG:4326'
 					});
 
@@ -408,31 +349,20 @@ var UI = function(args) {
 						click: function(evt) {
 							var target = $(evt.target);
 							var slideOrder = target.data('slideOrder');
-							CONFIG.ui.slider('goToSlide', slideOrder);
-							CONFIG.ui.slider('autoSlidePause');
+							me.slider('goToSlide', slideOrder);
+							me.slider('autoSlidePause');
 							$('.slide-menu-icon-pause-play').removeClass('icon-pause').addClass('icon-play').parent().on({
 								'click': function(evt) {
-									CONFIG.ui.slider('autoSlidePlay');
+									CCH.CONFIG.ui.slider('autoSlidePlay');
 									$('.slide-menu-icon-pause-play').removeClass('icon-play').addClass('icon-pause');
 								}
 							});
 
-						}
-					});
-					$('.slide-menu-icon-pause-play').parent().on({
-						'click': function(evt) {
-							CONFIG.ui.slider('autoSlidePause');
-							$('.slide-menu-icon-pause-play').removeClass('icon-pause').addClass('icon-play').parent().on({
-								'click': function(evt) {
-									CONFIG.ui.slider('autoSlidePlay');
-									$('.slide-menu-icon-pause-play').removeClass('icon-play').addClass('icon-pause');
-								}
-							});
 						}
 					});
 				};
 
-				if (CONFIG.ui.currentSizing === 'large') {
+				if (me.currentSizing === 'large') {
 					sliderContainer.iosSliderVertical({
 						desktopClickDrag: true,
 						snapToChildren: true,
@@ -445,7 +375,7 @@ var UI = function(args) {
 						onSliderResize: resizeVertical,
 						onSlideChange: toggleClassForActiveSlide
 					});
-				} else if (CONFIG.ui.currentSizing === 'small') {
+				} else if (me.currentSizing === 'small') {
 					sliderContainer.iosSlider({
 						desktopClickDrag: true,
 						snapToChildren: true,
@@ -462,7 +392,7 @@ var UI = function(args) {
 
 				var orientationChange = function(event) {
 					event.preventDefault();
-					CONFIG.ui.createSlideshow();
+					me.createSlideshow();
 				};
 
 				$(window).off('orientationchange', orientationChange);

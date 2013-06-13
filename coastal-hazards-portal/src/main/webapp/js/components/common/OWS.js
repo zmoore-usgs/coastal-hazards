@@ -1,16 +1,15 @@
-var OWS = function() {
-	LOG.info('OWS.js::constructor: OWS class is initializing.');
+CCH.Objects.OWS = function() {
+	CCH.LOG.info('OWS.js::constructor: OWS class is initializing.');
 	var me = (this === window) ? {} : this;
-    me.visibleLayers = [];
 	
 	me.servers = {
 		'cida-geoserver': {
 			endpoints: {
-				endpoint: CONFIG.data.sources['cida-geoserver'].endpoint,
-				proxy: CONFIG.data.sources['cida-geoserver'].proxy,
-				wmsGetCapsUrl: CONFIG.data.sources['cida-geoserver'].proxy + 'ows?service=wms&version=1.3.0&request=GetCapabilities',
-				wfsGetCapsUrl: CONFIG.data.sources['cida-geoserver'].proxy + 'ows?service=wfs&version=1.1.0&request=GetCapabilities',
-				wfsGetFeatureUrl: CONFIG.data.sources['cida-geoserver'].proxy + 'ows?service=wfs&version=1.0.0&request=GetFeature'
+				endpoint: CCH.CONFIG.data.sources['cida-geoserver'].endpoint,
+				proxy: CCH.CONFIG.data.sources['cida-geoserver'].proxy,
+				wmsGetCapsUrl: CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?service=wms&version=1.3.0&request=GetCapabilities',
+				wfsGetCapsUrl: CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?service=wfs&version=1.1.0&request=GetCapabilities',
+				wfsGetFeatureUrl: CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?service=wfs&version=1.0.0&request=GetFeature'
 			},
 			data: {
 				wms: {
@@ -29,10 +28,10 @@ var OWS = function() {
 		},
 		'stpete-arcserver-vulnerability-se-erosion': {
 			endpoints: {
-				endpoint: CONFIG.data.sources['stpete-arcserver'].endpoint,
-				proxy: CONFIG.data.sources['stpete-arcserver'].proxy,
-				wmsGetCapsUrl: CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_erosion_hazards/MapServer/WMSServer?request=GetCapabilities&version=1.3.0&service=WMS',
-				wmsGetImageUrl : CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_erosion_hazards/MapServer/WMSServer?'
+				endpoint: CCH.CONFIG.data.sources['stpete-arcserver'].endpoint,
+				proxy: CCH.CONFIG.data.sources['stpete-arcserver'].proxy,
+				wmsGetCapsUrl: CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_erosion_hazards/MapServer/WMSServer?request=GetCapabilities&version=1.3.0&service=WMS',
+				wmsGetImageUrl : CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_erosion_hazards/MapServer/WMSServer?'
 			},
 			data: {
 				wms: {
@@ -51,9 +50,9 @@ var OWS = function() {
 		},
 		'stpete-arcserver-vulnerability-se-dune': {
 			endpoints: {
-				endpoint: CONFIG.data.sources['stpete-arcserver'].endpoint,
-				proxy: CONFIG.data.sources['stpete-arcserver'].proxy,
-				wmsGetCapsUrl: CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_dune_vulnerability/MapServer/WMSServer?request=GetCapabilities&service=WMS'
+				endpoint: CCH.CONFIG.data.sources['stpete-arcserver'].endpoint,
+				proxy: CCH.CONFIG.data.sources['stpete-arcserver'].proxy,
+				wmsGetCapsUrl: CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_dune_vulnerability/MapServer/WMSServer?request=GetCapabilities&service=WMS'
 			},
 			data: {
 				wms: {
@@ -71,7 +70,7 @@ var OWS = function() {
 			}
 		}
 	};
-	LOG.debug('OWS.js::constructor: OWS class initialized.');
+	CCH.LOG.debug('OWS.js::constructor: OWS class initialized.');
 	return $.extend(me, {
 		getWMSCapabilities: function(args) {
 			var callbacks = args.callbacks || {};
@@ -81,7 +80,7 @@ var OWS = function() {
 			var namespace = args.namespace || 'ows';
 			var url = me.servers[server].endpoints.wmsGetCapsUrl;
 
-			LOG.debug('OWS.js::getWMSCapabilities: A request is being made for WMS GetCapabilities for the namespace: ' + namespace);
+			CCH.LOG.debug('OWS.js::getWMSCapabilities: A request is being made for WMS GetCapabilities for the namespace: ' + namespace);
 			$.ajax(url, {
 				context: args,
 				success: function(data, textStatus, jqXHR) {
@@ -116,8 +115,8 @@ var OWS = function() {
 			});
 		},
 		getFilteredFeature: function(args) {
-			LOG.info('OWS.js::getFilteredFeature');
-			LOG.debug('OWS.js::getFilteredFeature: Building request for WFS GetFeature (filtered)');
+			CCH.LOG.info('OWS.js::getFilteredFeature');
+			CCH.LOG.debug('OWS.js::getFilteredFeature: Building request for WFS GetFeature (filtered)');
 			var layerName = args.layerName;
 			var layerPrefix = layerName.split(':')[0];
 			var layerTitle = layerName.split(':')[1];
@@ -131,65 +130,27 @@ var OWS = function() {
 			$.ajax(url, {
 				context: scope || this,
 				success: function(data, textStatus, jqXHR) {
-					LOG.trace('OWS.js::getFilteredFeature: Successfully received WFS GetFeature response.');
+					CCH.LOG.trace('OWS.js::getFilteredFeature: Successfully received WFS GetFeature response.');
 					var gmlReader = new OpenLayers.Format.GML.v3();
 					var getFeatureResponse = gmlReader.read(data);
-					LOG.debug('OWS.js::getFilteredFeature: WFS GetFeature parsed .');
+					CCH.LOG.debug('OWS.js::getFilteredFeature: WFS GetFeature parsed .');
 					if (!me.featureTypeDescription[layerPrefix]) {
 						me.featureTypeDescription[layerPrefix] = Object.extended();
 					}
 					me.featureTypeDescription[layerPrefix][layerTitle] = getFeatureResponse;
 
-					LOG.trace('OWS.js::getFilteredFeature: Executing ' + callbacks.success + 'callbacks');
+					CCH.LOG.trace('OWS.js::getFilteredFeature: Executing ' + callbacks.success + 'callbacks');
 					$(callbacks.success || []).each(function(index, callback, allCallbacks) {
-						LOG.trace('OWS.js::getFilteredFeature: Executing callback ' + index);
+						CCH.LOG.trace('OWS.js::getFilteredFeature: Executing callback ' + index);
 						callback(getFeatureResponse, this);
-					})
+					});
 				},
 				error: function(data, textStatus, jqXHR) {
 					$(callbacks.error || []).each(function(index, callback, allCallbacks) {
 						callback(data, this);
-					})
+					});
 				}
-			})
-		},
-        displayData: function(args) {
-            // may want to do this first: CONFIG.map.removeLayersByName(me.visibleLayers);
-			var item = args.item;
-            var type = args.type;
-			if (item) {
-				var layer = new OpenLayers.Layer.WMS(
-						item.name,
-                        item.service.wms.endpoint,
-						{
-							layers: item.service.wms.layers,
-							format: 'image/png',
-							transparent: true
-						},
-				{
-					projection: 'EPSG:3857',
-					isBaseLayer: false,
-					displayInLayerSwitcher: false
-
-				});
-                
-                if (type === "vulnerability") {
-                    layer.params.STYLES = 'redwhite';
-                    // SLD will probably only work with one layer
-                    // also TODO: figure out best way to get public mapping (context.xml or document.location ??
-                    layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/rest/sld/redwhite/' + item.service.wms.layers + '/' + item.attr;
-                } else {
-                    layer.params.STYLES = 'line';
-                }
-                
-				CONFIG.map.getMap().addLayer(layer);
-				layer.redraw(true);
-
-				CONFIG.session.objects.view.storms.activeLayers = [{title: item.name, name: item.name, layers: item.service.wms.layers}];
-				if (me.visibleLayers.indexOf(layer) === -1) {
-					me.visibleLayers.push(layer);
-				}
-			}
+			});
 		}
 	});
 };

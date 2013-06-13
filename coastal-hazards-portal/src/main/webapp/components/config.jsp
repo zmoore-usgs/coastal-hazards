@@ -18,7 +18,7 @@
 %>
 <script type="text/javascript">
 	splashUpdate("Setting configuration...");
-	var CONFIG = {
+	CCH.CONFIG = {
 		development: <%= development%>,
 		ajaxTimeout: 300000,
 		popupHandling: {

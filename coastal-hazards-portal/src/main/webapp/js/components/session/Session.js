@@ -1,11 +1,12 @@
-var Session = function(args) {
-	LOG.info('Session.js::constructor: Session class is initializing.');
+CCH.Objects.Session = function(args) {
+	CCH.LOG.info('Session.js::constructor: Session class is initializing.');
 	var me = (this === window) ? {} : this;
 	args = args ? args : {};
 
 	me.objects = {
 		view: {
-			itemIds : []
+			itemIds: [],
+			activeLayers: []
 		},
 		map: {
 			baselayer: 'Not Yet Initialized',
@@ -36,7 +37,7 @@ var Session = function(args) {
 			var callbacks = args.callbacks || {};
 			var successCallbacks = callbacks.success || [];
 			var errorCallbacks = callbacks.error || [];
-			LOG.info("Will try to load session '" + sid + "' from server");
+			CCH.LOG.info("Will try to load session '" + sid + "' from server");
 			me.getSession({
 				sid: sid,
 				callbacks: {
@@ -44,10 +45,10 @@ var Session = function(args) {
 						// Update the session from the server
 						function(session) {
 							if (session) {
-								LOG.info("Session found on server. Updating current session.");
+								CCH.LOG.info("Session found on server. Updating current session.");
 								$.extend(true, me.objects, JSON.parse(session).objects);
 							} else {
-								LOG.info("Session not found on server.");
+								CCH.LOG.info("Session not found on server.");
 							}
 						}
 					].union(successCallbacks),
@@ -157,6 +158,23 @@ var Session = function(args) {
 				sid = sidItem.substr(4);
 			}
 			return sid;
+		},
+		toggleId: function(id) {
+			var itemIds = me.objects.view.itemIds;
+			var currIdIdx = itemIds.indexOf(id);
+			var toggleOn = currIdIdx === -1;
+
+			if (toggleOn) {
+				itemIds.push(id);
+			} else {
+				itemIds.removeAt(currIdIdx);
+			}
+
+			$(me).trigger('session-id-toggled', {
+				'on': toggleOn
+			});
+
+			return toggleOn;
 		}
 	});
 };

@@ -1,16 +1,17 @@
-var Map = function(args) {
-	LOG.info('Map.js::constructor:Map class is initializing.');
+CCH.Objects.Map = function(args) {
+	CCH.LOG.info('Map.js::constructor:Map class is initializing.');
 	var mapDivId = args.mapDiv;
 	var me = (this === window) ? {} : this;
-	var initialExtent = [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826];
+	me.initialExtent = [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826];
 
-	LOG.debug('Map.js::constructor:Loading Map object');
+
+	CCH.LOG.debug('Map.js::constructor:Loading Map object');
 	me.map = new OpenLayers.Map(mapDivId, {
 		projection: "EPSG:900913",
 		displayProjection: new OpenLayers.Projection("EPSG:900913")
 	});
 
-	LOG.debug('Map.js::constructor:Creating base layers');
+	CCH.LOG.debug('Map.js::constructor:Creating base layers');
 	me.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
 			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
 			{
@@ -74,34 +75,10 @@ var Map = function(args) {
 				wrapDateLine: true
 			}
 	));
-//	me.map.addLayer(new OpenLayers.Layer.ArcGIS93Rest("Boundaries",
-//			"http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer/export",
-//			{
-//				layers: '0',
-//				numZoomLevels: 13,
-//				transparent: true,
-//				displayInLayerSwitcher: true
-//			}, {
-//		visibility: false,
-//		isBaseLayer: false
-//	}
-//	));
-//	me.map.addLayer(new OpenLayers.Layer.ArcGIS93Rest("World Reference",
-//			"http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer/export",
-//			{
-//				layers: '0',
-//				numZoomLevels: 14,
-//				transparent: true,
-//				displayInLayerSwitcher: true
-//			}, {
-//		visibility: false,
-//		isBaseLayer: false
-//	}
-//	));
 
 	me.moveendCallback = function(evt) {
 		var map = evt.object;
-		var sMap = CONFIG.session.getMap();
+		var sMap = CCH.session.getMap();
 
 		sMap.baselayer = map.baseLayer.name;
 		sMap.center = {
@@ -120,7 +97,7 @@ var Map = function(args) {
 	});
 
 
-	LOG.debug('Map.js::constructor:Creating base layer');
+	CCH.LOG.debug('Map.js::constructor:Creating base layer');
 	me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
 			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
 			{
@@ -141,7 +118,7 @@ var Map = function(args) {
 	});
 	me.map.addLayer(me.boxLayer);
 
-	LOG.debug('Map.js::constructor:Adding ontrols to map');
+	CCH.LOG.debug('Map.js::constructor:Adding ontrols to map');
 	me.map.addControl(new OpenLayers.Control.MousePosition());
 	me.map.addControl(new OpenLayers.Control.ScaleLine({
 		geodesic: true
@@ -157,14 +134,14 @@ var Map = function(args) {
 //	]);
 //	me.map.addControl(panel);
 
-	LOG.debug('Map.js::constructor:Zooming to extent: ' + initialExtent);
-	me.map.zoomToExtent(initialExtent, true);
+	CCH.LOG.debug('Map.js::constructor:Zooming to extent: ' + me.initialExtent);
+	me.map.zoomToExtent(me.initialExtent, true);
 
 //	var zoomControlDiv = me.map.getControlsByClass("OpenLayers.Control.Zoom")[0].div;
 //	var panelTop = zoomControlDiv.offsetTop + zoomControlDiv.offsetHeight + 40;
 //	$('#ol-custom-panel').css('top', panelTop);
 
-	LOG.debug('Map.js::constructor: Map class initialized.');
+	CCH.LOG.debug('Map.js::constructor: Map class initialized.');
 	return $.extend(me, {
 		getMap: function() {
 			return me.map;
@@ -203,20 +180,13 @@ var Map = function(args) {
 			var originalWidth = markerDiv.width();
 			markerDiv.addClass('marker-active');
 			markerDiv.on({
-				'mouseover' : function() {
+				'mouseover': function() {
 					$(this).addClass('marker-hover');
 				},
-				'mouseout' : function() {
+				'mouseout': function() {
 					$(this).removeClass('marker-hover');
 				}
 			});
-//			markerDiv.animate({
-//				height: originalHeight * 5,
-//				width: originalWidth * 5
-//			}, 1000).animate({
-//				height: originalHeight,
-//				width: originalWidth
-//			}, 1000);
 
 			// Fade older markers out
 			var markerCt = me.boxLayer.markers.length;
@@ -227,29 +197,45 @@ var Map = function(args) {
 					'opacity': opacity
 				});
 			}
-			
+
 			return marker;
 		},
-        clearBoundingBoxMarkers: function() {
-            var markerCt = me.boxLayer.markers.length;
-            for (var mInd=markerCt; mInd>0; mInd--) {
-                me.boxLayer.removeMarker(me.boxLayer.markers[mInd-1]);
-            }
-        },
-        zoomToBoundingBox: function(args) {
-            args = args || {};
-            var bbox = args.bbox;
-            var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913")
-            var layerBounds = OpenLayers.Bounds.fromArray(bbox);
+		clearBoundingBoxMarkers: function() {
+			var markerCt = me.boxLayer.markers.length;
+			for (var mInd = markerCt; mInd > 0; mInd--) {
+				me.boxLayer.removeMarker(me.boxLayer.markers[mInd - 1]);
+			}
+		},
+		zoomToBoundingBox: function(args) {
+			args = args || {};
+			var bbox = args.bbox;
+			var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913");
+			var layerBounds = OpenLayers.Bounds.fromArray(bbox);
 			if (fromProjection) {
 				layerBounds.transform(new OpenLayers.Projection(fromProjection), new OpenLayers.Projection("EPSG:900913"));
 			}
-            me.map.zoomToExtent(layerBounds, false);
-        },
+			me.map.zoomToExtent(layerBounds, false);
+		},
+		zoomToActiveLayers: function() {
+			var activeLayers = me.map.getLayersBy('isItemLayer', true);
+			var bounds = null;
+			if (activeLayers.length) {
+				bounds = new OpenLayers.Bounds();
+				for (var lIdx = 0; lIdx < activeLayers.length; lIdx++) {
+					var activeLayer = activeLayers[lIdx];
+					var layerBounds = OpenLayers.Bounds.fromArray(activeLayer.bbox).transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection);
+					bounds.extend(layerBounds);
+				}
+			} else {
+				bounds = OpenLayers.Bounds.fromArray(me.initialExtent);
+			}
+
+			me.map.zoomToExtent(bounds, false);
+		},
 		updateFromSession: function() {
-			LOG.info('Map.js::updateFromSession()');
+			CCH.LOG.info('Map.js::updateFromSession()');
 			me.map.events.un({'moveend': me.moveendCallback});
-			var mapConfig = CONFIG.session.objects.map;
+			var mapConfig = CCH.session.objects.map;
 			this.getMap().setCenter([mapConfig.center.lon, mapConfig.center.lat]);
 			this.getMap().zoomToScale(mapConfig.scale);
 			me.map.events.on({'moveend': me.moveendCallback});
@@ -352,11 +338,52 @@ var Map = function(args) {
 		 * @returns {undefined}
 		 */
 		removeLayersByName: function(featureName) {
-			LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + featureName);
+			CCH.LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + featureName);
 			var layers = me.map.getLayersByName(featureName) || [];
 			layers.each(function(layer) {
 				me.map.removeLayer(layer, false);
 			});
+		},
+		displayData: function(args) {
+			// may want to do this first: CONFIG.map.removeLayersByName(me.visibleLayers);
+			var type = args.type;
+			var card = args.card;
+			if (me.map.getLayersByName(card.name).length !== -1) {
+				var layer = new OpenLayers.Layer.WMS(
+						card.name,
+						card.service.wms.endpoint,
+						{
+							layers: card.service.wms.layers,
+							format: 'image/png',
+							transparent: true
+						},
+				{
+					projection: 'EPSG:3857',
+					isBaseLayer: false,
+					displayInLayerSwitcher: false,
+					isItemLayer: true, // CCH specific setting
+					bbox: card.bbox
+				});
+
+				if (type === "vulnerability") {
+					// SLD will probably only work with one layer
+					// TODO - Fix with window.location.href but make sure actually works
+					layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + card.service.wms.layers + '/' + card.attr;
+					layer.params.STYLES = 'redwhite';
+				} else if (type === "historical" || type === "storms") {
+					layer.params.STYLES = 'line';
+				}
+
+				me.map.addLayer(layer);
+				layer.redraw(true);
+
+				CCH.session.objects.view.activeLayers.push = [{
+						title: card.name,
+						name: card.name,
+						layers: card.service.wms.layers,
+						type: type
+					}];
+			}
 		}
 	});
 };
