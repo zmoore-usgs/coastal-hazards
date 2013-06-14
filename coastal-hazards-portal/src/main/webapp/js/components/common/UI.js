@@ -293,8 +293,7 @@ CCH.Objects.UI = function(args) {
 							CCH.map.clearBoundingBoxMarkers();
 
 							CCH.map.displayData({
-								"card": card,
-								"type": card.type
+								"card": card
 							});
 
 							CCH.map.zoomToActiveLayers();
@@ -406,26 +405,10 @@ CCH.Objects.UI = function(args) {
 					});
 
 					var card = $(event.currentSlideObject[0].firstChild).data('card');
-					var marker = CCH.map.addBoundingBoxMarker({
+					CCH.map.addBoundingBoxMarker({
 						bbox: card.bbox,
-						fromProjection: 'EPSG:4326'
-					});
-
-					$(marker.div).data('slideOrder', event.currentSlideNumber);
-					$(marker.div).on({
-						click: function(evt) {
-							var target = $(evt.target);
-							var slideOrder = target.data('slideOrder');
-							me.slider('goToSlide', slideOrder);
-							me.slider('autoSlidePause');
-							$('.slide-menu-icon-pause-play').removeClass('icon-pause').addClass('icon-play').parent().on({
-								'click': function(evt) {
-									CCH.CONFIG.ui.slider('autoSlidePlay');
-									$('.slide-menu-icon-pause-play').removeClass('icon-play').addClass('icon-pause');
-								}
-							});
-
-						}
+						fromProjection: 'EPSG:4326',
+						slideOrder : event.currentSlideNumber
 					});
 				};
 

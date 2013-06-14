@@ -89,13 +89,6 @@ CCH.Objects.Map = function(args) {
 		sMap.extent = map.getExtent().toArray();
 	};
 
-	me.map.events.on({
-		'moveend': me.moveendCallback,
-		'changelayer': function() {
-
-		}
-	});
-
 
 	CCH.LOG.debug('Map.js::constructor:Creating base layer');
 	me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
@@ -141,6 +134,16 @@ CCH.Objects.Map = function(args) {
 //	var panelTop = zoomControlDiv.offsetTop + zoomControlDiv.offsetHeight + 40;
 //	$('#ol-custom-panel').css('top', panelTop);
 
+	me.map.events.on({
+		'moveend': me.moveendCallback,
+		'addlayer': function() {
+			while (me.boxLayer !== me.map.layers[me.map.layers.length - 1]) {
+				me.map.raiseLayer(me.boxLayer, 1);
+			}
+			;
+		}
+	});
+
 	CCH.LOG.debug('Map.js::constructor: Map class initialized.');
 	return $.extend(me, {
 		getMap: function() {
@@ -157,6 +160,8 @@ CCH.Objects.Map = function(args) {
 			var bbox = args.bbox;
 			var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913");
 			var layerBounds = OpenLayers.Bounds.fromArray(bbox);
+			var slideOrder = args.slideOrder;
+
 			if (fromProjection) {
 				layerBounds.transform(new OpenLayers.Projection(fromProjection), new OpenLayers.Projection("EPSG:900913"));
 			}
@@ -176,8 +181,6 @@ CCH.Objects.Map = function(args) {
 
 			// Alter the marker visually 
 			var markerDiv = $(marker.div);
-			var originalHeight = markerDiv.height();
-			var originalWidth = markerDiv.width();
 			markerDiv.addClass('marker-active');
 			markerDiv.on({
 				'mouseover': function() {
@@ -197,6 +200,30 @@ CCH.Objects.Map = function(args) {
 					'opacity': opacity
 				});
 			}
+
+			markerDiv.data('slideOrder', slideOrder);
+			markerDiv.data('bounds', layerBounds);
+			markerDiv.on({
+				click: function(evt) {
+					var target = $(evt.target);
+					var slideOrder = target.data('slideOrder');
+					var bbox = target.data('bounds');
+
+					CCH.ui.slider('goToSlide', slideOrder);
+					CCH.ui.slider('autoSlidePause');
+
+					me.clearBoundingBoxMarkers();
+
+					var card = $('.slide:nth-child(' + slideOrder + ') .description-container').data('card');
+					var isPinned = card.pinned;
+
+					if (!isPinned) {
+						card.pinButton.trigger('click');
+					} else {
+						me.map.zoomToExtent(bbox);
+					}
+				}
+			});
 
 			return marker;
 		},
@@ -346,8 +373,8 @@ CCH.Objects.Map = function(args) {
 		},
 		displayData: function(args) {
 			// may want to do this first: CONFIG.map.removeLayersByName(me.visibleLayers);
-			var type = args.type;
 			var card = args.card;
+			var type = card.type;
 			if (me.map.getLayersByName(card.name).length !== -1) {
 				var layer = new OpenLayers.Layer.WMS(
 						card.name,
