@@ -360,6 +360,21 @@
                 <artifactId>jersey-atom</artifactId>
                 <version>1.17.1</version>
             </dependency>
+<!--            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>4.2.2.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>4.2.2.Final</version>
+            </dependency>-->
+            <dependency>
+                <groupId>com.vividsolutions</groupId>
+                <artifactId>jts</artifactId>
+                <version>1.13</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 	

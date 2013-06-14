@@ -1,8 +1,8 @@
 package gov.usgs.cida.coastalhazards.rest;
 
-import gov.usgs.cida.coastalhazards.session.io.SessionFileIO;
 import gov.usgs.cida.coastalhazards.session.io.SessionIO;
 import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
+import gov.usgs.cida.coastalhazards.session.io.SessionJPAIO;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
@@ -24,8 +24,7 @@ import org.apache.commons.io.FileUtils;
 public class SessionResource {
     
     private static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
-    private static final String fileRepoLocation = props.getProperty("", FileUtils.getTempDirectoryPath());
-    private static final SessionIO sessionIo = new SessionFileIO(new File(fileRepoLocation).toURI());
+    private static final SessionIO sessionIo = new SessionJPAIO();
     
     @GET
     @Path("{sid}")
