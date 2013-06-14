@@ -53,7 +53,7 @@ CCH.Objects.UI = function(args) {
 						CCH.map.zoomToActiveLayers();
 					}
 				}
-				
+
 				// pinnedResults may or may not be an empty array. If it is, 
 				// the full deck will be seen. Otherwise, if pinnedResults is
 				// populated, only pinned cards will be seen
@@ -61,12 +61,9 @@ CCH.Objects.UI = function(args) {
 					results: pinnedResults
 				});
 			});
-			
+
 			navbarClearMenuItem.on('click', function() {
-				$('#app-navbar-pin-control-pincount').html(0);
-				$('#app-navbar-pin-control-icon').toggleClass('muted', true);
-				CCH.session.clearPinnedIds();
-				CCH.map.zoomToActiveLayers();
+				me.unpinAllCards();
 				me.createSlideshow();
 			});
 		},
@@ -168,6 +165,24 @@ CCH.Objects.UI = function(args) {
 			});
 
 			return card.create();
+		},
+		unpinAllCards: function() {
+			var pinnedCards = me.getPinnedCards();
+			pinnedCards.each(function(card) {
+				$(card).trigger('card-button-pin-clicked');
+			});
+		},
+		getPinnedCards: function() {
+			var pinnedCards = [];
+			var cardContainers = $('.description-container');
+			for (var ccIdx = 0; ccIdx < cardContainers.length; ccIdx++) {
+				var cardContainer = cardContainers[ccIdx];
+				var card = $(cardContainer).data('card');
+				if (card.pinned) {
+					pinnedCards.push(card);
+				}
+			}
+			return pinnedCards;
 		},
 		bindShareMenu: function(args) {
 			var menuItem = args.menuItem;
