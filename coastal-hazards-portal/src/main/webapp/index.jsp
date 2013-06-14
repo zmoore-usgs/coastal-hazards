@@ -7,14 +7,14 @@
 
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
-    {
-        try {
-            props = props.addJNDIContexts(new String[0]);
-        } catch (Exception e) {
-            LoggerFactory.getLogger("index.jsp").error("Could not find JNDI - Application will probably not function correctly");
-        }
-    }
-    boolean development = Boolean.parseBoolean(props.getProperty("development"));
+	{
+		try {
+			props = props.addJNDIContexts(new String[0]);
+		} catch (Exception e) {
+			LoggerFactory.getLogger("index.jsp").error("Could not find JNDI - Application will probably not function correctly");
+		}
+	}
+	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 %>
 
 <html lang="en">
@@ -44,7 +44,7 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="<%= development%>" />
         </jsp:include>
-		<script type="text/javascript">var CCH = { 'Objects' : {} };</script>
+		<script type="text/javascript">var CCH = {'Objects': {}};</script>
         <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? "" : ".min"%>.css" />
@@ -83,6 +83,11 @@
                 </jsp:include>
             </div>
         </div>
+		<span id="map-search-container">
+			<form class="app-navbar-search-form navbar-search" action="javascript:void(0);">
+				<i id="app-navbar-search-icon" class="icon-search"></i><input id="app-navbar-search-input" type="text" class="search-query" placeholder="Search">
+			</form>
+		</span>
 
         <script type="text/javascript" src="webjars/openlayers/2.12/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <jsp:include page="js/iosslider/iosslider.jsp"> 
@@ -97,11 +102,11 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-		
+
         <script type="text/javascript" src="js/openlayers/lib/OpenLayers/Layer/Shorelines.js"></script>
-<!--        <script type="text/javascript" src="js/components/nav/Storms.js"></script>
-        <script type="text/javascript" src="js/components/nav/Vulnerability.js"></script>
-        <script type="text/javascript" src="js/components/nav/Historical.js"></script>-->
+		<!--        <script type="text/javascript" src="js/components/nav/Storms.js"></script>
+				<script type="text/javascript" src="js/components/nav/Vulnerability.js"></script>
+				<script type="text/javascript" src="js/components/nav/Historical.js"></script>-->
         <script type="text/javascript" src="js/components/session/Session.js"></script>
         <script type="text/javascript" src="js/components/map/Map.js"></script>
         <script type="text/javascript" src="js/components/common/Card.js"></script>
@@ -114,6 +119,6 @@
         <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.1.1/css/font-awesome<%= development ? "" : ".min"%>.css" />
 
         <script type="text/javascript">
-            $('#footer > .content').addClass('visible-desktop hidden-phone hidden-tablet');
+			$('#footer > .content').addClass('visible-desktop hidden-phone hidden-tablet');
         </script>
     </body>

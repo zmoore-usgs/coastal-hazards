@@ -53,7 +53,7 @@ CCH.Objects.UI = function(args) {
 						CCH.map.zoomToActiveLayers();
 					}
 				}
-				
+
 				// pinnedResults may or may not be an empty array. If it is, 
 				// the full deck will be seen. Otherwise, if pinnedResults is
 				// populated, only pinned cards will be seen
@@ -61,12 +61,9 @@ CCH.Objects.UI = function(args) {
 					results: pinnedResults
 				});
 			});
-			
+
 			navbarClearMenuItem.on('click', function() {
-				$('#app-navbar-pin-control-pincount').html(0);
-				$('#app-navbar-pin-control-icon').toggleClass('muted', true);
-				CCH.session.clearPinnedIds();
-				CCH.map.zoomToActiveLayers();
+				me.unpinAllCards();
 				me.createSlideshow();
 			});
 		},
@@ -123,6 +120,20 @@ CCH.Objects.UI = function(args) {
 					me.createSlideshow();
 				}
 
+				var mapDiv = $('#map');
+				var mapPosition = mapDiv.position();
+				var mapHeight = mapDiv.height();
+				var mapWidth = mapDiv.width();
+				
+				var searchContainer = $('#map-search-container');
+				var searchContainerHeight = searchContainer.height();
+				var searchContainerWidth = searchContainer.width();
+				searchContainer.css({
+					top: mapPosition.top + mapHeight - searchContainerHeight - 10,
+					left: mapPosition.left + mapWidth - searchContainerWidth - 20,
+					zIndex: 1004
+				})
+
 				me.previousWidth = currWidth;
 			});
 		},
@@ -168,6 +179,24 @@ CCH.Objects.UI = function(args) {
 			});
 
 			return card.create();
+		},
+		unpinAllCards: function() {
+			var pinnedCards = me.getPinnedCards();
+			pinnedCards.each(function(card) {
+				$(card).trigger('card-button-pin-clicked');
+			});
+		},
+		getPinnedCards: function() {
+			var pinnedCards = [];
+			var cardContainers = $('.description-container');
+			for (var ccIdx = 0; ccIdx < cardContainers.length; ccIdx++) {
+				var cardContainer = cardContainers[ccIdx];
+				var card = $(cardContainer).data('card');
+				if (card.pinned) {
+					pinnedCards.push(card);
+				}
+			}
+			return pinnedCards;
 		},
 		bindShareMenu: function(args) {
 			var menuItem = args.menuItem;
@@ -278,8 +307,7 @@ CCH.Objects.UI = function(args) {
 							CCH.map.clearBoundingBoxMarkers();
 
 							CCH.map.displayData({
-								"card": card,
-								"type": card.type
+								"card": card
 							});
 
 							CCH.map.zoomToActiveLayers();
@@ -391,26 +419,10 @@ CCH.Objects.UI = function(args) {
 					});
 
 					var card = $(event.currentSlideObject[0].firstChild).data('card');
-					var marker = CCH.map.addBoundingBoxMarker({
+					CCH.map.addBoundingBoxMarker({
 						bbox: card.bbox,
-						fromProjection: 'EPSG:4326'
-					});
-
-					$(marker.div).data('slideOrder', event.currentSlideNumber);
-					$(marker.div).on({
-						click: function(evt) {
-							var target = $(evt.target);
-							var slideOrder = target.data('slideOrder');
-							me.slider('goToSlide', slideOrder);
-							me.slider('autoSlidePause');
-							$('.slide-menu-icon-pause-play').removeClass('icon-pause').addClass('icon-play').parent().on({
-								'click': function(evt) {
-									CCH.CONFIG.ui.slider('autoSlidePlay');
-									$('.slide-menu-icon-pause-play').removeClass('icon-play').addClass('icon-pause');
-								}
-							});
-
-						}
+						fromProjection: 'EPSG:4326',
+						slideOrder: event.currentSlideNumber
 					});
 				};
 
