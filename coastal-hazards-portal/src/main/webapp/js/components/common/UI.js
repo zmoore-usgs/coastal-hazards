@@ -120,6 +120,20 @@ CCH.Objects.UI = function(args) {
 					me.createSlideshow();
 				}
 
+				var mapDiv = $('#map');
+				var mapPosition = mapDiv.position();
+				var mapHeight = mapDiv.height();
+				var mapWidth = mapDiv.width();
+				
+				var searchContainer = $('#map-search-container');
+				var searchContainerHeight = searchContainer.height();
+				var searchContainerWidth = searchContainer.width();
+				searchContainer.css({
+					top: mapPosition.top + mapHeight - searchContainerHeight - 10,
+					left: mapPosition.left + mapWidth - searchContainerWidth - 20,
+					zIndex: 1004
+				})
+
 				me.previousWidth = currWidth;
 			});
 		},
@@ -408,7 +422,7 @@ CCH.Objects.UI = function(args) {
 					CCH.map.addBoundingBoxMarker({
 						bbox: card.bbox,
 						fromProjection: 'EPSG:4326',
-						slideOrder : event.currentSlideNumber
+						slideOrder: event.currentSlideNumber
 					});
 				};
 

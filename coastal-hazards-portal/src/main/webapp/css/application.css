@@ -96,6 +96,27 @@ img {
 	opacity : 1.0 !important;
 }
 
+#map-search-container {
+	background-color: rgba(0, 60, 136, 0.5);;
+	position: absolute;
+	top: 0;
+	padding: 0px 5px 5px 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	width: 180px;
+}
+
+#app-navbar-search-input {
+	width : 120px;
+}
+
+#app-navbar-search-icon {
+	margin-right: 5px;
+	color: #FFFFFF;
+	font-size: 18px;
+	width : 20px;
+}
+
 /*.olControlPanel div { 
 	display:block;
 	width:  48px;

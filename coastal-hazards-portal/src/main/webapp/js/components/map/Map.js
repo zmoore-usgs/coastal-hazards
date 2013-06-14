@@ -1,151 +1,140 @@
 CCH.Objects.Map = function(args) {
-	CCH.LOG.info('Map.js::constructor:Map class is initializing.');
 	var mapDivId = args.mapDiv;
 	var me = (this === window) ? {} : this;
 	me.initialExtent = [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826];
-
-
-	CCH.LOG.debug('Map.js::constructor:Loading Map object');
-	me.map = new OpenLayers.Map(mapDivId, {
-		projection: "EPSG:900913",
-		displayProjection: new OpenLayers.Projection("EPSG:900913")
-	});
-
-	CCH.LOG.debug('Map.js::constructor:Creating base layers');
-	me.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 20,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Street",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 20,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Topo",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 20,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Terrain",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 14,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Shaded Relief",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 14,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Physical",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 9,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Ocean",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 17,
-				wrapDateLine: true
-			}
-	));
-
-	me.moveendCallback = function(evt) {
-		var map = evt.object;
-		var sMap = CCH.session.getMap();
-
-		sMap.baselayer = map.baseLayer.name;
-		sMap.center = {
-			lat: map.center.lat,
-			lon: map.center.lon
-		};
-		sMap.scale = map.getScale();
-		sMap.extent = map.getExtent().toArray();
-	};
-
-
-	CCH.LOG.debug('Map.js::constructor:Creating base layer');
-	me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 20,
-				wrapDateLine: true
-			}
-	));
-
-	me.markerLayer = new OpenLayers.Layer.Markers('geocoding-marker-layer', {
-		displayInLayerSwitcher: false
-	});
-	me.map.addLayer(me.markerLayer);
-
-	me.boxLayer = new OpenLayers.Layer.Boxes('map-boxlayer', {
-		displayInLayerSwitcher: false
-	});
-	me.map.addLayer(me.boxLayer);
-
-	CCH.LOG.debug('Map.js::constructor:Adding ontrols to map');
-	me.map.addControl(new OpenLayers.Control.MousePosition());
-	me.map.addControl(new OpenLayers.Control.ScaleLine({
-		geodesic: true
-	}));
-	me.map.addControl(new OpenLayers.Control.LayerSwitcher({
-		roundedCorner: true
-	}));
-//
-//	var panel = new OpenLayers.Control.Panel();
-//	panel.id = 'ol-custom-panel';
-//	panel.addControls([
-//		new OpenLayers.Control.MousePosition()
-//	]);
-//	me.map.addControl(panel);
-
-	CCH.LOG.debug('Map.js::constructor:Zooming to extent: ' + me.initialExtent);
-	me.map.zoomToExtent(me.initialExtent, true);
-
-//	var zoomControlDiv = me.map.getControlsByClass("OpenLayers.Control.Zoom")[0].div;
-//	var panelTop = zoomControlDiv.offsetTop + zoomControlDiv.offsetHeight + 40;
-//	$('#ol-custom-panel').css('top', panelTop);
-
-	me.map.events.on({
-		'moveend': me.moveendCallback,
-		'addlayer': function() {
-			while (me.boxLayer !== me.map.layers[me.map.layers.length - 1]) {
-				me.map.raiseLayer(me.boxLayer, 1);
-			}
-			;
-		}
-	});
-
-	CCH.LOG.debug('Map.js::constructor: Map class initialized.');
 	return $.extend(me, {
+		init: function() {
+			CCH.LOG.info('Map.js::init():Map class is initializing.');
+			me.map = new OpenLayers.Map(mapDivId, {
+				projection: "EPSG:900913",
+				displayProjection: new OpenLayers.Projection("EPSG:900913")
+			});
+
+			// Please the search box inside the map
+
+
+
+			CCH.LOG.debug('Map.js::init():Creating base layers');
+			me.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
+					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
+					{
+						sphericalMercator: true,
+						isBaseLayer: true,
+						numZoomLevels: 20,
+						wrapDateLine: true
+					}
+			));
+			me.map.addLayer(new OpenLayers.Layer.XYZ("Street",
+					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}",
+					{
+						sphericalMercator: true,
+						isBaseLayer: true,
+						numZoomLevels: 20,
+						wrapDateLine: true
+					}
+			));
+			me.map.addLayer(new OpenLayers.Layer.XYZ("Topo",
+					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}",
+					{
+						sphericalMercator: true,
+						isBaseLayer: true,
+						numZoomLevels: 20,
+						wrapDateLine: true
+					}
+			));
+			me.map.addLayer(new OpenLayers.Layer.XYZ("Terrain",
+					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/${z}/${y}/${x}",
+					{
+						sphericalMercator: true,
+						isBaseLayer: true,
+						numZoomLevels: 14,
+						wrapDateLine: true
+					}
+			));
+			me.map.addLayer(new OpenLayers.Layer.XYZ("Shaded Relief",
+					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}",
+					{
+						sphericalMercator: true,
+						isBaseLayer: true,
+						numZoomLevels: 14,
+						wrapDateLine: true
+					}
+			));
+			me.map.addLayer(new OpenLayers.Layer.XYZ("Physical",
+					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/${z}/${y}/${x}",
+					{
+						sphericalMercator: true,
+						isBaseLayer: true,
+						numZoomLevels: 9,
+						wrapDateLine: true
+					}
+			));
+			me.map.addLayer(new OpenLayers.Layer.XYZ("Ocean",
+					"http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/${z}/${y}/${x}",
+					{
+						sphericalMercator: true,
+						isBaseLayer: true,
+						numZoomLevels: 17,
+						wrapDateLine: true
+					}
+			));
+
+			me.moveendCallback = function(evt) {
+				var map = evt.object;
+				var sMap = CCH.session.getMap();
+
+				sMap.baselayer = map.baseLayer.name;
+				sMap.center = {
+					lat: map.center.lat,
+					lon: map.center.lon
+				};
+				sMap.scale = map.getScale();
+				sMap.extent = map.getExtent().toArray();
+			};
+
+			CCH.LOG.debug('Map.js::init():Creating base layer');
+			me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
+					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
+					{
+						sphericalMercator: true,
+						isBaseLayer: true,
+						numZoomLevels: 20,
+						wrapDateLine: true
+					}
+			));
+
+			me.markerLayer = new OpenLayers.Layer.Markers('geocoding-marker-layer', {
+				displayInLayerSwitcher: false
+			});
+			me.map.addLayer(me.markerLayer);
+
+			me.boxLayer = new OpenLayers.Layer.Boxes('map-boxlayer', {
+				displayInLayerSwitcher: false
+			});
+			me.map.addLayer(me.boxLayer);
+
+			CCH.LOG.debug('Map.js::init():Adding ontrols to map');
+			me.map.addControl(new OpenLayers.Control.LayerSwitcher({
+				roundedCorner: true
+			}));
+
+			CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);
+			me.map.zoomToExtent(me.initialExtent, true);
+
+			me.map.events.on({
+				'moveend': me.moveendCallback,
+				'addlayer': function() {
+					// The bounding box layer needs to sit on top of other layers in 
+					// order to be hoverable and clickable
+					while (me.boxLayer !== me.map.layers[me.map.layers.length - 1]) {
+						me.map.raiseLayer(me.boxLayer, 1);
+					}
+				}
+			});
+
+
+
+		},
 		getMap: function() {
 			return me.map;
 		},

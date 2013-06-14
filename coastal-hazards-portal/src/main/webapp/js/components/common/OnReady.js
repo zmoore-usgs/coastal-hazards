@@ -24,6 +24,7 @@ $(document).ready(function() {
 	CCH.map = new CCH.Objects.Map({
 		mapDiv: 'map'
 	});
+	CCH.map.init();
 
 	splashUpdate("Initializing OWS Services");
 	CCH.ows = new CCH.Objects.OWS();
