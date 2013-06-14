@@ -387,7 +387,7 @@ var Session = function(name, isPerm) {
 
 				var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
 				var explanationWell = $('<div />').addClass('well well-small').attr('id', 'explanation-well');
-				var explanationDiv = $('<div />').html('In the session management section, you are able to maniupulate your current session set, export single sessions and import a new session set<br />While it isn\'t mandatory to do so, it is strongly suggested to reload the application after swithing sessions or creating a new session');
+				var explanationDiv = $('<div />').html('In the session management section, you are able to maniupulate your current session set, export single sessions and import a new session set<br />While it isn\'t mandatory to do so, it is strongly suggested to reload the application after switching sessions or creating a new session');
 				container.append(explanationWell.append(explanationRow.append(explanationDiv)));
 
 				var sessionListWell = $('<div />').addClass('well well-small');
