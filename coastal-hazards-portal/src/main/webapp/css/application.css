@@ -97,7 +97,7 @@ img {
 }
 
 #map-search-container {
-	background-color: rgba(0, 60, 136, 0.5);;
+	background-color: rgba(0, 60, 136, 0.5);
 	position: absolute;
 	top: 0;
 	padding: 0px 5px 5px 5px;
@@ -116,13 +116,3 @@ img {
 	font-size: 18px;
 	width : 20px;
 }
-
-/*.olControlPanel div { 
-	display:block;
-	width:  48px;
-	height: 48px;
-	margin: 5px;
-	background-color: #00008B;
-    -moz-border-radius: 1em 0 0 0;
-	border-radius:  1em;
-}*/

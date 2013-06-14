@@ -86,3 +86,14 @@
 #app-navbar-pin-control-caret {
 	font-size: 2em;
 }
+
+#app-navbar-item-search-container {
+	color: #FFFFFF;
+	font-size: 25px;
+	height: 40px;
+}
+
+#app-navbar-item-search-container i {
+	padding: 5px;
+	display: inherit;
+}
