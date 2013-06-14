@@ -97,9 +97,17 @@
 	padding-left: 2px;
 }
 
+#app-navbar-pin-control-icon {
+	font-size: 2em;
+}
+
+#app-navbar-pin-control-caret {
+	font-size: 2em;
+}
+
 .app-navbar-search-icon {
 	margin-right: 5px;
-	color: white;
+	color: #FFFFFF;
 	font-size: 18px;
 }
 

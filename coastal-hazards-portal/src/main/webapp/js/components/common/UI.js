@@ -13,8 +13,9 @@ CCH.Objects.UI = function(args) {
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
 		init: function() {
-			this.bindSearchInput();
-			this.bindWindowResize();
+			me.bindSearchInput();
+			me.bindWindowResize();
+			me.bindNavbarPinMenu();
 
 			var currWidth = me.previousWidth;
 			if (currWidth <= me.magicResizeNumber) {
@@ -24,6 +25,50 @@ CCH.Objects.UI = function(args) {
 			}
 
 			$(window).resize();
+		},
+		bindNavbarPinMenu: function() {
+			var navbarPinButton = $('#app-navbar-pin-control-button');
+			var navbarClearMenuItem = $('#app-navbar-pin-control-clear');
+			var navbarShareMenuItem = $('#app-navbar-pin-control-share');
+
+			navbarPinButton.on('click', function() {
+				// Check to see if any cards are pinned
+				var isButtonToggledOn = !$('#app-navbar-pin-control-icon').hasClass('muted');
+				var pinnedCardIds = CCH.session.getPinnedIds();
+				var pinnedResults = null;
+
+				if (pinnedCardIds.length) {
+					// Pinned cards available - toggle the button on/off
+					$('#app-navbar-pin-control-icon').toggleClass('muted');
+					if (!isButtonToggledOn) {
+						// If cards are pinned, show only pinned cards
+						// Otherwise, show all cards
+						pinnedResults = [];
+						for (var pcIdx = 0; pcIdx < pinnedCardIds.length; pcIdx++) {
+							var id = pinnedCardIds[pcIdx];
+							pinnedResults.push(CCH.CONFIG.popularity.results.find(function(result) {
+								return result.id === id;
+							}));
+						}
+						CCH.map.zoomToActiveLayers();
+					}
+				}
+				
+				// pinnedResults may or may not be an empty array. If it is, 
+				// the full deck will be seen. Otherwise, if pinnedResults is
+				// populated, only pinned cards will be seen
+				me.createSlideshow({
+					results: pinnedResults
+				});
+			});
+			
+			navbarClearMenuItem.on('click', function() {
+				$('#app-navbar-pin-control-pincount').html(0);
+				$('#app-navbar-pin-control-icon').toggleClass('muted', true);
+				CCH.session.clearPinnedIds();
+				CCH.map.zoomToActiveLayers();
+				me.createSlideshow();
+			});
 		},
 		bindWindowResize: function() {
 			$(window).resize(function() {
@@ -170,6 +215,10 @@ CCH.Objects.UI = function(args) {
 		hideSpinner: function() {
 			me.spinner.fadeOut();
 		},
+		updatePinnedCount: function() {
+			var pinnedCount = CCH.session.getPinnedIdsCount();
+			$('#app-navbar-pin-control-pincount').html(pinnedCount);
+		},
 		slider: function() {
 			var iosslider = $('#iosslider-container');
 			var sliderFunct;
@@ -219,6 +268,9 @@ CCH.Objects.UI = function(args) {
 							} else {
 								card.unpin();
 							}
+
+							me.updatePinnedCount();
+
 						},
 						'card-pinned': function(evt) {
 							var card = evt.currentTarget;
@@ -231,21 +283,21 @@ CCH.Objects.UI = function(args) {
 							});
 
 							CCH.map.zoomToActiveLayers();
-							
+
 							me.slider('autoSlidePause');
 						},
 						'card-unpinned': function(evt) {
 							var card = evt.currentTarget;
 							var layers = CCH.map.getMap().getLayersByName(card.name);
-							
+
 							if (layers.length) {
 								layers.each(function(layer) {
 									CCH.map.getMap().removeLayer(layer, false);
 								});
 							}
-							
+
 							CCH.map.zoomToActiveLayers();
-							
+
 							if (CCH.map.getMap().getLayersBy('isItemLayer', true).length === 0) {
 								me.slider('autoSlidePlay');
 							}
@@ -398,7 +450,7 @@ CCH.Objects.UI = function(args) {
 				$(window).off('orientationchange', orientationChange);
 				$(window).on('orientationchange', orientationChange);
 				$(window).resize();
-			}, 1000);
+			}, 1000, args);
 		}
 	});
 };
