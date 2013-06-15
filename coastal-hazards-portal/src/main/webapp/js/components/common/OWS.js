@@ -1,77 +1,81 @@
 CCH.Objects.OWS = function() {
 	CCH.LOG.info('OWS.js::constructor: OWS class is initializing.');
 	var me = (this === window) ? {} : this;
-	
-	me.servers = {
-		'cida-geoserver': {
-			endpoints: {
-				endpoint: CCH.CONFIG.data.sources['cida-geoserver'].endpoint,
-				proxy: CCH.CONFIG.data.sources['cida-geoserver'].proxy,
-				wmsGetCapsUrl: CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?service=wms&version=1.3.0&request=GetCapabilities',
-				wfsGetCapsUrl: CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?service=wfs&version=1.1.0&request=GetCapabilities',
-				wfsGetFeatureUrl: CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?service=wfs&version=1.0.0&request=GetFeature'
-			},
-			data: {
-				wms: {
-					capabilities: {
-						xml: '',
-						object: {}
-					}
-				},
-				wfs: {
-					capabilities: {
-						xml: '',
-						object: {}
-					}
-				}
-			}
-		},
-		'stpete-arcserver-vulnerability-se-erosion': {
-			endpoints: {
-				endpoint: CCH.CONFIG.data.sources['stpete-arcserver'].endpoint,
-				proxy: CCH.CONFIG.data.sources['stpete-arcserver'].proxy,
-				wmsGetCapsUrl: CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_erosion_hazards/MapServer/WMSServer?request=GetCapabilities&version=1.3.0&service=WMS',
-				wmsGetImageUrl : CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_erosion_hazards/MapServer/WMSServer?'
-			},
-			data: {
-				wms: {
-					capabilities: {
-						xml: '',
-						object: {}
-					}
-				},
-				wfs: {
-					capabilities: {
-						xml: '',
-						object: {}
-					}
-				}
-			}
-		},
-		'stpete-arcserver-vulnerability-se-dune': {
-			endpoints: {
-				endpoint: CCH.CONFIG.data.sources['stpete-arcserver'].endpoint,
-				proxy: CCH.CONFIG.data.sources['stpete-arcserver'].proxy,
-				wmsGetCapsUrl: CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_dune_vulnerability/MapServer/WMSServer?request=GetCapabilities&service=WMS'
-			},
-			data: {
-				wms: {
-					capabilities: {
-						xml: '',
-						object: {}
-					}
-				},
-				wfs: {
-					capabilities: {
-						xml: '',
-						object: {}
-					}
-				}
-			}
-		}
-	};
+
+
 	CCH.LOG.debug('OWS.js::constructor: OWS class initialized.');
 	return $.extend(me, {
+		init: function() {
+			me.servers = {
+				'cida-geoserver': {
+					endpoints: {
+						endpoint: CCH.CONFIG.data.sources['cida-geoserver'].endpoint,
+						proxy: CCH.CONFIG.data.sources['cida-geoserver'].proxy,
+						wmsGetCapsUrl: CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?service=wms&version=1.3.0&request=GetCapabilities',
+						wfsGetCapsUrl: CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?service=wfs&version=1.1.0&request=GetCapabilities',
+						wfsGetFeatureUrl: CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?service=wfs&version=1.0.0&request=GetFeature'
+					},
+					data: {
+						wms: {
+							capabilities: {
+								xml: '',
+								object: {}
+							}
+						},
+						wfs: {
+							capabilities: {
+								xml: '',
+								object: {}
+							}
+						}
+					}
+				},
+				'stpete-arcserver-vulnerability-se-erosion': {
+					endpoints: {
+						endpoint: CCH.CONFIG.data.sources['stpete-arcserver'].endpoint,
+						proxy: CCH.CONFIG.data.sources['stpete-arcserver'].proxy,
+						wmsGetCapsUrl: CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_erosion_hazards/MapServer/WMSServer?request=GetCapabilities&version=1.3.0&service=WMS',
+						wmsGetImageUrl: CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_erosion_hazards/MapServer/WMSServer?'
+					},
+					data: {
+						wms: {
+							capabilities: {
+								xml: '',
+								object: {}
+							}
+						},
+						wfs: {
+							capabilities: {
+								xml: '',
+								object: {}
+							}
+						}
+					}
+				},
+				'stpete-arcserver-vulnerability-se-dune': {
+					endpoints: {
+						endpoint: CCH.CONFIG.data.sources['stpete-arcserver'].endpoint,
+						proxy: CCH.CONFIG.data.sources['stpete-arcserver'].proxy,
+						wmsGetCapsUrl: CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_dune_vulnerability/MapServer/WMSServer?request=GetCapabilities&service=WMS'
+					},
+					data: {
+						wms: {
+							capabilities: {
+								xml: '',
+								object: {}
+							}
+						},
+						wfs: {
+							capabilities: {
+								xml: '',
+								object: {}
+							}
+						}
+					}
+				}
+			};
+			return me;
+		},
 		getWMSCapabilities: function(args) {
 			var callbacks = args.callbacks || {};
 			var sucessCallbacks = callbacks.success || [];

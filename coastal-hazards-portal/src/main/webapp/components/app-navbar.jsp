@@ -27,6 +27,10 @@
 					</div>
 				</span>
 
+				<span id="app-navbar-item-search-container" class="pull-right">
+					<i class="icon-search"></i><i class="icon-long-arrow-left"></i>
+				</span>
+				
 				<%-- 
                 <div class="nav-collapse hidden-tablet hidden-desktop visible-phone">
 				--%>

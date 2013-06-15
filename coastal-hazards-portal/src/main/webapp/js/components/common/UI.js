@@ -1,21 +1,27 @@
+var CCH = CCH || {};
 CCH.Objects.UI = function(args) {
 	CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 	var me = (this === window) ? {} : this;
-	me.spinner = args.spinner;
-	me.searchbar = args.searchbar;
+	me.search;
 	me.mapdiv = args.mapdiv;
 	me.descriptionDiv = args.descriptionDiv;
 	me.magicResizeNumber = 767;
 	me.minimumHeight = args.minimumHeight || 480;
 	me.previousWidth = $(window).width();
 	me.currentSizing = '';
-	me.geocodeEndoint = args.geocodeEndpoint || 'http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find';
+	me.navbarPinButton = args.navbarPinButton;
+	me.navbarClearMenuItem = args.navbarClearMenuItem;
+	me.navbarShareMenuItem = args.navbarShareMenuItem;
+	me.applicationContainer = args.applicationContainer;
+	me.headerRow = args.headerRow;
+	me.footerRow = args.footerRow;
+	me.mapSearchContainer = args.mapSearchContainer;
+
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
 		init: function() {
-			me.bindSearchInput();
-			me.bindWindowResize();
 			me.bindNavbarPinMenu();
+			me.bindWindowResize();
 
 			var currWidth = me.previousWidth;
 			if (currWidth <= me.magicResizeNumber) {
@@ -25,13 +31,10 @@ CCH.Objects.UI = function(args) {
 			}
 
 			$(window).resize();
+			return me;
 		},
 		bindNavbarPinMenu: function() {
-			var navbarPinButton = $('#app-navbar-pin-control-button');
-			var navbarClearMenuItem = $('#app-navbar-pin-control-clear');
-			var navbarShareMenuItem = $('#app-navbar-pin-control-share');
-
-			navbarPinButton.on('click', function() {
+			me.navbarPinButton.on('click', function() {
 				// Check to see if any cards are pinned
 				var isButtonToggledOn = !$('#app-navbar-pin-control-icon').hasClass('muted');
 				var pinnedCardIds = CCH.session.getPinnedIds();
@@ -60,17 +63,19 @@ CCH.Objects.UI = function(args) {
 				me.createSlideshow({
 					results: pinnedResults
 				});
+
+				$(window).trigger('cch.navbar.pinmenu.button.pin.click');
 			});
 
-			navbarClearMenuItem.on('click', function() {
-				me.unpinAllCards();
+			me.navbarClearMenuItem.on('click', function() {
+				$(window).trigger('cch.navbar.pinmenu.item.clear.click');
 				me.createSlideshow();
 			});
 		},
 		bindWindowResize: function() {
 			$(window).resize(function() {
 				var currWidth = $(window).width();
-				var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
+				var contentRowHeight = $(window).height() - me.headerRow.height() - me.footerRow.height();
 
 				if (contentRowHeight < me.minimumHeight) {
 					contentRowHeight = me.minimumHeight;
@@ -92,7 +97,7 @@ CCH.Objects.UI = function(args) {
 						'padding-left': '0px',
 						'padding-right': '0px'
 					});
-					$('#application-container').css({
+					me.applicationContainer.css({
 						'padding-left': '0px',
 						'padding-right': '0px'
 					});
@@ -108,7 +113,7 @@ CCH.Objects.UI = function(args) {
 						'padding-left': '20px',
 						'padding-right': '20px'
 					});
-					$('#application-container').css({
+					me.applicationContainer.css({
 						'padding-left': '20px',
 						'padding-right': '20px'
 					});
@@ -117,18 +122,17 @@ CCH.Objects.UI = function(args) {
 				}
 
 				if (updated) {
+					$(window).trigger('cch.ui.resized', me.currentSizing);
 					me.createSlideshow();
 				}
 
-				var mapDiv = $('#map');
-				var mapPosition = mapDiv.position();
-				var mapHeight = mapDiv.height();
-				var mapWidth = mapDiv.width();
-				
-				var searchContainer = $('#map-search-container');
-				var searchContainerHeight = searchContainer.height();
-				var searchContainerWidth = searchContainer.width();
-				searchContainer.css({
+				var mapPosition = me.mapdiv.position();
+				var mapHeight = me.mapdiv.height();
+				var mapWidth = me.mapdiv.width();
+
+				var searchContainerHeight = me.mapSearchContainer.height();
+				var searchContainerWidth = me.mapSearchContainer.width();
+				me.mapSearchContainer.css({
 					top: mapPosition.top + mapHeight - searchContainerHeight - 10,
 					left: mapPosition.left + mapWidth - searchContainerWidth - 20,
 					zIndex: 1004
@@ -136,67 +140,6 @@ CCH.Objects.UI = function(args) {
 
 				me.previousWidth = currWidth;
 			});
-		},
-		bindSearchInput: function() {
-			me.searchbar.submit(function(evt) {
-				var query = $('.search-query').val();
-				if (query) {
-					$.ajax({
-						type: 'GET',
-						url: me.geocodeEndoint,
-						data: {
-							text: query,
-							maxLocations: '20',
-							outFields: '*',
-							f: 'pjson',
-							outSR: '3785'
-						},
-						async: false,
-						contentType: 'application/json',
-						dataType: 'jsonp',
-						success: function(json) {
-							if (json.locations[0]) {
-								CCH.map.buildGeocodingPopup({
-									locations: json.locations
-								});
-
-							} else {
-							}
-						}
-					});
-				}
-
-			});
-		},
-		buildCard: function(args) {
-			var item = CCH.CONFIG.popularity.getById({
-				'id': args.itemId
-			});
-
-			var card = new CCH.Objects.Card({
-				item: item,
-				size: me.currentSizing
-			});
-
-			return card.create();
-		},
-		unpinAllCards: function() {
-			var pinnedCards = me.getPinnedCards();
-			pinnedCards.each(function(card) {
-				$(card).trigger('card-button-pin-clicked');
-			});
-		},
-		getPinnedCards: function() {
-			var pinnedCards = [];
-			var cardContainers = $('.description-container');
-			for (var ccIdx = 0; ccIdx < cardContainers.length; ccIdx++) {
-				var cardContainer = cardContainers[ccIdx];
-				var card = $(cardContainer).data('card');
-				if (card.pinned) {
-					pinnedCards.push(card);
-				}
-			}
-			return pinnedCards;
 		},
 		bindShareMenu: function(args) {
 			var menuItem = args.menuItem;
@@ -238,16 +181,6 @@ CCH.Objects.UI = function(args) {
 				}
 			});
 		},
-		showSpinner: function() {
-			me.spinner.fadeIn();
-		},
-		hideSpinner: function() {
-			me.spinner.fadeOut();
-		},
-		updatePinnedCount: function() {
-			var pinnedCount = CCH.session.getPinnedIdsCount();
-			$('#app-navbar-pin-control-pincount').html(pinnedCount);
-		},
 		slider: function() {
 			var iosslider = $('#iosslider-container');
 			var sliderFunct;
@@ -277,7 +210,7 @@ CCH.Objects.UI = function(args) {
 				}, true);
 
 				results.each(function(result) {
-					var cardContainer = me.buildCard({
+					var cardContainer = CCH.cards.buildCard({
 						'itemId': result.id
 					});
 
@@ -288,21 +221,12 @@ CCH.Objects.UI = function(args) {
 					var card = $(cardContainer.data('card'))[0];
 					$(card).on({
 						'card-button-pin-clicked': function(evt) {
-							var card = evt.currentTarget;
 							me.slider('autoSlidePause');
-
-							var toggledOn = CCH.session.toggleId(card.item.id);
-							if (toggledOn) {
-								card.pin();
-							} else {
-								card.unpin();
-							}
-
-							me.updatePinnedCount();
-
 						},
 						'card-pinned': function(evt) {
 							var card = evt.currentTarget;
+
+							me.slider('autoSlidePause');
 
 							CCH.map.clearBoundingBoxMarkers();
 
@@ -312,7 +236,6 @@ CCH.Objects.UI = function(args) {
 
 							CCH.map.zoomToActiveLayers();
 
-							me.slider('autoSlidePause');
 						},
 						'card-unpinned': function(evt) {
 							var card = evt.currentTarget;

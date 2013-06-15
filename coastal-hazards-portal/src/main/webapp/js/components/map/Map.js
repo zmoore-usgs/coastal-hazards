@@ -5,103 +5,14 @@ CCH.Objects.Map = function(args) {
 	return $.extend(me, {
 		init: function() {
 			CCH.LOG.info('Map.js::init():Map class is initializing.');
+			
 			me.map = new OpenLayers.Map(mapDivId, {
 				projection: "EPSG:900913",
 				displayProjection: new OpenLayers.Projection("EPSG:900913")
 			});
 
-			// Please the search box inside the map
-
-
-
 			CCH.LOG.debug('Map.js::init():Creating base layers');
-			me.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
-					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
-					{
-						sphericalMercator: true,
-						isBaseLayer: true,
-						numZoomLevels: 20,
-						wrapDateLine: true
-					}
-			));
-			me.map.addLayer(new OpenLayers.Layer.XYZ("Street",
-					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}",
-					{
-						sphericalMercator: true,
-						isBaseLayer: true,
-						numZoomLevels: 20,
-						wrapDateLine: true
-					}
-			));
-			me.map.addLayer(new OpenLayers.Layer.XYZ("Topo",
-					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}",
-					{
-						sphericalMercator: true,
-						isBaseLayer: true,
-						numZoomLevels: 20,
-						wrapDateLine: true
-					}
-			));
-			me.map.addLayer(new OpenLayers.Layer.XYZ("Terrain",
-					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/${z}/${y}/${x}",
-					{
-						sphericalMercator: true,
-						isBaseLayer: true,
-						numZoomLevels: 14,
-						wrapDateLine: true
-					}
-			));
-			me.map.addLayer(new OpenLayers.Layer.XYZ("Shaded Relief",
-					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}",
-					{
-						sphericalMercator: true,
-						isBaseLayer: true,
-						numZoomLevels: 14,
-						wrapDateLine: true
-					}
-			));
-			me.map.addLayer(new OpenLayers.Layer.XYZ("Physical",
-					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/${z}/${y}/${x}",
-					{
-						sphericalMercator: true,
-						isBaseLayer: true,
-						numZoomLevels: 9,
-						wrapDateLine: true
-					}
-			));
-			me.map.addLayer(new OpenLayers.Layer.XYZ("Ocean",
-					"http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/${z}/${y}/${x}",
-					{
-						sphericalMercator: true,
-						isBaseLayer: true,
-						numZoomLevels: 17,
-						wrapDateLine: true
-					}
-			));
-
-			me.moveendCallback = function(evt) {
-				var map = evt.object;
-				var sMap = CCH.session.getMap();
-
-				sMap.baselayer = map.baseLayer.name;
-				sMap.center = {
-					lat: map.center.lat,
-					lon: map.center.lon
-				};
-				sMap.scale = map.getScale();
-				sMap.extent = map.getExtent().toArray();
-			};
-
-			CCH.LOG.debug('Map.js::init():Creating base layer');
-			me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
-					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
-					{
-						sphericalMercator: true,
-						isBaseLayer: true,
-						numZoomLevels: 20,
-						wrapDateLine: true
-					}
-			));
+			me.map.addLayers(CCH.CONFIG.map.baselayers);
 
 			me.markerLayer = new OpenLayers.Layer.Markers('geocoding-marker-layer', {
 				displayInLayerSwitcher: false
@@ -131,9 +42,7 @@ CCH.Objects.Map = function(args) {
 					}
 				}
 			});
-
-
-
+			return me;
 		},
 		getMap: function() {
 			return me.map;
@@ -338,7 +247,7 @@ CCH.Objects.Map = function(args) {
 			$('#alt-location-list').change(function(event) {
 				var index = parseInt(event.target.value);
 				if (index !== -1) {
-					CONFIG.map.buildGeocodingPopup({
+					me.buildGeocodingPopup({
 						currentLocationIndex: index,
 						locations: locations
 					});
@@ -400,6 +309,18 @@ CCH.Objects.Map = function(args) {
 						type: type
 					}];
 			}
+		},
+		moveendCallback: function(evt) {
+			var map = evt.object;
+			var sMap = CCH.session.getMap();
+
+			sMap.baselayer = map.baseLayer.name;
+			sMap.center = {
+				lat: map.center.lat,
+				lon: map.center.lon
+			};
+			sMap.scale = map.getScale();
+			sMap.extent = map.getExtent().toArray();
 		}
 	});
 };

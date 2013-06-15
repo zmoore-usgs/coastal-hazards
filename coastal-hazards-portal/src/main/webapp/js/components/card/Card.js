@@ -16,6 +16,9 @@ CCH.Objects.Card = function(args) {
 	me.tweetButton = null;
 
 	return $.extend(me, {
+		init : function() {
+			return me;
+		},
 		create: function() {
 			me.container = $('<div />').addClass('description-container container-fluid');
 			var titleRow = $('<div />').addClass('description-title-row row-fluid');
