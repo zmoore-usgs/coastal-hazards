@@ -338,7 +338,7 @@ CCH.Objects.Map = function(args) {
 			$('#alt-location-list').change(function(event) {
 				var index = parseInt(event.target.value);
 				if (index !== -1) {
-					CONFIG.map.buildGeocodingPopup({
+					me.buildGeocodingPopup({
 						currentLocationIndex: index,
 						locations: locations
 					});
