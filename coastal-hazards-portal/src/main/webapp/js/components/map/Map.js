@@ -270,7 +270,6 @@ CCH.Objects.Map = function(args) {
 			});
 		},
 		displayData: function(args) {
-			// may want to do this first: CONFIG.map.removeLayersByName(me.visibleLayers);
 			var card = args.card;
 			var type = card.type;
 			if (me.map.getLayersByName(card.name).length !== -1) {

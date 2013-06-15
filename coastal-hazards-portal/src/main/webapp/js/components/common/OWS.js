@@ -1,3 +1,4 @@
+var CCH = CCH || {};
 CCH.Objects.OWS = function() {
 	CCH.LOG.info('OWS.js::constructor: OWS class is initializing.');
 	var me = (this === window) ? {} : this;

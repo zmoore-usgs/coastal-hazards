@@ -1,3 +1,4 @@
+var CCH = CCH || {};
 CCH.CONFIG.popularity = {
 	results: [],
 	populate: function(args) {
