@@ -170,11 +170,74 @@ CCH.Objects.UI = function(args) {
 			});
 		},
 		bindSearchModalButton: function() {
-			$('#app-navbar-item-search-container').on({
-				'click': function() {
-					$('#item-search-modal').modal('show')
+			var map = new OpenLayers.Map('item-search-map', {
+				projection: "EPSG:900913",
+				displayProjection: new OpenLayers.Projection("EPSG:900913")
+			});
+			map.addLayer(new OpenLayers.Layer.XYZ("Shaded Relief",
+					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}",
+					{
+						sphericalMercator: true,
+						isBaseLayer: true,
+						numZoomLevels: 14,
+						wrapDateLine: true
+					}
+			));
+			map.zoomToMaxExtent();
+			$('#item-search-map-input-north').html(map.getExtent().top);
+			$('#item-search-map-input-south').html(map.getExtent().bottom);
+			$('#item-search-map-input-west').html(map.getExtent().left);
+			$('#item-search-map-input-east').html(map.getExtent().right);
+
+			map.events.on({
+				'moveend': function(evt) {
+					var map = evt.object;
+					$('#item-search-map-input-north').html(map.getExtent().top);
+					$('#item-search-map-input-south').html(map.getExtent().bottom);
+					$('#item-search-map-input-west').html(map.getExtent().left);
+					$('#item-search-map-input-east').html(map.getExtent().right);
 				}
 			});
+
+			$('#app-navbar-item-search-container').on({
+				'click': function() {
+
+					var popularityScores = CCH.CONFIG.popularity.results.map(function(result) {
+						return parseInt(result.hotness);
+					});
+					var lowestPopularityScore = popularityScores.min();
+					var highestPopularityScore = popularityScores.max();
+					$("#slider-popularity-range").slider({
+						range: "min",
+						value: highestPopularityScore,
+						min: lowestPopularityScore,
+						max: highestPopularityScore,
+						slide: function(event, ui) {
+							$("#item-search-popularity-input").html(ui.value);
+						}
+					});
+
+					$("#item-search-popularity-input").html($("#slider-popularity-range").slider("value"));
+					$('#item-search-modal').modal('show');
+				}
+			});
+
+			$('#item-search-submit').on({
+				'click': function() {
+					$('#item-search-modal').modal('hide');
+					var top = $('#item-search-map-input-north').html();
+					var bottom = $('#item-search-map-input-south').html();
+					var left = $('#item-search-map-input-west').html();
+					var right = $('#item-search-map-input-east').html();
+					var popularity = $('#item-search-popularity-input').html();
+					var keywords = $('#item-search-keyword-input').html();
+					var themes = $('#item-search-theme-input option:selected').toArray().map(function(option) {
+						return option.value;
+					});
+
+					// Submit search
+				}
+			})
 		},
 		buildCard: function(args) {
 			var item = CCH.CONFIG.popularity.getById({

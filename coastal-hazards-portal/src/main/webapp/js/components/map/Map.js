@@ -79,19 +79,6 @@ CCH.Objects.Map = function(args) {
 					}
 			));
 
-			me.moveendCallback = function(evt) {
-				var map = evt.object;
-				var sMap = CCH.session.getMap();
-
-				sMap.baselayer = map.baseLayer.name;
-				sMap.center = {
-					lat: map.center.lat,
-					lon: map.center.lon
-				};
-				sMap.scale = map.getScale();
-				sMap.extent = map.getExtent().toArray();
-			};
-
 			CCH.LOG.debug('Map.js::init():Creating base layer');
 			me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
 					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
@@ -400,6 +387,18 @@ CCH.Objects.Map = function(args) {
 						type: type
 					}];
 			}
+		},
+		moveendCallback: function(evt) {
+			var map = evt.object;
+			var sMap = CCH.session.getMap();
+
+			sMap.baselayer = map.baseLayer.name;
+			sMap.center = {
+				lat: map.center.lat,
+				lon: map.center.lon
+			};
+			sMap.scale = map.getScale();
+			sMap.extent = map.getExtent().toArray();
 		}
 	});
 };

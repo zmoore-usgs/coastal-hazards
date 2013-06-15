@@ -1,9 +1,25 @@
-#item-search-row-map {
-	height : 300px;
-	width: 300px;
+#item-search-map {
+	height : 200px;
+}
+
+#item-search-modal-body {
+	max-height: 100% !important;
+	height: auto;
 }
 
 #app-navbar-item-search-container:hover {
 	cursor: pointer;
 	color: #D6DCE6;
+}
+
+#item-search-input-table-row{
+	text-align: center;
+}
+
+.item-search-row-map-input {
+	background-color: #EEEEEE;
+}
+
+#item-search-keyword-input {
+	width: 100%;
 }
