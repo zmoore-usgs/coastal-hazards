@@ -66,9 +66,6 @@
                 <jsp:include page="components/app-navbar.jsp"></jsp:include>
                 </div>
                 <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
-
-            <jsp:include page="components/config.jsp"></jsp:include>
-
                 <div id="content-row" class="row-fluid">
                     <div id="map-wrapper" class="span7">
                         <div id="map"></div>
@@ -98,7 +95,7 @@
         <jsp:include page="js/iosslider-vertical/iosslider-vertical.jsp"> 
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
         </jsp:include>
-
+		<jsp:include page="components/config.jsp"></jsp:include>
         <%-- TODO: Refactor log4javascript to take the log4js script from webjars --%>
         <jsp:include page="js/log4javascript/log4javascript.jsp">
             <jsp:param name="relPath" value="" />
@@ -106,13 +103,12 @@
         </jsp:include>
 
         <script type="text/javascript" src="js/openlayers/lib/OpenLayers/Layer/Shorelines.js"></script>
-		<!--        <script type="text/javascript" src="js/components/nav/Storms.js"></script>
-				<script type="text/javascript" src="js/components/nav/Vulnerability.js"></script>
-				<script type="text/javascript" src="js/components/nav/Historical.js"></script>-->
+        <script type="text/javascript" src="js/components/search/Search.js"></script>
         <script type="text/javascript" src="js/components/session/Session.js"></script>
         <script type="text/javascript" src="js/components/map/Map.js"></script>
-        <script type="text/javascript" src="js/components/common/Card.js"></script>
-        <script type="text/javascript" src="js/components/common/Popularity.js"></script>
+        <script type="text/javascript" src="js/components/card/Card.js"></script>
+        <script type="text/javascript" src="js/components/card/Cards.js"></script>
+        <script type="text/javascript" src="js/components/popularity/Popularity.js"></script>
         <script type="text/javascript" src="js/components/common/OWS.js"></script>
         <script type="text/javascript" src="js/components/common/UI.js"></script>
         <script type="text/javascript" src="js/components/common/OnReady.js"></script>
@@ -123,5 +119,5 @@
         <script type="text/javascript">
 			$('#footer > .content').addClass('visible-desktop hidden-phone hidden-tablet');
         </script>
-		
+
     </body>
