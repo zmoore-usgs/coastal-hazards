@@ -16,6 +16,7 @@ CCH.Objects.UI = function(args) {
 			me.bindSearchInput();
 			me.bindWindowResize();
 			me.bindNavbarPinMenu();
+			me.bindSearchModalButton();
 
 			var currWidth = me.previousWidth;
 			if (currWidth <= me.magicResizeNumber) {
@@ -124,7 +125,7 @@ CCH.Objects.UI = function(args) {
 				var mapPosition = mapDiv.position();
 				var mapHeight = mapDiv.height();
 				var mapWidth = mapDiv.width();
-				
+
 				var searchContainer = $('#map-search-container');
 				var searchContainerHeight = searchContainer.height();
 				var searchContainerWidth = searchContainer.width();
@@ -166,6 +167,13 @@ CCH.Objects.UI = function(args) {
 					});
 				}
 
+			});
+		},
+		bindSearchModalButton: function() {
+			$('#app-navbar-item-search-container').on({
+				'click': function() {
+					$('#item-search-modal').modal('show')
+				}
 			});
 		},
 		buildCard: function(args) {

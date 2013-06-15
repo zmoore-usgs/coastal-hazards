@@ -51,8 +51,8 @@
         <script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
     </head>
     <body>
-
         <jsp:include page="components/application-overlay.jsp"></jsp:include>
+		<jsp:include page="components/item-search.jsp"></jsp:include>
             <div id="application-container" class="container-fluid">
 
                 <div id="header-row" class="row-fluid">
@@ -121,4 +121,5 @@
         <script type="text/javascript">
 			$('#footer > .content').addClass('visible-desktop hidden-phone hidden-tablet');
         </script>
+		
     </body>

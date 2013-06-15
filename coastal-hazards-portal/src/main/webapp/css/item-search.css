@@ -1,0 +1,9 @@
+#item-search-row-map {
+	height : 300px;
+	width: 300px;
+}
+
+#app-navbar-item-search-container:hover {
+	cursor: pointer;
+	color: #D6DCE6;
+}
