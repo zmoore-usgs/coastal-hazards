@@ -1,24 +1,6 @@
 #app-navbar {
     margin-bottom: 0px;
 }
-
-.accordion-group-item {
-	color: #858585;
-}
-
-.accordion-group-item:hover{
-	color: #333333;
-	cursor: pointer;
-}
-
-.accordion-group-item > i {
-	font-size: 200%;
-}
-
-.accordion-heading-text {
-	font-size: 100%;
-}
-
 .nav-stacked li.active a img {
     height: 3.5em;
     width: 4.5em;
@@ -97,18 +79,21 @@
 	padding-left: 2px;
 }
 
-.app-navbar-search-icon {
-	margin-right: 5px;
-	color: white;
-	font-size: 18px;
+#app-navbar-pin-control-icon {
+	font-size: 2em;
 }
 
-#app-navbar-search-input-1 {
-	width : 190px;
+#app-navbar-pin-control-caret {
+	font-size: 2em;
 }
-#app-navbar-search-input-2 {
-	width : 170px;
+
+#app-navbar-item-search-container {
+	color: #FFFFFF;
+	font-size: 25px;
+	height: 40px;
 }
-#app-navbar-search-input-3 {
-	width : 155px;
+
+#app-navbar-item-search-container i {
+	padding: 5px;
+	display: inherit;
 }

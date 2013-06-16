@@ -16,12 +16,24 @@ CCH.Objects.Card = function(args) {
 	me.tweetButton = null;
 
 	return $.extend(me, {
+		init: function() {
+			return me;
+		},
 		create: function() {
 			me.container = $('<div />').addClass('description-container container-fluid');
 			var titleRow = $('<div />').addClass('description-title-row row-fluid');
 			var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
 			me.pinButton = $('<button />').addClass('btn  span1').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-zoom-in icon-eye-open slide-button muted'));
-			me.tweetButton = $('<button />').addClass('btn  span1').attr('type', 'button').append($('<i />').addClass('slide-menu-icon-twitter icon-twitter slide-button muted'));
+			me.tweetButton = $('<a />').
+					addClass('twitter-share-button').
+					attr({
+				'data-lang': 'en',
+				'data-count': 'none',
+				'data-hashtags': 'cch',
+				'data-text': me.name,
+				'data-url': 'http://go.usa.gov/random',
+				'data-counturl': window.location.href + 'sid=SomeRandomSessionId'
+			});
 
 			[me.pinButton, me.tweetButton].each(function(button) {
 				button.on({
@@ -72,10 +84,10 @@ CCH.Objects.Card = function(args) {
 
 			return me.container;
 		},
-		getAllCards : function() {
+		getAllCards: function() {
 			var descriptionContainers = $('.description-container');
 			var cards = [];
-			for (var contIdx = 0;contIdx < descriptionContainers.length;contIdx++) {
+			for (var contIdx = 0; contIdx < descriptionContainers.length; contIdx++) {
 				cards.push($(descriptionContainers[contIdx]).data('card'));
 			}
 			return cards;

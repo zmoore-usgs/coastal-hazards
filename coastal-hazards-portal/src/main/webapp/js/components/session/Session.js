@@ -1,3 +1,4 @@
+var CCH = CCH || {};
 CCH.Objects.Session = function(args) {
 	CCH.LOG.info('Session.js::constructor: Session class is initializing.');
 	var me = (this === window) ? {} : this;
@@ -175,6 +176,15 @@ CCH.Objects.Session = function(args) {
 			});
 
 			return toggleOn;
+		},
+		clearPinnedIds: function() {
+			me.objects.view.itemIds.length = 0;
+		},
+		getPinnedIdsCount: function() {
+			return me.objects.view.itemIds.length;
+		},
+		getPinnedIds: function() {
+			return me.objects.view.itemIds;
 		}
 	});
 };

@@ -1,20 +1,27 @@
+var CCH = CCH || {};
 CCH.Objects.UI = function(args) {
 	CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 	var me = (this === window) ? {} : this;
-	me.spinner = args.spinner;
-	me.searchbar = args.searchbar;
+	me.search;
 	me.mapdiv = args.mapdiv;
 	me.descriptionDiv = args.descriptionDiv;
 	me.magicResizeNumber = 767;
 	me.minimumHeight = args.minimumHeight || 480;
 	me.previousWidth = $(window).width();
 	me.currentSizing = '';
-	me.geocodeEndoint = args.geocodeEndpoint || 'http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find';
+	me.navbarPinButton = args.navbarPinButton;
+	me.navbarClearMenuItem = args.navbarClearMenuItem;
+	me.navbarShareMenuItem = args.navbarShareMenuItem;
+	me.applicationContainer = args.applicationContainer;
+	me.headerRow = args.headerRow;
+	me.footerRow = args.footerRow;
+	me.mapSearchContainer = args.mapSearchContainer;
+
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
 		init: function() {
-			this.bindSearchInput();
-			this.bindWindowResize();
+			me.bindNavbarPinMenu();
+			me.bindWindowResize();
 
 			var currWidth = me.previousWidth;
 			if (currWidth <= me.magicResizeNumber) {
@@ -24,11 +31,55 @@ CCH.Objects.UI = function(args) {
 			}
 
 			$(window).resize();
+			return me;
+		},
+		bindNavbarPinMenu: function() {
+			me.navbarPinButton.on('click', function() {
+				// Check to see if any cards are pinned
+				var isButtonToggledOn = !$('#app-navbar-pin-control-icon').hasClass('muted');
+				var pinnedCardIds = CCH.session.getPinnedIds();
+				var pinnedResults = null;
+
+				if (pinnedCardIds.length) {
+					// Pinned cards available - toggle the button on/off
+					$('#app-navbar-pin-control-icon').toggleClass('muted');
+					if (!isButtonToggledOn) {
+						// If cards are pinned, show only pinned cards
+						// Otherwise, show all cards
+						pinnedResults = [];
+						for (var pcIdx = 0; pcIdx < pinnedCardIds.length; pcIdx++) {
+							var id = pinnedCardIds[pcIdx];
+							pinnedResults.push(CCH.CONFIG.popularity.results.find(function(result) {
+								return result.id === id;
+							}));
+						}
+						CCH.map.zoomToActiveLayers();
+					}
+				}
+
+				// pinnedResults may or may not be an empty array. If it is, 
+				// the full deck will be seen. Otherwise, if pinnedResults is
+				// populated, only pinned cards will be seen
+				me.createSlideshow({
+					results: pinnedResults
+				});
+
+				$(window).trigger('cch.navbar.pinmenu.button.pin.click');
+			});
+
+			me.navbarClearMenuItem.on('click', function() {
+				$(window).trigger('cch.navbar.pinmenu.item.clear.click');
+				me.createSlideshow();
+			});
+			
+			me.navbarShareMenuItem.on('click', function() {
+				$('#multi-card-twitter-button').trigger('click');
+			})
 		},
 		bindWindowResize: function() {
 			$(window).resize(function() {
 				var currWidth = $(window).width();
-				var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
+				var contentRowHeight = $(window).height() - me.headerRow.height() - me.footerRow.height();
 
 				if (contentRowHeight < me.minimumHeight) {
 					contentRowHeight = me.minimumHeight;
@@ -50,7 +101,7 @@ CCH.Objects.UI = function(args) {
 						'padding-left': '0px',
 						'padding-right': '0px'
 					});
-					$('#application-container').css({
+					me.applicationContainer.css({
 						'padding-left': '0px',
 						'padding-right': '0px'
 					});
@@ -66,7 +117,7 @@ CCH.Objects.UI = function(args) {
 						'padding-left': '20px',
 						'padding-right': '20px'
 					});
-					$('#application-container').css({
+					me.applicationContainer.css({
 						'padding-left': '20px',
 						'padding-right': '20px'
 					});
@@ -75,54 +126,24 @@ CCH.Objects.UI = function(args) {
 				}
 
 				if (updated) {
+					$(window).trigger('cch.ui.resized', me.currentSizing);
 					me.createSlideshow();
 				}
 
+				var mapPosition = me.mapdiv.position();
+				var mapHeight = me.mapdiv.height();
+				var mapWidth = me.mapdiv.width();
+
+				var searchContainerHeight = me.mapSearchContainer.height();
+				var searchContainerWidth = me.mapSearchContainer.width();
+				me.mapSearchContainer.css({
+					top: mapPosition.top + mapHeight - searchContainerHeight - 10,
+					left: mapPosition.left + mapWidth - searchContainerWidth - 20,
+					zIndex: 1004
+				})
+
 				me.previousWidth = currWidth;
 			});
-		},
-		bindSearchInput: function() {
-			me.searchbar.submit(function(evt) {
-				var query = $('.search-query').val();
-				if (query) {
-					$.ajax({
-						type: 'GET',
-						url: me.geocodeEndoint,
-						data: {
-							text: query,
-							maxLocations: '20',
-							outFields: '*',
-							f: 'pjson',
-							outSR: '3785'
-						},
-						async: false,
-						contentType: 'application/json',
-						dataType: 'jsonp',
-						success: function(json) {
-							if (json.locations[0]) {
-								CCH.map.buildGeocodingPopup({
-									locations: json.locations
-								});
-
-							} else {
-							}
-						}
-					});
-				}
-
-			});
-		},
-		buildCard: function(args) {
-			var item = CCH.CONFIG.popularity.getById({
-				'id': args.itemId
-			});
-
-			var card = new CCH.Objects.Card({
-				item: item,
-				size: me.currentSizing
-			});
-
-			return card.create();
 		},
 		bindShareMenu: function(args) {
 			var menuItem = args.menuItem;
@@ -164,12 +185,6 @@ CCH.Objects.UI = function(args) {
 				}
 			});
 		},
-		showSpinner: function() {
-			me.spinner.fadeIn();
-		},
-		hideSpinner: function() {
-			me.spinner.fadeOut();
-		},
 		slider: function() {
 			var iosslider = $('#iosslider-container');
 			var sliderFunct;
@@ -199,7 +214,7 @@ CCH.Objects.UI = function(args) {
 				}, true);
 
 				results.each(function(result) {
-					var cardContainer = me.buildCard({
+					var cardContainer = CCH.cards.buildCard({
 						'itemId': result.id
 					});
 
@@ -210,42 +225,34 @@ CCH.Objects.UI = function(args) {
 					var card = $(cardContainer.data('card'))[0];
 					$(card).on({
 						'card-button-pin-clicked': function(evt) {
-							var card = evt.currentTarget;
 							me.slider('autoSlidePause');
-
-							var toggledOn = CCH.session.toggleId(card.item.id);
-							if (toggledOn) {
-								card.pin();
-							} else {
-								card.unpin();
-							}
 						},
 						'card-pinned': function(evt) {
 							var card = evt.currentTarget;
 
+							me.slider('autoSlidePause');
+
 							CCH.map.clearBoundingBoxMarkers();
 
 							CCH.map.displayData({
-								"card": card,
-								"type": card.type
+								"card": card
 							});
 
 							CCH.map.zoomToActiveLayers();
-							
-							me.slider('autoSlidePause');
+
 						},
 						'card-unpinned': function(evt) {
 							var card = evt.currentTarget;
 							var layers = CCH.map.getMap().getLayersByName(card.name);
-							
+
 							if (layers.length) {
 								layers.each(function(layer) {
 									CCH.map.getMap().removeLayer(layer, false);
 								});
 							}
-							
+
 							CCH.map.zoomToActiveLayers();
-							
+
 							if (CCH.map.getMap().getLayersBy('isItemLayer', true).length === 0) {
 								me.slider('autoSlidePlay');
 							}
@@ -259,9 +266,10 @@ CCH.Objects.UI = function(args) {
 					if (CCH.session.objects.view.itemIds.indexOf(card.item.id) !== -1) {
 						card.pin();
 					}
-
 				});
-
+				
+				twttr.widgets.load();
+				
 				var resizeVertical = function(event) {
 					toggleClassForActiveSlide(event);
 
@@ -339,26 +347,10 @@ CCH.Objects.UI = function(args) {
 					});
 
 					var card = $(event.currentSlideObject[0].firstChild).data('card');
-					var marker = CCH.map.addBoundingBoxMarker({
+					CCH.map.addBoundingBoxMarker({
 						bbox: card.bbox,
-						fromProjection: 'EPSG:4326'
-					});
-
-					$(marker.div).data('slideOrder', event.currentSlideNumber);
-					$(marker.div).on({
-						click: function(evt) {
-							var target = $(evt.target);
-							var slideOrder = target.data('slideOrder');
-							me.slider('goToSlide', slideOrder);
-							me.slider('autoSlidePause');
-							$('.slide-menu-icon-pause-play').removeClass('icon-pause').addClass('icon-play').parent().on({
-								'click': function(evt) {
-									CCH.CONFIG.ui.slider('autoSlidePlay');
-									$('.slide-menu-icon-pause-play').removeClass('icon-play').addClass('icon-pause');
-								}
-							});
-
-						}
+						fromProjection: 'EPSG:4326',
+						slideOrder: event.currentSlideNumber
 					});
 				};
 
@@ -398,7 +390,8 @@ CCH.Objects.UI = function(args) {
 				$(window).off('orientationchange', orientationChange);
 				$(window).on('orientationchange', orientationChange);
 				$(window).resize();
-			}, 1000);
+				
+			}, 1000, args);
 		}
 	});
 };
