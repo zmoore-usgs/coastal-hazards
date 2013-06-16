@@ -1,6 +1,7 @@
 package gov.usgs.cida.coastalhazards.rest;
 
 import com.google.gson.Gson;
+import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -16,6 +17,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Could also be called item or layer or some other way of describing a singular thing
@@ -28,8 +30,10 @@ public class CardResource {
     private static URL itemsUrl;
     private static URL dictionaryUrl;
     private Gson gson = new Gson();
+    private static ItemManager itemManager;
     static {
         itemsUrl = SummaryResource.class.getClassLoader().getResource("hotness.json");
+        itemManager = new ItemManager();
     }
 
     /**
@@ -42,14 +46,14 @@ public class CardResource {
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getCard(@PathParam("{id}") String id) throws FileNotFoundException, URISyntaxException {
+    public String getCard(@PathParam("{id}") String id) {
         String jsonResult = "";
-        
-        List<Map> cards = cardsList();
-        for (Map<String, String> card : cards) {
-            if (id.equals(card.get("key"))) {
-                jsonResult = gson.toJson(card, Map.class);
-            }
+        jsonResult = itemManager.load(id);
+        Response response = null;
+        if (null == jsonResult) {
+            response = Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            response = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).build();
         }
         return jsonResult;
     }

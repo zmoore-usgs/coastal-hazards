@@ -1,11 +1,13 @@
 package gov.usgs.cida.coastalhazards.rest;
 
+import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.session.io.SessionIO;
 import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
 import gov.usgs.cida.coastalhazards.jpa.SessionManager;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
-import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -14,7 +16,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -34,8 +35,7 @@ public class SessionResource {
         Response response = null;
         if (null == jsonSession) {
             response = Response.status(Response.Status.NOT_FOUND).build();
-        }
-        else {
+        } else {
             response = Response.ok(jsonSession, MediaType.APPLICATION_JSON_TYPE).build();
         }
         return response;
@@ -43,15 +43,15 @@ public class SessionResource {
     
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response postSession(String content) throws SessionIOException {
-        String saved = sessionIo.save(content);
+        final String sid = sessionIo.save(content);
         Response response = null;
-        if (null == saved) {
+        if (null == sid) {
             response = Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        else {
-            response = Response.ok(saved, MediaType.TEXT_PLAIN_TYPE).build();
+        } else {
+            Map<String, Object> ok = new HashMap<String, Object>() {{put("sid", sid);}};
+            response = Response.ok(new Gson().toJson(ok), MediaType.APPLICATION_JSON_TYPE).build();
         }
         return response;
     }
