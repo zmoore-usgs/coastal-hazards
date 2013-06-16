@@ -17,7 +17,7 @@ public class JPAHelper {
     
     public static EntityManagerFactory getEntityManagerFactory() {
         if (emf == null) {
-            Persistence.createEntityManagerFactory("coastalhazards");
+            emf = Persistence.createEntityManagerFactory("coastalhazards");
         }
         return emf;
     }

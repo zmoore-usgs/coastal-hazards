@@ -2,8 +2,12 @@ package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Geometry;
+import gov.usgs.cida.coastalhazards.geom.CoordinateSequenceDeserializer;
+import gov.usgs.cida.coastalhazards.geom.EnvelopeDeserializer;
+import gov.usgs.cida.coastalhazards.geom.GeometryDeserializer;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -17,23 +21,15 @@ import javax.persistence.*;
 @Entity
 @Table(name="session_table")
 public class Session implements Serializable {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1234567L;
     
-    @Id
+    public static final String TABLE_NAME = "session_table";
+    
     private transient String id;
-    @Column(name = "map_base_layer")
     private String baselayer;
-    @Column(name = "scale")
-	private double scale;
-    @Column(name = "bounding_box")
-    private Envelope extent;
-    @Column(name = "center")
-	private Point center;
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-      name="session_item",
-      joinColumns={@JoinColumn(name="session_id", referencedColumnName="id")},
-      inverseJoinColumns={@JoinColumn(name="item_id", referencedColumnName="id")})
+    private double scale;
+    private double[] bbox;
+    private double[] center;
     private List<Item> items;
     
 	/**
@@ -43,16 +39,15 @@ public class Session implements Serializable {
     @Transient
 	boolean isValid() {
         return (id != null && baselayer != null && !baselayer.isEmpty() &&
-                scale > 0.0 && extent != null && center != null && center.isValid() &&
-                items != null);
+                scale > 0.0 && bbox != null && bbox.length == 4 &&
+                center != null && center.length == 2);// &&
+               // items != null);
 	}
     
-    @Transient
     public String toJSON() {
         return new Gson().toJson(this);
     }
     
-    @Transient
     private static String makeSHA1Hash(String json) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA1");
         md.reset();
@@ -67,12 +62,16 @@ public class Session implements Serializable {
         return hexStr;
     }
     
-    @Transient
-    public static Session fromJSONString(String json) throws NoSuchAlgorithmException {
+    public static Session fromJSON(String json) throws NoSuchAlgorithmException {
         String id = makeSHA1Hash(json);
 
         Session session;
-        Gson gson = new GsonBuilder().create();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+//        gsonBuilder.registerTypeAdapter(Geometry.class, new GeometryDeserializer());
+//        gsonBuilder.registerTypeAdapter(Envelope.class, new EnvelopeDeserializer());
+//        gsonBuilder.registerTypeAdapter(CoordinateSequence.class, new CoordinateSequenceDeserializer());
+        Gson gson = gsonBuilder.create();
+
         session = gson.fromJson(json, Session.class);
         session.setId(id);
         return session;
@@ -82,10 +81,13 @@ public class Session implements Serializable {
         this.id = id;
     }
     
+    @Id
     public String getId() {
         return id;
     }
     
+
+    @Column(name = "map_base_layer")
     public String getBaselayer() {
         return baselayer;
     }
@@ -94,6 +96,7 @@ public class Session implements Serializable {
         this.baselayer = baselayer;
     }
 
+    @Column(name = "scale")
     public double getScale() {
         return scale;
     }
@@ -102,22 +105,29 @@ public class Session implements Serializable {
         this.scale = scale;
     }
 
-    public Envelope getExtent() {
-        return extent;
+    @Column(name = "bounding_box")
+    public double[] getBbox() {
+        return bbox;
     }
 
-    public void setExtent(Envelope extent) {
-        this.extent = extent;
+    public void setBbox(double[] bbox) {
+        this.bbox = bbox;
     }
 
-    public Point getCenter() {
+    @Column(name = "center")
+    public double[] getCenter() {
         return center;
     }
 
-    public void setCenter(Point center) {
+    public void setCenter(double[] center) {
         this.center = center;
     }
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+      name="session_item",
+      joinColumns={@JoinColumn(name="session_id", referencedColumnName="id")},
+      inverseJoinColumns={@JoinColumn(name="item_id", referencedColumnName="id")})
     public List<Item> getItems() {
         return items;
     }

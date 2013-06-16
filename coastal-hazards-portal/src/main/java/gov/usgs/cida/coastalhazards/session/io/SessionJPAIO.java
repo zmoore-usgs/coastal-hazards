@@ -5,6 +5,7 @@ import gov.usgs.cida.coastalhazards.model.Session;
 import java.security.NoSuchAlgorithmException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -14,15 +15,16 @@ public class SessionJPAIO implements SessionIO {
     
     @PersistenceContext
     private EntityManager em;
+    private TypedQuery<Session> query;
             
     public SessionJPAIO() {
         em = JPAHelper.getEntityManagerFactory().createEntityManager();
+        //query = em.createQuery("select s from Session s where s.id = ?", Session.class);
     }
 
     @Override
     public String load(String sessionID) throws SessionIOException {
-        Session session = em.createNamedQuery("Session.findByName", Session.class)
-                .setParameter("id", sessionID).getSingleResult();
+        Session session = em.find(Session.class, sessionID);
         String jsonSession = session.toJSON();
         return jsonSession;
     }
@@ -32,7 +34,7 @@ public class SessionJPAIO implements SessionIO {
         String id = "ERR";
         try {
             em.getTransaction().begin();
-            Session sessionObj = Session.fromJSONString(session);
+            Session sessionObj = Session.fromJSON(session);
             em.persist(sessionObj);
             id = sessionObj.getId();
             em.getTransaction().commit();

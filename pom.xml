@@ -130,6 +130,11 @@
 			<name>GeoSolutions</name>
 			<url>http://maven.geo-solutions.it/</url>
 		</repository>
+        <repository>
+            <id>hibernatespatial</id>
+            <name>Hibernate Spatial repo</name>
+            <url>http://www.hibernatespatial.org/repository</url>
+        </repository>
 	</repositories>
 	
 	<pluginRepositories>

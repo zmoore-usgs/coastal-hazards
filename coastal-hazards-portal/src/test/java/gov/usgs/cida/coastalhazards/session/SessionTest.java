@@ -3,8 +3,6 @@ package gov.usgs.cida.coastalhazards.session;
 import gov.usgs.cida.coastalhazards.session.io.SessionIO;
 import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
 import gov.usgs.cida.coastalhazards.session.io.SessionJPAIO;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -17,7 +15,7 @@ import static org.junit.Assert.*;
  * @author isuftin
  */
 public class SessionTest {
-	String sessionJSON =  "{\"baselayer\":\"ESRI World Imagery\",\"scale\":13867008.52318302,\"extent\":[-14879968.140907,3626269.4777222,-6470672.0382553,7755091.9969996],\"center\":[5690680.7373609,-10675320.089581]}";
+	String sessionJSON =  "{\"baselayer\":\"ESRI World Imagery\",\"scale\":13867008.52318302,\"bbox\":[-14879968.140907,3626269.4777222,-6470672.0382553,7755091.9969996],\"center\": [5690680.7373609,-10675320.089581]}";
 
 	public SessionTest() {
 	}
