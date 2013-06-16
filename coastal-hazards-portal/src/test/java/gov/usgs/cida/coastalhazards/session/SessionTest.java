@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 /**
  *
@@ -42,12 +43,13 @@ public class SessionTest {
 	}
     
     @Test
+    @Ignore // need to figure out how to do local db test
     public void testDB() throws SessionIOException {
         SessionIO sessionio = new SessionManager();
-		String sessionID = "3646d532bc933b96faf1fc0e4629d964117eba25";
+		String sessionID;
 		
-//		sessionID = sessionio.save(sessionJSON);
-//		assertNotNull(sessionID);
+		sessionID = sessionio.save(sessionJSON);
+		assertNotNull(sessionID);
 		
 		String json = sessionio.load(sessionID);
 		assertNotNull(json);

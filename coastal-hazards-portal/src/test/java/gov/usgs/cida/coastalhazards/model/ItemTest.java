@@ -5,17 +5,10 @@
 package gov.usgs.cida.coastalhazards.model;
 
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
-import gov.usgs.cida.coastalhazards.jpa.SessionManager;
-import gov.usgs.cida.coastalhazards.model.ogc.OGCService;
-import gov.usgs.cida.coastalhazards.session.io.SessionIO;
 import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
-import java.util.Set;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 /**
  *
@@ -44,6 +37,7 @@ public class ItemTest {
 "           }";
     
     @Test
+    @Ignore //need to figure out how to do local db test
     public void testDB() throws SessionIOException {
         ItemManager manager = new ItemManager();
 		String id;

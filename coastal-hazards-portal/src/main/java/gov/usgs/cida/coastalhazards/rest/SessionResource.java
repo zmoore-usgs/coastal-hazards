@@ -51,7 +51,7 @@ public class SessionResource {
             response = Response.status(Response.Status.BAD_REQUEST).build();
         } else {
             Map<String, Object> ok = new HashMap<String, Object>() {{put("sid", sid);}};
-            response = Response.ok(new Gson().toJson(ok), MediaType.APPLICATION_JSON_TYPE).build();
+            response = Response.ok(new Gson().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
         }
         return response;
     }
