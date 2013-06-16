@@ -119,5 +119,5 @@
         <script type="text/javascript">
 			$('#footer > .content').addClass('visible-desktop hidden-phone hidden-tablet');
         </script>
-
+		<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
     </body>
