@@ -35,7 +35,7 @@
 				</span>
 
 				<span id="app-navbar-item-search-container" class="pull-right">
-					<i class="icon-search"></i><i class="icon-long-arrow-left"></i>
+					<i class="icon-search"></i>
 				</span>
 
 				<%-- 
