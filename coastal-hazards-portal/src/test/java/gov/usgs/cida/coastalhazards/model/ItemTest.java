@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
  */
 public class ItemTest {
     
-    String itemJSON =  "{\"metadata\": \"testMetaUrl\"," +
+   String itemJSON =  "{\"metadata\": \"testMetaUrl\"," +
 "            \"wfsService\": {\n" +
 "                    \"endpoint\": \"http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs\",\n" +
 "                    \"typeName\": \"published:KauaiE_shorelines\"\n" +
@@ -35,8 +35,13 @@ public class ItemTest {
 "            \"name\": \"Linear Regression Rate of shorelines in eastern Kauai, HI\",\n" +
 "            \"type\": \"historical\",\n" +
 "            \"attr\": \"LRR\",\n" +
-"            \"bbox\": [-159.35, 21.96, -159.29, 22.17]"
-            + "}";
+"            \"bbox\": [-159.35, 21.96, -159.29, 22.17]," +
+"            \"summary\": {" +
+"               \"tiny\": \"Linear Regression Rate of shorelines in eastern Kauai, HI\"," +
+"               \"medium\": \"This dataset includes shorelines ranging from 1927 to 2008 in the Kauai East coastal region from Pilaa to Nawiliwili. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps\"," +
+"               \"info\": \"temporary placeholder\"" + 
+"            }" +             
+"           }";
     
     @Test
     public void testDB() throws SessionIOException {

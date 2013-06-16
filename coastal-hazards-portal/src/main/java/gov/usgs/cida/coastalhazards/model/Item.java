@@ -2,17 +2,16 @@ package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import gov.usgs.cida.coastalhazards.model.ogc.OGCService;
 import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
 import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
 import gov.usgs.cida.utilities.IdGenerator;
 import java.io.Serializable;
-import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -33,6 +32,7 @@ public class Item implements Serializable {
     private double[] bbox;
     private WFSService wfsService;
     private WMSService wmsService;
+    private Summary summary;
     
     @Id
     public String getId() {
@@ -99,6 +99,18 @@ public class Item implements Serializable {
     public void setBbox(double[] bbox) {
         this.bbox = bbox;
     }
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(columnDefinition = "summary_id")
+    public Summary getSummary() {
+        return summary;
+    }
+
+    public void setSummary(Summary summary) {
+        this.summary = summary;
+    }
+    
+    
     
     public static Item fromJSON(String json) {
         

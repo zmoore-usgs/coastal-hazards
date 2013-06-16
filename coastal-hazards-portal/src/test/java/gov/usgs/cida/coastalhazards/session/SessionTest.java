@@ -15,7 +15,12 @@ import static org.junit.Assert.*;
  * @author isuftin
  */
 public class SessionTest {
-	String sessionJSON =  "{\"baselayer\":\"ESRI World Imagery\",\"scale\":13867008.52318302,\"bbox\":[-14879968.140907,3626269.4777222,-6470672.0382553,7755091.9969996],\"center\": [5690680.7373609,-10675320.089581]}";
+	String sessionJSON =  "{\"baselayer\":\"ESRI World Imagery\","
+            + "\"scale\":13867008.52318302,\"bbox\":[-14879968.140907,3626269.4777222,-6470672.0382553,7755091.9969996],"
+            + "\"center\": [5690680.7373609,-10675320.089581],"
+            + "\"items\": ["
+            + "{ \"id\":\"C2qL7nP\"}"
+            + "]}";
 
 	public SessionTest() {
 	}
@@ -39,10 +44,10 @@ public class SessionTest {
     @Test
     public void testDB() throws SessionIOException {
         SessionIO sessionio = new SessionManager();
-		String sessionID;
+		String sessionID = "3646d532bc933b96faf1fc0e4629d964117eba25";
 		
-		sessionID = sessionio.save(sessionJSON);
-		assertNotNull(sessionID);
+//		sessionID = sessionio.save(sessionJSON);
+//		assertNotNull(sessionID);
 		
 		String json = sessionio.load(sessionID);
 		assertNotNull(json);
