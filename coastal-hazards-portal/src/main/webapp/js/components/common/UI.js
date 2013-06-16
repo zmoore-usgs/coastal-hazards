@@ -71,6 +71,10 @@ CCH.Objects.UI = function(args) {
 				$(window).trigger('cch.navbar.pinmenu.item.clear.click');
 				me.createSlideshow();
 			});
+			
+			me.navbarShareMenuItem.on('click', function() {
+				$('#multi-card-twitter-button').trigger('click');
+			})
 		},
 		bindWindowResize: function() {
 			$(window).resize(function() {
@@ -264,7 +268,7 @@ CCH.Objects.UI = function(args) {
 					}
 				});
 				
-				twttr.widgets.load()
+				twttr.widgets.load();
 				
 				var resizeVertical = function(event) {
 					toggleClassForActiveSlide(event);
