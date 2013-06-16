@@ -1,7 +1,9 @@
-package gov.usgs.cida.coastalhazards.session.io;
+package gov.usgs.cida.coastalhazards.jpa;
 
 import gov.usgs.cida.coastalhazards.jpa.JPAHelper;
 import gov.usgs.cida.coastalhazards.model.Session;
+import gov.usgs.cida.coastalhazards.session.io.SessionIO;
+import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
 import java.security.NoSuchAlgorithmException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -11,13 +13,13 @@ import javax.persistence.TypedQuery;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class SessionJPAIO implements SessionIO {
+public class SessionManager implements SessionIO {
     
     @PersistenceContext
     private EntityManager em;
     private TypedQuery<Session> query;
             
-    public SessionJPAIO() {
+    public SessionManager() {
         em = JPAHelper.getEntityManagerFactory().createEntityManager();
         //query = em.createQuery("select s from Session s where s.id = ?", Session.class);
     }

@@ -2,12 +2,6 @@ package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import gov.usgs.cida.coastalhazards.geom.CoordinateSequenceDeserializer;
-import gov.usgs.cida.coastalhazards.geom.EnvelopeDeserializer;
-import gov.usgs.cida.coastalhazards.geom.GeometryDeserializer;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -22,8 +16,6 @@ import javax.persistence.*;
 @Table(name="session_table")
 public class Session implements Serializable {
 	private static final long serialVersionUID = 1234567L;
-    
-    public static final String TABLE_NAME = "session_table";
     
     private transient String id;
     private String baselayer;

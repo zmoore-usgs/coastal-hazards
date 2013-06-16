@@ -2,7 +2,7 @@ package gov.usgs.cida.coastalhazards.session;
 
 import gov.usgs.cida.coastalhazards.session.io.SessionIO;
 import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
-import gov.usgs.cida.coastalhazards.session.io.SessionJPAIO;
+import gov.usgs.cida.coastalhazards.jpa.SessionManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -38,7 +38,7 @@ public class SessionTest {
     
     @Test
     public void testDB() throws SessionIOException {
-        SessionIO sessionio = new SessionJPAIO();
+        SessionIO sessionio = new SessionManager();
 		String sessionID;
 		
 		sessionID = sessionio.save(sessionJSON);
