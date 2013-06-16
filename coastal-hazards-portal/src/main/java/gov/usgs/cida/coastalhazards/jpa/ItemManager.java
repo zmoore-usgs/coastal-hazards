@@ -1,8 +1,13 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
+import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.model.Item;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -35,6 +40,14 @@ public class ItemManager {
             em.getTransaction().rollback();
         }
         return id;
+    }
+    
+    public String query(/* will have params here */) {
+        Query query = em.createQuery("select i from Item i", Item.class);
+        List<Item> resultList = query.getResultList();
+        Map<String, List> resultMap = new HashMap<String, List>();
+        resultMap.put("items", resultList);
+        return new Gson().toJson(resultMap, HashMap.class);
     }
     
 }
