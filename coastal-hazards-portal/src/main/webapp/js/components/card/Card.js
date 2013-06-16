@@ -28,7 +28,6 @@ CCH.Objects.Card = function(args) {
 					addClass('twitter-share-button').
 					attr({
 				'data-lang': 'en',
-				'data-size': 'medium',
 				'data-count': 'none',
 				'data-hashtags': 'cch',
 				'data-text': me.name,

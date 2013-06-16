@@ -38,7 +38,7 @@ CCH.Objects.Cards = function(args) {
 					}
 					me.updatePinnedCount();
 				}
-			})
+			});
 
 			return card.create();
 		},
@@ -65,8 +65,15 @@ CCH.Objects.Cards = function(args) {
 		},
 		updatePinnedCount: function() {
 			me.pinnedCount = CCH.session.getPinnedIdsCount();
-			$('#app-navbar-pin-control-pincount').html(me.getPinnedCount());
-			return me.getPinnedCount();
-		},
+			$('#app-navbar-pin-control-pincount').html(me.pinnedCount);
+			if (me.pinnedCount > 0) {
+				$('#app-navbar-pin-control-clear-li').removeClass('disabled');
+				$('#app-navbar-pin-control-share-li').removeClass('disabled');
+			} else {
+				$('#app-navbar-pin-control-clear-li').removeClass('enabled');
+				$('#app-navbar-pin-control-share-li').removeClass('enabled');
+			};
+			return me.pinnedCount;
+		}
 	});
 };

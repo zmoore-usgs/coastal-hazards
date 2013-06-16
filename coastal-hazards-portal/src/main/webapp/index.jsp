@@ -120,4 +120,5 @@
 			$('#footer > .content').addClass('visible-desktop hidden-phone hidden-tablet');
         </script>
 		<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+		<a id='multi-card-twitter-button' class='twitter-share-button hide' data-lang='en' data-count='none' data-hashtags='cch' data-text='Check out my pinned items on CCH!' data-url='http://go.usa.gov/random' data-counturl='sid=SomeRandomSessionId'></a>
     </body>
