@@ -115,7 +115,7 @@ CCH.Objects.Search = function(args) {
 
 			me.submitButton.on({
 				'click': function() {
-					var data = {
+					var query = {
 						'top': me.north.html(),
 						'bottom': me.south.html(),
 						'left': me.west.html(),

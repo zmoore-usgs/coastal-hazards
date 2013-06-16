@@ -262,9 +262,10 @@ CCH.Objects.UI = function(args) {
 					if (CCH.session.objects.view.itemIds.indexOf(card.item.id) !== -1) {
 						card.pin();
 					}
-
 				});
-
+				
+				twttr.widgets.load()
+				
 				var resizeVertical = function(event) {
 					toggleClassForActiveSlide(event);
 
@@ -385,6 +386,7 @@ CCH.Objects.UI = function(args) {
 				$(window).off('orientationchange', orientationChange);
 				$(window).on('orientationchange', orientationChange);
 				$(window).resize();
+				
 			}, 1000, args);
 		}
 	});

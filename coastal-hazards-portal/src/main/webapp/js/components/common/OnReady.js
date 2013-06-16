@@ -12,8 +12,10 @@ $(document).ready(function() {
 	splashUpdate("Initializing Session...");
 	CCH.session = new CCH.Objects.Session();
 
+	splashUpdate("Initializing Card Subsystem...");
 	CCH.cards = new CCH.Objects.Cards().init();
 	
+	splashUpdate("Initializing Search Subsystem...");
 	CCH.search = new CCH.Objects.Search({
 		searchbar: $('.app-navbar-search-form'),
 		geocodeEndoint : CCH.CONFIG.data.sources.geocoding.endpoint,
