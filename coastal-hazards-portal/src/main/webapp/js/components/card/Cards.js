@@ -11,6 +11,9 @@ CCH.Objects.Cards = function(args) {
 				},
 				'cch.navbar.pinmenu.item.clear.click': function(evt) {
 					me.unpinAllCards();
+				},
+				'cch.ui.initialized' : function(evt) {
+					me.updatePinnedCount();
 				}
 			});
 

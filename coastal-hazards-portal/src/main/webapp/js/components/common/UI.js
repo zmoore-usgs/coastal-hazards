@@ -24,7 +24,7 @@ CCH.Objects.UI = function(args) {
 		init: function() {
 			me.bindNavbarPinMenu();
 			me.bindWindowResize();
-
+			
 			var currWidth = me.previousWidth;
 			if (currWidth <= me.magicResizeNumber) {
 				me.currentSizing = 'small';
@@ -33,6 +33,7 @@ CCH.Objects.UI = function(args) {
 			}
 
 			$(window).resize();
+			$(window).trigger('cch.ui.initialized');
 			return me;
 		},
 		bindNavbarPinMenu: function() {
