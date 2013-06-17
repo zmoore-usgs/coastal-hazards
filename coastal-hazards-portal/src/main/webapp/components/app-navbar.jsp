@@ -18,14 +18,14 @@
 
 				<span id="app-navbar-pin-control">
 					<div class="btn-group">
-						<a id='app-navbar-pin-control-button' class="btn btn-mini" href='#'><i id='app-navbar-pin-control-icon' class="icon-eye-open muted"></i>&nbsp;<span id='app-navbar-pin-control-pincount'>0</span></a>
-						<a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#"><span id='app-navbar-pin-control-caret' class="icon-caret-down"></span></a>
+						<button id='app-navbar-pin-control-button' class="btn btn-mini disabled" href='#'><i id='app-navbar-pin-control-icon' class="icon-eye-open muted"></i>&nbsp;<span id='app-navbar-pin-control-pincount'>0</span></button>
+						<button id='app-navbar-pin-control-dropdown-button' class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown" href="#"><span id='app-navbar-pin-control-caret' class="icon-caret-down"></span></button>
 						<ul class="dropdown-menu">
-							<li id='app-navbar-pin-control-clear-li' class="disabled"><a id='app-navbar-pin-control-clear' href="#">Clear Deck</a></li>
-							<li class="dropdown-submenu">
+							<li id='app-navbar-pin-control-clear-li'><a id='app-navbar-pin-control-clear' href="#">Clear Deck</a></li>
+							<li id='app-navbar-pin-control-share-li' class="dropdown-submenu">
 								<a tabindex="-1" href="#">Share Deck</a>
 								<ul class="dropdown-menu">
-									<li id='app-navbar-pin-control-share-li' class="disabled"><a id='app-navbar-pin-control-share' href="#">
+									<li><a id='app-navbar-pin-control-share' href="#">
 											<a id='multi-card-twitter-button' class='twitter-share-button' data-lang='en' data-count='none' data-hashtags='cch' data-text='Check out my pinned items on CCH!' data-url='http://go.usa.gov/random' data-counturl='sid=SomeRandomSessionId'></a>
 									</li>
 								</ul>
