@@ -67,11 +67,11 @@ CCH.Objects.Cards = function(args) {
 			me.pinnedCount = CCH.session.getPinnedIdsCount();
 			$('#app-navbar-pin-control-pincount').html(me.pinnedCount);
 			if (me.pinnedCount > 0) {
-				$('#app-navbar-pin-control-clear-li').removeClass('disabled');
-				$('#app-navbar-pin-control-share-li').removeClass('disabled');
+				$('#app-navbar-pin-control-button').removeClass('disabled');
+				$('#app-navbar-pin-control-dropdown-button').removeClass('disabled');
 			} else {
-				$('#app-navbar-pin-control-clear-li').removeClass('enabled');
-				$('#app-navbar-pin-control-share-li').removeClass('enabled');
+				$('#app-navbar-pin-control-button').addClass('disabled');
+				$('#app-navbar-pin-control-dropdown-button').addClass('disabled');
 			};
 			return me.pinnedCount;
 		}

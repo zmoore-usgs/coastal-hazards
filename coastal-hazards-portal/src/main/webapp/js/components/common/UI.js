@@ -10,8 +10,9 @@ CCH.Objects.UI = function(args) {
 	me.previousWidth = $(window).width();
 	me.currentSizing = '';
 	me.navbarPinButton = args.navbarPinButton;
+	me.navbarPinDropdownButton = args.navbarDropdownIcon;
 	me.navbarClearMenuItem = args.navbarClearMenuItem;
-	me.navbarShareMenuItem = args.navbarShareMenuItem;
+	me.navbarShareMenuListItem = args.navbarShareMenuListItem;
 	me.applicationContainer = args.applicationContainer;
 	me.headerRow = args.headerRow;
 	me.footerRow = args.footerRow;
@@ -44,17 +45,17 @@ CCH.Objects.UI = function(args) {
 					// Pinned cards available - toggle the button on/off
 					$('#app-navbar-pin-control-icon').toggleClass('muted');
 					if (!isButtonToggledOn) {
-						// If cards are pinned, show only pinned cards
-						// Otherwise, show all cards
-						pinnedResults = [];
-						for (var pcIdx = 0; pcIdx < pinnedCardIds.length; pcIdx++) {
-							var id = pinnedCardIds[pcIdx];
-							pinnedResults.push(CCH.CONFIG.popularity.results.find(function(result) {
-								return result.id === id;
-							}));
-						}
-						CCH.map.zoomToActiveLayers();
+					// If cards are pinned, show only pinned cards
+					// Otherwise, show all cards
+					pinnedResults = [];
+					for (var pcIdx = 0; pcIdx < pinnedCardIds.length; pcIdx++) {
+						var id = pinnedCardIds[pcIdx];
+						pinnedResults.push(CCH.CONFIG.popularity.results.find(function(result) {
+							return result.id === id;
+						}));
 					}
+					CCH.map.zoomToActiveLayers();
+				}
 				}
 
 				// pinnedResults may or may not be an empty array. If it is, 
@@ -71,10 +72,6 @@ CCH.Objects.UI = function(args) {
 				$(window).trigger('cch.navbar.pinmenu.item.clear.click');
 				me.createSlideshow();
 			});
-			
-			me.navbarShareMenuItem.on('click', function() {
-				$('#multi-card-twitter-button').trigger('click');
-			})
 		},
 		bindWindowResize: function() {
 			$(window).resize(function() {
@@ -145,46 +142,46 @@ CCH.Objects.UI = function(args) {
 				me.previousWidth = currWidth;
 			});
 		},
-		bindShareMenu: function(args) {
-			var menuItem = args.menuItem;
-			menuItem.popover({
-				html: true,
-				placement: 'right',
-				trigger: 'manual',
-				title: 'Share Session',
-				container: 'body',
-				content: "<div class='container-fluid' id='prepare-container'><div>Preparing session export...</div></div>"
-			}).on({
-				'click': me.popoverClickHandler,
-				'shown': function() {
-					CCH.session.getMinifiedEndpoint({
-						callbacks: [
-							function(args) {
-								var response = args.response;
-								var url = args.url;
-
-								// URL controlset
-								var container = $('<div />').addClass('container-fluid');
-								var row = $('<div />').addClass('row-fluid');
-								var controlSetDiv = $('<div />');
-								container.append(row.append(controlSetDiv));
-								$('#prepare-container').replaceWith(container);
-
-
-								var goUsaResponse = JSON.parse(response.response);
-								if (goUsaResponse.response.statusCode && goUsaResponse.response.statusCode.toLowerCase() === 'error') {
-									CCH.LOG.warn(response.response);
-								} else {
-									url = goUsaResponse.response.data.entry[0].short_url;
-								}
-								controlSetDiv.html('Use the following URL to share your current view<br /><br /><b>' + url + '</b>');
-							}
-						]
-					});
-					CCH.CONFIG.ui.popoverShowHandler.call(this);
-				}
-			});
-		},
+//		bindShareMenu: function(args) {
+//			var menuItem = args.menuItem;
+//			menuItem.popover({
+//				html: true,
+//				placement: 'right',
+//				trigger: 'manual',
+//				title: 'Share Session',
+//				container: 'body',
+//				content: "<div class='container-fluid' id='prepare-container'><div>Preparing session export...</div></div>"
+//			}).on({
+//				'click': me.popoverClickHandler,
+//				'shown': function() {
+//					CCH.session.getMinifiedEndpoint({
+//						callbacks: [
+//							function(args) {
+//								var response = args.response;
+//								var url = args.url;
+//
+//								// URL controlset
+//								var container = $('<div />').addClass('container-fluid');
+//								var row = $('<div />').addClass('row-fluid');
+//								var controlSetDiv = $('<div />');
+//								container.append(row.append(controlSetDiv));
+//								$('#prepare-container').replaceWith(container);
+//
+//
+//								var goUsaResponse = JSON.parse(response.response);
+//								if (goUsaResponse.response.statusCode && goUsaResponse.response.statusCode.toLowerCase() === 'error') {
+//									CCH.LOG.warn(response.response);
+//								} else {
+//									url = goUsaResponse.response.data.entry[0].short_url;
+//								}
+//								controlSetDiv.html('Use the following URL to share your current view<br /><br /><b>' + url + '</b>');
+//							}
+//						]
+//					});
+//					CCH.CONFIG.ui.popoverShowHandler.call(this);
+//				}
+//			});
+//		},
 		slider: function() {
 			var iosslider = $('#iosslider-container');
 			var sliderFunct;
@@ -267,9 +264,9 @@ CCH.Objects.UI = function(args) {
 						card.pin();
 					}
 				});
-				
+
 				twttr.widgets.load();
-				
+
 				var resizeVertical = function(event) {
 					toggleClassForActiveSlide(event);
 
@@ -390,7 +387,7 @@ CCH.Objects.UI = function(args) {
 				$(window).off('orientationchange', orientationChange);
 				$(window).on('orientationchange', orientationChange);
 				$(window).resize();
-				
+
 			}, 1000, args);
 		}
 	});
