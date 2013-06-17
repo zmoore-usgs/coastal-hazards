@@ -41,8 +41,9 @@ $(document).ready(function() {
 		mapdiv: $('#map'),
 		descriptionDiv: $('#description-wrapper'),
 		navbarPinButton: $('#app-navbar-pin-control-button'),
+		navbarDropdownIcon : $('#app-navbar-pin-control-icon'),
 		navbarClearMenuItem: $('#app-navbar-pin-control-clear'),
-		navbarShareMenuItem: $('#app-navbar-pin-control-share'),
+		navbarShareMenuListItem: $('#app-navbar-pin-control-share-li'),
 		mapSearchContainer : $('#map-search-container')
 	}).init();
 
