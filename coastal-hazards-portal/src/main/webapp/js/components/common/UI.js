@@ -17,6 +17,7 @@ CCH.Objects.UI = function(args) {
 	me.headerRow = args.headerRow;
 	me.footerRow = args.footerRow;
 	me.mapSearchContainer = args.mapSearchContainer;
+	me.itemSearchModalWindow = args.itemSearchModalWindow;
 
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
