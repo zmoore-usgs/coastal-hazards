@@ -20,6 +20,7 @@
 <script type="text/javascript">
 	splashUpdate("Setting configuration...");
 	CCH.CONFIG = {
+		incomingSessionId : '${param.sessionId}',
 		development: <%= development%>,
 		ajaxTimeout: 300000,
 		popupHandling: {

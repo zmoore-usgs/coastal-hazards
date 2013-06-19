@@ -22,7 +22,7 @@ import javax.ws.rs.core.MediaType;
  *
  * @author jordan
  */
-@Path("cards")
+@Path("/data/item")
 public class CardResource {
     
     private static URL itemsUrl;

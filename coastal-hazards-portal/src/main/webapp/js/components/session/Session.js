@@ -4,7 +4,7 @@ CCH.Objects.Session = function(args) {
 	var me = (this === window) ? {} : this;
 	args = args ? args : {};
 
-	me.serviceEndpoint = 'rest/sessions';
+	me.serviceEndpoint = 'rest/ui/view/';
 	me.objects = {
 		view: {
 			itemIds: []
@@ -39,7 +39,7 @@ CCH.Objects.Session = function(args) {
 			var successCallbacks = callbacks.success || [];
 			var errorCallbacks = callbacks.error || [];
 			CCH.LOG.info("Will try to load session '" + sid + "' from server");
-			me.getSession({
+			me.readSession({
 				sid: sid,
 				callbacks: {
 					success: [
@@ -65,23 +65,28 @@ CCH.Objects.Session = function(args) {
 			var context = args.context;
 
 			if (sid) {
-				$.ajax('service/session', {
-					type: 'POST',
-					data: {
-						'sid': sid,
-						'action': 'read'
-					},
-					success: function(data, textStatus, jqXHR) {
+				$.ajax(me.serviceEndpoint + sid, {
+					type: 'GET',
+					contentType: 'application/json;charset=utf-8',
+					dataType: 'json',
+					success: function(json, textStatus, jqXHR) {
 						var session = null;
-						if (data.success === 'true') {
-							session = data.session;
+						if (json.objects) {
+							me.objects = json.objects;
+							if (successCallbacks && successCallbacks.length > 0) {
+								successCallbacks.each(function(callback) {
+									callback.call(context, session);
+								});
+							}
+						} else {
+							if (errorCallbacks && errorCallbacks.length > 0) {
+								errorCallbacks.each(function(callback) {
+									callback.call(context, null);
+								});
+							}
 						}
 
-						if (successCallbacks && successCallbacks.length > 0) {
-							successCallbacks.each(function(callback) {
-								callback.call(context, session);
-							});
-						}
+
 					},
 					error: function(data, textStatus, jqXHR) {
 						if (errorCallbacks && errorCallbacks.length > 0) {

@@ -20,7 +20,7 @@ import org.apache.commons.io.FileUtils;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Path("sessions")
+@Path("/ui/view")
 public class SessionResource {
     
     private static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
