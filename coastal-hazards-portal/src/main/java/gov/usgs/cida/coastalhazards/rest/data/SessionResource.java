@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.rest;
+package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.session.io.SessionIO;
@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Path("sessions")
+@Path("view")
 public class SessionResource {
     
     private static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();

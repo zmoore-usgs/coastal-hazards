@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.rest;
+package gov.usgs.cida.coastalhazards.rest.ui;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
