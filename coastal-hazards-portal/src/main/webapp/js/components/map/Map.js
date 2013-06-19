@@ -1,47 +1,47 @@
 CCH.Objects.Map = function(args) {
 	var mapDivId = args.mapDiv;
 	var me = (this === window) ? {} : this;
-	me.initialExtent = [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826];
+	me.initialExtent = CCH.CONFIG.map.initialExtent;
 	return $.extend(me, {
 		init: function() {
 			CCH.LOG.info('Map.js::init():Map class is initializing.');
-			
+
 			me.map = new OpenLayers.Map(mapDivId, {
-				projection: "EPSG:900913",
-				displayProjection: new OpenLayers.Projection("EPSG:900913")
+				projection: CCH.CONFIG.map.projection,
+				displayProjection: new OpenLayers.Projection(CCH.CONFIG.map.projection)
 			});
 
-			CCH.LOG.debug('Map.js::init():Creating base layers');
-			me.map.addLayers(CCH.CONFIG.map.baselayers);
+			CCH.LOG.debug('Map.js::init():Adding base layers to map');
+			me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
 
-			me.markerLayer = new OpenLayers.Layer.Markers('geocoding-marker-layer', {
-				displayInLayerSwitcher: false
-			});
+			CCH.LOG.debug('Map.js::init():Adding marker layer to map');
+			me.markerLayer = CCH.CONFIG.map.layers.markerLayer;
 			me.map.addLayer(me.markerLayer);
 
-			me.boxLayer = new OpenLayers.Layer.Boxes('map-boxlayer', {
-				displayInLayerSwitcher: false
-			});
+			CCH.LOG.debug('Map.js::init():Adding box layer to map');
+			me.boxLayer = CCH.CONFIG.map.layers.boxLayer;
 			me.map.addLayer(me.boxLayer);
 
 			CCH.LOG.debug('Map.js::init():Adding ontrols to map');
-			me.map.addControl(new OpenLayers.Control.LayerSwitcher({
-				roundedCorner: true
-			}));
+			me.map.addControls(CCH.CONFIG.map.controls);
 
 			CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);
 			me.map.zoomToExtent(me.initialExtent, true);
 
 			me.map.events.on({
-				'moveend': me.moveendCallback,
+				'moveend': me.updateSession,
 				'addlayer': function() {
-					// The bounding box layer needs to sit on top of other layers in 
-					// order to be hoverable and clickable
-					while (me.boxLayer !== me.map.layers[me.map.layers.length - 1]) {
-						me.map.raiseLayer(me.boxLayer, 1);
-					}
+					me.updateSession();
+					me.floatBoxLayer();
+				},
+				'changelayer': function() {
+					me.updateSession();
+					me.floatBoxLayer();
 				}
 			});
+
+			me.updateSession();
+
 			return me;
 		},
 		getMap: function() {
@@ -300,17 +300,10 @@ CCH.Objects.Map = function(args) {
 
 				me.map.addLayer(layer);
 				layer.redraw(true);
-
-				CCH.session.objects.view.activeLayers.push = [{
-						title: card.name,
-						name: card.name,
-						layers: card.service.wms.layers,
-						type: type
-					}];
 			}
 		},
-		moveendCallback: function(evt) {
-			var map = evt.object;
+		updateSession: function() {
+			var map = me.map;
 			var sMap = CCH.session.getMap();
 
 			sMap.baselayer = map.baseLayer.name;
@@ -320,6 +313,15 @@ CCH.Objects.Map = function(args) {
 			};
 			sMap.scale = map.getScale();
 			sMap.extent = map.getExtent().toArray();
+		},
+		floatBoxLayer: function() {
+			// The bounding box layer needs to sit on top of other layers in 
+			// order to be hoverable and clickable
+			if (me.boxLayer) {
+				while (me.boxLayer !== me.map.layers[me.map.layers.length - 1]) {
+					me.map.raiseLayer(me.boxLayer, 1);
+				}
+			}
 		}
 	});
 };

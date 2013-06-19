@@ -32,7 +32,7 @@ public class SessionResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSession(@PathParam("sid") String sid) throws SessionIOException {
         String jsonSession = sessionIo.load(sid);
-        Response response = null;
+        Response response;
         if (null == jsonSession) {
             response = Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -47,7 +47,7 @@ public class SessionResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response postSession(String content) throws SessionIOException {
         String saved = sessionIo.save(content);
-        Response response = null;
+        Response response;
         if (null == saved) {
             response = Response.status(Response.Status.BAD_REQUEST).build();
         }

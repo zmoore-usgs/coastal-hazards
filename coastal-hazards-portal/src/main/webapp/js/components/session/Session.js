@@ -4,10 +4,10 @@ CCH.Objects.Session = function(args) {
 	var me = (this === window) ? {} : this;
 	args = args ? args : {};
 
+	me.serviceEndpoint = 'rest/sessions';
 	me.objects = {
 		view: {
-			itemIds: [],
-			activeLayers: []
+			itemIds: []
 		},
 		map: {
 			baselayer: 'Not Yet Initialized',
@@ -57,7 +57,7 @@ CCH.Objects.Session = function(args) {
 				}
 			});
 		},
-		getSession: function(args) {
+		readSession: function(args) {
 			var sid = args.sid;
 			var callbacks = args.callbacks || {};
 			var successCallbacks = callbacks.success || [];
@@ -93,15 +93,15 @@ CCH.Objects.Session = function(args) {
 				});
 			}
 		},
-		getIdentifier: function(args) {
-			var context = args.context;
+		writeSession: function(args) {
+			args = args || {};
+			var context = args.context || me;
 			var callbacks = args.callbacks || [];
-			$.ajax('service/session', {
+			$.ajax(me.serviceEndpoint, {
 				type: 'POST',
-				data: {
-					'session': this.toString(),
-					'action': 'write'
-				},
+				contentType: 'application/json;charset=utf-8',
+				dataType: 'json',
+				data: me.toString(),
 				success: function(data, textStatus, jqXHR) {
 					if (data.success === 'true') {
 						var sid = data.sid;
