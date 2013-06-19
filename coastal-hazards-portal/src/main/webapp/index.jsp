@@ -102,6 +102,7 @@
         </jsp:include>
 
         <script type="text/javascript" src="js/openlayers/lib/OpenLayers/Layer/Shorelines.js"></script>
+        <script type="text/javascript" src="js/components/slideshow/Slideshow.js"></script>
         <script type="text/javascript" src="js/components/search/Search.js"></script>
         <script type="text/javascript" src="js/components/session/Session.js"></script>
         <script type="text/javascript" src="js/components/map/Map.js"></script>
