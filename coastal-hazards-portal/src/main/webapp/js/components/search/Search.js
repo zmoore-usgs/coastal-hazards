@@ -15,11 +15,13 @@ CCH.Objects.Search = function(args) {
 	me.submitButton = args.submitButton;
 	me.keywordInput = args.keywordInput;
 	me.themeInput = args.themeInput;
+	me.itemSearchModalWindow = args.itemSearchModalWindow;
 	
 	return $.extend(me, {
 		init : function() {
 			me.bindSearchInput();
 			me.bindSearchModalButton();
+			me.itemSearchModalWindow.css('display', 'none');
 		},
 		bindSearchInput: function() {
 			me.searchbar.submit(function(evt) {

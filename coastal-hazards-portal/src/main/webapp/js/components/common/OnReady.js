@@ -17,6 +17,7 @@ $(document).ready(function() {
 	
 	splashUpdate("Initializing Search Subsystem...");
 	CCH.search = new CCH.Objects.Search({
+		itemSearchModalWindow : $('#item-search-modal'),
 		searchbar: $('.app-navbar-search-form'),
 		geocodeEndoint : CCH.CONFIG.data.sources.geocoding.endpoint,
 		modalContainer : $('#item-search-modal'),
@@ -35,6 +36,7 @@ $(document).ready(function() {
 
 	splashUpdate("Initializing UI...");
 	CCH.ui = CCH.Objects.UI({
+		itemSearchModalWindow : $('#item-search-modal'),
 		applicationContainer : $('#application-container'),
 		headerRow : $('#header-row'),
 		footerRow : $('#footer-row'),
@@ -90,4 +92,5 @@ $(document).ready(function() {
 		$('#application-overlay').remove();
 		splashUpdate = undefined;
 	});
+	
 });
