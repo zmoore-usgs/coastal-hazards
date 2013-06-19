@@ -1,148 +1,49 @@
 CCH.Objects.Map = function(args) {
-	CCH.LOG.info('Map.js::constructor:Map class is initializing.');
 	var mapDivId = args.mapDiv;
 	var me = (this === window) ? {} : this;
 	me.initialExtent = [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826];
-
-
-	CCH.LOG.debug('Map.js::constructor:Loading Map object');
-	me.map = new OpenLayers.Map(mapDivId, {
-		projection: "EPSG:900913",
-		displayProjection: new OpenLayers.Projection("EPSG:900913")
-	});
-
-	CCH.LOG.debug('Map.js::constructor:Creating base layers');
-	me.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 20,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Street",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 20,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Topo",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 20,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Terrain",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 14,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Shaded Relief",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 14,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Physical",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 9,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Ocean",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 17,
-				wrapDateLine: true
-			}
-	));
-
-	me.moveendCallback = function(evt) {
-		var map = evt.object;
-		var sMap = CCH.session.getMap();
-
-		sMap.baselayer = map.baseLayer.name;
-		sMap.center = {
-			lat: map.center.lat,
-			lon: map.center.lon
-		};
-		sMap.scale = map.getScale();
-		sMap.extent = map.getExtent().toArray();
-	};
-
-	me.map.events.on({
-		'moveend': me.moveendCallback,
-		'changelayer': function() {
-
-		}
-	});
-
-
-	CCH.LOG.debug('Map.js::constructor:Creating base layer');
-	me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 20,
-				wrapDateLine: true
-			}
-	));
-
-	me.markerLayer = new OpenLayers.Layer.Markers('geocoding-marker-layer', {
-		displayInLayerSwitcher: false
-	});
-	me.map.addLayer(me.markerLayer);
-
-	me.boxLayer = new OpenLayers.Layer.Boxes('map-boxlayer', {
-		displayInLayerSwitcher: false
-	});
-	me.map.addLayer(me.boxLayer);
-
-	CCH.LOG.debug('Map.js::constructor:Adding ontrols to map');
-	me.map.addControl(new OpenLayers.Control.MousePosition());
-	me.map.addControl(new OpenLayers.Control.ScaleLine({
-		geodesic: true
-	}));
-	me.map.addControl(new OpenLayers.Control.LayerSwitcher({
-		roundedCorner: true
-	}));
-//
-//	var panel = new OpenLayers.Control.Panel();
-//	panel.id = 'ol-custom-panel';
-//	panel.addControls([
-//		new OpenLayers.Control.MousePosition()
-//	]);
-//	me.map.addControl(panel);
-
-	CCH.LOG.debug('Map.js::constructor:Zooming to extent: ' + me.initialExtent);
-	me.map.zoomToExtent(me.initialExtent, true);
-
-//	var zoomControlDiv = me.map.getControlsByClass("OpenLayers.Control.Zoom")[0].div;
-//	var panelTop = zoomControlDiv.offsetTop + zoomControlDiv.offsetHeight + 40;
-//	$('#ol-custom-panel').css('top', panelTop);
-
-	CCH.LOG.debug('Map.js::constructor: Map class initialized.');
 	return $.extend(me, {
+		init: function() {
+			CCH.LOG.info('Map.js::init():Map class is initializing.');
+			
+			me.map = new OpenLayers.Map(mapDivId, {
+				projection: "EPSG:900913",
+				displayProjection: new OpenLayers.Projection("EPSG:900913")
+			});
+
+			CCH.LOG.debug('Map.js::init():Creating base layers');
+			me.map.addLayers(CCH.CONFIG.map.baselayers);
+
+			me.markerLayer = new OpenLayers.Layer.Markers('geocoding-marker-layer', {
+				displayInLayerSwitcher: false
+			});
+			me.map.addLayer(me.markerLayer);
+
+			me.boxLayer = new OpenLayers.Layer.Boxes('map-boxlayer', {
+				displayInLayerSwitcher: false
+			});
+			me.map.addLayer(me.boxLayer);
+
+			CCH.LOG.debug('Map.js::init():Adding ontrols to map');
+			me.map.addControl(new OpenLayers.Control.LayerSwitcher({
+				roundedCorner: true
+			}));
+
+			CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);
+			me.map.zoomToExtent(me.initialExtent, true);
+
+			me.map.events.on({
+				'moveend': me.moveendCallback,
+				'addlayer': function() {
+					// The bounding box layer needs to sit on top of other layers in 
+					// order to be hoverable and clickable
+					while (me.boxLayer !== me.map.layers[me.map.layers.length - 1]) {
+						me.map.raiseLayer(me.boxLayer, 1);
+					}
+				}
+			});
+			return me;
+		},
 		getMap: function() {
 			return me.map;
 		},
@@ -157,6 +58,8 @@ CCH.Objects.Map = function(args) {
 			var bbox = args.bbox;
 			var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913");
 			var layerBounds = OpenLayers.Bounds.fromArray(bbox);
+			var slideOrder = args.slideOrder;
+
 			if (fromProjection) {
 				layerBounds.transform(new OpenLayers.Projection(fromProjection), new OpenLayers.Projection("EPSG:900913"));
 			}
@@ -176,8 +79,6 @@ CCH.Objects.Map = function(args) {
 
 			// Alter the marker visually 
 			var markerDiv = $(marker.div);
-			var originalHeight = markerDiv.height();
-			var originalWidth = markerDiv.width();
 			markerDiv.addClass('marker-active');
 			markerDiv.on({
 				'mouseover': function() {
@@ -197,6 +98,30 @@ CCH.Objects.Map = function(args) {
 					'opacity': opacity
 				});
 			}
+
+			markerDiv.data('slideOrder', slideOrder);
+			markerDiv.data('bounds', layerBounds);
+			markerDiv.on({
+				click: function(evt) {
+					var target = $(evt.target);
+					var slideOrder = target.data('slideOrder');
+					var bbox = target.data('bounds');
+
+					CCH.ui.slider('goToSlide', slideOrder);
+					CCH.ui.slider('autoSlidePause');
+
+					me.clearBoundingBoxMarkers();
+
+					var card = $('.slide:nth-child(' + slideOrder + ') .description-container').data('card');
+					var isPinned = card.pinned;
+
+					if (!isPinned) {
+						card.pinButton.trigger('click');
+					} else {
+						me.map.zoomToExtent(bbox);
+					}
+				}
+			});
 
 			return marker;
 		},
@@ -322,7 +247,7 @@ CCH.Objects.Map = function(args) {
 			$('#alt-location-list').change(function(event) {
 				var index = parseInt(event.target.value);
 				if (index !== -1) {
-					CONFIG.map.buildGeocodingPopup({
+					me.buildGeocodingPopup({
 						currentLocationIndex: index,
 						locations: locations
 					});
@@ -345,9 +270,8 @@ CCH.Objects.Map = function(args) {
 			});
 		},
 		displayData: function(args) {
-			// may want to do this first: CONFIG.map.removeLayersByName(me.visibleLayers);
-			var type = args.type;
 			var card = args.card;
+			var type = card.type;
 			if (me.map.getLayersByName(card.name).length !== -1) {
 				var layer = new OpenLayers.Layer.WMS(
 						card.name,
@@ -384,6 +308,18 @@ CCH.Objects.Map = function(args) {
 						type: type
 					}];
 			}
+		},
+		moveendCallback: function(evt) {
+			var map = evt.object;
+			var sMap = CCH.session.getMap();
+
+			sMap.baselayer = map.baseLayer.name;
+			sMap.center = {
+				lat: map.center.lat,
+				lon: map.center.lon
+			};
+			sMap.scale = map.getScale();
+			sMap.extent = map.getExtent().toArray();
 		}
 	});
 };

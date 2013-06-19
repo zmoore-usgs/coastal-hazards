@@ -33,10 +33,6 @@
     <servlet>
         <servlet-name>SessionService</servlet-name>
         <servlet-class>gov.usgs.cida.coastalhazards.service.SessionService</servlet-class>
-        <servlet-mapping>
-            <servlet-name>GeoServerServlet</servlet-name>
-            <url-pattern>/geoserver/*</url-pattern>
-        </servlet-mapping>
     </servlet>
     <servlet>
         <servlet-name>PopularityQueueService</servlet-name>
