@@ -33,7 +33,7 @@ CCH.Objects.Cards = function(args) {
 			$(card).on({
 				'card-button-pin-clicked': function(evt) {
 					var card = evt.currentTarget;
-					var toggledOn = CCH.session.toggleId(card.item.id);
+					var toggledOn = CCH.session.toggleItem(card.item);
 					if (toggledOn) {
 						card.pin();
 					} else {
@@ -67,7 +67,7 @@ CCH.Objects.Cards = function(args) {
 			return me.pinnedCount;
 		},
 		updatePinnedCount: function() {
-			me.pinnedCount = CCH.session.getPinnedIdsCount();
+			me.pinnedCount = CCH.session.getPinnedCount();
 			$('#app-navbar-pin-control-pincount').html(me.pinnedCount);
 			if (me.pinnedCount > 0) {
 				$('#app-navbar-pin-control-button').removeClass('disabled');

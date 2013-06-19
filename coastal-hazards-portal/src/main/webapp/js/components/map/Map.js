@@ -160,9 +160,9 @@ CCH.Objects.Map = function(args) {
 		updateFromSession: function() {
 			CCH.LOG.info('Map.js::updateFromSession()');
 			me.map.events.un({'moveend': me.moveendCallback});
-			var mapConfig = CCH.session.objects.map;
-			this.getMap().setCenter([mapConfig.center.lon, mapConfig.center.lat]);
-			this.getMap().zoomToScale(mapConfig.scale);
+			var session = CCH.session.getSession();
+			this.getMap().setCenter([session.center[0], session.center[1]]);
+			this.getMap().zoomToScale(session.scale);
 			me.map.events.on({'moveend': me.moveendCallback});
 		},
 		buildGeocodingPopup: function(args) {
@@ -271,13 +271,14 @@ CCH.Objects.Map = function(args) {
 		},
 		displayData: function(args) {
 			var card = args.card;
+			var item = card.item;
 			var type = card.type;
 			if (me.map.getLayersByName(card.name).length !== -1) {
 				var layer = new OpenLayers.Layer.WMS(
 						card.name,
-						card.service.wms.endpoint,
+						item.wmsService.endpoint,
 						{
-							layers: card.service.wms.layers,
+							layers: item.wmsService.layers,
 							format: 'image/png',
 							transparent: true
 						},
@@ -292,7 +293,7 @@ CCH.Objects.Map = function(args) {
 				if (type === "vulnerability") {
 					// SLD will probably only work with one layer
 					// TODO - Fix with window.location.href but make sure actually works
-					layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + card.service.wms.layers + '/' + card.attr;
+					layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + item.wmsService.layers + '/' + card.attr;
 					layer.params.STYLES = 'redwhite';
 				} else if (type === "historical" || type === "storms") {
 					layer.params.STYLES = 'line';
@@ -304,15 +305,15 @@ CCH.Objects.Map = function(args) {
 		},
 		updateSession: function() {
 			var map = me.map;
-			var sMap = CCH.session.getMap();
+			var session = CCH.session.getSession();
 
-			sMap.baselayer = map.baseLayer.name;
-			sMap.center = {
-				lat: map.center.lat,
-				lon: map.center.lon
-			};
-			sMap.scale = map.getScale();
-			sMap.extent = map.getExtent().toArray();
+			session.baselayer = map.baseLayer.name;
+			session.center = [
+				map.center.lon,
+				map.center.lat
+			];
+			session.scale = map.getScale();
+			session.bbox = map.getExtent().toArray();
 		},
 		floatBoxLayer: function() {
 			// The bounding box layer needs to sit on top of other layers in 

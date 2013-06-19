@@ -78,7 +78,7 @@ CCH.Slideshow = {
 					}
 				});
 
-				if (CCH.session.objects.view.itemIds.indexOf(card.item.id) !== -1) {
+				if (CCH.session.getSession().items.indexOf(card.item.id) !== -1) {
 					card.pin();
 				}
 			});

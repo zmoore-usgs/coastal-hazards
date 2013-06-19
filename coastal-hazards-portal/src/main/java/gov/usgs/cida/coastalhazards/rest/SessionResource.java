@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
 public class SessionResource {
     
     private static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
-    private static final SessionIO sessionIo = new SessionManager();
+    private  SessionIO sessionIo = new SessionManager();
     
     @GET
     @Path("{sid}")
