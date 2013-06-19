@@ -3,6 +3,7 @@ CCH.Objects.Cards = function(args) {
 	var me = (this === window) ? {} : this;
 	me.currentApplicationSize;
 	me.pinnedCount;
+	me.cards = [];
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
@@ -12,11 +13,10 @@ CCH.Objects.Cards = function(args) {
 				'cch.navbar.pinmenu.item.clear.click': function(evt) {
 					me.unpinAllCards();
 				},
-				'cch.ui.initialized' : function(evt) {
+				'cch.ui.initialized': function(evt) {
 					me.updatePinnedCount();
 				}
 			});
-
 
 			return me;
 		},
@@ -75,7 +75,8 @@ CCH.Objects.Cards = function(args) {
 			} else {
 				$('#app-navbar-pin-control-button').addClass('disabled');
 				$('#app-navbar-pin-control-dropdown-button').addClass('disabled');
-			};
+			}
+			;
 			return me.pinnedCount;
 		}
 	});
