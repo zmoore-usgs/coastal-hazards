@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import gov.usgs.cida.coastalhazards.gson.serializer.DoubleSerializer;
 import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
 import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
 import gov.usgs.cida.utilities.IdGenerator;
@@ -19,117 +20,117 @@ import javax.persistence.Table;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Entity
-@Table(name="item")
+@Table(name = "item")
 public class Item implements Serializable {
-    
-    private static final long serialVersionUID = 1L;
-    
-    private String id;
-    private String name;
-    private String metadata;
-    private String type;
-    private String attr;
-    private double[] bbox;
-    private WFSService wfsService;
-    private WMSService wmsService;
-    private Summary summary;
-    
-    @Id
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	private static final long serialVersionUID = 1L;
+	private static final int doublePrecision = 5;
+	private String id;
+	private String name;
+	private String metadata;
+	private String type;
+	private String attr;
+	private double[] bbox;
+	private WFSService wfsService;
+	private WMSService wmsService;
+	private Summary summary;
 
-    @Column(name="metadata")
-    public String getMetadata() {
-        return metadata;
-    }
+	@Id
+	public String getId() {
+		return id;
+	}
 
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
-    }
-    
-    public WFSService getWfsService() {
-        return wfsService;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setWfsService(WFSService wfsService) {
-        this.wfsService = wfsService;
-    }
+	@Column(name = "metadata")
+	public String getMetadata() {
+		return metadata;
+	}
 
-    public WMSService getWmsService() {
-        return wmsService;
-    }
+	public void setMetadata(String metadata) {
+		this.metadata = metadata;
+	}
 
-    public void setWmsService(WMSService wmsService) {
-        this.wmsService = wmsService;
-    }
+	public WFSService getWfsService() {
+		return wfsService;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setWfsService(WFSService wfsService) {
+		this.wfsService = wfsService;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public WMSService getWmsService() {
+		return wmsService;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public void setWmsService(WMSService wmsService) {
+		this.wmsService = wmsService;
+	}
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getAttr() {
-        return attr;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setAttr(String attr) {
-        this.attr = attr;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public double[] getBbox() {
-        return bbox;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    public void setBbox(double[] bbox) {
-        this.bbox = bbox;
-    }
+	public String getAttr() {
+		return attr;
+	}
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(columnDefinition = "summary_id")
-    public Summary getSummary() {
-        return summary;
-    }
+	public void setAttr(String attr) {
+		this.attr = attr;
+	}
 
-    public void setSummary(Summary summary) {
-        this.summary = summary;
-    }
-    
-    
-    
-    public static Item fromJSON(String json) {
-        
-        Item item;
-        GsonBuilder gsonBuilder = new GsonBuilder();
+	public double[] getBbox() {
+		return bbox;
+	}
+
+	public void setBbox(double[] bbox) {
+		this.bbox = bbox;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(columnDefinition = "summary_id")
+	public Summary getSummary() {
+		return summary;
+	}
+
+	public void setSummary(Summary summary) {
+		this.summary = summary;
+	}
+
+	public static Item fromJSON(String json) {
+
+		Item item;
+		GsonBuilder gsonBuilder = new GsonBuilder();
 //        gsonBuilder.registerTypeAdapter(Geometry.class, new GeometryDeserializer());
 //        gsonBuilder.registerTypeAdapter(Envelope.class, new EnvelopeDeserializer());
 //        gsonBuilder.registerTypeAdapter(CoordinateSequence.class, new CoordinateSequenceDeserializer());
-        Gson gson = gsonBuilder.create();
+		Gson gson = gsonBuilder.create();
 
-        item = gson.fromJson(json, Item.class);
-        if (item.getId() == null) {
-            item.setId(IdGenerator.generate());
-        }
-        return item;
-    }
-    
-    public String toJSON() {
-        return new Gson().toJson(this);
-    }
+		item = gson.fromJson(json, Item.class);
+		if (item.getId() == null) {
+			item.setId(IdGenerator.generate());
+		}
+		return item;
+	}
 
+	public String toJSON() {
+		return new GsonBuilder()
+				.registerTypeAdapter(Double.class, new DoubleSerializer(doublePrecision))
+				.create()
+				.toJson(this);
+	}
 }
