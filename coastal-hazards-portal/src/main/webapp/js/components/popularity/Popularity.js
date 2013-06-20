@@ -33,7 +33,7 @@ CCH.CONFIG.popularity = {
 
 		$.ajax({
 			url: CCH.CONFIG.data.sources.popularity.endpoint,
-			cache: false,
+			isLocal: true,
 			dataType: 'json',
 			data: {
 				maxRecords: '', // not yet supported

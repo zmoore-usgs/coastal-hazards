@@ -14,9 +14,7 @@ import javax.ws.rs.ApplicationPath;
 public class DataRestApplication extends PackagesResourceConfig {
      public DataRestApplication() {
          super(new HashMap<String, Object>() {{
-           put(PackagesResourceConfig.PROPERTY_PACKAGES, "gov.usgs.cida.coastalhazards.rest.data");
-           put(ServletContainer.JSP_TEMPLATES_BASE_PATH, "/WEB-INF/jsp");
-           put(ServletContainer.PROPERTY_WEB_PAGE_CONTENT_REGEX, "(/WEB-INF/jsp/*)");
+           put(PackagesResourceConfig.PROPERTY_PACKAGES, this.getClass().getPackage().getName());
          }});
      }    
 }

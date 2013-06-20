@@ -13,9 +13,7 @@ import javax.ws.rs.ApplicationPath;
 public class UIRestApplication extends PackagesResourceConfig {
      public UIRestApplication() {
          super(new HashMap<String, Object>() {{
-           put(PackagesResourceConfig.PROPERTY_PACKAGES, "gov.usgs.cida.coastalhazards.rest.ui");
-//           put(ServletContainer.JSP_TEMPLATES_BASE_PATH, "/");
-//           put(ServletContainer.PROPERTY_WEB_PAGE_CONTENT_REGEX, "(/.*)");
+           put(PackagesResourceConfig.PROPERTY_PACKAGES, this.getClass().getPackage().getName());
          }});
      }    
 }
