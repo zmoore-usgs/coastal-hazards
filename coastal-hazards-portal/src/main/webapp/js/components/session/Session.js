@@ -4,7 +4,6 @@ CCH.Objects.Session = function(args) {
 	var me = (this === window) ? {} : this;
 	args = args ? args : {};
 
-	me.serviceEndpoint = 'rest/ui/view/';
 	me.session = {
 		items: [],
 		baselayer: 'Not Yet Initialized',
@@ -52,7 +51,7 @@ CCH.Objects.Session = function(args) {
 			var context = args.context;
 
 			if (sid) {
-				$.ajax(me.serviceEndpoint + sid, {
+				$.ajax(CCH.CONFIG.data.sources.session.endpoint + sid, {
 					type: 'GET',
 					contentType: 'application/json;charset=utf-8',
 					dataType: 'json',

@@ -133,10 +133,13 @@
 					'proxy': 'stpgis/'
 				},
 				'popularity': {
-					'endpoint': 'service/popularity'
+					'endpoint': '<%=request.getContextPath()%>/data/item'
 				},
 				'geocoding': {
 					'endpoint': '<%=geocodeEndpoint%>'
+				},
+				'session' : {
+					'endpoint' : '<%=request.getContextPath()%>/data/view/'
 				}
 			}
 		}

@@ -95,7 +95,7 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
         </jsp:include>
 		<jsp:include page="components/config.jsp">
-			<jsp:param name="sessionId" value="96c5e67571f53df4aafc40d8dfb86a2618cdbae8" /> 
+			<jsp:param name="sessionId" value="${it}" /> 
 		</jsp:include>
         <%-- TODO: Refactor log4javascript to take the log4js script from webjars --%>
         <jsp:include page="js/log4javascript/log4javascript.jsp">
