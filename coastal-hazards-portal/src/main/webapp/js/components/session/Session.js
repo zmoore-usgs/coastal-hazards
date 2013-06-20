@@ -4,7 +4,7 @@ CCH.Objects.Session = function(args) {
 	var me = (this === window) ? {} : this;
 	args = args ? args : {};
 
-	me.serviceEndpoint = 'rest/ui/view/';
+	me.serviceEndpoint = 'data/view/';
 	me.session = {
 		items: [],
 		baselayer: 'Not Yet Initialized',
