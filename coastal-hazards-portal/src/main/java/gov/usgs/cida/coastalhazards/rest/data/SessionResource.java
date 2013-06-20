@@ -25,14 +25,14 @@ import javax.ws.rs.core.Response;
 public class SessionResource {
     
     private static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
-    private static final SessionIO sessionIo = new SessionManager();
+    private  SessionIO sessionIo = new SessionManager();
     
     @GET
     @Path("{sid}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSession(@PathParam("sid") String sid) throws SessionIOException {
         String jsonSession = sessionIo.load(sid);
-        Response response = null;
+        Response response;
         if (null == jsonSession) {
             response = Response.status(Response.Status.NOT_FOUND).build();
         } else {

@@ -4,34 +4,21 @@ CCH.Objects.Session = function(args) {
 	var me = (this === window) ? {} : this;
 	args = args ? args : {};
 
-	me.objects = {
-		view: {
-			itemIds: [],
-			activeLayers: []
-		},
-		map: {
-			baselayer: 'Not Yet Initialized',
-			scale: 0,
-			extent: [0, 0],
-			center: {
-				lat: 0,
-				lon: 0
-			}
-		}
+	me.serviceEndpoint = 'rest/ui/view/';
+	me.session = {
+		items: [],
+		baselayer: 'Not Yet Initialized',
+		scale: 0,
+		bbox: [0.0, 0.0, 0.0, 0.0],
+		center: [0.0, 0.0]
 	};
 
 	return $.extend(me, {
 		toString: function() {
-			var stringifyObject = {
-				objects: this.objects
-			};
-			return JSON.stringify(stringifyObject);
+			return JSON.stringify(me.session);
 		},
-		getObjects: function() {
-			return me.objects;
-		},
-		getMap: function() {
-			return me.objects.map;
+		getSession: function() {
+			return me.session;
 		},
 		updateFromServer: function(args) {
 			var sid = args.sid;
@@ -39,7 +26,7 @@ CCH.Objects.Session = function(args) {
 			var successCallbacks = callbacks.success || [];
 			var errorCallbacks = callbacks.error || [];
 			CCH.LOG.info("Will try to load session '" + sid + "' from server");
-			me.getSession({
+			me.readSession({
 				sid: sid,
 				callbacks: {
 					success: [
@@ -47,7 +34,7 @@ CCH.Objects.Session = function(args) {
 						function(session) {
 							if (session) {
 								CCH.LOG.info("Session found on server. Updating current session.");
-								$.extend(true, me.objects, JSON.parse(session).objects);
+								$.extend(true, me.session, JSON.parse(session));
 							} else {
 								CCH.LOG.info("Session not found on server.");
 							}
@@ -57,7 +44,7 @@ CCH.Objects.Session = function(args) {
 				}
 			});
 		},
-		getSession: function(args) {
+		readSession: function(args) {
 			var sid = args.sid;
 			var callbacks = args.callbacks || {};
 			var successCallbacks = callbacks.success || [];
@@ -65,23 +52,28 @@ CCH.Objects.Session = function(args) {
 			var context = args.context;
 
 			if (sid) {
-				$.ajax('service/session', {
-					type: 'POST',
-					data: {
-						'sid': sid,
-						'action': 'read'
-					},
-					success: function(data, textStatus, jqXHR) {
+				$.ajax(me.serviceEndpoint + sid, {
+					type: 'GET',
+					contentType: 'application/json;charset=utf-8',
+					dataType: 'json',
+					success: function(json, textStatus, jqXHR) {
 						var session = null;
-						if (data.success === 'true') {
-							session = data.session;
+						if (json) {
+							me.session = json;
+							if (successCallbacks && successCallbacks.length > 0) {
+								successCallbacks.each(function(callback) {
+									callback.call(context, session);
+								});
+							}
+						} else {
+							if (errorCallbacks && errorCallbacks.length > 0) {
+								errorCallbacks.each(function(callback) {
+									callback.call(context, null);
+								});
+							}
 						}
 
-						if (successCallbacks && successCallbacks.length > 0) {
-							successCallbacks.each(function(callback) {
-								callback.call(context, session);
-							});
-						}
+
 					},
 					error: function(data, textStatus, jqXHR) {
 						if (errorCallbacks && errorCallbacks.length > 0) {
@@ -93,15 +85,15 @@ CCH.Objects.Session = function(args) {
 				});
 			}
 		},
-		getIdentifier: function(args) {
-			var context = args.context;
+		writeSession: function(args) {
+			args = args || {};
+			var context = args.context || me;
 			var callbacks = args.callbacks || [];
-			$.ajax('service/session', {
+			$.ajax(me.serviceEndpoint, {
 				type: 'POST',
-				data: {
-					'session': this.toString(),
-					'action': 'write'
-				},
+				contentType: 'application/json;charset=utf-8',
+				dataType: 'json',
+				data: me.toString(),
 				success: function(data, textStatus, jqXHR) {
 					if (data.success === 'true') {
 						var sid = data.sid;
@@ -150,25 +142,15 @@ CCH.Objects.Session = function(args) {
 				]
 			});
 		},
-		getIncomingSid: function() {
-			var sidItem = window.location.search.substr(1).split('&').find(function(s) {
-				return s.substring(0, 3).toLowerCase() === 'sid';
-			});
-			var sid = '';
-			if (sidItem) {
-				sid = sidItem.substr(4);
-			}
-			return sid;
-		},
-		toggleId: function(id) {
-			var itemIds = me.objects.view.itemIds;
-			var currIdIdx = itemIds.indexOf(id);
+		toggleItem: function(item) {
+			var items = me.session.items;
+			var currIdIdx = items.indexOf(item);
 			var toggleOn = currIdIdx === -1;
 
 			if (toggleOn) {
-				itemIds.push(id);
+				items.push(item);
 			} else {
-				itemIds.removeAt(currIdIdx);
+				items.removeAt(currIdIdx);
 			}
 
 			$(me).trigger('session-id-toggled', {
@@ -177,14 +159,14 @@ CCH.Objects.Session = function(args) {
 
 			return toggleOn;
 		},
-		clearPinnedIds: function() {
-			me.objects.view.itemIds.length = 0;
+		clearPinnedItems: function() {
+			me.session.items.length = 0;
 		},
-		getPinnedIdsCount: function() {
-			return me.objects.view.itemIds.length;
+		getPinnedCount: function() {
+			return me.session.items.length;
 		},
-		getPinnedIds: function() {
-			return me.objects.view.itemIds;
+		getPinnedItems: function() {
+			return me.session.items;
 		}
 	});
 };

@@ -69,27 +69,30 @@ $(document).ready(function() {
 					function() {
 						if (CCH.CONFIG.popularity.results) {
 							$(window).trigger('cch.data.items.loaded');
+
+							var sid = CCH.CONFIG.incomingSessionId;
+							if (sid) {
+								CCH.session.updateFromServer({
+									sid: sid,
+									callbacks: {
+										success:
+												[
+													function(session) {
+														
+													}
+												],
+										error: []
+									}
+								});
+							}
+
 						}
 					}
 				]
 			}
 		});
 
-		var sid = CCH.session.getIncomingSid();
-		if (sid) {
-			CCH.session.updateFromServer({
-				sid: sid,
-				callbacks: {
-					success:
-							[
-								function() {
-//								splashUpdate("Applying session information to application...");
-								}
-							],
-					error: []
-				}
-			});
-		}
+
 
 	});
 });
