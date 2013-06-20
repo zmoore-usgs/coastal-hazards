@@ -14,7 +14,7 @@
     
     <properties>
         <n52.version>3.1.1</n52.version>
-        <gt.version>8.5</gt.version>
+        <gt.version>9.2</gt.version>
         <slf4j.version>1.7.2</slf4j.version>
     </properties>
     
@@ -61,6 +61,11 @@
                 <artifactId>gt-api</artifactId>
                 <version>${gt.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.geotools</groupId>
+                <artifactId>gt-opengis</artifactId>
+                <version>${gt.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
@@ -86,12 +91,21 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-opengis</artifactId>
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
@@ -101,10 +115,10 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <finalName>wps</finalName>
