@@ -75,13 +75,21 @@ public class Writer {
 		typeBuilder.setName(sourceSchema.getName());
 		typeBuilder.setCRS(sourceSchema.getCoordinateReferenceSystem());
 		
+		int geomIdx = -1;
+		int uncyIdx = -1;
+		int idx = 0;
 		for (AttributeDescriptor ad : sourceSchema.getAttributeDescriptors()) {
 			AttributeType at = ad.getType();
 			if (at instanceof GeometryType) {
 				typeBuilder.add(ad.getLocalName(), Point.class);
+				geomIdx = idx;
 			} else {
 				typeBuilder.add(ad.getLocalName(), ad.getType().getBinding());
+				if ("uncy".equalsIgnoreCase(ad.getLocalName())) {
+					uncyIdx = idx;
+				}
 			}
+			idx++;
 		}
 		SimpleFeatureType outputFeatureType = typeBuilder.buildFeatureType();
 		outputStore.createSchema(outputFeatureType);
@@ -127,8 +135,11 @@ public class Writer {
 						// TODO replace uncy
 						// TODO Better test for geometry property
 
-						if (i == 0) {
+						if (i == geomIdx) {
 							writeFeature.setAttribute(i, newPoint);
+						} else if (i == uncyIdx) {
+							// TODO replace uncy value with mapped, if possible
+							writeFeature.setAttribute(i, properties[i].getValue());
 						} else {
 							writeFeature.setAttribute(i, properties[i].getValue());
 						}
@@ -146,7 +157,7 @@ public class Writer {
 		
 		tx.commit();
 		
-		System.out.printf("Wrote %d features\n", featureCt);
+		System.out.printf("Wrote %d points from %d features\n", pointCt, featureCt);
 	}
 
 	public static void main(String[] args) throws Exception {
