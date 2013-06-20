@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
+import org.geotools.data.shapefile.ShpFiles;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
-import org.geotools.data.shapefile.files.ShpFiles;
 import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.data.shapefile.shp.ShapefileReader;
 import org.geotools.data.shapefile.shp.ShapefileReader.Record;
@@ -34,7 +34,28 @@ import com.vividsolutions.jts.geom.MultiLineString;
  */
 public class Reader {
 
-	public Map<Integer,Double> readDBF(String fn) throws Exception {
+	private int locateField(DbaseFileHeader hdr, String nm, Class<?> expected) {
+		int idx = -1;
+		
+		for (int x = 0; x < hdr.getNumFields(); x++) {
+			String fnm = hdr.getFieldName(x);
+			if (nm.equalsIgnoreCase(fnm)) {
+				idx = x;
+			}
+		}
+		if (idx < 0) {
+			throw new RuntimeException("did not find column named UNCY");
+		}
+		
+		Class<?> idClass = hdr.getFieldClass(idx);		
+		if ( ! expected.isAssignableFrom(idClass)) {
+			throw new RuntimeException("Actual class " + idClass + " is not assignable to expected " + expected);
+		}
+
+		return idx;
+	}
+	
+	public Map<Integer,Double> readUncyFromDBF(String fn) throws Exception {
 		
 		ShpFiles shpFile = new ShpFiles(fn);
 		Charset charset = Charset.defaultCharset();
@@ -44,14 +65,17 @@ public class Reader {
 		DbaseFileHeader hdr = rdr.getHeader();
 		System.out.println("Header: " + hdr);
 		
+		int uncyIdx = locateField(hdr, "uncy", Double.class);
+		int idIdx = locateField(hdr, "id", Number.class);
+		
 		Map<Integer,Double> value = new HashMap<Integer,Double>();
 		
 		while (rdr.hasNext()) {
 			Object[] ff = rdr.readEntry();
 			
 			// System.out.printf("%s\n", ff[2]);
-			Integer i = ((Number)ff[0]).intValue();
-			Double d = (Double)ff[1];
+			Integer i = ((Number)ff[idIdx]).intValue();
+			Double d = (Double)ff[uncyIdx];
 			
 			value.put(i, d);
 		}
@@ -59,7 +83,7 @@ public class Reader {
 		return value;
 	}
 	
-	public void readM(String fn) throws Exception {
+	public void processM(String fn, Map<Integer,Double> uncyMap) throws Exception {
 
 		File file = new File(fn);
 
@@ -70,14 +94,26 @@ public class Reader {
 		ShapefileReader rdr = new ShapefileReader(shpFile,false, false, gf);
 		rdr.setHandler(new MultiLineZHandler(ShapeType.ARCM, gf));
 
+		Charset charset = Charset.defaultCharset();		
+		DbaseFileReader dbf = new DbaseFileReader(shpFile, false, charset);
+		DbaseFileHeader hdr = dbf.getHeader();
+
+		int dfltUncyIdx = locateField(hdr, "uncy", Double.class);
+		
+		int shpCt = 0;
+		
 		while (rdr.hasNext()) { 
 			Record rec = rdr.nextRecord();
-
-			System.out.printf("%s\n", rec);
+			
+			Object[] ff = dbf.readEntry();
+			Double defaultUncy = (Double)ff[dfltUncyIdx];
 			
 			Object thing = rec.shape();
-			System.out.printf("shape %s\n", thing);
-			
+			if (shpCt < 100) {
+				System.out.printf("%s\n", rec);
+				System.out.printf("shape %s\n", thing);
+			}
+						
 			MultiLineString mls = (MultiLineString) thing;
 			for (int g = 0; g < mls.getNumGeometries(); g++) {
 				Geometry geom = mls.getGeometryN(g);
@@ -85,12 +121,32 @@ public class Reader {
 				LineString ls = (LineString) geom;
 				CoordinateSequence cs = ls.getCoordinateSequence();
 				
-				System.out.printf("Geom %d: %s\n", g, cs);
+				if (shpCt < 100) {
+					System.out.printf("Geom %d: %s\n", g, cs);
+				}
 				
-				for (int i = 0; i < 10 && i < cs.size(); i++) {
-					System.out.printf("\tX %f Y %f M %f\n", cs.getX(i), cs.getY(i), cs.getOrdinate(i, 3));
+				int ptCt = 0;
+				for (int i = 0; i < cs.size(); i++) {
+					ptCt ++;
+					
+					double uncy = defaultUncy;
+					
+					double md = cs.getOrdinate(i, 3);
+					if ( ! Double.isNaN(md)) {
+						int mi = (int)md;
+						
+						uncy = uncyMap.get(mi);
+					}
+					
+					if (shpCt < 100) {
+						if (ptCt < 10) {
+							System.out.printf("\tX %f Y %f M %f uncy %f\n", cs.getX(i), cs.getY(i), cs.getOrdinate(i, 3), uncy);
+						}
+					}
 				}
 			}
+			
+			shpCt ++;
 		}
 
 	}
@@ -137,10 +193,10 @@ public class Reader {
 		for (String fn : args) {
 			Reader ego = new Reader();
 
-			Map<Integer,Double> xx = ego.readDBF(fn + "_uncertainty.dbf");
-			System.out.printf("Got map size %d\n", xx.size());
+			Map<Integer,Double> uncyMap = ego.readUncyFromDBF(fn + "_uncertainty.dbf");
+			System.out.printf("Got map size %d\n", uncyMap.size());
 			
-			ego.readM(fn+".shp");
+			ego.processM(fn+".shp", uncyMap);
 			
 		}
 	}

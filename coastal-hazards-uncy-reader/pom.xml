@@ -10,7 +10,7 @@
 	<packaging>jar</packaging>
 	
 	<properties>
-		<geotools.version>10-SNAPSHOT</geotools.version>
+		<geotools.version>8.7</geotools.version>
 	</properties>
 
 		<dependencies>
