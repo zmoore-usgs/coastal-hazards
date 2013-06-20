@@ -17,10 +17,23 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.opengis.feature.Feature;
+import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.AttributeType;
+import org.opengis.feature.type.GeometryType;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiLineString;
+// which Point class to use?
+import com.vividsolutions.jts.geom.Point;
+
 
 /** Write a copy of the input shapefile.
  * 
@@ -57,7 +70,23 @@ public class Writer {
 
 		SimpleFeatureSource featureSource = inputStore.getFeatureSource(typeName);
 		SimpleFeatureType sourceSchema = featureSource.getSchema();
-		outputStore.createSchema(sourceSchema);
+		// duplicate schema, except replace geometry with Point
+		SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
+		typeBuilder.setName(sourceSchema.getName());
+		typeBuilder.setCRS(sourceSchema.getCoordinateReferenceSystem());
+		
+		for (AttributeDescriptor ad : sourceSchema.getAttributeDescriptors()) {
+			AttributeType at = ad.getType();
+			if (at instanceof GeometryType) {
+				typeBuilder.add(ad.getLocalName(), Point.class);
+			} else {
+				typeBuilder.add(ad.getLocalName(), ad.getType().getBinding());
+			}
+		}
+		SimpleFeatureType outputFeatureType = typeBuilder.buildFeatureType();
+		outputStore.createSchema(outputFeatureType);
+
+        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
 
         SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(outputStore.getSchema());
 
@@ -69,30 +98,45 @@ public class Writer {
 		FeatureWriter<SimpleFeatureType, SimpleFeature> featureWriter = outputStore.getFeatureWriterAppend(tx);
 
 		int featureCt = 0;
+		int pointCt = 0;
 		
 		try {
 			while (iterator.hasNext()) {
 				Feature feature = iterator.next();
-				// GeometryAttribute sourceGeometry = feature.getDefaultGeometryProperty();
+				
+				GeometryAttribute sourceGeometry = feature.getDefaultGeometryProperty();
+				System.out.printf("feature identifier %s,  name %s, geometry type %s\n",
+						feature.getIdentifier(), 
+						feature.getName(),
+						sourceGeometry.getType());
+				
+				SimpleFeature inputFeature = (SimpleFeature) feature;
+
+				// explode this one multi-point feature to one Point feature per point
+				
 				// System.out.printf("Geometry %s\n", sourceGeometry);
-								
-				SimpleFeature f = (SimpleFeature) feature;
-				Feature outputFeature = SimpleFeatureBuilder.deep(f);
-				
-				// DefaultFeatureCollection featureCollection = new DefaultFeatureCollection();
-				// featureCollection.add((SimpleFeature) outputFeature);
-				// outSFS.addFeatures(featureCollection);
-		        
-				SimpleFeature writeFeature = featureWriter.next();
-				Collection<Property> fpp = outputFeature.getProperties();
-				Property[] properties = fpp.toArray(new Property[fpp.size()]);
-				for (int i = 0; i < properties.length; i++) {
-					writeFeature.setAttribute(i, properties[i].getValue());
+				MultiLineString mls = (MultiLineString) sourceGeometry.getValue();
+				for (Coordinate coord : mls.getCoordinates()) {
+					Point newPoint = geometryFactory.createPoint(coord);
+					
+					SimpleFeature writeFeature = featureWriter.next();
+					
+					Collection<Property> fpp = inputFeature.getProperties();
+					Property[] properties = fpp.toArray(new Property[fpp.size()]);
+					for (int i = 0; i < properties.length; i++) {
+						// TODO replace uncy
+						// TODO Better test for geometry property
+
+						if (i == 0) {
+							writeFeature.setAttribute(i, newPoint);
+						} else {
+							writeFeature.setAttribute(i, properties[i].getValue());
+						}
+					}
+					
+					featureWriter.write();
+					pointCt ++;					
 				}
-				// writeFeature.setValue(fpp);
-								
-				featureWriter.write();
-				
 				featureCt ++;
 			}
 			
