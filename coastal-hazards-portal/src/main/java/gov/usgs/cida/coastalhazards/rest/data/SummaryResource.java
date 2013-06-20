@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.rest;
+package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
 import java.io.File;
@@ -21,7 +21,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author jordan
  */
-@Path("summaries")
+@Path("summary")
 public class SummaryResource {
     
     private static URL itemsUrl;

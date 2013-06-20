@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.rest;
+package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
@@ -28,8 +28,8 @@ import javax.ws.rs.core.UriInfo;
  *
  * @author jordan
  */
-@Path("cards")
-public class CardResource {
+@Path("item")
+public class ItemResource {
     
     @Context
     private UriInfo context;

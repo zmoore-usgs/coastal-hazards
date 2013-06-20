@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gov.usgs.cida.coastalhazards.rest;
+package gov.usgs.cida.coastalhazards.rest.data;
 
+import gov.usgs.cida.coastalhazards.rest.data.SLDResource;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
