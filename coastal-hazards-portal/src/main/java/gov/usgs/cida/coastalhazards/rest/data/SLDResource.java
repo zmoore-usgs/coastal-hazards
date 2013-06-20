@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.rest;
+package gov.usgs.cida.coastalhazards.rest.data;
 
 import java.awt.Color;
 import javax.ws.rs.GET;
