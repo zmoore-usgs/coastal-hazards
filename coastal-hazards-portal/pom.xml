@@ -140,6 +140,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>gov.usgs.cida</groupId>
+			<artifactId>tomcat-utilities</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
 			<version>6.0</version>
