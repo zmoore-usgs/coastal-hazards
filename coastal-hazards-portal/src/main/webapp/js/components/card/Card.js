@@ -95,12 +95,12 @@ CCH.Objects.Card = function(args) {
 		pin: function() {
 			me.pinButton.addClass('slider-card-pinned');
 			me.pinned = true;
-			$(me).trigger('card-pinned');
+			$(me).trigger('card-pinned', me);
 		},
 		unpin: function() {
 			me.pinButton.removeClass('slider-card-pinned');
 			me.pinned = false;
-			$(me).trigger('card-unpinned');
+			$(me).trigger('card-unpinned', me);
 		}
 	});
 };

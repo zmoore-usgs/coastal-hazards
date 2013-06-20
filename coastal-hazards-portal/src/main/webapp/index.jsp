@@ -54,7 +54,6 @@
     </head>
     <body>
         <jsp:include page="components/application-overlay.jsp"></jsp:include>
-		<jsp:include page="components/item-search.jsp"></jsp:include>
             <div id="application-container" class="container-fluid">
 
                 <div id="header-row" class="row-fluid">
@@ -103,6 +102,7 @@
         </jsp:include>
 
         <script type="text/javascript" src="js/openlayers/lib/OpenLayers/Layer/Shorelines.js"></script>
+        <script type="text/javascript" src="js/components/slideshow/Slideshow.js"></script>
         <script type="text/javascript" src="js/components/search/Search.js"></script>
         <script type="text/javascript" src="js/components/session/Session.js"></script>
         <script type="text/javascript" src="js/components/map/Map.js"></script>
@@ -121,4 +121,5 @@
         </script>
 		<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
 		<a id='multi-card-twitter-button' class='twitter-share-button hide' data-lang='en' data-count='none' data-hashtags='cch' data-text='Check out my pinned items on CCH!' data-url='http://go.usa.gov/random' data-counturl='sid=SomeRandomSessionId'></a>
+		<jsp:include page="components/item-search.jsp"></jsp:include>
     </body>
