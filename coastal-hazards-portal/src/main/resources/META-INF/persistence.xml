@@ -6,11 +6,12 @@
     <class>gov.usgs.cida.coastalhazards.model.Session</class>
     <class>gov.usgs.cida.coastalhazards.model.Item</class>
     <class>gov.usgs.cida.coastalhazards.model.Summary</class>
+    <class>gov.usgs.cida.coastalhazards.model.Activity</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
       <property name="hibernate.show_sql" value="false"/>
-      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <property name="hibernate.hbm2ddl.auto" value="validate"/>
     </properties>
   </persistence-unit>
 </persistence>
