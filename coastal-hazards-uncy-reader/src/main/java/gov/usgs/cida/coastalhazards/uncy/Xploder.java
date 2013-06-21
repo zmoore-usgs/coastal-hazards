@@ -141,16 +141,19 @@ public class Xploder {
 		
 		SimpleFeature writeFeature = featureWriter.next();
 		
+		// geometry field is first, otherwise we lose.
+		Point np = geometryFactory.createPoint(p.getCoordinate());
+		writeFeature.setAttribute(0, np);
+
+		// copy them other attributes over, replacing uncy
 		for (int i = 0; i < dbfHdr.getNumFields(); i++) {
-			if (i == geomIdx) {
-				Point np = geometryFactory.createPoint(p.getCoordinate());
-				writeFeature.setAttribute(i, np);
-			} else if (i == dfltUncyIdx) {
-				// replace uncy value with mapped uncy
-				writeFeature.setAttribute(i, uncy);
+			Object value;
+			if (i == dfltUncyIdx) {
+				value = uncy;
 			} else {
-				writeFeature.setAttribute(i, row.read(i));
+				value = row.read(i);
 			}
+			writeFeature.setAttribute(i+1, value);
 		}
 		
 		featureWriter.write();
