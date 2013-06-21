@@ -45,8 +45,8 @@ CCH.Objects.UI = function(args) {
 			me.navbarPinButton.on('click', function() {
 				// Check to see if any cards are pinned
 				var isButtonToggledOn = !$('#app-navbar-pin-control-icon').hasClass('muted');
-				var pinnedCardIds = CCH.session.getPinnedItems();
-				var pinnedResults = null;
+				var pinnedCardIds = CCH.session.getPinnedItemIds();
+				var items = null;
 
 				if (pinnedCardIds.length) {
 					// Pinned cards available - toggle the button on/off
@@ -54,10 +54,10 @@ CCH.Objects.UI = function(args) {
 					if (!isButtonToggledOn) {
 					// If cards are pinned, show only pinned cards
 					// Otherwise, show all cards
-					pinnedResults = [];
+					items = [];
 					for (var pcIdx = 0; pcIdx < pinnedCardIds.length; pcIdx++) {
 						var id = pinnedCardIds[pcIdx];
-						pinnedResults.push(CCH.CONFIG.popularity.results.find(function(result) {
+						items.push(CCH.session.getSession().items.find(function(result) {
 							return result.id === id;
 						}));
 					}
@@ -69,7 +69,7 @@ CCH.Objects.UI = function(args) {
 				// the full deck will be seen. Otherwise, if pinnedResults is
 				// populated, only pinned cards will be seen
 				CCH.Slideshow.createSlideshow({
-					results: pinnedResults
+					items: items
 				});
 
 				$(window).trigger('cch.navbar.pinmenu.button.pin.click');
