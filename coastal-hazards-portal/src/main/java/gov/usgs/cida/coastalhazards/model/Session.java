@@ -18,7 +18,7 @@ import javax.persistence.*;
 public class Session implements Serializable {
 
 	private static final long serialVersionUID = 1234567L;
-	private static final int doublePrecision = 5;
+	private static final int doublePrecision = 10;
 	private transient String id;
 	private String baselayer;
 	private double scale;
