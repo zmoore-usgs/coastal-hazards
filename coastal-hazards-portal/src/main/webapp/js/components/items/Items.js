@@ -10,7 +10,9 @@ CCH.Objects.Items = function(args) {
 				success: [],
 				error: []
 			};
+			
 			me.load(args);
+			
 			return me;
 		},
 		load: function(args) {

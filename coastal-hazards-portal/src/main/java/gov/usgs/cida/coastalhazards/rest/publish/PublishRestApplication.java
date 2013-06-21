@@ -13,6 +13,7 @@ public class PublishRestApplication extends PackagesResourceConfig {
 
 	public PublishRestApplication() {
 		super(new HashMap<String, Object>() {
+			private static final long serialVersionUID = 76876L;
 			{
 				put(PackagesResourceConfig.PROPERTY_PACKAGES, this.getClass().getPackage().getName());
 			}

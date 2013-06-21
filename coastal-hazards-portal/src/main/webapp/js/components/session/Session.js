@@ -13,23 +13,40 @@ CCH.Objects.Session = function(args) {
 	};
 
 	return $.extend(me, {
-		init: function() {
-			$(window).on('cch.data.items.loaded', function() {
-				if (CCH.CONFIG.incomingSessionId) {
-					me.load({
-						sid: CCH.CONFIG.incomingSessionId,
-						callbacks: {
-							success:
-									[
-										function(session) {
+		init: function(args) {
+			args = args || {};
 
-										}
-									],
-							error: []
-						}
-					});
-				}
+			args.callbacks = args.callbacks || {
+				success: [],
+				error: []
+			};
+
+			args.callbacks.success.unshift(function() {
+				$(window).trigger('cch.data.session.initialized', {
+					error: false,
+					loaded: true
+				});
 			});
+
+			args.callbacks.error.unshift(function() {
+				$(window).trigger('cch.data.session.initialized', {
+					error: true,
+					loaded: false
+				});
+			});
+
+			if (CCH.CONFIG.incomingSessionId) {
+				me.load({
+					sid: CCH.CONFIG.incomingSessionId,
+					callbacks: args.callbacks
+				});
+			} else {
+				$(window).trigger('cch.data.session.initialized', {
+					error: false,
+					loaded: false
+				});
+				args.callbacks.success();
+			}
 		},
 		toString: function() {
 			return JSON.stringify(me.session);
@@ -38,26 +55,28 @@ CCH.Objects.Session = function(args) {
 			return me.session;
 		},
 		load: function(args) {
+			args = args || {};
 			var sid = args.sid;
-			var callbacks = args.callbacks || {};
-			var successCallbacks = callbacks.success || [];
-			var errorCallbacks = callbacks.error || [];
+			args.callbacks = args.callbacks || {
+				success: [],
+				error: []
+			};
+
+			args.callbacks.success.unshift(function(session) {
+				if (session) {
+					CCH.LOG.info("Session found on server. Updating current session.");
+					$.extend(true, me.session, JSON.parse(session));
+				} else {
+					CCH.LOG.info("Session not found on server.");
+				}
+			});
+
 			CCH.LOG.info("Will try to load session '" + sid + "' from server");
 			me.readSession({
 				sid: sid,
 				callbacks: {
-					success: [
-						// Update the session from the server
-						function(session) {
-							if (session) {
-								CCH.LOG.info("Session found on server. Updating current session.");
-								$.extend(true, me.session, JSON.parse(session));
-							} else {
-								CCH.LOG.info("Session not found on server.");
-							}
-						}
-					].union(successCallbacks),
-					error: errorCallbacks
+					success: args.callbacks.success,
+					error: args.callbacks.error
 				}
 			});
 		},
@@ -106,7 +125,7 @@ CCH.Objects.Session = function(args) {
 			args = args || {};
 			var context = args.context || me;
 			var callbacks = args.callbacks || [];
-			$.ajax(me.serviceEndpoint, {
+			$.ajax(CCH.CONFIG.data.sources.session.endpoint, {
 				type: 'POST',
 				contentType: 'application/json;charset=utf-8',
 				dataType: 'json',

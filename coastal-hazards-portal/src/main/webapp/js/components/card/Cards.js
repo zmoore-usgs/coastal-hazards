@@ -76,7 +76,6 @@ CCH.Objects.Cards = function(args) {
 				$('#app-navbar-pin-control-button').addClass('disabled');
 				$('#app-navbar-pin-control-dropdown-button').addClass('disabled');
 			}
-			;
 			return me.pinnedCount;
 		}
 	});

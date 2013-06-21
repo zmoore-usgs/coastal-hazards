@@ -45,7 +45,7 @@ CCH.Objects.UI = function(args) {
 			me.navbarPinButton.on('click', function() {
 				// Check to see if any cards are pinned
 				var isButtonToggledOn = !$('#app-navbar-pin-control-icon').hasClass('muted');
-				var pinnedCardIds = CCH.session.getPinnedIds();
+				var pinnedCardIds = CCH.session.getPinnedItems();
 				var pinnedResults = null;
 
 				if (pinnedCardIds.length) {
