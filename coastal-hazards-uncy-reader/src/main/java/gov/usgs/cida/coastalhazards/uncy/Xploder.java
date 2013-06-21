@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,37 +15,25 @@ import org.geotools.data.FeatureWriter;
 import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
+import org.geotools.data.shapefile.ShpFileType;
 import org.geotools.data.shapefile.ShpFiles;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
-import org.geotools.data.shapefile.shp.ShapeType;
-import org.geotools.data.shapefile.shp.ShapefileReader;
-import org.geotools.data.shapefile.shp.ShapefileReader.Record;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
-import org.opengis.feature.Feature;
-import org.opengis.feature.GeometryAttribute;
-import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.GeometryType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFactory;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-// which Point class to use?
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jtsexample.geom.ExtendedCoordinate;
+// which Point class to use?
 
 
 /** Write a copy of the input shapefile, with lines exploded to their constituent points
@@ -57,6 +44,8 @@ import com.vividsolutions.jtsexample.geom.ExtendedCoordinate;
  */
 public class Xploder {
 
+	private static Logger logger = LoggerFactory.getLogger(Xploder.class);
+	
 	private int geomIdx = -1;
 	private FeatureWriter<SimpleFeatureType, SimpleFeature> featureWriter;
 	private Map<Integer,Double>  uncyMap;
@@ -112,12 +101,16 @@ public class Xploder {
 		
 		rdr.close();
 		
+		logger.info("Read uncertainty map, size {}", value.size());
+		
 		return value;
 	}
 	
-	public void processShape(ShapeAndAttributes sap) throws Exception {
+	public int processShape(ShapeAndAttributes sap) throws Exception {
 
 		Double defaultUncertainty = (Double)sap.row.read(dfltUncyIdx);
+		
+		int ptCt = 0;
 		
 		for (Point p : sap) {
 			ExtendedCoordinate ec = (ExtendedCoordinate)p.getCoordinate();
@@ -133,7 +126,11 @@ public class Xploder {
 			
 			// write new point-thing-with-uncertainty
 			writePoint(p, sap.row, uncy);
+			
+			ptCt ++;
 		}
+		
+		return ptCt;
 		
 	}
 
@@ -190,10 +187,12 @@ public class Xploder {
 		}
 		SimpleFeatureType outputFeatureType = typeBuilder.buildFeatureType();
 
-		File fout = new File(fn + "_copy.shp");
+		logger.debug("Output feature type is {}", outputFeatureType);
+		
+		File fout = new File(fn + "_pts.shp");
 		
 		Map<String, Serializable> connect = new HashMap<String, Serializable> ();
-		connect.put("url", fout.toURL());
+		connect.put("url", fout.toURI().toURL());
         connect.put("create spatial index", Boolean.TRUE);
         
         ShapefileDataStoreFactory dataStoreFactory = new ShapefileDataStoreFactory();
@@ -202,15 +201,18 @@ public class Xploder {
 		outputStore.createSchema(outputFeatureType);
 
         featureWriter = outputStore.getFeatureWriterAppend(tx);
+        
+        logger.info("Will write {}", fout.getAbsolutePath());
 	}
 
 	private static SimpleFeatureType readSourceSchema(String fn)
 			throws MalformedURLException, IOException
 	{
 		File fin = new File(fn+".shp");
-
+		logger.debug("Reading source schema from {}", fin);
+		
 		Map<String, Serializable> connect = new HashMap<String, Serializable> ();
-		connect.put("url", fin.toURL());
+		connect.put("url", fin.toURI().toURL());
 
 		DataStore inputStore = DataStoreFinder.getDataStore(connect);
 
@@ -223,22 +225,51 @@ public class Xploder {
 		// this might kill the source schema.
 		inputStore.dispose();
 		
+		logger.debug("Source schema is {}", sourceSchema);
+		
 		return sourceSchema;
 	}
 	
 	public void explode(String fn) throws Exception {
 		MyShapefileReader rdr = initReader(fn);
 		
+		logger.debug("Input files from {}\n{}", fn, shapefileNames(rdr.getShpFiles()));
+		
 		tx = new DefaultTransaction("create");
 		initWriter(fn);
 		
+		// Too bad that the reader classes don't expose the ShpFiles.
+		
+		int shpCt = 0;
+		int ptTotal = 0;
+		
+		if (geomIdx != 0) {
+			throw new RuntimeException("This program only supports input that has the geometry as attribute 0");
+		}
 		for (ShapeAndAttributes saa : rdr) {
-			processShape(saa);
+			int ptCt = processShape(saa);
+			logger.debug("Wrote {} points for shape {}", ptCt, saa.record.toString());
+			
+			ptTotal += ptCt;
+			shpCt++;
 		}
 		
 		tx.commit();
+		
+		logger.info("Wrote {} points in {} shapes", ptTotal, shpCt);
 	}
 
+	private static String shapefileNames(ShpFiles shp) {
+		StringBuilder sb = new StringBuilder();
+		
+		Map<ShpFileType, String> m = shp.getFileNames();
+		for (Map.Entry<ShpFileType, String> me : m.entrySet()) {
+			sb.append(me.getKey()).append("\t").append(me.getValue()).append("\n");
+		}
+		
+		return sb.toString();
+	}
+	
 	private MyShapefileReader initReader(String fn) throws Exception {
 		MyShapefileReader rdr = new MyShapefileReader(fn);
 		

@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Iterator;
+import java.util.Map;
 
+import org.geotools.data.shapefile.ShpFileType;
 import org.geotools.data.shapefile.ShpFiles;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
@@ -42,6 +44,10 @@ public class MyShapefileReader implements Iterable<ShapeAndAttributes>, Iterator
 	
 	public DbaseFileHeader getDbfHeader() {
 		return dbf.getHeader();
+	}
+	
+	public ShpFiles getShpFiles() {
+		return shpFile;
 	}
 	
 	private void init(File f) {
