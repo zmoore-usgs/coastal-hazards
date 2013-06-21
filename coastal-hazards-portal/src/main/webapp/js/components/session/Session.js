@@ -5,8 +5,10 @@ CCH.Objects.Session = function(args) {
 	args = args ? args : {};
 
 	me.session = {
+		// Pinned Items
 		items: [],
-		baselayer: 'Not Yet Initialized',
+		// Map
+		baselayer: '',
 		scale: 0,
 		bbox: [0.0, 0.0, 0.0, 0.0],
 		center: [0.0, 0.0]
@@ -45,7 +47,7 @@ CCH.Objects.Session = function(args) {
 					error: false,
 					loaded: false
 				});
-				
+
 				args.callbacks.success.each(function(func) {
 					func();
 				});
@@ -183,7 +185,9 @@ CCH.Objects.Session = function(args) {
 		},
 		toggleItem: function(item) {
 			var items = me.session.items;
-			var currIdIdx = items.indexOf(item);
+			var currIdIdx = items.findIndex(function(sItem) {
+				return sItem.id === item.id;
+			});
 			var toggleOn = currIdIdx === -1;
 
 			if (toggleOn) {

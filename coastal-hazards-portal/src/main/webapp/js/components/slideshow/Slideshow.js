@@ -1,15 +1,15 @@
 CCH.Slideshow = {
-	slideContainers : [],
+	slideContainers: [],
 	slider: function() {
-			var iosslider = $('#iosslider-container');
-			var sliderFunct;
-			if (CCH.ui.currentSizing === 'large') {
-				sliderFunct = iosslider.iosSliderVertical;
-			} else if (CCH.ui.currentSizing === 'small') {
-				sliderFunct = iosslider.iosSlider;
-			}
-			return sliderFunct.apply(iosslider, arguments);
-		},
+		var iosslider = $('#iosslider-container');
+		var sliderFunct;
+		if (CCH.ui.currentSizing === 'large') {
+			sliderFunct = iosslider.iosSliderVertical;
+		} else if (CCH.ui.currentSizing === 'small') {
+			sliderFunct = iosslider.iosSlider;
+		}
+		return sliderFunct.apply(iosslider, arguments);
+	},
 	createSlideshow: function(args) {
 		setTimeout(function(args) {
 			args = args || {};
@@ -21,15 +21,9 @@ CCH.Slideshow = {
 			var sliderContainer = $('<div />').addClass('iosSlider').attr('id', 'iosslider-container');
 			var sliderUl = $('<div />').addClass('slider').attr('id', 'iosslider-slider');
 			sliderContainer.append(sliderUl);
-
 			$('#description-wrapper').append(sliderContainer);
 
-//			var results = args.items || CCH.CONFIG.popularity.results.sortBy(function(result) {
-//				return parseInt(result.hotness);
-//			}, true);
-
-
-			CCH.items.getItems().each(function(result) {
+			(args.items || CCH.items.getItems()).each(function(result) {
 				var cardContainer = CCH.cards.buildCard({
 					'itemId': result.id
 				});
