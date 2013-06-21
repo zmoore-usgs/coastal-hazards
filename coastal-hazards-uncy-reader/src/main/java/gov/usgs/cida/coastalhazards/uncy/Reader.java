@@ -3,10 +3,12 @@ package gov.usgs.cida.coastalhazards.uncy;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
+import org.geotools.data.Query;
 import org.geotools.data.shapefile.ShpFiles;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
@@ -16,16 +18,21 @@ import org.geotools.data.shapefile.shp.ShapefileReader.Record;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.factory.Hints;
+import org.geotools.factory.Hints.Key;
 import org.opengis.feature.Feature;
 import org.opengis.feature.GeometryAttribute;
 import org.opengis.metadata.identification.CharacterSet;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFactory;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jtsexample.geom.ExtendedCoordinate;
 
 /** Read a shoreline shapefile and the associated uncertainty map.
  * 
@@ -131,6 +138,12 @@ public class Reader {
 					
 					double uncy = defaultUncy;
 					
+					Coordinate coord = cs.getCoordinate(i);
+					ExtendedCoordinate eCoord = (ExtendedCoordinate) coord;
+					
+					Point p = ls.getPointN(i);
+					ExtendedCoordinate eCoord2 = (ExtendedCoordinate) p.getCoordinate();
+
 					double md = cs.getOrdinate(i, 3);
 					if ( ! Double.isNaN(md)) {
 						int mi = (int)md;
@@ -173,11 +186,17 @@ public class Reader {
 
 		SimpleFeatureSource featureSource = dataStore.getFeatureSource(typeName);
 
-		SimpleFeatureCollection collection = featureSource.getFeatures();
+		Query q = new Query();
+		CoordinateSequenceFactory x = com.vividsolutions.jtsexample.geom.ExtendedCoordinateSequenceFactory.instance();
+		GeometryFactory gf = new GeometryFactory(x);
+
+		Hints hints = new Hints(org.geotools.factory.Hints.JTS_GEOMETRY_FACTORY, gf);
+		q.setHints(hints);
+		
+		SimpleFeatureCollection collection = featureSource.getFeatures(q);
 
 		SimpleFeatureIterator iterator = collection.features();
-
-
+		
 		try {
 			while (iterator.hasNext()) {
 				Feature feature = iterator.next();
@@ -189,15 +208,65 @@ public class Reader {
 		}
 	}
 
+	// This loses -- it produces Extended points, but with m=0.0.
+	public void read_lose263(String fn) throws Exception {
+
+		File file = new File(fn);
+
+		Map connect = new HashMap();
+		connect.put("url", file.toURL());
+
+		DataStore dataStore = DataStoreFinder.getDataStore(connect);
+
+		String[] typeNames = dataStore.getTypeNames();
+
+		System.out.println("Type names:");
+		for (String tn : typeNames) {
+			System.out.println(tn);
+		}
+
+		String typeName = typeNames[0];
+
+		System.out.println("Reading content " + typeName);
+
+		SimpleFeatureSource featureSource = dataStore.getFeatureSource(typeName);
+
+		Query q = new Query();
+		CoordinateSequenceFactory x = com.vividsolutions.jtsexample.geom.ExtendedCoordinateSequenceFactory.instance();
+		GeometryFactory gf = new GeometryFactory(x);
+
+		Hints hints = new Hints(org.geotools.factory.Hints.JTS_GEOMETRY_FACTORY, gf);
+		q.setHints(hints);
+		
+		SimpleFeatureCollection collection = featureSource.getFeatures(q);
+
+		SimpleFeatureIterator iterator = collection.features();
+		
+		try {
+			while (iterator.hasNext()) {
+				Feature feature = iterator.next();
+				GeometryAttribute sourceGeometry = feature.getDefaultGeometryProperty();
+				System.out.printf("Geometry %s\n", sourceGeometry);
+			}
+		} finally {
+			iterator.close();
+		}
+	}
+
+	public boolean rd = false;
+	
 	public static void main(String[] args) throws Exception {
 		for (String fn : args) {
 			Reader ego = new Reader();
-
-			Map<Integer,Double> uncyMap = ego.readUncyFromDBF(fn + "_uncertainty.dbf");
-			System.out.printf("Got map size %d\n", uncyMap.size());
 			
-			ego.processM(fn+".shp", uncyMap);
+			if (ego.rd) {
+				ego.read(fn+".shp");
+			} else {
+				Map<Integer,Double> uncyMap = ego.readUncyFromDBF(fn + "_uncertainty.dbf");
+				System.out.printf("Got map size %d\n", uncyMap.size());
 			
+				ego.processM(fn+".shp", uncyMap);
+			}
 		}
 	}
 
