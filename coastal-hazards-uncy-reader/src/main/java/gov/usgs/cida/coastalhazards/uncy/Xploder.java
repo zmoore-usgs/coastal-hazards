@@ -62,7 +62,7 @@ public class Xploder {
 	private Map<Integer,Double>  uncyMap;
 	private int dfltUncyIdx = -1;
 	private DbaseFileHeader dbfHdr;
-	private Transaction tx = new DefaultTransaction("create");
+	private Transaction tx;
     private GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
 
 	private static int locateField(DbaseFileHeader hdr, String nm, Class<?> expected) {
@@ -226,9 +226,8 @@ public class Xploder {
 	public void explode(String fn) throws Exception {
 		MyShapefileReader rdr = initReader(fn);
 		
-		initWriter(fn);
-
 		tx = new DefaultTransaction("create");
+		initWriter(fn);
 		
 		for (ShapeAndAttributes saa : rdr) {
 			processShape(saa);
