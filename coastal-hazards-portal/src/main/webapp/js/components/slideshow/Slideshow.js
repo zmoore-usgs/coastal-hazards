@@ -24,11 +24,6 @@ CCH.Slideshow = {
 
 			$('#description-wrapper').append(sliderContainer);
 
-//			var results = args.items || CCH.CONFIG.popularity.results.sortBy(function(result) {
-//				return parseInt(result.hotness);
-//			}, true);
-
-
 			CCH.items.getItems().each(function(result) {
 				var cardContainer = CCH.cards.buildCard({
 					'itemId': result.id
