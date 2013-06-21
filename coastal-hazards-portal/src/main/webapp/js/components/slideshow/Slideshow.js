@@ -72,19 +72,13 @@ CCH.Slideshow = {
 						if (CCH.map.getMap().getLayersBy('isItemLayer', true).length === 0) {
 							CCH.Slideshow.slider('autoSlidePlay');
 						}
-					},
-					'card-button-tweet-clicked': function(evt) {
-						var card = evt.currentTarget;
-						CCH.Slideshow.slider('autoSlidePause');
 					}
 				});
 
-				if (CCH.session.getSession().items.indexOf(card.item.id) !== -1) {
+				if (CCH.session.getPinnedItemIds().indexOf(card.item.id) !== -1) {
 					card.pin();
 				}
 			});
-
-			twttr.widgets.load();
 
 			var resizeVertical = function(event) {
 				toggleClassForActiveSlide(event);

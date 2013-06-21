@@ -45,7 +45,10 @@ CCH.Objects.Session = function(args) {
 					error: false,
 					loaded: false
 				});
-				args.callbacks.success();
+				
+				args.callbacks.success.each(function(func) {
+					func();
+				});
 			}
 		},
 		toString: function() {
@@ -203,6 +206,11 @@ CCH.Objects.Session = function(args) {
 		},
 		getPinnedItems: function() {
 			return me.session.items;
+		},
+		getPinnedItemIds: function() {
+			return me.session.items.map(function(item) {
+				return item.id;
+			});
 		}
 	});
 };

@@ -36,7 +36,7 @@ CCH.Objects.UI = function(args) {
 				'cch.data.items.loaded' : function(evt) {
 					CCH.Slideshow.createSlideshow();
 				}
-			})
+			});
 			$(window).trigger('cch.ui.initialized');
 			$(window).resize();
 			return me;
