@@ -12,8 +12,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  *
@@ -30,6 +34,7 @@ public class Item implements Serializable {
 	private String metadata;
 	private String type;
 	private String attr;
+    private transient Rank rank;
 	private double[] bbox;
 	private WFSService wfsService;
 	private WMSService wmsService;
@@ -92,6 +97,16 @@ public class Item implements Serializable {
 	public void setAttr(String attr) {
 		this.attr = attr;
 	}
+
+    @OneToOne
+    @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
+    public Rank getRank() {
+        return rank;
+    }
+
+    public void setRank(Rank rank) {
+        this.rank = rank;
+    }
 
 	public double[] getBbox() {
 		return bbox;

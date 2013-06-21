@@ -43,7 +43,7 @@ public class ItemManager {
     }
     
     public String query(/* will have params here */) {
-        Query query = em.createQuery("select i from Item i", Item.class);
+        Query query = em.createQuery("select i from Item i order by i.rank.totalScore desc", Item.class);
         List<Item> resultList = query.getResultList();
         Map<String, List> resultMap = new HashMap<String, List>();
         resultMap.put("items", resultList);
