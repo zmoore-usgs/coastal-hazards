@@ -21,7 +21,7 @@ CCH.Objects.Cards = function(args) {
 			return me;
 		},
 		buildCard: function(args) {
-			var item = CCH.CONFIG.popularity.getById({
+			var item = CCH.items.getById({
 				'id': args.itemId
 			});
 

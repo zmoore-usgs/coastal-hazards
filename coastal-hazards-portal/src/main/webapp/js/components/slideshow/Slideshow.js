@@ -24,11 +24,12 @@ CCH.Slideshow = {
 
 			$('#description-wrapper').append(sliderContainer);
 
-			var results = args.results || CCH.CONFIG.popularity.results.sortBy(function(result) {
-				return parseInt(result.hotness);
-			}, true);
+//			var results = args.items || CCH.CONFIG.popularity.results.sortBy(function(result) {
+//				return parseInt(result.hotness);
+//			}, true);
 
-			results.each(function(result) {
+
+			CCH.items.getItems().each(function(result) {
 				var cardContainer = CCH.cards.buildCard({
 					'itemId': result.id
 				});

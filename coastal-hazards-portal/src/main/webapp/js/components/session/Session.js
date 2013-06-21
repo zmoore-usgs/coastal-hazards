@@ -13,13 +13,31 @@ CCH.Objects.Session = function(args) {
 	};
 
 	return $.extend(me, {
+		init: function() {
+			$(window).on('cch.data.items.loaded', function() {
+				if (CCH.CONFIG.incomingSessionId) {
+					me.load({
+						sid: CCH.CONFIG.incomingSessionId,
+						callbacks: {
+							success:
+									[
+										function(session) {
+
+										}
+									],
+							error: []
+						}
+					});
+				}
+			});
+		},
 		toString: function() {
 			return JSON.stringify(me.session);
 		},
 		getSession: function() {
 			return me.session;
 		},
-		updateFromServer: function(args) {
+		load: function(args) {
 			var sid = args.sid;
 			var callbacks = args.callbacks || {};
 			var successCallbacks = callbacks.success || [];

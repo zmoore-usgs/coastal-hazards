@@ -57,42 +57,21 @@ $(document).ready(function() {
 	splashUpdate("Initializing OWS Services");
 	CCH.ows = new CCH.Objects.OWS().init();
 
-
-	splashUpdate("Starting Application...");
-	$('#application-overlay').fadeOut(2000, function() {
-		$('#application-overlay').remove();
-		splashUpdate = undefined;
-
-		CCH.CONFIG.popularity.populate({
-			callbacks: {
-				success: [
-					function() {
-						if (CCH.CONFIG.popularity.results) {
-							$(window).trigger('cch.data.items.loaded');
-
-							var sid = CCH.CONFIG.incomingSessionId;
-							if (sid) {
-								CCH.session.updateFromServer({
-									sid: sid,
-									callbacks: {
-										success:
-												[
-													function(session) {
-														
-													}
-												],
-										error: []
-									}
-								});
-							}
-
-						}
-					}
-				]
-			}
-		});
-
-
-
+	splashUpdate('Loading Items...');
+	CCH.items = new CCH.Objects.Items().init({
+		callbacks: {
+			success: [
+				function() {
+					splashUpdate("Starting Application...");
+					$('#application-overlay').fadeOut(2000, function() {
+						$('#application-overlay').remove();
+						splashUpdate = undefined;
+					});
+				}
+			],
+			error: [
+			]
+		}
 	});
+
 });
