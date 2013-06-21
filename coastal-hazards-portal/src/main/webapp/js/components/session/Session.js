@@ -5,8 +5,10 @@ CCH.Objects.Session = function(args) {
 	args = args ? args : {};
 
 	me.session = {
+		// Pinned Items
 		items: [],
-		baselayer: 'Not Yet Initialized',
+		// Map
+		baselayer: '',
 		scale: 0,
 		bbox: [0.0, 0.0, 0.0, 0.0],
 		center: [0.0, 0.0]
