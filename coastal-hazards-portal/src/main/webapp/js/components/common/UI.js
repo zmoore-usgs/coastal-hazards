@@ -24,7 +24,7 @@ CCH.Objects.UI = function(args) {
 		init: function() {
 			me.bindNavbarPinMenu();
 			me.bindWindowResize();
-			
+
 			var currWidth = me.previousWidth;
 			if (currWidth <= me.magicResizeNumber) {
 				me.currentSizing = 'small';
@@ -33,7 +33,7 @@ CCH.Objects.UI = function(args) {
 			}
 
 			$(window).on({
-				'cch.data.items.loaded' : function(evt) {
+				'cch.data.items.loaded': function(evt) {
 					CCH.Slideshow.createSlideshow();
 				}
 			});
@@ -44,25 +44,31 @@ CCH.Objects.UI = function(args) {
 		bindNavbarPinMenu: function() {
 			me.navbarPinButton.on('click', function() {
 				// Check to see if any cards are pinned
-				var isButtonToggledOn = !$('#app-navbar-pin-control-icon').hasClass('muted');
 				var pinnedCardIds = CCH.session.getPinnedItemIds();
 				var items = null;
 
 				if (pinnedCardIds.length) {
 					// Pinned cards available - toggle the button on/off
-					$('#app-navbar-pin-control-icon').toggleClass('muted');
-					if (!isButtonToggledOn) {
-					// If cards are pinned, show only pinned cards
-					// Otherwise, show all cards
-					items = [];
-					for (var pcIdx = 0; pcIdx < pinnedCardIds.length; pcIdx++) {
-						var id = pinnedCardIds[pcIdx];
-						items.push(CCH.session.getSession().items.find(function(result) {
-							return result.id === id;
-						}));
+					var pinControl = $('#app-navbar-pin-control-icon');
+
+					// Toggle how the button looks
+					pinControl.toggleClass('muted');
+					me.navbarPinButton.toggleClass('slider-card-pinned');
+
+					// Check if button is active
+					if (!pinControl.hasClass('muted')) {
+						// If cards are pinned, show only pinned cards
+						// Otherwise, show all cards
+						// TODO- This functionality should probably be in Cards
+						items = [];
+						for (var pcIdx = 0; pcIdx < pinnedCardIds.length; pcIdx++) {
+							var id = pinnedCardIds[pcIdx];
+							items.push(CCH.session.getSession().items.find(function(result) {
+								return result.id === id;
+							}));
+						}
+						CCH.map.zoomToActiveLayers();
 					}
-					CCH.map.zoomToActiveLayers();
-				}
 				}
 
 				// pinnedResults may or may not be an empty array. If it is, 
