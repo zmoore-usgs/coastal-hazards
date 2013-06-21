@@ -23,36 +23,42 @@ import javax.ws.rs.core.Response;
  */
 @Path("view")
 public class SessionResource {
-    
-    private static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
-    private  SessionIO sessionIo = new SessionManager();
-    
-    @GET
-    @Path("{sid}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getSession(@PathParam("sid") String sid) throws SessionIOException {
-        String jsonSession = sessionIo.load(sid);
-        Response response;
-        if (null == jsonSession) {
-            response = Response.status(Response.Status.NOT_FOUND).build();
-        } else {
-            response = Response.ok(jsonSession, MediaType.APPLICATION_JSON_TYPE).build();
-        }
-        return response;
-    }
-    
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response postSession(String content) throws SessionIOException {
-        final String sid = sessionIo.save(content);
-        Response response = null;
-        if (null == sid) {
-            response = Response.status(Response.Status.BAD_REQUEST).build();
-        } else {
-            Map<String, Object> ok = new HashMap<String, Object>() {{put("sid", sid);}};
-            response = Response.ok(new Gson().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
-        }
-        return response;
-    }
+
+	private static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
+	private SessionIO sessionIo = new SessionManager();
+
+	@GET
+	@Path("{sid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getSession(@PathParam("sid") String sid) throws SessionIOException {
+		String jsonSession = sessionIo.load(sid);
+		Response response;
+		if (null == jsonSession) {
+			response = Response.status(Response.Status.NOT_FOUND).build();
+		} else {
+			response = Response.ok(jsonSession, MediaType.APPLICATION_JSON_TYPE).build();
+		}
+		return response;
+	}
+
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response postSession(String content) throws SessionIOException {
+		final String sid = sessionIo.save(content);
+		Response response;
+		if (null == sid) {
+			response = Response.status(Response.Status.BAD_REQUEST).build();
+		} else {
+			Map<String, Object> ok = new HashMap<String, Object>() {
+				private static final long serialVersionUID = 9238479L;
+
+				{
+					put("sid", sid);
+				}
+			};
+			response = Response.ok(new Gson().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+		}
+		return response;
+	}
 }

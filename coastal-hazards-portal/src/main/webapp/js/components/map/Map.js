@@ -107,8 +107,8 @@ CCH.Objects.Map = function(args) {
 					var slideOrder = target.data('slideOrder');
 					var bbox = target.data('bounds');
 
-					CCH.ui.slider('goToSlide', slideOrder);
-					CCH.ui.slider('autoSlidePause');
+					CCH.Slideshow.slider('goToSlide', slideOrder);
+					CCH.Slideshow.slider('autoSlidePause');
 
 					me.clearBoundingBoxMarkers();
 

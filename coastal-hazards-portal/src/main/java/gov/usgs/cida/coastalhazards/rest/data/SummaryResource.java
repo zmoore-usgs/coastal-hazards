@@ -36,16 +36,15 @@ public class SummaryResource {
     @Path("tiny/{id}")
     @Produces(MediaType.TEXT_PLAIN)
     public String getTinySummary(@PathParam("id") String id) throws FileNotFoundException, URISyntaxException {
-        String tinySummary = "";
         String state = null;
         String direction = null;
         
         Gson gson = new Gson();
-        Map<String, Map> dictionary = gson.fromJson(new FileReader(new File(dictionaryUrl.toURI())), HashMap.class);
+        Map<String, Map<String, String>> dictionary = gson.fromJson(new FileReader(new File(dictionaryUrl.toURI())), HashMap.class);
         Map<String, String> states = dictionary.get("states");
         Map<String, String> directions = dictionary.get("cardinal-directions");
-        Map<String, List> items = gson.fromJson(new FileReader(new File(itemsUrl.toURI())), HashMap.class);
-        List<Map> results = items.get("results");
+        Map<String, List<Map<String, String>>> items = gson.fromJson(new FileReader(new File(itemsUrl.toURI())), HashMap.class);
+        List<Map<String, String>> results = items.get("results");
         for (Map<String, String> item : results) {
             if (item.get("id").equals(id)) {
                 if (item.get("type").equals("historical")) {
@@ -65,11 +64,6 @@ public class SummaryResource {
             }
         }
         
-        tinySummary = "Rate of change for" + 
-                ((direction == null) ? "" : " "+direction) +
-                " shoreline of" +
-                ((state == null) ? "" : " "+state) +
-                " is available at {tinygov} #coastalhazards";
         // make sure this is only 140 characters - hashtag - tinygov
         // start with storms
         // storm name
@@ -79,7 +73,11 @@ public class SummaryResource {
         // Historical template: Average rate of change for {name} is {avg/period} go.usa.gov/xxxx #icanhazards
         // Vulnerability template: Average vulnerability of {stat} is {avg} for {name} go.usa.gov/xxxx #icanhazards
         // General template: See my coastal hazards assessment of {storm?} ,/and {vulnerability?} ,and? {historical?} go.usa.gov/xxxx #icanhazards
-        return tinySummary;
+        return "Rate of change for" + 
+                ((direction == null) ? "" : " "+direction) +
+                " shoreline of" +
+                ((state == null) ? "" : " "+state) +
+                " is available at {tinygov} #coastalhazards";
     }
     
     @GET
