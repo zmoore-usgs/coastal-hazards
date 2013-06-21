@@ -2,11 +2,15 @@ package gov.usgs.cida.coastalhazards.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 
 /**
@@ -40,6 +44,7 @@ public class Activity implements Serializable {
         this.id = id;
     }
 
+    @Column(length = 10)
     public String getItemId() {
         return itemId;
     }
@@ -48,6 +53,7 @@ public class Activity implements Serializable {
         this.itemId = itemId;
     }
 
+    @Enumerated
     public ActivityType getType() {
         return type;
     }
@@ -56,6 +62,8 @@ public class Activity implements Serializable {
         this.type = type;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "activity_timestamp")
     public Date getActivityTimestamp() {
         return activityTimestamp;
     }

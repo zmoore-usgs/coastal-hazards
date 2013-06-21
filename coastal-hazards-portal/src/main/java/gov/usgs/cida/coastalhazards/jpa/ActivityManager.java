@@ -1,14 +1,8 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
-import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.model.Activity;
-import gov.usgs.cida.coastalhazards.model.Item;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 /**
  *
