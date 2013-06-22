@@ -23,8 +23,7 @@ import org.apache.commons.lang.StringUtils;
 public class PublishResource {
 	@GET
 	@Path("")
-	@Produces(MediaType.TEXT_HTML)
-	public Response publishEntryRouter(@Context HttpServletRequest req, @Context HttpServletResponse res) throws IOException, URISyntaxException {
+	public Response publishEntryRouter(@Context HttpServletRequest req) throws IOException, URISyntaxException {
 		HttpSession session = req.getSession(false);
 		if (session == null || session.getAttribute("oid-info") == null) {
 			return Response.temporaryRedirect(new URI("../components/OpenID/oid-login.jsp")).build();
@@ -35,18 +34,7 @@ public class PublishResource {
 		if (StringUtils.isEmpty(email)) {
 			return Response.temporaryRedirect(new URI("../components/OpenID/oid-login.jsp")).build();
 		}
-		
-		if (isUserAuthorized(email)) {
-			return Response.temporaryRedirect(new URI("../components/publish/index.jsp")).build();
-		} else {
-			return Response.ok("<html><body>SORRY THATS NOT IT</body></html>").build();
-		}
-	}
-	
-	private boolean isUserAuthorized(String email) {
-		boolean authorized = false; 
-		// TOO: Get this from the database
-		return authorized;
+		return Response.temporaryRedirect(new URI("../components/publish/")).build();
 	}
 	
 }
