@@ -6,7 +6,7 @@
 	</head>
 	<body>
 		<div id="form-div" style="display:none">
-			<form id="form" action="consumer" method="post">
+			<form id="form" action="<%=request.getContextPath()%>/login" method="post">
 				<input type="text" name="openid_identifier" value="https://www.google.com/accounts/o8/id" />
 				<input type="text" name="alias" value="email" />
 				<input type="text" name="typeUri" value="http://axschema.org/contact/email" />

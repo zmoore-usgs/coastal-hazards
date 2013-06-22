@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.login;
+package gov.usgs.cida.coastalhazards.oid;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -9,12 +9,10 @@ import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -39,19 +37,20 @@ import org.openid4java.message.sreg.SRegRequest;
 import org.openid4java.message.sreg.SRegResponse;
 import org.openid4java.util.HttpClientFactory;
 import org.openid4java.util.ProxyProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sutra Zhou Borrowed from example for openid4java
  */
 
 public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
-
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = -5998885243419513055L;
 	private static final String OPTIONAL_VALUE = "0";
 	private static final String REQUIRED_VALUE = "1";
+	private static final Logger LOG = LoggerFactory.getLogger(OpenIDConsumerService.class);
+
+	private ServletContext context;
 	private ConsumerManager manager;
 
 	/**
@@ -61,9 +60,14 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 
+		context = config.getServletContext();
+
+		LOG.debug("context: " + context);
+
 		// --- Forward proxy setup (only if needed) ---
 		ProxyProperties proxyProps = getProxyProperties(config);
 		if (proxyProps != null) {
+			LOG.debug("ProxyProperties: " + proxyProps);
 			HttpClientFactory.setProxyProperties(proxyProps);
 		}
 
@@ -95,7 +99,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 			if (identifier != null) {
 				this.authRequest(identifier, req, resp);
 			} else {
-				this.getServletContext().getRequestDispatcher("/openid/verify")
+				this.getServletContext().getRequestDispatcher("/components/OpenID/oid-verify.jsp")
 						.forward(req, resp);
 			}
 		}
@@ -104,11 +108,12 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 	private void processReturn(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		Identifier identifier = this.verifyResponse(req);
+		LOG.debug("identifier: " + identifier);
 		if (identifier == null) {
-			this.getServletContext().getRequestDispatcher("/openid/login").forward(req, resp);
+			this.getServletContext().getRequestDispatcher("/components/OpenID/oid-login.jsp").forward(req, resp);
 		} else {
 			req.setAttribute("identifier", identifier.getIdentifier());
-			this.getServletContext().getRequestDispatcher("/openid/verify").forward(req, resp);
+			this.getServletContext().getRequestDispatcher("/components/OpenID/oid-verify.jsp").forward(req, resp);
 		}
 	}
 
@@ -150,7 +155,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 				return null;
 			} else {
 				// Option 2: HTML FORM Redirection (Allows payloads >2048 bytes)
-				RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/openid/redirect");
+				RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/components/OpenID/oid-formredirection.jsp");
 				httpReq.setAttribute("prameterMap", httpReq.getParameterMap());
 				httpReq.setAttribute("message", authReq);
 				// httpReq.setAttribute("destinationUrl", httpResp
@@ -167,15 +172,12 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * Simple Registration Extension example.
-	 *
+	 * 
 	 * @param httpReq
 	 * @param authReq
 	 * @throws MessageException
-	 * @see <a href="http://code.google.com/p/openid4java/wiki/SRegHowTo">Simple
-	 * Registration HowTo</a>
-	 * @see <a
-	 * href="http://openid.net/specs/openid-simple-registration-extension-1_0.html">OpenID
-	 * Simple Registration Extension 1.0</a>
+	 * @see <a href="http://code.google.com/p/openid4java/wiki/SRegHowTo">Simple Registration HowTo</a>
+	 * @see <a href="http://openid.net/specs/openid-simple-registration-extension-1_0.html">OpenID Simple Registration Extension 1.0</a>
 	 */
 	private void addSimpleRegistrationToAuthRequest(HttpServletRequest httpReq,
 			AuthRequest authReq) throws MessageException {
@@ -183,8 +185,8 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 		// FetchRequest fetch = FetchRequest.createFetchRequest();
 		SRegRequest sregReq = SRegRequest.createFetchRequest();
 
-		String[] attributes = {"nickname", "email", "fullname", "dob",
-			"gender", "postcode", "country", "language", "timezone"};
+		String[] attributes = { "nickname", "email", "fullname", "dob",
+				"gender", "postcode", "country", "language", "timezone" };
 		for (int i = 0, l = attributes.length; i < l; i++) {
 			String attribute = attributes[i];
 			String value = httpReq.getParameter(attribute);
@@ -203,16 +205,12 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * Attribute exchange example.
-	 *
+	 * 
 	 * @param httpReq
 	 * @param authReq
 	 * @throws MessageException
-	 * @see <a
-	 * href="http://code.google.com/p/openid4java/wiki/AttributeExchangeHowTo">Attribute
-	 * Exchange HowTo</a>
-	 * @see <a
-	 * href="http://openid.net/specs/openid-attribute-exchange-1_0.html">OpenID
-	 * Attribute Exchange 1.0 - Final</a>
+	 * @see <a href="http://code.google.com/p/openid4java/wiki/AttributeExchangeHowTo">Attribute Exchange HowTo</a>
+	 * @see <a href="http://openid.net/specs/openid-attribute-exchange-1_0.html">OpenID Attribute Exchange 1.0 - Final</a>
 	 */
 	private void addAttributeExchangeToAuthRequest(HttpServletRequest httpReq,
 			AuthRequest authReq) throws MessageException {
@@ -263,7 +261,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 				receiveSimpleRegistration(httpReq, authSuccess);
 
 				receiveAttributeExchange(httpReq, authSuccess);
-
+				
 				Map<String, String> oidInfoMap = new HashMap<String, String>();
 				oidInfoMap.put("oid-firstname", response.getParameter("openid.ext1.value.firstname").getValue());
 				oidInfoMap.put("oid-lastname", response.getParameter("openid.ext1.value.lastname").getValue());
@@ -285,7 +283,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 	/**
 	 * @param httpReq
 	 * @param authSuccess
-	 * @throws MessageException
+	 * @throws MessageException 
 	 */
 	private void receiveSimpleRegistration(HttpServletRequest httpReq,
 			AuthSuccess authSuccess) throws MessageException {
@@ -307,7 +305,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 	/**
 	 * @param httpReq
 	 * @param authSuccess
-	 * @throws MessageException
+	 * @throws MessageException 
 	 */
 	private void receiveAttributeExchange(HttpServletRequest httpReq,
 			AuthSuccess authSuccess) throws MessageException {
@@ -341,6 +339,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 	private static ProxyProperties getProxyProperties(ServletConfig config) {
 		ProxyProperties proxyProps;
 		String host = config.getInitParameter("proxy.host");
+		LOG.debug("proxy.host: " + host);
 		if (host == null) {
 			proxyProps = null;
 		} else {
