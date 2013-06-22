@@ -2,12 +2,12 @@ package gov.usgs.cida.coastalhazards.uncy;
 
 import java.util.Iterator;
 
-import org.geotools.data.shapefile.shp.ShapefileReader.Record;
+import org.geotools.geometry.jts.JTSFactoryFinder;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryCollectionIterator;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
@@ -18,12 +18,27 @@ public class PointIterator implements Iterator<Point> {
 	private LineString thisGeom = null;
 	private int ptCt;
 	
-	public PointIterator(Geometry shape) {		
-		gIter = new GeometryCollectionIterator(shape);
+	public PointIterator(Geometry shape) {	
+		if (shape instanceof LineString) {
+			// hack around problem that LineString thinks it contains 1 geometry (besides itself)
+			thisGeom = (LineString)shape;
+		    GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
+			gIter = new GeometryCollectionIterator(new GeometryCollection(null,geometryFactory));
+		} else if (shape instanceof MultiLineString) {
+			gIter = new GeometryCollectionIterator(shape);
+		} else {
+			throw new ClassCastException("Can't handle this type");
+		}
 	}
 	
 	@Override
 	public boolean hasNext() {
+		if (thisGeom != null) {
+			if (ptCt >= thisGeom.getNumPoints()) {
+				thisGeom = null;
+			}
+		}
+		
 		while (thisGeom == null && gIter.hasNext()) {
 			Geometry nextGeom = (Geometry)gIter.next();
 			// TODO Would be nice to extend this to other collections, but they lack the GetPointN method.
