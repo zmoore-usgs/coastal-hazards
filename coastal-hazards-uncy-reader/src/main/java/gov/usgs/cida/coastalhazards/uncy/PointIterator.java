@@ -22,8 +22,7 @@ public class PointIterator implements Iterator<Point> {
 		if (shape instanceof LineString) {
 			// hack around problem that LineString thinks it contains 1 geometry (besides itself)
 			thisGeom = (LineString)shape;
-		    GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
-			gIter = new GeometryCollectionIterator(new GeometryCollection(null,geometryFactory));
+			gIter = null;
 		} else if (shape instanceof MultiLineString) {
 			gIter = new GeometryCollectionIterator(shape);
 		} else {
@@ -39,12 +38,14 @@ public class PointIterator implements Iterator<Point> {
 			}
 		}
 		
-		while (thisGeom == null && gIter.hasNext()) {
-			Geometry nextGeom = (Geometry)gIter.next();
-			// TODO Would be nice to extend this to other collections, but they lack the GetPointN method.
-			if ( nextGeom instanceof LineString) {
-				thisGeom = (LineString)nextGeom;
-				ptCt = 0;
+		if (gIter != null) {
+			while (thisGeom == null && gIter.hasNext()) {
+				Geometry nextGeom = (Geometry)gIter.next();
+				// TODO Would be nice to extend this to other collections, but they lack the GetPointN method.
+				if ( nextGeom instanceof LineString) {
+					thisGeom = (LineString)nextGeom;
+					ptCt = 0;
+				}
 			}
 		}
 		

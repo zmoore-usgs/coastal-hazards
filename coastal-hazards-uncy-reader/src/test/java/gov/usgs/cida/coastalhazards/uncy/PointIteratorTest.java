@@ -37,16 +37,32 @@ public class PointIteratorTest {
 		}
 		
 		LineString ls = geometryFactory.createLineString(coordinates);
+		GeometryCollectionIterator gci;
+		int ct;
 		
-		GeometryCollectionIterator gci = new GeometryCollectionIterator(ls);
+		gci = new GeometryCollectionIterator(ls);
 		
-		int ct = 0;
+		ct = 0;
 		while (gci.hasNext()) {
 			Object thing = gci.next();
 			ct++;
 		}
-		// Well, this might be a bug in the GeometryCollectionIterator...
+		// This is what you get for applying a GeometryCollectionIterator to a non-collection geometry;
+		// you get the initial object twice.
+		// This is probably a bug in geotools -- should either barf at init, or return base type once.
 		assertEquals(2, ct);	
+		
+		Point p = geometryFactory.createPoint(coordinates[0]);
+		gci = new GeometryCollectionIterator(ls);
+		
+		ct = 0;
+		while (gci.hasNext()) {
+			Object thing = gci.next();
+			ct++;
+		}
+		// as above
+		assertEquals(2, ct);	
+		
 	}
 	
 	@Test
