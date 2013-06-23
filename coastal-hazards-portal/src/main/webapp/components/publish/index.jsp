@@ -34,7 +34,6 @@
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
         <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="<%=request.getContextPath()%>webjars/openlayers/2.12/OpenLayers.js"></script>
 		<style type="text/css">
 			.container-fluid {
 				margin-top: 10px;
@@ -55,9 +54,9 @@
 			<c:when test='${empty pageContext.session.getAttribute("oid-info")}'>
 				Could not find your log-in info. 
 				<br />
-				<a href="/">Try again?</a>
+				<a href="<%=request.getContextPath()%>/publish">Try again?</a>
 				<br />
-				<a href="">Go to Coastal Hazards Portal?</a>
+				<a href="<%=request.getContextPath()%>/">Go to Coastal Hazards Portal?</a>
 			</c:when>
 			<c:when test='${false}'>
 				You are not an authorized user. 
@@ -108,7 +107,7 @@
 					<div id="publish-metadata-container-row" class="row-fluid">
 						<div class="well well-small">
 							<span id="publish-container-metadata">
-								Metadata&nbsp;&nbsp;<button id="publish-metadata-upload-button">Upload</button><span id="publish-metadata-validate"></span>
+								Metadata&nbsp;&nbsp;<span id="publish-metadata-upload-button">Upload Metadata</span><span id="publish-metadata-validate"></span>
 							</span>
 						</div>
 					</div>
@@ -146,50 +145,71 @@
 								)
 					}
 				});
-			});
 
-			$('#publish-services-wms').on('change', function(evt) {
-				var value = evt.target.value;
-				// TODO- verify WMS
-				var valid = true;
-				if (valid) {
-					$('#publish-services-wms-validate')
-							.removeClass('invalid')
-							.addClass('valid')
-							.html('Valid');
-				} else {
-					$('#publish-services-wms-validate')
-							.removeClass('valid')
-							.addClass('invalid')
-							.html('Invalid');
-				}
-			});
-			$('#publish-services-wfs').on('change', function(evt) {
-				var value = evt.target.value;
-				// TODO - very WFS
-				var valid = true;
-				if (valid) {
-					$('#publish-services-wfs-validate')
-							.removeClass('invalid')
-							.addClass('valid')
-							.html('Valid');
-				} else {
-					$('#publish-services-wfs-validate')
-							.removeClass('valid')
-							.addClass('invalid')
-							.html('Invalid');
-				}
-			});
-			
-			$('#publish-preview-button').on('click', function() {
-				// Do Submit
-			});
-			$('#publish-submit-button').on('click', function() {
-				// Do Submit
-			});
+				$('#publish-services-wms').on('change', function(evt) {
+					var value = evt.target.value;
+					// TODO- verify WMS
+					var valid = true;
+					if (valid) {
+						$('#publish-services-wms-validate')
+								.removeClass('invalid')
+								.addClass('valid')
+								.html('Valid');
+					} else {
+						$('#publish-services-wms-validate')
+								.removeClass('valid')
+								.addClass('invalid')
+								.html('Invalid');
+					}
+				});
+				$('#publish-services-wfs').on('change', function(evt) {
+					var value = evt.target.value;
+					// TODO - verify WFS
+					var valid = true;
+					if (valid) {
+						$('#publish-services-wfs-validate')
+								.removeClass('invalid')
+								.addClass('valid')
+								.html('Valid');
+					} else {
+						$('#publish-services-wfs-validate')
+								.removeClass('valid')
+								.addClass('invalid')
+								.html('Invalid');
+					}
+				});
 
-			$('#publish-select-type-type').val($('#publish-select-type-type option:first').val()).trigger('change');
+				var uploader = new qq.FineUploader({
+					element: $('#publish-metadata-upload-button')[0],
+					autoUpload: true,
+					paramsInBody: false,
+                    forceMultipart : false,
+					request: {
+						endpoint: '<%=request.getContextPath()%>/data/metadata/'
+					},
+					validation: {
+						allowedExtensions: ['xml'],
+						sizeLimit: 15728640 // 200 kB = 200 * 1024 bytes
+					},
+					classes: {
+						success: 'alert alert-success',
+						fail: 'alert alert-error'
+					}
+				});
 
+				$('#publish-preview-button').on('click', function() {
+					// Do Submit
+				});
+				$('#publish-submit-button').on('click', function() {
+					// Do Submit
+				});
+
+				$('#publish-select-type-type').val($('#publish-select-type-type option:first').val()).trigger('change');
+
+			});
 		</script>
+		<jsp:include page="../../js/fineuploader/fineuploader.jsp">
+			<jsp:param name="relPath" value="../../" />
+		</jsp:include>
     </body>
 </html>

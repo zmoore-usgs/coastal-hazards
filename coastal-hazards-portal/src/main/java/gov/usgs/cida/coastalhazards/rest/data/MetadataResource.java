@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -45,37 +48,26 @@ public class MetadataResource {
 	@POST
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response acceptMetadata(@Context HttpServletRequest req) {
+	public Response acceptMetadata(@Context HttpServletRequest req) throws IOException {
 		int maxFileSize = FILE_UPLOAD_MAX_SIZE;
 		int fileSize = Integer.parseInt(req.getHeader("Content-Length"));
-		String fileName = req.getParameter(FILENAME_PARAM);
+		File tempFile = File.createTempFile(UUID.randomUUID().toString(), "temp");
 		Map<String, String> responseContent = new HashMap<String, String>();
-		try {
-			FileUtils.forceMkdir(UPLOAD_DIR);
-		} catch (IOException ex) {
-			return Response.serverError().build();
-		}
+		String fileName;
 
 		if (maxFileSize > 0 && fileSize > maxFileSize) {
 			responseContent.put("message", "File too large");
 			return Response.notAcceptable(null).entity(responseContent).build();
 		}
 
-		File savedFile = new File(UPLOAD_DIR, fileName);
-		if (savedFile.exists()) {
-			try {
-				responseContent.put("fid", StringHelper.makeSHA1Hash(IOUtils.toString(new FileInputStream(savedFile))));
-				return Response.ok(new Gson().toJson(responseContent, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
-			} catch (NoSuchAlgorithmException ex) {
-				responseContent.put("message", ex.getMessage());
-				return Response.serverError().entity(responseContent).build();
-			} catch (IOException ex) {
-				responseContent.put("message", ex.getMessage());
-				return Response.serverError().entity(responseContent).build();
-			}
-		}
 		try {
-			FormUploadHandler.saveFileFromRequest(req, FILENAME_PARAM, savedFile);
+			FileUtils.forceMkdir(UPLOAD_DIR);
+		} catch (IOException ex) {
+			return Response.serverError().build();
+		}
+
+		try {
+			FormUploadHandler.saveFileFromRequest(req, FILENAME_PARAM, tempFile);
 		} catch (FileUploadException ex) {
 			responseContent.put("message", ex.getMessage());
 			return Response.serverError().entity(responseContent).build();
@@ -85,15 +77,22 @@ public class MetadataResource {
 		}
 
 		try {
-			responseContent.put("fid", StringHelper.makeSHA1Hash(IOUtils.toString(new FileInputStream(savedFile))));
-			return Response.ok(new Gson().toJson(responseContent, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+			fileName = StringHelper.makeSHA1Hash(IOUtils.toString(new FileInputStream(tempFile)));
 		} catch (NoSuchAlgorithmException ex) {
 			responseContent.put("message", ex.getMessage());
 			return Response.serverError().entity(responseContent).build();
-		} catch (IOException ex) {
-			responseContent.put("message", ex.getMessage());
-			return Response.serverError().entity(responseContent).build();
 		}
+
+		File savedFile = new File(UPLOAD_DIR, fileName);
+		if (savedFile.exists()) {
+			responseContent.put("fid", fileName);
+		} else {
+			FileUtils.moveFile(tempFile, savedFile);
+			responseContent.put("fid", fileName);
+		}
+		
+		return Response.ok(new Gson().toJson(responseContent, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+
 	}
 
 	@GET

@@ -23,7 +23,6 @@
 						} else {
 							
 						}
-						debugger;
 						var loginListItem = $('#login-list-item');
 						var country = '',
 								email = '',
