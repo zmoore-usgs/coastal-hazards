@@ -63,7 +63,6 @@
 				<a href="">Go to Coastal Hazards Portal?</a>
 			</c:when>
 			<c:otherwise>
-
 				<div class="container-fluid span7 offset5">
 					<div id="publish-user-container-row" class="row-fluid">
 						<div class="well well-small">
@@ -129,6 +128,16 @@
 		</jsp:include>
 		<script type="text/javascript">
 			$(document).ready(function() {
+				var entry = {
+					name: '',
+					metadata: '',
+					type: '',
+					wms: '',
+					wfs: '',
+					attr: ''
+				};
+				entry.name = $('#publish-user-name-first') + ' ' + $('#publish-user-name-last');
+
 				$('#publish-select-type-type').on('change', function(evt) {
 					var val = evt.target.value;
 					var subtypeSelect = $('#publish-select-type-subtype');
@@ -137,12 +146,12 @@
 						subtypeSelect.append(
 								$('<option />').attr('value', 'pcoi').html('PCOI'),
 								$('<option />').attr('value', 'cvi').html('CVI')
-								)
+								);
 					} else if (val === 'storms') {
 						subtypeSelect.append(
 								$('<option />').attr('value', 'real-time').html('REAL TIME'),
 								$('<option />').attr('value', 'past').html('PAST')
-								)
+								);
 					}
 				});
 
@@ -151,27 +160,32 @@
 					// TODO- verify WMS
 					var valid = true;
 					if (valid) {
+						entry.wms = evt.target.value;
 						$('#publish-services-wms-validate')
 								.removeClass('invalid')
 								.addClass('valid')
 								.html('Valid');
 					} else {
+						entry.wms = '';
 						$('#publish-services-wms-validate')
 								.removeClass('valid')
 								.addClass('invalid')
 								.html('Invalid');
 					}
 				});
+
 				$('#publish-services-wfs').on('change', function(evt) {
 					var value = evt.target.value;
 					// TODO - verify WFS
 					var valid = true;
 					if (valid) {
+						entry.wfs = evt.target.value;
 						$('#publish-services-wfs-validate')
 								.removeClass('invalid')
 								.addClass('valid')
 								.html('Valid');
 					} else {
+						entry.wfs = '';
 						$('#publish-services-wfs-validate')
 								.removeClass('valid')
 								.addClass('invalid')
@@ -195,25 +209,30 @@
 						success: 'alert alert-success',
 						fail: 'alert alert-error'
 					},
-					onComplete: function(id, fileName, responseJSON) {
-						if (responseJSON.success) {
-							$.ajax({
-								endpoint: '<%=request.getContextPath()%>/data/metadata/validate/' + fileName,
-								success: function(data, textStatus, jqXHR) {
-									$('#publish-metadata-validate').html('Valid');
-								},
-								error: function(data, textStatus, jqXHR) {
-									$('#publish-metadata-validate').html('Invalid')
-								}
-							})
-						} else {
-
+					callbacks: {
+						onComplete: function(id, fileName, responseJSON) {
+							if (responseJSON.success) {
+								$.ajax({
+									endpoint: '<%=request.getContextPath()%>/data/metadata/validate/' + responseJSON.fid,
+									success: function(data, textStatus, jqXHR) {
+										entry.metadata = responseJSON.metadata;
+										$('#publish-metadata-validate').html('Valid');
+									},
+									error: function(data, textStatus, jqXHR) {
+										entry.metadata = '';
+										$('#publish-metadata-validate').html('Invalid');
+									}
+								});
+							} else {
+								entry.metadata = '';
+								$('#publish-metadata-validate').html('Invalid');
+							}
 						}
 					}
-				})
+				});
 
 				$('#publish-preview-button').on('click', function() {
-					// Do Submit
+
 				});
 				$('#publish-submit-button').on('click', function() {
 					// Do Submit
