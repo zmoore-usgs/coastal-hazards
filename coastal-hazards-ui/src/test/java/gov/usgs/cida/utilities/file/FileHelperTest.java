@@ -23,6 +23,9 @@ public class FileHelperTest {
 		
 		assertTrue(ze.getName(),FileHelper.entryIsMacBundle(ze));
 		
+		ze = new ZipEntry("Another_MacOSX_Bundle/");
+		assertTrue(ze.getName(),FileHelper.entryIsMacBundle(ze));
+		
 		ze = new ZipEntry("NOT_MACOSX_BUNDLE");
 		assertFalse(ze.getName(),FileHelper.entryIsMacBundle(ze));
 		

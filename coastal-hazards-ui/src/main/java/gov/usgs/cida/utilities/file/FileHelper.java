@@ -629,7 +629,7 @@ public class FileHelper {
 
 	public static boolean entryIsMacBundle(ZipEntry entry) {
         String entryName = entry.getName();
-		return (entry.isDirectory() && entryName.toLowerCase().contains("MACOSX")) || entryName.charAt(0) == '.';
+		return (entry.isDirectory() && entryName.toLowerCase().contains("macosx")) || entryName.charAt(0) == '.';
 	}
 
     // http://www.javaer.org/java/1-zip/3-delete-zipentry-from-zip-file
