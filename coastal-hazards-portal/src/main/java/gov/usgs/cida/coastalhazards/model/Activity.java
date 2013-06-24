@@ -26,7 +26,8 @@ public class Activity implements Serializable {
         TWEET,
         WEATHER,
         PUBLISH,
-        UPDATE;
+        UPDATE,
+        INSERT;
     }
 
     private long id;
