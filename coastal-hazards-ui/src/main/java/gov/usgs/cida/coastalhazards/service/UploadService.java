@@ -102,9 +102,7 @@ public class UploadService extends HttpServlet {
         Boolean needsMacFix = false;
         while (entries.hasMoreElements()) {
             ZipEntry entry = entries.nextElement();
-            String entryName = entry.getName();
-            if ((entry.isDirectory() && entryName.toLowerCase().contains("MACOSX"))
-                    || entryName.charAt(0) == '.') {
+            if (FileHelper.entryIsMacBundle(entry)) {
                 needsMacFix = true;
             }
         }

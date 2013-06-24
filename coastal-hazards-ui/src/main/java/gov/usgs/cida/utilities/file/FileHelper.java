@@ -617,8 +617,7 @@ public class FileHelper {
         List<String> zipEntry = new ArrayList<String>();
         while (entries.hasMoreElements()) {
             ZipEntry entry = entries.nextElement();
-            String entryName = entry.getName();
-            if ((entry.isDirectory() && entryName.toLowerCase().contains("MACOSX")) || entryName.charAt(0) == '.') {
+            if (entryIsMacBundle(entry)) {
                 zipEntry.add(entry.getName());
             }
         }
@@ -627,6 +626,11 @@ public class FileHelper {
             deleteZipEntries(zipFile, zipEntry.toArray(new String[0]));
         }
     }
+
+	public static boolean entryIsMacBundle(ZipEntry entry) {
+        String entryName = entry.getName();
+		return (entry.isDirectory() && entryName.toLowerCase().contains("MACOSX")) || entryName.charAt(0) == '.';
+	}
 
     // http://www.javaer.org/java/1-zip/3-delete-zipentry-from-zip-file
     public static void deleteZipEntries(File zipFile,
