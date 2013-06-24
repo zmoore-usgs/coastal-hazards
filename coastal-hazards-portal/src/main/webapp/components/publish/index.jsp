@@ -183,7 +183,7 @@
 					element: $('#publish-metadata-upload-button')[0],
 					autoUpload: true,
 					paramsInBody: false,
-                    forceMultipart : false,
+					forceMultipart: false,
 					request: {
 						endpoint: '<%=request.getContextPath()%>/data/metadata/'
 					},
@@ -194,8 +194,23 @@
 					classes: {
 						success: 'alert alert-success',
 						fail: 'alert alert-error'
+					},
+					onComplete: function(id, fileName, responseJSON) {
+						if (responseJSON.success) {
+							$.ajax({
+								endpoint: '<%=request.getContextPath()%>/data/metadata/validate/' + fileName,
+								success: function(data, textStatus, jqXHR) {
+									$('#publish-metadata-validate').html('Valid');
+								},
+								error: function(data, textStatus, jqXHR) {
+									$('#publish-metadata-validate').html('Invalid')
+								}
+							})
+						} else {
+
+						}
 					}
-				});
+				})
 
 				$('#publish-preview-button').on('click', function() {
 					// Do Submit
