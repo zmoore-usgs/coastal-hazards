@@ -1,4 +1,3 @@
-
 <changeSet author="bheck" id="change2">
    <createView 
            replaceIfExists="true"
@@ -72,7 +71,7 @@ from
      /* limit selection to at most 5, with a minimum score too */
      ranking <= 5 and total_score >= 50;
    </createView>
-
+     
 </changeSet>
 
 
