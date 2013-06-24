@@ -51,8 +51,7 @@ CCH.Objects.Card = function(args) {
 
 			titleRow.append(me.pinButton, titleColumn);
 
-			// TODO description should come from summary service (URL in item)
-			descriptionRow.append($('<p />').addClass('slide-vertical-description unselectable').html(me.summary.medium));
+			descriptionRow.append($('<p />').addClass('slide-vertical-description').html(me.summary.medium));
 
 			me.container.append(titleRow, descriptionRow);
 			if (me.size === 'large') {

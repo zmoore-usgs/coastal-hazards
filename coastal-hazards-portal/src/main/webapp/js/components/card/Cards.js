@@ -3,7 +3,6 @@ CCH.Objects.Cards = function(args) {
 	var me = (this === window) ? {} : this;
 	me.currentApplicationSize;
 	me.pinnedCount;
-	me.cards = [];
 	return $.extend(me, {
 		init: function() {
 			$(window).on({

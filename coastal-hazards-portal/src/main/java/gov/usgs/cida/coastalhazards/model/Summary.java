@@ -16,6 +16,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "summary")
 public class Summary implements Serializable {
+	private static final long serialVersionUID = 182763L;
 
     private transient int id;
     private String tiny;

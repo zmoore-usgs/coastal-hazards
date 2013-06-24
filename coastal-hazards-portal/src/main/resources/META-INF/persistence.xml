@@ -5,6 +5,7 @@
     <non-jta-data-source>java:comp/env/jdbc/coastalhazards</non-jta-data-source>
     <class>gov.usgs.cida.coastalhazards.model.Session</class>
     <class>gov.usgs.cida.coastalhazards.model.Item</class>
+    <class>gov.usgs.cida.coastalhazards.model.Rank</class>
     <class>gov.usgs.cida.coastalhazards.model.Summary</class>
     <class>gov.usgs.cida.coastalhazards.model.Activity</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
