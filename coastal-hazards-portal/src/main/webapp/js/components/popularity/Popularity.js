@@ -33,11 +33,12 @@ CCH.CONFIG.popularity = {
 
 		$.ajax({
 			url: CCH.CONFIG.data.sources.popularity.endpoint,
-			cache: false,
+			isLocal: true,
 			dataType: 'json',
 			data: {
-				maxRecords: '', // not yet supported
-				bbox: '' // not yet supported
+				count: '', // not yet supported
+				bbox: '', // not yet supported
+				sortBy: ''
 			},
 			success: runSuccessCallbacks,
 			error: runErrorCallbacks

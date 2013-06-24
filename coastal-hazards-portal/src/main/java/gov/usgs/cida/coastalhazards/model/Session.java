@@ -3,6 +3,8 @@ package gov.usgs.cida.coastalhazards.model;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import gov.usgs.cida.coastalhazards.gson.serializer.DoubleSerializer;
+import gov.usgs.cida.utilities.file.FileHelper;
+import gov.usgs.cida.utilities.string.StringHelper;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,7 +20,7 @@ import javax.persistence.*;
 public class Session implements Serializable {
 
 	private static final long serialVersionUID = 1234567L;
-	private static final int doublePrecision = 5;
+	private static final int doublePrecision = 10;
 	private transient String id;
 	private String baselayer;
 	private double scale;
@@ -46,22 +48,8 @@ public class Session implements Serializable {
 				.toJson(this);
 	}
 
-	private static String makeSHA1Hash(String json) throws NoSuchAlgorithmException {
-		MessageDigest md = MessageDigest.getInstance("SHA1");
-		md.reset();
-		byte[] buffer = json.getBytes();
-		md.update(buffer);
-		byte[] digest = md.digest();
-
-		String hexStr = "";
-		for (int i = 0; i < digest.length; i++) {
-			hexStr += Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1);
-		}
-		return hexStr;
-	}
-
 	public static Session fromJSON(String json) throws NoSuchAlgorithmException {
-		String id = makeSHA1Hash(json);
+		String id = StringHelper.makeSHA1Hash(json);
 
 		Session session;
 		GsonBuilder gsonBuilder = new GsonBuilder();

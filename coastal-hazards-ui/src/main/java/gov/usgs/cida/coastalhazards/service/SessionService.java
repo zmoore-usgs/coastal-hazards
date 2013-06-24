@@ -97,12 +97,12 @@ public class SessionService extends HttpServlet {
 					RequestResponseHelper.sendErrorResponse(response, responseMap);
 					return;
 				} else {
-					Map<String, String> oidInfoMap = (Map<String, String>) session.getAttribute("oid-info");
-					responseMap.put("firstname", (String) oidInfoMap.get("oid-firstname"));
-					responseMap.put("lastname", (String) oidInfoMap.get("oid-lastname"));
-					responseMap.put("country", (String) oidInfoMap.get("oid-country"));
-					responseMap.put("language", (String) oidInfoMap.get("oid-language"));
-					responseMap.put("email", (String) oidInfoMap.get("oid-email"));
+					Map<String, String> oidInfoMap = ((Map<String, String>) session.getAttribute("oid-info"));
+					responseMap.put("firstname", oidInfoMap.get("oid-firstname"));
+					responseMap.put("lastname", oidInfoMap.get("oid-lastname"));
+					responseMap.put("country", oidInfoMap.get("oid-country"));
+					responseMap.put("language", oidInfoMap.get("oid-language"));
+					responseMap.put("email", oidInfoMap.get("oid-email"));
 				}
 			}
 		}

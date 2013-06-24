@@ -63,6 +63,6 @@ public class DoubleSerializerTest {
 		assertFalse(result.contains("E"));
 		assertTrue(result.contains("55468034.09273"));
 		assertTrue(result.contains("-55468034.09273"));
-		assertTrue(result.contains("\"dblArray\":[\"55468034.09273\",\"-55468034.09273\"]"));
+		assertTrue(result.contains("\"dblArray\":[55468034.09273,-55468034.09273]"));
 	}
 }

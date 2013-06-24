@@ -1,11 +1,11 @@
 package gov.usgs.cida.coastalhazards.model;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Subselect;
 
 /**
  *
@@ -14,7 +14,8 @@ import org.hibernate.annotations.Subselect;
 @Entity
 @Immutable
 @Table(name="ranking")
-public class Rank {
+public class Rank implements Serializable {
+	private static final long serialVersionUID = 1L;
     
     
     private String id;

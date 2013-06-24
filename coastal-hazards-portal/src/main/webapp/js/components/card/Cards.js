@@ -3,7 +3,6 @@ CCH.Objects.Cards = function(args) {
 	var me = (this === window) ? {} : this;
 	me.currentApplicationSize;
 	me.pinnedCount;
-	me.cards = [];
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
@@ -21,7 +20,7 @@ CCH.Objects.Cards = function(args) {
 			return me;
 		},
 		buildCard: function(args) {
-			var item = CCH.CONFIG.popularity.getById({
+			var item = CCH.items.getById({
 				'id': args.itemId
 			});
 
@@ -76,7 +75,6 @@ CCH.Objects.Cards = function(args) {
 				$('#app-navbar-pin-control-button').addClass('disabled');
 				$('#app-navbar-pin-control-dropdown-button').addClass('disabled');
 			}
-			;
 			return me.pinnedCount;
 		}
 	});

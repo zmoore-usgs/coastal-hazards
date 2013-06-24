@@ -29,18 +29,16 @@ CCH.Objects.Map = function(args) {
 			me.map.zoomToExtent(me.initialExtent, true);
 
 			me.map.events.on({
-				'moveend': me.updateSession,
-				'addlayer': function() {
-					me.updateSession();
-					me.floatBoxLayer();
-				},
-				'changelayer': function() {
-					me.updateSession();
-					me.floatBoxLayer();
-				}
+				'moveend': me.moveendCallack,
+				'addlayer': me.addlayerCallback,
+				'changelayer': me.changelayerCallback
 			});
 
-			me.updateSession();
+			if (!CCH.session.getSession().baselayer) {
+				me.updateSession();
+			} else {
+				me.updateFromSession();
+			}
 
 			return me;
 		},
@@ -107,8 +105,8 @@ CCH.Objects.Map = function(args) {
 					var slideOrder = target.data('slideOrder');
 					var bbox = target.data('bounds');
 
-					CCH.ui.slider('goToSlide', slideOrder);
-					CCH.ui.slider('autoSlidePause');
+					CCH.Slideshow.slider('goToSlide', slideOrder);
+					CCH.Slideshow.slider('autoSlidePause');
 
 					me.clearBoundingBoxMarkers();
 
@@ -159,11 +157,24 @@ CCH.Objects.Map = function(args) {
 		},
 		updateFromSession: function() {
 			CCH.LOG.info('Map.js::updateFromSession()');
-			me.map.events.un({'moveend': me.moveendCallback});
+			me.map.events.un({
+				'moveend': me.moveendCallback,
+				'addlayer': me.addlayerCallback,
+				'changelayer': me.changelayerCallback
+			});
 			var session = CCH.session.getSession();
-			this.getMap().setCenter([session.center[0], session.center[1]]);
-			this.getMap().zoomToScale(session.scale);
-			me.map.events.on({'moveend': me.moveendCallback});
+			var sessionBaselayer = me.map.getLayersByName(session.baselayer);
+			if (sessionBaselayer.length) {
+				me.map.setBaseLayer(sessionBaselayer[0]);
+			}
+			me.map.setCenter([session.center[0], session.center[1]]);
+			me.map.zoomToScale(session.scale);
+			
+			me.map.events.on({
+				'moveend': me.moveendCallback,
+				'addlayer': me.addlayerCallback,
+				'changelayer': me.changelayerCallback
+			});
 		},
 		buildGeocodingPopup: function(args) {
 			var map = me.map;
@@ -323,6 +334,17 @@ CCH.Objects.Map = function(args) {
 					me.map.raiseLayer(me.boxLayer, 1);
 				}
 			}
+		},
+		moveendCallback: function() {
+			me.updateSession();
+		},
+		addlayerCallback: function() {
+			me.updateSession();
+			me.floatBoxLayer();
+		},
+		changelayerCallback: function() {
+			me.updateSession();
+			me.floatBoxLayer();
 		}
 	});
 };

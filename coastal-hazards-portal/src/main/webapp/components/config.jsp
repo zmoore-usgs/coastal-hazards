@@ -132,11 +132,14 @@
 					'endpoint': '<%=stPeteArcServerEndpoint%>',
 					'proxy': 'stpgis/'
 				},
-				'popularity': {
-					'endpoint': 'service/popularity'
+				'item': {
+					'endpoint': '<%=request.getContextPath()%>/data/item'
 				},
 				'geocoding': {
 					'endpoint': '<%=geocodeEndpoint%>'
+				},
+				'session' : {
+					'endpoint' : '<%=request.getContextPath()%>/data/view/'
 				}
 			}
 		}

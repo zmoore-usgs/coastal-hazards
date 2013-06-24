@@ -1,15 +1,15 @@
 CCH.Slideshow = {
-	slideContainers : [],
+	slideContainers: [],
 	slider: function() {
-			var iosslider = $('#iosslider-container');
-			var sliderFunct;
-			if (CCH.ui.currentSizing === 'large') {
-				sliderFunct = iosslider.iosSliderVertical;
-			} else if (CCH.ui.currentSizing === 'small') {
-				sliderFunct = iosslider.iosSlider;
-			}
-			return sliderFunct.apply(iosslider, arguments);
-		},
+		var iosslider = $('#iosslider-container');
+		var sliderFunct;
+		if (CCH.ui.currentSizing === 'large') {
+			sliderFunct = iosslider.iosSliderVertical;
+		} else if (CCH.ui.currentSizing === 'small') {
+			sliderFunct = iosslider.iosSlider;
+		}
+		return sliderFunct.apply(iosslider, arguments);
+	},
 	createSlideshow: function(args) {
 		setTimeout(function(args) {
 			args = args || {};
@@ -21,14 +21,9 @@ CCH.Slideshow = {
 			var sliderContainer = $('<div />').addClass('iosSlider').attr('id', 'iosslider-container');
 			var sliderUl = $('<div />').addClass('slider').attr('id', 'iosslider-slider');
 			sliderContainer.append(sliderUl);
-
 			$('#description-wrapper').append(sliderContainer);
 
-			var results = args.results || CCH.CONFIG.popularity.results.sortBy(function(result) {
-				return parseInt(result.hotness);
-			}, true);
-
-			results.each(function(result) {
+			(args.items || CCH.items.getItems()).each(function(result) {
 				var cardContainer = CCH.cards.buildCard({
 					'itemId': result.id
 				});
@@ -71,19 +66,13 @@ CCH.Slideshow = {
 						if (CCH.map.getMap().getLayersBy('isItemLayer', true).length === 0) {
 							CCH.Slideshow.slider('autoSlidePlay');
 						}
-					},
-					'card-button-tweet-clicked': function(evt) {
-						var card = evt.currentTarget;
-						CCH.Slideshow.slider('autoSlidePause');
 					}
 				});
 
-				if (CCH.session.getSession().items.indexOf(card.item.id) !== -1) {
+				if (CCH.session.getPinnedItemIds().indexOf(card.item.id) !== -1) {
 					card.pin();
 				}
 			});
-
-			twttr.widgets.load();
 
 			var resizeVertical = function(event) {
 				toggleClassForActiveSlide(event);

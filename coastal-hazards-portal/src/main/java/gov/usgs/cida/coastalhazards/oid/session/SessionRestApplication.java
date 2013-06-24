@@ -1,18 +1,19 @@
-package gov.usgs.cida.coastalhazards.rest.data;
+package gov.usgs.cida.coastalhazards.oid.session;
 
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import java.util.HashMap;
 import javax.ws.rs.ApplicationPath;
 
 /**
- * @author Jordan Walker <jiwalker@usgs.gov>
+ *
+ * @author isuftin
  */
-@ApplicationPath("/data")
-public class DataRestApplication extends PackagesResourceConfig {
+@ApplicationPath("/app")
+public class SessionRestApplication extends PackagesResourceConfig {
 
-	public DataRestApplication() {
+	public SessionRestApplication() {
 		super(new HashMap<String, Object>() {
-			private static final long serialVersionUID = 763254L;
+			private static final long serialVersionUID = 7613254L;
 			{
 				put(PackagesResourceConfig.PROPERTY_PACKAGES, this.getClass().getPackage().getName());
 			}

@@ -5,6 +5,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 /**
@@ -54,14 +55,13 @@ import java.text.DecimalFormat;
  */
 public class DoubleSerializer implements JsonSerializer<Double> {
 
-	private String format = "#";
-
+	private int precision = 0;
 	/**
 	 * DoubleSerializer with a default precision of 4
 	 */
 	public DoubleSerializer() {
 		super();
-		format += ".####";
+		precision = 4;
 	}
 
 	/**
@@ -72,16 +72,11 @@ public class DoubleSerializer implements JsonSerializer<Double> {
 	 */
 	public DoubleSerializer(int precision) {
 		super();
-		if (precision > 0) {
-			this.format += ".";
-			for (int pInd = 0; pInd < precision; pInd++) {
-				this.format += "#";
-			}
-		}
+		this.precision = Math.abs(precision);
 	}
 
 	@Override
 	public JsonElement serialize(Double src, Type typeOfSrc, JsonSerializationContext context) {
-		return new JsonPrimitive(new DecimalFormat(this.format).format(src));
+		return new JsonPrimitive(new BigDecimal(src).setScale(precision, BigDecimal.ROUND_HALF_EVEN));
 	}
 }

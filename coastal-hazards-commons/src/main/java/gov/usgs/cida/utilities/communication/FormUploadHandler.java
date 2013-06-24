@@ -16,7 +16,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author isuftin
  */
-public class UploadHandler {
+public class FormUploadHandler {
 
     public static File saveFileFromRequest(HttpServletRequest request, String filenameParameter, File destinationFile) throws FileUploadException, IOException {
         if (StringUtils.isBlank(filenameParameter)) {
