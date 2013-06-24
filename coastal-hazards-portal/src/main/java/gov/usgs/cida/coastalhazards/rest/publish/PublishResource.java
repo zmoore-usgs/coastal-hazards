@@ -18,20 +18,21 @@ import org.apache.commons.lang.StringUtils;
  */
 @Path("/")
 public class PublishResource {
+
 	@GET
 	@Path("")
 	public Response publishEntryRouter(@Context HttpServletRequest req) throws IOException, URISyntaxException {
 		HttpSession session = req.getSession(false);
-		if (session == null || session.getAttribute("oid-info") == null) {
-			return Response.temporaryRedirect(new URI("../components/OpenID/oid-login.jsp")).build();
-		} 
-		
-		Map<String, String> oidInfoMap = ((Map<String, String>) session.getAttribute("oid-info"));
-		String email = oidInfoMap.get("oid-email");
-		if (StringUtils.isEmpty(email)) {
+		if (session == null
+				|| session.getAttribute("oid-info") == null
+				|| ((Map<String, String>) session.getAttribute("oid-info")).isEmpty()
+				|| StringUtils.isEmpty(((Map<String, String>) session.getAttribute("oid-info")).get("oid-email"))
+				|| session.getAttribute("sessionValid") == null
+				|| ((Boolean) session.getAttribute("sessionValid")) == false) {
 			return Response.temporaryRedirect(new URI("../components/OpenID/oid-login.jsp")).build();
 		}
+
 		return Response.temporaryRedirect(new URI("../components/publish/")).build();
 	}
-	
+
 }

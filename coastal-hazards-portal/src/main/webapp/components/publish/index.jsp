@@ -34,6 +34,10 @@
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
         <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="<%=request.getContextPath()%>/webjars/openlayers/2.12/OpenLayers.js"></script>
+		<jsp:include page="../../js/jsuri/jsuri.jsp">
+            <jsp:param name="relPath" value="../../" />
+		</jsp:include>
 		<style type="text/css">
 			.container-fluid {
 				margin-top: 10px;
@@ -41,7 +45,7 @@
 			}
 
 			.publish-services-input {
-				width: 60%;
+				width: 70%;
 			}
 		</style>
     </head>
@@ -73,50 +77,81 @@
 						</div>
 					</div>
 					<div id="publish-type-container-row" class="row-fluid">
+						<div class="publish-metadata-container-row row-fluid">
+							<div class="well well-small">
+								<span class="publish-container-metadata">
+									Metadata&nbsp;&nbsp;<span id="publish-metadata-upload-button">Upload Metadata</span><span id="publish-metadata-validate"></span>
+								</span>
+							</div>
+						</div>
+						<div class="publish-services-container-row row-fluid">
+							<div class="well well-small">
+								<span id="publish-container-services-wfs">
+									WFS&nbsp;&nbsp;
+									<input type="text" id="publish-services-wfs"class="publish-services-input"/><span id="publish-services-wfs-validate"></span>
+								</span>
+								<br />
+								<span id="publish-container-services-wms">
+									WMS&nbsp;&nbsp;
+									<input type="text" id="publish-services-wms"class="publish-services-input"/><span id="publish-services-wms-validate"></span>
+								</span>
+							</div>
+						</div>
 						<div class="well well-small">
 							<span id="publish-container-type-type">
-								Type:&nbsp;&nbsp;
+								Type:
 								<select id="publish-select-type-type">
 									<option value="vulnerability">Vulnerability</option>
 									<option value="storms">Storms</option>
 								</select>
-							</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-							Subtype: &nbsp;&nbsp;
+							</span>
+							Subtype:
 							<span id="publish-container-type-subtype">
 								<select id="publish-select-type-subtype">
 									<option value="pcoi">PCOI</option>
 									<option value="cvi">CVI</option>
 								</select>
 							</span>
-						</div>
-					</div>
-					<div id="publish-services-container-row" class="row-fluid">
-						<div class="well well-small">
-							<span id="publish-container-services-wms">
-								WMS&nbsp;&nbsp;
-								<input type="text" id="publish-services-wms" class="publish-services-input"/><span id="publish-services-wms-validate"></span>
-							</span>
-							<br />
-							<span id="publish-container-services-wfs">
-								WFS&nbsp;&nbsp;
-								<input type="text" id="publish-services-wfs" class="publish-services-input"/><span id="publish-services-wfs-validate"></span>
+							Attributes: 
+							<span id="publish-container-type-attributes">
+								<select multiple="multiple" id="publish-select-type-multiple"></select>
 							</span>
 						</div>
 					</div>
-					<div id="publish-metadata-container-row" class="row-fluid">
-						<div class="well well-small">
-							<span id="publish-container-metadata">
-								Metadata&nbsp;&nbsp;<span id="publish-metadata-upload-button">Upload Metadata</span><span id="publish-metadata-validate"></span>
-							</span>
-						</div>
+
+					<div id="publish-container-tabs">
+						<ul class="nav nav-tabs">
+
+						</ul>
 					</div>
-					<div id="publish-actions-container-row" class="row-fluid">
-						<div class="well well-small">
-							<span id="publish-container-actions">
-								<button id="publish-preview-button">Upload</button><button id="publish-submit-button">Submit</button>
-							</span>
+
+					<span id="publish-container-tab-template" class="hidden">
+						<div class="publish-summary-container-row row-fluid">
+							<div class="well well-small">
+								Summary: <br />
+								<span class="publish-container-summary-tiny">
+									Tiny: <input type="text" class="publish-services-tiny publish-summary-tiny-input"/>
+								</span>
+								<br />
+								<span class="publish-container-summary-medium">
+									Medium: <input type="text" class="publish-services-medium publish-summary-medium-input"/>
+								</span>
+								<br />
+								<span class="publish-container-summary-full">
+									Full <input type="textarea" class="publish-services-full publish-summary-full-input"/>
+								</span>
+							</div>
 						</div>
-					</div>
+
+						<div class="publish-actions-container-row row-fluid">
+							<div class="well well-small">
+								<span class="publish-container-actions">
+									<button class="publish-preview-button">Upload</button><button class="publish-submit-button">Submit</button>
+								</span>
+							</div>
+						</div>
+					</span>
+
 				</div>
 			</c:otherwise>
 		</c:choose>
@@ -128,15 +163,24 @@
 		</jsp:include>
 		<script type="text/javascript">
 			$(document).ready(function() {
-				var entry = {
-					name: '',
-					metadata: '',
-					type: '',
-					wms: '',
-					wfs: '',
-					attr: ''
+				var buildServiceEndpoint = function(endpoint) {
+					var updatedEndpoint = null;
+					var urlIndex = 0;
+					switch (endpoint) {
+						case (endpoint.toLowerCase().has('coastalmap.marine.usgs.gov')) :
+							urlIndex = endpoint.indexOf('cmgp');
+							updatedEndpoint = '/marine/' + endpoint.substring(urlIndex);
+							break;
+						case (endpoint.toLowerCase().has('olga.er.usgs.gov')) :
+							urlIndex = endpoint.indexOf('services');
+							updatedEndpoint = '/stpgis/' + endpoint.substring(urlIndex);
+							break;
+						case (endpoint.toLowerCase().has('cida.usgs.gov')) :
+							urlIndex = endpoint.indexOf('geoserver');
+							updatedEndpoint = '/cidags/' + endpoint.substring(urlIndex);
+							break;
+					}
 				};
-				entry.name = $('#publish-user-name-first') + ' ' + $('#publish-user-name-last');
 
 				$('#publish-select-type-type').on('change', function(evt) {
 					var val = evt.target.value;
@@ -155,9 +199,8 @@
 					}
 				});
 
-				$('#publish-services-wms').on('change', function(evt) {
+				$('#publish-services-wms').on('blur', function(evt) {
 					var value = evt.target.value;
-					// TODO- verify WMS
 					var valid = true;
 					if (valid) {
 						entry.wms = evt.target.value;
@@ -174,26 +217,29 @@
 					}
 				});
 
-				$('#publish-services-wfs').on('change', function(evt) {
+				$('#publish-services-wfs').on('blur', function(evt) {
 					var value = evt.target.value;
-					// TODO - verify WFS
-					var valid = true;
-					if (valid) {
-						entry.wfs = evt.target.value;
-						$('#publish-services-wfs-validate')
-								.removeClass('invalid')
-								.addClass('valid')
-								.html('Valid');
-					} else {
-						entry.wfs = '';
-						$('#publish-services-wfs-validate')
-								.removeClass('valid')
-								.addClass('invalid')
-								.html('Invalid');
+					var endpoint = buildServiceEndpoint(value);
+					if (endpoint !== null) {
+						var valid = true;
+						if (valid) {
+							entry.wfs = evt.target.value;
+							$('#publish-services-wfs-validate')
+									.removeClass('invalid')
+									.addClass('valid')
+									.html('Valid');
+						} else {
+							entry.wfs = '';
+							$('#publish-services-wfs-validate')
+									.removeClass('valid')
+									.addClass('invalid')
+									.html('Invalid');
+						}
 					}
+
 				});
 
-				var uploader = new qq.FineUploader({
+				new qq.FineUploader({
 					element: $('#publish-metadata-upload-button')[0],
 					autoUpload: true,
 					paramsInBody: false,
@@ -203,7 +249,7 @@
 					},
 					validation: {
 						allowedExtensions: ['xml'],
-						sizeLimit: 15728640 // 200 kB = 200 * 1024 bytes
+						sizeLimit: 15728640
 					},
 					classes: {
 						success: 'alert alert-success',
@@ -231,14 +277,14 @@
 					}
 				});
 
-				$('#publish-preview-button').on('click', function() {
+				$('.publish-preview-button').on('click', function() {
 
 				});
-				$('#publish-submit-button').on('click', function() {
+				$('.publish-submit-button').on('click', function() {
 					// Do Submit
 				});
 
-				$('#publish-select-type-type').val($('#publish-select-type-type option:first').val()).trigger('change');
+				$('.publish-select-type-type').val($('#publish-select-type-type option:first').val()).trigger('change');
 
 			});
 		</script>
