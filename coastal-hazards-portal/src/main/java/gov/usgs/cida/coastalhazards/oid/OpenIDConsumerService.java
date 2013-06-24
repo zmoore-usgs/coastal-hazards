@@ -13,6 +13,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -43,13 +44,12 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Sutra Zhou Borrowed from example for openid4java
  */
-
 public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
+
 	private static final long serialVersionUID = -5998885243419513055L;
 	private static final String OPTIONAL_VALUE = "0";
 	private static final String REQUIRED_VALUE = "1";
 	private static final Logger LOG = LoggerFactory.getLogger(OpenIDConsumerService.class);
-
 	private ServletContext context;
 	private ConsumerManager manager;
 
@@ -172,12 +172,15 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * Simple Registration Extension example.
-	 * 
+	 *
 	 * @param httpReq
 	 * @param authReq
 	 * @throws MessageException
-	 * @see <a href="http://code.google.com/p/openid4java/wiki/SRegHowTo">Simple Registration HowTo</a>
-	 * @see <a href="http://openid.net/specs/openid-simple-registration-extension-1_0.html">OpenID Simple Registration Extension 1.0</a>
+	 * @see <a href="http://code.google.com/p/openid4java/wiki/SRegHowTo">Simple
+	 * Registration HowTo</a>
+	 * @see <a
+	 * href="http://openid.net/specs/openid-simple-registration-extension-1_0.html">OpenID
+	 * Simple Registration Extension 1.0</a>
 	 */
 	private void addSimpleRegistrationToAuthRequest(HttpServletRequest httpReq,
 			AuthRequest authReq) throws MessageException {
@@ -185,8 +188,8 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 		// FetchRequest fetch = FetchRequest.createFetchRequest();
 		SRegRequest sregReq = SRegRequest.createFetchRequest();
 
-		String[] attributes = { "nickname", "email", "fullname", "dob",
-				"gender", "postcode", "country", "language", "timezone" };
+		String[] attributes = {"nickname", "email", "fullname", "dob",
+			"gender", "postcode", "country", "language", "timezone"};
 		for (int i = 0, l = attributes.length; i < l; i++) {
 			String attribute = attributes[i];
 			String value = httpReq.getParameter(attribute);
@@ -205,12 +208,16 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * Attribute exchange example.
-	 * 
+	 *
 	 * @param httpReq
 	 * @param authReq
 	 * @throws MessageException
-	 * @see <a href="http://code.google.com/p/openid4java/wiki/AttributeExchangeHowTo">Attribute Exchange HowTo</a>
-	 * @see <a href="http://openid.net/specs/openid-attribute-exchange-1_0.html">OpenID Attribute Exchange 1.0 - Final</a>
+	 * @see <a
+	 * href="http://code.google.com/p/openid4java/wiki/AttributeExchangeHowTo">Attribute
+	 * Exchange HowTo</a>
+	 * @see <a
+	 * href="http://openid.net/specs/openid-attribute-exchange-1_0.html">OpenID
+	 * Attribute Exchange 1.0 - Final</a>
 	 */
 	private void addAttributeExchangeToAuthRequest(HttpServletRequest httpReq,
 			AuthRequest authReq) throws MessageException {
@@ -261,7 +268,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 				receiveSimpleRegistration(httpReq, authSuccess);
 
 				receiveAttributeExchange(httpReq, authSuccess);
-				
+
 				Map<String, String> oidInfoMap = new HashMap<String, String>();
 				oidInfoMap.put("oid-firstname", response.getParameter("openid.ext1.value.firstname").getValue());
 				oidInfoMap.put("oid-lastname", response.getParameter("openid.ext1.value.lastname").getValue());
@@ -269,6 +276,12 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 				oidInfoMap.put("oid-language", response.getParameter("openid.ext1.value.language").getValue());
 				oidInfoMap.put("oid-email", response.getParameter("openid.ext1.value.email").getValue());
 				httpReq.getSession().setAttribute("oid-info", oidInfoMap);
+
+				if (true/* Validate user against back end */) {
+					httpReq.getSession().setAttribute("sessionValid", true);
+				} else {
+					httpReq.getSession().setAttribute("sessionValid", false);
+				}
 
 				return verified; // success
 			}
@@ -283,7 +296,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 	/**
 	 * @param httpReq
 	 * @param authSuccess
-	 * @throws MessageException 
+	 * @throws MessageException
 	 */
 	private void receiveSimpleRegistration(HttpServletRequest httpReq,
 			AuthSuccess authSuccess) throws MessageException {
@@ -305,7 +318,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 	/**
 	 * @param httpReq
 	 * @param authSuccess
-	 * @throws MessageException 
+	 * @throws MessageException
 	 */
 	private void receiveAttributeExchange(HttpServletRequest httpReq,
 			AuthSuccess authSuccess) throws MessageException {
