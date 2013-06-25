@@ -858,7 +858,7 @@ var Results = {
                 $('<input />').attr({
                     'type' : 'hidden',
                     'name' : 'type'
-                }).val('image/png;base64')).
+                }).val('image/png')).
             append(
                 $('<input />').attr({
                     'type' : 'hidden',
