@@ -124,3 +124,9 @@ img {
 	font-size: 18px;
 	width : 20px;
 }
+
+@media print {
+	img {
+		max-width: none !important; 
+	}
+}
