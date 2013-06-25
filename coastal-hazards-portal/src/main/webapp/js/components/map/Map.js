@@ -1,148 +1,47 @@
 CCH.Objects.Map = function(args) {
-	CCH.LOG.info('Map.js::constructor:Map class is initializing.');
 	var mapDivId = args.mapDiv;
 	var me = (this === window) ? {} : this;
-	me.initialExtent = [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826];
-
-
-	CCH.LOG.debug('Map.js::constructor:Loading Map object');
-	me.map = new OpenLayers.Map(mapDivId, {
-		projection: "EPSG:900913",
-		displayProjection: new OpenLayers.Projection("EPSG:900913")
-	});
-
-	CCH.LOG.debug('Map.js::constructor:Creating base layers');
-	me.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 20,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Street",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 20,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Topo",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 20,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Terrain",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 14,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Shaded Relief",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 14,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Physical",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 9,
-				wrapDateLine: true
-			}
-	));
-	me.map.addLayer(new OpenLayers.Layer.XYZ("Ocean",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 17,
-				wrapDateLine: true
-			}
-	));
-
-	me.moveendCallback = function(evt) {
-		var map = evt.object;
-		var sMap = CCH.session.getMap();
-
-		sMap.baselayer = map.baseLayer.name;
-		sMap.center = {
-			lat: map.center.lat,
-			lon: map.center.lon
-		};
-		sMap.scale = map.getScale();
-		sMap.extent = map.getExtent().toArray();
-	};
-
-	me.map.events.on({
-		'moveend': me.moveendCallback,
-		'changelayer': function() {
-
-		}
-	});
-
-
-	CCH.LOG.debug('Map.js::constructor:Creating base layer');
-	me.map.addLayer(new OpenLayers.Layer.XYZ("ESRI World Imagery",
-			"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}",
-			{
-				sphericalMercator: true,
-				isBaseLayer: true,
-				numZoomLevels: 20,
-				wrapDateLine: true
-			}
-	));
-
-	me.markerLayer = new OpenLayers.Layer.Markers('geocoding-marker-layer', {
-		displayInLayerSwitcher: false
-	});
-	me.map.addLayer(me.markerLayer);
-
-	me.boxLayer = new OpenLayers.Layer.Boxes('map-boxlayer', {
-		displayInLayerSwitcher: false
-	});
-	me.map.addLayer(me.boxLayer);
-
-	CCH.LOG.debug('Map.js::constructor:Adding ontrols to map');
-	me.map.addControl(new OpenLayers.Control.MousePosition());
-	me.map.addControl(new OpenLayers.Control.ScaleLine({
-		geodesic: true
-	}));
-	me.map.addControl(new OpenLayers.Control.LayerSwitcher({
-		roundedCorner: true
-	}));
-//
-//	var panel = new OpenLayers.Control.Panel();
-//	panel.id = 'ol-custom-panel';
-//	panel.addControls([
-//		new OpenLayers.Control.MousePosition()
-//	]);
-//	me.map.addControl(panel);
-
-	CCH.LOG.debug('Map.js::constructor:Zooming to extent: ' + me.initialExtent);
-	me.map.zoomToExtent(me.initialExtent, true);
-
-//	var zoomControlDiv = me.map.getControlsByClass("OpenLayers.Control.Zoom")[0].div;
-//	var panelTop = zoomControlDiv.offsetTop + zoomControlDiv.offsetHeight + 40;
-//	$('#ol-custom-panel').css('top', panelTop);
-
-	CCH.LOG.debug('Map.js::constructor: Map class initialized.');
+	me.initialExtent = CCH.CONFIG.map.initialExtent;
 	return $.extend(me, {
+		init: function() {
+			CCH.LOG.info('Map.js::init():Map class is initializing.');
+
+			me.map = new OpenLayers.Map(mapDivId, {
+				projection: CCH.CONFIG.map.projection,
+				displayProjection: new OpenLayers.Projection(CCH.CONFIG.map.projection)
+			});
+
+			CCH.LOG.debug('Map.js::init():Adding base layers to map');
+			me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
+
+			CCH.LOG.debug('Map.js::init():Adding marker layer to map');
+			me.markerLayer = CCH.CONFIG.map.layers.markerLayer;
+			me.map.addLayer(me.markerLayer);
+
+			CCH.LOG.debug('Map.js::init():Adding box layer to map');
+			me.boxLayer = CCH.CONFIG.map.layers.boxLayer;
+			me.map.addLayer(me.boxLayer);
+
+			CCH.LOG.debug('Map.js::init():Adding ontrols to map');
+			me.map.addControls(CCH.CONFIG.map.controls);
+
+			CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);
+			me.map.zoomToExtent(me.initialExtent, true);
+
+			me.map.events.on({
+				'moveend': me.moveendCallack,
+				'addlayer': me.addlayerCallback,
+				'changelayer': me.changelayerCallback
+			});
+
+			if (!CCH.session.getSession().baselayer) {
+				me.updateSession();
+			} else {
+				me.updateFromSession();
+			}
+
+			return me;
+		},
 		getMap: function() {
 			return me.map;
 		},
@@ -157,6 +56,8 @@ CCH.Objects.Map = function(args) {
 			var bbox = args.bbox;
 			var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913");
 			var layerBounds = OpenLayers.Bounds.fromArray(bbox);
+			var slideOrder = args.slideOrder;
+
 			if (fromProjection) {
 				layerBounds.transform(new OpenLayers.Projection(fromProjection), new OpenLayers.Projection("EPSG:900913"));
 			}
@@ -176,8 +77,6 @@ CCH.Objects.Map = function(args) {
 
 			// Alter the marker visually 
 			var markerDiv = $(marker.div);
-			var originalHeight = markerDiv.height();
-			var originalWidth = markerDiv.width();
 			markerDiv.addClass('marker-active');
 			markerDiv.on({
 				'mouseover': function() {
@@ -197,6 +96,30 @@ CCH.Objects.Map = function(args) {
 					'opacity': opacity
 				});
 			}
+
+			markerDiv.data('slideOrder', slideOrder);
+			markerDiv.data('bounds', layerBounds);
+			markerDiv.on({
+				click: function(evt) {
+					var target = $(evt.target);
+					var slideOrder = target.data('slideOrder');
+					var bbox = target.data('bounds');
+
+					CCH.Slideshow.slider('goToSlide', slideOrder);
+					CCH.Slideshow.slider('autoSlidePause');
+
+					me.clearBoundingBoxMarkers();
+
+					var card = $('.slide:nth-child(' + slideOrder + ') .description-container').data('card');
+					var isPinned = card.pinned;
+
+					if (!isPinned) {
+						card.pinButton.trigger('click');
+					} else {
+						me.map.zoomToExtent(bbox);
+					}
+				}
+			});
 
 			return marker;
 		},
@@ -234,11 +157,24 @@ CCH.Objects.Map = function(args) {
 		},
 		updateFromSession: function() {
 			CCH.LOG.info('Map.js::updateFromSession()');
-			me.map.events.un({'moveend': me.moveendCallback});
-			var mapConfig = CCH.session.objects.map;
-			this.getMap().setCenter([mapConfig.center.lon, mapConfig.center.lat]);
-			this.getMap().zoomToScale(mapConfig.scale);
-			me.map.events.on({'moveend': me.moveendCallback});
+			me.map.events.un({
+				'moveend': me.moveendCallback,
+				'addlayer': me.addlayerCallback,
+				'changelayer': me.changelayerCallback
+			});
+			var session = CCH.session.getSession();
+			var sessionBaselayer = me.map.getLayersByName(session.baselayer);
+			if (sessionBaselayer.length) {
+				me.map.setBaseLayer(sessionBaselayer[0]);
+			}
+			me.map.setCenter([session.center[0], session.center[1]]);
+			me.map.zoomToScale(session.scale);
+			
+			me.map.events.on({
+				'moveend': me.moveendCallback,
+				'addlayer': me.addlayerCallback,
+				'changelayer': me.changelayerCallback
+			});
 		},
 		buildGeocodingPopup: function(args) {
 			var map = me.map;
@@ -322,7 +258,7 @@ CCH.Objects.Map = function(args) {
 			$('#alt-location-list').change(function(event) {
 				var index = parseInt(event.target.value);
 				if (index !== -1) {
-					CONFIG.map.buildGeocodingPopup({
+					me.buildGeocodingPopup({
 						currentLocationIndex: index,
 						locations: locations
 					});
@@ -345,15 +281,15 @@ CCH.Objects.Map = function(args) {
 			});
 		},
 		displayData: function(args) {
-			// may want to do this first: CONFIG.map.removeLayersByName(me.visibleLayers);
-			var type = args.type;
 			var card = args.card;
+			var item = card.item;
+			var type = card.type;
 			if (me.map.getLayersByName(card.name).length !== -1) {
 				var layer = new OpenLayers.Layer.WMS(
 						card.name,
-						card.service.wms.endpoint,
+						item.wmsService.endpoint,
 						{
-							layers: card.service.wms.layers,
+							layers: item.wmsService.layers,
 							format: 'image/png',
 							transparent: true
 						},
@@ -368,7 +304,7 @@ CCH.Objects.Map = function(args) {
 				if (type === "vulnerability") {
 					// SLD will probably only work with one layer
 					// TODO - Fix with window.location.href but make sure actually works
-					layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + card.service.wms.layers + '/' + card.attr;
+					layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + item.wmsService.layers + '/' + card.attr;
 					layer.params.STYLES = 'redwhite';
 				} else if (type === "historical" || type === "storms") {
 					layer.params.STYLES = 'line';
@@ -376,14 +312,39 @@ CCH.Objects.Map = function(args) {
 
 				me.map.addLayer(layer);
 				layer.redraw(true);
-
-				CCH.session.objects.view.activeLayers.push = [{
-						title: card.name,
-						name: card.name,
-						layers: card.service.wms.layers,
-						type: type
-					}];
 			}
+		},
+		updateSession: function() {
+			var map = me.map;
+			var session = CCH.session.getSession();
+
+			session.baselayer = map.baseLayer.name;
+			session.center = [
+				map.center.lon,
+				map.center.lat
+			];
+			session.scale = map.getScale();
+			session.bbox = map.getExtent().toArray();
+		},
+		floatBoxLayer: function() {
+			// The bounding box layer needs to sit on top of other layers in 
+			// order to be hoverable and clickable
+			if (me.boxLayer) {
+				while (me.boxLayer !== me.map.layers[me.map.layers.length - 1]) {
+					me.map.raiseLayer(me.boxLayer, 1);
+				}
+			}
+		},
+		moveendCallback: function() {
+			me.updateSession();
+		},
+		addlayerCallback: function() {
+			me.updateSession();
+			me.floatBoxLayer();
+		},
+		changelayerCallback: function() {
+			me.updateSession();
+			me.floatBoxLayer();
 		}
 	});
 };

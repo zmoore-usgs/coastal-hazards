@@ -1,0 +1,78 @@
+
+<changeSet author="bheck" id="change2">
+   <createView 
+           replaceIfExists="true"
+           schemaName="public"
+           viewName="ranking">select
+   id,
+   ranking,
+   total_score
+from
+  (select
+      id,
+      sum(popularity_type_score) total_score,
+      rank() over (order by sum(popularity_type_score) desc) ranking
+   from
+     (select 
+         id, 
+         popularity_type,
+         /* cap the score for any particular popularity type */
+         /* to guarantee that a recent "publish" will rank   */
+         /* higher than a recent set of uses (etc)           */
+         case when popularity_type = 'use'             then 
+                   least(sum((life_span - days_ago) * multiplier), 1000)
+              when popularity_type = 'updatePublished' then 
+                   least(sum((life_span - days_ago) * multiplier),  500)
+              when popularity_type = 'tweet'           then 
+                   least(sum((life_span - days_ago) * multiplier), 1000)
+              when popularity_type = 'weather'         then 
+                   least(sum((life_span - days_ago) * multiplier),  800)
+              when popularity_type = 'publish'         then
+                   least(sum((life_span - days_ago) * multiplier), 1200)
+         end as popularity_type_score
+      from
+         (select 
+             id, 
+             extract(epoch from (now() - activity_date)) / 86400 as days_ago, 
+             popularity_type,
+             /* multiplier: weight of each popularity record occurrence */
+             case when popularity_type = 'use'             then 1 
+                  when popularity_type = 'updatePublished' then 50
+                  when popularity_type = 'tweet'           then 2 
+                  when popularity_type = 'weather'         then 75 
+                  when popularity_type = 'publish'         then 100
+             end as multiplier,
+             /* life_span: maximum days to consider a popularity record */
+             case when popularity_type = 'use'             then 14 
+                  when popularity_type = 'updatePublished' then 7
+                  when popularity_type = 'tweet'           then 10 
+                  when popularity_type = 'weather'         then 7 
+                  when popularity_type = 'publish'         then 14
+             end as life_span
+          from 
+             popularity
+          where
+             extract(epoch from (now() - activity_date)) / 86400 <= 14  /* 14: greatest(life_span) */
+         ) id_days
+      where
+        /* limit selection of popularity records by the life_span of each type */
+        ((popularity_type = 'use'             and days_ago <= life_span) or
+         (popularity_type = 'updatePublished' and days_ago <= life_span) or
+         (popularity_type = 'tweet'           and days_ago <= life_span) or
+         (popularity_type = 'weather'         and days_ago <= life_span) or
+         (popularity_type = 'publish'         and days_ago <= life_span))
+      group by
+         id,
+         popularity_type
+      ) score_by_id_and_pop_type
+   group by
+      id
+  ) overall_ranking
+  where
+     /* limit selection to at most 5, with a minimum score too */
+     ranking <= 5 and total_score >= 50;
+   </createView>
+
+</changeSet>
+
+

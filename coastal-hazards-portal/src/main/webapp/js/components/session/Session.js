@@ -1,62 +1,91 @@
+var CCH = CCH || {};
 CCH.Objects.Session = function(args) {
 	CCH.LOG.info('Session.js::constructor: Session class is initializing.');
 	var me = (this === window) ? {} : this;
 	args = args ? args : {};
 
-	me.objects = {
-		view: {
-			itemIds: [],
-			activeLayers: []
-		},
-		map: {
-			baselayer: 'Not Yet Initialized',
-			scale: 0,
-			extent: [0, 0],
-			center: {
-				lat: 0,
-				lon: 0
-			}
-		}
+	me.session = {
+		// Pinned Items
+		items: [],
+		// Map
+		baselayer: '',
+		scale: 0,
+		bbox: [0.0, 0.0, 0.0, 0.0],
+		center: [0.0, 0.0]
 	};
 
 	return $.extend(me, {
-		toString: function() {
-			var stringifyObject = {
-				objects: this.objects
+		init: function(args) {
+			args = args || {};
+
+			args.callbacks = args.callbacks || {
+				success: [],
+				error: []
 			};
-			return JSON.stringify(stringifyObject);
+
+			args.callbacks.success.unshift(function() {
+				$(window).trigger('cch.data.session.initialized', {
+					error: false,
+					loaded: true
+				});
+			});
+
+			args.callbacks.error.unshift(function() {
+				$(window).trigger('cch.data.session.initialized', {
+					error: true,
+					loaded: false
+				});
+			});
+
+			if (CCH.CONFIG.incomingSessionId) {
+				me.load({
+					sid: CCH.CONFIG.incomingSessionId,
+					callbacks: args.callbacks
+				});
+			} else {
+				$(window).trigger('cch.data.session.initialized', {
+					error: false,
+					loaded: false
+				});
+
+				args.callbacks.success.each(function(func) {
+					func();
+				});
+			}
 		},
-		getObjects: function() {
-			return me.objects;
+		toString: function() {
+			return JSON.stringify(me.session);
 		},
-		getMap: function() {
-			return me.objects.map;
+		getSession: function() {
+			return me.session;
 		},
-		updateFromServer: function(args) {
+		load: function(args) {
+			args = args || {};
 			var sid = args.sid;
-			var callbacks = args.callbacks || {};
-			var successCallbacks = callbacks.success || [];
-			var errorCallbacks = callbacks.error || [];
+			args.callbacks = args.callbacks || {
+				success: [],
+				error: []
+			};
+
+			args.callbacks.success.unshift(function(session) {
+				if (session) {
+					CCH.LOG.info("Session found on server. Updating current session.");
+					$.extend(true, me.session, JSON.parse(session));
+				} else {
+					CCH.LOG.info("Session not found on server.");
+				}
+			});
+
 			CCH.LOG.info("Will try to load session '" + sid + "' from server");
-			me.getSession({
+			me.readSession({
 				sid: sid,
 				callbacks: {
-					success: [
-						// Update the session from the server
-						function(session) {
-							if (session) {
-								CCH.LOG.info("Session found on server. Updating current session.");
-								$.extend(true, me.objects, JSON.parse(session).objects);
-							} else {
-								CCH.LOG.info("Session not found on server.");
-							}
-						}
-					].union(successCallbacks),
-					error: errorCallbacks
+					success: args.callbacks.success,
+					error: args.callbacks.error
 				}
 			});
 		},
-		getSession: function(args) {
+		readSession: function(args) {
 			var sid = args.sid;
 			var callbacks = args.callbacks || {};
 			var successCallbacks = callbacks.success || [];
@@ -64,23 +93,28 @@ CCH.Objects.Session = function(args) {
 			var context = args.context;
 
 			if (sid) {
-				$.ajax('service/session', {
-					type: 'POST',
-					data: {
-						'sid': sid,
-						'action': 'read'
-					},
-					success: function(data, textStatus, jqXHR) {
+				$.ajax(CCH.CONFIG.data.sources.session.endpoint + sid, {
+					type: 'GET',
+					contentType: 'application/json;charset=utf-8',
+					dataType: 'json',
+					success: function(json, textStatus, jqXHR) {
 						var session = null;
-						if (data.success === 'true') {
-							session = data.session;
+						if (json) {
+							me.session = json;
+							if (successCallbacks && successCallbacks.length > 0) {
+								successCallbacks.each(function(callback) {
+									callback.call(context, session);
+								});
+							}
+						} else {
+							if (errorCallbacks && errorCallbacks.length > 0) {
+								errorCallbacks.each(function(callback) {
+									callback.call(context, null);
+								});
+							}
 						}
 
-						if (successCallbacks && successCallbacks.length > 0) {
-							successCallbacks.each(function(callback) {
-								callback.call(context, session);
-							});
-						}
+
 					},
 					error: function(data, textStatus, jqXHR) {
 						if (errorCallbacks && errorCallbacks.length > 0) {
@@ -92,15 +126,15 @@ CCH.Objects.Session = function(args) {
 				});
 			}
 		},
-		getIdentifier: function(args) {
-			var context = args.context;
+		writeSession: function(args) {
+			args = args || {};
+			var context = args.context || me;
 			var callbacks = args.callbacks || [];
-			$.ajax('service/session', {
+			$.ajax(CCH.CONFIG.data.sources.session.endpoint, {
 				type: 'POST',
-				data: {
-					'session': this.toString(),
-					'action': 'write'
-				},
+				contentType: 'application/json;charset=utf-8',
+				dataType: 'json',
+				data: me.toString(),
 				success: function(data, textStatus, jqXHR) {
 					if (data.success === 'true') {
 						var sid = data.sid;
@@ -149,25 +183,17 @@ CCH.Objects.Session = function(args) {
 				]
 			});
 		},
-		getIncomingSid: function() {
-			var sidItem = window.location.search.substr(1).split('&').find(function(s) {
-				return s.substring(0, 3).toLowerCase() === 'sid';
+		toggleItem: function(item) {
+			var items = me.session.items;
+			var currIdIdx = items.findIndex(function(sItem) {
+				return sItem.id === item.id;
 			});
-			var sid = '';
-			if (sidItem) {
-				sid = sidItem.substr(4);
-			}
-			return sid;
-		},
-		toggleId: function(id) {
-			var itemIds = me.objects.view.itemIds;
-			var currIdIdx = itemIds.indexOf(id);
 			var toggleOn = currIdIdx === -1;
 
 			if (toggleOn) {
-				itemIds.push(id);
+				items.push(item);
 			} else {
-				itemIds.removeAt(currIdIdx);
+				items.removeAt(currIdIdx);
 			}
 
 			$(me).trigger('session-id-toggled', {
@@ -176,14 +202,19 @@ CCH.Objects.Session = function(args) {
 
 			return toggleOn;
 		},
-		clearPinnedIds: function() {
-			me.objects.view.itemIds.length = 0;
+		clearPinnedItems: function() {
+			me.session.items.length = 0;
 		},
-		getPinnedIdsCount: function() {
-			return me.objects.view.itemIds.length;
+		getPinnedCount: function() {
+			return me.session.items.length;
 		},
-		getPinnedIds: function() {
-			return me.objects.view.itemIds;
+		getPinnedItems: function() {
+			return me.session.items;
+		},
+		getPinnedItemIds: function() {
+			return me.session.items.map(function(item) {
+				return item.id;
+			});
 		}
 	});
 };

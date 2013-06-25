@@ -1,701 +1,614 @@
 {
-    "results": [
-        {
-            "id": "BzNRvCU",
-            "metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5b45af0-b8d9-11e2-83d8-0050569544e0",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
-                    "typeName": "published:KauaiE_shorelines"
-                },
-                "wms": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
-                    "layers": "KauaiE_shorelines"
-                }
-            },
-            "name": "Linear Regression Rate of shorelines in eastern Kauai, HI",
-            "type": "historical",
-            "attr": "LRR",
-            "hotness": "101",
-            "bbox": [-159.35, 21.96, -159.29, 22.17],
-            "summary": {
-                "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/BzNRvCU",
-                "medium": "This dataset includes shorelines ranging from 1927 to 2008 in the Kauai East coastal region from Pilaa to Nawiliwili. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
-                "full": "XXX"
-            }
-        },{
-            "id": "tdQmyp9",
-            "metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5c614fc-b8d9-11e2-a3ac-0050569544e0",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
-                    "typeName": "published:KauaiN_shorelines"
-                },
-                "wms": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
-                    "layers": "KauaiN_shorelines"
-                }
-            },
-            "name": "Linear Regression Rate of shorelines in northern Kauai, HI",
-            "type": "historical",
-            "attr": "LRR",
-            "hotness": "3",
-            "bbox": [-159.59, 22.19, -159.33, 22.23],
-            "summary": {
-                "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/tdQmyp9",
-                "medium": "This dataset includes shorelines ranging from 1927 to 2008 in the Kauai North coastal region from Haena to Moloaa. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
-                "full": "XXX"
-            }
-        },{
-            "id": "TI7t3Pp",
-            "metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5d48cc6-b8d9-11e2-8a16-0050569544e0",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
-                    "typeName": "published:KauaiS_shorelines"
-                },
-                "wms": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
-                    "layers": "KauaiS_shorelines"
-                }
-            },
-            "name": "Linear Regression Rate of shorelines in southern Kauai, HI",
-            "type": "historical",
-            "attr": "LRR",
-            "hotness": "17",
-            "bbox": [-159.69, 21.87, -159.38, 21.96],
-            "summary": {
-                "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/TI7t3Pp",
-                "medium": "This dataset includes shorelines ranging from 1926 to 2008 in the Kauai South coastal region from Waimea to Kipu Kai. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
-                "full": "XXX"
-            }
-        },{
-            "id": "BCzzXsI",
-            "metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5e1b96e-b8d9-11e2-9cf4-0050569544e0",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
-                    "typeName": "published:MauiE_shorelines"
-                },
-                "wms": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
-                    "layers": "MauiE_shorelines"
-                }
-            },
-            "name": "Linear Regression Rate of shorelines in the Kihei coastal region of Maui, HI",
-            "type": "historical",
-            "attr": "LRR",
-            "hotness": "91",
-            "bbox": [-156.52, 20.63, -156.44, 20.8],
-            "summary": {
-                "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/BCzzXsI",
-                "medium": "This dataset includes shorelines ranging from 1900 to 2007 in the Maui Kihei coastal region from Maalaea to Makena. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
-                "full": "XXX"
-            }
-        },{
-            "id": "VGz79MZ",
-            "metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5ef27d4-b8d9-11e2-83d8-0050569544e0",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
-                    "typeName": "published:MauiN_shorelines"
-                },
-                "wms": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
-                    "layers": "MauiN_shorelines"
-                }
-            },
-            "name": "Linear Regression Rate of shorelines in northern Maui, HI",
-            "type": "historical",
-            "attr": "LRR",
-            "hotness": "31",
-            "bbox": [-156.51, 20.89, -156.36, 20.94],
-            "summary": {
-                "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/VGz79MZ",
-                "medium": "This dataset includes shorelines ranging from 1899 to 2002 in the Maui North coastal region from Waihee to Kuau. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
-                "full": "XXX"
-            }
-        },{
-            "id": "o3sjkQk",
-            "metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5fc8fbe-b8d9-11e2-a3ac-0050569544e0",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
-                    "typeName": "published:MauiW_shorelines"
-                },
-                "wms": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
-                    "layers": "MauiW_shorelines"
-                }
-            },
-            "name": "Linear Regression Rate of shorelines in western Maui, HI",
-            "type": "historical",
-            "attr": "LRR",
-            "hotness": "19",
-            "bbox": [-156.7, 20.79, -156.56, 21.02],
-            "summary": {
-                "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/o3sjkQk",
-                "medium": "This dataset includes shorelines ranging from 1912 to 1997 in the Maui West coastal region from Ukumehame to Honolua. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
-                "full": "XXX"
-            }
-        },{
-            "id": "0m2uQP7",
-            "metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c6098fde-b8d9-11e2-8a16-0050569544e0",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
-                    "typeName": "published:NewJerseyN_shorelines"
-                },
-                "wms": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
-                    "layers": "NewJerseyN_shorelines"
-                }
-            },
-            "name": "Linear Regression Rate of shorelines in northern NJ",
-            "type": "historical",
-            "attr": "LRR",
-            "hotness": "26",
-            "bbox": [-74.31, 39.49, -73.97, 40.48],
-            "summary": {
-                "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/0m2uQP7",
-                "medium": "This dataset includes shorelines from 22 years ranging from 1836 to 2000 in the New Jersey North coastal region from Sandy Hook to Little Egg Inlet, New Jersey. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps, lidar",
-                "full": "XXX"
-            }
-        },{
-            "id": "Sah1qwk",
-            "metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c616c1ae-b8d9-11e2-9cf4-0050569544e0",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
-                    "typeName": "published:OahuE_shorelines"
-                },
-                "wms": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
-                    "layers": "OahuE_shorelines"
-                }                
-            },
-            "name": "Linear Regression Rate of shorelines in eastern Oahu, HI",
-            "type": "historical",
-            "attr": "LRR",
-            "hotness": "11",
-            "bbox": [-157.97, 21.31, -157.66, 21.71],
-            "summary": {
-                "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/Sah1qwk",
-                "medium": "This dataset includes shorelines ranging from 1910 to 2006 in the Oahu East coastal region from Kahuku to Makapuu. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
-                "full": "XXX"
-            }
-        },{
-            "id": "Dy26qZ0",
-            "metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c6240238-b8d9-11e2-83d8-0050569544e0",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
-                    "typeName": "published:OahuN_shorelines"
-                },
-                "wms": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
-                    "layers": "OahuN_shorelines"
-                }
-            },
-            "name": "Linear Regression Rate of shorelines in northern Oahu, HI",
-            "type": "historical",
-            "attr": "LRR",
-            "hotness": "8",
-            "bbox": [-158.24, 21.58, -157.97, 21.71],
-            "summary": {
-                "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/Dy26qZ0",
-                "medium": "This dataset includes shorelines ranging from 1910 to 2007 in the Oahu North coastal region from Camp Erdman to Kahuku. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
-                "full": "XXX"
-            }
-        },{
-            "id": "ZqRI7Rh",
-            "metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c6326648-b8d9-11e2-a3ac-0050569544e0",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
-                    "typeName": "published:OahuS_shorelines"
-                },
-                "wms": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
-                    "layers": "OahuS_shorelines"
-                }
-            },
-            "name": "Linear Regression Rate of shorelines in southern Oahu, HI",
-            "type": "historical",
-            "attr": "LRR",
-            "hotness": "17",
-            "bbox": [-158.1, 21.25, -157.67, 21.33],
-            "summary": {
-                "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/ZqRI7Rh",
-                "medium": "This dataset includes shorelines ranging from 1927 to 2005 in the Oahu South coastal region from Barbers Point to Sandy Beach. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
-                "full": "XXX"
-            }
-        },{
-            "id": "BIJ4eT2",
-            "metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c63ff312-b8d9-11e2-8a16-0050569544e0",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
-                    "typeName": "published:OahuW_shorelines"
-                },
-                "wms": {
-                    "endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
-                    "layers": "OahuW_shorelines"
-                }
-            },
-            "name": "Linear Regression Rate of shorelines in western Oahu, HI",
-            "type": "historical",
-            "attr": "LRR",
-            "hotness": "2",
-            "bbox": [-158.25, 21.35, -158.13, 21.55],
-            "summary": {
-                "abstract": "Sandy ocean beaches are a popular recreational destination, often surrounded by communities containing valuable real estate.  Development is on the rise despite the fact that coastal infrastructure is subjected to flooding and erosion.  As a result, there is an increased demand for accurate information regarding past and present shoreline changes.  To meet these national needs, the Coastal and Marine Geology Program of the U.S. Geological Survey (USGS) is compiling existing reliable historical shoreline data along open-ocean sandy shores of the conterminous United States and parts of Alaska and Hawaii under the National Assessment of Shoreline Change project.  Shoreline vectors derived from historic and modern sources represent the low water mark (beach toe).There is no widely accepted standard for analyzing shoreline change.  Existing shoreline data measurements and rate calculation methods vary from study to study and prevent combining results into state-wide or regional assessments.  The impetus behind the National Assessment project was to develop a standardized method of measuring changes in shoreline position that is consistent from coast to coast.  The goal was to facilitate the process of periodically and systematically updating the results in an internally consistent manner.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/BIJ4eT2",
-                "medium": "This dataset includes shorelines ranging from 1910 to 2007 in the Oahu West coastal region from Yokohama to Tracks Beach. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
-                "full": "XXX"
-            }
-        },{
-            "id": "fa4VVJf",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability/SE_erosion_hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced collision during a category 1 storm in southeast U.S.",
-            "type": "vulnerability",
-            "attr": "PCOL1",
-            "hotness": "1",
-            "bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/fa4VVJf",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "H6nCTQL",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability/SE_erosion_hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced collision during a category 5 storm in southeast U.S.",
-            "type": "vulnerability",
-            "attr": "PCOL5",
-            "hotness": "0",
-            "bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/H6nCTQL",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "Kfokhw8",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability/SE_erosion_hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced inundation during a category 1 storm in southeast U.S.",
-            "type": "vulnerability",
-            "attr": "PIND1",
-            "hotness": "0",
-            "bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/Kfokhw8",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "tAUQglr",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability/SE_erosion_hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced inundation during a category 5 storm in southeast U.S.",
-            "type": "vulnerability",
-            "attr": "PIND5",
-            "hotness": "1",
-            "bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/tAUQglr",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "CFlwaU2",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability/SE_erosion_hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced overwash during a category 1 storm in southeast U.S.",
-            "type": "vulnerability",
-            "attr": "POVW1",
-            "hotness": "1",
-            "bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/CFlwaU2",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "rmYSUZY",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability/SE_erosion_hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced overwash during a category 5 storm in southeast U.S.",
-            "type": "vulnerability",
-            "attr": "POVW5",
-            "hotness": "4",
-            "bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/rmYSUZY",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "Mj8X0rQ",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability_Mid_ATL_erosion_hazards:Mid-Atlantic_Erosion_Hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced collision during a category 1 storm in mid-Atlantic U.S.",
-            "type": "vulnerability",
-            "attr": "PCOL1",
-            "hotness": "2",
-            "bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/Mj8X0rQ",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Altlantic U.S. region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "oq7XE9i",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability_Mid_ATL_erosion_hazards:Mid-Atlantic_Erosion_Hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced collision during a category 5 storm in mid-Atlantic U.S.",
-            "type": "vulnerability",
-            "attr": "PCOL5",
-            "hotness": "12",
-            "bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/oq7XE9i",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Altlantic U.S. region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "56kxGXd",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability_Mid_ATL_erosion_hazards:Mid-Atlantic_Erosion_Hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced inundation during a category 1 storm in mid-Atlantic U.S.",
-            "type": "vulnerability",
-            "attr": "PIND1",
-            "hotness": "54",
-            "bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/56kxGXd",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Atlantic U.S. region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "NR0x7G1",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability_Mid_ATL_erosion_hazards:Mid-Atlantic_Erosion_Hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced inundation during a category 5 storm in mid-Atlantic U.S.",
-            "type": "vulnerability",
-            "attr": "PIND5",
-            "hotness": "1",
-            "bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/NR0x7G1",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Atlantic U.S. region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "SfR4EkM",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability_Mid_ATL_erosion_hazards:Mid-Atlantic_Erosion_Hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced overwash during a category 1 storm in mid-Atlantic U.S.",
-            "type": "vulnerability",
-            "attr": "POVW1",
-            "hotness": "2",
-            "bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/SfR4EkM",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Atlantic U.S. region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "cziF05r",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability_Mid_ATL_erosion_hazards:Mid-Atlantic_Erosion_Hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced overwash during a category 5 storm in mid-Atlantic U.S.",
-            "type": "vulnerability",
-            "attr": "POVW5",
-            "hotness": "40",
-            "bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/cziF05r",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Atlantic U.S. region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "A0OcdQN",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability_GOM_erosion_hazards:Gulf_of_Mexico_Erosion_Hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced collision during a category 1 storm in Gulf of Mexico U.S.",
-            "type": "vulnerability",
-            "attr": "PCOL1",
-            "hotness": "0",
-            "bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/A0OcdQN",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "c5zC0qg",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability_GOM_erosion_hazards:Gulf_of_Mexico_Erosion_Hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced collision during a category 5 storm in Gulf of Mexico U.S.",
-            "type": "vulnerability",
-            "attr": "PCOL5",
-            "hotness": "1",
-            "bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/c5zC0qg",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "E0uAG9R",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability_GOM_erosion_hazards:Gulf_of_Mexico_Erosion_Hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced inundation during a category 1 storm in Gulf of Mexico U.S.",
-            "type": "vulnerability",
-            "attr": "PIND1",
-            "hotness": "16",
-            "bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/E0uAG9R",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "Z2T9am0",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability_GOM_erosion_hazards:Gulf_of_Mexico_Erosion_Hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced inundation during a category 5 storm in Gulf of Mexico U.S.",
-            "type": "vulnerability",
-            "attr": "PIND5",
-            "hotness": "4",
-            "bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/Z2T9am0",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "TfyjPZQ",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability_GOM_erosion_hazards:Gulf_of_Mexico_Erosion_Hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced overwash during a category 1 storm in Gulf of Mexico U.S.",
-            "type": "vulnerability",
-            "attr": "POVW1",
-            "hotness": "6",
-            "bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/TfyjPZQ",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        },{
-            "id": "EfpJ1Y5",
-            "metadata": "placeholder csw",
-            "service": {
-                "wfs": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WFSServer",
-                    "typeName": "Vulnerability_GOM_erosion_hazards:Gulf_of_Mexico_Erosion_Hazards"
-                },
-                "wms": {
-                    "endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WMSServer",
-                    "layers": "0"
-                }
-            },
-            "name": "Probability of storm-induced overwash during a category 5 storm in Gulf of Mexico U.S.",
-            "type": "vulnerability",
-            "attr": "POVW5",
-            "hotness": "668",
-            "bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
-            "summary": {
-                "abstract": "Sandy beaches provide a natural barrier between the ocean and inland communities, ecosystems, and resources. However, these dynamic environments move and change in response to winds, waves, and currents. During a hurricane, these changes can be large and sometimes catastrophic. High waves and storm surge act together to erode beaches and inundate low-lying lands, putting inland communities at risk. A decade of USGS research on storm-driven coastal change hazards has provided the data and modeling capabilities to identify areas of our coastline that are likely to experience extreme and potentially hazardous erosion during a hurricane.",
-                "tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/EfpJ1Y5",
-                "medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
-                "full": "XXX"
-            }
-        }
-    ]
+	"results": [
+		{
+			"id": "BzNRvCU",
+			"metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5b45af0-b8d9-11e2-83d8-0050569544e0",
+			"wfsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
+				"typeName": "published:KauaiE_shorelines"
+			},
+			"wmsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
+				"layers": "KauaiE_shorelines"
+			},
+			"name": "Linear Regression Rate of shorelines in eastern Kauai, HI",
+			"type": "historical",
+			"attr": "LRR",
+			"hotness": "101",
+			"bbox": [-159.35, 21.96, -159.29, 22.17],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/BzNRvCU",
+				"medium": "This dataset includes shorelines ranging from 1927 to 2008 in the Kauai East coastal region from Pilaa to Nawiliwili. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
+				"full": "XXX"
+			}
+		}, {
+			"id": "tdQmyp9",
+			"metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5c614fc-b8d9-11e2-a3ac-0050569544e0",
+			"wfsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
+				"typeName": "published:KauaiN_shorelines"
+			},
+			"wmsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
+				"layers": "KauaiN_shorelines"
+			},
+			"name": "Linear Regression Rate of shorelines in northern Kauai, HI",
+			"type": "historical",
+			"attr": "LRR",
+			"hotness": "3",
+			"bbox": [-159.59, 22.19, -159.33, 22.23],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/tdQmyp9",
+				"medium": "This dataset includes shorelines ranging from 1927 to 2008 in the Kauai North coastal region from Haena to Moloaa. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
+				"full": "XXX"
+			}
+		}, {
+			"id": "TI7t3Pp",
+			"metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5d48cc6-b8d9-11e2-8a16-0050569544e0",
+			"wfsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
+				"typeName": "published:KauaiS_shorelines"
+			},
+			"wmsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
+				"layers": "KauaiS_shorelines"
+			},
+			"name": "Linear Regression Rate of shorelines in southern Kauai, HI",
+			"type": "historical",
+			"attr": "LRR",
+			"hotness": "17",
+			"bbox": [-159.69, 21.87, -159.38, 21.96],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/TI7t3Pp",
+				"medium": "This dataset includes shorelines ranging from 1926 to 2008 in the Kauai South coastal region from Waimea to Kipu Kai. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
+				"full": "XXX"
+			}
+		}, {
+			"id": "BCzzXsI",
+			"metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5e1b96e-b8d9-11e2-9cf4-0050569544e0",
+			"wfsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
+				"typeName": "published:MauiE_shorelines"
+			},
+			"wmsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
+				"layers": "MauiE_shorelines"
+			},
+			"name": "Linear Regression Rate of shorelines in the Kihei coastal region of Maui, HI",
+			"type": "historical",
+			"attr": "LRR",
+			"hotness": "91",
+			"bbox": [-156.52, 20.63, -156.44, 20.8],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/BCzzXsI",
+				"medium": "This dataset includes shorelines ranging from 1900 to 2007 in the Maui Kihei coastal region from Maalaea to Makena. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
+				"full": "XXX"
+			}
+		}, {
+			"id": "VGz79MZ",
+			"metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5ef27d4-b8d9-11e2-83d8-0050569544e0",
+			"wfsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
+				"typeName": "published:MauiN_shorelines"
+			},
+			"wmsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
+				"layers": "MauiN_shorelines"
+			},
+			"name": "Linear Regression Rate of shorelines in northern Maui, HI",
+			"type": "historical",
+			"attr": "LRR",
+			"hotness": "31",
+			"bbox": [-156.51, 20.89, -156.36, 20.94],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/VGz79MZ",
+				"medium": "This dataset includes shorelines ranging from 1899 to 2002 in the Maui North coastal region from Waihee to Kuau. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
+				"full": "XXX"
+			}
+		}, {
+			"id": "o3sjkQk",
+			"metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5fc8fbe-b8d9-11e2-a3ac-0050569544e0",
+			"wfsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
+				"typeName": "published:MauiW_shorelines"
+			},
+			"wmsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
+				"layers": "MauiW_shorelines"
+			},
+			"name": "Linear Regression Rate of shorelines in western Maui, HI",
+			"type": "historical",
+			"attr": "LRR",
+			"hotness": "19",
+			"bbox": [-156.7, 20.79, -156.56, 21.02],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/o3sjkQk",
+				"medium": "This dataset includes shorelines ranging from 1912 to 1997 in the Maui West coastal region from Ukumehame to Honolua. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
+				"full": "XXX"
+			}
+		}, {
+			"id": "0m2uQP7",
+			"metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c6098fde-b8d9-11e2-8a16-0050569544e0",
+			"wfsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
+				"typeName": "published:NewJerseyN_shorelines"
+			},
+			"wmsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
+				"layers": "NewJerseyN_shorelines"
+			},
+			"name": "Linear Regression Rate of shorelines in northern NJ",
+			"type": "historical",
+			"attr": "LRR",
+			"hotness": "26",
+			"bbox": [-74.31, 39.49, -73.97, 40.48],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/0m2uQP7",
+				"medium": "This dataset includes shorelines from 22 years ranging from 1836 to 2000 in the New Jersey North coastal region from Sandy Hook to Little Egg Inlet, New Jersey. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps, lidar",
+				"full": "XXX"
+			}
+		}, {
+			"id": "Sah1qwk",
+			"metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c616c1ae-b8d9-11e2-9cf4-0050569544e0",
+			"wfsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
+				"typeName": "published:OahuE_shorelines"
+			},
+			"wmsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
+				"layers": "OahuE_shorelines"
+			},
+			"name": "Linear Regression Rate of shorelines in eastern Oahu, HI",
+			"type": "historical",
+			"attr": "LRR",
+			"hotness": "11",
+			"bbox": [-157.97, 21.31, -157.66, 21.71],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/Sah1qwk",
+				"medium": "This dataset includes shorelines ranging from 1910 to 2006 in the Oahu East coastal region from Kahuku to Makapuu. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
+				"full": "XXX"
+			}
+		}, {
+			"id": "Dy26qZ0",
+			"metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c6240238-b8d9-11e2-83d8-0050569544e0",
+			"wfsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
+				"typeName": "published:OahuN_shorelines"
+			},
+			"wmsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
+				"layers": "OahuN_shorelines"
+			},
+			"name": "Linear Regression Rate of shorelines in northern Oahu, HI",
+			"type": "historical",
+			"attr": "LRR",
+			"hotness": "8",
+			"bbox": [-158.24, 21.58, -157.97, 21.71],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/Dy26qZ0",
+				"medium": "This dataset includes shorelines ranging from 1910 to 2007 in the Oahu North coastal region from Camp Erdman to Kahuku. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
+				"full": "XXX"
+			}
+		}, {
+			"id": "ZqRI7Rh",
+			"metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c6326648-b8d9-11e2-a3ac-0050569544e0",
+			"wfsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
+				"typeName": "published:OahuS_shorelines"
+			},
+			"wmsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
+				"layers": "OahuS_shorelines"
+			},
+			"name": "Linear Regression Rate of shorelines in southern Oahu, HI",
+			"type": "historical",
+			"attr": "LRR",
+			"hotness": "17",
+			"bbox": [-158.1, 21.25, -157.67, 21.33],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/ZqRI7Rh",
+				"medium": "This dataset includes shorelines ranging from 1927 to 2005 in the Oahu South coastal region from Barbers Point to Sandy Beach. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
+				"full": "XXX"
+			}
+		}, {
+			"id": "BIJ4eT2",
+			"metadata": "http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c63ff312-b8d9-11e2-8a16-0050569544e0",
+			"wfsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wfs",
+				"typeName": "published:OahuW_shorelines"
+			},
+			"wmsService": {
+				"endpoint": "http://cida.usgs.gov/qa/DSASweb/geoserver/published/wms",
+				"layers": "OahuW_shorelines"
+			},
+			"name": "Linear Regression Rate of shorelines in western Oahu, HI",
+			"type": "historical",
+			"attr": "LRR",
+			"hotness": "2",
+			"bbox": [-158.25, 21.35, -158.13, 21.55],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/BIJ4eT2",
+				"medium": "This dataset includes shorelines ranging from 1910 to 2007 in the Oahu West coastal region from Yokohama to Tracks Beach. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps",
+				"full": "XXX"
+			}
+		}, {
+			"id": "fa4VVJf",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability/SE_erosion_hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced collision during a category 1 storm in southeast U.S.",
+			"type": "vulnerability",
+			"attr": "PCOL1",
+			"hotness": "1",
+			"bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/fa4VVJf",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "H6nCTQL",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability/SE_erosion_hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced collision during a category 5 storm in southeast U.S.",
+			"type": "vulnerability",
+			"attr": "PCOL5",
+			"hotness": "0",
+			"bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/H6nCTQL",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "Kfokhw8",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability/SE_erosion_hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced inundation during a category 1 storm in southeast U.S.",
+			"type": "vulnerability",
+			"attr": "PIND1",
+			"hotness": "0",
+			"bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/Kfokhw8",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "tAUQglr",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability/SE_erosion_hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced inundation during a category 5 storm in southeast U.S.",
+			"type": "vulnerability",
+			"attr": "PIND5",
+			"hotness": "1",
+			"bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/tAUQglr",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "CFlwaU2",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability/SE_erosion_hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced overwash during a category 1 storm in southeast U.S.",
+			"type": "vulnerability",
+			"attr": "POVW1",
+			"hotness": "1",
+			"bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/CFlwaU2",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "rmYSUZY",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability/SE_erosion_hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced overwash during a category 5 storm in southeast U.S.",
+			"type": "vulnerability",
+			"attr": "POVW5",
+			"hotness": "4",
+			"bbox": [-81.4592176193096, 26.7702602780707, -75.4605521839809, 36.5478325001067],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/rmYSUZY",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the southeast U.S. region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "Mj8X0rQ",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability_Mid_ATL_erosion_hazards:Mid-Atlantic_Erosion_Hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced collision during a category 1 storm in mid-Atlantic U.S.",
+			"type": "vulnerability",
+			"attr": "PCOL1",
+			"hotness": "2",
+			"bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/Mj8X0rQ",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Altlantic U.S. region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "oq7XE9i",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability_Mid_ATL_erosion_hazards:Mid-Atlantic_Erosion_Hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced collision during a category 5 storm in mid-Atlantic U.S.",
+			"type": "vulnerability",
+			"attr": "PCOL5",
+			"hotness": "12",
+			"bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/oq7XE9i",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Altlantic U.S. region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "56kxGXd",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability_Mid_ATL_erosion_hazards:Mid-Atlantic_Erosion_Hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced inundation during a category 1 storm in mid-Atlantic U.S.",
+			"type": "vulnerability",
+			"attr": "PIND1",
+			"hotness": "54",
+			"bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/56kxGXd",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Atlantic U.S. region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "NR0x7G1",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability_Mid_ATL_erosion_hazards:Mid-Atlantic_Erosion_Hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced inundation during a category 5 storm in mid-Atlantic U.S.",
+			"type": "vulnerability",
+			"attr": "PIND5",
+			"hotness": "1",
+			"bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/NR0x7G1",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Atlantic U.S. region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "SfR4EkM",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability_Mid_ATL_erosion_hazards:Mid-Atlantic_Erosion_Hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced overwash during a category 1 storm in mid-Atlantic U.S.",
+			"type": "vulnerability",
+			"attr": "POVW1",
+			"hotness": "2",
+			"bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/SfR4EkM",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Atlantic U.S. region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "cziF05r",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability_Mid_ATL_erosion_hazards:Mid-Atlantic_Erosion_Hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/Mid_ATL_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced overwash during a category 5 storm in mid-Atlantic U.S.",
+			"type": "vulnerability",
+			"attr": "POVW5",
+			"hotness": "40",
+			"bbox": [-75.9929436814416, 36.5478889996749, -71.8593907176169, 41.0849461626622],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/cziF05r",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the mid-Atlantic U.S. region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "A0OcdQN",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability_GOM_erosion_hazards:Gulf_of_Mexico_Erosion_Hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced collision during a category 1 storm in Gulf of Mexico U.S.",
+			"type": "vulnerability",
+			"attr": "PCOL1",
+			"hotness": "0",
+			"bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/A0OcdQN",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "c5zC0qg",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability_GOM_erosion_hazards:Gulf_of_Mexico_Erosion_Hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced collision during a category 5 storm in Gulf of Mexico U.S.",
+			"type": "vulnerability",
+			"attr": "PCOL5",
+			"hotness": "1",
+			"bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/c5zC0qg",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Collision occurs when the dune toe is eroded by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "E0uAG9R",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability_GOM_erosion_hazards:Gulf_of_Mexico_Erosion_Hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced inundation during a category 1 storm in Gulf of Mexico U.S.",
+			"type": "vulnerability",
+			"attr": "PIND1",
+			"hotness": "16",
+			"bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/E0uAG9R",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "Z2T9am0",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability_GOM_erosion_hazards:Gulf_of_Mexico_Erosion_Hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced inundation during a category 5 storm in Gulf of Mexico U.S.",
+			"type": "vulnerability",
+			"attr": "PIND5",
+			"hotness": "4",
+			"bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/Z2T9am0",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Inundation occurs when the beach and dune are completely and continuously submerged by surge and wave setup. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "TfyjPZQ",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability_GOM_erosion_hazards:Gulf_of_Mexico_Erosion_Hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced overwash during a category 1 storm in Gulf of Mexico U.S.",
+			"type": "vulnerability",
+			"attr": "POVW1",
+			"hotness": "6",
+			"bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/TfyjPZQ",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 1 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}, {
+			"id": "EfpJ1Y5",
+			"metadata": "placeholder csw",
+			"wfsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WFSServer",
+				"typeName": "Vulnerability_GOM_erosion_hazards:Gulf_of_Mexico_Erosion_Hazards"
+			},
+			"wmsService": {
+				"endpoint": "http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WMSServer",
+				"layers": "0"
+			},
+			"name": "Probability of storm-induced overwash during a category 5 storm in Gulf of Mexico U.S.",
+			"type": "vulnerability",
+			"attr": "POVW5",
+			"hotness": "668",
+			"bbox": [-97.378962239692612, 26.048893589783042, -81.894645099749738, 30.396650820168169],
+			"summary": {
+				"tiny": "http://cida.usgs.gov/qa/coastalhazards/rest/summaries/tiny/EfpJ1Y5",
+				"medium": "This datasets includes an element of a National Assessment of Hurricane-induced Coastal Erosion Hazards for the Gulf of Mexico region. Overwash occurs when sand is transported landward over the beach and dune by waves and surge. These probabilities apply to a generic representation of a category 5 hurricane. Data sources: XX, YY.",
+				"full": "XXX"
+			}
+		}
+	]
 }

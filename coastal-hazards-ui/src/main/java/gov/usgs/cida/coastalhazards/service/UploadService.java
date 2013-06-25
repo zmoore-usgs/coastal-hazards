@@ -3,7 +3,7 @@ package gov.usgs.cida.coastalhazards.service;
 import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
-import gov.usgs.cida.utilities.communication.UploadHandler;
+import gov.usgs.cida.utilities.communication.FormUploadHandler;
 import gov.usgs.cida.utilities.file.FileHelper;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
@@ -85,7 +85,7 @@ public class UploadService extends HttpServlet {
 
         // Save the file to the upload directory
         try {
-            UploadHandler.saveFileFromRequest(request, fileParamKey, uploadDestinationFile);
+            FormUploadHandler.saveFileFromRequest(request, fileParamKey, uploadDestinationFile);
         } catch (FileUploadException ex) {
             LOG.warn("Could not save file.", ex);
             responseMap.put("error", "Could not save file.");
