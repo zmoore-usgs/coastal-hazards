@@ -5,3 +5,6 @@ nb-configuration.xml
 
 #vim swap files:
 .*sw[po]
+.project
+.settings
+.classpath

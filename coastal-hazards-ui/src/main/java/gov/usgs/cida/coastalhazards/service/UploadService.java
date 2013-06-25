@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.service;
 
+import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.communication.UploadHandler;
@@ -99,15 +100,33 @@ public class UploadService extends HttpServlet {
             return;
         }
         Enumeration<? extends ZipEntry> entries = new ZipFile(uploadDestinationFile).entries();
-        Boolean needsMacFix = false;
+        boolean needsMacFix = false;
+        boolean needsLidarExplosion = false;
         while (entries.hasMoreElements()) {
             ZipEntry entry = entries.nextElement();
             if (FileHelper.entryIsMacBundle(entry)) {
                 needsMacFix = true;
             }
+            if (entry.getName().endsWith("_uncertainty.dbf")) {
+            	needsLidarExplosion = true;
+            }
         }
         if (needsMacFix) {
             FileHelper.fixMacZip(uploadDestinationFile);
+        }
+        
+        if (needsLidarExplosion) {
+        	ZipInterpolator exploder = new ZipInterpolator();
+        	
+        	try {
+				uploadDestinationFile = exploder.explode(uploadDestinationFile);
+				// make a new destinationDirectory, as downstream code expects that directory to hold exactly one zipfile
+				destinationDirectoryChild = UUID.randomUUID().toString();
+		        uploadDestinationDirectory = new File(new File(uploadDirectory), destinationDirectoryChild);
+		        uploadDestinationFile.renameTo(new File(uploadDestinationDirectory,fileName));
+			} catch (Exception e) {
+				throw new RuntimeException("Problem exploding shapefile zip file", e);
+			}
         }
 
         responseMap.put("file-token", destinationDirectoryChild);

@@ -156,7 +156,7 @@ public class Xploder {
 		featureWriter.write();
 	}
 	
-	private void initWriter(String fn) throws Exception {
+	private File initWriter(String fn) throws Exception {
 		// read input to get attributes
 		SimpleFeatureType sourceSchema = readSourceSchema(fn);
 		
@@ -203,6 +203,8 @@ public class Xploder {
         featureWriter = outputStore.getFeatureWriterAppend(tx);
         
         logger.info("Will write {}", fout.getAbsolutePath());
+        
+        return fout;
 	}
 
 	private static SimpleFeatureType readSourceSchema(String fn)
@@ -230,13 +232,13 @@ public class Xploder {
 		return sourceSchema;
 	}
 	
-	public void explode(String fn) throws Exception {
+	public File explode(String fn) throws Exception {
 		MyShapefileReader rdr = initReader(fn);
 		
 		logger.debug("Input files from {}\n{}", fn, shapefileNames(rdr.getShpFiles()));
 		
 		tx = new DefaultTransaction("create");
-		initWriter(fn);
+		File ptFile = initWriter(fn);
 		
 		// Too bad that the reader classes don't expose the ShpFiles.
 		
@@ -257,6 +259,8 @@ public class Xploder {
 		tx.commit();
 		
 		logger.info("Wrote {} points in {} shapes", ptTotal, shpCt);
+		
+		return ptFile;
 	}
 
 	private static String shapefileNames(ShpFiles shp) {
