@@ -1,4 +1,7 @@
-/* ---------------------------------------------------------------------- UI */
+#ccsa-area {
+	padding-top: 5px;
+}
+
 .btn {
     margin-top: .25em;
     margin-bottom: .25em;
