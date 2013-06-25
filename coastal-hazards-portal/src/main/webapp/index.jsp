@@ -42,7 +42,7 @@
             <jsp:param name="revisedDate" value="" />
             <jsp:param name="nextReview" value="" />
             <jsp:param name="expires" value="never" />
-            <jsp:param name="development" value="<%= development%>" />
+            <jsp:param name="development" value="false" />
         </jsp:include>
 		<script type="text/javascript">var CCH = {'Objects': {}};</script>
         <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
