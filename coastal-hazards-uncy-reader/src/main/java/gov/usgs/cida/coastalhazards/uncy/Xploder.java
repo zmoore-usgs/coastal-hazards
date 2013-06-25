@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jtsexample.geom.ExtendedCoordinate;
-// which Point class to use?
 
 
 /** Write a copy of the input shapefile, with lines exploded to their constituent points
@@ -121,7 +120,10 @@ public class Xploder {
 			if ( ! Double.isNaN(md)) {
 				int mi = (int)md;
 				
-				uncy = uncyMap.get(mi);
+				Double uv = uncyMap.get(mi);
+				if (uv != null) {
+					uncy = uv;
+				}
 			}
 			
 			// write new point-thing-with-uncertainty
