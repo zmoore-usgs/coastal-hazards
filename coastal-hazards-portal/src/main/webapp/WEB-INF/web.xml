@@ -18,6 +18,18 @@
 		</init-param>
 	</servlet>
 	<servlet>
+		<servlet-name>ExternalGeoServerServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url-param</param-name>
+			<param-value>coastal-hazards.cidags.endpoint</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+	<servlet>
 		<servlet-name>StPeteArcServerServlet</servlet-name>
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
@@ -42,18 +54,6 @@
 		</init-param>
 	</servlet>
 	<servlet>
-		<servlet-name>CidaGeoserverServlet</servlet-name>
-		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
-		<init-param>
-			<param-name>forward-url-param</param-name>
-			<param-value>coastal-hazards.cidags.endpoint</param-value>
-		</init-param>
-		<init-param>
-			<param-name>readTimeout</param-name>
-			<param-value>300000</param-value>
-		</init-param>
-	</servlet>
-	<servlet>
 		<servlet-name>OpenIDConsumerService</servlet-name>
 		<servlet-class>gov.usgs.cida.coastalhazards.oid.OpenIDConsumerService</servlet-class>
 	</servlet>
@@ -71,7 +71,7 @@
 		<url-pattern>/marine/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>MarineArcServerServlet</servlet-name>
+		<servlet-name>ExternalGeoServerServlet</servlet-name>
 		<url-pattern>/cidags/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>

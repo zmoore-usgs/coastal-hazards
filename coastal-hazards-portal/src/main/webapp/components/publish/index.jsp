@@ -35,6 +35,7 @@
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
         <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="<%=request.getContextPath()%>/webjars/openlayers/2.12/OpenLayers.js"></script>
+		<script type="text/javascript" src="<%=request.getContextPath()%>/webjars/sugar/1.3.8/sugar.min.js"></script>
 		<jsp:include page="../../js/jsuri/jsuri.jsp">
             <jsp:param name="relPath" value="../../" />
 		</jsp:include>
@@ -87,13 +88,15 @@
 						<div class="publish-services-container-row row-fluid">
 							<div class="well well-small">
 								<span id="publish-container-services-wfs">
-									WFS&nbsp;&nbsp;
-									<input type="text" id="publish-services-wfs"class="publish-services-input"/><span id="publish-services-wfs-validate"></span>
+									WFS: <input type="text" id="publish-services-wfs"class="publish-services-input"/><span id="publish-services-wfs-validate"></span>
 								</span>
 								<br />
 								<span id="publish-container-services-wms">
-									WMS&nbsp;&nbsp;
-									<input type="text" id="publish-services-wms"class="publish-services-input"/><span id="publish-services-wms-validate"></span>
+									WMS: <input type="text" id="publish-services-wms"class="publish-services-input"/><span id="publish-services-wms-validate"></span>
+								</span>
+								<br />
+								<span id="publish-container-services-layers">
+									Available Services: <select type="text" id="publish-services-layers" class="publish-layers-input"></select>
 								</span>
 							</div>
 						</div>
@@ -120,9 +123,7 @@
 					</div>
 
 					<div id="publish-container-tabs">
-						<ul class="nav nav-tabs">
-
-						</ul>
+						<ul class="nav nav-tabs"></ul>
 					</div>
 
 					<span id="publish-container-tab-template" class="hidden">
@@ -162,25 +163,183 @@
 			<jsp:param name="contact-info" value="<a href='mailto:jread@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Jordan Read</a>" />
 		</jsp:include>
 		<script type="text/javascript">
+			var config = {
+				endpoint: {
+					wfs: '',
+					wfsValid: false,
+					wfsCaps: null,
+					wms: '',
+					wmsValid: false,
+					type: ''
+				}
+			};
 			$(document).ready(function() {
 				var buildServiceEndpoint = function(endpoint) {
 					var updatedEndpoint = null;
 					var urlIndex = 0;
-					switch (endpoint) {
-						case (endpoint.toLowerCase().has('coastalmap.marine.usgs.gov')) :
-							urlIndex = endpoint.indexOf('cmgp');
-							updatedEndpoint = '/marine/' + endpoint.substring(urlIndex);
-							break;
-						case (endpoint.toLowerCase().has('olga.er.usgs.gov')) :
-							urlIndex = endpoint.indexOf('services');
-							updatedEndpoint = '/stpgis/' + endpoint.substring(urlIndex);
-							break;
-						case (endpoint.toLowerCase().has('cida.usgs.gov')) :
-							urlIndex = endpoint.indexOf('geoserver');
-							updatedEndpoint = '/cidags/' + endpoint.substring(urlIndex);
-							break;
+					if (endpoint) {
+						if (endpoint.toLowerCase().has('coastalmap.marine.usgs.gov')) {
+							urlIndex = endpoint.indexOf('cmgp/') + 5;
+							updatedEndpoint = '<%=request.getContextPath()%>/marine/' + endpoint.substring(urlIndex);
+							config.endpoint.type = 'arcgis';
+						} else if (endpoint.toLowerCase().has('olga.er.usgs.gov')) {
+							urlIndex = endpoint.indexOf('services') + 8;
+							updatedEndpoint = '<%=request.getContextPath()%>/stpgis/' + endpoint.substring(urlIndex);
+							config.endpoint.type = 'arcgis';
+						} else if (endpoint.toLowerCase().has('cida.usgs.gov')) {
+							urlIndex = endpoint.indexOf('geoserver') + 10;
+							updatedEndpoint = '<%=request.getContextPath()%>/cidags/' + endpoint.substring(urlIndex);
+							config.endpoint.type = 'geoserver';
+						}
+						var indexOfQueryStart = updatedEndpoint.indexOf('?');
+						if (indexOfQueryStart !== -1) {
+							return updatedEndpoint.substring(0, indexOfQueryStart);
+						}
 					}
+					return updatedEndpoint;
 				};
+
+				var getCapabilities = function(args) {
+					args = args || {}
+					var endpoint = args.endpoint;
+					var callbacks = args.callbacks || {
+						success: [],
+						error: []
+					};
+					$.ajax(endpoint, {
+						data: {
+							request: 'GetCapabilities',
+							service: 'WFS',
+							version: '1.0.0'
+						},
+						success: function(data, textStatus, jqXHR) {
+							var getCapsResponse = new OpenLayers.Format.WFSCapabilities.v1_0_0().read(data);
+							$(callbacks.success).each(function(index, callback, allCallbacks) {
+								callback(getCapsResponse, this);
+							});
+						},
+						error: function(data, textStatus, jqXHR) {
+							$(callbacks.error).each(function(index, callback, allCallbacks) {
+								callback(getCapsResponse, this);
+							});
+						}
+					});
+				};
+
+				var describeFeatureType = function(args) {
+					args = args || {};
+
+					var callbacks = args.callbacks || {
+						success: [],
+						error: []
+					};
+
+					$.ajax(config.endpoint.wfs, {
+						data: {
+							request: 'DescribeFeaturetype',
+							service: 'WFS',
+							version: '1.0.0',
+							typename: args.layername || ''
+						},
+						success: function(data, textStatus, jqXHR) {
+							var describeFTResponse = new OpenLayers.Format.WFSDescribeFeatureType().read(data);
+							$(callbacks.success).each(function(index, callback, allCallbacks) {
+								callback(describeFTResponse, this);
+							});
+						},
+						error: function(data, textStatus, jqXHR) {
+							$(callbacks.error).each(function(index, callback, allCallbacks) {
+								callback(describeFTResponse, this);
+							});
+						}
+					});
+				};
+				
+				var bindAttribtues = function() {
+					$('#publish-select-type-multiple').children().each(function(index, option) {
+						$(option).on('mouseup', function(evt) {
+							var opt = evt.target;
+							var selected = opt.selected;
+							if (selected) {
+								
+							} else {
+								
+							}
+						});
+					});
+				};
+
+				$('#publish-services-wfs').on('blur', function(evt) {
+					var value = evt.target.value;
+					var endpoint = buildServiceEndpoint(value);
+
+					if (endpoint !== null && endpoint.toLowerCase() !== config.endpoint.wfs) {
+						config.endpoint.wfs = endpoint;
+						getCapabilities({
+							endpoint: endpoint,
+							callbacks: {
+								success: [
+									function(caps) {
+										$('#publish-services-layers').empty();
+										if (caps && caps.featureTypeList.featureTypes.length) {
+											config.endpoint.wfsValid = true;
+											config.endpoint.wfsCaps = caps;
+
+											var namespace;
+											if (config.endpoint.type === 'geoserver') {
+												namespace = caps.featureTypeList.featureTypes[0].featureNS;
+											} else {
+												namespace = caps.service.name;
+											}
+											caps.featureTypeList.featureTypes.each(function(ft) {
+												$('#publish-services-layers').append(
+														$('<option />').attr('value', namespace + ':' + ft.name).html(ft.name)
+														).trigger('change');
+											});
+											$('#publish-services-wfs-validate')
+													.removeClass('invalid')
+													.addClass('valid')
+													.html('Valid');
+										} else {
+											config.endpoint.wfsValid = false;
+											config.endpoint.wfsCaps = null;
+											$('#publish-services-wfs-validate')
+													.removeClass('valid')
+													.addClass('invalid')
+													.html('Invalid');
+										}
+									}
+								]
+							}
+						});
+					}
+				});
+
+				$('#publish-services-layers').on('change', function(evt) {
+					var val = evt.target.value;
+					var namespace = val.split(':')[0];
+					var layer = val.split(':')[1];
+					describeFeatureType({
+						layername: layer,
+						callbacks: {
+							success: [
+								function(featuresDescription) {
+									$('#publish-select-type-multiple').empty();
+									featuresDescription.featureTypes[0].properties.each(function(prop) {
+										var name = prop.name;
+										var nameTlc = name.toLowerCase();
+										if (nameTlc !== 'objectid' && nameTlc !== 'shape_length') {
+											$('#publish-select-type-multiple').append(
+													$('<option />').attr('value', name).html(name)
+													);
+										}
+									});
+									bindAttribtues();
+								}
+							]
+						}
+					});
+				});
 
 				$('#publish-select-type-type').on('change', function(evt) {
 					var val = evt.target.value;
@@ -201,6 +360,8 @@
 
 				$('#publish-services-wms').on('blur', function(evt) {
 					var value = evt.target.value;
+					var endpoint = buildServiceEndpoint(value);
+
 					var valid = true;
 					if (valid) {
 						entry.wms = evt.target.value;
@@ -215,28 +376,6 @@
 								.addClass('invalid')
 								.html('Invalid');
 					}
-				});
-
-				$('#publish-services-wfs').on('blur', function(evt) {
-					var value = evt.target.value;
-					var endpoint = buildServiceEndpoint(value);
-					if (endpoint !== null) {
-						var valid = true;
-						if (valid) {
-							entry.wfs = evt.target.value;
-							$('#publish-services-wfs-validate')
-									.removeClass('invalid')
-									.addClass('valid')
-									.html('Valid');
-						} else {
-							entry.wfs = '';
-							$('#publish-services-wfs-validate')
-									.removeClass('valid')
-									.addClass('invalid')
-									.html('Invalid');
-						}
-					}
-
 				});
 
 				new qq.FineUploader({
