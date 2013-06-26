@@ -66,15 +66,26 @@
                         <Property name="Rserve_Port" active="true">6311</Property>
                         <Property name="Rserve_User" active="true">need_user</Property>
                         <Property name="Rserve_Password" active="true">and_password</Property>
-                        <Property name="Algorithm" active="true">org.n52.wps.server.r.stats_compare_wps</Property>
-                        <Property name="Algorithm" active="true">org.n52.wps.server.r.test_zip</Property>
+                        <Property active="true" name="Script_Dir">R/r_scripts</Property>
+                        <Property active="true" name="Resource_Dir">R/resources</Property>
+                        <Property name="R_Datatype_Config" active="true">R/R_Datatype.conf</Property>
+                        <Property name="R_Work_Dir" active="true">default</Property>
+                        <Property name="Enable_Batch_Start" active="true">true</Property>
+                        <Property active="true" name="Algorithm">org.n52.wps.server.r.DSAS_stats</Property>
+                        <Property active="true" name="Algorithm">org.n52.wps.server.r.DSAS_squigglePlot</Property>
         </Repository>
 	</AlgorithmRepositoryList>
     <!-- @hostname@, @hostport@ and @webappPath@ are filtered and replaced by values derived from
          HttpServelRequest instance of getRequestURL() in response using a Filter -->
-	<Server hostname="@hostname@" hostport="@hostport@" webappPath="@webappPath@" includeDataInputsInResponse="true" computationTimeoutMilliSeconds="5" cacheCapabilites="false">
+	<Server hostname="localhost" hostport="9080" webappPath="coastal-hazards-n52" includeDataInputsInResponse="true" computationTimeoutMilliSeconds="5" cacheCapabilites="false">
+        <Property name="responseURLFilterEnabled" active="true">true</Property>
         <Database>
-            <Property name="databaseClass" active="true">gov.usgs.cida.n52.wps.database.ResultsDatabase</Property>
+            <!--enable database wiping base on values below-->
+            <Property name="wipe.enabled" active="true">true</Property>
+            <!--scans database every 1 hour-->
+            <Property name="wipe.period" active="true">PT1H</Property>
+            <!--deletes files older than 7 days-->
+            <Property name="wipe.threshold" active="true">P7D</Property>
         </Database>
     </Server>
 </WPSConfiguration>
