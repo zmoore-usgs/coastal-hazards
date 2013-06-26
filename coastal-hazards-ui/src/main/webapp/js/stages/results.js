@@ -742,7 +742,7 @@ var Results = {
         '<wps:DataInputs>' +
         '<wps:Input>' + 
         '<ows:Identifier>input</ows:Identifier>' + 
-        '<wps:Reference xlink:href="' + geoserverEndpoint + CONFIG.tempSession.getCurrentSessionKey() + '/wfs">' + 
+        '<wps:Reference xlink:href="' + geoserverEndpoint + CONFIG.tempSession.getCurrentSessionKey() + '/wfs" mimeType="text/xml">' + 
         '<wps:Body>' + 
         '<wfs:GetFeature service="WFS" version="1.1.0" outputFormat="GML2" xmlns:ogc="http://www.opengis.net/ogc">' + 
         '<wfs:Query typeName="'+intersects+'" />' + 
@@ -858,7 +858,7 @@ var Results = {
                 $('<input />').attr({
                     'type' : 'hidden',
                     'name' : 'type'
-                }).val('image/png;base64')).
+                }).val('image/png')).
             append(
                 $('<input />').attr({
                     'type' : 'hidden',

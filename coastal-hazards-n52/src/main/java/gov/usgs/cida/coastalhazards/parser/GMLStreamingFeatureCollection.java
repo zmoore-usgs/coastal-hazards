@@ -33,7 +33,6 @@ import org.opengis.feature.type.GeometryType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterVisitor;
 import org.opengis.filter.sort.SortBy;
-import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 import org.slf4j.Logger;
@@ -94,7 +93,6 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 		return createStreamingFeatureIterator();
 	}
 
-	@Override
 	public Iterator iterator() {
 		return createStreamingFeatureIterator();
 	}
@@ -109,12 +107,10 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 		return iterator;
 	}
 
-	@Override
 	public void close(FeatureIterator close) {
 		destroyStreamingFeatureIterator(close);
 	}
 
-	@Override
 	public void close(Iterator close) {
 		destroyStreamingFeatureIterator(close);
 	}
@@ -130,12 +126,10 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 		throw new RuntimeException("iterator not known by this instance");
 	}
 
-	@Override
 	public void addListener(CollectionListener listener) throws NullPointerException {
 		// do nothing, this collection is read-only
 	}
 
-	@Override
 	public void removeListener(CollectionListener listener) throws NullPointerException {
 		// do nothing, this collection is read-only
 	}
@@ -175,27 +169,22 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 		return size;
 	}
 
-	@Override
 	public void purge() {
 		throw new UnsupportedOperationException("This instance is read-only");
 	}
 
-	@Override
 	public boolean add(Feature obj) {
 		throw new UnsupportedOperationException("This instance is read-only");
 	}
 
-	@Override
 	public boolean addAll(Collection collection) {
 		throw new UnsupportedOperationException("This instance is read-only");
 	}
 
-	@Override
 	public boolean addAll(FeatureCollection resource) {
 		throw new UnsupportedOperationException("This instance is read-only");
 	}
 
-	@Override
 	public void clear() {
 		throw new UnsupportedOperationException("This instance is read-only");
 	}
@@ -215,17 +204,14 @@ public class GMLStreamingFeatureCollection implements FeatureCollection {
 		return size() > 0;
 	}
 
-	@Override
 	public boolean remove(Object o) {
 		throw new UnsupportedOperationException("This instance is read-only");
 	}
 
-	@Override
 	public boolean removeAll(Collection c) {
 		throw new UnsupportedOperationException("This instance is read-only");
 	}
 
-	@Override
 	public boolean retainAll(Collection c) {
 		throw new UnsupportedOperationException("This instance is read-only");
 	}

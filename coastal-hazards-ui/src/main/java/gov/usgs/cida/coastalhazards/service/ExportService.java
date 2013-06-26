@@ -41,6 +41,7 @@ public class ExportService extends HttpServlet {
         String filename = request.getParameter("filename");
         String data = request.getParameter("data");
         String type = request.getParameter("type");
+        String encoding = "base64"; // hardcode this for now
         String shortName = request.getParameter("shortName");
         String url = request.getRequestURL().toString();
 
@@ -89,7 +90,7 @@ public class ExportService extends HttpServlet {
                     + "</wps:Input>"
                     + "</wps:DataInputs>"
                     + "<wps:ResponseForm>"
-                    + "<wps:RawDataOutput>"
+                    + "<wps:RawDataOutput mimeType=\"" + type + "\" encoding=\"" + encoding + "\">"
                     + "<ows:Identifier>output</ows:Identifier>"
                     + "</wps:RawDataOutput>"
                     + "</wps:ResponseForm>"
@@ -122,7 +123,7 @@ public class ExportService extends HttpServlet {
 
         StringBuilder sb = new StringBuilder(data);
         byte[] dataByteArr;
-        if ("image/png;base64".equalsIgnoreCase(type) || "image/tiff;base64".equalsIgnoreCase(type)) {
+        if ("base64".equalsIgnoreCase(encoding)) {
             dataByteArr = new BASE64Decoder().decodeBuffer(data.toString());
         } else {
             dataByteArr = data.toString().getBytes("UTF-8");
