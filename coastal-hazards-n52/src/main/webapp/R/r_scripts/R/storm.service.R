@@ -1,6 +1,6 @@
 
-storm.service = function(WFSendpoint,attName){
-	subType	<-	attName
+storm.service = function(serviceEndpoint,attribute){
+	subType	<-	attribute
 	supportSubTypes <- c('PCOL1','PCOL2','PCOL3','PCOL4','PCOL5',
 	                     'POVW1','POVW2','POVW3','POVW4','POVW5',
 	                     'PIND1','PIND2','PIND3','PIND4','PIND5') # more to come...etc...
@@ -22,7 +22,7 @@ storm.service = function(WFSendpoint,attName){
 	                   'coastal survey maps'=c('T-sheets','coastal survey maps'))        
 	subTypeDataSrc <- names(synDataSrc)
 
-	doc <- xmlInternalTreeParse('http://olga.er.usgs.gov/data/NACCH/SE_erosion_hazards_metadata.xml')
+	doc <- xmlInternalTreeParse(serviceEndpoint)
 
 	title <- xmlValue(getNodeSet(doc,'//citation/citeinfo/title')[[1]])
 
@@ -48,77 +48,10 @@ storm.service = function(WFSendpoint,attName){
 	firstLine <-  paste(c('This datasets includes an element of ', title),collapse='')
 	dataSources <- paste(c('Data sources:',paste(c(subTypeDataSrc[useI]),collapse=', ')),collapse=' ')
 	summary <- paste(c(firstLine,definition,detail,dataSources),collapse='. ')
-
-	return(summary)
-}
-
-#'historicalService
-#'
-#'a \code{itemSummaryService} function for ...
-#'
-#'@param junk
-#'@param junk2
-#'@return summary
-#'@export
-#'@docType functions
-#'@rdname historicalService
-#'@keywords historicalService
-historicalService = function(WFSendpoint,attName){
-	subType <- attName
-	rootDir<- '/Users/jread/Documents/R/coastal-hazards/coastal-hazards-wps/target/test-classes/gov/usgs/cida/coastalhazards/jersey/'
-
-	supportSubTypes <- c('Shorelines','Linear Regression Rate') # more to come...
-
-
-	if (!any(grepl(subType,supportSubTypes))){stop(c(subType,' is not supported for this type'))}
-
-	# need additional synonyms------
-	synDataSrc <- list('lidar'=c('lidar','EAARL Topography'),
-	                   'aerial photographs'=c('air photos','aerial photographs'),
-	                   'NOAA SLOSH model'=c('SLOSH','Storm Surge Maximum of the Maximum'),
-	                   'SWAN model'=c('Simulating WAves Nearshore','SWAN'),
-	                   'coastal survey maps'=c('T-sheets','coastal survey maps'))        
-	subTypeDataSrc <- names(synDataSrc)
-
-	doc <- xmlInternalTreeParse(paste(c(rootDir,'NewJerseyN_shorelines.shp.xml'),collapse=''))
-
-	purpose <- strsplit(xmlValue(getNodeSet(doc,'//descript/purpose')[[1]]),'.  ') # purpose in text form
-
-	# FIND data sources, match to dictionary layperson terms
-	useI = vector(length = length(subTypeDataSrc))
-	for (i in 1:length(synDataSrc)){
-	  for (k in 1:length(synDataSrc[[i]])){
-	    if (grepl(as.character(synDataSrc[[i]][k]),purpose[[1]][2])){
-	      useI[i] = TRUE
-	    }
-	  }
-	}
-
-	detail <- NULL
-	if (subType!='Shorelines'){ # additional line and details needed
-	  # get process source (could be DSASweb in the future) and version***
-	  for (j in 1:length(purpose[[1]])){
-	    if (grepl("(DSAS)",purpose[[1]][j])){
-	      print(purpose[[1]][j])
-	      stI <- regexpr('version ',purpose[[1]][j])[1]
-	      detail<- paste(c(subType,' is a shoreline change metric calculated using the ',
-	        'Digital Shoreline Analysis System v',substring(purpose[[1]][j],stI+nchar('version '))),
-	                     collapse='')
-	      break
-	    }
-	  }
-	}
-
-
-	dataSources <- paste(c('Data sources:',paste(c(subTypeDataSrc[useI]),collapse=', ')),collapse=' ')
-	summary <- paste(c(purpose[[1]][1],detail,dataSources),collapse='. ')
-}
-
-#' @export
-# '@docType functions
-# '@rdname vulnerabilityService
-# '@keywords vulnerabilityService
-vulnerabilityService = function(WFSendpoint,attName){
-	summary	<-	NULL
-	return(summary)
+	
+	summaryJSON	<- toJSON(list('summary'=list(
+		'tiny'=list('text'='xxx'),
+		'medium'=list('title'='XXX','text'=summary),
+		'full'=list('title'='XXX','text'='XXX','publications'='XXX'))), method="C" )
+	return(summaryJSON)
 }

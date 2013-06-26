@@ -1,6 +1,6 @@
 
-historical.service = function(WFSendpoint,attName){
-	subType <- attName
+historical.service = function(serviceEndpoint,attribute){
+	subType <- attribute
 	rootDir<- '/Users/jread/Documents/R/coastal-hazards/coastal-hazards-wps/target/test-classes/gov/usgs/cida/coastalhazards/jersey/'
 
 	supportSubTypes <- c('Shorelines','Linear Regression Rate') # more to come...
@@ -16,7 +16,7 @@ historical.service = function(WFSendpoint,attName){
 	                   'coastal survey maps'=c('T-sheets','coastal survey maps'))        
 	subTypeDataSrc <- names(synDataSrc)
 
-	doc <- xmlInternalTreeParse(paste(c(rootDir,'NewJerseyN_shorelines.shp.xml'),collapse=''))
+	doc <- xmlInternalTreeParse(serviceEndpoint)
 
 	purpose <- strsplit(xmlValue(getNodeSet(doc,'//descript/purpose')[[1]]),'.  ') # purpose in text form
 
@@ -48,13 +48,9 @@ historical.service = function(WFSendpoint,attName){
 
 	dataSources <- paste(c('Data sources:',paste(c(subTypeDataSrc[useI]),collapse=', ')),collapse=' ')
 	summary <- paste(c(purpose[[1]][1],detail,dataSources),collapse='. ')
-}
-
-#' @export
-# '@docType functions
-# '@rdname vulnerabilityService
-# '@keywords vulnerabilityService
-vulnerabilityService = function(WFSendpoint,attName){
-	summary	<-	NULL
-	return(summary)
+	summaryJSON	<- toJSON(list('summary'=list(
+		'tiny'=list('text'='xxx'),
+		'medium'=list('title'='XXX','text'=summary),
+		'full'=list('title'='XXX','text'='XXX','publications'='XXX'))), method="C" )
+	return(summaryJSON)
 }
