@@ -4,7 +4,7 @@
 \title{create various levels of summary for an individual storm item}
 \description{This service parses the metadata record and creates a summary specific to the \emph{STORM} theme, with subtype being defined by the attribute name}
 \usage{
-stormService(serviceEndpoint,attribute)
+storm.service(serviceEndpoint,attribute)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
