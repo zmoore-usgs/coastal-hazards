@@ -34,18 +34,19 @@
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/css/infopage.css" />
         <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="<%=request.getContextPath()%>/webjars/openlayers/2.12/OpenLayers.js"></script>
-		<script type="text/javascript" src="<%=request.getContextPath()%>/"></script>
-		<script type="text/javascript">
-			var CCH = {
-				config: {
-					itemId: '${it}',
-					contextPath: '<%=request.getContextPath()%>',
-					map: null,
-					projection: "EPSG:3857",
-					initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
-					item: null
-				}
-			};
+		<script type="text/javascript" src="<%=request.getContextPath()%>/webjars/sugar/1.3.8/sugar-full.min.js"></script>
+		<jsp:include page="js/jsuri/jsuri.jsp"></jsp:include>
+			<script type="text/javascript">
+				var CCH = {
+					config: {
+						itemId: '${it}',
+						contextPath: '<%=request.getContextPath()%>',
+						map: null,
+						projection: "EPSG:3857",
+						initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
+						item: null
+					}
+				};
 		</script>
     </head>
     <body>
@@ -67,13 +68,24 @@
 				</div> 
 
 
-				<div id="info-row-map" class="row-fluid">
+				<div id="info-row-map-and-summary" class="row-fluid">
 
 					<%-- Map --%>
 					<div id="map" class="span6"></div>
 
-					<%-- Summary Information --%>
-					<div id="info-summary" class="span6 well"></div>
+					<%-- Info --%>
+					<div class="span6 well">
+
+						<%-- Summary Information --%>
+						<div id="info-summary"></div>
+
+						<%-- Metadata Link --%>
+						<div id="metadata-link"></div>
+						
+						<%-- Application Link --%>
+						<div id="application-link"></div>
+
+					</div>
 
 				</div>
 
@@ -84,7 +96,7 @@
 					<jsp:param name="relPath" value="" />
 					<jsp:param name="footer-class" value="" />
 					<jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
-					<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Jordan Read</a>" />
+					<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Site Administrator</a>" />
 				</jsp:include>
 			</div>
 
@@ -103,11 +115,24 @@
 					success: function(data, textStatus, jqXHR) {
 						CCH.config.data = data;
 
+						var metadataLink = $('<a />').attr({
+							'href': CCH.config.data.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
+							'target': '_blank'
+						}).addClass('btn').html('View Metadata');
+						
+//						var applicationLink = $('<a />').attr({
+//							'href': CCH.config.contextPath + '/' + CCH.config.itemId,
+//							'target': '_blank'
+//						}).addClass('btn').html('View In Portal');
+
 						$('#info-title').html(data.name);
 						$('#info-summary').html(data.summary.full);
+						$('#metadata-link').append(metadataLink);
+						
+//						$('#application-link').append(applicationLink);
+						
 
 						buildMap();
-						buildMetadata();
 					},
 					error: function(jqXHR, textStatus, errorThrown) {
 						var b = 2;
@@ -148,20 +173,33 @@
 					var bounds = new OpenLayers.Bounds(CCH.config.data.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'))
 					CCH.config.map.zoomToExtent(bounds);
 				}
-				
+
 				var buildMetadata = function() {
+					var uri = new Uri(CCH.config.data.metadata);
+					var id = uri.getQueryParamValue('id');
 					$.ajax({
-						url : CCH.config.contextPath + '/csw',
-						data : {
-							// service=CSW&request=GetRecordById&version=2.0.2&id=urn:uuid:c5b45af0-b8d9-11e2-83d8-0050569544e0&outputFormat=application/json
-							service : 'CSW',
-							request : 'GetRecordById',
-							version : '2.0.2',
-							id : 
+						url: CCH.config.contextPath + '/csw/',
+						data: {
+							service: 'CSW',
+							request: 'GetRecordById',
+							version: '2.0.2',
+							id: id,
+							outputFormat: 'application/json'
+						},
+						success: function(data, textStatus, jqXHR) {
+							var getItemsByName = function(data, name) {
+								return data.children[0].children.findAll(function(item) {
+									return item.tag.split(':')[1].toLowerCase() === item.toLowerCase();
+								});
+							}
+//							var subjects
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+							var b = 2;
 						}
 					})
 				}
 			});
 		</script>
-    </body>
+	</body>
 </html>

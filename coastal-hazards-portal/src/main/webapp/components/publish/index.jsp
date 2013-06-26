@@ -137,7 +137,7 @@
 			<jsp:param name="relPath" value="../../" />
 			<jsp:param name="footer-class" value="" />
 			<jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
-			<jsp:param name="contact-info" value="<a href='mailto:jread@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Jordan Read</a>" />
+			<jsp:param name="contact-info" value="<a href='mailto:jread@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Site Administrator</a>" />
 		</jsp:include>
 		<script type="text/javascript">
 			var contextPath = '<%=request.getContextPath()%>';

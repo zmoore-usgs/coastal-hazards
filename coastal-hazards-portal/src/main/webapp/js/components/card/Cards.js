@@ -25,8 +25,8 @@ CCH.Objects.Cards = function(args) {
 			});
 
 			var card = new CCH.Objects.Card({
-				item: item,
-				size: me.currentApplicationSize
+				'item': item,
+				'size': me.currentApplicationSize
 			});
 
 			$(card).on({
