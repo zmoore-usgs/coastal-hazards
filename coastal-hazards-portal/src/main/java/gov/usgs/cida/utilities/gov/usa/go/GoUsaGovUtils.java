@@ -26,7 +26,7 @@ public class GoUsaGovUtils {
 	private static String usagovEndpoint = null;
 	private static String login = null;
 	private static String apiKey = null;
-	private static DynamicReadOnlyProperties props = null;
+	private static final DynamicReadOnlyProperties props;
 	private static final String loginParam = "coastal-hazards.go.usa.gov.login";
 	private static final String apiKeyParam = "coastal-hazards.go.usa.gov.apikey";
 	private static final String endpointyParam = "coastal-hazards.go.usa.gov.endpoint";
