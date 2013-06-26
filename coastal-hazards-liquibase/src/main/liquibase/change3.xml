@@ -19,16 +19,20 @@
             tableName="session"/>
     </changeSet>
     <changeSet author="jlucido" id="1372109304375-4">
-        <dropTable cascadeConstraints="true"
-            schemaName="public"
-            tableName="popularity"/>
+        <dropView schemaName="public"
+            viewName="ranking"/>
     </changeSet>
     <changeSet author="jlucido" id="1372109304375-5">
         <dropTable cascadeConstraints="true"
             schemaName="public"
+            tableName="popularity"/>
+    </changeSet>
+    <changeSet author="jlucido" id="1372109304375-6">
+        <dropTable cascadeConstraints="true"
+            schemaName="public"
             tableName="authorized_users"/>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-6">
+    <changeSet author="jiwalker" id="1372109304375-7">
         <createTable tableName="session_item">
             <column name="session_id" type="VARCHAR(40)">
                 <constraints nullable="false"/>
@@ -38,7 +42,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-7">
+    <changeSet author="jiwalker" id="1372109304375-8">
         <createTable tableName="summary">
             <column name="id" type="INT4">
                 <constraints nullable="false"/>
@@ -48,7 +52,7 @@
             <column name="tiny" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-8">
+    <changeSet author="jiwalker" id="1372109304375-9">
         <createTable tableName="authorized_users">
             <column name="id" type="INT8">
                 <constraints nullable="false"/>
@@ -57,7 +61,7 @@
             <column name="name" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-9">
+    <changeSet author="jiwalker" id="1372109304375-10">
         <createTable tableName="session_table">
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -68,7 +72,7 @@
             <column name="scale" type="FLOAT8"/>
         </createTable>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-10">
+    <changeSet author="jiwalker" id="1372109304375-11">
         <createTable tableName="activity">
             <column name="id" type="INT8">
                 <constraints nullable="false"/>
@@ -78,7 +82,7 @@
             <column name="type" type="INT4"/>
         </createTable>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-11">
+    <changeSet author="jiwalker" id="1372109304375-12">
         <createTable tableName="item">
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -94,28 +98,28 @@
             <column name="rank_id" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-12">
+    <changeSet author="jiwalker" id="1372109304375-13">
         <addPrimaryKey columnNames="id" constraintName="authorized_users_pkey" tableName="authorized_users"/>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-13">
+    <changeSet author="jiwalker" id="1372109304375-14">
         <addPrimaryKey columnNames="id" constraintName="activity_pkey" tableName="activity"/>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-14">
+    <changeSet author="jiwalker" id="1372109304375-15">
         <addPrimaryKey columnNames="id" constraintName="item_pkey" tableName="item"/>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-15">
+    <changeSet author="jiwalker" id="1372109304375-16">
         <addPrimaryKey columnNames="id" constraintName="session_table_pkey" tableName="session_table"/>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-16">
+    <changeSet author="jiwalker" id="1372109304375-17">
         <addPrimaryKey columnNames="id" constraintName="summary_pkey" tableName="summary"/>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-17">
+    <changeSet author="jiwalker" id="1372109304375-18">
         <addForeignKeyConstraint baseColumnNames="summary_id" baseTableName="item" constraintName="fk_q73aomo0x4nf4hyaqsy11jcwh" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="summary"/>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-18">
+    <changeSet author="jiwalker" id="1372109304375-19">
         <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="session_item" constraintName="fk_i1wo4o1lv7x8ijsukjrk4a049" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item"/>
     </changeSet>
-    <changeSet author="jiwalker" id="1372109304375-19">
+    <changeSet author="jiwalker" id="1372109304375-20">
         <createView viewName="ranking" replaceIfExists="true">SELECT overall_ranking.id, overall_ranking.total_score FROM (SELECT score_by_id_and_pop_type.id, sum(score_by_id_and_pop_type.activity_type_score) AS total_score FROM (SELECT id_days.id, id_days.type, CASE WHEN (id_days.type = 0) THEN LEAST(sum((((id_days.life_span)::double precision - id_days.days_ago) * (id_days.multiplier)::double precision)), (1000)::double precision) WHEN (id_days.type = 1) THEN LEAST(sum((((id_days.life_span)::double precision - id_days.days_ago) * (id_days.multiplier)::double precision)), (1000)::double precision) WHEN (id_days.type = 2) THEN LEAST(sum((((id_days.life_span)::double precision - id_days.days_ago) * (id_days.multiplier)::double precision)), (800)::double precision) WHEN (id_days.type = 3) THEN LEAST(sum((((id_days.life_span)::double precision - id_days.days_ago) * (id_days.multiplier)::double precision)), (1200)::double precision) WHEN (id_days.type = 4) THEN LEAST(sum((((id_days.life_span)::double precision - id_days.days_ago) * (id_days.multiplier)::double precision)), (500)::double precision) WHEN (id_days.type = 5) THEN (0)::double precision ELSE NULL::double precision END AS activity_type_score FROM (SELECT activity.itemid AS id, (date_part('epoch'::text, (now() - (activity.activity_timestamp)::timestamp with time zone)) / (86400)::double precision) AS days_ago, activity.type, CASE WHEN (activity.type = 0) THEN 1 WHEN (activity.type = 1) THEN 2 WHEN (activity.type = 2) THEN 75 WHEN (activity.type = 3) THEN 100 WHEN (activity.type = 4) THEN 50 WHEN (activity.type = 5) THEN 0 ELSE NULL::integer END AS multiplier, CASE WHEN (activity.type = 0) THEN 7 WHEN (activity.type = 1) THEN 10 WHEN (activity.type = 2) THEN 5 WHEN (activity.type = 3) THEN 14 WHEN (activity.type = 4) THEN 14 WHEN (activity.type = 5) THEN 0 ELSE NULL::integer END AS life_span FROM activity WHERE ((date_part('epoch'::text, (now() - (activity.activity_timestamp)::timestamp with time zone)) / (86400)::double precision) &lt;= (14)::double precision)) id_days WHERE (((((((id_days.type = 0) AND (id_days.days_ago &lt;= (id_days.life_span)::double precision)) OR ((id_days.type = 1) AND (id_days.days_ago &lt;= (id_days.life_span)::double precision))) OR ((id_days.type = 2) AND (id_days.days_ago &lt;= (id_days.life_span)::double precision))) OR ((id_days.type = 3) AND (id_days.days_ago &lt;= (id_days.life_span)::double precision))) OR ((id_days.type = 4) AND (id_days.days_ago &lt;= (id_days.life_span)::double precision))) OR (id_days.type = 5)) GROUP BY id_days.id, id_days.type) score_by_id_and_pop_type GROUP BY score_by_id_and_pop_type.id) overall_ranking ORDER BY overall_ranking.total_score DESC;</createView>
     </changeSet>
 </databaseChangeLog>
