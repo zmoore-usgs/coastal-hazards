@@ -18,6 +18,18 @@
 		</init-param>
 	</servlet>
 	<servlet>
+		<servlet-name>PyCSWServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+		<init-param>
+			<param-name>forward-url-param</param-name>
+			<param-value>coastal-hazards.csw.endpoint</param-value>
+		</init-param>
+		<init-param>
+			<param-name>readTimeout</param-name>
+			<param-value>300000</param-value>
+		</init-param>
+	</servlet>
+	<servlet>
 		<servlet-name>ExternalGeoServerServlet</servlet-name>
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
@@ -58,6 +70,10 @@
 		<servlet-class>gov.usgs.cida.coastalhazards.oid.OpenIDConsumerService</servlet-class>
 	</servlet>
 	<!-- MAPPING -->
+	<servlet-mapping>
+		<servlet-name>PyCSWServlet</servlet-name>
+		<url-pattern>/csw/*</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>GeoServerServlet</servlet-name>
 		<url-pattern>/geoserver/*</url-pattern>

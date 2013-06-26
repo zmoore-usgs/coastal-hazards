@@ -1,7 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
-<%@page import="org.slf4j.Logger"%>
-<%@page import="org.slf4j.LoggerFactory"%>
 
 <!DOCTYPE html>
 
@@ -11,7 +9,7 @@
 		try {
 			props = props.addJNDIContexts(new String[0]);
 		} catch (Exception e) {
-			LoggerFactory.getLogger("index.jsp").error("Could not find JNDI - Application will probably not function correctly");
+			System.out.println("Could not find JNDI - Application will probably not function correctly");
 		}
 	}
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
@@ -57,12 +55,12 @@
             <div id="application-container" class="container-fluid">
 
                 <div id="header-row" class="row-fluid">
-                <jsp:include page="template/USGSHeader.jsp">
-                    <jsp:param name="relPath" value="" />
-                    <jsp:param name="header-class" value="visible-desktop hidden-phone hidden-tablet" />
-                    <jsp:param name="site-title" value="USGS Coastal Hazards Portal" />
-                </jsp:include>
-                <jsp:include page="components/app-navbar.jsp"></jsp:include>
+				<jsp:include page="template/USGSHeader.jsp">
+					<jsp:param name="relPath" value="" />
+					<jsp:param name="header-class" value="visible-desktop hidden-phone hidden-tablet" />
+					<jsp:param name="site-title" value="USGS Coastal Hazards Portal" />
+				</jsp:include>
+				<jsp:include page="components/app-navbar.jsp"></jsp:include>
                 </div>
                 <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
                 <div id="content-row" class="row-fluid">
@@ -73,13 +71,13 @@
                 </div>	
 
                 <div  id="footer-row"  class="row-fluid">
-                <jsp:include page="template/USGSFooter.jsp">
-                    <jsp:param name="relPath" value="" />
-                    <jsp:param name="footer-class" value="" />
-                    <jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
-                    <jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Jordan Read</a>" />
-                </jsp:include>
-            </div>
+				<jsp:include page="template/USGSFooter.jsp">
+					<jsp:param name="relPath" value="" />
+					<jsp:param name="footer-class" value="" />
+					<jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
+					<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Jordan Read</a>" />
+				</jsp:include>
+			</div>
         </div>
 		<span id="map-search-container">
 			<form class="app-navbar-search-form navbar-search" action="javascript:void(0);">
