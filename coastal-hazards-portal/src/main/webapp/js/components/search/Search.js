@@ -11,14 +11,14 @@ CCH.Objects.Search = function(args) {
 	me.popularityInput = args.popularityInput;
 	me.popularityRange = args.popularityRange;
 	me.searchContainer = args.searchContainer;
-	me.slider = args.slider;
 	me.submitButton = args.submitButton;
 	me.keywordInput = args.keywordInput;
 	me.themeInput = args.themeInput;
 	me.itemSearchModalWindow = args.itemSearchModalWindow;
-	
+	me.popularityCb = args.popularityCb;
+
 	return $.extend(me, {
-		init : function() {
+		init: function() {
 			me.bindSearchInput();
 			me.bindSearchModalButton();
 			me.itemSearchModalWindow.css('display', 'none');
@@ -61,6 +61,15 @@ CCH.Objects.Search = function(args) {
 				});
 			});
 		},
+		transformBBOX3857to4326: function(extent) {
+			return extent.transform(new OpenLayers.Projection('EPSG:3857'), new OpenLayers.Projection('EPSG:4326'));
+		},
+		updateSearchBBOX: function(extent) {
+			me.north.html(extent.top.toFixed(4));
+			me.south.html(extent.bottom.toFixed(4));
+			me.west.html(extent.left.toFixed(4));
+			me.east.html(extent.right.toFixed(4));
+		},
 		bindSearchModalButton: function() {
 			var miniMap = new OpenLayers.Map('item-search-map', {
 				projection: "EPSG:900913",
@@ -78,18 +87,15 @@ CCH.Objects.Search = function(args) {
 			));
 
 			miniMap.zoomToMaxExtent();
-			me.north.html(miniMap.getExtent().top);
-			me.south.html(miniMap.getExtent().bottom);
-			me.west.html(miniMap.getExtent().left);
-			me.east.html(miniMap.getExtent().right);
+			var extent = me.transformBBOX3857to4326(miniMap.getExtent());
+			me.updateSearchBBOX(extent);
+
 
 			miniMap.events.on({
 				'moveend': function(evt) {
 					var map = evt.object;
-					me.north.html(map.getExtent().top);
-					me.south.html(map.getExtent().bottom);
-					me.west.html(map.getExtent().left);
-					me.east.html(map.getExtent().right);
+					var extent = me.transformBBOX3857to4326(map.getExtent());
+					me.updateSearchBBOX(extent);
 				}
 			});
 
@@ -100,17 +106,6 @@ CCH.Objects.Search = function(args) {
 					});
 					var lowestPopularityScore = popularityScores.min();
 					var highestPopularityScore = popularityScores.max();
-					me.slider.slider({
-						range: "min",
-						value: highestPopularityScore,
-						min: lowestPopularityScore,
-						max: highestPopularityScore,
-						slide: function(event, ui) {
-							me.popularityInput.html(ui.value);
-						}
-					});
-
-					me.popularityInput.html(me.popularityRange.slider("value"));
 					me.modalContainer.modal('show');
 				}
 			});
@@ -122,7 +117,7 @@ CCH.Objects.Search = function(args) {
 						'bottom': me.south.html(),
 						'left': me.west.html(),
 						'right': me.east.html(),
-						'popularity': me.popularityInput.html(),
+						'popularity': me.popularityCb.is(':checked'),
 						'keywords': me.keywordInput.html(),
 						'themes': me.themeInput.find('option:selected').toArray().map(function(option) {
 							return option.value;

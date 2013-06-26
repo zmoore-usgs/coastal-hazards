@@ -23,13 +23,11 @@ $(document).ready(function() {
 			south: $('#item-search-map-input-south'),
 			east: $('#item-search-map-input-east'),
 			west: $('#item-search-map-input-west'),
-			popularityInput: $("#item-search-popularity-input"),
-			popularityRange: $("#slider-popularity-range"),
 			searchContainer: $('#app-navbar-item-search-container'),
-			slider: $("#slider-popularity-range"),
 			submitButton: $('#item-search-submit'),
 			keywordInput: $('#item-search-keyword-input'),
-			themeInput: $('#item-search-theme-input')
+			themeInput: $('#item-search-theme-input'),
+			popularityCb : $('#popularity-sort-checkbox')
 		}).init();
 
 		splashUpdate("Initializing UI...");

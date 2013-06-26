@@ -22,11 +22,9 @@ CCH.Objects.Card = function(args) {
 			me.container = $('<div />').addClass('description-container container-fluid');
 			var titleRow = $('<div />').addClass('description-title-row row-fluid');
 			var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
-			me.pinButton = $('<button />')
-					.addClass('btn  span1')
-					.attr('type', 'button')
+			me.pinButton = $('<div />')
 					.append($('<i />')
-					.addClass('slide-menu-icon-zoom-in icon-eye-open slide-button muted'))
+					.addClass('slide-menu-icon icon-eye-open slide-button muted pull-right'))
 					.on({
 				'mouseover': function(evt) {
 					$(this).find('i').removeClass('muted');
@@ -49,7 +47,7 @@ CCH.Objects.Card = function(args) {
 
 			var titleColumn = $('<span />').addClass('description-title span10').html(me.name);
 
-			titleRow.append(me.pinButton, titleColumn);
+			titleRow.append(titleColumn, me.pinButton);
 
 			descriptionRow.append($('<p />').addClass('slide-vertical-description').html(me.summary.medium));
 

@@ -44,8 +44,6 @@
         </jsp:include>
 		<script type="text/javascript">var CCH = {'Objects': {}};</script>
         <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
-        <script type="text/javascript" src="webjars/jquery-ui/1.10.2/ui/minified/jquery-ui.min.js"></script>
-        <link type="text/css" rel="stylesheet" href="webjars/jquery-ui/1.10.2/themes/base/minified/jquery-ui.min.css" />
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? "" : ".min"%>.css" />
         <script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
@@ -75,7 +73,7 @@
 					<jsp:param name="relPath" value="" />
 					<jsp:param name="footer-class" value="" />
 					<jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
-					<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Jordan Read</a>" />
+					<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Site Administrator</a>" />
 				</jsp:include>
 			</div>
         </div>
