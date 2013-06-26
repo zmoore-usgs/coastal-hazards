@@ -19,5 +19,7 @@ Collate:
 Depends:
     R (>= 2.15.0)
 Imports:
-    XML
+    XML,
 	rjson
+LazyLoad: yes
+LazyData: yes
