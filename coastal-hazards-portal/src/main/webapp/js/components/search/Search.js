@@ -11,11 +11,11 @@ CCH.Objects.Search = function(args) {
 	me.popularityInput = args.popularityInput;
 	me.popularityRange = args.popularityRange;
 	me.searchContainer = args.searchContainer;
-	me.slider = args.slider;
 	me.submitButton = args.submitButton;
 	me.keywordInput = args.keywordInput;
 	me.themeInput = args.themeInput;
 	me.itemSearchModalWindow = args.itemSearchModalWindow;
+	me.popularityCb = args.popularityCb;
 
 	return $.extend(me, {
 		init: function() {
@@ -106,17 +106,6 @@ CCH.Objects.Search = function(args) {
 					});
 					var lowestPopularityScore = popularityScores.min();
 					var highestPopularityScore = popularityScores.max();
-					me.slider.slider({
-						range: "min",
-						value: highestPopularityScore,
-						min: lowestPopularityScore,
-						max: highestPopularityScore,
-						slide: function(event, ui) {
-							me.popularityInput.html(ui.value);
-						}
-					});
-
-					me.popularityInput.html(me.popularityRange.slider("value"));
 					me.modalContainer.modal('show');
 				}
 			});
@@ -128,7 +117,7 @@ CCH.Objects.Search = function(args) {
 						'bottom': me.south.html(),
 						'left': me.west.html(),
 						'right': me.east.html(),
-						'popularity': me.popularityInput.html(),
+						'popularity': me.popularityCb.is(':checked'),
 						'keywords': me.keywordInput.html(),
 						'themes': me.themeInput.find('option:selected').toArray().map(function(option) {
 							return option.value;
