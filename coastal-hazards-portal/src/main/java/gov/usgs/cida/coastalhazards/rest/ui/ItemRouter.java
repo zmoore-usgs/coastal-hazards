@@ -12,15 +12,15 @@ import javax.ws.rs.core.Response;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Path("/info/item")
-public class InfoRouter {
+@Path("/item")
+public class ItemRouter {
     
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("{id}")
     public Response useInfoJsp(@PathParam("id") String id) {
-        Identifier identifier = new Identifier(id, Identifier.IdentifierType.INFO);
-        return Response.ok(new Viewable("/info.jsp", identifier)).build();
+        Identifier identifier = new Identifier(id, Identifier.IdentifierType.ITEM);
+        return Response.ok(new Viewable("/index.jsp", identifier)).build();
     }
     
     @GET
