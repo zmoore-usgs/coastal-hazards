@@ -46,7 +46,6 @@ public class MetadataResource {
 	}
 
 	@POST
-	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response acceptMetadata(@Context HttpServletRequest req) throws IOException {
 		int maxFileSize = FILE_UPLOAD_MAX_SIZE;
