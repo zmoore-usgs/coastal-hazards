@@ -5,9 +5,7 @@
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-	<!-- Excluding these for now because they don't work, but change3 is in theory based on them
-    <include file="change1.xml" />
-	<include file="change2.xml" />
-    -->
-    <include file="change3.xml" />
+    <include file="change1.xml" relativeToChangelogFile="true"/>
+    <include file="change2.xml" relativeToChangelogFile="true"/>
+    <include file="change3.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
