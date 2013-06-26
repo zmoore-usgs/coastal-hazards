@@ -384,7 +384,7 @@
                     <jsp:param name="relPath" value="" />
                     <jsp:param name="header-class" value="" />
                     <jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
-                    <jsp:param name="contact-info" value="<a href='mailto:DSAS_Help@usgs.gov?Subject=DSASWeb%20Feedback'>Jordan Read</a>" />
+                    <jsp:param name="contact-info" value="<a href='mailto:DSAS_Help@usgs.gov?Subject=DSASWeb%20Feedback'>Site Administrator</a>" />
                 </jsp:include>
                 <p id="footer-page-version-info">Application Version: <%= props.get("application.version") %></p>
             </div>
