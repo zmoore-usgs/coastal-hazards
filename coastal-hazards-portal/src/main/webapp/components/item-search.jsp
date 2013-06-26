@@ -49,10 +49,9 @@
 			</div>
 
 			<div id='item-search-row-popularity row-fluid'>
-				<label for='item-search-popularity-input'>Search by popularity (0 to <span id='item-search-popularity-input' style="border: 0; font-weight: bold;"></span>):</label>
-				
-				<div id="slider-popularity-range"></div>
+				<label id="popularity-sort-label" for='popularity-sort'>Sort by popularity?</label><input id="popularity-sort-checkbox" type="checkbox" name="popularity-sort"/>
 			</div>
+			
 		</div>
 	</div>
 	<div class="modal-footer">
