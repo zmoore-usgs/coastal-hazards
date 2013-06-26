@@ -24,6 +24,9 @@ CCH.Objects.UI = function(args) {
 		init: function() {
 			me.bindNavbarPinMenu();
 			me.bindWindowResize();
+			
+			// Header fix
+			$('#ccsa-area').find('br').first().remove();
 
 			var currWidth = me.previousWidth;
 			if (currWidth <= me.magicResizeNumber) {

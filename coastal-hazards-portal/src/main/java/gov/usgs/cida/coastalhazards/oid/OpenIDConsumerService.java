@@ -1,5 +1,7 @@
 package gov.usgs.cida.coastalhazards.oid;
 
+import gov.usgs.cida.coastalhazards.jpa.UserManager;
+import gov.usgs.cida.coastalhazards.model.AuthorizedUser;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -277,7 +279,13 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 				oidInfoMap.put("oid-email", response.getParameter("openid.ext1.value.email").getValue());
 				httpReq.getSession().setAttribute("oid-info", oidInfoMap);
 
-				if (true/* Validate user against back end */) {
+                AuthorizedUser thisUser = new AuthorizedUser();
+                thisUser.setName(oidInfoMap.get("oid-firstname") + " " + oidInfoMap.get("oid-lastname"));
+                thisUser.setEmail(oidInfoMap.get("oid-email"));
+                
+                UserManager userManager = new UserManager();
+                List<AuthorizedUser> users = userManager.loadAll();
+				if (users.contains(thisUser)) {
 					httpReq.getSession().setAttribute("sessionValid", true);
 				} else {
 					httpReq.getSession().setAttribute("sessionValid", false);

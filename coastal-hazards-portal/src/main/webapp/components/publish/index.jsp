@@ -34,6 +34,11 @@
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
         <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="<%=request.getContextPath()%>/webjars/openlayers/2.12/OpenLayers.js"></script>
+		<script type="text/javascript" src="<%=request.getContextPath()%>/webjars/sugar/1.3.8/sugar.min.js"></script>
+		<jsp:include page="../../js/jsuri/jsuri.jsp">
+            <jsp:param name="relPath" value="../../" />
+		</jsp:include>
 		<style type="text/css">
 			.container-fluid {
 				margin-top: 10px;
@@ -41,7 +46,15 @@
 			}
 
 			.publish-services-input {
-				width: 60%;
+				width: 70%;
+			}
+			
+			.publish-container-actions {
+				margin-left : 15px;
+			}
+			
+			.name-span {
+				width: auto !important;
 			}
 		</style>
     </head>
@@ -63,60 +76,60 @@
 				<a href="">Go to Coastal Hazards Portal?</a>
 			</c:when>
 			<c:otherwise>
-				<div class="container-fluid span7 offset5">
-					<div id="publish-user-container-row" class="row-fluid">
-						<div class="well well-small">
-							User: 
-							<span class="publish-user-container" id="publish-user-name-first">${pageContext.session.getAttribute("oid-info").get("oid-firstname")}</span>&nbsp;
-							<span class="publish-user-container" id="publish-user-name-last">${pageContext.session.getAttribute("oid-info").get("oid-lastname")}</span>&nbsp;
-							( <span class="publish-user-container" id="publish-user-name-email">${pageContext.session.getAttribute("oid-info").get("oid-email")}</span> )
+				<div class="container-fluid">
+					<div class="row-fluid">
+						<div class="well well-small span6">
+							<div id="publish-user-container-row">
+								<div class="well well-small">
+									User: 
+									<span class="publish-user-container" id="publish-user-name-first">${pageContext.session.getAttribute("oid-info").get("oid-firstname")}</span>&nbsp;
+									<span class="publish-user-container" id="publish-user-name-last">${pageContext.session.getAttribute("oid-info").get("oid-lastname")}</span>&nbsp;
+									( <span class="publish-user-container" id="publish-user-name-email">${pageContext.session.getAttribute("oid-info").get("oid-email")}</span> )
+								</div>
+							</div>
+							<div id="publish-type-container-row" class="row-fluid">
+								<div class="publish-metadata-container-row row-fluid">
+									<div class="well well-small">
+										<span class="publish-container-metadata">
+											Metadata&nbsp;&nbsp;<span id="publish-metadata-upload-button">Upload Metadata</span><span id="publish-metadata-validate"></span>
+										</span>
+									</div>
+								</div>
+								<div class="publish-services-container-row row-fluid">
+									<div class="well well-small">
+										<span id="publish-container-services-wfs">
+											WFS: <input type="text" id="publish-services-wfs"class="publish-services-input"/><span id="publish-services-wfs-validate"></span>
+										</span>
+										<br />
+										<span id="publish-container-services-wms">
+											WMS: <input type="text" id="publish-services-wms"class="publish-services-input"/><span id="publish-services-wms-validate"></span>
+										</span>
+										<br />
+										<span id="publish-container-services-types">
+											Types: <select type="text" id="publish-services-types" class="publish-types-input"></select>
+										</span>
+										<span id="publish-container-services-layers">
+											Layers: <select type="text" id="publish-services-layers" class="publish-layers-input"></select>
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="well well-small span6">
+							<div class="well well-small">
+								<div class="row-fluid">
+									<button id="publish-publish-button" class="btn btn-primary disabled pull-right">Publish</button>
+								</div>
+								<div id="attribute-checkbox-list-div" class="row-fluid">
+									<label>Attributes</label>
+									<ul id="attribute-checkbox-list"></ul>
+								</div>
+							</div>
 						</div>
 					</div>
-					<div id="publish-type-container-row" class="row-fluid">
-						<div class="well well-small">
-							<span id="publish-container-type-type">
-								Type:&nbsp;&nbsp;
-								<select id="publish-select-type-type">
-									<option value="vulnerability">Vulnerability</option>
-									<option value="storms">Storms</option>
-								</select>
-							</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-							Subtype: &nbsp;&nbsp;
-							<span id="publish-container-type-subtype">
-								<select id="publish-select-type-subtype">
-									<option value="pcoi">PCOI</option>
-									<option value="cvi">CVI</option>
-								</select>
-							</span>
-						</div>
-					</div>
-					<div id="publish-services-container-row" class="row-fluid">
-						<div class="well well-small">
-							<span id="publish-container-services-wms">
-								WMS&nbsp;&nbsp;
-								<input type="text" id="publish-services-wms" class="publish-services-input"/><span id="publish-services-wms-validate"></span>
-							</span>
-							<br />
-							<span id="publish-container-services-wfs">
-								WFS&nbsp;&nbsp;
-								<input type="text" id="publish-services-wfs" class="publish-services-input"/><span id="publish-services-wfs-validate"></span>
-							</span>
-						</div>
-					</div>
-					<div id="publish-metadata-container-row" class="row-fluid">
-						<div class="well well-small">
-							<span id="publish-container-metadata">
-								Metadata&nbsp;&nbsp;<span id="publish-metadata-upload-button">Upload Metadata</span><span id="publish-metadata-validate"></span>
-							</span>
-						</div>
-					</div>
-					<div id="publish-actions-container-row" class="row-fluid">
-						<div class="well well-small">
-							<span id="publish-container-actions">
-								<button id="publish-preview-button">Upload</button><button id="publish-submit-button">Submit</button>
-							</span>
-						</div>
-					</div>
+
+
 				</div>
 			</c:otherwise>
 		</c:choose>
@@ -127,123 +140,11 @@
 			<jsp:param name="contact-info" value="<a href='mailto:jread@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Jordan Read</a>" />
 		</jsp:include>
 		<script type="text/javascript">
-			$(document).ready(function() {
-				var entry = {
-					name: '',
-					metadata: '',
-					type: '',
-					wms: '',
-					wfs: '',
-					attr: ''
-				};
-				entry.name = $('#publish-user-name-first') + ' ' + $('#publish-user-name-last');
-
-				$('#publish-select-type-type').on('change', function(evt) {
-					var val = evt.target.value;
-					var subtypeSelect = $('#publish-select-type-subtype');
-					subtypeSelect.empty();
-					if (val === 'vulnerability') {
-						subtypeSelect.append(
-								$('<option />').attr('value', 'pcoi').html('PCOI'),
-								$('<option />').attr('value', 'cvi').html('CVI')
-								);
-					} else if (val === 'storms') {
-						subtypeSelect.append(
-								$('<option />').attr('value', 'real-time').html('REAL TIME'),
-								$('<option />').attr('value', 'past').html('PAST')
-								);
-					}
-				});
-
-				$('#publish-services-wms').on('change', function(evt) {
-					var value = evt.target.value;
-					// TODO- verify WMS
-					var valid = true;
-					if (valid) {
-						entry.wms = evt.target.value;
-						$('#publish-services-wms-validate')
-								.removeClass('invalid')
-								.addClass('valid')
-								.html('Valid');
-					} else {
-						entry.wms = '';
-						$('#publish-services-wms-validate')
-								.removeClass('valid')
-								.addClass('invalid')
-								.html('Invalid');
-					}
-				});
-
-				$('#publish-services-wfs').on('change', function(evt) {
-					var value = evt.target.value;
-					// TODO - verify WFS
-					var valid = true;
-					if (valid) {
-						entry.wfs = evt.target.value;
-						$('#publish-services-wfs-validate')
-								.removeClass('invalid')
-								.addClass('valid')
-								.html('Valid');
-					} else {
-						entry.wfs = '';
-						$('#publish-services-wfs-validate')
-								.removeClass('valid')
-								.addClass('invalid')
-								.html('Invalid');
-					}
-				});
-
-				var uploader = new qq.FineUploader({
-					element: $('#publish-metadata-upload-button')[0],
-					autoUpload: true,
-					paramsInBody: false,
-					forceMultipart: false,
-					request: {
-						endpoint: '<%=request.getContextPath()%>/data/metadata/'
-					},
-					validation: {
-						allowedExtensions: ['xml'],
-						sizeLimit: 15728640 // 200 kB = 200 * 1024 bytes
-					},
-					classes: {
-						success: 'alert alert-success',
-						fail: 'alert alert-error'
-					},
-					callbacks: {
-						onComplete: function(id, fileName, responseJSON) {
-							if (responseJSON.success) {
-								$.ajax({
-									endpoint: '<%=request.getContextPath()%>/data/metadata/validate/' + responseJSON.fid,
-									success: function(data, textStatus, jqXHR) {
-										entry.metadata = responseJSON.metadata;
-										$('#publish-metadata-validate').html('Valid');
-									},
-									error: function(data, textStatus, jqXHR) {
-										entry.metadata = '';
-										$('#publish-metadata-validate').html('Invalid');
-									}
-								});
-							} else {
-								entry.metadata = '';
-								$('#publish-metadata-validate').html('Invalid');
-							}
-						}
-					}
-				});
-
-				$('#publish-preview-button').on('click', function() {
-
-				});
-				$('#publish-submit-button').on('click', function() {
-					// Do Submit
-				});
-
-				$('#publish-select-type-type').val($('#publish-select-type-type option:first').val()).trigger('change');
-
-			});
+			var contextPath = '<%=request.getContextPath()%>';
 		</script>
+		<script type="text/javascript" src="publish.js"></script>
 		<jsp:include page="../../js/fineuploader/fineuploader.jsp">
 			<jsp:param name="relPath" value="../../" />
 		</jsp:include>
-    </body>
+	</body>
 </html>

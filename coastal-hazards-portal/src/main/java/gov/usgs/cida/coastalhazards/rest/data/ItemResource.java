@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.DefaultValue;
@@ -20,7 +21,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -94,6 +94,29 @@ public class ItemResource {
 		} else {
 			Map<String, Object> ok = new HashMap<String, Object>() {
 				private static final long serialVersionUID = 2398472L;
+
+				{
+					put("id", id);
+				}
+			};
+			response = Response.ok(new Gson().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+		}
+		return response;
+	}
+
+	@POST
+	@Path("/preview")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response publishPreviewCard(String content, @Context HttpServletRequest req) {
+		final String id = itemManager.savePreview(content);
+		Response response;
+		if (null == id) {
+			response = Response.status(Response.Status.BAD_REQUEST).build();
+		} else {
+			Map<String, String> ok = new HashMap<String, String>() {
+				private static final long serialVersionUID = 23918472L;
+
 				{
 					put("id", id);
 				}

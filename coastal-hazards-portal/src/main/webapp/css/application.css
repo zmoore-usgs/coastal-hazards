@@ -1,5 +1,9 @@
 /* ---------------------------------------------------------------------- UI */
 /* Because of a conflict between twitter bootstrap and openlayers */
+#ccsa-area {
+	padding-top: 5px;
+}
+
 img { 
     max-width: none !important; 
 }
@@ -55,6 +59,10 @@ img {
 	background-size: auto 80%;
 	background-repeat: no-repeat;
 	background-position: right top;
+}
+
+.slide-menu-icon {
+	font-size: 2em;
 }
 
 .slider-slide-active .description-container-storms {

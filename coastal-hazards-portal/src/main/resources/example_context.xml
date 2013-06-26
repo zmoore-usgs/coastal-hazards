@@ -4,6 +4,9 @@
 <!-- URL Forwarding Configuration -->
 <Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/coastal-hazards-geoserver" />
 <Environment name="coastal-hazards.stpetearcserver.endpoint" type="java.lang.String" value="http://olga.er.usgs.gov/stpgis/services" />
+<Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="http://coastalmap.marine.usgs.gov/cmgp" />
+<Environment name="coastal-hazards.cidags.endpoint" type="java.lang.String" value="http://cida.usgs.gov/DSASweb/geoserver" />
+<Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="http://cida.usgs.gov/qa/coastalhazards/csw" />
 <Environment name="coastal-hazards.geocoding.endpoint" type="java.lang.String" value="http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find" />
 
 <!-- Coastal hazards interacts with go.usa.gov for url minification -->
