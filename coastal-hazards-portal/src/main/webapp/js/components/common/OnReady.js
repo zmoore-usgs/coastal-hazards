@@ -33,6 +33,7 @@ $(document).ready(function() {
 			keywordInput: $('#item-search-keyword-input'),
 			themeInput: $('#item-search-theme-input'),
 			popularityCb : $('#popularity-sort-checkbox'),
+			searchQuery : $('.search-query')
 			
 		}).init();
 
