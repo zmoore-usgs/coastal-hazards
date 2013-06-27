@@ -16,7 +16,8 @@ CCH.Objects.Search = function(args) {
 	me.themeInput = args.themeInput;
 	me.itemSearchModalWindow = args.itemSearchModalWindow;
 	me.popularityCb = args.popularityCb;
-
+	me.searchQuery = args.searchQuery;
+	
 	return $.extend(me, {
 		init: function() {
 			me.bindSearchInput();
@@ -25,7 +26,7 @@ CCH.Objects.Search = function(args) {
 		},
 		bindSearchInput: function() {
 			me.searchbar.submit(function(evt) {
-				var query = $('.search-query').val();
+				var query = me.searchQuery.val();
 				if (query) {
 					$.ajax({
 						type: 'GET',

@@ -79,7 +79,7 @@
         </div>
 		<span id="map-search-container">
 			<form class="map-search-form map-search" action="javascript:void(0);">
-				<i id="map-search-icon" class="icon-search"></i><input id="map-search-input" type="text" class="search-query" placeholder="Search">
+				<input id="map-search-input" type="text" class="search-query" placeholder="Search...">
 			</form>
 		</span>
 

@@ -11,7 +11,12 @@ $(document).ready(function() {
 
 	var initApplication = function() {
 		splashUpdate("Initializing Card Subsystem...");
-		CCH.cards = new CCH.Objects.Cards().init();
+		CCH.cards = new CCH.Objects.Cards({
+			navPinControlCount : $('#app-navbar-pin-control-pincount'),
+			navPinControlButton : $('#app-navbar-pin-control-button'),
+			navPinControlDropdownButton : $('#app-navbar-pin-control-dropdown-button'),
+			descrContainers : $('.description-container')
+		}).init();
 
 		splashUpdate("Initializing Search Subsystem...");
 		CCH.search = new CCH.Objects.Search({
@@ -27,7 +32,9 @@ $(document).ready(function() {
 			submitButton: $('#item-search-submit'),
 			keywordInput: $('#item-search-keyword-input'),
 			themeInput: $('#item-search-theme-input'),
-			popularityCb : $('#popularity-sort-checkbox')
+			popularityCb : $('#popularity-sort-checkbox'),
+			searchQuery : $('.search-query')
+			
 		}).init();
 
 		splashUpdate("Initializing UI...");
@@ -42,12 +49,15 @@ $(document).ready(function() {
 			navbarDropdownIcon: $('#app-navbar-pin-control-icon'),
 			navbarClearMenuItem: $('#app-navbar-pin-control-clear'),
 			navbarShareMenuListItem: $('#app-navbar-pin-control-share-li'),
-			mapSearchContainer: $('#map-search-container')
+			mapSearchContainer: $('#map-search-container'),
+			ccsArea : $('#ccsa-area')
 		}).init();
 
 		splashUpdate("Initializing Map...");
 		CCH.map = new CCH.Objects.Map({
-			mapDiv: 'map'
+			mapDiv: 'map',
+			maximizeDiv : $('#OpenLayers_Control_MaximizeDiv_innerImage'),
+			minimizeDiv : $('#OpenLayers_Control_MinimizeDiv_innerImage')
 		}).init();
 
 		splashUpdate("Initializing OWS Services");

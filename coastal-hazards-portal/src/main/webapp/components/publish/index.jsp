@@ -29,8 +29,6 @@
             <jsp:param name="development" value="false" />
         </jsp:include>
         <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/jquery/2.0.0/jquery.min.js"></script>
-        <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/jquery-ui/1.10.2/ui/minified/jquery-ui.min.js"></script>
-        <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/jquery-ui/1.10.2/themes/base/minified/jquery-ui.min.css" />
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
         <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/js/bootstrap.min.js"></script>
@@ -67,13 +65,14 @@
 			<c:when test='${empty pageContext.session.getAttribute("oid-info")}'>
 				Could not find your log-in info. 
 				<br />
-				<a href="<%=request.getContextPath()%>/publish">Try again?</a>
+				<a href="<%=request.getContextPath()%>/publish">Try agai???n?</a>
 				<br />
 				<a href="<%=request.getContextPath()%>/">Go to Coastal Hazards Portal?</a>
 			</c:when>
 			<c:when test='${false}'>
 				You are not an authorized user. 
-				<a href="">Go to Coastal Hazards Portal?</a>
+				<br /><br />
+				<a href="">Go to Coastal Hazards Portal</a>
 			</c:when>
 			<c:otherwise>
 				<div class="container-fluid">
