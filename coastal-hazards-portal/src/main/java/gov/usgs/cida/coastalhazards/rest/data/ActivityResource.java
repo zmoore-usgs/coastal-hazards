@@ -4,7 +4,7 @@ import gov.usgs.cida.coastalhazards.jpa.ActivityManager;
 import gov.usgs.cida.coastalhazards.model.Activity;
 import gov.usgs.cida.coastalhazards.model.Activity.ActivityType;
 import java.util.Date;
-import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -23,7 +23,7 @@ public class ActivityResource {
         activityManager = new ActivityManager();
     }
 
-    @POST
+    @PUT
     @Path("/{type}/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response triggerItemHit(@PathParam("type") String type, @PathParam("id") String id) {
