@@ -37,21 +37,21 @@ CCH.Objects.Session = function(args) {
 				});
 			});
 
-			if (CCH.CONFIG.incomingSessionId) {
-				me.load({
-					sid: CCH.CONFIG.incomingSessionId,
-					callbacks: args.callbacks
-				});
-			} else {
-				$(window).trigger('cch.data.session.initialized', {
-					error: false,
-					loaded: false
-				});
-
-				args.callbacks.success.each(function(func) {
-					func();
-				});
-			}
+//			if (CCH.CONFIG.incomingSessionId) {
+//				me.load({
+//					sid: CCH.CONFIG.incomingSessionId,
+//					callbacks: args.callbacks
+//				});
+//			} else {
+//				$(window).trigger('cch.data.session.initialized', {
+//					error: false,
+//					loaded: false
+//				});
+//
+//				args.callbacks.success.each(function(func) {
+//					func();
+//				});
+//			}
 		},
 		toString: function() {
 			return JSON.stringify(me.session);
