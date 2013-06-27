@@ -27,8 +27,6 @@
             <jsp:param name="development" value="false" />
         </jsp:include>
         <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/jquery/2.0.0/jquery.min.js"></script>
-        <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/jquery-ui/1.10.2/ui/minified/jquery-ui.min.js"></script>
-        <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/jquery-ui/1.10.2/themes/base/minified/jquery-ui.min.css" />
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/css/infopage.css" />
@@ -50,7 +48,29 @@
 		</script>
     </head>
     <body>
+
 		<div id="application-container" class="container-fluid">
+
+			<div id="application-overlay">
+				<div id="application-overlay-content">
+					<div style="text-align: center">
+						<h1 id="application-overlay-title">
+							USGS Coastal Hazards Portal
+						</h1>
+						<div id="application-overlay-img">
+							<img id="application-overlay-banner" src="<%=request.getContextPath()%>/images/splash/splash.png" style="width:75%" />
+						</div>
+						<p>Maecenas eu placerat ante. Fusce ut neque justo, et aliquet enim. In hac habitasse platea dictumst. <br />
+							Nullam commodo neque erat, vitae facilisis erat. Cras at mauris ut tortor vestibulum fringilla vel sed metus. Donec interdum purus a justo feugiat rutrum. <br />
+							Sed ac neque ut neque dictum accumsan. Cras lacinia rutrum risus, id viverra metus dictum sit amet. </p>
+						<div style="text-align:center;">
+							<div id="splash-status-update">Loading Item...</div>
+							<img id="splash-spinner" src="<%=request.getContextPath()%>/images/spinner/spinner3.gif" />
+						</div>
+					</div>
+				</div>
+			</div>
+
 			<div id="header-row" class="row-fluid">
 				<jsp:include page="template/USGSHeader.jsp">
 					<jsp:param name="relPath" value="" />
@@ -81,7 +101,7 @@
 
 						<%-- Metadata Link --%>
 						<div id="metadata-link"></div>
-						
+
 						<%-- Application Link --%>
 						<div id="application-link"></div>
 
@@ -108,18 +128,23 @@
 					var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
 					$('#info-content').css('height', contentRowHeight + 'px');
 				});
-				$(window).resize();
+
 
 				$.ajax({
 					url: CCH.config.contextPath + '/data/item/' + CCH.config.itemId,
 					success: function(data, textStatus, jqXHR) {
 						CCH.config.data = data;
+						$(window).resize();
+
+						$('#application-overlay').fadeOut(2000, function() {
+							$('#application-overlay').remove();
+						});
 
 						var metadataLink = $('<a />').attr({
 							'href': CCH.config.data.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
 							'target': '_blank'
 						}).addClass('btn').html('View Metadata');
-						
+
 //						var applicationLink = $('<a />').attr({
 //							'href': CCH.config.contextPath + '/' + CCH.config.itemId,
 //							'target': '_blank'
@@ -128,9 +153,9 @@
 						$('#info-title').html(data.name);
 						$('#info-summary').html(data.summary.full);
 						$('#metadata-link').append(metadataLink);
-						
+
 //						$('#application-link').append(applicationLink);
-						
+
 
 						buildMap();
 					},
