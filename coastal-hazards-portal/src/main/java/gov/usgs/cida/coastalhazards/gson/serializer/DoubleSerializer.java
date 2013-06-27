@@ -6,7 +6,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 
 /**
  * GSON serializes doubles using Double.toString() which may produce scientific
