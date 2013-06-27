@@ -135,6 +135,11 @@
             <name>Hibernate Spatial repo</name>
             <url>http://www.hibernatespatial.org/repository</url>
         </repository>
+        <repository>
+            <id>n52-releases</id>
+            <name>52-north Releases</name>
+            <url>http://52north.org/maven/repo/releases/</url>
+        </repository>
 	</repositories>
 	
 	<pluginRepositories>
