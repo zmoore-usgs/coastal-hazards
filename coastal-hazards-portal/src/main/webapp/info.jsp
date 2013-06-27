@@ -128,6 +128,10 @@
 		</div>
 		<script type="text/javascript">
 			$(document).ready(function() {
+
+				// Header fix
+				$('#ccsa-area').find('br').first().remove();
+
 				$(window).resize(function() {
 					var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
 					$('#info-content').css('height', contentRowHeight + 'px');
@@ -175,97 +179,97 @@
 						url: CCH.config.contextPath + '/data/minifier/minify/' + url,
 						success: function(data, textStatus, jqXHR) {
 							var dataUrl;
-							<%-- 
-							go.usa.gov has an ... interesting ... API.
-							If there's an error, there's a data.response.statusCode
-							object. Otherwise, there's a data.response[0][0].status_code
-							object. This is not ideal but we roll with it. 
-							Oh, and the service will only shorten government URLs
-							Oh, and the service will not give consistent URL output
-							for consistent URL input
-							--%>
-							if (data.response.statusCode) {
-								dataUrl = url;
-							} else {
-								dataUrl = data.response.data.entry[0].short_url;
-							}
-							
-							$('#info-twitter-button').attr({
-								'data-text': 'Check out my pinned items on CCH!',
-								'data-url': dataUrl,
-								'data-counturl': dataUrl
-							});
-							
-							$.getScript('http://platform.twitter.com/widgets.js');
-						},
-						error: function(jqXHR, textStatus, errorThrown) {
+			<%-- 
+			go.usa.gov has an ... interesting ... API.
+			If there's an error, there's a data.response.statusCode
+			object. Otherwise, there's a data.response[0][0].status_code
+			object. This is not ideal but we roll with it. 
+			Oh, and the service will only shorten government URLs
+			Oh, and the service will not give consistent URL output
+			for consistent URL input
+			--%>
+												if (data.response.statusCode) {
+													dataUrl = url;
+												} else {
+													dataUrl = data.response.data.entry[0].short_url;
+												}
 
-						}
-					});
+												$('#info-twitter-button').attr({
+													'data-text': 'Check out my pinned items on CCH!',
+													'data-url': dataUrl,
+													'data-counturl': dataUrl
+												});
 
-				};
+												$.getScript('http://platform.twitter.com/widgets.js');
+											},
+											error: function(jqXHR, textStatus, errorThrown) {
 
-				var buildMap = function() {
-					CCH.config.map = new OpenLayers.Map('map', {
-						projection: CCH.config.projection,
-						displayProjection: new OpenLayers.Projection(CCH.config.projection)
-					});
+											}
+										});
 
-					CCH.config.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
-							"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/\${z}/\${y}/\${x}",
-							{
-								sphericalMercator: true,
-								isBaseLayer: true,
-								numZoomLevels: 20,
-								wrapDateLine: true
-							}
-					));
+									};
 
-					CCH.config.map.addLayer(
-							new OpenLayers.Layer.WMS(CCH.config.data.id,
-							CCH.config.data.wmsService.endpoint,
-							{
-								layers: CCH.config.data.wmsService.layers,
-								version: '1.3.0',
-								crs: 'EPSG:3857',
-								transparent: true
-							}, {
-						singleTile: true,
-						transparent: true,
-						isBaseLayer: false,
-						projection: 'EPSG:3857'
-					}));
+									var buildMap = function() {
+										CCH.config.map = new OpenLayers.Map('map', {
+											projection: CCH.config.projection,
+											displayProjection: new OpenLayers.Projection(CCH.config.projection)
+										});
 
-					var bounds = new OpenLayers.Bounds(CCH.config.data.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'))
-					CCH.config.map.zoomToExtent(bounds);
-				}
+										CCH.config.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
+												"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/\${z}/\${y}/\${x}",
+												{
+													sphericalMercator: true,
+													isBaseLayer: true,
+													numZoomLevels: 20,
+													wrapDateLine: true
+												}
+										));
 
-				var buildMetadata = function() {
-					var uri = new Uri(CCH.config.data.metadata);
-					var id = uri.getQueryParamValue('id');
-					$.ajax({
-						url: CCH.config.contextPath + '/csw/',
-						data: {
-							service: 'CSW',
-							request: 'GetRecordById',
-							version: '2.0.2',
-							id: id,
-							outputFormat: 'application/json'
-						},
-						success: function(data, textStatus, jqXHR) {
-							var getItemsByName = function(data, name) {
-								return data.children[0].children.findAll(function(item) {
-									return item.tag.split(':')[1].toLowerCase() === item.toLowerCase();
-								});
-							}
+										CCH.config.map.addLayer(
+												new OpenLayers.Layer.WMS(CCH.config.data.id,
+												CCH.config.data.wmsService.endpoint,
+												{
+													layers: CCH.config.data.wmsService.layers,
+													version: '1.3.0',
+													crs: 'EPSG:3857',
+													transparent: true
+												}, {
+											singleTile: true,
+											transparent: true,
+											isBaseLayer: false,
+											projection: 'EPSG:3857'
+										}));
+
+										var bounds = new OpenLayers.Bounds(CCH.config.data.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'))
+										CCH.config.map.zoomToExtent(bounds);
+									}
+
+									var buildMetadata = function() {
+										var uri = new Uri(CCH.config.data.metadata);
+										var id = uri.getQueryParamValue('id');
+										$.ajax({
+											url: CCH.config.contextPath + '/csw/',
+											data: {
+												service: 'CSW',
+												request: 'GetRecordById',
+												version: '2.0.2',
+												id: id,
+												outputFormat: 'application/json'
+											},
+											success: function(data, textStatus, jqXHR) {
+												var getItemsByName = function(data, name) {
+													return data.children[0].children.findAll(function(item) {
+														return item.tag.split(':')[1].toLowerCase() === item.toLowerCase();
+													});
+												}
 //							var subjects
-						},
-						error: function(jqXHR, textStatus, errorThrown) {
-							var b = 2;
-						}
-					})
-				}
-			});
+											},
+											error: function(jqXHR, textStatus, errorThrown) {
+												var b = 2;
+											}
+										})
+									}
+								});
 		</script>
 	</body>
 </html>
