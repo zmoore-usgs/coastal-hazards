@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
+import gov.usgs.cida.coastalhazards.model.Item;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -35,13 +36,10 @@ public class ItemResource {
 
 	@Context
 	private UriInfo context;
-	private static URL itemsUrl;
-	private static URL dictionaryUrl;
 	private Gson gson = new Gson();
 	private static ItemManager itemManager;
 
 	static {
-		itemsUrl = SummaryResource.class.getClassLoader().getResource("hotness.json");
 		itemManager = new ItemManager();
 	}
 
@@ -70,7 +68,7 @@ public class ItemResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchCards(
 			@DefaultValue("popularity") @QueryParam("sortBy") String sortBy,
-			@DefaultValue("10") @QueryParam("count") int count,
+			@DefaultValue("-1") @QueryParam("count") int count,
 			@DefaultValue("") @QueryParam("bbox") String bbox) {
 		// need to figure out how to search popularity and bbox yet
 		String jsonResult = itemManager.query();
@@ -108,7 +106,8 @@ public class ItemResource {
 	@Path("/preview")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response publishPreviewCard(String content, @Context HttpServletRequest req) {
+	public Response publishPreviewCard(String content) {
+        //Item item = Item.fromJSON(content);
 		final String id = itemManager.savePreview(content);
 		Response response;
 		if (null == id) {
@@ -124,11 +123,5 @@ public class ItemResource {
 			response = Response.ok(new Gson().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;
-	}
-
-	private List<Map> cardsList() throws FileNotFoundException, URISyntaxException {
-		Map<String, List<Map>> items = gson.fromJson(new FileReader(new File(itemsUrl.toURI())), HashMap.class);
-		List<Map> cards = items.get("results");
-		return cards;
 	}
 }

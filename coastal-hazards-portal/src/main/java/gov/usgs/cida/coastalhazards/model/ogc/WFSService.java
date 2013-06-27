@@ -1,36 +1,22 @@
 package gov.usgs.cida.coastalhazards.model.ogc;
 
 import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-//@Entity
-//@Table(name="wfs_service")
-public class WFSService implements OGCService, Serializable {
+@Embeddable
+public class WFSService implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-//    private int id;
     private String endpoint;
     private String typeName;
-
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-//    public int getId() {
-//        return id;
-//    }
-//
-//    public void setId(int id) {
-//        this.id = id;
-//    }
     
+    @Column(name="wfs_endpoint")
     public String getEndpoint() {
         return endpoint;
     }
@@ -39,6 +25,7 @@ public class WFSService implements OGCService, Serializable {
         this.endpoint = endpoint;
     }
 
+    @Column(name="wfs_typename")
     public String getTypeName() {
         return typeName;
     }
