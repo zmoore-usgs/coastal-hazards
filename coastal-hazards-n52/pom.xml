@@ -13,8 +13,8 @@
     <name>Coastal Hazards 52north WPS</name>
     
     <properties>
-        <n52.version>3.0</n52.version>
-        <gt.version>8.5</gt.version>
+        <n52.version>3.1.1</n52.version>
+        <gt.version>9.2</gt.version>
         <slf4j.version>1.7.2</slf4j.version>
     </properties>
     
@@ -23,7 +23,7 @@
             <dependency>
                 <groupId>gov.usgs.cida</groupId>
                 <artifactId>wps-n52</artifactId>
-                <version>3.1.1-1-SNAPSHOT</version>
+                <version>${n52.version}-1-SNAPSHOT</version>
                 <type>war</type>
             </dependency>
             <dependency>
@@ -61,6 +61,11 @@
                 <artifactId>gt-api</artifactId>
                 <version>${gt.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.geotools</groupId>
+                <artifactId>gt-opengis</artifactId>
+                <version>${gt.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
@@ -86,12 +91,21 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-opengis</artifactId>
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>

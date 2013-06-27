@@ -16,7 +16,7 @@ $(document).ready(function() {
 		splashUpdate("Initializing Search Subsystem...");
 		CCH.search = new CCH.Objects.Search({
 			itemSearchModalWindow: $('#item-search-modal'),
-			searchbar: $('.app-navbar-search-form'),
+			searchbar: $('.map-search-form'),
 			geocodeEndoint: CCH.CONFIG.data.sources.geocoding.endpoint,
 			modalContainer: $('#item-search-modal'),
 			north: $('#item-search-map-input-north'),
@@ -66,6 +66,11 @@ $(document).ready(function() {
 					}
 				],
 				error: [
+					function(jqXHR,textStatus,errorThrown) {
+						splashUpdate("<b>There was an error attempting to load cards.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.");
+						LOG.error(errorThrown + ' : ' + jqXHR.responseText);
+						$('#splash-spinner').fadeOut(2000);
+					}
 				]
 			}
 		});

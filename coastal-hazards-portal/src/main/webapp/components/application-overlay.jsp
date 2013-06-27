@@ -15,7 +15,7 @@
 			Sed ac neque ut neque dictum accumsan. Cras lacinia rutrum risus, id viverra metus dictum sit amet. </p>
         <div style="text-align:center;">
             <div id="splash-status-update"></div>
-            <img src="images/spinner/spinner3.gif" />
+            <img id="splash-spinner" src="images/spinner/spinner3.gif" />
         </div>
     </div>
 </div>

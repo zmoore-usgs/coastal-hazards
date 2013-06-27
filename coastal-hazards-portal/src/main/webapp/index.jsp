@@ -78,8 +78,8 @@
 			</div>
         </div>
 		<span id="map-search-container">
-			<form class="app-navbar-search-form navbar-search" action="javascript:void(0);">
-				<i id="app-navbar-search-icon" class="icon-search"></i><input id="app-navbar-search-input" type="text" class="search-query" placeholder="Search">
+			<form class="map-search-form map-search" action="javascript:void(0);">
+				<i id="map-search-icon" class="icon-search"></i><input id="map-search-input" type="text" class="search-query" placeholder="Search">
 			</form>
 		</span>
 
