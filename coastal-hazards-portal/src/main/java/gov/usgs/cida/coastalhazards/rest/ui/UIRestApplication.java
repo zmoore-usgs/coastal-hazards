@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.ui;
 
 import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
 import java.util.HashMap;
 import javax.ws.rs.ApplicationPath;
 

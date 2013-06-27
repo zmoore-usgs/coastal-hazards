@@ -304,7 +304,7 @@ CCH.Objects.Map = function(args) {
 					bbox: card.bbox
 				});
 
-				if (type === "vulnerability") {
+				if (type === "storms") {
 					// SLD will probably only work with one layer
 					// TODO - Fix with window.location.href but make sure actually works
 					layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + item.wmsService.layers + '/' + card.attr;
