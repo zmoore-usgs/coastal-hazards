@@ -26,6 +26,8 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="false" />
         </jsp:include>
+
+        <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
         <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/jquery/2.0.0/jquery.min.js"></script>
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
@@ -37,7 +39,7 @@
 			<script type="text/javascript">
 				var CCH = {
 					config: {
-						itemId: '${it}',
+						itemId: '${it.id}',
 						contextPath: '<%=request.getContextPath()%>',
 						map: null,
 						projection: "EPSG:3857",
@@ -48,6 +50,7 @@
 		</script>
     </head>
     <body>
+
 
 		<div id="application-container" class="container-fluid">
 
@@ -83,7 +86,7 @@
 			<div id="info-content" class="container-fluid">
 
 				<%-- Title --%>
-				<div id="info-row-title" class="row-fluid">
+				<div id="info-row-title" class="info-title row-fluid">
 					<div id="info-title"></div>
 				</div> 
 
@@ -106,7 +109,7 @@
 						<div id="application-link"></div>
 
 						<div id="social-link">
-							<a id='info-twitter-button' class='twitter-share-button' data-lang='en' data-hashtags='cch' data-count='vertical'></a>
+							<a id='info-twitter-button'></a>
 						</div>
 
 					</div>
@@ -114,6 +117,25 @@
 				</div>
 
 			</div>
+
+			<%-- Content Here --%>
+			<div id="info-not-found-content" class="container-fluid hidden">
+
+				<%-- Title --%>
+				<div id="info-not-found-row-title" class="info-title row-fluid">
+					<div id="info-not-found-title">Item Not Found</div>
+				</div> 
+
+
+				<div id="info-not-found--summary" class="row-fluid">
+					Unfortunately the item you are looking for could not be found. 
+					<br /><br />
+					<a href="<%=request.getContextPath()%>">Back to the USGS Coastal Hazards Portal</a>
+				</div>
+
+			</div>
+
+
 
 			<div  id="footer-row"  class="row-fluid">
 				<jsp:include page="template/USGSFooter.jsp">
@@ -144,6 +166,8 @@
 						CCH.config.data = data;
 						$(window).resize();
 
+						updateItemPopularity();
+
 						$('#application-overlay').fadeOut(2000, function() {
 							$('#application-overlay').remove();
 						});
@@ -169,9 +193,41 @@
 						buildMap();
 					},
 					error: function(jqXHR, textStatus, errorThrown) {
-						var b = 2;
+						$('#info-content').addClass('hidden');
+						$('#info-not-found-content').removeClass('hidden');
+						$('#application-overlay').fadeOut(2000, function() {
+							$('#application-overlay').remove();
+						});
 					}
 				});
+
+				var updateItemPopularity = function() {
+					$.ajax({
+						url: CCH.config.contextPath + '/data/activity/tweet/' + CCH.config.itemId,
+						type: 'PUT'
+					});
+				}
+
+				var createShareButton = function(url) {
+					twttr.ready(function(twttr) {
+						twttr.widgets.createShareButton(
+								url,
+								$('#info-twitter-button')[0],
+								function(element) {
+									// Any callbacks that may be needed
+								},
+								{
+									hashtags: 'USGS_CCH',
+									lang: 'en',
+									size: 'medium',
+									text: CCH.config.data.summary.tiny,
+								});
+
+						twttr.events.bind('tweet', function(event) {
+							updateItemPopularity();
+						});
+					});
+				}
 
 				var buildTwitterButton = function() {
 					var url = window.location.toString();
@@ -188,88 +244,58 @@
 			Oh, and the service will not give consistent URL output
 			for consistent URL input
 			--%>
-												if (data.response.statusCode) {
-													dataUrl = url;
-												} else {
-													dataUrl = data.response.data.entry[0].short_url;
-												}
+								if (data.response.statusCode) {
+									dataUrl = url;
+								} else {
+									dataUrl = data.response.data.entry[0].short_url;
+								}
 
-												$('#info-twitter-button').attr({
-													'data-text': 'Check out my pinned items on CCH!',
-													'data-url': dataUrl,
-													'data-counturl': dataUrl
-												});
+								createShareButton(url);
 
-												$.getScript('http://platform.twitter.com/widgets.js');
-											},
-											error: function(jqXHR, textStatus, errorThrown) {
 
-											}
-										});
+							},
+							error: function(jqXHR, textStatus, errorThrown) {
+								createShareButton(url);
+							}
+						});
 
-									};
+					};
 
-									var buildMap = function() {
-										CCH.config.map = new OpenLayers.Map('map', {
-											projection: CCH.config.projection,
-											displayProjection: new OpenLayers.Projection(CCH.config.projection)
-										});
+					var buildMap = function() {
+						CCH.config.map = new OpenLayers.Map('map', {
+							projection: CCH.config.projection,
+							displayProjection: new OpenLayers.Projection(CCH.config.projection)
+						});
 
-										CCH.config.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
-												"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/\${z}/\${y}/\${x}",
-												{
-													sphericalMercator: true,
-													isBaseLayer: true,
-													numZoomLevels: 20,
-													wrapDateLine: true
-												}
-										));
+						CCH.config.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
+								"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/\${z}/\${y}/\${x}",
+								{
+									sphericalMercator: true,
+									isBaseLayer: true,
+									numZoomLevels: 20,
+									wrapDateLine: true
+								}
+						));
 
-										CCH.config.map.addLayer(
-												new OpenLayers.Layer.WMS(CCH.config.data.id,
-												CCH.config.data.wmsService.endpoint,
-												{
-													layers: CCH.config.data.wmsService.layers,
-													version: '1.3.0',
-													crs: 'EPSG:3857',
-													transparent: true
-												}, {
-											singleTile: true,
-											transparent: true,
-											isBaseLayer: false,
-											projection: 'EPSG:3857'
-										}));
+						CCH.config.map.addLayer(
+								new OpenLayers.Layer.WMS(CCH.config.data.id,
+								CCH.config.data.wmsService.endpoint,
+								{
+									layers: CCH.config.data.wmsService.layers,
+									version: '1.3.0',
+									crs: 'EPSG:3857',
+									transparent: true
+								}, {
+							singleTile: true,
+							transparent: true,
+							isBaseLayer: false,
+							projection: 'EPSG:3857'
+						}));
 
-										var bounds = new OpenLayers.Bounds(CCH.config.data.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'))
-										CCH.config.map.zoomToExtent(bounds);
-									}
-
-									var buildMetadata = function() {
-										var uri = new Uri(CCH.config.data.metadata);
-										var id = uri.getQueryParamValue('id');
-										$.ajax({
-											url: CCH.config.contextPath + '/csw/',
-											data: {
-												service: 'CSW',
-												request: 'GetRecordById',
-												version: '2.0.2',
-												id: id,
-												outputFormat: 'application/json'
-											},
-											success: function(data, textStatus, jqXHR) {
-												var getItemsByName = function(data, name) {
-													return data.children[0].children.findAll(function(item) {
-														return item.tag.split(':')[1].toLowerCase() === item.toLowerCase();
-													});
-												}
-//							var subjects
-											},
-											error: function(jqXHR, textStatus, errorThrown) {
-												var b = 2;
-											}
-										})
-									}
-								});
+						var bounds = new OpenLayers.Bounds(CCH.config.data.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'))
+						CCH.config.map.zoomToExtent(bounds);
+					}
+				});
 		</script>
 	</body>
 </html>

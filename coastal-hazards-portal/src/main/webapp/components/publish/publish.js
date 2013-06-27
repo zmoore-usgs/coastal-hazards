@@ -304,14 +304,14 @@ var bindServices = function(evt) {
 							var invalidAttribute = combinedAttributes.indexOf(nameTlc) === -1;
 							if (invalidAttribute) {
 								nameSpan.addClass('muted');
-								cb.attr('disabled', 'true')
+								cb.attr('disabled', 'true');
 							}
 							var previewButton = $('<button />').addClass('publish-preview-button btn disabled').attr('id', 'btn-preview-' + name).attr('name', name).html('Preview');
 							var controls = $('<span />').addClass('publish-container-actions').append(previewButton);
 							li.append(cb, nameSpan, controls);
 							$('#attribute-checkbox-list').append(li);
 							cb.on('change', bindCheckbox);
-							previewButton.on('click', bindPreviewButton);
+							previewButton.on('click', previewButtonClickHandler);
 						}
 					});
 				}
@@ -324,7 +324,7 @@ var bindLayers = function(evt) {
 	var val = evt.target.value;
 }
 
-var bindPreviewButton = function(evt) {
+var previewButtonClickHandler = function(evt) {
 	var btn = evt.target;
 	var attName = $(btn).attr('name');
 };
