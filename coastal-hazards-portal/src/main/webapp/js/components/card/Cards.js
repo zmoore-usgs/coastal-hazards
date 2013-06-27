@@ -1,8 +1,14 @@
 var CCH = CCH || {};
 CCH.Objects.Cards = function(args) {
+	args = args || {};
 	var me = (this === window) ? {} : this;
 	me.currentApplicationSize;
 	me.pinnedCount;
+	me.navPinControlCount = args.navPinControlCount;
+	me.navPinControlButton = args.navPinControlButton;
+	me.navPinControlDropdownButton = args.navPinControlDropdownButton;
+	me.descrContainers = args.descrContainers;
+	
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
@@ -52,9 +58,8 @@ CCH.Objects.Cards = function(args) {
 		},
 		getPinnedCards: function() {
 			var pinnedCards = [];
-			var cardContainers = $('.description-container');
-			for (var ccIdx = 0; ccIdx < cardContainers.length; ccIdx++) {
-				var cardContainer = cardContainers[ccIdx];
+			for (var ccIdx = 0; ccIdx < me.descrContainers.length; ccIdx++) {
+				var cardContainer = me.descrContainers[ccIdx];
 				var card = $(cardContainer).data('card');
 				if (card.pinned) {
 					pinnedCards.push(card);
@@ -67,13 +72,13 @@ CCH.Objects.Cards = function(args) {
 		},
 		updatePinnedCount: function() {
 			me.pinnedCount = CCH.session.getPinnedCount();
-			$('#app-navbar-pin-control-pincount').html(me.pinnedCount);
+			me.navPinControlCount.html(me.pinnedCount);
 			if (me.pinnedCount > 0) {
-				$('#app-navbar-pin-control-button').removeClass('disabled');
-				$('#app-navbar-pin-control-dropdown-button').removeClass('disabled');
+				me.navPinControlButton.removeClass('disabled');
+				me.navPinControlDropdownButton.removeClass('disabled');
 			} else {
-				$('#app-navbar-pin-control-button').addClass('disabled');
-				$('#app-navbar-pin-control-dropdown-button').addClass('disabled');
+				me.navPinControlButton.addClass('disabled');
+				me.navPinControlDropdownButton.addClass('disabled');
 			}
 			return me.pinnedCount;
 		}

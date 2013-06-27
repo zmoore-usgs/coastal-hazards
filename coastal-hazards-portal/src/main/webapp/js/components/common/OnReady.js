@@ -11,7 +11,12 @@ $(document).ready(function() {
 
 	var initApplication = function() {
 		splashUpdate("Initializing Card Subsystem...");
-		CCH.cards = new CCH.Objects.Cards().init();
+		CCH.cards = new CCH.Objects.Cards({
+			navPinControlCount : $('#app-navbar-pin-control-pincount'),
+			navPinControlButton : $('#app-navbar-pin-control-button'),
+			navPinControlDropdownButton : $('#app-navbar-pin-control-dropdown-button'),
+			descrContainers : $('.description-container')
+		}).init();
 
 		splashUpdate("Initializing Search Subsystem...");
 		CCH.search = new CCH.Objects.Search({
@@ -27,7 +32,8 @@ $(document).ready(function() {
 			submitButton: $('#item-search-submit'),
 			keywordInput: $('#item-search-keyword-input'),
 			themeInput: $('#item-search-theme-input'),
-			popularityCb : $('#popularity-sort-checkbox')
+			popularityCb : $('#popularity-sort-checkbox'),
+			
 		}).init();
 
 		splashUpdate("Initializing UI...");
