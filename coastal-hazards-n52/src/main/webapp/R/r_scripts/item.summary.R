@@ -7,11 +7,11 @@
 library(itemSummaryService)
 
 
-themeNames	<-	names(subTypeMap)
+themeNames	<-	names(attrMap)
 theme	<-	NULL
 for (i in 1:length(themeNames)){
-	if (any(attr %in% unlist(subTypeMap[i]))){
-		theme	<- names(subTypeMap[i])
+	if (any(attr %in% unlist(attrMap[i]))){
+		theme	<- names(attrMap[i])
 		break
 	}
 }
