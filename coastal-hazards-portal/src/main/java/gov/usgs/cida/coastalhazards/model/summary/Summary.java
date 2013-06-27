@@ -1,16 +1,16 @@
-package gov.usgs.cida.coastalhazards.model;
+package gov.usgs.cida.coastalhazards.model.summary;
 
 import java.io.Serializable;
-import javax.persistence.Column;
+import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
- * This object may be deprecated in favor of an on the fly service
- * *or* we could run the service once and store the results
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Entity
@@ -19,9 +19,9 @@ public class Summary implements Serializable {
 	private static final long serialVersionUID = 182763L;
 
     private transient int id;
-    private String tiny;
-    private String medium;
-    private String full;
+    private Tiny tiny;
+    private Medium medium;
+    private Full full;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,29 +33,30 @@ public class Summary implements Serializable {
         this.id = id;
     }
 
-    public String getTiny() {
+    @Embedded
+    public Tiny getTiny() {
         return tiny;
     }
 
-    public void setTiny(String tiny) {
+    public void setTiny(Tiny tiny) {
         this.tiny = tiny;
     }
 
-    @Column(length = 1023)
-    public String getMedium() {
+    @Embedded
+    public Medium getMedium() {
         return medium;
     }
 
-    public void setMedium(String medium) {
+    public void setMedium(Medium medium) {
         this.medium = medium;
     }
 
-    @Column(length = 1023, name = "full_text")
-    public String getFull() {
+    @OneToOne(cascade = CascadeType.ALL)
+    public Full getFull() {
         return full;
     }
 
-    public void setFull(String full) {
+    public void setFull(Full full) {
         this.full = full;
     }
     

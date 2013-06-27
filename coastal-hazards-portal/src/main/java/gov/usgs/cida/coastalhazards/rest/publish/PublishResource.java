@@ -6,9 +6,13 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang.StringUtils;
 
@@ -36,4 +40,18 @@ public class PublishResource {
 		}
 		return Response.temporaryRedirect(redir).build();
 	}
+    
+    @POST
+    @Path("items")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response publishItems(String items) {
+        // do CSW transaction here
+        // get Metadata Record ID
+        // iterate through items
+            // update item with CSW call
+            // post item and get posted id
+        // return list of added ids
+        return Response.serverError().build();
+    }
 }
