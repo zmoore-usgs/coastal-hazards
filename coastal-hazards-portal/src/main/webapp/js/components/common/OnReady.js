@@ -66,6 +66,11 @@ $(document).ready(function() {
 					}
 				],
 				error: [
+					function(jqXHR,textStatus,errorThrown) {
+						splashUpdate("<b>There was an error attempting to load cards.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.");
+						LOG.error(errorThrown + ' : ' + jqXHR.responseText);
+						$('#splash-spinner').fadeOut(2000);
+					}
 				]
 			}
 		});

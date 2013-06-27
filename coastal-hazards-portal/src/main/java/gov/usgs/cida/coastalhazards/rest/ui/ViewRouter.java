@@ -17,15 +17,16 @@ public class ViewRouter {
 	@GET
 	@Produces("text/html")
 	@Path("/view/{id}")
-	public Response useJsp(@PathParam("id") String name) {
-		return Response.ok(new Viewable("/index.jsp", name)).build();
+	public Response useJsp(@PathParam("id") String id) {
+        Identifier identifier = new Identifier(id, Identifier.IdentifierType.VIEW);
+		return Response.ok(new Viewable("/index.jsp", identifier)).build();
 	}
 
 	@GET
 	@Produces("text/html")
 	@Path("/view/{jspPath:.*/?.*\\..*}")
-	public Response useJspAtViewPath(@PathParam("jspPath") String name) {
-		return Response.ok(new Viewable("/" + name)).build();
+	public Response useJspAtViewPath(@PathParam("jspPath") String jspPath) {
+		return Response.ok(new Viewable("/" + jspPath)).build();
 	}
 
 	@GET
