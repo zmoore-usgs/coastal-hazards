@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.model;
 
+import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import gov.usgs.cida.coastalhazards.gson.serializer.DoubleSerializer;
@@ -9,6 +10,7 @@ import gov.usgs.cida.utilities.IdGenerator;
 import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -55,6 +57,7 @@ public class Item implements Serializable {
 		this.metadata = metadata;
 	}
 
+    @Embedded
 	public WFSService getWfsService() {
 		return wfsService;
 	}
@@ -63,6 +66,7 @@ public class Item implements Serializable {
 		this.wfsService = wfsService;
 	}
 
+    @Embedded
 	public WMSService getWmsService() {
 		return wmsService;
 	}
