@@ -49,7 +49,8 @@ $(document).ready(function() {
 			navbarDropdownIcon: $('#app-navbar-pin-control-icon'),
 			navbarClearMenuItem: $('#app-navbar-pin-control-clear'),
 			navbarShareMenuListItem: $('#app-navbar-pin-control-share-li'),
-			mapSearchContainer: $('#map-search-container')
+			mapSearchContainer: $('#map-search-container'),
+			ccsArea : $('#ccsa-area')
 		}).init();
 
 		splashUpdate("Initializing Map...");

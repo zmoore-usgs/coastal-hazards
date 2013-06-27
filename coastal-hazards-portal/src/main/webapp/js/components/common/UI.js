@@ -18,6 +18,7 @@ CCH.Objects.UI = function(args) {
 	me.footerRow = args.footerRow;
 	me.mapSearchContainer = args.mapSearchContainer;
 	me.itemSearchModalWindow = args.itemSearchModalWindow;
+	me.ccsArea = args.ccsArea;
 
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
@@ -26,7 +27,7 @@ CCH.Objects.UI = function(args) {
 			me.bindWindowResize();
 			
 			// Header fix
-			$('#ccsa-area').find('br').first().remove();
+			me.ccsArea.find('br').first().remove();
 
 			var currWidth = me.previousWidth;
 			if (currWidth <= me.magicResizeNumber) {
@@ -51,15 +52,12 @@ CCH.Objects.UI = function(args) {
 				var items = null;
 
 				if (pinnedCardIds.length) {
-					// Pinned cards available - toggle the button on/off
-					var pinControl = $('#app-navbar-pin-control-icon');
-
 					// Toggle how the button looks
-					pinControl.toggleClass('muted');
+					me.me.navbarPinDropdownButton.toggleClass('muted');
 					me.navbarPinButton.toggleClass('slider-card-pinned');
 
 					// Check if button is active
-					if (!pinControl.hasClass('muted')) {
+					if (!me.me.navbarPinDropdownButton.hasClass('muted')) {
 						// If cards are pinned, show only pinned cards
 						// Otherwise, show all cards
 						// TODO- This functionality should probably be in Cards
@@ -157,46 +155,6 @@ CCH.Objects.UI = function(args) {
 
 				me.previousWidth = currWidth;
 			});
-		},
-//		bindShareMenu: function(args) {
-//			var menuItem = args.menuItem;
-//			menuItem.popover({
-//				html: true,
-//				placement: 'right',
-//				trigger: 'manual',
-//				title: 'Share Session',
-//				container: 'body',
-//				content: "<div class='container-fluid' id='prepare-container'><div>Preparing session export...</div></div>"
-//			}).on({
-//				'click': me.popoverClickHandler,
-//				'shown': function() {
-//					CCH.session.getMinifiedEndpoint({
-//						callbacks: [
-//							function(args) {
-//								var response = args.response;
-//								var url = args.url;
-//
-//								// URL controlset
-//								var container = $('<div />').addClass('container-fluid');
-//								var row = $('<div />').addClass('row-fluid');
-//								var controlSetDiv = $('<div />');
-//								container.append(row.append(controlSetDiv));
-//								$('#prepare-container').replaceWith(container);
-//
-//
-//								var goUsaResponse = JSON.parse(response.response);
-//								if (goUsaResponse.response.statusCode && goUsaResponse.response.statusCode.toLowerCase() === 'error') {
-//									CCH.LOG.warn(response.response);
-//								} else {
-//									url = goUsaResponse.response.data.entry[0].short_url;
-//								}
-//								controlSetDiv.html('Use the following URL to share your current view<br /><br /><b>' + url + '</b>');
-//							}
-//						]
-//					});
-//					CCH.CONFIG.ui.popoverShowHandler.call(this);
-//				}
-//			});
-//		},
+		}
 	});
 };
