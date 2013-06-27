@@ -67,13 +67,14 @@
 			<c:when test='${empty pageContext.session.getAttribute("oid-info")}'>
 				Could not find your log-in info. 
 				<br />
-				<a href="<%=request.getContextPath()%>/publish">Try again?</a>
+				<a href="<%=request.getContextPath()%>/publish">Try agai???n?</a>
 				<br />
 				<a href="<%=request.getContextPath()%>/">Go to Coastal Hazards Portal?</a>
 			</c:when>
 			<c:when test='${false}'>
 				You are not an authorized user. 
-				<a href="">Go to Coastal Hazards Portal?</a>
+				<br /><br />
+				<a href="">Go to Coastal Hazards Portal</a>
 			</c:when>
 			<c:otherwise>
 				<div class="container-fluid">

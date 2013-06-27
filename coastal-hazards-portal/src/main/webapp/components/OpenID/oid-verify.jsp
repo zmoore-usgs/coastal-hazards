@@ -12,9 +12,8 @@
 		<c:choose>
 			<c:when test='${sessionScope.sessionValid == null or sessionScope.sessionValid == false}'>
 				Could not find your log-in info or you are not an authorized user. 
-				<c:out value="${sessionScope.sessionValid}" />
 				<br />
-				<a href="oid-login.jsp">Try again?</a>
+				<a href="publish">Try again?</a>
 				<br />
 				<a href="<%=request.getContextPath()%>/">Go to Coastal Hazards Portal?</a>
 			</c:when>
