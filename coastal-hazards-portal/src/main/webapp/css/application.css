@@ -114,8 +114,13 @@ img {
 	width: 180px;
 }
 
+.map-search-form {
+	margin: 0px;
+	padding: 5px 5px 3px 3px;
+}
+
 #map-search-input {
-	width : 120px;
+	width : 140px;
 }
 
 #map-search-icon {

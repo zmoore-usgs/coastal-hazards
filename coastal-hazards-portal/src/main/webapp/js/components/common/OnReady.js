@@ -55,7 +55,9 @@ $(document).ready(function() {
 
 		splashUpdate("Initializing Map...");
 		CCH.map = new CCH.Objects.Map({
-			mapDiv: 'map'
+			mapDiv: 'map',
+			maximizeDiv : $('#OpenLayers_Control_MaximizeDiv_innerImage'),
+			minimizeDiv : $('#OpenLayers_Control_MinimizeDiv_innerImage')
 		}).init();
 
 		splashUpdate("Initializing OWS Services");

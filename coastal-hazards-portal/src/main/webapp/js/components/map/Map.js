@@ -1,12 +1,14 @@
 CCH.Objects.Map = function(args) {
-	var mapDivId = args.mapDiv;
 	var me = (this === window) ? {} : this;
 	me.initialExtent = CCH.CONFIG.map.initialExtent;
+	me.maximizeDiv = args.maximizeDiv;
+	me.minimizeDiv = args.minimizeDiv;
+	me.mapDivId = args.mapDiv;
 	return $.extend(me, {
 		init: function() {
 			CCH.LOG.info('Map.js::init():Map class is initializing.');
 
-			me.map = new OpenLayers.Map(mapDivId, {
+			me.map = new OpenLayers.Map(me.mapDivId, {
 				projection: CCH.CONFIG.map.projection,
 				displayProjection: new OpenLayers.Projection(CCH.CONFIG.map.projection)
 			});
@@ -40,8 +42,8 @@ CCH.Objects.Map = function(args) {
 				me.updateFromSession();
 			}
 			
-			$('#OpenLayers_Control_MaximizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-maximize.png');
-			$('#OpenLayers_Control_MinimizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-minimize.png');
+			me.maximizeDiv.attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-maximize.png');
+			me.minimizeDiv.attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-minimize.png');
 
 			return me;
 		},
