@@ -8,11 +8,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.MissingResourceException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.slf4j.LoggerFactory;
 

@@ -105,6 +105,10 @@
 						<%-- Application Link --%>
 						<div id="application-link"></div>
 
+						<div id="social-link">
+							<a id='info-twitter-button' class='twitter-share-button' data-lang='en' data-hashtags='cch' data-count='vertical'></a>
+						</div>
+
 					</div>
 
 				</div>
@@ -157,12 +161,49 @@
 //						$('#application-link').append(applicationLink);
 
 
+						buildTwitterButton();
 						buildMap();
 					},
 					error: function(jqXHR, textStatus, errorThrown) {
 						var b = 2;
 					}
 				});
+
+				var buildTwitterButton = function() {
+					var url = window.location.toString();
+					$.ajax({
+						url: CCH.config.contextPath + '/data/minifier/minify/' + url,
+						success: function(data, textStatus, jqXHR) {
+							var dataUrl;
+							<%-- 
+							go.usa.gov has an ... interesting ... API.
+							If there's an error, there's a data.response.statusCode
+							object. Otherwise, there's a data.response[0][0].status_code
+							object. This is not ideal but we roll with it. 
+							Oh, and the service will only shorten government URLs
+							Oh, and the service will not give consistent URL output
+							for consistent URL input
+							--%>
+							if (data.response.statusCode) {
+								dataUrl = url;
+							} else {
+								dataUrl = data.response.data.entry[0].short_url;
+							}
+							
+							$('#info-twitter-button').attr({
+								'data-text': 'Check out my pinned items on CCH!',
+								'data-url': dataUrl,
+								'data-counturl': dataUrl
+							});
+							
+							$.getScript('http://platform.twitter.com/widgets.js');
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+
+						}
+					});
+
+				};
 
 				var buildMap = function() {
 					CCH.config.map = new OpenLayers.Map('map', {
