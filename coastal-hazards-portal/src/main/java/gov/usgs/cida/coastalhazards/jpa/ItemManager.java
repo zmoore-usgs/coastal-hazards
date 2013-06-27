@@ -62,11 +62,11 @@ public class ItemManager {
 		return id;
 	}
 	
-	public String savePreview(String item) {
-		String id = IdGenerator.generate();
+	public String savePreview(Item item) {
+        String id = item.getId();
 		try {
 			File onDiskItem = new File(FileUtils.getTempDirectory(), id);
-			FileUtils.write(onDiskItem, item);
+			FileUtils.write(onDiskItem, item.toJSON());
 			onDiskItem.deleteOnExit();
 		} catch (Exception ex) {
 			id = "ERR";
