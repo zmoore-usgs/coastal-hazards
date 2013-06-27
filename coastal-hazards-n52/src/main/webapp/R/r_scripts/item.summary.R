@@ -6,7 +6,6 @@
 
 library(itemSummaryService)
 
-item.summary = function(input,attr){
 
 themeNames	<-	names(subTypeMap)
 theme	<-	NULL
@@ -32,5 +31,4 @@ cat(summary)
 sink()
 
 output 	<-	'output.json'
-}
 # wps.out: output, text, output title, JSON object for item summary;
