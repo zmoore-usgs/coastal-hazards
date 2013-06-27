@@ -4,33 +4,41 @@ CCH.Objects.Items = function(args) {
 	me.items = [];
 	return $.extend(me, {
 		init: function(args) {
-			args = args || {};
-
-			args.callbacks = args.callbacks || {
-				success: [],
-				error: []
-			};
-			
-			me.load(args);
-			
 			return me;
 		},
 		load: function(args) {
 			args = args || {};
+			var items = args.items || [];
 
 			var callbacks = args.callbacks || {
 				success: [],
 				error: []
 			};
 
-			callbacks.success.unshift(function(data, status, jqXHR) {
-				me.items = data.items;
-				$(window).trigger('cch.data.items.loaded');
-			});
+			if (!items.length) {
+				callbacks.success.unshift(function(data, status, jqXHR) {
+					me.items = data.items;
+					$(window).trigger('cch.data.items.loaded');
+				});
+			} else {
+				callbacks.success.unshift(function(data, status, jqXHR) {
+					me.items.push(data);
+					if (items.length) {
+						me.search({
+							items: items,
+							callbacks: callbacks
+						});
+					} else {
+						$(window).trigger('cch.data.items.loaded');
+					}
+				});
+			}
 
 			me.search({
+				items: items,
 				callbacks: callbacks
 			});
+
 		},
 		search: function(args) {
 			args = args || {};
@@ -38,6 +46,8 @@ CCH.Objects.Items = function(args) {
 			var count = args.count || '';
 			var bbox = args.bbox || '';
 			var sortBy = args.sortBy || '';
+			var items = args.items || [];
+			var item = '/' + items.pop() || '';
 
 			var callbacks = args.callbacks || {
 				success: [],
@@ -45,7 +55,7 @@ CCH.Objects.Items = function(args) {
 			};
 
 			$.ajax({
-				url: CCH.CONFIG.data.sources.item.endpoint,
+				url: CCH.CONFIG.data.sources.item.endpoint + item,
 				dataType: 'json',
 				data: {
 					count: count,

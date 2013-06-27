@@ -20,7 +20,8 @@
 <script type="text/javascript">
 	splashUpdate("Setting configuration...");
 	CCH.CONFIG = {
-		incomingSessionId : '${param.sessionId}',
+		id: '${param.id}',
+		idType: '${param.idType}',
 		development: <%= development%>,
 		ajaxTimeout: 300000,
 		popupHandling: {
@@ -138,8 +139,8 @@
 				'geocoding': {
 					'endpoint': '<%=geocodeEndpoint%>'
 				},
-				'session' : {
-					'endpoint' : '<%=request.getContextPath()%>/data/view/'
+				'session': {
+					'endpoint': '<%=request.getContextPath()%>/data/view/'
 				}
 			}
 		}
