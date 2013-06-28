@@ -8,6 +8,7 @@
         <class>gov.usgs.cida.coastalhazards.model.Rank</class>
         <class>gov.usgs.cida.coastalhazards.model.Activity</class>
         <class>gov.usgs.cida.coastalhazards.model.AuthorizedUser</class>
+        <class>gov.usgs.cida.coastalhazards.model.TinyGov</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Summary</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Tiny</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Medium</class>

@@ -66,6 +66,11 @@
                 <artifactId>gt-opengis</artifactId>
                 <version>${gt.version}</version>
             </dependency>
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>2.10.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
@@ -118,7 +123,6 @@
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
-            <version>2.11.0</version>
         </dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

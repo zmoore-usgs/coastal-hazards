@@ -1,6 +1,8 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
+import gov.usgs.cida.coastalhazards.jpa.TinyGovManager;
+import gov.usgs.cida.coastalhazards.model.TinyGov;
 import gov.usgs.cida.utilities.gov.usa.go.GoUsaGovUtils;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -24,6 +26,8 @@ public class MinifyResource {
 
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MinifyResource.class);
 	private static final long serialVersionUID = 1L;
+    private static TinyGovManager urlManager = new TinyGovManager();
+    private static Gson gson = new Gson();
 
 	@GET
 	@Path("/minify/{url:.*}")
@@ -33,8 +37,25 @@ public class MinifyResource {
 		Response response;
 		try {
 			if (StringUtils.isNotBlank(url)) {
-				String encodedUrl = URLEncoder.encode(url, "UTF-8");
-				response = Response.ok(GoUsaGovUtils.minify(encodedUrl)).build();
+                TinyGov tinygov = urlManager.load(url);
+                if (tinygov == null) {
+                    String encodedUrl = URLEncoder.encode(url, "UTF-8");
+                    String minified = GoUsaGovUtils.minify(encodedUrl);
+                    String short_url = GoUsaGovUtils.getUrlFromResponse(minified);
+                    if (short_url == null) {
+                        throw new Exception("Cannot get url from go.usa.gov");
+                    }
+                    else {
+                        tinygov = new TinyGov();
+                        tinygov.setFullUrl(url);
+                        tinygov.setTinyUrl(short_url);
+                        boolean save = urlManager.save(tinygov);
+                        if (!save) {
+                            LOG.error("Could not save this to the database, this is probably not your biggest problem.");
+                        }
+                    }
+                }
+				response = Response.ok(new Gson().toJson(tinygov, TinyGov.class)).build();
 			} else {
 				responseMap.put("message", "parameter 'url' may not be missing or blank");
 				response = Response.status(Response.Status.BAD_REQUEST).entity(new Gson().toJson(responseMap, HashMap.class)).build();
