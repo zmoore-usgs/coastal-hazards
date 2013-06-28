@@ -25,7 +25,7 @@ CCH.Objects.UI = function(args) {
 		init: function() {
 			me.bindNavbarPinMenu();
 			me.bindWindowResize();
-			
+
 			// Header fix
 			me.ccsArea.find('br').first().remove();
 
@@ -154,6 +154,13 @@ CCH.Objects.UI = function(args) {
 				})
 
 				me.previousWidth = currWidth;
+			});
+		},
+		removeOverlay: function() {
+			splashUpdate("Starting Application...");
+			$('#application-overlay').fadeOut(2000, function() {
+				$('#application-overlay').remove();
+				splashUpdate = undefined;
 			});
 		}
 	});

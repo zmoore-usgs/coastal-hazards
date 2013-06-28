@@ -7,7 +7,6 @@ CCH.Objects.Cards = function(args) {
 	me.navPinControlCount = args.navPinControlCount;
 	me.navPinControlButton = args.navPinControlButton;
 	me.navPinControlDropdownButton = args.navPinControlDropdownButton;
-	me.descrContainers = args.descrContainers;
 	
 	return $.extend(me, {
 		init: function() {
@@ -58,8 +57,9 @@ CCH.Objects.Cards = function(args) {
 		},
 		getPinnedCards: function() {
 			var pinnedCards = [];
-			for (var ccIdx = 0; ccIdx < me.descrContainers.length; ccIdx++) {
-				var cardContainer = me.descrContainers[ccIdx];
+			var descrContainers = $('.description-container');
+			for (var ccIdx = 0; ccIdx < descrContainers.length; ccIdx++) {
+				var cardContainer = descrContainers[ccIdx];
 				var card = $(cardContainer).data('card');
 				if (card.pinned) {
 					pinnedCards.push(card);
