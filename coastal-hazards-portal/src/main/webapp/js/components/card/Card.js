@@ -49,7 +49,7 @@ CCH.Objects.Card = function(args) {
 
 			titleRow.append(titleColumn, me.pinButton);
 
-			descriptionRow.append($('<p />').addClass('slide-vertical-description').html(me.summary.medium));
+			descriptionRow.append($('<p />').addClass('slide-vertical-description').html(me.summary.medium.text));
 
 			me.container.append(titleRow, descriptionRow);
 			if (me.size === 'large') {

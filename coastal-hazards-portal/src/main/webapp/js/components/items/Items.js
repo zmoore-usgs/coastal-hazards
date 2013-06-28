@@ -47,7 +47,8 @@ CCH.Objects.Items = function(args) {
 			var bbox = args.bbox || '';
 			var sortBy = args.sortBy || '';
 			var items = args.items || [];
-			var item = '/' + items.pop() || '';
+			var itemId = items.pop() || '';
+			var item = '/' + itemId || '';
 
 			var callbacks = args.callbacks || {
 				success: [],
