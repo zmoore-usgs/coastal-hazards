@@ -158,7 +158,7 @@ public class ItemResource {
     private String getSummaryFromWPS(String metadataId, String attr) throws IOException {
         MetadataResource metadata = new MetadataResource();
         Response response = metadata.getFileById(metadataId);
-        
+        String xmlWithoutHeader = response.getEntity().toString().replaceAll("<\\?xml[^>]*>", "");
         String wpsRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                     + "<wps:Execute xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" service=\"WPS\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd\">"
                     + "<ows:Identifier>org.n52.wps.server.r.item.summary</ows:Identifier>"
@@ -167,7 +167,7 @@ public class ItemResource {
                     + "<ows:Identifier>input</ows:Identifier>"
                     + "<wps:Data>"
                     + "<wps:ComplexData mimeType=\"text/xml\">"
-                    + response.getEntity().toString()
+                    + xmlWithoutHeader
                     + "</wps:ComplexData>"
                     + "</wps:Data>"
                     + "</wps:Input>"
