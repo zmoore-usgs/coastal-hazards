@@ -1,11 +1,15 @@
 package gov.usgs.cida.utilities.gov.usa.go;
 
+import com.google.gson.Gson;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.HttpClientSingleton;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
@@ -71,4 +75,23 @@ public class GoUsaGovUtils {
 		HttpClient httpClient = HttpClientSingleton.getInstance();
 		return httpClient.execute(httpGet, new BasicResponseHandler());
 	}
+    
+    public static String getUrlFromResponse(String response) {
+        String result = null;
+        Map<String, Object> map = new Gson().fromJson(response, HashMap.class);
+        if (map.containsKey("response")) {
+            Map<String, Object> responseMap = (Map)map.get("response");
+            if (responseMap.containsKey("data")) {
+                Map<String, Object> dataMap = (Map)responseMap.get("data");
+                if (dataMap.containsKey("entry")) {
+                    List<Object> entries = (List)dataMap.get("entry");
+                    Map<String, String> urlMap = (Map)entries.get(0);
+                    if (urlMap.containsKey("short_url")) {
+                        result = urlMap.get("short_url");
+                    }
+                }
+            }
+        }
+        return result;
+    }
 }

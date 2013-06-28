@@ -5,9 +5,15 @@
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-    <include file="change1.xml" relativeToChangelogFile="true"/>
-    <include file="change2.xml" relativeToChangelogFile="true"/>
-    <include file="change3.xml" relativeToChangelogFile="true"/>
-    <include file="change4.xml" relativeToChangelogFile="true"/>
-    <include file="change5.xml" relativeToChangelogFile="true"/>
+    <changeSet author="jiwalker" id="change5-1">
+        <createTable tableName="tinygov">
+            <column name="full_url" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tiny_url" type="VARCHAR(64)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jiwalker" id="change5-2">
+        <addPrimaryKey columnNames="full_url" constraintName="tinygov_pkey" tableName="tinygov"/>
+    </changeSet>
 </databaseChangeLog>
