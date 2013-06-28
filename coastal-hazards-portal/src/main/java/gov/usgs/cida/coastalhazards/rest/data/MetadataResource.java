@@ -34,12 +34,10 @@ public class MetadataResource {
 
 	private static int FILE_UPLOAD_MAX_SIZE = 15728640;
 	private static String FILENAME_PARAM = "qqfile";
-	private static DynamicReadOnlyProperties props = null;
 	private static File UPLOAD_DIR;
 
 	public MetadataResource() {
 		super();
-		props = JNDISingleton.getInstance();
 		UPLOAD_DIR = new File(FileUtils.getTempDirectoryPath() + "/metadata-upload");
 	}
 

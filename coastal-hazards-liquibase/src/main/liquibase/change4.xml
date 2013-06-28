@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet author="jiwalker" id="1372360950095-1">
+        <dropColumn tableName="summary" columnName="full_text"/>
+        <dropColumn tableName="summary" columnName="medium"/>
+        <dropColumn tableName="summary" columnName="tiny"/>
+        <addColumn tableName="summary">
+            <column name="medium_text" type="VARCHAR(2048)"/>
+            <column name="medium_title" type="VARCHAR(1024)"/>
+            <column name="tiny_text" type="VARCHAR(512)"/>
+            <column name="full_id" type="INT8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jiwalker" id="1372360950095-2">
+        <dropColumn tableName="item" columnName="wmsservice"/>
+        <dropColumn tableName="item" columnName="wfsservice"/>
+        <addColumn tableName="item">
+            <column name="wfs_endpoint" type="VARCHAR(255)"/>
+            <column name="wfs_typename" type="VARCHAR(255)"/>
+            <column name="wms_endpoint" type="VARCHAR(255)"/>
+            <column name="wms_layers" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jiwalker" id="1372360950095-3">
+        <createTable tableName="full_summary">
+            <column name="id" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="VARCHAR(64000)"/>
+            <column name="title" type="VARCHAR(1024)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jiwalker" id="1372360950095-4">
+        <createTable tableName="full_publications">
+            <column name="full_id" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="link" type="VARCHAR(255)"/>
+            <column name="title" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jiwalker" id="1372360950095-5">
+        <addPrimaryKey columnNames="id" constraintName="full_summary_pkey" tableName="full_summary"/>
+    </changeSet>
+    <changeSet author="jiwalker" id="1372360950095-6">
+        <addForeignKeyConstraint baseColumnNames="full_id" baseTableName="summary" constraintName="fk_ox5yvuyldud5gij3u4c90pyri" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="full_summary"/>
+    </changeSet>
+    <changeSet author="jiwalker" id="1372360950095-7">
+        <addForeignKeyConstraint baseColumnNames="full_id" baseTableName="full_publications" constraintName="fk_jbq09el4j5pm4j56emfcag2uq" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="full_summary"/>
+    </changeSet>
+</databaseChangeLog>
