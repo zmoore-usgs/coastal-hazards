@@ -1,24 +1,26 @@
 var CCH = {
 	config: {
 		metadataToken: '',
+		bbox: [],
+		type: '',
 		endpoint: {
 			wfs: '',
+			wfsFullpath: '',
 			wfsValid: false,
 			wfsCaps: null,
 			wms: '',
+			wmsFullpath: '',
 			wmsValid: false,
-			type: ''
+			servertype: ''
 		}
 	},
 	items: []
 };
-
 $(document).ready(function() {
 
-	$('#publish-publish-button').on('click', bindPublishButton);
-	$('#publish-services-wfs').on('blur', bindWFSEntry);
-	$('#publish-services-wms').on('blur', bindWMSEntry);
-
+	$('#publish-publish-button').on('click', publishButtonClickHandler);
+	$('#publish-services-wfs').on('blur', wfsInputboxBlurHandler);
+	$('#publish-services-wms').on('blur', wmsInputBoxBlurHandler);
 	new qq.FineUploader({
 		element: $('#publish-metadata-upload-button')[0],
 		autoUpload: true,
@@ -48,36 +50,33 @@ $(document).ready(function() {
 			}
 		}
 	});
-
 	$('.publish-select-type-type').val($('#publish-select-type-type option:first').val()).trigger('change');
 });
-
-var bindWFSEntry = function(evt) {
+var wfsInputboxBlurHandler = function(evt) {
 	evt.stopPropagation();
 	var value = evt.target.value;
 	var endpoint = buildServiceEndpoint(value);
-
-	if (endpoint.toLowerCase() === CCH.config.endpoint.wms) {
+	if (!endpoint || endpoint.toLowerCase() === CCH.config.endpoint.wms) {
 		return;
 	}
 	;
-
 	if (endpoint !== null && endpoint.toLowerCase() !== CCH.config.endpoint.wfs) {
 		CCH.config.endpoint.wfs = endpoint;
+		CCH.config.type = '';
 		getWFSCapabilities({
 			endpoint: endpoint,
 			callbacks: {
 				success: [
 					function(caps) {
 						var slBox = $('#publish-services-types');
-						slBox.off('change', bindServices);
+						slBox.off('change', serviceTypesDropdownChangeHandler);
 						slBox.empty();
 						if (caps && caps.featureTypeList.featureTypes.length) {
+							CCH.config.endpoint.wfsFullpath = getFullEndpoint($('#publish-services-wfs').val());
 							CCH.config.endpoint.wfsValid = true;
 							CCH.config.endpoint.wfsCaps = caps;
-
 							var namespace;
-							if (CCH.config.endpoint.type === 'geoserver') {
+							if (CCH.config.endpoint.servertype === 'geoserver') {
 								namespace = caps.featureTypeList.featureTypes[0].featureNS;
 							} else {
 								namespace = caps.service.name;
@@ -100,7 +99,7 @@ var bindWFSEntry = function(evt) {
 									.addClass('invalid')
 									.html('Invalid');
 						}
-						slBox.on('change', bindServices);
+						slBox.on('change', serviceTypesDropdownChangeHandler);
 						slBox.trigger('change');
 					}
 				]
@@ -113,17 +112,14 @@ var bindWFSEntry = function(evt) {
 				.html('Invalid');
 	}
 };
-
-var bindWMSEntry = function(evt) {
+var wmsInputBoxBlurHandler = function(evt) {
 	evt.stopPropagation();
 	var value = evt.target.value;
 	var endpoint = buildServiceEndpoint(value);
-
-	if (endpoint.toLowerCase() === CCH.config.endpoint.wms) {
+	if (!endpoint || endpoint.toLowerCase() === CCH.config.endpoint.wms) {
 		return;
 	}
 	;
-
 	if (endpoint !== null) {
 		CCH.config.endpoint.wms = endpoint;
 		getWMSCapabilities({
@@ -132,12 +128,12 @@ var bindWMSEntry = function(evt) {
 				success: [
 					function(caps) {
 						var slBox = $('#publish-services-layers');
-						slBox.off('change', bindServices);
+						slBox.off('change', wmsLayersDropdownChangeHandler);
 						slBox.empty();
 						if (caps && caps.capability.layers.length) {
+							CCH.config.endpoint.wfsFullpath = getFullEndpoint($('#publish-services-wms').val());
 							CCH.config.endpoint.wmsValid = true;
 							CCH.config.endpoint.wmsCaps = caps;
-
 							caps.capability.layers.each(function(l) {
 								slBox.append(
 										$('<option />').attr('value', l.name).html(l.name)
@@ -155,7 +151,7 @@ var bindWMSEntry = function(evt) {
 									.addClass('invalid')
 									.html('Invalid');
 						}
-						slBox.on('change', bindLayers);
+						slBox.on('change', wmsLayersDropdownChangeHandler);
 						slBox.trigger('change');
 					}
 				]
@@ -168,7 +164,6 @@ var bindWMSEntry = function(evt) {
 				.html('Invalid');
 	}
 };
-
 var buildServiceEndpoint = function(endpoint) {
 	var updatedEndpoint = null;
 	var urlIndex = 0;
@@ -176,15 +171,15 @@ var buildServiceEndpoint = function(endpoint) {
 		if (endpoint.toLowerCase().has('coastalmap.marine.usgs.gov')) {
 			urlIndex = endpoint.indexOf('cmgp/') + 5;
 			updatedEndpoint = contextPath + '/marine/' + endpoint.substring(urlIndex);
-			CCH.config.endpoint.type = 'arcgis';
+			CCH.config.endpoint.servertype = 'arcgis';
 		} else if (endpoint.toLowerCase().has('olga.er.usgs.gov')) {
 			urlIndex = endpoint.indexOf('services') + 8;
 			updatedEndpoint = contextPath + '/stpgis/' + endpoint.substring(urlIndex);
-			CCH.config.endpoint.type = 'arcgis';
+			CCH.config.endpoint.servertype = 'arcgis';
 		} else if (endpoint.toLowerCase().has('cida.usgs.gov')) {
 			urlIndex = endpoint.indexOf('geoserver') + 10;
 			updatedEndpoint = contextPath + '/cidags/' + endpoint.substring(urlIndex);
-			CCH.config.endpoint.type = 'geoserver';
+			CCH.config.endpoint.servertype = 'geoserver';
 		}
 		var indexOfQueryStart = updatedEndpoint ? updatedEndpoint.indexOf('?') : -1;
 		if (indexOfQueryStart !== -1) {
@@ -193,9 +188,8 @@ var buildServiceEndpoint = function(endpoint) {
 	}
 	return updatedEndpoint;
 };
-
 var getWFSCapabilities = function(args) {
-	args = args || {}
+	args = args || {};
 	var endpoint = args.endpoint;
 	var callbacks = args.callbacks || {
 		success: [],
@@ -220,9 +214,8 @@ var getWFSCapabilities = function(args) {
 		}
 	});
 };
-
 var getWMSCapabilities = function(args) {
-	args = args || {}
+	args = args || {};
 	var endpoint = args.endpoint;
 	var callbacks = args.callbacks || {
 		success: [],
@@ -247,15 +240,12 @@ var getWMSCapabilities = function(args) {
 		}
 	});
 };
-
 var describeFeatureType = function(args) {
 	args = args || {};
-
 	var callbacks = args.callbacks || {
 		success: [],
 		error: []
 	};
-
 	$.ajax(CCH.config.endpoint.wfs, {
 		data: {
 			request: 'DescribeFeaturetype',
@@ -276,8 +266,7 @@ var describeFeatureType = function(args) {
 		}
 	});
 };
-
-var bindServices = function(evt) {
+var serviceTypesDropdownChangeHandler = function(evt) {
 	var val = evt.target.value;
 	var namespace = val.split(':')[0];
 	var layer = val.split(':')[1];
@@ -301,6 +290,11 @@ var bindServices = function(evt) {
 							if (invalidAttribute) {
 								nameSpan.addClass('muted');
 								cb.attr('disabled', 'true');
+							} else {
+								if (!CCH.config.type) {
+									// Using the attribute, match it to a type
+									CCH.config.type = deriveTypeFromAttribute(nameTlc);
+								}
 							}
 							var previewButton = $('<button />').addClass('publish-preview-button btn disabled').attr('id', 'btn-preview-' + name).attr('name', name).html('Preview');
 							var controls = $('<span />').addClass('publish-container-actions').append(previewButton);
@@ -315,31 +309,69 @@ var bindServices = function(evt) {
 		}
 	});
 };
+var deriveTypeFromAttribute = function(name) {
+	if (historicAttributes.indexOf(name) !== -1) {
+		return 'historical';
+	} else if (vulnAttributes.indexOf(name) !== -1) {
+		return 'vulnerability';
+	} else if (stormAttributes.indexOf(name) !== -1) {
+		return 'storms';
+	} else {
+		return '';
+	}
+};
+var wmsLayersDropdownChangeHandler = function(evt) {
+	var wmsLayer = CCH.config.endpoint.wmsCaps.capability.layers.find(function(l) {
+		return l.name === evt.target.value;
+	});
+	var bbox = wmsLayer.llbbox;//wmsLayer.bbox['EPSG:4326'].bbox;
+	CCH.config.bbox = bbox;
+};
 
 var previewButtonClickHandler = function(evt) {
 	var btn = evt.target;
 	var attName = $(btn).attr('name');
 	var metadataToken = CCH.config.metadataToken;
-	var wfs = CCH.config.endpoint.wfs;
-	var wms = CCH.config.endpoint.wms;
-	var type = $('#publish-services-types').val();
-	var layer = $('#publish-services-layers').val();
-	var item = {
-		attribute: attName,
+	var wfs = CCH.config.endpoint.wfsCaps.service.onlineResource;
+	var wms = CCH.config.endpoint.wmsCaps.service.href;
+	var wfsType = $('#publish-services-types').val();
+	var wmsLayers = $('#publish-services-layers').val();
+	var type = CCH.config.type;
+	var bbox = CCH.config.bbox;
+	var name = $('#publish-name-input').val();
+	var data = {
 		metadata: metadataToken,
-		wfs: wfs,
-		wms: wms,
+		wfsService: {
+			endpoint: wfs,
+			typeName: wfsType
+		},
+		wmsService: {
+			endpoint: wms,
+			typeName: wmsLayers
+		},
+		name: name,
 		type: type,
-		layer: layer
-	}
+		attr: attName,
+		bbox: bbox
+	};
+	$.ajax({
+		url: contextPath + '/data/item/preview',
+		type: 'POST',
+		data: JSON.stringify(data),
+		dataType: 'json',
+		contentType: "application/json; charset=utf-8",
+		success: function(data, status, xhr) {
+			var a = 1;
+		},
+		error: function(xhr, status, error) {
 
+		}
+	});
 };
-
-var bindPublishButton = function(evt) {
+var publishButtonClickHandler = function(evt) {
 	var btn = evt.target;
 	var attName = $(btn).attr('name');
 };
-
 var bindCheckbox = function(evt) {
 	var cb = evt.target;
 	var value = cb.value;
@@ -355,8 +387,20 @@ var bindCheckbox = function(evt) {
 	}
 };
 
+var getFullEndpoint = function(val) {
+	var queryBegin = val.indexOf('?');
+	var fullPath;
+
+	if (queryBegin === -1) {
+		fullPath = val;
+	} else {
+		fullPath = val.substring(0, queryBegin);
+	}
+
+	return fullPath;
+};
 
 var historicAttributes = ['date_', 'lrr', 'wlr', 'sce', 'nsm', 'epr'];
-var vulnAttributes = ['waverisk', 'tiderisk', 'sloperisk', 'errrisk', 'slrisk', 'cvirisk'];
+var vulnAttributes = ['waverisk', 'tiderisk', 'sloperisk', 'errrisk', 'slrisk', 'cvirisk', 'rslr', 'mwh', 'tr', 'e_rate', 'peros2', 'peros1', 'pstable', 'pacc1', 'pacc2'];
 var stormAttributes = ['pcol1', 'pcol2', 'pcol3', 'pcol4', 'pcol5', 'povw1', 'povw2', 'povw3', 'povw4', 'povw5', 'pind1', 'pind2', 'pind3', 'pind4', 'pind5'];
 var combinedAttributes = historicAttributes.concat(vulnAttributes, stormAttributes);

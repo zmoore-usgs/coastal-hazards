@@ -47,10 +47,14 @@
 				width: 70%;
 			}
 			
+			#publish-name-input {
+				width: 70%;
+			}
+
 			.publish-container-actions {
 				margin-left : 15px;
 			}
-			
+
 			.name-span {
 				width: auto !important;
 			}
@@ -65,7 +69,7 @@
 			<c:when test='${empty pageContext.session.getAttribute("oid-info")}'>
 				Could not find your log-in info. 
 				<br />
-				<a href="<%=request.getContextPath()%>/publish">Try agai???n?</a>
+				<a href="<%=request.getContextPath()%>/publish">Try again?</a>
 				<br />
 				<a href="<%=request.getContextPath()%>/">Go to Coastal Hazards Portal?</a>
 			</c:when>
@@ -91,6 +95,13 @@
 									<div class="well well-small">
 										<span class="publish-container-metadata">
 											Metadata&nbsp;&nbsp;<span id="publish-metadata-upload-button">Upload Metadata</span><span id="publish-metadata-validate"></span>
+										</span>
+									</div>
+								</div>
+								<div class="publish-name-container-row row-fluid">
+									<div class="well well-small">
+										<span id="publish-container-name">
+											Name: <input type="text" id="publish-name-input" />
 										</span>
 									</div>
 								</div>
