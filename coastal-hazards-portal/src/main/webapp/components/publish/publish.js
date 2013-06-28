@@ -378,44 +378,42 @@ var publishButtonClickHandler = function(evt) {
 		return cb.value;
 	}).toArray();
 
-	for (var attIdx = 0; attIdx < attributes; attIdx++) {
-		var data = {
-			metadata: CCH.config.metadataToken,
-			wfsService: {
-				endpoint: CCH.config.endpoint.wfsCaps.service.onlineResource,
-				typeName: $('#publish-services-types').val()
-			},
-			wmsService: {
-				endpoint: CCH.config.endpoint.wmsCaps.service.href,
-				layers: $('#publish-services-layers').val()
-			},
-			name: $('#publish-name-input').val(),
-			type: CCH.config.type,
-			attr: attributes[attIdx],
-			bbox: CCH.config.bbox
-		};
+	var data = {
+		metadata: CCH.config.metadataToken,
+		wfsService: {
+			endpoint: CCH.config.endpoint.wfsCaps.service.onlineResource,
+			typeName: $('#publish-services-types').val()
+		},
+		wmsService: {
+			endpoint: CCH.config.endpoint.wmsCaps.service.href,
+			layers: $('#publish-services-layers').val()
+		},
+		name: $('#publish-name-input').val(),
+		type: CCH.config.type,
+		attr: attributes,
+		bbox: CCH.config.bbox
+	};
 
-		$.ajax({
-			url: contextPath + '/data/item/',
-			type: 'POST',
-			data: JSON.stringify(data),
-			dataType: 'json',
-			contentType: "application/json; charset=utf-8",
-			success: function(data, status, xhr) {
-				var id = data.id;
-				$('body').append(
-						$('<a />').attr({
-					'href': contextPath + '/ui/item/' + id,
-					'id': 'preview-link'
-				}).addClass('hidden'));
-				$('#preview-link').trigger('click');
-				$('#preview-link').remove();
-			},
-			error: function(xhr, status, error) {
-				// TODO- Handle this
-			}
-		});
-	}
+	$.ajax({
+		url: contextPath + '/data/item/',
+		type: 'POST',
+		data: JSON.stringify(data),
+		dataType: 'json',
+		contentType: "application/json; charset=utf-8",
+		success: function(data, status, xhr) {
+			var id = data.id;
+			$('body').append(
+					$('<a />').attr({
+				'href': contextPath + '/ui/item/' + id,
+				'id': 'preview-link'
+			}).addClass('hidden'));
+			$('#preview-link').trigger('click');
+			$('#preview-link').remove();
+		},
+		error: function(xhr, status, error) {
+			// TODO- Handle this
+		}
+	});
 
 };
 
