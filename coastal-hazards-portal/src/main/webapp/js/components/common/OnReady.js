@@ -71,7 +71,7 @@ $(document).ready(function() {
 			var itemId = CCH.CONFIG.id;
 			splashUpdate('Loading Item With ID ' + itemId);
 			CCH.items.load({
-//				items: [itemId],
+				items: [itemId],
 				callbacks: {
 					success: [
 						function() {
@@ -89,7 +89,8 @@ $(document).ready(function() {
 			});
 		} else if (type === 'VIEW') {
 			splashUpdate("Initializing Session...");
-			CCH.session.init({
+			CCH.session.load({
+				sid : CCH.CONFIG.id,
 				callbacks: {
 					success: [
 						function() {

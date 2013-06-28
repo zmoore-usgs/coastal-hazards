@@ -347,7 +347,7 @@ var previewButtonClickHandler = function(evt) {
 		},
 		wmsService: {
 			endpoint: wms,
-			typeName: wmsLayers
+			layers: wmsLayers
 		},
 		name: name,
 		type: type,
