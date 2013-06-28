@@ -15,8 +15,7 @@ $(document).ready(function() {
 	CCH.cards = new CCH.Objects.Cards({
 		navPinControlCount: $('#app-navbar-pin-control-pincount'),
 		navPinControlButton: $('#app-navbar-pin-control-button'),
-		navPinControlDropdownButton: $('#app-navbar-pin-control-dropdown-button'),
-		descrContainers: $('.description-container')
+		navPinControlDropdownButton: $('#app-navbar-pin-control-dropdown-button')
 	}).init();
 
 	splashUpdate("Initializing Search Subsystem...");
