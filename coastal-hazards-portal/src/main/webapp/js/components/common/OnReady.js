@@ -88,18 +88,40 @@ $(document).ready(function() {
 				}
 			});
 		} else if (type === 'VIEW') {
-			splashUpdate("Initializing Session...");
+			splashUpdate("Initializing Session " + CCH.CONFIG.id);
 			CCH.session.load({
-				sid : CCH.CONFIG.id,
+				sid: CCH.CONFIG.id,
 				callbacks: {
 					success: [
 						function() {
-							CCH.ui.removeOverlay();
+							CCH.items.load({
+								items: CCH.session.getSession().items.map(function(i){ return i.id }),
+								callbacks: {
+									success: [
+										function() {
+											CCH.ui.removeOverlay();
+										}
+									],
+									error: [
+										function(jqXHR, textStatus, errorThrown) {
+											splashUpdate("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.");
+											LOG.error(errorThrown + ' : ' + jqXHR.responseText);
+											$('#splash-spinner').fadeOut(2000);
+										}
+									]
+								}
+							});
 						}
 					],
 					error: [
 						function(jqXHR, textStatus, errorThrown) {
-							splashUpdate("<b>There was an error attempting to load session.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.");
+							var continueLink = $('<a />').attr('href', CCH.CONFIG.contextPath).html('Click to continue');
+							if (404 === jqXHR.status) {
+								splashUpdate("<b>View Not Found</b><br />The view you are attempting to load no longer exists.<br />");
+							} else {
+								splashUpdate("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br />");
+							}
+							$('#splash-status-update').append(continueLink);
 							LOG.error(errorThrown + ' : ' + jqXHR.responseText);
 							$('#splash-spinner').fadeOut(2000);
 						}
@@ -117,7 +139,12 @@ $(document).ready(function() {
 				],
 				error: [
 					function(jqXHR, textStatus, errorThrown) {
-						splashUpdate("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.");
+						var continueLink = $('<a />').attr('href', CCH.config.contextPath).html('Click to continue');
+						if (404 === jqXHR.status) {
+							splashUpdate("<b>View Not Found</b><br />The view you are attempting to load no longer exists.<br />" + continueLink);
+						} else {
+							splashUpdate("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br />" + continueLink);
+						}
 						LOG.error(errorThrown + ' : ' + jqXHR.responseText);
 						$('#splash-spinner').fadeOut(2000);
 					}
