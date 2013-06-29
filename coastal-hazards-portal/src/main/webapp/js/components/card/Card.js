@@ -46,7 +46,11 @@ CCH.Objects.Card = function(args) {
 				me.container.addClass('description-container-historical');
 			}
 
-			var titleColumn = $('<span />').addClass('description-title span10').html(me.name);
+			// Link the title of the card to the info page for that card
+			var titleColumn = $('<a />').addClass('description-title span10').attr({
+				'href': CCH.CONFIG.contextPath + '/ui/info/item/' + me.item.id,
+				'target': '_blank'
+			}).html(me.name);
 
 			titleRow.append(titleColumn, me.pinButton);
 
