@@ -27,6 +27,8 @@ CCH.Objects.Slideshow = function(args) {
 			return sliderFunct.apply(iosslider, arguments);
 		},
 		createSlideshow: function(args) {
+			// A timer is necessary here - Not having one here causes the browser to
+			// crash. Guessing it is a resize loop issue
 			setTimeout(function(args) {
 				args = args || {};
 				var currentSizing = CCH.ui.getCurrentSizing();
@@ -34,8 +36,10 @@ CCH.Objects.Slideshow = function(args) {
 				$('#iosslider-container').iosSliderVertical('destroy');
 				$('#iosslider-container').iosSlider('destroy');
 				$('.iosSlider').remove();
+				$('.iosSliderVertical').remove();
 
-				var sliderContainer = $('<div />').addClass('iosSlider').attr('id', 'iosslider-container');
+				var classname = CCH.ui.getCurrentSizing() === 'large' ? 'iosSliderVertical' : 'iosSlider';
+				var sliderContainer = $('<div />').addClass(classname).attr('id', 'iosslider-container');
 				var sliderUl = $('<div />').addClass('slider').attr('id', 'iosslider-slider');
 				sliderContainer.append(sliderUl);
 				$('#description-wrapper').append(sliderContainer);
@@ -214,6 +218,6 @@ CCH.Objects.Slideshow = function(args) {
 
 			}, 1000, args);
 		}
-	})
+	});
 
 };
