@@ -10,6 +10,23 @@ $(document).ready(function() {
 	CCH.LOG = LOG;
 
 	CCH.session = new CCH.Objects.Session().init();
+
+	splashUpdate("Initializing UI...");
+	CCH.ui = CCH.Objects.UI({
+		itemSearchModalWindow: $('#item-search-modal'),
+		applicationContainer: $('#application-container'),
+		headerRow: $('#header-row'),
+		footerRow: $('#footer-row'),
+		mapdiv: $('#map'),
+		descriptionDiv: $('#description-wrapper'),
+		navbarPinButton: $('#app-navbar-pin-control-button'),
+		navbarDropdownIcon: $('#app-navbar-pin-control-icon'),
+		navbarClearMenuItem: $('#app-navbar-pin-control-clear'),
+		navbarShareMenuListItem: $('#app-navbar-pin-control-share-li'),
+		mapSearchContainer: $('#map-search-container'),
+		ccsArea: $('#ccsa-area')
+	}).init();
+
 	CCH.slideshow = new CCH.Objects.Slideshow().init();
 
 	splashUpdate("Initializing Card Subsystem...");
@@ -37,21 +54,7 @@ $(document).ready(function() {
 		searchQuery: $('.search-query')
 	}).init();
 
-	splashUpdate("Initializing UI...");
-	CCH.ui = CCH.Objects.UI({
-		itemSearchModalWindow: $('#item-search-modal'),
-		applicationContainer: $('#application-container'),
-		headerRow: $('#header-row'),
-		footerRow: $('#footer-row'),
-		mapdiv: $('#map'),
-		descriptionDiv: $('#description-wrapper'),
-		navbarPinButton: $('#app-navbar-pin-control-button'),
-		navbarDropdownIcon: $('#app-navbar-pin-control-icon'),
-		navbarClearMenuItem: $('#app-navbar-pin-control-clear'),
-		navbarShareMenuListItem: $('#app-navbar-pin-control-share-li'),
-		mapSearchContainer: $('#map-search-container'),
-		ccsArea: $('#ccsa-area')
-	}).init();
+
 
 	splashUpdate("Initializing Map...");
 	CCH.map = new CCH.Objects.Map({

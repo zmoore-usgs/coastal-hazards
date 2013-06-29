@@ -9,10 +9,10 @@ CCH.Objects.Slideshow = function(args) {
 				'cch.data.items.loaded': me.createSlideshow,
 				'cch.ui.resized': me.createSlideshow,
 				'cch.navbar.pinmenu.item.clear.click': me.createSlideshow,
-				'cch.ui.overlay.removed': me.resize,
 				'cch.navbar.pinmenu.button.pin.click': function(evt, items) {
 					me.createSlideshow(items);
-				}
+				},
+				'resize': me.resize
 			});
 			return me;
 		},
@@ -45,7 +45,7 @@ CCH.Objects.Slideshow = function(args) {
 				$(slide).removeClass('slider-slide-active');
 				$(slide).addClass('slider-slide-inactive');
 			});
-			
+
 			var currentSlide = $('#iosslider-container').data().args.currentSlideObject;
 			var currentSlideNumber = $('#iosslider-container').data().args.currentSlideNumber;
 			currentSlide.removeClass('slider-slide-inactive');
@@ -75,7 +75,7 @@ CCH.Objects.Slideshow = function(args) {
 			var descriptionWrapper = $('#description-wrapper');
 			var sliderContainer = $('.iosSlider');
 			var sliderList = $('.slider');
-			
+
 			sliderContainer.css('height', (descriptionWrapper.height()) + 'px');
 			sliderContainer.css('width', (descriptionWrapper.width()) + 'px');
 			sliderList.css('height', (descriptionWrapper.height()) + 'px');

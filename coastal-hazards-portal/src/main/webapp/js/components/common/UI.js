@@ -128,10 +128,14 @@ CCH.Objects.UI = function(args) {
 		},
 		removeOverlay: function() {
 			splashUpdate("Starting Application...");
+			
+			$(window).resize();
+			
 			$('#application-overlay').fadeOut(2000, function() {
 				$('#application-overlay').remove();
 				$(window).trigger('cch.ui.overlay.removed');
 				splashUpdate = undefined;
+				
 			});
 		},
 		getCurrentSizing: function() {
