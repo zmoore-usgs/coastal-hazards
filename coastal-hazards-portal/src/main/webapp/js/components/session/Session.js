@@ -3,7 +3,6 @@ CCH.Objects.Session = function(args) {
 	CCH.LOG.info('Session.js::constructor: Session class is initializing.');
 	var me = (this === window) ? {} : this;
 	args = args ? args : {};
-
 	me.session = {
 		// Pinned Items
 		items: [],
@@ -17,41 +16,7 @@ CCH.Objects.Session = function(args) {
 	return $.extend(me, {
 		init: function(args) {
 			args = args || {};
-
-			args.callbacks = args.callbacks || {
-				success: [],
-				error: []
-			};
-
-			args.callbacks.success.unshift(function() {
-				$(window).trigger('cch.data.session.initialized', {
-					error: false,
-					loaded: true
-				});
-			});
-
-			args.callbacks.error.unshift(function() {
-				$(window).trigger('cch.data.session.initialized', {
-					error: true,
-					loaded: false
-				});
-			});
-
-//			if (CCH.CONFIG.incomingSessionId) {
-//				me.load({
-//					sid: CCH.CONFIG.incomingSessionId,
-//					callbacks: args.callbacks
-//				});
-//			} else {
-//				$(window).trigger('cch.data.session.initialized', {
-//					error: false,
-//					loaded: false
-//				});
-//
-//				args.callbacks.success.each(function(func) {
-//					func();
-//				});
-//			}
+			return me;
 		},
 		toString: function() {
 			return JSON.stringify(me.session);
@@ -67,12 +32,14 @@ CCH.Objects.Session = function(args) {
 				error: []
 			};
 
-			args.callbacks.success.unshift(function(session) {
-				if (session) {
+			args.callbacks.success.unshift(function(json, textStatus, jqXHR) {
+				if (json) {
 					CCH.LOG.info("Session found on server. Updating current session.");
-					$.extend(true, me.session, JSON.parse(session));
+					$.extend(true, me.session, json);
+					$(window).trigger('cch.data.session.loaded.true');
 				} else {
 					CCH.LOG.info("Session not found on server.");
+					$(window).trigger('cch.data.session.loaded.false');
 				}
 			});
 
@@ -98,28 +65,16 @@ CCH.Objects.Session = function(args) {
 					contentType: 'application/json;charset=utf-8',
 					dataType: 'json',
 					success: function(json, textStatus, jqXHR) {
-						var session = null;
-						if (json) {
-							me.session = json;
-							if (successCallbacks && successCallbacks.length > 0) {
-								successCallbacks.each(function(callback) {
-									callback.call(context, session);
-								});
-							}
-						} else {
-							if (errorCallbacks && errorCallbacks.length > 0) {
-								errorCallbacks.each(function(callback) {
-									callback.call(context, null);
-								});
-							}
+						if (successCallbacks && successCallbacks.length > 0) {
+							successCallbacks.each(function(callback) {
+								callback.call(context, json, textStatus, jqXHR);
+							});
 						}
-
-
 					},
 					error: function(data, textStatus, jqXHR) {
 						if (errorCallbacks && errorCallbacks.length > 0) {
 							errorCallbacks.each(function(callback) {
-								callback.call(context, null);
+								callback.call(context, data, textStatus, jqXHR);
 							});
 						}
 					}

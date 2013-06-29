@@ -9,7 +9,7 @@ $(document).ready(function() {
 
 	CCH.LOG = LOG;
 
-	CCH.session = new CCH.Objects.Session();
+	CCH.session = new CCH.Objects.Session().init();
 
 	splashUpdate("Initializing Card Subsystem...");
 	CCH.cards = new CCH.Objects.Cards({
@@ -54,9 +54,7 @@ $(document).ready(function() {
 
 	splashUpdate("Initializing Map...");
 	CCH.map = new CCH.Objects.Map({
-		mapDiv: 'map',
-		maximizeDiv: $('#OpenLayers_Control_MaximizeDiv_innerImage'),
-		minimizeDiv: $('#OpenLayers_Control_MinimizeDiv_innerImage')
+		mapDiv: 'map'
 	}).init();
 
 	splashUpdate("Initializing OWS Services");
@@ -65,13 +63,18 @@ $(document).ready(function() {
 	splashUpdate("Initializing Items");
 	CCH.items = new CCH.Objects.Items().init();
 
+	// Decide how to load the application. 
+	// Depending on the 'idType' string, the application can be loaded either through:
+	// 'ITEM' = Load a single item from the database
+	// 'VIEW' = Load a session which can have zero, one or more items
+	// '' = Load the application normally
 	if (CCH.CONFIG.idType) {
 		var type = CCH.CONFIG.idType;
 		if (type === 'ITEM') {
 			var itemId = CCH.CONFIG.id;
 			splashUpdate('Loading Item With ID ' + itemId);
 			CCH.items.load({
-//				items: [itemId],
+				items: [itemId],
 				callbacks: {
 					success: [
 						function() {
@@ -88,17 +91,43 @@ $(document).ready(function() {
 				}
 			});
 		} else if (type === 'VIEW') {
-			splashUpdate("Initializing Session...");
-			CCH.session.init({
+			splashUpdate("Initializing Session " + CCH.CONFIG.id);
+			CCH.session.load({
+				sid: CCH.CONFIG.id,
 				callbacks: {
 					success: [
 						function() {
-							CCH.ui.removeOverlay();
+							var idList = CCH.session.getSession().items.map(function(i) {
+								return i.id
+							});
+							CCH.items.load({
+								items: idList,
+								callbacks: {
+									success: [
+										function() {
+											CCH.ui.removeOverlay();
+										}
+									],
+									error: [
+										function(jqXHR, textStatus, errorThrown) {
+											splashUpdate("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.");
+											LOG.error(errorThrown + ' : ' + jqXHR.responseText);
+											$('#splash-spinner').fadeOut(2000);
+										}
+									]
+								}
+							});
 						}
 					],
 					error: [
 						function(jqXHR, textStatus, errorThrown) {
-							splashUpdate("<b>There was an error attempting to load session.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.");
+							var continueLink = $('<a />').attr('href', CCH.CONFIG.contextPath).html('Click to continue');
+							if (404 === jqXHR.status) {
+								splashUpdate("<b>View Not Found</b><br />The view you are attempting to load no longer exists.<br />");
+							} else {
+								splashUpdate("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br />");
+							}
+							$('#splash-status-update').append(continueLink);
 							LOG.error(errorThrown + ' : ' + jqXHR.responseText);
 							$('#splash-spinner').fadeOut(2000);
 						}
@@ -116,7 +145,12 @@ $(document).ready(function() {
 				],
 				error: [
 					function(jqXHR, textStatus, errorThrown) {
-						splashUpdate("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.");
+						var continueLink = $('<a />').attr('href', CCH.config.contextPath).html('Click to continue');
+						if (404 === jqXHR.status) {
+							splashUpdate("<b>View Not Found</b><br />The view you are attempting to load no longer exists.<br />" + continueLink);
+						} else {
+							splashUpdate("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br />" + continueLink);
+						}
 						LOG.error(errorThrown + ' : ' + jqXHR.responseText);
 						$('#splash-spinner').fadeOut(2000);
 					}

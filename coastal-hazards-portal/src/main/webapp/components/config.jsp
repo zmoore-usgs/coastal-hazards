@@ -24,6 +24,7 @@
 		idType: '${param.idType}',
 		development: <%= development%>,
 		ajaxTimeout: 300000,
+		contextPath : '<%=request.getContextPath()%>',
 		popupHandling: {
 			isVisible: false,
 			clickedAway: false,

@@ -283,8 +283,8 @@ var serviceTypesDropdownChangeHandler = function(evt) {
 							var li = $('<li />').attr('id', 'li-' + name);
 							var cb = $('<input />').attr({
 								'type': 'checkbox',
-								'value': name
-							});
+								'value': name,
+							}).addClass('attr-checkbox');
 							var nameSpan = $('<span />').addClass('name-span').html(name);
 							var invalidAttribute = combinedAttributes.indexOf(nameTlc) === -1;
 							if (invalidAttribute) {
@@ -347,13 +347,14 @@ var previewButtonClickHandler = function(evt) {
 		},
 		wmsService: {
 			endpoint: wms,
-			typeName: wmsLayers
+			layers: wmsLayers
 		},
 		name: name,
 		type: type,
 		attr: attName,
 		bbox: bbox
 	};
+
 	$.ajax({
 		url: contextPath + '/data/item/preview',
 		type: 'POST',
@@ -361,17 +362,61 @@ var previewButtonClickHandler = function(evt) {
 		dataType: 'json',
 		contentType: "application/json; charset=utf-8",
 		success: function(data, status, xhr) {
-			var a = 1;
+			var id = data.id;
+			window.open(contextPath + '/ui/item/' + id);
 		},
 		error: function(xhr, status, error) {
-
+			// TODO- Handle this
 		}
 	});
 };
+
 var publishButtonClickHandler = function(evt) {
 	var btn = evt.target;
 	var attName = $(btn).attr('name');
+	var attributes = $(".attr-checkbox:checked").map(function(ind, cb) {
+		return cb.value;
+	}).toArray();
+
+	var data = {
+		metadata: CCH.config.metadataToken,
+		wfsService: {
+			endpoint: CCH.config.endpoint.wfsCaps.service.onlineResource,
+			typeName: $('#publish-services-types').val()
+		},
+		wmsService: {
+			endpoint: CCH.config.endpoint.wmsCaps.service.href,
+			layers: $('#publish-services-layers').val()
+		},
+		name: $('#publish-name-input').val(),
+		type: CCH.config.type,
+		attr: attributes,
+		bbox: CCH.config.bbox
+	};
+
+	$.ajax({
+		url: contextPath + '/data/item/',
+		type: 'POST',
+		data: JSON.stringify(data),
+		dataType: 'json',
+		contentType: "application/json; charset=utf-8",
+		success: function(data, status, xhr) {
+			var id = data.id;
+			$('body').append(
+					$('<a />').attr({
+				'href': contextPath + '/ui/item/' + id,
+				'id': 'preview-link'
+			}).addClass('hidden'));
+			$('#preview-link').trigger('click');
+			$('#preview-link').remove();
+		},
+		error: function(xhr, status, error) {
+			// TODO- Handle this
+		}
+	});
+
 };
+
 var bindCheckbox = function(evt) {
 	var cb = evt.target;
 	var value = cb.value;

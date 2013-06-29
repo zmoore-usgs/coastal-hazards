@@ -7,7 +7,7 @@ CCH.Objects.Cards = function(args) {
 	me.navPinControlCount = args.navPinControlCount;
 	me.navPinControlButton = args.navPinControlButton;
 	me.navPinControlDropdownButton = args.navPinControlDropdownButton;
-	
+
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
@@ -18,6 +18,9 @@ CCH.Objects.Cards = function(args) {
 					me.unpinAllCards();
 				},
 				'cch.ui.initialized': function(evt) {
+					me.updatePinnedCount();
+				},
+				'cch.data.session.loaded.true': function(evt) {
 					me.updatePinnedCount();
 				}
 			});

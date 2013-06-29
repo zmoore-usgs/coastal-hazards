@@ -23,6 +23,8 @@ public class ActivityResource {
         activityManager = new ActivityManager();
     }
 
+	// TODO: When using the /data/activity/ REST call, return a 404 if the item 
+	// the call attempts to update does not exist. Currently, responds with "success" : true
     @PUT
     @Path("/{type}/{id}")
     @Produces(MediaType.APPLICATION_JSON)
