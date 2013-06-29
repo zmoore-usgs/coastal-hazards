@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
+import java.net.URISyntaxException;
 
 /**
  *
