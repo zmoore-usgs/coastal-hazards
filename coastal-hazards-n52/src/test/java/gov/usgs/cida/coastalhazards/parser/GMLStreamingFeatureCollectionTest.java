@@ -1,4 +1,3 @@
-
 package gov.usgs.cida.coastalhazards.parser;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -55,9 +54,8 @@ public class GMLStreamingFeatureCollectionTest {
         URL url = getClass().getClassLoader().getResource("collection.xml");
         assertThat(url, notNullValue());
         assertThat(url.getProtocol(), equalTo("file"));
-        String path = url.getPath();
-        assertThat(path, notNullValue());
-        File file = new File(path);
+        assertThat(url.getPath(), notNullValue());
+        File file = new File(url.toURI());
         assertThat(file.canRead(), equalTo(true));
         return file;
     } 
