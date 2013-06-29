@@ -13,6 +13,7 @@ CCH.Objects.Card = function(args) {
 	me.size = args.size;
 	me.pinned = false;
 	me.pinButton = null;
+	me.layer = null;
 
 	return $.extend(me, {
 		init: function(args) {
@@ -65,7 +66,36 @@ CCH.Objects.Card = function(args) {
 				me.container.addClass('description-container-small');
 			}
 
+			me.layer = me.buildLayer();
+
 			return me;
+		},
+		buildLayer: function() {
+			var layer = new OpenLayers.Layer.WMS(
+					me.item.id,
+					me.item.wmsService.endpoint,
+					{
+						layers: me.item.wmsService.layers,
+						format: 'image/png',
+						transparent: true
+					},
+			{
+				projection: 'EPSG:3857',
+				isBaseLayer: false,
+				displayInLayerSwitcher: false,
+				isItemLayer: true, // CCH specific setting
+				bbox: me.bbox
+			});
+
+			if (me.type === "storms") {
+				// SLD will probably only work with one layer
+				// TODO - Fix with window.location.href but make sure actually works
+				layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + me.item.wmsService.layers + '/' + me.attr;
+				layer.params.STYLES = 'redwhite';
+			} else if (me.type === "historical" || me.type === "vulnerability") {
+				layer.params.STYLES = 'line';
+			}
+			return layer;
 		},
 		pin: function() {
 			me.pinButton.addClass('slider-card-pinned');
