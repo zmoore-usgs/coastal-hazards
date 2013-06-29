@@ -34,7 +34,7 @@ CCH.Objects.Card = function(args) {
 
 			me.pinButton = $('<span />')
 					.append($('<i />')
-					.addClass('slide-menu-icon icon-eye-open muted pull-right'))
+					.addClass('slide-menu-icon icon-pushpin muted pull-right'))
 					.on({
 				'mouseover': function(evt) {
 					$(this).find('i').removeClass('muted');
