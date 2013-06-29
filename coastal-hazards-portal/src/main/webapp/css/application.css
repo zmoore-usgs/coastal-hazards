@@ -62,6 +62,10 @@ img {
 	font-size: 2em;
 }
 
+.slide-menu-icon:hover {
+	cursor: pointer;
+}
+
 .slider-slide-active .description-container-storms {
 	background-image : url("../images/cards/StormsActive.svg");
 }
@@ -82,7 +86,7 @@ img {
 }
 
 .slider-card-pinned i {
-	color : #008F00; 
+	color : #FF0000; 
 }
 
 .marker-active {

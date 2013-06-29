@@ -34,7 +34,7 @@ CCH.Objects.Card = function(args) {
 
 			me.pinButton = $('<span />')
 					.append($('<i />')
-					.addClass('slide-menu-icon icon-pushpin muted pull-right'))
+					.addClass('slide-menu-icon icon-pushpin muted pull-left'))
 					.on({
 				'mouseover': function(evt) {
 					$(this).find('i').removeClass('muted');
@@ -48,12 +48,12 @@ CCH.Objects.Card = function(args) {
 			});
 
 			// Link the title of the card to the info page for that card
-			var titleColumn = $('<a />').addClass('description-title span10').attr({
+			var titleLink = $('<a />').addClass('description-title span10').attr({
 				'href': CCH.CONFIG.contextPath + '/ui/info/item/' + me.item.id,
 				'target': '_blank'
 			}).html(me.name);
 
-			titleRow.append(titleColumn, me.pinButton);
+			titleRow.append(me.pinButton, titleLink);
 			me.layer = me.buildLayer();
 
 			return me;
