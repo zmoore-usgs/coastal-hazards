@@ -9,7 +9,7 @@ $(document).ready(function() {
 
 	CCH.LOG = LOG;
 
-	CCH.session = new CCH.Objects.Session();
+	CCH.session = new CCH.Objects.Session().init();
 
 	splashUpdate("Initializing Card Subsystem...");
 	CCH.cards = new CCH.Objects.Cards({
@@ -54,9 +54,7 @@ $(document).ready(function() {
 
 	splashUpdate("Initializing Map...");
 	CCH.map = new CCH.Objects.Map({
-		mapDiv: 'map',
-		maximizeDiv: $('#OpenLayers_Control_MaximizeDiv_innerImage'),
-		minimizeDiv: $('#OpenLayers_Control_MinimizeDiv_innerImage')
+		mapDiv: 'map'
 	}).init();
 
 	splashUpdate("Initializing OWS Services");
@@ -65,6 +63,11 @@ $(document).ready(function() {
 	splashUpdate("Initializing Items");
 	CCH.items = new CCH.Objects.Items().init();
 
+	// Decide how to load the application. 
+	// Depending on the 'idType' string, the application can be loaded either through:
+	// 'ITEM' = Load a single item from the database
+	// 'VIEW' = Load a session which can have zero, one or more items
+	// '' = Load the application normally
 	if (CCH.CONFIG.idType) {
 		var type = CCH.CONFIG.idType;
 		if (type === 'ITEM') {
@@ -94,8 +97,11 @@ $(document).ready(function() {
 				callbacks: {
 					success: [
 						function() {
+							var idList = CCH.session.getSession().items.map(function(i) {
+								return i.id
+							});
 							CCH.items.load({
-								items: CCH.session.getSession().items.map(function(i){ return i.id }),
+								items: idList,
 								callbacks: {
 									success: [
 										function() {

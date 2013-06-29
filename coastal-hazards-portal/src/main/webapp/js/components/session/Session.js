@@ -3,7 +3,6 @@ CCH.Objects.Session = function(args) {
 	CCH.LOG.info('Session.js::constructor: Session class is initializing.');
 	var me = (this === window) ? {} : this;
 	args = args ? args : {};
-
 	me.session = {
 		// Pinned Items
 		items: [],
@@ -17,6 +16,7 @@ CCH.Objects.Session = function(args) {
 	return $.extend(me, {
 		init: function(args) {
 			args = args || {};
+			return me;
 		},
 		toString: function() {
 			return JSON.stringify(me.session);

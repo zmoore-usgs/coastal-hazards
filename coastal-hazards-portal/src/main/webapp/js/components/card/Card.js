@@ -15,7 +15,8 @@ CCH.Objects.Card = function(args) {
 	me.pinButton = null;
 
 	return $.extend(me, {
-		init: function() {
+		init: function(args) {
+			args = args || {};
 			return me;
 		},
 		create: function() {

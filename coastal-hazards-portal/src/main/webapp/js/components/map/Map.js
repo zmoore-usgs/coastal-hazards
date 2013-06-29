@@ -1,8 +1,6 @@
 CCH.Objects.Map = function(args) {
 	var me = (this === window) ? {} : this;
 	me.initialExtent = CCH.CONFIG.map.initialExtent;
-	me.maximizeDiv = args.maximizeDiv;
-	me.minimizeDiv = args.minimizeDiv;
 	me.mapDivId = args.mapDiv;
 	return $.extend(me, {
 		init: function() {
@@ -31,19 +29,17 @@ CCH.Objects.Map = function(args) {
 			me.map.zoomToExtent(me.initialExtent, true);
 
 			me.map.events.on({
-				'moveend': me.moveendCallack,
+				'moveend': me.moveendCallback,
 				'addlayer': me.addlayerCallback,
 				'changelayer': me.changelayerCallback
 			});
 
-			if (!CCH.session.getSession().baselayer) {
-				me.updateSession();
-			} else {
+			$('#OpenLayers_Control_MaximizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-maximize.png');
+			$('#OpenLayers_Control_MinimizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-minimize.png');
+
+			$(window).on('cch.data.session.loaded.true', function() {
 				me.updateFromSession();
-			}
-			
-			me.maximizeDiv.attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-maximize.png');
-			me.minimizeDiv.attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-minimize.png');
+			});
 
 			return me;
 		},
@@ -162,19 +158,40 @@ CCH.Objects.Map = function(args) {
 		},
 		updateFromSession: function() {
 			CCH.LOG.info('Map.js::updateFromSession()');
+			var session = CCH.session.getSession();
+
 			me.map.events.un({
 				'moveend': me.moveendCallback,
 				'addlayer': me.addlayerCallback,
 				'changelayer': me.changelayerCallback
 			});
-			var session = CCH.session.getSession();
-			var sessionBaselayer = me.map.getLayersByName(session.baselayer);
-			if (sessionBaselayer.length) {
-				me.map.setBaseLayer(sessionBaselayer[0]);
+
+			// If the session holds items, they will be loaded and if they are pinned,
+			// the map will zoom to those items that are pinned. However, if there 
+			// are no items in the session or if none are pinned, zoom to the bounding box 
+			// provided in the session
+			if (!session.items.length) {
+//				me.map.zoomToExtent(session.bbox, true);
+				me.map.setCenter([session.center[0], session.center[1]]);
+				me.map.zoomToScale(session.scale);
 			}
-			me.map.setCenter([session.center[0], session.center[1]]);
-			me.map.zoomToScale(session.scale);
-			
+
+			// A session will have a base layer set. Check if the base layer is 
+			// different from the current base layer. If so, switch to that base layer
+			if (session.baselayer && session.baselayer !== me.map.baseLayer.name) {
+				// Try to find the named base layer from the configuration object's
+				// list of layers. If found, set it to the map's new base layer
+				var baselayer = CCH.CONFIG.map.layers.baselayers.find(function(bl) {
+					return bl.name === session.baselayer;
+				})
+
+				if (baselayer) {
+					// The base layer from the config object has been found.
+					// Add it to the map as a new baselayer
+					me.map.setBaseLayer(baselayer);
+				}
+			}
+
 			me.map.events.on({
 				'moveend': me.moveendCallback,
 				'addlayer': me.addlayerCallback,
