@@ -19,9 +19,76 @@ CCH.Objects.Card = function(args) {
 			args = args || {};
 			return me;
 		},
-		create: function() {
+		create: function(args) {
+			args = args || {};
+			var applicationSize = CCH.ui.currentSizing;
+
+			// Build the large (landscape) version of the card. 
+			if (applicationSize === 'large') {
+				me.buildLargeCard();
+			} else if (applicationSize === 'small') {
+				me.buildSmallCard();
+			}
+			
+			return me.container;
+		},
+		/** 
+		 * Builds a version of the card intended for wide versions of the application
+		 * (Before bootstrap flips the UI to mobile view)
+		 */
+		buildLargeCard: function() {
 			me.container = $('<div />').addClass('description-container container-fluid');
-			var titleRow = $('<div />').addClass('description-title-row row-fluid');
+			var titleRow = $('<div />').addClass('description-title-row row-fluid unselectable');
+			var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
+			me.pinButton = $('<div />')
+					.append($('<i />')
+					.addClass('slide-menu-icon icon-eye-open slide-button muted pull-right'))
+					.on({
+				'mouseover': function(evt) {
+					$(this).find('i').removeClass('muted');
+				},
+				'mouseout': function(evt) {
+					$(this).find('i').addClass('muted');
+				},
+				'click': function() {
+					$(me).trigger('card-button-pin-clicked');
+				}
+			});
+
+			if (me.type === 'storms') {
+				me.container.addClass('description-container-storms');
+			} else if (me.type === 'vulnerability') {
+				me.container.addClass('description-container-vulnerability');
+			} else {
+				me.container.addClass('description-container-historical');
+			}
+
+			// Link the title of the card to the info page for that card
+			var titleColumn = $('<a />').addClass('description-title span10').attr({
+				'href': CCH.CONFIG.contextPath + '/ui/info/item/' + me.item.id,
+				'target': '_blank'
+			}).html(me.name);
+
+			titleRow.append(titleColumn, me.pinButton);
+
+			descriptionRow.append($('<p />').addClass('slide-vertical-description').html(me.summary.medium.text));
+
+			me.container.append(titleRow, descriptionRow);
+			if (me.size === 'large') {
+				me.container.addClass('description-container-large');
+			} else if (me.size === 'small') {
+				me.container.addClass('description-container-small');
+			}
+
+			me.container.data('card', me);
+		},
+		/** 
+		 * Builds a version of the card intended for narrow versions of the application
+		 * (After bootstrap flips the UI to mobile view)
+		 */
+		buildSmallCard: function() {
+			me.container = $('<div />').addClass('description-container container-fluid');
+			var titleRow = $('<div />').addClass('description-title-row row-fluid unselectable');
 			var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
 			me.pinButton = $('<div />')
 					.append($('<i />')
@@ -65,7 +132,6 @@ CCH.Objects.Card = function(args) {
 
 			me.container.data('card', me);
 
-			return me.container;
 		},
 		getAllCards: function() {
 			var descriptionContainers = $('.description-container');
