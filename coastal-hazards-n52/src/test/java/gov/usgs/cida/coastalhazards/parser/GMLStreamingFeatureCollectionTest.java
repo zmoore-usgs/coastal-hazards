@@ -20,7 +20,7 @@ public class GMLStreamingFeatureCollectionTest {
     }
 
     @Test
-    public void testSimpleWFSParse() {
+    public void testSimpleWFSParse() throws URISyntaxException {
         File file = getFile();
         assertThat(file, notNullValue());
         
@@ -50,7 +50,7 @@ public class GMLStreamingFeatureCollectionTest {
         
     }
     
-    private File getFile() {
+    private File getFile() throws URISyntaxException {
         URL url = getClass().getClassLoader().getResource("collection.xml");
         assertThat(url, notNullValue());
         assertThat(url.getProtocol(), equalTo("file"));
