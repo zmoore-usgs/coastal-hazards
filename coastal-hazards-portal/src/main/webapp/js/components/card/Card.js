@@ -29,7 +29,7 @@ CCH.Objects.Card = function(args) {
 					append($('<p />').addClass('slide-vertical-description').html(me.summary.medium.text));
 
 			me.container.
-					addClass('description-container-' + args.size, 'description-container-' + me.type).
+					addClass('description-container-' + args.size + ' description-container-' + me.type).
 					append(titleRow, descriptionRow);
 
 			me.pinButton = $('<span />')
