@@ -21,7 +21,7 @@ CCH.Objects.Card = function(args) {
 		},
 		create: function(args) {
 			args = args || {};
-			var applicationSize = CCH.ui.currentSizing;
+			var applicationSize = CCH.ui.getCurrentSizing();
 
 			// Build the large (landscape) version of the card. 
 			if (applicationSize === 'large') {

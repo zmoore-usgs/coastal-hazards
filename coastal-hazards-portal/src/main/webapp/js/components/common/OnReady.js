@@ -10,6 +10,7 @@ $(document).ready(function() {
 	CCH.LOG = LOG;
 
 	CCH.session = new CCH.Objects.Session().init();
+	CCH.slideshow = new CCH.Objects.Slideshow().init();
 
 	splashUpdate("Initializing Card Subsystem...");
 	CCH.cards = new CCH.Objects.Cards({
