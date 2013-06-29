@@ -6,6 +6,13 @@ CCH.Objects.Map = function(args) {
 		init: function() {
 			CCH.LOG.info('Map.js::init():Map class is initializing.');
 
+			// Bind application event handlers
+			$(window).on('cch.data.session.loaded.true', function() {
+				// A session has been loaded. The map will be rebuilt from the session
+				me.updateFromSession();
+			});
+			
+			CCH.LOG.debug('Map.js::init():Building map object');
 			me.map = new OpenLayers.Map(me.mapDivId, {
 				projection: CCH.CONFIG.map.projection,
 				displayProjection: new OpenLayers.Projection(CCH.CONFIG.map.projection)
@@ -28,18 +35,16 @@ CCH.Objects.Map = function(args) {
 			CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);
 			me.map.zoomToExtent(me.initialExtent, true);
 
+			CCH.LOG.debug('Map.js::init():Binding map event handlers');
 			me.map.events.on({
 				'moveend': me.moveendCallback,
 				'addlayer': me.addlayerCallback,
 				'changelayer': me.changelayerCallback
 			});
 
+			CCH.LOG.debug('Map.js::init():Replacing map graphics');
 			$('#OpenLayers_Control_MaximizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-maximize.png');
 			$('#OpenLayers_Control_MinimizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-minimize.png');
-
-			$(window).on('cch.data.session.loaded.true', function() {
-				me.updateFromSession();
-			});
 
 			return me;
 		},
@@ -157,9 +162,12 @@ CCH.Objects.Map = function(args) {
 			me.map.zoomToExtent(bounds, false);
 		},
 		updateFromSession: function() {
-			CCH.LOG.info('Map.js::updateFromSession()');
+			CCH.LOG.info('Map.js::updateFromSession():Map being recreated from session');
 			var session = CCH.session.getSession();
 
+			// Becaue we don't want these events to write back to the session, 
+			// unhook the event handlers for map events tied to session writing.
+			// They will be rehooked later
 			me.map.events.un({
 				'moveend': me.moveendCallback,
 				'addlayer': me.addlayerCallback,
@@ -171,7 +179,6 @@ CCH.Objects.Map = function(args) {
 			// are no items in the session or if none are pinned, zoom to the bounding box 
 			// provided in the session
 			if (!session.items.length) {
-//				me.map.zoomToExtent(session.bbox, true);
 				me.map.setCenter([session.center[0], session.center[1]]);
 				me.map.zoomToScale(session.scale);
 			}
@@ -183,7 +190,7 @@ CCH.Objects.Map = function(args) {
 				// list of layers. If found, set it to the map's new base layer
 				var baselayer = CCH.CONFIG.map.layers.baselayers.find(function(bl) {
 					return bl.name === session.baselayer;
-				})
+				});
 
 				if (baselayer) {
 					// The base layer from the config object has been found.
@@ -192,6 +199,8 @@ CCH.Objects.Map = function(args) {
 				}
 			}
 
+			// We're done altering the map to fit the session. Let's re-register those 
+			// events we disconnected earlier
 			me.map.events.on({
 				'moveend': me.moveendCallback,
 				'addlayer': me.addlayerCallback,
