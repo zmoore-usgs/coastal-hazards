@@ -18,7 +18,7 @@
 
 				<span id="app-navbar-pin-control">
 					<div class="btn-group">
-						<button id='app-navbar-pin-control-button' class="btn btn-mini" href='#'><i id='app-navbar-pin-control-icon' class="icon-eye-open muted"></i>&nbsp;<span id='app-navbar-pin-control-pincount'>0</span></button>
+						<button id='app-navbar-pin-control-button' class="btn btn-mini" href='#'><i id='app-navbar-pin-control-icon' class="icon-pushpin muted"></i>&nbsp;<span id='app-navbar-pin-control-pincount'>0</span></button>
 						<button id='app-navbar-pin-control-dropdown-button' class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#"><span id='app-navbar-pin-control-caret' class="icon-caret-down"></span></button>
 						<ul class="dropdown-menu">
 							<li id='app-navbar-pin-control-clear-li'><a id='app-navbar-pin-control-clear' href="#">Clear Deck</a></li>

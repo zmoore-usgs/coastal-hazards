@@ -56,7 +56,7 @@
 	}
 	
 	.description-container-small i {
-		font-size: 0.65em;
+		font-size: 2em;
 	}
 	
 

@@ -41,9 +41,6 @@ img {
 	display : inline;
 }
 
-.slide-menu-icon-twitter {
-	color : #7EB3CD;
-}
 
 .description-description-row {
 	min-height : 100px;
@@ -63,6 +60,10 @@ img {
 
 .slide-menu-icon {
 	font-size: 2em;
+}
+
+.slide-menu-icon:hover {
+	cursor: pointer;
 }
 
 .slider-slide-active .description-container-storms {
@@ -85,7 +86,7 @@ img {
 }
 
 .slider-card-pinned i {
-	color : #008F00; 
+	color : #FF0000; 
 }
 
 .marker-active {

@@ -76,48 +76,12 @@
 								wrapDateLine: true
 							}
 					),
-					new OpenLayers.Layer.XYZ("Terrain",
-							"http://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/\${z}/\${y}/\${x}",
-							{
-								sphericalMercator: true,
-								isBaseLayer: true,
-								numZoomLevels: 14,
-								wrapDateLine: true
-							}
-					),
-					new OpenLayers.Layer.XYZ("Shaded Relief",
-							"http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/\${z}/\${y}/\${x}",
-							{
-								sphericalMercator: true,
-								isBaseLayer: true,
-								numZoomLevels: 14,
-								wrapDateLine: true
-							}
-					),
-					new OpenLayers.Layer.XYZ("Physical",
-							"http://services.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/\${z}/\${y}/\${x}",
-							{
-								sphericalMercator: true,
-								isBaseLayer: true,
-								numZoomLevels: 9,
-								wrapDateLine: true
-							}
-					),
 					new OpenLayers.Layer.XYZ("Ocean",
 							"http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/\${z}/\${y}/\${x}",
 							{
 								sphericalMercator: true,
 								isBaseLayer: true,
 								numZoomLevels: 17,
-								wrapDateLine: true
-							}
-					),
-					new OpenLayers.Layer.XYZ("ESRI World Imagery",
-							"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/\${z}/\${y}/\${x}",
-							{
-								sphericalMercator: true,
-								isBaseLayer: true,
-								numZoomLevels: 20,
 								wrapDateLine: true
 							}
 					)

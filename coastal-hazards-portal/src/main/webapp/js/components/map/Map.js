@@ -11,7 +11,7 @@ CCH.Objects.Map = function(args) {
 				// A session has been loaded. The map will be rebuilt from the session
 				me.updateFromSession();
 			});
-			
+
 			CCH.LOG.debug('Map.js::init():Building map object');
 			me.map = new OpenLayers.Map(me.mapDivId, {
 				projection: CCH.CONFIG.map.projection,
@@ -59,7 +59,8 @@ CCH.Objects.Map = function(args) {
 		 */
 		addBoundingBoxMarker: function(args) {
 			args = args || {};
-			var bbox = args.bbox;
+			var card = args.card;
+			var bbox = card.bbox;
 			var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913");
 			var layerBounds = OpenLayers.Bounds.fromArray(bbox);
 			var slideOrder = args.slideOrder;
@@ -81,18 +82,6 @@ CCH.Objects.Map = function(args) {
 			marker = new OpenLayers.Marker.Box(layerBounds);
 			me.boxLayer.addMarker(marker);
 
-			// Alter the marker visually 
-			var markerDiv = $(marker.div);
-			markerDiv.addClass('marker-active');
-			markerDiv.on({
-				'mouseover': function() {
-					$(this).addClass('marker-hover');
-				},
-				'mouseout': function() {
-					$(this).removeClass('marker-hover');
-				}
-			});
-
 			// Fade older markers out
 			var markerCt = me.boxLayer.markers.length;
 			for (var mInd = markerCt; mInd > 0; mInd--) {
@@ -103,22 +92,32 @@ CCH.Objects.Map = function(args) {
 				});
 			}
 
-			markerDiv.data('slideOrder', slideOrder);
-			markerDiv.data('bounds', layerBounds);
-			markerDiv.on({
-				click: function(evt) {
+			// Alter the marker visually 
+			var markerDiv = $(marker.div);
+			markerDiv.addClass('marker-active').data({
+				'slideOrder': slideOrder,
+				'bounds': layerBounds,
+				'cardId': card.item.id
+			}).on({
+				'mouseover': function() {
+					$(this).addClass('marker-hover');
+				},
+				'mouseout': function() {
+					$(this).removeClass('marker-hover');
+				},
+				'click': function(evt) {
 					var target = $(evt.target);
 					var slideOrder = target.data('slideOrder');
 					var bbox = target.data('bounds');
+					var cardId = target.data('cardId');
+					var card = CCH.cards.getById(cardId);
 
-					CCH.Slideshow.slider('goToSlide', slideOrder);
-					CCH.Slideshow.slider('autoSlidePause');
+					CCH.slideshow.slider('goToSlide', slideOrder);
+					CCH.slideshow.slider('autoSlidePause');
 
 					me.clearBoundingBoxMarkers();
 
-					var card = $('.slide:nth-child(' + slideOrder + ') .description-container').data('card');
 					var isPinned = card.pinned;
-
 					if (!isPinned) {
 						card.pinButton.trigger('click');
 					} else {
@@ -313,34 +312,8 @@ CCH.Objects.Map = function(args) {
 		},
 		displayData: function(args) {
 			var card = args.card;
-			var item = card.item;
-			var type = card.type;
-			if (me.map.getLayersByName(card.name).length !== -1) {
-				var layer = new OpenLayers.Layer.WMS(
-						card.name,
-						item.wmsService.endpoint,
-						{
-							layers: item.wmsService.layers,
-							format: 'image/png',
-							transparent: true
-						},
-				{
-					projection: 'EPSG:3857',
-					isBaseLayer: false,
-					displayInLayerSwitcher: false,
-					isItemLayer: true, // CCH specific setting
-					bbox: card.bbox
-				});
-
-				if (type === "storms") {
-					// SLD will probably only work with one layer
-					// TODO - Fix with window.location.href but make sure actually works
-					layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + item.wmsService.layers + '/' + card.attr;
-					layer.params.STYLES = 'redwhite';
-				} else if (type === "historical" || type === "storms") {
-					layer.params.STYLES = 'line';
-				}
-
+			if (me.map.getLayersByName(card.item.id).length === 0) {
+				var layer = card.layer;
 				me.map.addLayer(layer);
 				layer.redraw(true);
 			}

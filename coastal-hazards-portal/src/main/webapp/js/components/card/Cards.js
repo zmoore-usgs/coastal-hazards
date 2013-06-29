@@ -2,17 +2,16 @@ var CCH = CCH || {};
 CCH.Objects.Cards = function(args) {
 	args = args || {};
 	var me = (this === window) ? {} : this;
-	me.currentApplicationSize;
 	me.pinnedCount;
 	me.navPinControlCount = args.navPinControlCount;
 	me.navPinControlButton = args.navPinControlButton;
 	me.navPinControlDropdownButton = args.navPinControlDropdownButton;
-
+	me.cards = [];
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
 				'cch.ui.resized': function(evt, size) {
-					me.currentApplicationSize = size;
+					// Not yet
 				},
 				'cch.navbar.pinmenu.item.clear.click': function(evt) {
 					me.unpinAllCards();
@@ -27,15 +26,17 @@ CCH.Objects.Cards = function(args) {
 
 			return me;
 		},
+		/**
+		 * Builds a card to add to the card container 
+		 */
 		buildCard: function(args) {
 			var item = CCH.items.getById({
 				'id': args.itemId
 			});
 
 			var card = new CCH.Objects.Card({
-				'item': item,
-				'size': me.currentApplicationSize
-			});
+				'item': item
+			}).init();
 
 			$(card).on({
 				'card-button-pin-clicked': function(evt) {
@@ -50,7 +51,20 @@ CCH.Objects.Cards = function(args) {
 				}
 			});
 
-			return card.create();
+			return card;
+		},
+		addCard: function(card) {
+			if (me.cards.indexOf(card) === -1) {
+				me.cards.push(card);
+			}
+		},
+		getById: function(id) {
+			return me.cards.find(function(card) {
+				return card.item.id === id;
+			})
+		},
+		getCards: function() {
+			return me.cards;
 		},
 		unpinAllCards: function() {
 			var pinnedCards = me.getPinnedCards();
@@ -60,10 +74,8 @@ CCH.Objects.Cards = function(args) {
 		},
 		getPinnedCards: function() {
 			var pinnedCards = [];
-			var descrContainers = $('.description-container');
-			for (var ccIdx = 0; ccIdx < descrContainers.length; ccIdx++) {
-				var cardContainer = descrContainers[ccIdx];
-				var card = $(cardContainer).data('card');
+			for (var ccIdx = 0; ccIdx < me.cards.length; ccIdx++) {
+				var card  = me.cards[ccIdx];
 				if (card.pinned) {
 					pinnedCards.push(card);
 				}
