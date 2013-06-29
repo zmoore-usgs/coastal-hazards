@@ -9,6 +9,7 @@ CCH.Objects.Slideshow = function(args) {
 				'cch.data.items.loaded': me.createSlideshow,
 				'cch.ui.resized': me.createSlideshow,
 				'cch.navbar.pinmenu.item.clear.click': me.createSlideshow,
+				'cch.ui.overlay.removed': me.resize,
 				'cch.navbar.pinmenu.button.pin.click': function(evt, items) {
 					me.createSlideshow(items);
 				}
@@ -24,7 +25,7 @@ CCH.Objects.Slideshow = function(args) {
 			} else if (currentSizing === 'small') {
 				sliderFunct = iosslider.iosSlider;
 			}
-			return sliderFunct.apply(iosslider, arguments);
+			return sliderFunct;
 		},
 		destroySlider: function() {
 			var container = $('#iosslider-container');
@@ -34,6 +35,103 @@ CCH.Objects.Slideshow = function(args) {
 			container.iosSlider('destroy');
 			container.remove();
 			$(window).trigger('cch.ui.slider.destroyed');
+		},
+		orientationChange: function(event) {
+			event.preventDefault();
+			me.createSlideshow();
+		},
+		toggleClassForActiveSlide: function() {
+			$('.slide').each(function(i, slide) {
+				$(slide).removeClass('slider-slide-active');
+				$(slide).addClass('slider-slide-inactive');
+			});
+			
+			var currentSlide = $('#iosslider-container').data().args.currentSlideObject;
+			var currentSlideNumber = $('#iosslider-container').data().args.currentSlideNumber;
+			currentSlide.removeClass('slider-slide-inactive');
+			currentSlide.addClass('slider-slide-active');
+
+			CCH.map.boxLayer.markers.each(function(mrk) {
+				$(mrk.div).removeClass('marker-active');
+				$(mrk.div).addClass('marker-inactive');
+			});
+
+			var cardId = $(currentSlide).attr('id');
+			var card = CCH.cards.getById(cardId);
+			CCH.map.addBoundingBoxMarker({
+				card: card,
+				fromProjection: 'EPSG:4326',
+				slideOrder: currentSlideNumber
+			});
+		},
+		resize: function() {
+			if ('large' === CCH.ui.getCurrentSizing()) {
+				me.resizeVertical();
+			} else if ('small' === CCH.ui.getCurrentSizing()) {
+				me.resizeHorizontal();
+			}
+		},
+		resizeHorizontal: function() {
+			var descriptionWrapper = $('#description-wrapper');
+			var sliderContainer = $('.iosSlider');
+			var sliderList = $('.slider');
+			
+			sliderContainer.css('height', (descriptionWrapper.height()) + 'px');
+			sliderContainer.css('width', (descriptionWrapper.width()) + 'px');
+			sliderList.css('height', (descriptionWrapper.height()) + 'px');
+
+			$('.slide').each(function(index, slide) {
+				var title = $(slide).find('.description-title-row');
+				var descr = $(slide).find('.description-description-row');
+				var descrDiv = $(descr).find('p');
+
+				var slideHeight = sliderContainer.height() - 10;
+
+				$(slide).css({
+					'height': slideHeight + 'px'
+				});
+
+				descr.css({
+					'height': slideHeight - title.height() + 'px'
+				});
+
+				descrDiv.css({
+					'max-height': descr.height()
+				});
+			});
+		},
+		resizeVertical: function() {
+			var sliderContainer = $('.iosSliderVertical');
+			var sliderList = $('.slider');
+			sliderContainer.css({
+				'height': $('#description-wrapper').height() + 'px'
+			});
+			sliderList.css({
+				'height': sliderContainer.height() + 'px'
+			});
+
+			$('.slide').each(function(index, slide) {
+				var title = $(slide).find('.description-title-row');
+				var descr = $(slide).find('.description-description-row');
+				var descrDiv = $(descr).find('p');
+
+				var slideHeight = title.height() + descrDiv.height();
+				if (slideHeight > (sliderContainer.height() - 10)) {
+					slideHeight = sliderContainer.height() - 10;
+				}
+
+				$(slide).css({
+					'height': slideHeight + 'px'
+				});
+
+				descr.css({
+					'height': slideHeight - title.height() + 'px'
+				});
+
+				descrDiv.css({
+					'max-height': descr.height()
+				});
+			});
 		},
 		createSlideshow: function(args) {
 			// A timer is necessary here - Not having one here causes the browser to
@@ -66,7 +164,7 @@ CCH.Objects.Slideshow = function(args) {
 							.addClass('slide well well-small')
 							.attr('id', result.id)
 							.append(card.container);
-					$('#iosslider-slider').append(slide);
+					slideList.append(slide);
 
 					// Append handlers to the card
 					$(card).on({
@@ -115,91 +213,6 @@ CCH.Objects.Slideshow = function(args) {
 					}
 				});
 
-				var resizeVertical = function(event) {
-					toggleClassForActiveSlide(event);
-
-					event.sliderContainerObject.css({
-						'height': $('#description-wrapper').height() + 'px'
-					});
-					event.sliderObject.css({
-						'height': event.sliderContainerObject.height() + 'px'
-					});
-
-					$('.slide').each(function(index, slide) {
-						var title = $(slide).find('.description-title-row');
-						var descr = $(slide).find('.description-description-row');
-						var descrDiv = $(descr).find('p');
-
-						var slideHeight = title.height() + descrDiv.height();
-						if (slideHeight > (event.sliderContainerObject.height() - 10)) {
-							slideHeight = event.sliderContainerObject.height() - 10;
-						}
-
-						$(slide).css({
-							'height': slideHeight + 'px'
-						});
-
-						descr.css({
-							'height': slideHeight - title.height() + 'px'
-						});
-
-						descrDiv.css({
-							'max-height': descr.height()
-						});
-					});
-				};
-
-				var resizeHorizontal = function(event) {
-					toggleClassForActiveSlide(event);
-					var container = $(event.sliderContainerObject).parent();
-					event.sliderContainerObject.css('height', (container.height()) + 'px');
-					event.sliderObject.css('height', (container.height()) + 'px');
-
-					$('.slide').each(function(index, slide) {
-						var title = $(slide).find('.description-title-row');
-						var descr = $(slide).find('.description-description-row');
-						var descrDiv = $(descr).find('p');
-
-						var slideHeight = event.sliderContainerObject.height() - 10;
-
-						$(slide).css({
-							'height': slideHeight + 'px'
-						});
-
-						descr.css({
-							'height': slideHeight - title.height() + 'px'
-						});
-
-						descrDiv.css({
-							'max-height': descr.height()
-						});
-					});
-				};
-
-				var toggleClassForActiveSlide = function(event) {
-					$('.slide').each(function(i, slide) {
-						$(slide).removeClass('slider-slide-active');
-						$(slide).addClass('slider-slide-inactive');
-					});
-
-					event.currentSlideObject.removeClass('slider-slide-inactive');
-					event.currentSlideObject.addClass('slider-slide-active');
-
-
-					CCH.map.boxLayer.markers.each(function(mrk) {
-						$(mrk.div).removeClass('marker-active');
-						$(mrk.div).addClass('marker-inactive');
-					});
-
-					var cardId = $(event.currentSlideObject[0]).attr('id');
-					var card = CCH.cards.getById(cardId);
-					CCH.map.addBoundingBoxMarker({
-						card : card,
-						fromProjection: 'EPSG:4326',
-						slideOrder: event.currentSlideNumber,
-					});
-				};
-
 				var defaultSliderOptions = {
 					desktopClickDrag: true,
 					snapToChildren: true,
@@ -208,29 +221,22 @@ CCH.Objects.Slideshow = function(args) {
 					autoSlide: true,
 					autoSlideTransTimer: 1500,
 					unselectableSelector: $('.unselectable'),
-					onSlideChange: toggleClassForActiveSlide
+					onSlideChange: me.toggleClassForActiveSlide,
+					onSliderLoaded: function() {
+						me.resize();
+						me.toggleClassForActiveSlide();
+					},
+					onSliderResize: me.resize
 				};
 				if (currentSizing === 'large') {
-					sliderContainer.iosSliderVertical($.extend(defaultSliderOptions, {
-						onSliderLoaded: resizeVertical,
-						onSliderResize: resizeVertical,
-					}));
+					sliderContainer.iosSliderVertical(defaultSliderOptions);
 				} else if (currentSizing === 'small') {
-					sliderContainer.iosSlider($.extend(defaultSliderOptions, {
-						onSliderLoaded: resizeHorizontal,
-						onSliderResize: resizeHorizontal,
-					}));
+					sliderContainer.iosSlider(defaultSliderOptions);
 				}
 
-				var orientationChange = function(event) {
-					event.preventDefault();
-					me.createSlideshow();
-				};
-
-				$(window).off('orientationchange', orientationChange);
-				$(window).on('orientationchange', orientationChange);
+				$(window).off('orientationchange', me.orientationChange);
+				$(window).on('orientationchange', me.orientationChange);
 				$(window).resize();
-
 			}, 1000, args);
 		}
 	});

@@ -30,8 +30,8 @@ CCH.Objects.UI = function(args) {
 			// Header fix
 			me.ccsArea.find('br').first().remove();
 
-			$(window).trigger('cch.ui.initialized');
 			$(window).resize();
+			$(window).trigger('cch.ui.initialized');
 			return me;
 		},
 		navbarMenuClickHandler: function() {
@@ -130,6 +130,7 @@ CCH.Objects.UI = function(args) {
 			splashUpdate("Starting Application...");
 			$('#application-overlay').fadeOut(2000, function() {
 				$('#application-overlay').remove();
+				$(window).trigger('cch.ui.overlay.removed');
 				splashUpdate = undefined;
 			});
 		},

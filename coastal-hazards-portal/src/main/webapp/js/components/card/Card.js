@@ -25,10 +25,16 @@ CCH.Objects.Card = function(args) {
 		buildCard: function(args) {
 			me.container = $('<div />').addClass('description-container container-fluid');
 			var titleRow = $('<div />').addClass('description-title-row row-fluid unselectable');
-			var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
-			me.pinButton = $('<div />')
+			var descriptionRow = $('<div />').addClass('description-description-row row-fluid').
+					append($('<p />').addClass('slide-vertical-description').html(me.summary.medium.text));
+
+			me.container.
+					addClass('description-container-' + args.size, 'description-container-' + me.type).
+					append(titleRow, descriptionRow);
+
+			me.pinButton = $('<span />')
 					.append($('<i />')
-					.addClass('slide-menu-icon icon-eye-open slide-button muted pull-right'))
+					.addClass('slide-menu-icon icon-eye-open muted pull-right'))
 					.on({
 				'mouseover': function(evt) {
 					$(this).find('i').removeClass('muted');
@@ -41,14 +47,6 @@ CCH.Objects.Card = function(args) {
 				}
 			});
 
-			if (me.type === 'storms') {
-				me.container.addClass('description-container-storms');
-			} else if (me.type === 'vulnerability') {
-				me.container.addClass('description-container-vulnerability');
-			} else {
-				me.container.addClass('description-container-historical');
-			}
-
 			// Link the title of the card to the info page for that card
 			var titleColumn = $('<a />').addClass('description-title span10').attr({
 				'href': CCH.CONFIG.contextPath + '/ui/info/item/' + me.item.id,
@@ -56,16 +54,6 @@ CCH.Objects.Card = function(args) {
 			}).html(me.name);
 
 			titleRow.append(titleColumn, me.pinButton);
-
-			descriptionRow.append($('<p />').addClass('slide-vertical-description').html(me.summary.medium.text));
-
-			me.container.append(titleRow, descriptionRow);
-			if (args.size === 'large') {
-				me.container.addClass('description-container-large');
-			} else if (args.size === 'small') {
-				me.container.addClass('description-container-small');
-			}
-
 			me.layer = me.buildLayer();
 
 			return me;
