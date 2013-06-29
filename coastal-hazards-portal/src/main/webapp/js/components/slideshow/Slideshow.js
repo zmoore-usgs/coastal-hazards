@@ -2,7 +2,6 @@ CCH.Objects.Slideshow = function(args) {
 	CCH.LOG.info('Slideshow.js::constructor:Slideshow class is initializing.');
 	var me = (this === window) ? {} : this;
 	args = args || {};
-	me.slideContainers = [];
 	me.descriptionWrapper = $('#description-wrapper');
 	return $.extend(me, {
 		init: function() {
@@ -28,11 +27,12 @@ CCH.Objects.Slideshow = function(args) {
 			return sliderFunct.apply(iosslider, arguments);
 		},
 		destroySlider: function() {
-			me.slideContainers.length = 0;
-			$('#iosslider-container').empty();
-			$('#iosslider-container').iosSliderVertical('destroy');
-			$('#iosslider-container').iosSlider('destroy');
-			$('#iosslider-container').remove();
+			var container = $('#iosslider-container');
+			CCH.cards.cards.length = 0;
+			container.empty();
+			container.iosSliderVertical('destroy');
+			container.iosSlider('destroy');
+			container.remove();
 			$(window).trigger('cch.ui.slider.destroyed');
 		},
 		createSlideshow: function(args) {
@@ -51,27 +51,36 @@ CCH.Objects.Slideshow = function(args) {
 				var slideList = $('<div />').addClass('slider').attr('id', 'iosslider-slider');
 				sliderContainer.append(slideList);
 				me.descriptionWrapper.append(sliderContainer);
-				
+
 				// Build the card deck with items coming in from the arguments
 				// or the list of items in the CCH.items object
 				(args.items || CCH.items.getItems()).each(function(result) {
 					// Build a card from the item
-					var card =  CCH.cards.buildCard({
+					var card = CCH.cards.buildCard({
 						'itemId': result.id
 					});
+					CCH.cards.addCard(card);
 
-					var slide = $('<div />').addClass('slide well well-small').append(card.container);
-
+					// Add the card's container (the DOM of the card) to the slide list
+					var slide = $('<div />')
+							.addClass('slide well well-small')
+							.attr('id', result.id)
+							.append(card.container);
 					$('#iosslider-slider').append(slide);
 
+					// Append handlers to the card
 					$(card).on({
 						'card-button-pin-clicked': function(evt) {
+							// When the card pin button is clicked, regardless of 
+							// whether or not it was clicked on or off, stop the 
+							// slideshow
 							me.slider('autoSlidePause');
 						},
 						'card-pinned': function(evt) {
+							// When a card is pinned, clear all of the bounding
+							// box markers and display the card. Zoom to the combo
+							// of all available layers
 							var card = evt.currentTarget;
-
-							me.slider('autoSlidePause');
 
 							CCH.map.clearBoundingBoxMarkers();
 
@@ -83,6 +92,9 @@ CCH.Objects.Slideshow = function(args) {
 
 						},
 						'card-unpinned': function(evt) {
+							// When a card is unpinned, remove the layer from the 
+							// map. The OpenLayers API doesn't have a 'removeLayerByName'
+							// function :( 
 							var card = evt.currentTarget;
 							var layers = CCH.map.getMap().getLayersByName(card.name);
 
@@ -93,13 +105,11 @@ CCH.Objects.Slideshow = function(args) {
 							}
 
 							CCH.map.zoomToActiveLayers();
-
-							if (CCH.map.getMap().getLayersBy('isItemLayer', true).length === 0) {
-								me.slider('autoSlidePlay');
-							}
 						}
 					});
 
+					// After the event handlers are set, pin the card if it needs
+					// to be pinned
 					if (CCH.session.getPinnedItemIds().indexOf(card.item.id) !== -1) {
 						card.pin();
 					}
@@ -181,40 +191,35 @@ CCH.Objects.Slideshow = function(args) {
 						$(mrk.div).addClass('marker-inactive');
 					});
 
-					var card = $(event.currentSlideObject[0].firstChild).data('card');
+					var cardId = $(event.currentSlideObject[0]).attr('id');
+					var card = CCH.cards.getById(cardId);
 					CCH.map.addBoundingBoxMarker({
-						bbox: card.bbox,
+						card : card,
 						fromProjection: 'EPSG:4326',
-						slideOrder: event.currentSlideNumber
+						slideOrder: event.currentSlideNumber,
 					});
 				};
 
+				var defaultSliderOptions = {
+					desktopClickDrag: true,
+					snapToChildren: true,
+					snapSlideCenter: true,
+					keyboardControls: true,
+					autoSlide: true,
+					autoSlideTransTimer: 1500,
+					unselectableSelector: $('.unselectable'),
+					onSlideChange: toggleClassForActiveSlide
+				};
 				if (currentSizing === 'large') {
-					sliderContainer.iosSliderVertical({
-						desktopClickDrag: true,
-						snapToChildren: true,
-						snapSlideCenter: true,
-						keyboardControls: true,
-						autoSlide: true,
-						autoSlideTransTimer: 1500,
-						unselectableSelector: $('.unselectable'),
+					sliderContainer.iosSliderVertical($.extend(defaultSliderOptions, {
 						onSliderLoaded: resizeVertical,
 						onSliderResize: resizeVertical,
-						onSlideChange: toggleClassForActiveSlide
-					});
+					}));
 				} else if (currentSizing === 'small') {
-					sliderContainer.iosSlider({
-						desktopClickDrag: true,
-						snapToChildren: true,
-						snapSlideCenter: true,
-						keyboardControls: true,
-						autoSlide: true,
-						autoSlideTransTimer: 1500,
-						unselectableSelector: $('.unselectable'),
+					sliderContainer.iosSlider($.extend(defaultSliderOptions, {
 						onSliderLoaded: resizeHorizontal,
 						onSliderResize: resizeHorizontal,
-						onSlideChange: toggleClassForActiveSlide
-					});
+					}));
 				}
 
 				var orientationChange = function(event) {

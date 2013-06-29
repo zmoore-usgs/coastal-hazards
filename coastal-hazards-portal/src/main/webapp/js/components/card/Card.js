@@ -65,16 +65,7 @@ CCH.Objects.Card = function(args) {
 				me.container.addClass('description-container-small');
 			}
 
-			me.container.data('card', me);
 			return me;
-		},
-		getAllCards: function() {
-			var descriptionContainers = $('.description-container');
-			var cards = [];
-			for (var contIdx = 0; contIdx < descriptionContainers.length; contIdx++) {
-				cards.push($(descriptionContainers[contIdx]).data('card'));
-			}
-			return cards;
 		},
 		pin: function() {
 			me.pinButton.addClass('slider-card-pinned');

@@ -59,7 +59,8 @@ CCH.Objects.Map = function(args) {
 		 */
 		addBoundingBoxMarker: function(args) {
 			args = args || {};
-			var bbox = args.bbox;
+			var card = args.card;
+			var bbox = card.bbox;
 			var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913");
 			var layerBounds = OpenLayers.Bounds.fromArray(bbox);
 			var slideOrder = args.slideOrder;
@@ -84,14 +85,6 @@ CCH.Objects.Map = function(args) {
 			// Alter the marker visually 
 			var markerDiv = $(marker.div);
 			markerDiv.addClass('marker-active');
-			markerDiv.on({
-				'mouseover': function() {
-					$(this).addClass('marker-hover');
-				},
-				'mouseout': function() {
-					$(this).removeClass('marker-hover');
-				}
-			});
 
 			// Fade older markers out
 			var markerCt = me.boxLayer.markers.length;
@@ -103,22 +96,31 @@ CCH.Objects.Map = function(args) {
 				});
 			}
 
-			markerDiv.data('slideOrder', slideOrder);
-			markerDiv.data('bounds', layerBounds);
+			markerDiv.data({
+				'slideOrder': slideOrder,
+				'bounds': layerBounds,
+				'cardId' : card.item.id
+			});
 			markerDiv.on({
-				click: function(evt) {
+				'mouseover': function() {
+					$(this).addClass('marker-hover');
+				},
+				'mouseout': function() {
+					$(this).removeClass('marker-hover');
+				},
+				'click': function(evt) {
 					var target = $(evt.target);
 					var slideOrder = target.data('slideOrder');
 					var bbox = target.data('bounds');
-
-					CCH.Slideshow.slider('goToSlide', slideOrder);
-					CCH.Slideshow.slider('autoSlidePause');
+					var cardId = target.data('cardId');
+					var card = CCH.cards.getById(cardId);
+					
+					CCH.slideshow.slider('goToSlide', slideOrder);
+					CCH.slideshow.slider('autoSlidePause');
 
 					me.clearBoundingBoxMarkers();
 
-					var card = $('.slide:nth-child(' + slideOrder + ') .description-container').data('card');
 					var isPinned = card.pinned;
-
 					if (!isPinned) {
 						card.pinButton.trigger('click');
 					} else {
