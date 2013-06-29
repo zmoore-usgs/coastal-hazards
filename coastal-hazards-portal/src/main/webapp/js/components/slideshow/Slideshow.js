@@ -3,13 +3,14 @@ CCH.Objects.Slideshow = function(args) {
 	var me = (this === window) ? {} : this;
 	args = args || {};
 	me.slideContainers = [];
+	me.descriptionWrapper = $('#description-wrapper');
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
-				'cch.data.items.loaded':  me.createSlideshow,
+				'cch.data.items.loaded': me.createSlideshow,
 				'cch.ui.resized': me.createSlideshow,
 				'cch.navbar.pinmenu.item.clear.click': me.createSlideshow,
-				'cch.navbar.pinmenu.button.pin.click' : function(evt, items) {
+				'cch.navbar.pinmenu.button.pin.click': function(evt, items) {
 					me.createSlideshow(items);
 				}
 			});
@@ -26,34 +27,43 @@ CCH.Objects.Slideshow = function(args) {
 			}
 			return sliderFunct.apply(iosslider, arguments);
 		},
+		destroySlider: function() {
+			me.slideContainers.length = 0;
+			$('#iosslider-container').empty();
+			$('#iosslider-container').iosSliderVertical('destroy');
+			$('#iosslider-container').iosSlider('destroy');
+			$('#iosslider-container').remove();
+			$(window).trigger('cch.ui.slider.destroyed');
+		},
 		createSlideshow: function(args) {
 			// A timer is necessary here - Not having one here causes the browser to
 			// crash. Guessing it is a resize loop issue
 			setTimeout(function(args) {
 				args = args || {};
 				var currentSizing = CCH.ui.getCurrentSizing();
+				var classname = currentSizing === 'large' ? 'iosSliderVertical' : 'iosSlider';
 
-				$('#iosslider-container').iosSliderVertical('destroy');
-				$('#iosslider-container').iosSlider('destroy');
-				$('.iosSlider').remove();
-				$('.iosSliderVertical').remove();
+				// The slider will be rebuilt so destroy the old one
+				me.destroySlider();
 
-				var classname = CCH.ui.getCurrentSizing() === 'large' ? 'iosSliderVertical' : 'iosSlider';
+				// Create the slider container that will house the slides
 				var sliderContainer = $('<div />').addClass(classname).attr('id', 'iosslider-container');
-				var sliderUl = $('<div />').addClass('slider').attr('id', 'iosslider-slider');
-				sliderContainer.append(sliderUl);
-				$('#description-wrapper').append(sliderContainer);
-
+				var slideList = $('<div />').addClass('slider').attr('id', 'iosslider-slider');
+				sliderContainer.append(slideList);
+				me.descriptionWrapper.append(sliderContainer);
+				
+				// Build the card deck with items coming in from the arguments
+				// or the list of items in the CCH.items object
 				(args.items || CCH.items.getItems()).each(function(result) {
-					var cardContainer = CCH.cards.buildCard({
+					// Build a card from the item
+					var card =  CCH.cards.buildCard({
 						'itemId': result.id
 					});
 
-					var slide = $('<div />').addClass('slide well well-small').append(cardContainer);
+					var slide = $('<div />').addClass('slide well well-small').append(card.container);
 
 					$('#iosslider-slider').append(slide);
 
-					var card = $(cardContainer.data('card'))[0];
 					$(card).on({
 						'card-button-pin-clicked': function(evt) {
 							me.slider('autoSlidePause');

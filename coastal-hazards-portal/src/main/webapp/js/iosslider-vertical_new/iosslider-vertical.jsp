@@ -21,11 +21,14 @@
     /* required */
     width: 100%;
     height: 100%;
+	
+	
 }
 
 /* slide */
 .iosSliderVertical .slider .slide {
     /* required */
     float: left;
+	position: relative;
 }
 </style>
