@@ -51,7 +51,7 @@ public class MinifyResource {
                         tinygov.setTinyUrl(short_url);
                         boolean save = urlManager.save(tinygov);
                         if (!save) {
-                            LOG.error("Could not save this to the database, this is probably not your biggest problem.");
+                            LOG.warn("Could not save this to the database, this is probably not your biggest problem.");
                         }
                     }
                 }
@@ -61,9 +61,11 @@ public class MinifyResource {
 				response = Response.status(Response.Status.BAD_REQUEST).entity(new Gson().toJson(responseMap, HashMap.class)).build();
 			}
 		} catch (URISyntaxException ex) {
+			responseMap.put("full_url", url);
 			responseMap.put("message", ex.getMessage());
 			response = Response.status(Response.Status.BAD_REQUEST).entity(new Gson().toJson(responseMap, HashMap.class)).build();
 		} catch (Exception ex) {
+			responseMap.put("full_url", url);
 			responseMap.put("message", ex.getMessage());
 			response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new Gson().toJson(responseMap, HashMap.class)).build();
 		}
