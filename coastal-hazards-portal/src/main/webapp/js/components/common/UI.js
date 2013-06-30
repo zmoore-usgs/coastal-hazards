@@ -18,6 +18,7 @@ CCH.Objects.UI = function(args) {
 	me.mapSearchContainer = args.mapSearchContainer;
 	me.itemSearchModalWindow = args.itemSearchModalWindow;
 	me.ccsArea = args.ccsArea;
+	me.shareModal = args.shareModal;
 
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
@@ -26,77 +27,8 @@ CCH.Objects.UI = function(args) {
 			$(window).on('resize', me.windowResizeHandler);
 			me.navbarPinButton.on('click', me.navbarMenuClickHandler);
 			me.navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
-			$('#shareModal').on({
-				'show': function(evt) {
-					$('#modal-share-summary-url-inputbox').val('');
-					$('#multi-card-twitter-button').empty();
-					CCH.session.writeSession({
-						callbacks: {
-							success: [
-								function(json, textStatus, jqXHR) {
-									var sid = json.sid;
-									var sessionUrl = window.location.origin + CCH.CONFIG.contextPath + '/ui/view/' + sid;
-									$('#modal-share-summary-url-inputbox').val(sessionUrl);
-									CCH.Util.getMinifiedEndpoint({
-										contextPath: CCH.CONFIG.contextPath,
-										location: sessionUrl,
-										callbacks: {
-											success: [
-												function(json, textStatus, jqXHR) {
-													var url = json.tinyUrl;
-													twttr.widgets.createShareButton(
-															url,
-															$('#multi-card-twitter-button')[0],
-															function(element) {
-																// Any callbacks that may be needed
-															},
-															{
-																// hashtags: 'USGS_CCH',
-																lang: 'en',
-																size: 'large',
-																text: 'Check out my view at #USGS_CCH'
-															});
+			$('#shareModal').on('show', me.sharemodalDisplayHandler);
 
-													twttr.events.bind('tweet', function(event) {
-														// TODO: What to do when this view has been tweeted? Anything?
-													});
-												}
-											],
-											error: [
-												function(data, textStatus, jqXHR) {
-													var url = data.responseJSON.full_url;
-													twttr.widgets.createShareButton(
-															url,
-															$('#multi-card-twitter-button')[0],
-															function(element) {
-																// Any callbacks that may be needed
-															},
-															{
-																// hashtags: 'USGS_CCH',
-																lang: 'en',
-																size: 'large',
-																text: 'Check out my view at #USGS_CCH'
-															});
-
-													twttr.events.bind('tweet', function(event) {
-														// TODO: What to do when this view has been tweeted? Anything?
-													});
-												}
-											]
-										}
-									})
-
-								}
-							],
-							error: [
-								function(data, textStatus, jqXHR) {
-									// TODO: Handle error condition
-								}
-							]
-						}
-					});
-				}
-			});
 			// Header fix
 			me.ccsArea.find('br').first().remove();
 
@@ -220,6 +152,80 @@ CCH.Objects.UI = function(args) {
 				currentSizing = 'large';
 			}
 			return currentSizing;
+		},
+		sharemodalDisplayHandler: function(evt) {
+			$('#modal-share-summary-url-inputbox').val('');
+			$('#multi-card-twitter-button').empty();
+			CCH.session.writeSession({
+				callbacks: {
+					success: [
+						function(json, textStatus, jqXHR) {
+							var sid = json.sid;
+							var sessionUrl = window.location.origin + CCH.CONFIG.contextPath + '/ui/view/' + sid;
+							CCH.Util.getMinifiedEndpoint({
+								contextPath: CCH.CONFIG.contextPath,
+								location: sessionUrl,
+								callbacks: {
+									success: [
+										function(json, textStatus, jqXHR) {
+											var url = json.tinyUrl;
+											$('#modal-share-summary-url-inputbox').val(url);
+											$('#modal-share-summary-url-inputbox').select();
+											twttr.widgets.createShareButton(
+													url,
+													$('#multi-card-twitter-button')[0],
+													function(element) {
+														// Any callbacks that may be needed
+													},
+													{
+														hashtags: 'USGS_CCH',
+														lang: 'en',
+														size: 'large',
+														text: 'Check out my CCH View!',
+														count: 'none'
+													});
+
+											twttr.events.bind('tweet', function(event) {
+												// TODO: What to do when this view has been tweeted? Anything?
+											});
+										}
+									],
+									error: [
+										function(data, textStatus, jqXHR) {
+											var url = data.responseJSON.full_url;
+											$('#modal-share-summary-url-inputbox').val(url);
+											$('#modal-share-summary-url-inputbox').select();
+											twttr.widgets.createShareButton(
+													url,
+													$('#multi-card-twitter-button')[0],
+													function(element) {
+														// Any callbacks that may be needed
+													},
+													{
+														hashtags: 'USGS_CCH',
+														lang: 'en',
+														size: 'large',
+														text: 'Check out my CCH View!',
+														count: 'none'
+													});
+
+											twttr.events.bind('tweet', function(event) {
+												// TODO: What to do when this view has been tweeted? Anything?
+											});
+										}
+									]
+								}
+							})
+
+						}
+					],
+					error: [
+						function(data, textStatus, jqXHR) {
+							// TODO: Handle error condition
+						}
+					]
+				}
+			});
 		}
 	});
 };

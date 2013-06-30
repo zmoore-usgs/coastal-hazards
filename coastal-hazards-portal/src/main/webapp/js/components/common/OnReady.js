@@ -24,7 +24,8 @@ $(document).ready(function() {
 		navbarClearMenuItem: $('#app-navbar-pin-control-clear'),
 		navbarShareMenuListItem: $('#app-navbar-pin-control-share-li'),
 		mapSearchContainer: $('#map-search-container'),
-		ccsArea: $('#ccsa-area')
+		ccsArea: $('#ccsa-area'),
+		shareModal : $('#shareModal')
 	}).init();
 
 	CCH.slideshow = new CCH.Objects.Slideshow().init();

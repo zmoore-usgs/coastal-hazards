@@ -18,7 +18,7 @@
 					<div id="shareModal" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-							<h3>Share Your Coastal Hazards Portal View With Others</h3>
+							<h4>Share Your Coastal Hazards Portal View With Others</h4>
 						</div>
 						<div class="modal-body">
 							<div class="row-fluid">
@@ -28,17 +28,17 @@
 								<div class="well-small span12">
 									<div id="modal-share-summary-url-label">You can share this URL with others to allow them to see your view...</div>
 									<div id="modal-share-summary-url-inputbox-div">
-										<input id="modal-share-summary-url-inputbox" type='text' autofocus contenteditable="false" size="20" placeholder="Loading..." />
+										<input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." />
 									</div>
 								</div>
 								<div class="well-small span12">
-									<div id="modal-share-summary-url-label">You can also Tweet your view...</div>
-									<span id='multi-card-twitter-button'></span>
+									<div id="modal-share-summary-url-label">You can also <span id='multi-card-twitter-button'></span> your view...</div>
+									
 								</div>
 							</div>
 						</div>
 						<div class="modal-footer">
-							<a href="#" class="btn">Close</a>
+							<a href="#" class="btn"  data-dismiss="modal" aria-hidden="true">Close</a>
 						</div>
 					</div>
 
