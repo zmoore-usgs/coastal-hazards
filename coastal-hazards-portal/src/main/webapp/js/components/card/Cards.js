@@ -48,6 +48,12 @@ CCH.Objects.Cards = function(args) {
 						card.unpin();
 					}
 					me.updatePinnedCount();
+				},
+				'card-pinned': function(evt, card) {
+					CCH.Util.updateItemPopularity({
+						item: card.item.id,
+						type: 'use'
+					});
 				}
 			});
 
@@ -75,7 +81,7 @@ CCH.Objects.Cards = function(args) {
 		getPinnedCards: function() {
 			var pinnedCards = [];
 			for (var ccIdx = 0; ccIdx < me.cards.length; ccIdx++) {
-				var card  = me.cards[ccIdx];
+				var card = me.cards[ccIdx];
 				if (card.pinned) {
 					pinnedCards.push(card);
 				}

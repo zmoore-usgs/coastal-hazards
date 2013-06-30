@@ -48,7 +48,7 @@ CCH.Objects.Card = function(args) {
 			});
 
 			// Link the title of the card to the info page for that card
-			var titleLink = $('<a />').addClass('description-title span10').attr({
+			var titleLink = $('<a />').addClass('description-title span11').attr({
 				'href': CCH.CONFIG.contextPath + '/ui/info/item/' + me.item.id,
 				'target': '_blank'
 			}).html(me.summary.medium.title);
