@@ -25,6 +25,7 @@
 		development: <%= development%>,
 		ajaxTimeout: 300000,
 		contextPath : '<%=request.getContextPath()%>',
+		emailLink : 'CCH_Help@usgs.gov',
 		popupHandling: {
 			isVisible: false,
 			clickedAway: false,

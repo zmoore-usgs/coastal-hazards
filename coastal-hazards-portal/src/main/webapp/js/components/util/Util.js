@@ -1,4 +1,16 @@
 CCH.Util = {
+	updateItemPopularity: function(args) {
+		args = args || {};
+		var itemId = args.item || '';
+		var useType = args.type || '';
+		if (itemId &&
+				(useType.toLowerCase() === 'tweet' || useType.toLowerCase() === 'use')) {
+			$.ajax({
+				url: CCH.CONFIG.contextPath + '/data/activity/' + useType.toLowerCase() + '/' + itemId,
+				type: 'PUT'
+			});
+		}
+	},
 	getMinifiedEndpoint: function(args) {
 		var contextPath = args.contextPath;
 		var location = args.location || window.location.href;

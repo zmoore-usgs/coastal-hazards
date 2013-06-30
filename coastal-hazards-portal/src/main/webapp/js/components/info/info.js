@@ -11,23 +11,26 @@ $(document).ready(function() {
 
 
 	$.ajax({
-		url: CCH.config.contextPath + '/data/item/' + CCH.config.itemId,
+		url: CCH.CONFIG.contextPath + '/data/item/' + CCH.CONFIG.itemId,
 		success: function(data, textStatus, jqXHR) {
-			CCH.config.data = data;
+			CCH.CONFIG.data = data;
 			$(window).resize();
-			updateItemPopularity();
+			CCH.Util.updateItemPopularity({
+				item: CCH.CONFIG.itemId,
+				type: 'use'
+			});
 
 			$('#application-overlay').fadeOut(2000, function() {
 				$('#application-overlay').remove();
 			});
 
 			var metadataLink = $('<a />').attr({
-				'href': CCH.config.data.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
+				'href': CCH.CONFIG.data.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
 				'target': '_blank'
 			}).addClass('btn').html('View Metadata');
 
 			var applicationLink = $('<a />').attr({
-				'href': CCH.config.contextPath + '/ui/item/' + CCH.config.itemId,
+				'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId,
 				'target': '_blank'
 			}).addClass('btn').html('View In Portal');
 
@@ -37,21 +40,21 @@ $(document).ready(function() {
 				data.summary.full.publications.each(function(item) {
 					var li = $('<li />');
 					var a = $('<a />').attr({
-						'href' : item.link,
-						'target' : '_blank'
+						'href': item.link,
+						'target': '_blank'
 					}).html(item.title);
 					li.append(a);
 					publist.append(li);
 				});
 			}
-			
+
 			$('#info-title').html(data.summary.full.title);
 			$('#info-summary').html(data.summary.full.text);
 			$('#info-container-publications-list-span').append(publist);
 			$('#metadata-link').append(metadataLink);
 
 			$('#application-link').append(applicationLink);
-			
+
 
 			buildTwitterButton();
 			buildMap();
@@ -65,13 +68,6 @@ $(document).ready(function() {
 		}
 	});
 
-	var updateItemPopularity = function() {
-		$.ajax({
-			url: CCH.config.contextPath + '/data/activity/tweet/' + CCH.config.itemId,
-			type: 'PUT'
-		});
-	};
-
 	var createShareButton = function(url) {
 		twttr.ready(function(twttr) {
 			twttr.widgets.createShareButton(
@@ -84,20 +80,23 @@ $(document).ready(function() {
 						hashtags: 'USGS_CCH',
 						lang: 'en',
 						size: 'medium',
-						text: CCH.config.data.summary.tiny.text
+						text: CCH.CONFIG.data.summary.tiny.text
 					});
 
 			twttr.events.bind('tweet', function(event) {
-				updateItemPopularity();
+				CCH.Util.updateItemPopularity({
+					item: CCH.CONFIG.itemId,
+					type : 'tweet'
+				});
 			});
 		});
 	};
 
 	var buildTwitterButton = function() {
-		var url = window.location.origin + CCH.config.contextPath + '/ui/item/' + CCH.config.itemId;
+		var url = window.location.origin + CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId;
 		CCH.Util.getMinifiedEndpoint({
 			location: url,
-			contextPath : CCH.config.contextPath,
+			contextPath: CCH.CONFIG.contextPath,
 			callbacks: {
 				success: [
 					function(data, textStatus, jqXHR) {
@@ -131,15 +130,15 @@ $(document).ready(function() {
 	};
 
 	var buildMap = function() {
-		var bounds = new OpenLayers.Bounds(CCH.config.data.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'))
+		var bounds = new OpenLayers.Bounds(CCH.CONFIG.data.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));
 		$('#map').css('height', $('#info-summary-and-links-container').height() + 'px');
-		CCH.config.map = new OpenLayers.Map('map', {
-			projection: CCH.config.projection,
-			displayProjection: new OpenLayers.Projection(CCH.config.projection),
+		CCH.CONFIG.map = new OpenLayers.Map('map', {
+			projection: CCH.CONFIG.projection,
+			displayProjection: new OpenLayers.Projection(CCH.CONFIG.projection),
 			restrictedExtent: bounds
 		});
 
-		CCH.config.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
+		CCH.CONFIG.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
 				"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/\${z}/\${y}/\${x}",
 				{
 					sphericalMercator: true,
@@ -149,11 +148,11 @@ $(document).ready(function() {
 				}
 		));
 
-		CCH.config.map.addLayer(
-				new OpenLayers.Layer.WMS(CCH.config.data.id,
-				CCH.config.data.wmsService.endpoint,
+		CCH.CONFIG.map.addLayer(
+				new OpenLayers.Layer.WMS(CCH.CONFIG.data.id,
+				CCH.CONFIG.data.wmsService.endpoint,
 				{
-					layers: CCH.config.data.wmsService.layers,
+					layers: CCH.CONFIG.data.wmsService.layers,
 					version: '1.3.0',
 					crs: 'EPSG:3857',
 					transparent: true
@@ -164,6 +163,6 @@ $(document).ready(function() {
 			projection: 'EPSG:3857'
 		}));
 
-		CCH.config.map.zoomToExtent(bounds);
-	}
+		CCH.CONFIG.map.zoomToExtent(bounds);
+	};
 });

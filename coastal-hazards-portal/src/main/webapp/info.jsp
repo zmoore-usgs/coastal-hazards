@@ -39,7 +39,7 @@
 		<jsp:include page="js/jsuri/jsuri.jsp"></jsp:include>
 			<script type="text/javascript">
 				var CCH = {
-					config: {
+					CONFIG : {
 						itemId: '${it.id}',
 						contextPath: '<%=request.getContextPath()%>',
 						map: null,
