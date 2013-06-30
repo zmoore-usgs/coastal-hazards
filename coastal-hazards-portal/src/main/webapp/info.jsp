@@ -35,6 +35,7 @@
         <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="<%=request.getContextPath()%>/webjars/openlayers/2.12/OpenLayers.js"></script>
 		<script type="text/javascript" src="<%=request.getContextPath()%>/webjars/sugar/1.3.8/sugar-full.min.js"></script>
+
 		<jsp:include page="js/jsuri/jsuri.jsp"></jsp:include>
 			<script type="text/javascript">
 				var CCH = {
@@ -48,10 +49,11 @@
 					}
 				};
 		</script>
+
+		<script type="text/javascript" src="<%=request.getContextPath()%>/js/components/util/Util.js"></script>
+		<script type="text/javascript" src='<%=request.getContextPath()%>/js/components/info/info.js'></script>
     </head>
     <body>
-
-
 		<div id="application-container" class="container-fluid">
 
 			<div id="application-overlay">
@@ -74,48 +76,67 @@
 				</div>
 			</div>
 
-			<div id="header-row" class="row-fluid">
-				<jsp:include page="template/USGSHeader.jsp">
-					<jsp:param name="relPath" value="" />
-					<jsp:param name="header-class" value="visible-desktop hidden-phone hidden-tablet" />
-					<jsp:param name="site-title" value="USGS Coastal Hazards Portal" />
-				</jsp:include>
-			</div>
-
 			<%-- Content Here --%>
 			<div id="info-content" class="container-fluid">
 
+				<div id="header-row" class="row-fluid">
+					<jsp:include page="template/USGSHeader.jsp">
+						<jsp:param name="relPath" value="" />
+						<jsp:param name="header-class" value="" />
+						<jsp:param name="site-title" value="USGS Coastal Hazards Portal" />
+					</jsp:include>
+				</div>
+
 				<%-- Title --%>
 				<div id="info-row-title" class="info-title row-fluid">
-					<div id="info-title"></div>
+					<div id="info-title" class='span10 offset1'></div>
 				</div> 
 
 
 				<div id="info-row-map-and-summary" class="row-fluid">
-
 					<%-- Map --%>
 					<div id="map" class="span6"></div>
 
-					<%-- Info --%>
-					<div class="span6 well">
-
+					<div id='info-summary-and-links-container' class='span6'>
 						<%-- Summary Information --%>
-						<div id="info-summary"></div>
+						<div id="info-summary"  class="well"></div>
 
-						<%-- Metadata Link --%>
-						<div id="metadata-link"></div>
+						<div class="row-fluid">
+							<div class='well well-small'>
+								<%-- Metadata Link --%>
+								<span id="metadata-link"></span>
 
-						<%-- Application Link --%>
-						<div id="application-link"></div>
+								<%-- Application Link --%>
+								<span id="application-link"></span>
 
-						<div id="social-link">
-							<a id='info-twitter-button'></a>
+								<span id="social-link" class='pull-right'>
+									<a id='info-twitter-button'></a>
+								</span>
+							</div>
 						</div>
-
 					</div>
 
 				</div>
-
+				<div id='info-row-info-fullwidth' class='row-fluid'>
+					<div class='well span6'>
+						<%-- Publications --%>
+						<span id='info-container-publications'>
+							<span id='info-container-publications-label'>Publications: </span>
+							<span id='info-container-publications-list-span'></span>
+						</span>
+					</div>
+					<div class='well span6'>
+						<h1>Placeholder for some super-awesome graph</h1>
+					</div>
+				</div>
+				<div  id="footer-row"  class="row-fluid">
+					<jsp:include page="template/USGSFooter.jsp">
+						<jsp:param name="relPath" value="" />
+						<jsp:param name="footer-class" value="" />
+						<jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
+						<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Site Administrator</a>" />
+					</jsp:include>
+				</div>
 			</div>
 
 			<%-- Content Here --%>
@@ -133,169 +154,8 @@
 					<a href="<%=request.getContextPath()%>">Back to the USGS Coastal Hazards Portal</a>
 				</div>
 
+
 			</div>
-
-
-
-			<div  id="footer-row"  class="row-fluid">
-				<jsp:include page="template/USGSFooter.jsp">
-					<jsp:param name="relPath" value="" />
-					<jsp:param name="footer-class" value="" />
-					<jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
-					<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Site Administrator</a>" />
-				</jsp:include>
-			</div>
-
-
 		</div>
-		<script type="text/javascript">
-			$(document).ready(function() {
-
-				// Header fix
-				$('#ccsa-area').find('br').first().remove();
-
-				$(window).resize(function() {
-					var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
-					$('#info-content').css('height', contentRowHeight + 'px');
-				});
-
-
-				$.ajax({
-					url: CCH.config.contextPath + '/data/item/' + CCH.config.itemId,
-					success: function(data, textStatus, jqXHR) {
-						CCH.config.data = data;
-						$(window).resize();
-
-						updateItemPopularity();
-
-						$('#application-overlay').fadeOut(2000, function() {
-							$('#application-overlay').remove();
-						});
-
-						var metadataLink = $('<a />').attr({
-							'href': CCH.config.data.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
-							'target': '_blank'
-						}).addClass('btn').html('View Metadata');
-
-//						var applicationLink = $('<a />').attr({
-//							'href': CCH.config.contextPath + '/' + CCH.config.itemId,
-//							'target': '_blank'
-//						}).addClass('btn').html('View In Portal');
-
-						$('#info-title').html(data.name);
-						$('#info-summary').html(data.summary.full);
-						$('#metadata-link').append(metadataLink);
-
-//						$('#application-link').append(applicationLink);
-
-
-						buildTwitterButton();
-						buildMap();
-					},
-					error: function(jqXHR, textStatus, errorThrown) {
-						$('#info-content').addClass('hidden');
-						$('#info-not-found-content').removeClass('hidden');
-						$('#application-overlay').fadeOut(2000, function() {
-							$('#application-overlay').remove();
-						});
-					}
-				});
-
-				var updateItemPopularity = function() {
-					$.ajax({
-						url: CCH.config.contextPath + '/data/activity/tweet/' + CCH.config.itemId,
-						type: 'PUT'
-					});
-				}
-
-				var createShareButton = function(url) {
-					twttr.ready(function(twttr) {
-						twttr.widgets.createShareButton(
-								url,
-								$('#info-twitter-button')[0],
-								function(element) {
-									// Any callbacks that may be needed
-								},
-								{
-									hashtags: 'USGS_CCH',
-									lang: 'en',
-									size: 'medium',
-									text: CCH.config.data.summary.tiny,
-								});
-
-						twttr.events.bind('tweet', function(event) {
-							updateItemPopularity();
-						});
-					});
-				}
-
-				var buildTwitterButton = function() {
-					var url = window.location.toString();
-					$.ajax({
-						url: CCH.config.contextPath + '/data/minifier/minify/' + url,
-						success: function(data, textStatus, jqXHR) {
-							var dataUrl;
-			<%-- 
-			go.usa.gov has an ... interesting ... API.
-			If there's an error, there's a data.response.statusCode
-			object. Otherwise, there's a data.response[0][0].status_code
-			object. This is not ideal but we roll with it. 
-			Oh, and the service will only shorten government URLs
-			Oh, and the service will not give consistent URL output
-			for consistent URL input
-			--%>
-								if (data.response.statusCode) {
-									dataUrl = url;
-								} else {
-									dataUrl = data.response.data.entry[0].short_url;
-								}
-
-								createShareButton(url);
-
-
-							},
-							error: function(jqXHR, textStatus, errorThrown) {
-								createShareButton(url);
-							}
-						});
-
-					};
-
-					var buildMap = function() {
-						CCH.config.map = new OpenLayers.Map('map', {
-							projection: CCH.config.projection,
-							displayProjection: new OpenLayers.Projection(CCH.config.projection)
-						});
-
-						CCH.config.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
-								"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/\${z}/\${y}/\${x}",
-								{
-									sphericalMercator: true,
-									isBaseLayer: true,
-									numZoomLevels: 20,
-									wrapDateLine: true
-								}
-						));
-
-						CCH.config.map.addLayer(
-								new OpenLayers.Layer.WMS(CCH.config.data.id,
-								CCH.config.data.wmsService.endpoint,
-								{
-									layers: CCH.config.data.wmsService.layers,
-									version: '1.3.0',
-									crs: 'EPSG:3857',
-									transparent: true
-								}, {
-							singleTile: true,
-							transparent: true,
-							isBaseLayer: false,
-							projection: 'EPSG:3857'
-						}));
-
-						var bounds = new OpenLayers.Bounds(CCH.config.data.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'))
-						CCH.config.map.zoomToExtent(bounds);
-					}
-				});
-		</script>
 	</body>
 </html>

@@ -110,34 +110,6 @@ CCH.Objects.Session = function(args) {
 				callbacks: callbacks
 			});
 		},
-		getMinifiedEndpoint: function(args) {
-			var location = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
-			var callbacks = args.callbacks || [];
-			var context = args.context;
-
-			this.getEndpoint({
-				context: this,
-				callbacks: [
-					function(sid) {
-						var url = location + '?sid=' + sid;
-						$.ajax('service/minify', {
-							data: {
-								action: 'minify',
-								url: url
-							},
-							success: function(data, textStatus, jqXHR) {
-								callbacks.each(function(callback) {
-									callback.call(context, {
-										response: data,
-										url: url
-									});
-								});
-							}
-						});
-					}
-				]
-			});
-		},
 		toggleItem: function(item) {
 			var items = me.session.items;
 			var currIdIdx = items.findIndex(function(sItem) {

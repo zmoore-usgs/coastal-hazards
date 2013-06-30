@@ -51,7 +51,7 @@ CCH.Objects.Card = function(args) {
 			var titleLink = $('<a />').addClass('description-title span10').attr({
 				'href': CCH.CONFIG.contextPath + '/ui/info/item/' + me.item.id,
 				'target': '_blank'
-			}).html(me.name);
+			}).html(me.summary.medium.title);
 
 			titleRow.append(me.pinButton, titleLink);
 			me.layer = me.buildLayer();
