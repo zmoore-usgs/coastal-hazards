@@ -4,8 +4,10 @@ import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.session.io.SessionIO;
 import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
 import gov.usgs.cida.coastalhazards.jpa.SessionManager;
+import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.Consumes;
@@ -44,19 +46,23 @@ public class SessionResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response postSession(String content) throws SessionIOException {
-		final String sid = sessionIo.save(content);
+	public Response postSession(String content) throws SessionIOException, NoSuchAlgorithmException {
+		//First check to see if there's already a session saved for this item
+		Session session = Session.fromJSON(content);
+		String existingSession = sessionIo.load(session.getId());
+		String sid = null;
+		if (null != existingSession) {
+			sid = session.getId();
+		} else {
+			sid = sessionIo.save(content);
+		}
+		
 		Response response;
 		if (null == sid) {
 			response = Response.status(Response.Status.BAD_REQUEST).build();
 		} else {
-			Map<String, Object> ok = new HashMap<String, Object>() {
-				private static final long serialVersionUID = 9238479L;
-
-				{
-					put("sid", sid);
-				}
-			};
+			Map<String, Object> ok = new HashMap<String, Object>();
+			ok.put("sid", sid);
 			response = Response.ok(new Gson().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;

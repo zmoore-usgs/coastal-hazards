@@ -3,10 +3,6 @@ img {
     max-width: none !important; 
 }
 
-#map {
-	height: 340px;
-}
-
 /* Overlay Settings */
 #application-overlay {
 	height : 100%;
@@ -47,15 +43,24 @@ img {
 	vertical-align: middle;
 }
 
+#info-summary {
+	font-size:1.3em;
+	line-height: 1.5em;
+}
+
 .info-title {
 	text-align: center;
 	font-size: 2em;
 	margin-top: 10px;
 	margin-bottom: 10px;
-	font-weight: 500;
-	font-family: "Arial Black", Gadget, sans-serif;
+	font-weight: 600;
 	letter-spacing: 3px;
 	color: #666;
+	line-height: 1em;
+}
+
+#info-row-info-fullwidth {
+	margin-top: 10px;
 }
 
 #social-link {

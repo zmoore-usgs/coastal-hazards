@@ -43,15 +43,15 @@ CCH.Objects.Card = function(args) {
 					$(this).find('i').addClass('muted');
 				},
 				'click': function() {
-					$(me).trigger('card-button-pin-clicked');
+					$(me).trigger('card-button-pin-clicked', me);
 				}
 			});
 
 			// Link the title of the card to the info page for that card
-			var titleLink = $('<a />').addClass('description-title span10').attr({
+			var titleLink = $('<a />').addClass('description-title span11').attr({
 				'href': CCH.CONFIG.contextPath + '/ui/info/item/' + me.item.id,
 				'target': '_blank'
-			}).html(me.name);
+			}).html(me.summary.medium.title);
 
 			titleRow.append(me.pinButton, titleLink);
 			me.layer = me.buildLayer();
