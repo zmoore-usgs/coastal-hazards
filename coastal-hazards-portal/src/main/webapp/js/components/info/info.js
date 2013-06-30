@@ -131,10 +131,12 @@ $(document).ready(function() {
 	};
 
 	var buildMap = function() {
+		var bounds = new OpenLayers.Bounds(CCH.config.data.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'))
 		$('#map').css('height', $('#info-summary-and-links-container').height() + 'px');
 		CCH.config.map = new OpenLayers.Map('map', {
 			projection: CCH.config.projection,
-			displayProjection: new OpenLayers.Projection(CCH.config.projection)
+			displayProjection: new OpenLayers.Projection(CCH.config.projection),
+			restrictedExtent: bounds
 		});
 
 		CCH.config.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
@@ -162,7 +164,6 @@ $(document).ready(function() {
 			projection: 'EPSG:3857'
 		}));
 
-		var bounds = new OpenLayers.Bounds(CCH.config.data.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'))
 		CCH.config.map.zoomToExtent(bounds);
 	}
 });

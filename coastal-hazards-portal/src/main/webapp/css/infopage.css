@@ -3,10 +3,6 @@ img {
     max-width: none !important; 
 }
 
-#map {
-	height: 340px;
-}
-
 /* Overlay Settings */
 #application-overlay {
 	height : 100%;
