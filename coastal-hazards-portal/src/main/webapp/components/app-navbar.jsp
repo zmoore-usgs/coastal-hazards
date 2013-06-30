@@ -12,19 +12,35 @@
 					<button id='app-navbar-pin-control-dropdown-button' class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown"><span id='app-navbar-pin-control-caret' class="icon-caret-down"></span></button>
 					<ul class="dropdown-menu">
 						<li id='app-navbar-pin-control-clear-li'><a id='app-navbar-pin-control-clear' href="#">Clear Deck</a></li>
-						<li id='app-navbar-pin-control-share-li' class="dropdown-submenu">
-							<a tabindex="-1" href="#">Share Deck</a>
-							<ul class="dropdown-menu">
-								<li>
-									<a id='app-navbar-pin-control-share' href="#">
-										<span id='multi-card-twitter-button'></span>
-										<%-- <a id='multi-card-twitter-button' class='twitter-share-button' data-lang='en' data-count='none' data-hashtags='cch' data-text='Check out my pinned items on CCH!' data-url='http://go.usa.gov/random' data-counturl='sid=SomeRandomSessionId'>&nbsp;</a> --%>
-									</a>
-								</li>
-							</ul>
-						</li>
+						<li id='app-navbar-pin-control-share-li'><a tabindex="-1" data-toggle="modal" role="button" href="#shareModal">Share Deck</a></li>
 					</ul>
 				</div>
+					<div id="shareModal" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h3>Share Your Coastal Hazards Portal View With Others</h3>
+						</div>
+						<div class="modal-body">
+							<div class="row-fluid">
+								<div class="well-small span12">
+									<div id="modal-share-summary-text-label">The Coastal Hazards Portal allows you to share your current view with others.</div>
+								</div>
+								<div class="well-small span12">
+									<div id="modal-share-summary-url-label">You can share this URL with others to allow them to see your view...</div>
+									<div id="modal-share-summary-url-inputbox-div">
+										<input id="modal-share-summary-url-inputbox" type='text' autofocus contenteditable="false" size="20" placeholder="Loading..." />
+									</div>
+								</div>
+								<div class="well-small span12">
+									<div id="modal-share-summary-url-label">You can also Tweet your view...</div>
+									<span id='multi-card-twitter-button'></span>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<a href="#" class="btn">Close</a>
+						</div>
+					</div>
 
 				<span id="app-navbar-item-search-container" class="pull-right">
 					<i class="icon-search"></i>

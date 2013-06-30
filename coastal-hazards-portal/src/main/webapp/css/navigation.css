@@ -97,3 +97,10 @@
 	padding: 5px;
 	display: inherit;
 }
+
+#modal-share-summary-url-inputbox{
+	width: 95%;
+	font-size: 2em;
+	line-height: 2em;
+	height: 2em;
+}

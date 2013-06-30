@@ -43,7 +43,7 @@ CCH.Objects.Card = function(args) {
 					$(this).find('i').addClass('muted');
 				},
 				'click': function() {
-					$(me).trigger('card-button-pin-clicked');
+					$(me).trigger('card-button-pin-clicked', me);
 				}
 			});
 

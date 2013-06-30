@@ -39,7 +39,7 @@ CCH.Objects.Cards = function(args) {
 			}).init();
 
 			$(card).on({
-				'card-button-pin-clicked': function(evt) {
+				'card-button-pin-clicked': function(evt, card) {
 					var card = evt.currentTarget;
 					var toggledOn = CCH.session.toggleItem(card.item);
 					if (toggledOn) {
@@ -48,12 +48,14 @@ CCH.Objects.Cards = function(args) {
 						card.unpin();
 					}
 					me.updatePinnedCount();
+					$(me).trigger('card-button-pin-clicked', card);
 				},
 				'card-pinned': function(evt, card) {
 					CCH.Util.updateItemPopularity({
 						item: card.item.id,
 						type: 'use'
 					});
+					$(me).trigger('card-pinned', card);
 				}
 			});
 
@@ -67,7 +69,7 @@ CCH.Objects.Cards = function(args) {
 		getById: function(id) {
 			return me.cards.find(function(card) {
 				return card.item.id === id;
-			})
+			});
 		},
 		getCards: function() {
 			return me.cards;

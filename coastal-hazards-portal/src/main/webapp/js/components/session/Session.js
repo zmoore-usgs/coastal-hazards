@@ -54,9 +54,11 @@ CCH.Objects.Session = function(args) {
 		},
 		readSession: function(args) {
 			var sid = args.sid;
-			var callbacks = args.callbacks || {};
-			var successCallbacks = callbacks.success || [];
-			var errorCallbacks = callbacks.error || [];
+			var callbacks = args.callbacks || {
+				success: [],
+				error: []
+			};
+
 			var context = args.context;
 
 			if (sid) {
@@ -65,15 +67,15 @@ CCH.Objects.Session = function(args) {
 					contentType: 'application/json;charset=utf-8',
 					dataType: 'json',
 					success: function(json, textStatus, jqXHR) {
-						if (successCallbacks && successCallbacks.length > 0) {
-							successCallbacks.each(function(callback) {
+						if (callbacks.success && callbacks.success.length > 0) {
+							callbacks.success.each(function(callback) {
 								callback.call(context, json, textStatus, jqXHR);
 							});
 						}
 					},
 					error: function(data, textStatus, jqXHR) {
-						if (errorCallbacks && errorCallbacks.length > 0) {
-							errorCallbacks.each(function(callback) {
+						if (callbacks.error && callbacks.error.length > 0) {
+							callbacks.error.each(function(callback) {
 								callback.call(context, data, textStatus, jqXHR);
 							});
 						}
@@ -83,21 +85,27 @@ CCH.Objects.Session = function(args) {
 		},
 		writeSession: function(args) {
 			args = args || {};
-			var context = args.context || me;
-			var callbacks = args.callbacks || [];
+			var callbacks = args.callbacks || {
+				success: [],
+				error: []
+			};
 			$.ajax(CCH.CONFIG.data.sources.session.endpoint, {
 				type: 'POST',
 				contentType: 'application/json;charset=utf-8',
 				dataType: 'json',
 				data: me.toString(),
-				success: function(data, textStatus, jqXHR) {
-					if (data.success === 'true') {
-						var sid = data.sid;
-						if (callbacks && callbacks.length > 0) {
-							callbacks.each(function(callback) {
-								callback.call(context, sid);
-							});
-						}
+				success: function(json, textStatus, jqXHR) {
+					if (callbacks.success && callbacks.success.length > 0) {
+						callbacks.success.each(function(callback) {
+							callback.call(null, json, textStatus, jqXHR);
+						});
+					}
+				},
+				error: function(data, textStatus, jqXHR) {
+					if (callbacks.error && callbacks.error.length > 0) {
+						callbacks.error.each(function(callback) {
+							callback.call(null, data, textStatus, jqXHR);
+						});
 					}
 				}
 			});

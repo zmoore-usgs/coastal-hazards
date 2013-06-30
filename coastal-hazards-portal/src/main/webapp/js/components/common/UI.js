@@ -26,7 +26,77 @@ CCH.Objects.UI = function(args) {
 			$(window).on('resize', me.windowResizeHandler);
 			me.navbarPinButton.on('click', me.navbarMenuClickHandler);
 			me.navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
+			$('#shareModal').on({
+				'show': function(evt) {
+					$('#modal-share-summary-url-inputbox').val('');
+					$('#multi-card-twitter-button').empty();
+					CCH.session.writeSession({
+						callbacks: {
+							success: [
+								function(json, textStatus, jqXHR) {
+									var sid = json.sid;
+									var sessionUrl = window.location.origin + CCH.CONFIG.contextPath + '/ui/view/' + sid;
+									$('#modal-share-summary-url-inputbox').val(sessionUrl);
+									CCH.Util.getMinifiedEndpoint({
+										contextPath: CCH.CONFIG.contextPath,
+										location: sessionUrl,
+										callbacks: {
+											success: [
+												function(json, textStatus, jqXHR) {
+													var url = json.tinyUrl;
+													twttr.widgets.createShareButton(
+															url,
+															$('#multi-card-twitter-button')[0],
+															function(element) {
+																// Any callbacks that may be needed
+															},
+															{
+																// hashtags: 'USGS_CCH',
+																lang: 'en',
+																size: 'large',
+																text: 'Check out my view at #USGS_CCH'
+															});
 
+													twttr.events.bind('tweet', function(event) {
+														// TODO: What to do when this view has been tweeted? Anything?
+													});
+												}
+											],
+											error: [
+												function(data, textStatus, jqXHR) {
+													var url = data.responseJSON.full_url;
+													twttr.widgets.createShareButton(
+															url,
+															$('#multi-card-twitter-button')[0],
+															function(element) {
+																// Any callbacks that may be needed
+															},
+															{
+																// hashtags: 'USGS_CCH',
+																lang: 'en',
+																size: 'large',
+																text: 'Check out my view at #USGS_CCH'
+															});
+
+													twttr.events.bind('tweet', function(event) {
+														// TODO: What to do when this view has been tweeted? Anything?
+													});
+												}
+											]
+										}
+									})
+
+								}
+							],
+							error: [
+								function(data, textStatus, jqXHR) {
+									// TODO: Handle error condition
+								}
+							]
+						}
+					});
+				}
+			});
 			// Header fix
 			me.ccsArea.find('br').first().remove();
 
@@ -59,12 +129,12 @@ CCH.Objects.UI = function(args) {
 					CCH.map.zoomToActiveLayers();
 				}
 			}
-			
+
 			// pinnedResults may or may not be an empty array. If it is, 
 			// the full deck will be seen. Otherwise, if pinnedResults is
 			// populated, only pinned cards will be seen
 			$(window).trigger('cch.navbar.pinmenu.button.pin.click', {
-				items : items
+				items: items
 			});
 		},
 		navbarClearItemClickHandler: function() {
@@ -128,14 +198,14 @@ CCH.Objects.UI = function(args) {
 		},
 		removeOverlay: function() {
 			splashUpdate("Starting Application...");
-			
+
 			$(window).resize();
-			
+
 			$('#application-overlay').fadeOut(2000, function() {
 				$('#application-overlay').remove();
 				$(window).trigger('cch.ui.overlay.removed');
 				splashUpdate = undefined;
-				
+
 			});
 		},
 		getCurrentSizing: function() {

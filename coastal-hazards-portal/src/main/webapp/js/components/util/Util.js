@@ -25,14 +25,14 @@ CCH.Util = {
 			success: function(json, textStatus, jqXHR) {
 				if (callbacks.success && callbacks.success.length > 0) {
 					callbacks.success.each(function(callback) {
-						callback.call(json, textStatus, jqXHR);
+						callback.call(null, json, textStatus, jqXHR);
 					});
 				}
 			},
 			error: function(data, textStatus, jqXHR) {
 				if (callbacks.error && callbacks.error.length > 0) {
 					callbacks.error.each(function(callback) {
-						callback.call(data, textStatus, jqXHR);
+						callback.call(null, data, textStatus, jqXHR);
 					});
 				}
 			}
