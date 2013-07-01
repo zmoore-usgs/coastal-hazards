@@ -1,6 +1,7 @@
 var CCH = {
 	config: {
 		metadataToken: '',
+		metadataUrl: '',
 		bbox: [],
 		type: '',
 		endpoint: {
@@ -372,48 +373,55 @@ var previewButtonClickHandler = function(evt) {
 };
 
 var publishButtonClickHandler = function(evt) {
-	var btn = evt.target;
-	var attName = $(btn).attr('name');
-	var attributes = $(".attr-checkbox:checked").map(function(ind, cb) {
-		return cb.value;
-	}).toArray();
-
-	var data = {
-		metadata: CCH.config.metadataToken,
-		wfsService: {
-			endpoint: CCH.config.endpoint.wfsCaps.service.onlineResource,
-			typeName: $('#publish-services-types').val()
-		},
-		wmsService: {
-			endpoint: CCH.config.endpoint.wmsCaps.service.href,
-			layers: $('#publish-services-layers').val()
-		},
-		name: $('#publish-name-input').val(),
-		type: CCH.config.type,
-		attr: attributes,
-		bbox: CCH.config.bbox
-	};
 
 	$.ajax({
-		url: contextPath + '/data/item/',
+		url: contextPath + '/publish/metadata/' + CCH.config.metadataToken,
 		type: 'POST',
-		data: JSON.stringify(data),
 		dataType: 'json',
-		contentType: "application/json; charset=utf-8",
 		success: function(data, status, xhr) {
-			var id = data.id;
-			$('body').append(
-					$('<a />').attr({
-				'href': contextPath + '/ui/item/' + id,
-				'id': 'preview-link'
-			}).addClass('hidden'));
-			$('#preview-link').trigger('click');
-			$('#preview-link').remove();
+			CCH.config.metadataUrl = data.metadata;
+			var publishData = {
+				metadata: CCH.config.metadataUrl,
+				wfsService: {
+					endpoint: CCH.config.endpoint.wfsCaps.service.onlineResource,
+					typeName: $('#publish-services-types').val()
+				},
+				wmsService: {
+					endpoint: CCH.config.endpoint.wmsCaps.service.href,
+					layers: $('#publish-services-layers').val()
+				},
+				name: $('#publish-name-input').val(),
+				type: CCH.config.type,
+				attr: '',
+				bbox: CCH.config.bbox
+			};
+			
+			// For every checked attribute...
+			$(".attr-checkbox:checked").map(function(ind, cb) {
+				return cb.value;
+			}).toArray().each(function(attribute) {
+				publishData.attr = attribute;
+				$.ajax({
+					url: contextPath + '/data/item/',
+					type: 'POST',
+					data: JSON.stringify(publishData),
+					dataType: 'json',
+					contentType: "application/json; charset=utf-8",
+					success: function(data, status, xhr) {
+						console.log('PUBLISHED')
+					},
+					error: function(xhr, status, error) {
+						console.log('NOT PUBLISHED: ' + error);
+					}
+				});
+			});
 		},
 		error: function(xhr, status, error) {
-			// TODO- Handle this
+			console.log('Could not attain metadata url for token: ' + CCH.config.metadataToken);
 		}
 	});
+
+
 
 };
 
