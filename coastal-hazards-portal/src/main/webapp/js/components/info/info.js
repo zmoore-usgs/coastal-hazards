@@ -3,38 +3,46 @@ $(document).ready(function() {
 	// Header fix
 	$('#ccsa-area').find('br').first().remove();
 
+	// Bind the window resize to properly size the content area and the map within it
 	$(window).resize(function() {
 		var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
 		$('#info-content').css('height', contentRowHeight + 'px');
 		$('#map').css('height', $('#info-summary-and-links-container').height() + 'px');
 	});
 
-
+	// Load the item
 	$.ajax({
 		url: CCH.CONFIG.contextPath + '/data/item/' + CCH.CONFIG.itemId,
 		success: function(data, textStatus, jqXHR) {
 			CCH.CONFIG.data = data;
 			$(window).resize();
+
+			// Clear the overlay
+			$('#application-overlay').fadeOut(2000, function() {
+				$('#application-overlay').remove();
+			});
+
+			// A user has navigated to the info page. Update the popularity of 
+			// the object for that use type
 			CCH.Util.updateItemPopularity({
 				item: CCH.CONFIG.itemId,
 				type: 'use'
 			});
 
-			$('#application-overlay').fadeOut(2000, function() {
-				$('#application-overlay').remove();
-			});
-
+			// Create a "View Metadata" button
 			var metadataLink = $('<a />').attr({
 				'href': CCH.CONFIG.data.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
 				'target': '_blank'
 			}).addClass('btn').html('View Metadata');
 
+			// Create a "View in Portal" link to let the user view this in the portal
 			var applicationLink = $('<a />').attr({
 				'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId,
 				'target': '_blank'
 			}).addClass('btn').html('View In Portal');
 
-			var publist = 'None';
+			// Build the publications list for the item
+			var publist = 'None Found';
 			if (data.summary.full.publications.length) {
 				publist = $('<ul />').attr('id', 'info-container-publications-list');
 				data.summary.full.publications.each(function(item) {
@@ -52,19 +60,24 @@ $(document).ready(function() {
 			$('#info-summary').html(data.summary.full.text);
 			$('#info-container-publications-list-span').append(publist);
 			$('#metadata-link').append(metadataLink);
-
 			$('#application-link').append(applicationLink);
-
 
 			buildTwitterButton();
 			buildMap();
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
-			$('#info-content').addClass('hidden');
-			$('#info-not-found-content').removeClass('hidden');
-			$('#application-overlay').fadeOut(2000, function() {
-				$('#application-overlay').remove();
-			});
+			// If the item doesn't exist, we allow the user to either continue to the main application or email us to tell us this happened
+			var continueLink = $('<a />').attr('href', CCH.CONFIG.contextPath).addClass('btn-error btn btn-mini').html('<br />Click to continue');
+			var emailLink = $('<a />').attr('href', 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (Item: ' + CCH.CONFIG.itemId + ' Error: ' + errorThrown + ')').addClass('btn-error btn btn-mini').html('<br />Send E-Mail To System Administrator');
+
+			if (404 === jqXHR.status) {
+				$('#splash-status-update').html("<b>Item Not Found</b><br />The item you are attempting to view no longer exists.<br />");
+			} else {
+				$('#splash-status-update').html("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br />");
+			}
+			$('#splash-status-update').append(continueLink);
+			$('#splash-status-update').append(emailLink);
+			$('#splash-spinner').fadeOut(2000);
 		}
 	});
 
@@ -86,7 +99,7 @@ $(document).ready(function() {
 			twttr.events.bind('tweet', function(event) {
 				CCH.Util.updateItemPopularity({
 					item: CCH.CONFIG.itemId,
-					type : 'tweet'
+					type: 'tweet'
 				});
 			});
 		});
@@ -138,18 +151,16 @@ $(document).ready(function() {
 			restrictedExtent: bounds
 		});
 
-		CCH.CONFIG.map.addLayer(new OpenLayers.Layer.XYZ("World Imagery",
-				"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/\${z}/\${y}/\${x}",
+		CCH.CONFIG.map.addLayer(new OpenLayers.Layer.XYZ("Ocean",
+				"http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/\${z}/\${y}/\${x}",
 				{
 					sphericalMercator: true,
 					isBaseLayer: true,
-					numZoomLevels: 20,
+					numZoomLevels: 17,
 					wrapDateLine: true
-				}
-		));
+				}));
 
-		CCH.CONFIG.map.addLayer(
-				new OpenLayers.Layer.WMS(CCH.CONFIG.data.id,
+		var layer = new OpenLayers.Layer.WMS(CCH.CONFIG.data.id,
 				CCH.CONFIG.data.wmsService.endpoint,
 				{
 					layers: CCH.CONFIG.data.wmsService.layers,
@@ -161,8 +172,17 @@ $(document).ready(function() {
 			transparent: true,
 			isBaseLayer: false,
 			projection: 'EPSG:3857'
-		}));
+		});
 
+		var type = CCH.CONFIG.data.type;
+		if (type === "storms") {
+			layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + CCH.CONFIG.data.wmsService.layers + '/' + CCH.CONFIG.data.attr;
+			layer.params.STYLES = 'redwhite';
+		} else if (type === "historical" || type === "vulnerability") {
+			layer.params.STYLES = 'line';
+		}
+		CCH.CONFIG.map.addLayer(layer);
 		CCH.CONFIG.map.zoomToExtent(bounds);
+
 	};
 });

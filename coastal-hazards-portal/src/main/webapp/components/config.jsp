@@ -84,8 +84,7 @@
 								isBaseLayer: true,
 								numZoomLevels: 17,
 								wrapDateLine: true
-							}
-					)
+							})
 				]
 			}
 		},

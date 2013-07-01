@@ -48,7 +48,7 @@ public class ItemManager {
 		return jsonItem;
 	}
 
-	public String save(String item) {
+	public synchronized String save(String item) {
 		String id = "ERR";
 		try {
 			em.getTransaction().begin();
