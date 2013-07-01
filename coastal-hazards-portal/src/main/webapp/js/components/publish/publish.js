@@ -422,6 +422,16 @@ var publishButtonClickHandler = function(evt) {
 									dataType: 'json',
 									contentType: "application/json; charset=utf-8",
 									success: function(data, status, xhr) {
+										CCH.Util.updateItemPopularity({
+											item : data.id,
+											type : 'publish',
+											contextPath : contextPath
+										});
+										CCH.Util.updateItemPopularity({
+											item : data.id,
+											type : 'insert',
+											contextPath : contextPath
+										});
 										console.log('PUBLISHED');
 									},
 									error: function(xhr, status, error) {

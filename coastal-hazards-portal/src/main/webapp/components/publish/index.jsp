@@ -153,6 +153,7 @@
 			var contextPath = '<%=request.getContextPath()%>';
 		</script>
 		<script type="text/javascript" src="<%=request.getContextPath()%>/js/components/publish/publish.js"></script>
+		<script type="text/javascript" src="<%=request.getContextPath()%>/js/components/util/Util.js"></script>
 		<jsp:include page="../../js/fineuploader/fineuploader.jsp">
 			<jsp:param name="relPath" value="../../" />
 		</jsp:include>
