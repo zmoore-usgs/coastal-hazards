@@ -25,7 +25,7 @@
 		idType: '${param.idType}',
 		development: <%= development%>,
 		ajaxTimeout: 300000,
-		contextPath : '<%= "".equals(request.getContextPath()) ? publicContext : request.getContextPath()%>',
+		contextPath : '<%=request.getContextPath()%>',
 		emailLink : 'CCH_Help@usgs.gov',
 		popupHandling: {
 			isVisible: false,
