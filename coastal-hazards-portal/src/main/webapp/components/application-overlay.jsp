@@ -5,8 +5,8 @@
 				USGS Coastal Hazards Portal
 			</h1>
 		</div>
-        <div style="width: 100%;max-width: none;border: 0 none;height: auto;vertical-align: middle;">
-            <img id="application-overlay-banner" src="images/splash/splash.png" style="width:75%" />
+        <div style="width: 100%;max-width: none;border: 0 none;vertical-align: middle;text-align: center;">
+            <img id="application-overlay-banner" src="images/splash/splash.svg" style="height: 40%" />
         </div>
         <!-- start slipsum code -->
 

@@ -39,13 +39,14 @@
 		<jsp:include page="js/jsuri/jsuri.jsp"></jsp:include>
 			<script type="text/javascript">
 				var CCH = {
-					CONFIG : {
+					CONFIG: {
 						itemId: '${it.id}',
 						contextPath: '<%=request.getContextPath()%>',
 						map: null,
 						projection: "EPSG:3857",
 						initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
-						item: null
+						item: null,
+						emailLink : 'CCH_Help@usgs.gov'
 					}
 				};
 		</script>
@@ -63,7 +64,7 @@
 							USGS Coastal Hazards Portal
 						</h1>
 						<div id="application-overlay-img">
-							<img id="application-overlay-banner" src="<%=request.getContextPath()%>/images/splash/splash.png" style="width:75%" />
+							<img id="application-overlay-banner" src="<%=request.getContextPath()%>/images/splash/splash_info.png" style="width:75%" />
 						</div>
 						<p>Maecenas eu placerat ante. Fusce ut neque justo, et aliquet enim. In hac habitasse platea dictumst. <br />
 							Nullam commodo neque erat, vitae facilisis erat. Cras at mauris ut tortor vestibulum fringilla vel sed metus. Donec interdum purus a justo feugiat rutrum. <br />
@@ -119,15 +120,16 @@
 				</div>
 				<div id='info-row-info-fullwidth' class='row-fluid'>
 					<div class='well span6'>
+						<h1>Placeholder for some super-awesome graph</h1>
+					</div>
+					<div class='well span6'>
 						<%-- Publications --%>
 						<span id='info-container-publications'>
 							<span id='info-container-publications-label'>Publications: </span>
 							<span id='info-container-publications-list-span'></span>
 						</span>
 					</div>
-					<div class='well span6'>
-						<h1>Placeholder for some super-awesome graph</h1>
-					</div>
+
 				</div>
 				<div  id="footer-row"  class="row-fluid">
 					<jsp:include page="template/USGSFooter.jsp">

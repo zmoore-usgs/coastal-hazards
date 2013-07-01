@@ -43,6 +43,14 @@ img {
 	vertical-align: middle;
 }
 
+.btn-error {
+	font-size: 1em;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
 #info-summary {
 	font-size:1.3em;
 	line-height: 1.5em;
@@ -60,9 +68,5 @@ img {
 }
 
 #info-row-info-fullwidth {
-	margin-top: 10px;
-}
-
-#social-link {
 	margin-top: 10px;
 }
