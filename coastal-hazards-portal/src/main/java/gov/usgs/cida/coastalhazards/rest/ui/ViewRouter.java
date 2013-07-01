@@ -35,4 +35,11 @@ public class ViewRouter {
 	public Response useJspAtPath() {
 		return Response.ok(new Viewable("/index.jsp")).build();
 	}
+    
+    @GET
+    @Produces("text/html")
+	@Path("/diagnostics")
+    public Response useDiagnosticsPage() {
+		return Response.ok(new Viewable("/diagnostics.jsp")).build();
+	}
 }
