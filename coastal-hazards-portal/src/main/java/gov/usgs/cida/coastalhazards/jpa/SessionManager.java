@@ -35,7 +35,7 @@ public class SessionManager implements SessionIO {
     }
 
     @Override
-    public String save(String session) throws SessionIOException {
+    public synchronized String save(String session) throws SessionIOException {
         String id = "ERR";
         try {
             em.getTransaction().begin();

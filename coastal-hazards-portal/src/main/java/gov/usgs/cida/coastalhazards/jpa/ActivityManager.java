@@ -17,7 +17,7 @@ public class ActivityManager {
         em = JPAHelper.getEntityManagerFactory().createEntityManager();
     }
 
-    public String hit(Activity activity) {
+    public synchronized String hit(Activity activity) {
         String result = "{\"success\": false}";
         try {
             em.getTransaction().begin();

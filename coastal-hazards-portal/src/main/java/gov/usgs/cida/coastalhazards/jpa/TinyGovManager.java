@@ -22,7 +22,7 @@ public class TinyGovManager {
         return urls;
     }
     
-    public boolean save(TinyGov tinygov) {
+    public synchronized boolean save(TinyGov tinygov) {
         boolean result = false;
 		try {
 			em.getTransaction().begin();
