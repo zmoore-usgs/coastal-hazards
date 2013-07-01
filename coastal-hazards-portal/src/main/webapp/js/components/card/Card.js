@@ -78,7 +78,7 @@ CCH.Objects.Card = function(args) {
 			if (me.type === "storms") {
 				// SLD will probably only work with one layer
 				// TODO - Fix with window.location.href but make sure actually works
-				layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + me.item.wmsService.layers + '/' + me.attr;
+				layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'data/sld/redwhite/' + me.item.wmsService.layers + '/' + me.attr;
 				layer.params.STYLES = 'redwhite';
 			} else if (me.type === "historical" || me.type === "vulnerability") {
 				layer.params.STYLES = 'line';

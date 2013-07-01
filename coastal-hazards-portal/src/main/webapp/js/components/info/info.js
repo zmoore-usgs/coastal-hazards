@@ -176,7 +176,7 @@ $(document).ready(function() {
 
 		var type = CCH.CONFIG.data.type;
 		if (type === "storms") {
-			layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + CCH.CONFIG.data.wmsService.layers + '/' + CCH.CONFIG.data.attr;
+			layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'data/sld/redwhite/' + CCH.CONFIG.data.wmsService.layers + '/' + CCH.CONFIG.data.attr;
 			layer.params.STYLES = 'redwhite';
 		} else if (type === "historical" || type === "vulnerability") {
 			layer.params.STYLES = 'line';
