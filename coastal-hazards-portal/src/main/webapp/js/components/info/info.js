@@ -160,8 +160,7 @@ $(document).ready(function() {
 					wrapDateLine: true
 				}));
 
-		CCH.CONFIG.map.addLayer(
-				new OpenLayers.Layer.WMS(CCH.CONFIG.data.id,
+		var layer = new OpenLayers.Layer.WMS(CCH.CONFIG.data.id,
 				CCH.CONFIG.data.wmsService.endpoint,
 				{
 					layers: CCH.CONFIG.data.wmsService.layers,
@@ -173,9 +172,17 @@ $(document).ready(function() {
 			transparent: true,
 			isBaseLayer: false,
 			projection: 'EPSG:3857'
-		}));
+		});
 
+		var type = CCH.CONFIG.data.type;
+		if (type === "storms") {
+			layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + CCH.CONFIG.data.wmsService.layers + '/' + CCH.CONFIG.data.attr;
+			layer.params.STYLES = 'redwhite';
+		} else if (type === "historical" || type === "vulnerability") {
+			layer.params.STYLES = 'line';
+		}
+		CCH.CONFIG.map.addLayer(layer);
 		CCH.CONFIG.map.zoomToExtent(bounds);
-		
+
 	};
 });
