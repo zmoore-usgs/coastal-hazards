@@ -13,6 +13,7 @@
 		}
 	}
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
+	String publicContext = props.getProperty("coastal-hazards.public.context");
 	String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
 	String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
 	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
@@ -24,7 +25,7 @@
 		idType: '${param.idType}',
 		development: <%= development%>,
 		ajaxTimeout: 300000,
-		contextPath : '<%=request.getContextPath()%>',
+		contextPath : '<%= "".equals(request.getContextPath()) ? publicContext : request.getContextPath()%>',
 		emailLink : 'CCH_Help@usgs.gov',
 		popupHandling: {
 			isVisible: false,
