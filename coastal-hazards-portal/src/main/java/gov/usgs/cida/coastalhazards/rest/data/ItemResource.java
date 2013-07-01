@@ -53,7 +53,7 @@ public class ItemResource {
 	private Gson gson = new Gson();
 	private static ItemManager itemManager;
     private static String cchn52Endpoint;
-    private static DynamicReadOnlyProperties props;
+    private static final DynamicReadOnlyProperties props;
 
 	static {
         props = JNDISingleton.getInstance();
@@ -85,11 +85,13 @@ public class ItemResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchCards(
+            @DefaultValue("") @QueryParam("query") String query,
+            @DefaultValue("") @QueryParam("type") String type,
 			@DefaultValue("popularity") @QueryParam("sortBy") String sortBy,
 			@DefaultValue("-1") @QueryParam("count") int count,
 			@DefaultValue("") @QueryParam("bbox") String bbox) {
 		// need to figure out how to search popularity and bbox yet
-		String jsonResult = itemManager.query();
+		String jsonResult = itemManager.query(query, type, sortBy, count, bbox);
 		return Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).build();
 	}
 

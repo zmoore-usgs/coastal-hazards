@@ -2,7 +2,6 @@ package gov.usgs.cida.coastalhazards.jpa;
 
 import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.model.Item;
-import gov.usgs.cida.utilities.IdGenerator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,6 +13,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -74,8 +74,40 @@ public class ItemManager {
 		return id;
 	}
 
-	public String query(/* will have params here */) {
-		Query query = em.createQuery("select i from Item i order by i.rank.totalScore desc", Item.class);
+	public String query(String queryText, String type, String sortBy, int count, String bbox) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("select i from Item i");
+        boolean hasQueryText = StringUtils.isNotBlank(queryText);
+        boolean hasType = StringUtils.isNotBlank(type);
+        if (hasQueryText || hasType) {
+            builder.append(" where");
+            if (hasQueryText) {
+                String[] words = queryText.split(" ");
+                builder.append(" i.summary.full.text like");
+                for (int i = 0; i<words.length; i++) {
+                    words[i] = "'%'||" + words[i] + "||'%'";
+                }
+                String like = StringUtils.join(words, " or ");
+                builder.append(" ").append(like);
+            }
+            if (hasQueryText && hasType) {
+                builder.append(" and");
+            }
+            if (hasType) {
+                builder.append(" i.type in(").append(type).append(")");
+            }
+        }
+        if ("popularity".equals(sortBy)) {
+            builder.append(" order by i.rank.totalScore desc");
+        }
+        if (count > 0) {
+            builder.append(" limit ").append(count);
+        }
+        if (StringUtils.isNotBlank(bbox)) {
+            //do bbox stuff here
+        }
+        
+		Query query = em.createQuery(builder.toString(), Item.class);
 		List<Item> resultList = query.getResultList();
 		Map<String, List> resultMap = new HashMap<String, List>();
 		resultMap.put("items", resultList);
