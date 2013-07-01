@@ -380,8 +380,8 @@ var publishButtonClickHandler = function(evt) {
 		dataType: 'json',
 		success: function(data, status, xhr) {
 			CCH.config.metadataUrl = data.metadata;
-			var publishData = {
-				metadata: CCH.config.metadataUrl,
+			var previewData = {
+				metadata: CCH.config.metadataToken,
 				wfsService: {
 					endpoint: CCH.config.endpoint.wfsCaps.service.onlineResource,
 					typeName: $('#publish-services-types').val()
@@ -395,20 +395,43 @@ var publishButtonClickHandler = function(evt) {
 				attr: '',
 				bbox: CCH.config.bbox
 			};
-			
 			// For every checked attribute...
 			$(".attr-checkbox:checked").map(function(ind, cb) {
 				return cb.value;
 			}).toArray().each(function(attribute) {
-				publishData.attr = attribute;
+				previewData.attr = attribute;
 				$.ajax({
-					url: contextPath + '/data/item/',
+					url: contextPath + '/data/item/preview',
 					type: 'POST',
-					data: JSON.stringify(publishData),
+					data: JSON.stringify(previewData),
 					dataType: 'json',
 					contentType: "application/json; charset=utf-8",
 					success: function(data, status, xhr) {
-						console.log('PUBLISHED')
+
+						$.ajax({
+							url: contextPath + '/data/item/' + data.id,
+							dataType: 'json',
+							success: function(data, status, xhr) {
+								var a = data;
+								a.metadata = CCH.config.metadataUrl;
+								
+								$.ajax({
+									url: contextPath + '/data/item/',
+									type: 'POST',
+									data: JSON.stringify(a),
+									dataType: 'json',
+									contentType: "application/json; charset=utf-8",
+									success: function(data, status, xhr) {
+										console.log('PUBLISHED');
+									},
+									error: function(xhr, status, error) {
+										console.log('NOT PUBLISHED: ' + error);
+									}
+								});
+							}
+						});
+
+
 					},
 					error: function(xhr, status, error) {
 						console.log('NOT PUBLISHED: ' + error);
