@@ -287,16 +287,16 @@ var serviceTypesDropdownChangeHandler = function(evt) {
 								'value': name,
 							}).addClass('attr-checkbox');
 							var nameSpan = $('<span />').addClass('name-span').html(name);
-							var invalidAttribute = combinedAttributes.indexOf(nameTlc) === -1;
-							if (invalidAttribute) {
-								nameSpan.addClass('muted');
-								cb.attr('disabled', 'true');
-							} else {
+//							var invalidAttribute = combinedAttributes.indexOf(nameTlc) === -1;
+//							if (invalidAttribute) {
+//								nameSpan.addClass('muted');
+//								cb.attr('disabled', 'true');
+//							} else {
 								if (!CCH.config.type) {
 									// Using the attribute, match it to a type
 									CCH.config.type = deriveTypeFromAttribute(nameTlc);
 								}
-							}
+//							}
 							var previewButton = $('<button />').addClass('publish-preview-button btn disabled').attr('id', 'btn-preview-' + name).attr('name', name).html('Preview');
 							var controls = $('<span />').addClass('publish-container-actions').append(previewButton);
 							li.append(cb, nameSpan, controls);
