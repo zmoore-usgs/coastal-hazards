@@ -6,11 +6,11 @@
 
 library(itemSummaryService)
 
-
+attr <- tolower(attr)
 themeNames	<-	names(attrMap)
 theme	<-	NULL
 for (i in 1:length(themeNames)){
-	if (any(tolower(attr) %in% tolower(unlist(attrMap[i])))){
+	if (any(attr %in% unlist(attrMap[i]))){
 		theme	<- names(attrMap[i])
 		break
 	}
