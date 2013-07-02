@@ -15,7 +15,7 @@
         <![endif]-->
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
-            <jsp:param name="shortName" value="USGS Coastal Hazards Portal" />
+            <jsp:param name="shortName" value="USGS Coastal Change Hazards Portal" />
             <jsp:param name="title" value="USGS Coastal Change Hazards" />
             <jsp:param name="description" value="" />
             <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Jordan Read, Carl Schroedl" />
@@ -61,7 +61,7 @@
 				<div id="application-overlay-content">
 					<div style="text-align: center">
 						<h1 id="application-overlay-title">
-							USGS Coastal Hazards Portal
+							USGS Coastal Change Hazards Portal
 						</h1>
 						<div id="application-overlay-img">
 							<img id="application-overlay-banner" src="<%=request.getContextPath()%>/images/splash/splash_info.png" style="width:75%" />
@@ -84,7 +84,7 @@
 					<jsp:include page="template/USGSHeader.jsp">
 						<jsp:param name="relPath" value="" />
 						<jsp:param name="header-class" value="" />
-						<jsp:param name="site-title" value="USGS Coastal Hazards Portal" />
+						<jsp:param name="site-title" value="USGS Coastal Change Hazards Portal" />
 					</jsp:include>
 				</div>
 
@@ -136,7 +136,7 @@
 						<jsp:param name="relPath" value="" />
 						<jsp:param name="footer-class" value="" />
 						<jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
-						<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Site Administrator</a>" />
+						<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Change%20Hazards%20Feedback'>Site Administrator</a>" />
 					</jsp:include>
 				</div>
 			</div>
@@ -153,7 +153,7 @@
 				<div id="info-not-found--summary" class="row-fluid">
 					Unfortunately the item you are looking for could not be found. 
 					<br /><br />
-					<a href="<%=request.getContextPath()%>">Back to the USGS Coastal Hazards Portal</a>
+					<a href="<%=request.getContextPath()%>">Back to the USGS Coastal Change Hazards Portal</a>
 				</div>
 
 

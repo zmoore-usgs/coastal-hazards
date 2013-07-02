@@ -15,7 +15,7 @@
 				<br />
 				<a href="publish">Try again?</a>
 				<br />
-				<a href="<%=request.getContextPath()%>/">Go to Coastal Hazards Portal?</a>
+				<a href="<%=request.getContextPath()%>/">Go to Coastal Change Hazards Portal?</a>
 			</c:when>
 			<c:when test='${sessionScope.sessionValid == true}'>
 				You have been logged in. <a href="<%=request.getContextPath()%>/publish">Go to publish form</a>

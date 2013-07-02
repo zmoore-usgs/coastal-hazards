@@ -17,7 +17,7 @@
         <![endif]-->
         <jsp:include page="../../template/USGSHead.jsp">
             <jsp:param name="relPath" value="../../" />
-            <jsp:param name="shortName" value="USGS Coastal Hazards Portal" />
+            <jsp:param name="shortName" value="USGS Coastal Change Hazards Portal" />
             <jsp:param name="title" value="USGS Coastal Change Hazards" />
             <jsp:param name="description" value="" />
             <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Jordan Read, Carl Schroedl" />
@@ -63,7 +63,7 @@
     <body>
 		<jsp:include page="../../template/USGSHeader.jsp">
 			<jsp:param name="relPath" value="../../" />
-			<jsp:param name="site-title" value="USGS Coastal Hazards Portal" />
+			<jsp:param name="site-title" value="USGS Coastal Change Hazards Portal" />
 		</jsp:include>
         <c:choose>
 			<c:when test='${empty pageContext.session.getAttribute("oid-info")}'>
@@ -71,12 +71,12 @@
 				<br />
 				<a href="<%=request.getContextPath()%>/publish">Try again?</a>
 				<br />
-				<a href="<%=request.getContextPath()%>/">Go to Coastal Hazards Portal?</a>
+				<a href="<%=request.getContextPath()%>/">Go to Coastal Change Hazards Portal?</a>
 			</c:when>
 			<c:when test='${false}'>
 				You are not an authorized user. 
 				<br /><br />
-				<a href="">Go to Coastal Hazards Portal</a>
+				<a href="">Go to Coastal Change Hazards Portal</a>
 			</c:when>
 			<c:otherwise>
 				<div class="container-fluid">

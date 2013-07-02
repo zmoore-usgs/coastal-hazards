@@ -177,7 +177,7 @@ $(document).ready(function() {
 					function(jqXHR, textStatus, errorThrown) {
 						var continueLink = $('<a />').attr('href', CCH.CONFIG.contextPath).html('<br />Click to try again');
 						var emailLink = $('<a />').attr('href', 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')').html('<br />Send E-Mail To System Administrator');
-						splashUpdate("<b>Application Error</b><br />Coastal Hazards Portal could not find any items to display.<br />Due to this error, the application can not function properly.<br />");
+						splashUpdate("<b>Application Error</b><br />Coastal Change Hazards Portal could not find any items to display.<br />Due to this error, the application can not function properly.<br />");
 						$('#splash-status-update').append(continueLink);
 						$('#splash-status-update').append(emailLink);
 						LOG.error(errorThrown + ' : ' + jqXHR.responseText);
