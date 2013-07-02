@@ -6,7 +6,7 @@
 
 library(itemSummaryService)
 
-
+attr <- tolower(attr)
 themeNames	<-	names(attrMap)
 theme	<-	NULL
 for (i in 1:length(themeNames)){

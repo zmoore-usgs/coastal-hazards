@@ -80,8 +80,10 @@ CCH.Objects.Card = function(args) {
 				// TODO - Fix with window.location.href but make sure actually works
 				layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'data/sld/redwhite/' + me.item.wmsService.layers + '/' + me.attr;
 				layer.params.STYLES = 'redwhite';
-			} else if (me.type === "historical" || me.type === "vulnerability") {
+			} else if (me.type === "historical") {
 				layer.params.STYLES = 'line';
+			} else if (me.type === "vulnerability") {
+				layer.params.STYLES = '';
 			}
 			return layer;
 		},
