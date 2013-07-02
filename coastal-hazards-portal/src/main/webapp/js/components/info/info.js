@@ -178,9 +178,12 @@ $(document).ready(function() {
 		if (type === "storms") {
 			layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'data/sld/redwhite/' + CCH.CONFIG.data.wmsService.layers + '/' + CCH.CONFIG.data.attr;
 			layer.params.STYLES = 'redwhite';
-		} else if (type === "historical" || type === "vulnerability") {
+		} else if (me.type === "historical") {
 			layer.params.STYLES = 'line';
+		} else if (me.type === "vulnerability") {
+			layer.params.STYLES = '';
 		}
+		return
 		CCH.CONFIG.map.addLayer(layer);
 		CCH.CONFIG.map.zoomToExtent(bounds);
 
