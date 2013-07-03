@@ -31,7 +31,6 @@ public class ViewRouter {
 
 	@GET
 	@Produces("text/html")
-	@Path("/")
 	public Response useJspAtPath() {
 		return Response.ok(new Viewable("/index.jsp")).build();
 	}

@@ -89,7 +89,7 @@ CCH.Objects.Session = function(args) {
 				success: [],
 				error: []
 			};
-			$.ajax(CCH.CONFIG.data.sources.session.endpoint, {
+			$.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint, {
 				type: 'POST',
 				contentType: 'application/json;charset=utf-8',
 				dataType: 'json',

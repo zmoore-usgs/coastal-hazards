@@ -1,7 +1,23 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@page import="org.apache.commons.lang.StringUtils"%>
+<%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
+<%@page import="java.util.Map" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
+	{
+		try {
+			props = props.addJNDIContexts(new String[0]);
+		} catch (Exception e) {
+			System.out.println("Could not find JNDI - Application will probably not function correctly");
+		}
+	}
+%>
+<%
+	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+%>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -17,7 +33,7 @@
         <![endif]-->
         <jsp:include page="../../template/USGSHead.jsp">
             <jsp:param name="relPath" value="../../" />
-            <jsp:param name="shortName" value="USGS Coastal Hazards Portal" />
+            <jsp:param name="shortName" value="USGS Coastal Change Hazards Portal" />
             <jsp:param name="title" value="USGS Coastal Change Hazards" />
             <jsp:param name="description" value="" />
             <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Jordan Read, Carl Schroedl" />
@@ -28,12 +44,12 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="false" />
         </jsp:include>
-        <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/jquery/2.0.0/jquery.min.js"></script>
-        <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap.min.css" />
-        <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
-        <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/bootstrap/2.3.1/js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="<%=request.getContextPath()%>/webjars/openlayers/2.12/OpenLayers.js"></script>
-		<script type="text/javascript" src="<%=request.getContextPath()%>/webjars/sugar/1.3.8/sugar.min.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/2.3.1/css/bootstrap.min.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/2.3.1/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.12/OpenLayers.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar.min.js"></script>
 		<jsp:include page="../../js/jsuri/jsuri.jsp">
             <jsp:param name="relPath" value="../../" />
 		</jsp:include>
@@ -63,20 +79,20 @@
     <body>
 		<jsp:include page="../../template/USGSHeader.jsp">
 			<jsp:param name="relPath" value="../../" />
-			<jsp:param name="site-title" value="USGS Coastal Hazards Portal" />
+			<jsp:param name="site-title" value="USGS Coastal Change Hazards Portal" />
 		</jsp:include>
         <c:choose>
 			<c:when test='${empty pageContext.session.getAttribute("oid-info")}'>
 				Could not find your log-in info. 
 				<br />
-				<a href="<%=request.getContextPath()%>/publish">Try again?</a>
+				<a href="<%=baseUrl%>/publish">Try again?</a>
 				<br />
-				<a href="<%=request.getContextPath()%>/">Go to Coastal Hazards Portal?</a>
+				<a href="<%=baseUrl%>/">Go to Coastal Change Hazards Portal?</a>
 			</c:when>
 			<c:when test='${false}'>
 				You are not an authorized user. 
 				<br /><br />
-				<a href="">Go to Coastal Hazards Portal</a>
+				<a href="">Go to Coastal Change Hazards Portal</a>
 			</c:when>
 			<c:otherwise>
 				<div class="container-fluid">
@@ -150,10 +166,10 @@
 			<jsp:param name="contact-info" value="<a href='mailto:jread@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Site Administrator</a>" />
 		</jsp:include>
 		<script type="text/javascript">
-			var contextPath = '<%=request.getContextPath()%>';
+			var contextPath = '<%=baseUrl%>';
 		</script>
-		<script type="text/javascript" src="<%=request.getContextPath()%>/js/components/publish/publish.js"></script>
-		<script type="text/javascript" src="<%=request.getContextPath()%>/js/components/util/Util.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/components/publish/publish.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/js/components/util/Util.js"></script>
 		<jsp:include page="../../js/fineuploader/fineuploader.jsp">
 			<jsp:param name="relPath" value="../../" />
 		</jsp:include>

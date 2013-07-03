@@ -287,16 +287,16 @@ var serviceTypesDropdownChangeHandler = function(evt) {
 								'value': name,
 							}).addClass('attr-checkbox');
 							var nameSpan = $('<span />').addClass('name-span').html(name);
-							var invalidAttribute = combinedAttributes.indexOf(nameTlc) === -1;
-							if (invalidAttribute) {
-								nameSpan.addClass('muted');
-								cb.attr('disabled', 'true');
-							} else {
-								if (!CCH.config.type) {
-									// Using the attribute, match it to a type
-									CCH.config.type = deriveTypeFromAttribute(nameTlc);
-								}
+//							var invalidAttribute = combinedAttributes.indexOf(nameTlc) === -1;
+//							if (invalidAttribute) {
+//								nameSpan.addClass('muted');
+//								cb.attr('disabled', 'true');
+//							} else {
+							if (!CCH.config.type) {
+								// Using the attribute, match it to a type
+								CCH.config.type = deriveTypeFromAttribute(nameTlc);
 							}
+//							}
 							var previewButton = $('<button />').addClass('publish-preview-button btn disabled').attr('id', 'btn-preview-' + name).attr('name', name).html('Preview');
 							var controls = $('<span />').addClass('publish-container-actions').append(previewButton);
 							li.append(cb, nameSpan, controls);
@@ -400,6 +400,7 @@ var publishButtonClickHandler = function(evt) {
 				return cb.value;
 			}).toArray().each(function(attribute) {
 				previewData.attr = attribute;
+
 				$.ajax({
 					url: contextPath + '/data/item/preview',
 					type: 'POST',
@@ -407,41 +408,40 @@ var publishButtonClickHandler = function(evt) {
 					dataType: 'json',
 					contentType: "application/json; charset=utf-8",
 					success: function(data, status, xhr) {
+						setInterval(function() {
+							$.ajax({
+								url: contextPath + '/data/item/' + data.id,
+								dataType: 'json',
+								success: function(data, status, xhr) {
+									var a = data;
+									a.metadata = CCH.config.metadataUrl;
 
-						$.ajax({
-							url: contextPath + '/data/item/' + data.id,
-							dataType: 'json',
-							success: function(data, status, xhr) {
-								var a = data;
-								a.metadata = CCH.config.metadataUrl;
-								
-								$.ajax({
-									url: contextPath + '/data/item/',
-									type: 'POST',
-									data: JSON.stringify(a),
-									dataType: 'json',
-									contentType: "application/json; charset=utf-8",
-									success: function(data, status, xhr) {
-										CCH.Util.updateItemPopularity({
-											item : data.id,
-											type : 'publish',
-											contextPath : contextPath
-										});
-										CCH.Util.updateItemPopularity({
-											item : data.id,
-											type : 'insert',
-											contextPath : contextPath
-										});
-										console.log('PUBLISHED');
-									},
-									error: function(xhr, status, error) {
-										console.log('NOT PUBLISHED: ' + error);
-									}
-								});
-							}
-						});
-
-
+									$.ajax({
+										url: contextPath + '/data/item/',
+										type: 'POST',
+										data: JSON.stringify(a),
+										dataType: 'json',
+										contentType: "application/json; charset=utf-8",
+										success: function(data, status, xhr) {
+											CCH.Util.updateItemPopularity({
+												item: data.id,
+												type: 'publish',
+												contextPath: contextPath
+											});
+											CCH.Util.updateItemPopularity({
+												item: data.id,
+												type: 'insert',
+												contextPath: contextPath
+											});
+											console.log('PUBLISHED');
+										},
+										error: function(xhr, status, error) {
+											console.log('NOT PUBLISHED: ' + error);
+										}
+									});
+								}
+							});
+						}, 1000);
 					},
 					error: function(xhr, status, error) {
 						console.log('NOT PUBLISHED: ' + error);
