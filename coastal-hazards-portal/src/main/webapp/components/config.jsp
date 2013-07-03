@@ -1,10 +1,10 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
+<%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="org.slf4j.Logger"%>
 <%@page import="org.slf4j.LoggerFactory"%>
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
-
 	{
 		try {
 			props = props.addJNDIContexts(new String[0]);
@@ -18,6 +18,9 @@
 	String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
 	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
 %>
+<%
+	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+%>
 <script type="text/javascript">
 	splashUpdate("Setting configuration...");
 	CCH.CONFIG = {
@@ -25,7 +28,7 @@
 		idType: '${param.idType}',
 		development: <%= development%>,
 		ajaxTimeout: 300000,
-		contextPath : '<%=request.getContextPath()%>',
+		contextPath : '${param.baseUrl}',
 		emailLink : 'CCH_Help@usgs.gov',
 		popupHandling: {
 			isVisible: false,
@@ -100,13 +103,13 @@
 					'proxy': 'stpgis/'
 				},
 				'item': {
-					'endpoint': '<%=request.getContextPath()%>/data/item'
+					'endpoint': '<%=baseUrl%>/data/item'
 				},
 				'geocoding': {
 					'endpoint': '<%=geocodeEndpoint%>'
 				},
 				'session': {
-					'endpoint': '<%=request.getContextPath()%>/data/view/'
+					'endpoint': '<%=baseUrl%>/data/view/'
 				}
 			}
 		}

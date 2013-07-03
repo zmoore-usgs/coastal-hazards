@@ -1,3 +1,4 @@
+<%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 
@@ -13,7 +14,14 @@
 		}
 	}
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
+
 %>
+
+<%
+	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+%>
+
+
 
 <html lang="en">
     <head>
@@ -93,13 +101,14 @@
 		<jsp:include page="components/config.jsp">
 			<jsp:param name="id" value="${it.id}" /> 
 			<jsp:param name="idType" value="${it.type}" /> 
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
 		</jsp:include>
         <%-- TODO: Refactor log4javascript to take the log4js script from webjars --%>
         <jsp:include page="js/log4javascript/log4javascript.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-		
+
 		<script type="text/javascript" src="js/components/util/Util.js"></script>
         <script type="text/javascript" src="js/openlayers/lib/OpenLayers/Layer/Shorelines.js"></script>
         <script type="text/javascript" src="js/components/slideshow/Slideshow.js"></script>
