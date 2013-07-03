@@ -400,15 +400,14 @@ var publishButtonClickHandler = function(evt) {
 				return cb.value;
 			}).toArray().each(function(attribute) {
 				previewData.attr = attribute;
-
-				$.ajax({
-					url: contextPath + '/data/item/preview',
-					type: 'POST',
-					data: JSON.stringify(previewData),
-					dataType: 'json',
-					contentType: "application/json; charset=utf-8",
-					success: function(data, status, xhr) {
-						setInterval(function() {
+				setTimeout(function() {
+					$.ajax({
+						url: contextPath + '/data/item/preview',
+						type: 'POST',
+						data: JSON.stringify(previewData),
+						dataType: 'json',
+						contentType: "application/json; charset=utf-8",
+						success: function(data, status, xhr) {
 							$.ajax({
 								url: contextPath + '/data/item/' + data.id,
 								dataType: 'json',
@@ -441,12 +440,12 @@ var publishButtonClickHandler = function(evt) {
 									});
 								}
 							});
-						}, 1000);
-					},
-					error: function(xhr, status, error) {
-						console.log('NOT PUBLISHED: ' + error);
-					}
-				});
+						},
+						error: function(xhr, status, error) {
+							console.log('NOT PUBLISHED: ' + error);
+						}
+					});
+				}, 1000);
 			});
 		},
 		error: function(xhr, status, error) {
