@@ -56,7 +56,7 @@ CCH.Objects.Items = function(args) {
 			};
 
 			$.ajax({
-				url: CCH.CONFIG.data.sources.item.endpoint + item,
+				url: CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.item.endpoint + item,
 				dataType: 'json',
 				data: {
 					count: count,

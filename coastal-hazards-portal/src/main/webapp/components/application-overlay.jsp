@@ -2,7 +2,7 @@
     <div id="application-overlay-content" style='height: 50%;padding-left: 25%;position: relative;top: 15%;width: 50%;color: #333333;font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;font-size: 14px;line-height: 20px;'>
         <div style="text-align: center">
 			<h1 style="letter-spacing: 0.5em;font-size: 38.5px; line-height: 40px;color: inherit; font-family: inherit; font-weight: bold;text-rendering: optimizelegibility;">
-				USGS Coastal Hazards Portal
+				USGS Coastal Change Hazards Portal
 			</h1>
 		</div>
         <div style="width: 100%;max-width: none;border: 0 none;vertical-align: middle;text-align: center;">

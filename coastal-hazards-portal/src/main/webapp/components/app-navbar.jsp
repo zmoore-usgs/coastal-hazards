@@ -3,8 +3,8 @@
         <div id="app-navbar-inner" class="navbar-inner">
             <div id="inner-navbar-container" class="container">
 
-				<h4 class="app-navbar-brand visible-desktop hidden-tablet hidden-phone">USGS Coastal Hazards Portal</h4>
-                <h4 class="app-navbar-brand hidden-desktop visible-tablet hidden-phone">Coastal Hazards Portal</h4>
+				<h4 class="app-navbar-brand visible-desktop hidden-tablet hidden-phone">USGS Coastal Change Hazards Portal</h4>
+                <h4 class="app-navbar-brand hidden-desktop visible-tablet hidden-phone">Coastal Change Hazards Portal</h4>
 				<h4 class="app-navbar-brand hidden-desktop hidden-tablet visible-phone">USGS CCH</h4>
 
 				<div id="app-navbar-pin-control" class="btn-group">
@@ -18,12 +18,12 @@
 					<div id="shareModal" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-							<h4>Share Your Coastal Hazards Portal View With Others</h4>
+							<h4>Share Your Coastal Change Hazards Portal View With Others</h4>
 						</div>
 						<div class="modal-body">
 							<div class="row-fluid">
 								<div class="well-small span12">
-									<div id="modal-share-summary-text-label">The Coastal Hazards Portal allows you to share your current view with others.</div>
+									<div id="modal-share-summary-text-label">The Coastal Change Hazards Change Portal allows you to share your current view with others.</div>
 								</div>
 								<div class="well-small span12">
 									<div id="modal-share-summary-url-label">You can share this URL with others to allow them to see your view...</div>

@@ -3,6 +3,7 @@ CCH.Objects.Slideshow = function(args) {
 	var me = (this === window) ? {} : this;
 	args = args || {};
 	me.descriptionWrapper = $('#description-wrapper');
+	me.iossliderContainer = $('#iosslider-container');
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
@@ -16,20 +17,45 @@ CCH.Objects.Slideshow = function(args) {
 			});
 			return me;
 		},
-		slider: function() {
-			var iosslider = $('#iosslider-container');
-			var sliderFunct;
+		stop: function() {
+			var container = $('#iosslider-container');
 			var currentSizing = CCH.ui.getCurrentSizing();
 			if (currentSizing === 'large') {
-				sliderFunct = iosslider.iosSliderVertical;
+				container.iosSliderVertical('autoSlidePause');
 			} else if (currentSizing === 'small') {
-				sliderFunct = iosslider.iosSlider;
+				container.iosSlider('autoSlidePause');
 			}
-			return sliderFunct;
+		},
+		start: function() {
+			var container = $('#iosslider-container');
+			var currentSizing = CCH.ui.getCurrentSizing();
+			if (currentSizing === 'large') {
+				container.iosSliderVertical('autoSlidePlay');
+			} else if (currentSizing === 'small') {
+				container.iosSlider('autoSlidePlay');
+			}
+		},
+		goToSlide: function(slide) {
+			var container = $('#iosslider-container');
+			var currentSizing = CCH.ui.getCurrentSizing();
+			if (currentSizing === 'large') {
+				container.iosSliderVertical('goToSlide', slide);
+			} else if (currentSizing === 'small') {
+				container.iosSlider('goToSlide', slide);
+			}
+		},
+		updateSlides: function() {
+			var container = $('#iosslider-container');
+			var currentSizing = CCH.ui.getCurrentSizing();
+			if (currentSizing === 'large') {
+				container.iosSliderVertical('update');
+			} else if (currentSizing === 'small') {
+				container.iosSlider('update');
+			}
 		},
 		destroySlider: function() {
-			var container = $('#iosslider-container');
 			CCH.cards.cards.length = 0;
+			var container = $('#iosslider-container');
 			container.empty();
 			container.iosSliderVertical('destroy');
 			container.iosSlider('destroy');
@@ -45,9 +71,9 @@ CCH.Objects.Slideshow = function(args) {
 				$(slide).removeClass('slider-slide-active');
 				$(slide).addClass('slider-slide-inactive');
 			});
-
-			var currentSlide = $('#iosslider-container').data().args.currentSlideObject;
-			var currentSlideNumber = $('#iosslider-container').data().args.currentSlideNumber;
+			var container = $('#iosslider-container');
+			var currentSlide = container.data().args.currentSlideObject;
+			var currentSlideNumber = container.data().args.currentSlideNumber;
 			currentSlide.removeClass('slider-slide-inactive');
 			currentSlide.addClass('slider-slide-active');
 
@@ -214,18 +240,43 @@ CCH.Objects.Slideshow = function(args) {
 				});
 
 				var defaultSliderOptions = {
+					//  Desktop click and drag fallback for the desktop slider
 					desktopClickDrag: true,
+					// Slider will slide to the closest child element on touch release
 					snapToChildren: true,
+					// When snapToChildren is true, this option will snap the slide to the center of the draggable area
 					snapSlideCenter: true,
+					// Keyboard arrows can be used to navigate the slider
 					keyboardControls: true,
+					// Modifies the mouse wheel scroll sensitivity
+					mousewheelScrollSensitivity: 10,
+					// Enables mouse wheel browser scrolling when bottom or top of slider is reached
+					mousewheelScrollOverflow: true,
+					// The css height in 'px' of the scrollbar
+					scrollbarWidth: '3px',
+					// Tab key can be used to navigate the slider forward
+					tabToAdvance: true,
+					// Enables automatic cycling through slides
 					autoSlide: true,
+					// The time (in milliseconds) required for all automatic animations to move between slides
 					autoSlideTransTimer: 1500,
+					// A jQuery selection (ex. $('.unselectable') ), each element returned by the selector will become removed from touch/click move events
 					unselectableSelector: $('.unselectable'),
-					onSlideChange: me.toggleClassForActiveSlide,
+					// Width of slides becomes responsive to the width/height of 
+					// its parent element. Slides dynamically collapse to the 
+					// width/height of the parent element of the slider when wider/taller
+					responsiveSlides: true,
+					// Executed when the slider has entered the range of a new slide,
+					onSlideChange: function() {
+//						$(window).trigger('cch')
+						me.toggleClassForActiveSlide();
+					},
+					// Executed when slider has finished loading initially
 					onSliderLoaded: function() {
 						me.resize();
 						me.toggleClassForActiveSlide();
 					},
+					// Executed when the window has been resized or a device has been rotated
 					onSliderResize: me.resize
 				};
 				if (currentSizing === 'large') {
@@ -237,6 +288,7 @@ CCH.Objects.Slideshow = function(args) {
 				$(window).off('orientationchange', me.orientationChange);
 				$(window).on('orientationchange', me.orientationChange);
 				$(window).resize();
+				me.updateSlides();
 			}, 1000, args);
 		}
 	});

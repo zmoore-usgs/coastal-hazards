@@ -1,3 +1,4 @@
+<%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 
@@ -13,7 +14,14 @@
 		}
 	}
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
+
 %>
+
+<%
+	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+%>
+
+
 
 <html lang="en">
     <head>
@@ -31,7 +39,7 @@
         <![endif]-->
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
-            <jsp:param name="shortName" value="USGS Coastal Hazards Portal" />
+            <jsp:param name="shortName" value="USGS Coastal Change Hazards Portal" />
             <jsp:param name="title" value="USGS Coastal Change Hazards" />
             <jsp:param name="description" value="" />
             <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Jordan Read, Carl Schroedl" />
@@ -56,7 +64,7 @@
 				<jsp:include page="template/USGSHeader.jsp">
 					<jsp:param name="relPath" value="" />
 					<jsp:param name="header-class" value="visible-desktop hidden-phone hidden-tablet" />
-					<jsp:param name="site-title" value="USGS Coastal Hazards Portal" />
+					<jsp:param name="site-title" value="USGS Coastal Change Hazards Portal" />
 				</jsp:include>
 				<jsp:include page="components/app-navbar.jsp"></jsp:include>
                 </div>
@@ -73,7 +81,7 @@
 					<jsp:param name="relPath" value="" />
 					<jsp:param name="footer-class" value="" />
 					<jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
-					<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Site Administrator</a>" />
+					<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Change%20Hazards%20Feedback'>Site Administrator</a>" />
 				</jsp:include>
 			</div>
         </div>
@@ -84,22 +92,24 @@
 		</span>
 
         <script type="text/javascript" src="webjars/openlayers/2.12/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
+        <script type="text/javascript" src="js/jquery-mousewheel/jquery-mousewheel.js"></script>
         <jsp:include page="js/iosslider/iosslider.jsp"> 
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
         </jsp:include>
         <jsp:include page="js/iosslider-vertical/iosslider-vertical.jsp"> 
-            <jsp:param name="debug-qualifier" value="<%= development%>" /> 
+            <jsp:param name="debug-qualifier" value="true" /> 
         </jsp:include>
 		<jsp:include page="components/config.jsp">
 			<jsp:param name="id" value="${it.id}" /> 
 			<jsp:param name="idType" value="${it.type}" /> 
+			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
 		</jsp:include>
         <%-- TODO: Refactor log4javascript to take the log4js script from webjars --%>
         <jsp:include page="js/log4javascript/log4javascript.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-		
+
 		<script type="text/javascript" src="js/components/util/Util.js"></script>
         <script type="text/javascript" src="js/openlayers/lib/OpenLayers/Layer/Shorelines.js"></script>
         <script type="text/javascript" src="js/components/slideshow/Slideshow.js"></script>

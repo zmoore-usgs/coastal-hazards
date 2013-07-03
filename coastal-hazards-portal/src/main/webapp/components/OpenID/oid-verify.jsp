@@ -1,7 +1,23 @@
-
-<?xml version="1.0" encoding="UTF-8"?>
-<%@page contentType="text/html; charset=UTF-8" import="java.util.Map" %>
+<%@page import="org.apache.commons.lang.StringUtils"%>
+<%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.util.Map" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
+
+	{
+		try {
+			props = props.addJNDIContexts(new String[0]);
+		} catch (Exception e) {
+			System.out.println("Could not find JNDI - Application will probably not function correctly");
+		}
+	}
+%>
+<%
+	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+%>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
@@ -15,10 +31,10 @@
 				<br />
 				<a href="publish">Try again?</a>
 				<br />
-				<a href="<%=request.getContextPath()%>/">Go to Coastal Hazards Portal?</a>
+				<a href="<%=baseUrl%>/">Go to Coastal Change Hazards Portal?</a>
 			</c:when>
 			<c:when test='${sessionScope.sessionValid == true}'>
-				You have been logged in. <a href="<%=request.getContextPath()%>/publish">Go to publish form</a>
+				You have been logged in. <a href="<%=baseUrl%>/publish">Go to publish form</a>
 			</c:when>
 		</c:choose>
 	</body>

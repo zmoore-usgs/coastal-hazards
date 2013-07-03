@@ -111,11 +111,13 @@ CCH.Objects.Map = function(args) {
 					var bbox = target.data('bounds');
 					var cardId = target.data('cardId');
 					var card = CCH.cards.getById(cardId);
+					CCH.slideshow.goToSlide(slideOrder);
+					CCH.slideshow.stop();
 
-					CCH.slideshow.slider('goToSlide', slideOrder);
-					CCH.slideshow.slider('autoSlidePause');
-
-					me.clearBoundingBoxMarkers();
+					setTimeout(function(args) {
+						me.clearBoundingBoxMarkers();
+					}, 1500)
+					
 
 					var isPinned = card.pinned;
 					if (!isPinned) {
