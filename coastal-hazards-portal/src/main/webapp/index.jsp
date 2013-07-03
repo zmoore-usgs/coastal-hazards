@@ -96,7 +96,7 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
         </jsp:include>
         <jsp:include page="js/iosslider-vertical/iosslider-vertical.jsp"> 
-            <jsp:param name="debug-qualifier" value="<%= development%>" /> 
+            <jsp:param name="debug-qualifier" value="true" /> 
         </jsp:include>
 		<jsp:include page="components/config.jsp">
 			<jsp:param name="id" value="${it.id}" /> 

@@ -49,7 +49,6 @@
 		<script>
 			function r(f){/in/.test(document.readyState)?setTimeout('r('+f+')',9):f()}
 			r(function() {
-				debugger
 				document.forms['form'].submit();
 			})
 		</script>

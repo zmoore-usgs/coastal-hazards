@@ -103,13 +103,13 @@
 					'proxy': 'stpgis/'
 				},
 				'item': {
-					'endpoint': '<%=baseUrl%>/data/item'
+					'endpoint': '/data/item'
 				},
 				'geocoding': {
 					'endpoint': '<%=geocodeEndpoint%>'
 				},
 				'session': {
-					'endpoint': '<%=baseUrl%>/data/view/'
+					'endpoint': '/data/view/'
 				}
 			}
 		}
