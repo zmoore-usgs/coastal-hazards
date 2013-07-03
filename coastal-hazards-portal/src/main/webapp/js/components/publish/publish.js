@@ -398,54 +398,52 @@ var publishButtonClickHandler = function(evt) {
 			// For every checked attribute...
 			$(".attr-checkbox:checked").map(function(ind, cb) {
 				return cb.value;
-			}).toArray().each(function(attribute) {
+			}).toArray().each(function(attribute, index) {
 				previewData.attr = attribute;
-				setTimeout(function() {
-					$.ajax({
-						url: contextPath + '/data/item/preview',
-						type: 'POST',
-						data: JSON.stringify(previewData),
-						dataType: 'json',
-						contentType: "application/json; charset=utf-8",
-						success: function(data, status, xhr) {
-							$.ajax({
-								url: contextPath + '/data/item/' + data.id,
-								dataType: 'json',
-								success: function(data, status, xhr) {
-									var a = data;
-									a.metadata = CCH.config.metadataUrl;
+                $.ajax({
+                    url: contextPath + '/data/item/preview',
+                    type: 'POST',
+                    data: JSON.stringify(arg),
+                    dataType: 'json',
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data, status, xhr) {
+                        $.ajax({
+                            url: contextPath + '/data/item/' + data.id,
+                            dataType: 'json',
+                            success: function(data, status, xhr) {
+                                var a = data;
+                                a.metadata = CCH.config.metadataUrl;
 
-									$.ajax({
-										url: contextPath + '/data/item/',
-										type: 'POST',
-										data: JSON.stringify(a),
-										dataType: 'json',
-										contentType: "application/json; charset=utf-8",
-										success: function(data, status, xhr) {
-											CCH.Util.updateItemPopularity({
-												item: data.id,
-												type: 'publish',
-												contextPath: contextPath
-											});
-											CCH.Util.updateItemPopularity({
-												item: data.id,
-												type: 'insert',
-												contextPath: contextPath
-											});
-											console.log('PUBLISHED');
-										},
-										error: function(xhr, status, error) {
-											console.log('NOT PUBLISHED: ' + error);
-										}
-									});
-								}
-							});
-						},
-						error: function(xhr, status, error) {
-							console.log('NOT PUBLISHED: ' + error);
-						}
-					});
-				}, 1000);
+                                $.ajax({
+                                    url: contextPath + '/data/item/',
+                                    type: 'POST',
+                                    data: JSON.stringify(a),
+                                    dataType: 'json',
+                                    contentType: "application/json; charset=utf-8",
+                                    success: function(data, status, xhr) {
+                                        CCH.Util.updateItemPopularity({
+                                            item: data.id,
+                                            type: 'publish',
+                                            contextPath: contextPath
+                                        });
+                                        CCH.Util.updateItemPopularity({
+                                            item: data.id,
+                                            type: 'insert',
+                                            contextPath: contextPath
+                                        });
+                                        console.log('PUBLISHED');
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.log('NOT PUBLISHED: ' + error);
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('NOT PUBLISHED: ' + error);
+                    }
+                });
 			});
 		},
 		error: function(xhr, status, error) {
