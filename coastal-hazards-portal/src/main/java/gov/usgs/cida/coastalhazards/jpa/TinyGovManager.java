@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.jpa;
 
 import gov.usgs.cida.coastalhazards.model.TinyGov;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -22,15 +23,18 @@ public class TinyGovManager {
         return urls;
     }
     
-    public boolean save(TinyGov tinygov) {
+    public synchronized boolean save(TinyGov tinygov) {
         boolean result = false;
+        EntityTransaction transaction = em.getTransaction();
 		try {
-			em.getTransaction().begin();
+			transaction.begin();
 			em.persist(tinygov);
-			em.getTransaction().commit();
+			transaction.commit();
             result = true;
 		} catch (Exception ex) {
-			em.getTransaction().rollback();
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
 		}
 		return result;
     }

@@ -6,16 +6,9 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.DefaultValue;
@@ -53,7 +46,7 @@ public class ItemResource {
 	private Gson gson = new Gson();
 	private static ItemManager itemManager;
     private static String cchn52Endpoint;
-    private static DynamicReadOnlyProperties props;
+    private static final DynamicReadOnlyProperties props;
 
 	static {
         props = JNDISingleton.getInstance();
@@ -85,11 +78,13 @@ public class ItemResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchCards(
+            @DefaultValue("") @QueryParam("query") String query,
+            @DefaultValue("") @QueryParam("type") String type,
 			@DefaultValue("popularity") @QueryParam("sortBy") String sortBy,
 			@DefaultValue("-1") @QueryParam("count") int count,
 			@DefaultValue("") @QueryParam("bbox") String bbox) {
 		// need to figure out how to search popularity and bbox yet
-		String jsonResult = itemManager.query();
+		String jsonResult = itemManager.query(query, type, sortBy, count, bbox);
 		return Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).build();
 	}
 

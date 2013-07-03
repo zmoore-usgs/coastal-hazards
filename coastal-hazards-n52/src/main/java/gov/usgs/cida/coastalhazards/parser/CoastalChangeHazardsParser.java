@@ -31,26 +31,28 @@ import org.opengis.feature.type.FeatureType;
  *
  * @author jiwalker
  */
-public class FeatureCollectionRParser extends AbstractParser {
+public class CoastalChangeHazardsParser extends AbstractParser {
     
     private static List<String> rateColumns = Lists.newArrayList(BASELINE_DIST_ATTR, BASELINE_ID_ATTR, 
                         LRR_ATTR, LCI_ATTR, WLR_ATTR, WCI_ATTR, SCE_ATTR, NSM_ATTR, EPR_ATTR);
 
-    public FeatureCollectionRParser() {
+    public CoastalChangeHazardsParser() {
         supportedIDataTypes.add(GenericFileDataBinding.class);
     }
 
     @Override
     public GenericFileDataBinding parse(InputStream input, String mimetype, String schema) {
         BufferedWriter buf = null;
+        File xmlFile = null;
+        GenericFileDataBinding fileBinding = null;
         try {
             File outfile = File.createTempFile(getClass().getSimpleName(), ".tsv");
             buf = new BufferedWriter(new FileWriter(outfile));
 
-            File tempFile = File.createTempFile(getClass().getSimpleName(), ".xml");
+            xmlFile = File.createTempFile(getClass().getSimpleName(), ".xml");
             //FileUtils.copyInputStreamToFile(input, tempFile);
-            consumeInputStreamToFile(input, tempFile);
-            FeatureCollection collection = new GMLStreamingFeatureCollection(tempFile);
+            consumeInputStreamToFile(input, xmlFile);
+            FeatureCollection collection = new GMLStreamingFeatureCollection(xmlFile);
             FeatureType type = collection.getSchema();
             AttributeGetter getter = new AttributeGetter(type);
 
@@ -116,13 +118,15 @@ public class FeatureCollectionRParser extends AbstractParser {
             }
             buf.flush();
             IOUtils.closeQuietly(buf);
-            return new GenericFileDataBinding(new GenericFileData(outfile, "text/tsv"));
+            fileBinding = new GenericFileDataBinding(new GenericFileData(outfile, "text/tsv"));
         } catch (IOException e) {
             throw new RuntimeException("Error creating temporary file", e);
         } catch (Exception e) {
-            throw new RuntimeException("Unable to parse feature collection", e);
+            // if there is trouble parsing the feature collection (or it isn't one) just pass along the xml
+            fileBinding = new GenericFileDataBinding(new GenericFileData(xmlFile, "text/xml"));
         } finally {
-            IOUtils.closeQuietly(buf); // just in case
+            IOUtils.closeQuietly(buf);
+            return fileBinding;
         }
     }
 
