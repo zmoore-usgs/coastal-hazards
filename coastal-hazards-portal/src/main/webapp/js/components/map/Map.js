@@ -111,14 +111,8 @@ CCH.Objects.Map = function(args) {
 					var bbox = target.data('bounds');
 					var cardId = target.data('cardId');
 					var card = CCH.cards.getById(cardId);
-
-					if (CCH.ui.getCurrentSizing() === 'large') {
-						$('#iosslider-container').iosSliderVertical('goToSlide', slideOrder);
-						$('#iosslider-container').iosSliderVertical('autoSlidePause');
-					} else if (CCH.ui.getCurrentSizing() === 'small') {
-						$('#iosslider-container').iosSlider('goToSlide', slideOrder);
-						$('#iosslider-container').iosSlider('autoSlidePause');
-					}
+					CCH.slideshow.goToSlide(slideOrder);
+					CCH.slideshow.stop();
 
 					setTimeout(function(args) {
 						me.clearBoundingBoxMarkers();
