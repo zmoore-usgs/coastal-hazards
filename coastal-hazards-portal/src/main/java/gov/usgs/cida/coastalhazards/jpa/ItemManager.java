@@ -104,14 +104,14 @@ public class ItemManager {
         if ("popularity".equals(sortBy)) {
             builder.append(" order by i.rank.totalScore desc");
         }
-        if (count > 0) {
-            builder.append(" limit ").append(count);
-        }
         if (StringUtils.isNotBlank(bbox)) {
             //do bbox stuff here
         }
         
 		Query query = em.createQuery(builder.toString(), Item.class);
+        if (count > 0) {
+            query.setMaxResults(count);
+        }
 		List<Item> resultList = query.getResultList();
 		Map<String, List> resultMap = new HashMap<String, List>();
 		resultMap.put("items", resultList);
