@@ -214,18 +214,40 @@ CCH.Objects.Slideshow = function(args) {
 				});
 
 				var defaultSliderOptions = {
+					//  Desktop click and drag fallback for the desktop slider
 					desktopClickDrag: true,
+					// Slider will slide to the closest child element on touch release
 					snapToChildren: true,
+					// When snapToChildren is true, this option will snap the slide to the center of the draggable area
 					snapSlideCenter: true,
+					// Keyboard arrows can be used to navigate the slider
 					keyboardControls: true,
+					// Modifies the mouse wheel scroll sensitivity
+					mousewheelScrollSensitivity : 10,
+					// Enables mouse wheel browser scrolling when bottom or top of slider is reached
+					mousewheelScrollOverflow : true,
+					// The css height in 'px' of the scrollbar
+					scrollbarWidth : '3px',
+					// Tab key can be used to navigate the slider forward
+					tabToAdvance : true,
+					// Enables automatic cycling through slides
 					autoSlide: true,
+					// The time (in milliseconds) required for all automatic animations to move between slides
 					autoSlideTransTimer: 1500,
+					// A jQuery selection (ex. $('.unselectable') ), each element returned by the selector will become removed from touch/click move events
 					unselectableSelector: $('.unselectable'),
+					// Width of slides becomes responsive to the width/height of 
+					// its parent element. Slides dynamically collapse to the 
+					// width/height of the parent element of the slider when wider/taller
+					responsiveSlides : true,
+					// Executed when the slider has entered the range of a new slide,
 					onSlideChange: me.toggleClassForActiveSlide,
+					// Executed when slider has finished loading initially
 					onSliderLoaded: function() {
 						me.resize();
 						me.toggleClassForActiveSlide();
 					},
+					// Executed when the window has been resized or a device has been rotated
 					onSliderResize: me.resize
 				};
 				if (currentSizing === 'large') {
@@ -237,6 +259,7 @@ CCH.Objects.Slideshow = function(args) {
 				$(window).off('orientationchange', me.orientationChange);
 				$(window).on('orientationchange', me.orientationChange);
 				$(window).resize();
+				$('#iosslider-container').iosSliderVertical('update');
 			}, 1000, args);
 		}
 	});

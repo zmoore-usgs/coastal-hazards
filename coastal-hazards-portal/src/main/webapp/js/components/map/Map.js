@@ -112,10 +112,18 @@ CCH.Objects.Map = function(args) {
 					var cardId = target.data('cardId');
 					var card = CCH.cards.getById(cardId);
 
-					CCH.slideshow.slider('goToSlide', slideOrder);
-					CCH.slideshow.slider('autoSlidePause');
+					if (CCH.ui.getCurrentSizing() === 'large') {
+						$('#iosslider-container').iosSliderVertical('goToSlide', slideOrder);
+						$('#iosslider-container').iosSliderVertical('autoSlidePause');
+					} else if (CCH.ui.getCurrentSizing() === 'small') {
+						$('#iosslider-container').iosSlider('goToSlide', slideOrder);
+						$('#iosslider-container').iosSlider('autoSlidePause');
+					}
 
-					me.clearBoundingBoxMarkers();
+					setTimeout(function(args) {
+						me.clearBoundingBoxMarkers();
+					}, 1500)
+					
 
 					var isPinned = card.pinned;
 					if (!isPinned) {
