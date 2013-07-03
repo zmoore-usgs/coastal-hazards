@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.apache.commons.io.FileUtils;
@@ -50,14 +51,17 @@ public class ItemManager {
 
 	public synchronized String save(String item) {
 		String id = "ERR";
+        EntityTransaction transaction = em.getTransaction();
 		try {
-			em.getTransaction().begin();
+			transaction.begin();
 			Item itemObj = Item.fromJSON(item);
 			em.persist(itemObj);
 			id = itemObj.getId();
-			em.getTransaction().commit();
+			transaction.commit();
 		} catch (Exception ex) {
-			em.getTransaction().rollback();
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
 		}
 		return id;
 	}
