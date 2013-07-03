@@ -267,7 +267,10 @@ CCH.Objects.Slideshow = function(args) {
 					// width/height of the parent element of the slider when wider/taller
 					responsiveSlides: true,
 					// Executed when the slider has entered the range of a new slide,
-					onSlideChange: me.toggleClassForActiveSlide,
+					onSlideChange: function() {
+//						$(window).trigger('cch')
+						me.toggleClassForActiveSlide();
+					},
 					// Executed when slider has finished loading initially
 					onSliderLoaded: function() {
 						me.resize();
