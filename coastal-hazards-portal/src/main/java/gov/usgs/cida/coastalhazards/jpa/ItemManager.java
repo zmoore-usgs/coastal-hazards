@@ -84,21 +84,21 @@ public class ItemManager {
         boolean hasQueryText = StringUtils.isNotBlank(queryText);
         boolean hasType = StringUtils.isNotBlank(type);
         if (hasQueryText || hasType) {
-            builder.append(" where");
+            builder.append(" where ");
             if (hasQueryText) {
                 String[] words = queryText.split(" ");
-                builder.append(" i.summary.full.text like");
+                
                 for (int i = 0; i<words.length; i++) {
-                    words[i] = "'%'||" + words[i] + "||'%'";
+                    words[i] = "lower(i.summary.full.text) like lower('%" + words[i] + "%')";
                 }
                 String like = StringUtils.join(words, " or ");
-                builder.append(" ").append(like);
+                builder.append(like);
             }
             if (hasQueryText && hasType) {
                 builder.append(" and");
             }
             if (hasType) {
-                builder.append(" i.type in(").append(type).append(")");
+                builder.append(" i.type in('").append(type).append("')");
             }
         }
         if ("popularity".equals(sortBy)) {
