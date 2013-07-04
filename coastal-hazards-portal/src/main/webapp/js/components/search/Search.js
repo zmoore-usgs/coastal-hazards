@@ -17,7 +17,7 @@ CCH.Objects.Search = function(args) {
 	me.itemSearchModalWindow = args.itemSearchModalWindow;
 	me.popularityCb = args.popularityCb;
 	me.searchQuery = args.searchQuery;
-	
+
 	return $.extend(me, {
 		init: function() {
 			me.bindSearchInput();
@@ -113,22 +113,17 @@ CCH.Objects.Search = function(args) {
 
 			me.submitButton.on({
 				'click': function() {
-					var query = {
+					me.modalContainer.modal('hide');
+					$(window).trigger('cch.search.item.submit', {
 						'top': me.north.html(),
 						'bottom': me.south.html(),
 						'left': me.west.html(),
 						'right': me.east.html(),
 						'popularity': me.popularityCb.is(':checked'),
-						'keywords': me.keywordInput.html(),
+						'keywords': me.keywordInput.val(),
 						'themes': me.themeInput.find('option:selected').toArray().map(function(option) {
 							return option.value;
 						})
-					};
-
-					me.modalContainer.modal('hide');
-
-					$(window).trigger('cch.search.item.submit', {
-						query: query
 					});
 				}
 			});

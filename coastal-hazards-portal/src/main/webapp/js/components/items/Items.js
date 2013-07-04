@@ -4,6 +4,32 @@ CCH.Objects.Items = function(args) {
 	me.items = [];
 	return $.extend(me, {
 		init: function(args) {
+			$(window).on('cch.search.item.submit', function(evt, data) {
+				me.search({
+					bbox: [data.left, data.bottom, data.right, data.top].toString(),
+					query: data.keywords || '',
+					type: data.themes.toString() || '',
+					sortBy: data.popularity ? 'popularity' : '',
+					callbacks: {
+						success: [
+							function(data, status, jqXHR) {
+								if (data && data.items && data.items.length) {
+									me.items = data.items;
+									$(window).trigger('cch.data.items.loaded');
+								} else {
+									// TODO: Deal with when no items were returned. 
+								}
+							}
+						],
+						error: [
+							function(xhr, status, error) {
+								// TODO - What to do on error? Log it and somehow display it via notification
+								LOG.info('An error occurred during search: ' + error);
+							}
+						]
+					}
+				});
+			});
 			return me;
 		},
 		load: function(args) {
@@ -49,6 +75,8 @@ CCH.Objects.Items = function(args) {
 			var items = args.items || [];
 			var itemId = items.pop() || '';
 			var item = '/' + itemId || '';
+			var query = args.query || '';
+			var type = args.type || '';
 
 			var callbacks = args.callbacks || {
 				success: [],
@@ -61,16 +89,18 @@ CCH.Objects.Items = function(args) {
 				data: {
 					count: count,
 					bbox: bbox,
-					sortBy: sortBy
+					sortBy: sortBy,
+					query: query,
+					type: type
 				},
 				success: function(data, status, jqXHR) {
 					callbacks.success.each(function(cb) {
 						cb.apply(this, [data, status, jqXHR]);
 					});
 				},
-				error: function(data, status, errorThrown) {
+				error: function(xhr, status, error) {
 					callbacks.error.each(function(cb) {
-						cb.apply(this, [data, status, errorThrown]);
+						cb.apply(this, [xhr, status, error]);
 					});
 				}
 			});

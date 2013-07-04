@@ -566,9 +566,7 @@ var publish = function(args) {
 									}
 								]
 							}
-						})
-
-
+						});
 					}
 				],
 				error: [
