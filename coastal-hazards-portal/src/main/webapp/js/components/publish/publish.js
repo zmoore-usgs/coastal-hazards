@@ -4,6 +4,7 @@ var CCH = {
 		metadataUrl: '',
 		bbox: [],
 		type: '',
+		attributes: [],
 		endpoint: {
 			wfs: '',
 			wfsFullpath: '',
@@ -356,103 +357,256 @@ var previewButtonClickHandler = function(evt) {
 		bbox: bbox
 	};
 
+	publishPreview({
+		previewData: data,
+		callbacks: {
+			success: [
+				function(data, status, xhr) {
+					var id = data.id;
+					window.open(contextPath + '/ui/item/' + id);
+				}
+			],
+			error: [
+				function(xhr, status, error) {
+					// TODO- Handle this
+				}
+			]
+		}
+	})
+};
+
+var publishPreview = function(args) {
+	args = args || {};
+	var previewData = args.previewData;
+	var callbacks = args.callbacks || {
+		success: [],
+		error: []
+	};
+
 	$.ajax({
 		url: contextPath + '/data/item/preview',
 		type: 'POST',
-		data: JSON.stringify(data),
+		data: JSON.stringify(previewData),
 		dataType: 'json',
 		contentType: "application/json; charset=utf-8",
-		success: function(data, status, xhr) {
-			var id = data.id;
-			window.open(contextPath + '/ui/item/' + id);
+		success: function(json, textStatus, jqXHR) {
+			if (callbacks.success && callbacks.success.length > 0) {
+				callbacks.success.each(function(callback) {
+					callback.call(null, json, textStatus, jqXHR);
+				});
+			}
 		},
 		error: function(xhr, status, error) {
-			// TODO- Handle this
+			if (callbacks.error && callbacks.error.length > 0) {
+				callbacks.error.each(function(callback) {
+					callback.call(null, xhr, status, error);
+				});
+			}
+		}
+	});
+}
+
+var publishMetadata = function(args) {
+	args = args || {};
+	var token = args.token;
+	var callbacks = args.callbacks || {
+		success: [],
+		error: []
+	};
+
+	$.ajax({
+		url: contextPath + '/publish/metadata/' + token,
+		type: 'POST',
+		dataType: 'json',
+		success: function(json, textStatus, jqXHR) {
+			if (callbacks.success && callbacks.success.length > 0) {
+				callbacks.success.each(function(callback) {
+					callback.call(null, json, textStatus, jqXHR);
+				});
+			}
+		},
+		error: function(xhr, status, error) {
+			if (callbacks.error && callbacks.error.length > 0) {
+				callbacks.error.each(function(callback) {
+					callback.call(null, xhr, status, error);
+				});
+			}
 		}
 	});
 };
 
-var publishButtonClickHandler = function(evt) {
+var publishData = function(args) {
+	args = args || {};
+	var publishData = args.publishData;
+	var callbacks = args.callbacks || {
+		success: [],
+		error: []
+	};
 
 	$.ajax({
-		url: contextPath + '/publish/metadata/' + CCH.config.metadataToken,
+		url: contextPath + '/data/item/',
 		type: 'POST',
+		data: JSON.stringify(publishData),
 		dataType: 'json',
-		success: function(data, status, xhr) {
-			CCH.config.metadataUrl = data.metadata;
-			var previewData = {
-				metadata: CCH.config.metadataToken,
-				wfsService: {
-					endpoint: CCH.config.endpoint.wfsCaps.service.onlineResource,
-					typeName: $('#publish-services-types').val()
-				},
-				wmsService: {
-					endpoint: CCH.config.endpoint.wmsCaps.service.href,
-					layers: $('#publish-services-layers').val()
-				},
-				name: $('#publish-name-input').val(),
-				type: CCH.config.type,
-				attr: '',
-				bbox: CCH.config.bbox
-			};
-			// For every checked attribute...
-			$(".attr-checkbox:checked").map(function(ind, cb) {
-				return cb.value;
-			}).toArray().each(function(attribute, index) {
-				previewData.attr = attribute;
-                $.ajax({
-                    url: contextPath + '/data/item/preview',
-                    type: 'POST',
-                    data: JSON.stringify(arg),
-                    dataType: 'json',
-                    contentType: "application/json; charset=utf-8",
-                    success: function(data, status, xhr) {
-                        $.ajax({
-                            url: contextPath + '/data/item/' + data.id,
-                            dataType: 'json',
-                            success: function(data, status, xhr) {
-                                var a = data;
-                                a.metadata = CCH.config.metadataUrl;
-
-                                $.ajax({
-                                    url: contextPath + '/data/item/',
-                                    type: 'POST',
-                                    data: JSON.stringify(a),
-                                    dataType: 'json',
-                                    contentType: "application/json; charset=utf-8",
-                                    success: function(data, status, xhr) {
-                                        CCH.Util.updateItemPopularity({
-                                            item: data.id,
-                                            type: 'publish',
-                                            contextPath: contextPath
-                                        });
-                                        CCH.Util.updateItemPopularity({
-                                            item: data.id,
-                                            type: 'insert',
-                                            contextPath: contextPath
-                                        });
-                                        console.log('PUBLISHED');
-                                    },
-                                    error: function(xhr, status, error) {
-                                        console.log('NOT PUBLISHED: ' + error);
-                                    }
-                                });
-                            }
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        console.log('NOT PUBLISHED: ' + error);
-                    }
-                });
-			});
+		contentType: "application/json; charset=utf-8",
+		success: function(json, textStatus, jqXHR) {
+			if (callbacks.success && callbacks.success.length > 0) {
+				callbacks.success.each(function(callback) {
+					callback.call(null, json, textStatus, jqXHR);
+				});
+			}
 		},
 		error: function(xhr, status, error) {
-			console.log('Could not attain metadata url for token: ' + CCH.config.metadataToken);
+			if (callbacks.error && callbacks.error.length > 0) {
+				callbacks.error.each(function(callback) {
+					callback.call(null, xhr, status, error);
+				});
+			}
 		}
 	});
+};
+
+var getItem = function(args) {
+	args = args || {};
+	var itemId = args.itemId;
+	var callbacks = args.callbacks || {
+		success: [],
+		error: []
+	};
+
+	$.ajax({
+		url: contextPath + '/data/item/' + itemId,
+		dataType: 'json',
+		contentType: "application/json; charset=utf-8",
+		success: function(json, textStatus, jqXHR) {
+			if (callbacks.success && callbacks.success.length > 0) {
+				callbacks.success.each(function(callback) {
+					callback.call(null, json, textStatus, jqXHR);
+				});
+			}
+		},
+		error: function(xhr, status, error) {
+			if (callbacks.error && callbacks.error.length > 0) {
+				callbacks.error.each(function(callback) {
+					callback.call(null, xhr, status, error);
+				});
+			}
+		}
+	});
+};
+
+var publish = function(args) {
+	args = args || {};
+	if (CCH.config.attributes.length) {
+		var previewData = {
+			metadata: CCH.config.CCH.config.metadataUrl,
+			wfsService: {
+				endpoint: CCH.config.endpoint.wfsCaps.service.onlineResource,
+				typeName: $('#publish-services-types').val()
+			},
+			wmsService: {
+				endpoint: CCH.config.endpoint.wmsCaps.service.href,
+				layers: $('#publish-services-layers').val()
+			},
+			name: $('#publish-name-input').val(),
+			type: CCH.config.type,
+			attr: CCH.config.attributes.shift(),
+			bbox: CCH.config.bbox
+		};
+
+		// Publish the preview item
+		publishPreview({
+			previewData: previewData,
+			callbacks: {
+				success: [
+					function(data, textStatus, jqXHR) {
+						var id = data.id;
+						// Using the preview item id,  pull the item
+						getItem({
+							itemId: id,
+							callbacks: {
+								success: [
+									function(data, textStatus, jqXHR) {
+										var pData = data;
+										pData.metadata = CCH.config.metadataUrl;
+										// Publish the item from the preview
+										publishData({
+											publishData: pData,
+											callbacks: {
+												success: [
+													function(data, textStatus, jqXHR) {
+														// Using the published item, update the popularity
+														CCH.Util.updateItemPopularity({
+															item: data.id,
+															type: 'publish',
+															contextPath: contextPath
+														});
+														CCH.Util.updateItemPopularity({
+															item: data.id,
+															type: 'insert',
+															contextPath: contextPath
+														});
+														console.log('PUBLISHED');
+														publish();
+													}
+												],
+												error: [
+													function(xhr, status, error) {
+														console.log('ERR: NOT PUBLISHED: ' + error);
+														publish();
+													}
+												]
+											}
+										});
+									}
+								], error: [
+									function(xhr, status, error) {
+										console.log('ERR: NOT PUBLISHED: ' + error);
+										publish();
+									}
+								]
+							}
+						})
 
 
+					}
+				],
+				error: [
+					function(xhr, status, error) {
+						console.log('ERR: NOT PUBLISHED: ' + error);
+						publish();
+					}
+				]
+			}
+		});
 
+	}
+
+};
+
+var publishButtonClickHandler = function() {
+	CCH.config.attributes = $(".attr-checkbox:checked").map(function(ind, cb) {
+		return cb.value;
+	}).toArray();
+
+	if (CCH.config.attributes.length) {
+		publishMetadata({
+			token: CCH.config.metadataToken,
+			callbacks: {
+				success: [
+					function(data, status, xhr) {
+						CCH.config.metadataUrl = data.metadata;
+						publish();
+					}
+				],
+				error: [
+					function(xhr, status, error) {
+						console.log('Could not parse metadata: ' + error);
+					}
+				]
+			}
+		});
+	}
 };
 
 var bindCheckbox = function(evt) {

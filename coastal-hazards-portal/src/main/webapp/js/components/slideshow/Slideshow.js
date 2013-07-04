@@ -248,10 +248,6 @@ CCH.Objects.Slideshow = function(args) {
 					snapSlideCenter: true,
 					// Keyboard arrows can be used to navigate the slider
 					keyboardControls: true,
-					// Modifies the mouse wheel scroll sensitivity
-					mousewheelScrollSensitivity: 10,
-					// Enables mouse wheel browser scrolling when bottom or top of slider is reached
-					mousewheelScrollOverflow: true,
 					// The css height in 'px' of the scrollbar
 					scrollbarWidth: '3px',
 					// Tab key can be used to navigate the slider forward
@@ -288,7 +284,7 @@ CCH.Objects.Slideshow = function(args) {
 				$(window).off('orientationchange', me.orientationChange);
 				$(window).on('orientationchange', me.orientationChange);
 				$(window).resize();
-				me.updateSlides();
+//				me.updateSlides();
 			}, 1000, args);
 		}
 	});
