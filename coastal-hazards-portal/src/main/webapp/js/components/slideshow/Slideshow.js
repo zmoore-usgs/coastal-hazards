@@ -4,6 +4,7 @@ CCH.Objects.Slideshow = function(args) {
 	args = args || {};
 	me.descriptionWrapper = $('#description-wrapper');
 	me.iossliderContainer = $('#iosslider-container');
+	me.autoplay = args.autoplay || false;
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
@@ -198,7 +199,7 @@ CCH.Objects.Slideshow = function(args) {
 							// When the card pin button is clicked, regardless of 
 							// whether or not it was clicked on or off, stop the 
 							// slideshow
-							me.slider('autoSlidePause');
+							me.stop();
 						},
 						'card-pinned': function(evt) {
 							// When a card is pinned, clear all of the bounding
@@ -253,7 +254,7 @@ CCH.Objects.Slideshow = function(args) {
 					// Tab key can be used to navigate the slider forward
 					tabToAdvance: true,
 					// Enables automatic cycling through slides
-					autoSlide: true,
+					autoSlide: me.autoplay,
 					// The time (in milliseconds) required for all automatic animations to move between slides
 					autoSlideTransTimer: 1500,
 					// A jQuery selection (ex. $('.unselectable') ), each element returned by the selector will become removed from touch/click move events
@@ -284,6 +285,7 @@ CCH.Objects.Slideshow = function(args) {
 				$(window).off('orientationchange', me.orientationChange);
 				$(window).on('orientationchange', me.orientationChange);
 				$(window).resize();
+				me.autoplay = false;
 //				me.updateSlides();
 			}, 1000, args);
 		}

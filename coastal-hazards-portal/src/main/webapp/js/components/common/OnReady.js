@@ -28,7 +28,9 @@ $(document).ready(function() {
 		shareModal : $('#shareModal')
 	}).init();
 
-	CCH.slideshow = new CCH.Objects.Slideshow().init();
+	CCH.slideshow = new CCH.Objects.Slideshow({
+		autoplay : CCH.CONFIG.idType === 'ITEM' || CCH.CONFIG.idType === 'VIEW'
+	}).init();
 
 	splashUpdate("Initializing Card Subsystem...");
 	CCH.cards = new CCH.Objects.Cards({
