@@ -4,14 +4,22 @@ CCH.Objects.Slideshow = function(args) {
 	args = args || {};
 	me.descriptionWrapper = $('#description-wrapper');
 	me.iossliderContainer = $('#iosslider-container');
-	me.autoplay = args.autoplay || false;
+	me.stopped = false;
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
-				'cch.data.items.loaded': me.createSlideshow,
-				'cch.ui.resized': me.createSlideshow,
-				'cch.navbar.pinmenu.item.clear.click': me.createSlideshow,
+				'cch.data.items.loaded': function(evt) {
+					me.createSlideshow(evt);
+				},
+				'cch.ui.resized': function(evt) {
+					me.createSlideshow(evt);
+				},
+				'cch.navbar.pinmenu.item.clear.click': function(evt) {
+					me.createSlideshow(evt);
+					me.stop();
+				},
 				'cch.navbar.pinmenu.button.pin.click': function(evt, items) {
+					me.stop();
 					me.createSlideshow(items);
 				},
 				'resize': me.resize
@@ -19,6 +27,7 @@ CCH.Objects.Slideshow = function(args) {
 			return me;
 		},
 		stop: function() {
+			me.stopped = true;
 			var container = $('#iosslider-container');
 			var currentSizing = CCH.ui.getCurrentSizing();
 			if (currentSizing === 'large') {
@@ -254,7 +263,7 @@ CCH.Objects.Slideshow = function(args) {
 					// Tab key can be used to navigate the slider forward
 					tabToAdvance: true,
 					// Enables automatic cycling through slides
-					autoSlide: me.autoplay,
+					autoSlide: !me.stopped,
 					// The time (in milliseconds) required for all automatic animations to move between slides
 					autoSlideTransTimer: 1500,
 					// A jQuery selection (ex. $('.unselectable') ), each element returned by the selector will become removed from touch/click move events
@@ -285,7 +294,6 @@ CCH.Objects.Slideshow = function(args) {
 				$(window).off('orientationchange', me.orientationChange);
 				$(window).on('orientationchange', me.orientationChange);
 				$(window).resize();
-				me.autoplay = false;
 //				me.updateSlides();
 			}, 1000, args);
 		}
