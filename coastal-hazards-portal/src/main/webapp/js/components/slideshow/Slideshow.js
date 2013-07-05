@@ -145,28 +145,28 @@ CCH.Objects.Slideshow = function(args) {
 				'height': sliderContainer.height() + 'px'
 			});
 
-			$('.slide').each(function(index, slide) {
-				var title = $(slide).find('.description-title-row');
-				var descr = $(slide).find('.description-description-row');
-				var descrDiv = $(descr).find('p');
-
-				var slideHeight = title.height() + descrDiv.height();
-				if (slideHeight > (sliderContainer.height() - 10)) {
-					slideHeight = sliderContainer.height() - 10;
-				}
-
-				$(slide).css({
-					'height': slideHeight + 'px'
-				});
-
-				descr.css({
-					'height': slideHeight - title.height() + 'px'
-				});
-
-				descrDiv.css({
-					'max-height': descr.height()
-				});
-			});
+//			$('.slide').each(function(index, slide) {
+//				var title = $(slide).find('.description-title-row');
+//				var descr = $(slide).find('.description-description-row');
+//				var descrDiv = $(descr).find('p');
+//
+//				var slideHeight = title.height() + descrDiv.height();
+//				if (slideHeight > (sliderContainer.height() - 10)) {
+//					slideHeight = sliderContainer.height() - 10;
+//				}
+//
+//				$(slide).css({
+//					'height': slideHeight + 'px'
+//				});
+//
+//				descr.css({
+//					'height': slideHeight - title.height() + 'px'
+//				});
+//
+//				descrDiv.css({
+//					'max-height': descr.height()
+//				});
+//			});
 		},
 		createSlideshow: function(args) {
 			// A timer is necessary here - Not having one here causes the browser to
@@ -267,6 +267,10 @@ CCH.Objects.Slideshow = function(args) {
 					autoSlideTransTimer: 1500,
 					// A jQuery selection (ex. $('.unselectable') ), each element returned by the selector will become removed from touch/click move events
 					unselectableSelector: $('.unselectable'),
+					// Show or hide the scrollbar when it is idle
+					scrollbar: true,
+					scrollbarHide: true,
+					scrollbarDrag: false,
 					// Executed when the slider has entered the range of a new slide,
 					onSlideChange: function() {
 						me.toggleClassForActiveSlide();
@@ -277,18 +281,22 @@ CCH.Objects.Slideshow = function(args) {
 					onSliderLoaded: function() {
 						me.toggleClassForActiveSlide();
 						me.resize();
-						$(window).trigger('cch-slideshow-loaded');
+						$(window).trigger('cch-slideshow-slider-loaded');
 						LOG.debug('Slideshow.js:: Slider Loaded')
 					},
- 					// Executed when the window has been resized or a device has been rotated
-					onSliderResize: me.resize
+					// Executed when the window has been resized or a device has been rotated
+					onSliderResize: function() {
+						$(window).trigger('cch-slideshow-slider-resized');
+						LOG.debug('Slideshow.js:: Slider Loaded')
+						me.resize();
+					}
 				};
 				if (currentSizing === 'large') {
 					LOG.debug('Slideshow.js:: Vertical Slider Loading');
 					sliderContainer.iosSliderVertical($.extend(defaultSliderOptions, {
 						// Currently mouse wheel scrolling is not fully compatible with browsers.
 						// Causes an infinite loop in the vertical script that causes a crash
-						mousewheelScroll: false
+						mousewheelScroll: false,
 					}));
 				} else if (currentSizing === 'small') {
 					LOG.debug('Slideshow.js:: Horizontal Slider Loading');
@@ -297,6 +305,7 @@ CCH.Objects.Slideshow = function(args) {
 
 				$(window).off('orientationchange', me.orientationChange);
 				$(window).on('orientationchange', me.orientationChange);
+				me.resize();
 				me.updateSlides();
 			}, 1000, args);
 		}
