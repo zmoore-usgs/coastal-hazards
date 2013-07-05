@@ -62,7 +62,7 @@ CCH.Objects.Session = function(args) {
 			var context = args.context;
 
 			if (sid) {
-				$.ajax(CCH.CONFIG.data.sources.session.endpoint + sid, {
+				$.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint + sid, {
 					type: 'GET',
 					contentType: 'application/json;charset=utf-8',
 					dataType: 'json',
