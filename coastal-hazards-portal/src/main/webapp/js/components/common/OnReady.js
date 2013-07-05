@@ -28,9 +28,7 @@ $(document).ready(function() {
 		shareModal : $('#shareModal')
 	}).init();
 
-	CCH.slideshow = new CCH.Objects.Slideshow({
-		autoplay : CCH.CONFIG.idType === 'ITEM' || CCH.CONFIG.idType === 'VIEW'
-	}).init();
+	CCH.slideshow = new CCH.Objects.Slideshow().init();
 
 	splashUpdate("Initializing Card Subsystem...");
 	CCH.cards = new CCH.Objects.Cards({
@@ -90,6 +88,7 @@ $(document).ready(function() {
 								type: 'use'
 							});
 							CCH.ui.removeOverlay();
+							CCH.slideshow.stop();
 						}
 					],
 					error: [
@@ -126,6 +125,7 @@ $(document).ready(function() {
 									success: [
 										function() {
 											CCH.ui.removeOverlay();
+											CCH.slideshow.stop();
 										}
 									],
 									error: [
