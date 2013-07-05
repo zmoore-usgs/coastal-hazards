@@ -24,7 +24,19 @@ CCH.Objects.UI = function(args) {
 	return $.extend(me, {
 		init: function() {
 			// Bindings
-			$(window).on('resize', me.windowResizeHandler);
+			$(window).on({
+				'resize': me.windowResizeHandler,
+				'cch.data.items.searched': function(evt, count) {
+					$.pnotify({
+						text: 'Found ' + count + ' item' + (count === 1 ? '.' : 's.'),
+						styling: 'bootstrap',
+						type: 'info',
+						nonblock: true,
+						sticker: false,
+						icon: 'icon-search'
+					});
+				}
+			});
 			me.navbarPinButton.on('click', me.navbarMenuClickHandler);
 			me.navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
 			$('#shareModal').on('show', me.sharemodalDisplayHandler);

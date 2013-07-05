@@ -13,17 +13,21 @@ CCH.Objects.Items = function(args) {
 					callbacks: {
 						success: [
 							function(data, status, jqXHR) {
+								$(window).trigger('cch.data.items.searched', data.items.length);
 								if (data && data.items && data.items.length) {
 									me.items = data.items;
 									$(window).trigger('cch.data.items.loaded');
-								} else {
-									// TODO: Deal with when no items were returned. 
 								}
 							}
 						],
 						error: [
 							function(xhr, status, error) {
-								// TODO - What to do on error? Log it and somehow display it via notification
+								$.pnotify({
+									text: 'Could not perform search. Check logs for details.',
+									styling: 'bootstrap',
+									type: 'error',
+									nonblock: true
+								});
 								LOG.info('An error occurred during search: ' + error);
 							}
 						]
