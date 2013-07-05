@@ -16,14 +16,26 @@ CCH.Objects.Items = function(args) {
 								if (data && data.items && data.items.length) {
 									me.items = data.items;
 									$(window).trigger('cch.data.items.loaded');
-								} else {
-									// TODO: Deal with when no items were returned. 
 								}
+
+								$.pnotify({
+									text: 'Found ' + me.items.length + ' item' + me.items.length === 1 ? '.' : 's.',
+									styling: 'bootstrap',
+									type: 'info',
+									nonblock: true,
+									sticker: false,
+									icon: 'icon-search'
+								});
 							}
 						],
 						error: [
 							function(xhr, status, error) {
-								// TODO - What to do on error? Log it and somehow display it via notification
+								$.pnotify({
+									text: 'Could not perform search. Check logs for details.',
+									styling: 'bootstrap',
+									type: 'error',
+									nonblock: true
+								});
 								LOG.info('An error occurred during search: ' + error);
 							}
 						]
