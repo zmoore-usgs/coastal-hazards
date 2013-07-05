@@ -230,7 +230,7 @@ CCH.Objects.Slideshow = function(args) {
 							// map. The OpenLayers API doesn't have a 'removeLayerByName'
 							// function :( 
 							var card = evt.currentTarget;
-							var layers = CCH.map.getMap().getLayersByName(card.name);
+							var layers = CCH.map.getMap().getLayersByName(card.item.id);
 
 							if (layers.length) {
 								layers.each(function(layer) {

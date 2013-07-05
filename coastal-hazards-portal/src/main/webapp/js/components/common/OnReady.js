@@ -125,7 +125,7 @@ $(document).ready(function() {
 									success: [
 										function() {
 											CCH.ui.removeOverlay();
-											CCH.slideshow.stop()
+											CCH.slideshow.stop();
 										}
 									],
 									error: [
