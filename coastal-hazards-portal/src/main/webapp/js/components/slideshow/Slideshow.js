@@ -144,7 +144,7 @@ CCH.Objects.Slideshow = function(args) {
 			sliderList.css({
 				'height': sliderContainer.height() + 'px'
 			});
-
+			
 //			$('.slide').each(function(index, slide) {
 //				var title = $(slide).find('.description-title-row');
 //				var descr = $(slide).find('.description-description-row');
@@ -272,22 +272,22 @@ CCH.Objects.Slideshow = function(args) {
 					scrollbarHide: true,
 					scrollbarDrag: false,
 					// Executed when the slider has entered the range of a new slide,
-					onSlideChange: function() {
+					onSlideChange: function(evt) {
 						me.toggleClassForActiveSlide();
-						$(window).trigger('cch-slideshow-slide-changed');
-						LOG.debug('Slideshow.js:: Slide Changed')
+						$(window).trigger('cch-slideshow-slide-changed', evt);
+						LOG.debug('Slideshow.js:: Slide Changed');
 					},
 					// Executed when slider has finished loading initially
 					onSliderLoaded: function() {
 						me.toggleClassForActiveSlide();
 						me.resize();
 						$(window).trigger('cch-slideshow-slider-loaded');
-						LOG.debug('Slideshow.js:: Slider Loaded')
+						LOG.debug('Slideshow.js:: Slider Loaded');
 					},
 					// Executed when the window has been resized or a device has been rotated
 					onSliderResize: function() {
 						$(window).trigger('cch-slideshow-slider-resized');
-						LOG.debug('Slideshow.js:: Slider Loaded')
+						LOG.debug('Slideshow.js:: Slider Loaded');
 						me.resize();
 					}
 				};
@@ -296,7 +296,7 @@ CCH.Objects.Slideshow = function(args) {
 					sliderContainer.iosSliderVertical($.extend(defaultSliderOptions, {
 						// Currently mouse wheel scrolling is not fully compatible with browsers.
 						// Causes an infinite loop in the vertical script that causes a crash
-						mousewheelScroll: false,
+						mousewheelScroll: false
 					}));
 				} else if (currentSizing === 'small') {
 					LOG.debug('Slideshow.js:: Horizontal Slider Loading');
