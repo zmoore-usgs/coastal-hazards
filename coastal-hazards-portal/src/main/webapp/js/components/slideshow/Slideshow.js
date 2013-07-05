@@ -21,8 +21,7 @@ CCH.Objects.Slideshow = function(args) {
 				'cch.navbar.pinmenu.button.pin.click': function(evt, items) {
 					me.stop();
 					me.createSlideshow(items);
-				},
-				'resize': me.resize
+				}
 			});
 			return me;
 		},
@@ -145,29 +144,29 @@ CCH.Objects.Slideshow = function(args) {
 			sliderList.css({
 				'height': sliderContainer.height() + 'px'
 			});
-
-			$('.slide').each(function(index, slide) {
-				var title = $(slide).find('.description-title-row');
-				var descr = $(slide).find('.description-description-row');
-				var descrDiv = $(descr).find('p');
-
-				var slideHeight = title.height() + descrDiv.height();
-				if (slideHeight > (sliderContainer.height() - 10)) {
-					slideHeight = sliderContainer.height() - 10;
-				}
-
-				$(slide).css({
-					'height': slideHeight + 'px'
-				});
-
-				descr.css({
-					'height': slideHeight - title.height() + 'px'
-				});
-
-				descrDiv.css({
-					'max-height': descr.height()
-				});
-			});
+			
+//			$('.slide').each(function(index, slide) {
+//				var title = $(slide).find('.description-title-row');
+//				var descr = $(slide).find('.description-description-row');
+//				var descrDiv = $(descr).find('p');
+//
+//				var slideHeight = title.height() + descrDiv.height();
+//				if (slideHeight > (sliderContainer.height() - 10)) {
+//					slideHeight = sliderContainer.height() - 10;
+//				}
+//
+//				$(slide).css({
+//					'height': slideHeight + 'px'
+//				});
+//
+//				descr.css({
+//					'height': slideHeight - title.height() + 'px'
+//				});
+//
+//				descrDiv.css({
+//					'max-height': descr.height()
+//				});
+//			});
 		},
 		createSlideshow: function(args) {
 			// A timer is necessary here - Not having one here causes the browser to
@@ -268,33 +267,46 @@ CCH.Objects.Slideshow = function(args) {
 					autoSlideTransTimer: 1500,
 					// A jQuery selection (ex. $('.unselectable') ), each element returned by the selector will become removed from touch/click move events
 					unselectableSelector: $('.unselectable'),
-					// Width of slides becomes responsive to the width/height of 
-					// its parent element. Slides dynamically collapse to the 
-					// width/height of the parent element of the slider when wider/taller
-					responsiveSlides: true,
+					// Show or hide the scrollbar when it is idle
+					scrollbar: true,
+					scrollbarHide: true,
+					scrollbarDrag: false,
 					// Executed when the slider has entered the range of a new slide,
-					onSlideChange: function() {
-//						$(window).trigger('cch')
+					onSlideChange: function(evt) {
 						me.toggleClassForActiveSlide();
+						$(window).trigger('cch-slideshow-slide-changed', evt);
+						LOG.debug('Slideshow.js:: Slide Changed');
 					},
 					// Executed when slider has finished loading initially
 					onSliderLoaded: function() {
-						me.resize();
 						me.toggleClassForActiveSlide();
+						me.resize();
+						$(window).trigger('cch-slideshow-slider-loaded');
+						LOG.debug('Slideshow.js:: Slider Loaded');
 					},
 					// Executed when the window has been resized or a device has been rotated
-					onSliderResize: me.resize
+					onSliderResize: function() {
+						$(window).trigger('cch-slideshow-slider-resized');
+						LOG.debug('Slideshow.js:: Slider Loaded');
+						me.resize();
+					}
 				};
 				if (currentSizing === 'large') {
-					sliderContainer.iosSliderVertical(defaultSliderOptions);
+					LOG.debug('Slideshow.js:: Vertical Slider Loading');
+					sliderContainer.iosSliderVertical($.extend(defaultSliderOptions, {
+						// Currently mouse wheel scrolling is not fully compatible with browsers.
+						// Causes an infinite loop in the vertical script that causes a crash
+						mousewheelScroll: false
+					}));
 				} else if (currentSizing === 'small') {
+					LOG.debug('Slideshow.js:: Horizontal Slider Loading');
 					sliderContainer.iosSlider(defaultSliderOptions);
 				}
 
 				$(window).off('orientationchange', me.orientationChange);
 				$(window).on('orientationchange', me.orientationChange);
-				$(window).resize();
-//				me.updateSlides();
+				me.resize();
+				me.updateSlides();
 			}, 1000, args);
 		}
 	});

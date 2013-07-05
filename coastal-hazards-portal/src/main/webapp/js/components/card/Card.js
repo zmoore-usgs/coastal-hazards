@@ -26,7 +26,7 @@ CCH.Objects.Card = function(args) {
 			me.container = $('<div />').addClass('description-container container-fluid');
 			var titleRow = $('<div />').addClass('description-title-row row-fluid unselectable');
 			var descriptionRow = $('<div />').addClass('description-description-row row-fluid').
-					append($('<p />').addClass('slide-vertical-description').html(me.summary.medium.text));
+					append($('<p />').addClass('slide-description').html(me.summary.medium.text));
 
 			me.container.
 					addClass('description-container-' + args.size + ' description-container-' + me.type).
