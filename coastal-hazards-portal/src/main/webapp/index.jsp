@@ -30,7 +30,8 @@
         <META HTTP-EQUIV="EXPIRES" CONTENT="0" />
         <META HTTP-EQUIV="CONTENT-LANGUAGE" CONTENT="en-US" />
         <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8" />
-        <META NAME="viewport" CONTENT="width=device-width, initial-scale=1.0">
+        <META NAME="viewport" CONTENT="width=device-width, minimum-scale=1, maximum-scale=1" />
+		<meta NAME="apple-mobile-web-app-capable" CONTENT="yes" /> 
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -92,11 +93,11 @@
 		</span>
 
         <script type="text/javascript" src="webjars/openlayers/2.12/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
-        <script type="text/javascript" src="js/jquery-mousewheel/jquery-mousewheel.js"></script>
+        <!--<script type="text/javascript" src="js/jquery-mousewheel/jquery-mousewheel.js"></script>-->
         <jsp:include page="js/iosslider/iosslider.jsp"> 
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
         </jsp:include>
-        <jsp:include page="js/iosslider-vertical/iosslider-vertical.jsp"> 
+        <jsp:include page="js/iosslider-vertical_new/iosslider-vertical.jsp"> 
             <jsp:param name="debug-qualifier" value="true" /> 
         </jsp:include>
 		<jsp:include page="components/config.jsp">

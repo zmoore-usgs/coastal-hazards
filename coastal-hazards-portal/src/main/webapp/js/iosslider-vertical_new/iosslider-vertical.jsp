@@ -11,24 +11,19 @@
     top: 0;
     left: 0;
     overflow: hidden;
-/*    
-    width: px;
-    height: px;*/
+    width: 100%;
+    height: 100%;
 }
 
 /* slider */
 .iosSliderVertical .slider {
-    /* required */
     width: 100%;
     height: 100%;
-	
-	
 }
 
 /* slide */
 .iosSliderVertical .slider .slide {
     /* required */
     float: left;
-	position: relative;
 }
 </style>
