@@ -13,19 +13,11 @@ CCH.Objects.Items = function(args) {
 					callbacks: {
 						success: [
 							function(data, status, jqXHR) {
+								$(window).trigger('cch.data.items.searched', data.items.length);
 								if (data && data.items && data.items.length) {
 									me.items = data.items;
 									$(window).trigger('cch.data.items.loaded');
 								}
-
-								$.pnotify({
-									text: 'Found ' + me.items.length + ' item' + me.items.length === 1 ? '.' : 's.',
-									styling: 'bootstrap',
-									type: 'info',
-									nonblock: true,
-									sticker: false,
-									icon: 'icon-search'
-								});
 							}
 						],
 						error: [
