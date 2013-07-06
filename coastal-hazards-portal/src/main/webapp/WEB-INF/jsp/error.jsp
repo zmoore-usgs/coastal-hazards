@@ -14,7 +14,7 @@
 
 %>
 <%
-	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+	String baseUrl = StringUtils.isNotBlank(props.getProperty("coastal-hazards.base.url")) ? props.getProperty("coastal-hazards.base.url") : request.getContextPath();
 %>
 <!DOCTYPE html>
 <html lang="en">
