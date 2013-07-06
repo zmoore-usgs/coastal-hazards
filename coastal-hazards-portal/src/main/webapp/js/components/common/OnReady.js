@@ -25,7 +25,7 @@ $(document).ready(function() {
 		navbarShareMenuListItem: $('#app-navbar-pin-control-share-li'),
 		mapSearchContainer: $('#map-search-container'),
 		ccsArea: $('#ccsa-area'),
-		shareModal : $('#shareModal')
+		shareModal: $('#shareModal')
 	}).init();
 
 	CCH.slideshow = new CCH.Objects.Slideshow().init();
@@ -93,8 +93,15 @@ $(document).ready(function() {
 					],
 					error: [
 						function(jqXHR, textStatus, errorThrown) {
-							var continueLink = $('<a />').attr('href', CCH.CONFIG.contextPath).html('<br />Click to continue');
-							var emailLink = $('<a />').attr('href', 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (Item: ' + itemId + ' Error: ' + errorThrown + ')').html('<br />Send E-Mail To System Administrator');
+							var continueLink = $('<a />').attr({
+								'href': CCH.CONFIG.contextPath,
+								'role': 'button'
+							}).addClass('btn btn-large').html('<i class="icon-refresh"></i> Click to continue')
+
+							var emailLink = $('<a />').attr({
+								'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')',
+								'role': 'button'
+							}).addClass('btn btn-large').html('<i class="icon-envelope"></i>Send E-Mail To System Administrator');
 
 							if (404 === jqXHR.status) {
 								splashUpdate("<b>Item Not Found</b><br />The item you are attempting to view no longer exists.<br />");
@@ -130,13 +137,20 @@ $(document).ready(function() {
 									],
 									error: [
 										function(jqXHR, textStatus, errorThrown) {
-											var continueLink = $('<a />').attr('href', CCH.CONFIG.contextPath).html('<br />Click to continue');
-											var emailLink = $('<a />').attr('href', 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (Item: ' + itemId + ' Error: ' + errorThrown + ')').html('<br />Send E-Mail To System Administrator');
+											var continueLink = $('<a />').attr({
+												'href': CCH.CONFIG.contextPath,
+												'role': 'button'
+											}).addClass('btn btn-large').html('<i class="icon-refresh"></i> Click to continue')
+
+											var emailLink = $('<a />').attr({
+												'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')',
+												'role': 'button'
+											}).addClass('btn btn-large').html('<i class="icon-envelope"></i>Send E-Mail To System Administrator');
 
 											if (404 === jqXHR.status) {
-												splashUpdate("<b>Items Not Found</b><br />The items you are attempting to view no longer exist.<br />");
+												splashUpdate("<b>View Not Found</b><br />The view you are attempting to view may no longer exist.<br />");
 											} else {
-												splashUpdate("<b>There was an error attempting to load items.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br />");
+												splashUpdate("<b>There was an error attempting to load a view.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br />");
 											}
 											$('#splash-status-update').append(continueLink);
 											$('#splash-status-update').append(emailLink);
@@ -150,8 +164,15 @@ $(document).ready(function() {
 					],
 					error: [
 						function(jqXHR, textStatus, errorThrown) {
-							var continueLink = $('<a />').attr('href', CCH.CONFIG.contextPath).html('Click to continue');
-							var emailLink = $('<a />').attr('href', 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')').html('<br />Send E-Mail To System Administrator');
+							var continueLink = $('<a />').attr({
+								'href': CCH.CONFIG.contextPath,
+								'role': 'button'
+							}).addClass('btn btn-large').html('<i class="icon-refresh"></i> Click to continue')
+
+							var emailLink = $('<a />').attr({
+								'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')',
+								'role': 'button'
+							}).addClass('btn btn-large').html('<i class="icon-envelope"></i>Send E-Mail To System Administrator');
 
 							if (404 === jqXHR.status) {
 								splashUpdate("<b>View Not Found</b><br />The view you are attempting to load may no longer exist.<br />");
@@ -177,8 +198,18 @@ $(document).ready(function() {
 				],
 				error: [
 					function(jqXHR, textStatus, errorThrown) {
-						var continueLink = $('<a />').attr('href', CCH.CONFIG.contextPath).html('<br />Click to try again');
-						var emailLink = $('<a />').attr('href', 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')').html('<br />Send E-Mail To System Administrator');
+						var continueLink = $('<a />')
+								.attr({
+							'href': CCH.CONFIG.contextPath,
+							'role': 'button'})
+								.addClass('btn btn-large')
+								.html('<i class="icon-refresh"></i> Click to try again');
+
+						var emailLink = $('<a />').attr({
+							'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')',
+							'role': 'button'
+						}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
+
 						splashUpdate("<b>Application Error</b><br />Coastal Change Hazards Portal could not find any items to display.<br />Due to this error, the application can not function properly.<br />");
 						$('#splash-status-update').append(continueLink);
 						$('#splash-status-update').append(emailLink);
