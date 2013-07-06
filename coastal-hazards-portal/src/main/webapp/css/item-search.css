@@ -1,3 +1,8 @@
+
+#item-search-modal[aria-hidden="true"] {
+	z-index: -1;
+}
+
 #item-search-map {
 	height : 200px;
 }

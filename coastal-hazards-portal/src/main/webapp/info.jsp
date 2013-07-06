@@ -45,10 +45,10 @@
 
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/2.3.1/css/bootstrap.min.css" />
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/2.3.1/css/bootstrap-responsive.min.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/2.3.2/css/bootstrap.min.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/2.3.2/css/bootstrap-responsive.min.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/infopage.css" />
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/2.3.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/2.3.2/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.12/OpenLayers.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full.min.js"></script>
 

@@ -131,6 +131,10 @@ img {
 	width : 20px;
 }
 
+#shareModal[aria-hidden="true"] {
+	z-index: -1;
+}
+
 @media print {
 	img {
 		max-width: none !important; 
