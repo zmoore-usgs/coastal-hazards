@@ -116,8 +116,8 @@ CCH.Objects.Map = function(args) {
 
 					setTimeout(function(args) {
 						me.clearBoundingBoxMarkers();
-					}, 1500)
-					
+					}, 1500);
+
 
 					var isPinned = card.pinned;
 					if (!isPinned) {

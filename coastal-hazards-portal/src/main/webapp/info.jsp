@@ -49,7 +49,7 @@
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/2.3.2/css/bootstrap-responsive.min.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/infopage.css" />
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/2.3.2/js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.12/OpenLayers.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13/OpenLayers.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full.min.js"></script>
 
 		<jsp:include page="js/jsuri/jsuri.jsp"></jsp:include>
