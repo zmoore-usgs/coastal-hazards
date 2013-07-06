@@ -39,6 +39,7 @@
 		<script type="text/javascript">
 			var errorCode = <%=request.getAttribute("javax.servlet.error.status_code")%>;
 			var errorPath = '<%=request.getAttribute("javax.servlet.error.request_uri")%>';
+			var errorException = '<%=request.getAttribute("javax.servlet.error.exception")%>';
 		</script>
 		<style type="text/css">
 			body {
@@ -122,6 +123,12 @@
 							description = 'Unfortunately the page that you\'re searching for could not be found.';
 							contact.subject = 'Error 404: ' + errorPath;
 							contact.content = 'The application could not fine the path at ' + errorPath;
+							break;
+						}
+						case 500 : {
+								description = 'The server ran into an error while processing your request.';
+								contact.subject = 'Error 500: ' + errorPath;
+								contact.content = 'Error: ' + errorException;
 						}
 				}
 
