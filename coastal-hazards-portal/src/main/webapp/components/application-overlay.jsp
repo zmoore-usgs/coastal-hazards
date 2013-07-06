@@ -5,7 +5,7 @@
 		position : fixed;
 		top : 0;left : 0;
 		background-color: #FFFFFF;
-		background-image: url("images/splash/splash.svg");
+		background-image: url("<%=request.getParameter("application-overlay-background-image")%>");
 		background-attachment: fixed;
 		background-position: center center;
 		background-repeat: no-repeat;
@@ -69,9 +69,7 @@
 			USGS Coastal Change Hazards Portal
 		</div>
 		<div id="application-overlay-description-container">
-			<p id="application-overlay-description">Maecenas eu placerat ante. Fusce ut neque justo, et aliquet enim. In hac habitasse platea dictumst. <br />
-				Nullam commodo neque erat, vitae facilisis erat. Cras at mauris ut tortor vestibulum fringilla vel sed metus. Donec interdum purus a justo feugiat rutrum. <br />
-				Sed ac neque ut neque dictum accumsan. Cras lacinia rutrum risus, id viverra metus dictum sit amet. </p>
+			<p id="application-overlay-description"><%=request.getParameter("application-overlay-description")%></p>
 		</div>
 
         <div>

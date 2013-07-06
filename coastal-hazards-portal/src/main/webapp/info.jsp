@@ -71,33 +71,15 @@
 		<script type="text/javascript" src='<%=baseUrl%>/js/components/info/info.js'></script>
     </head>
     <body>
+		<jsp:include page="components/application-overlay.jsp">
+			<jsp:param name="application-overlay-description" value="Maecenas eu placerat ante. Fusce ut neque justo, et aliquet enim. In hac habitasse platea dictumst. <br />
+					   Nullam commodo neque erat, vitae facilisis erat. Cras at mauris ut tortor vestibulum fringilla vel sed metus. Donec interdum purus a justo feugiat rutrum. <br />
+					   Sed ac neque ut neque dictum accumsan. Cras lacinia rutrum risus, id viverra metus dictum sit amet." />
+			<jsp:param name="application-overlay-background-image" value="images/splash/splash_info.png" />
+		</jsp:include>
 		<div id="application-container" class="container-fluid">
-
-			<div id="application-overlay">
-				<div id="application-overlay-content">
-					<div id="application-overlay-title">
-						USGS Coastal Change Hazards Portal
-					</div>
-					<div id="application-overlay-banner">
-						<img src="<%=baseUrl%>/images/splash/splash_info.png" />
-					</div>
-					<!-- start slipsum code -->
-					<div id="application-overlay-description-container">
-						<p id="application-overlay-description">Maecenas eu placerat ante. Fusce ut neque justo, et aliquet enim. In hac habitasse platea dictumst. <br />
-							Nullam commodo neque erat, vitae facilisis erat. Cras at mauris ut tortor vestibulum fringilla vel sed metus. Donec interdum purus a justo feugiat rutrum. <br />
-							Sed ac neque ut neque dictum accumsan. Cras lacinia rutrum risus, id viverra metus dictum sit amet. </p>
-					</div>
-
-					<div>
-						<div id="splash-status-update"></div>
-						<img id="splash-spinner" src="images/spinner/spinner3.gif" />
-					</div>
-				</div>
-			</div>
-					
 			<%-- Content Here --%>
 			<div id="info-content" class="container-fluid">
-
 				<div id="header-row" class="row-fluid">
 					<jsp:include page="template/USGSHeader.jsp">
 						<jsp:param name="relPath" value="" />

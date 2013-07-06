@@ -58,10 +58,15 @@
         <script type="text/javascript" src="webjars/bootstrap/2.3.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
     </head>
     <body>
-        <jsp:include page="components/application-overlay.jsp"></jsp:include>
-            <div id="application-container" class="container-fluid">
+		<jsp:include page="components/application-overlay.jsp">
+			<jsp:param name="application-overlay-description" value="Maecenas eu placerat ante. Fusce ut neque justo, et aliquet enim. In hac habitasse platea dictumst. <br />
+					   Nullam commodo neque erat, vitae facilisis erat. Cras at mauris ut tortor vestibulum fringilla vel sed metus. Donec interdum purus a justo feugiat rutrum. <br />
+					   Sed ac neque ut neque dictum accumsan. Cras lacinia rutrum risus, id viverra metus dictum sit amet." />
+			<jsp:param name="application-overlay-background-image" value="images/splash/splash.svg" />
+		</jsp:include>
+		<div id="application-container" class="container-fluid">
 
-                <div id="header-row" class="row-fluid">
+			<div id="header-row" class="row-fluid">
 				<jsp:include page="template/USGSHeader.jsp">
 					<jsp:param name="relPath" value="" />
 					<jsp:param name="header-class" value="visible-desktop hidden-phone hidden-tablet" />
