@@ -101,12 +101,12 @@ $(document).ready(function() {
 							var emailLink = $('<a />').attr({
 								'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')',
 								'role': 'button'
-							}).addClass('btn btn-large').html('<i class="icon-envelope"></i>Send E-Mail To System Administrator');
+							}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
 
 							if (404 === jqXHR.status) {
-								splashUpdate("<b>Item Not Found</b><br />The item you are attempting to view no longer exists.<br />");
+								splashUpdate("<b>Item Not Found</b><br />The item you are attempting to view no longer exists.<br /><br />");
 							} else {
-								splashUpdate("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br />");
+								splashUpdate("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br /><br />");
 							}
 							$('#splash-status-update').append(continueLink);
 							$('#splash-status-update').append(emailLink);
@@ -143,18 +143,17 @@ $(document).ready(function() {
 											}).addClass('btn btn-large').html('<i class="icon-refresh"></i> Click to continue')
 
 											var emailLink = $('<a />').attr({
-												'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')',
+												'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')',
 												'role': 'button'
-											}).addClass('btn btn-large').html('<i class="icon-envelope"></i>Send E-Mail To System Administrator');
+											}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
 
 											if (404 === jqXHR.status) {
-												splashUpdate("<b>View Not Found</b><br />The view you are attempting to view may no longer exist.<br />");
+												splashUpdate("<b>Item Not Found</b><br /><br />We couldn't find an item you are looking for<br /><br />");
 											} else {
-												splashUpdate("<b>There was an error attempting to load a view.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br />");
+												splashUpdate("<b>There was an error attempting to load an item.</b><br />Either try to reload the application or contact the system administrator.<br /><br />");
 											}
 											$('#splash-status-update').append(continueLink);
 											$('#splash-status-update').append(emailLink);
-											LOG.error(errorThrown + ' : ' + jqXHR.responseText);
 											$('#splash-spinner').fadeOut(2000);
 										}
 									]
@@ -172,12 +171,12 @@ $(document).ready(function() {
 							var emailLink = $('<a />').attr({
 								'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')',
 								'role': 'button'
-							}).addClass('btn btn-large').html('<i class="icon-envelope"></i>Send E-Mail To System Administrator');
+							}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
 
 							if (404 === jqXHR.status) {
-								splashUpdate("<b>View Not Found</b><br />The view you are attempting to load may no longer exist.<br />");
+								splashUpdate("<b>View Not Found</b><br /><br />The view you are trying to load may no longer exist<br /><br />");
 							} else {
-								splashUpdate("<b>There was an error attempting to load your view.</b><br /><br />Either try to reload the application or contact the system administrator.<br />");
+								splashUpdate("<b>There was an error attempting to load your view.</b><br /><br />Either try to reload the application or contact the system administrator.<br /><br />");
 							}
 							$('#splash-status-update').append(continueLink);
 							$('#splash-status-update').append(emailLink);
@@ -210,7 +209,7 @@ $(document).ready(function() {
 							'role': 'button'
 						}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
 
-						splashUpdate("<b>Application Error</b><br />Coastal Change Hazards Portal could not find any items to display.<br />Due to this error, the application can not function properly.<br />");
+						splashUpdate("<b>Application Error</b><br />Coastal Change Hazards Portal could not find any items to display.<br />Due to this error, the application can not function properly.<br /><br />");
 						$('#splash-status-update').append(continueLink);
 						$('#splash-status-update').append(emailLink);
 						LOG.error(errorThrown + ' : ' + jqXHR.responseText);

@@ -12,6 +12,17 @@
 		z-index: 9999;
 	}
 
+	#application-overlay-title {
+		text-align: center;
+		font-size: 3em; 
+		line-height: 1em;
+		color: inherit; 
+		font-family: inherit; 
+		font-weight: bold;
+		text-rendering: optimizelegibility;
+		font-family: Verdana, Tahoma, Geneva, sans-serif;
+	}
+
 	#application-overlay-content {
 		height: auto;
 		position: relative;
@@ -19,7 +30,7 @@
 		width: 90%;
 		color: #000000;
 		margin-left: 5%;
-		font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+		font-family: Verdana, Geneva, Tahoma, sans-serif;
 		font-size: 14px;
 		line-height: 20px;
 		text-align: center;
@@ -31,17 +42,6 @@
 		-moz-border-radius: 5px;
 		-webkit-border-radius: 5px;
 
-	}
-
-	#application-overlay-title {
-		text-align: center;
-		font-size: 3.25em; 
-		line-height: 1em;
-		color: inherit; 
-		font-family: inherit; 
-		font-weight: bold;
-		text-rendering: optimizelegibility;
-		font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 	}
 
 	#application-overlay-description-container {
@@ -56,10 +56,17 @@
 		padding-left: 5%;
 		text-align: left;
 	}
-	
+
 	#splash-status-update {
 		font-size: 1.4em;
 		font-weight: bold;
+	}
+
+	#splash-status-update .btn {
+		margin-top: 10px;
+		margin-bottom: 10px;
+		margin-left : 5px;
+		margin-right : 5px;
 	}
 </style>
 

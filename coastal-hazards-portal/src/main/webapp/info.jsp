@@ -1,4 +1,3 @@
-
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -139,24 +138,6 @@
 						<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Change%20Hazards%20Feedback'>Site Administrator</a>" />
 					</jsp:include>
 				</div>
-			</div>
-
-			<%-- Content Here --%>
-			<div id="info-not-found-content" class="container-fluid hidden">
-
-				<%-- Title --%>
-				<div id="info-not-found-row-title" class="info-title row-fluid">
-					<div id="info-not-found-title">Item Not Found</div>
-				</div> 
-
-
-				<div id="info-not-found--summary" class="row-fluid">
-					Unfortunately the item you are looking for could not be found. 
-					<br /><br />
-					<a href="<%=baseUrl%>">Back to the USGS Coastal Change Hazards Portal</a>
-				</div>
-
-
 			</div>
 		</div>
 	</body>
