@@ -48,7 +48,7 @@
 					</select>
 				</span>
 				<span id='item-search-row-popularity' class='span6'>
-					<label id="popularity-sort-label" for='popularity-sort'>Sort by popularity?</label><input id="popularity-sort-checkbox" type="checkbox" name="popularity-sort"/>
+					<label id="popularity-sort-label" for='popularity-sort'>Sort by popularity?</label><input id="popularity-sort-checkbox" type="checkbox" checked="checked" name="popularity-sort"/>
 				</span>
 			</div>
 
