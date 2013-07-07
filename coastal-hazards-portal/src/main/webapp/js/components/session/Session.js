@@ -27,23 +27,22 @@ CCH.Objects.Session = function(args) {
 		load: function(args) {
 			args = args || {};
 			var sid = args.sid;
-			args.callbacks = args.callbacks || {
-				success: [],
-				error: []
-			};
+			var callbacks = args.callbacks || {};
+			callbacks.success = callbacks.success || [];
+			callbacks.error = callbacks.error || [];
 
 			args.callbacks.success.unshift(function(json, textStatus, jqXHR) {
 				if (json) {
-					CCH.LOG.info("Session found on server. Updating current session.");
+					CCH.LOG.info("Session.js::load: Session found on server. Updating current session.");
 					$.extend(true, me.session, json);
 					$(window).trigger('cch.data.session.loaded.true');
 				} else {
-					CCH.LOG.info("Session not found on server.");
+					CCH.LOG.info("Session.js::load: Session not found on server.");
 					$(window).trigger('cch.data.session.loaded.false');
 				}
 			});
 
-			CCH.LOG.info("Will try to load session '" + sid + "' from server");
+			CCH.LOG.info("Session.js::load: Will try to load session '" + sid + "' from server");
 			me.readSession({
 				sid: sid,
 				callbacks: {

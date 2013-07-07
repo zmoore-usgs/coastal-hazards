@@ -10,9 +10,6 @@ CCH.Objects.Cards = function(args) {
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
-				'cch.ui.resized': function(evt, size) {
-					// Not yet
-				},
 				'cch.navbar.pinmenu.item.clear.click': function(evt) {
 					me.unpinAllCards();
 				},
@@ -93,6 +90,9 @@ CCH.Objects.Cards = function(args) {
 		getPinnedCount: function() {
 			return me.pinnedCount;
 		},
+		/**
+		 * Updates the count of pinned items in the navigation bar's pin control
+		 */
 		updatePinnedCount: function() {
 			me.pinnedCount = CCH.session.getPinnedCount();
 			me.navPinControlCount.html(me.pinnedCount);

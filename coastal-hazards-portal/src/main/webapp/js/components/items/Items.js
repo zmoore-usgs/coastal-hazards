@@ -42,10 +42,9 @@ CCH.Objects.Items = function(args) {
 			args = args || {};
 			var items = args.items || [];
 
-			var callbacks = args.callbacks || {
-				success: [],
-				error: []
-			};
+			var callbacks = args.callbacks || {};
+			callbacks.success = callbacks.success || [];
+			callbacks.error = callbacks.error || [];
 
 			if (!items.length) {
 				callbacks.success.unshift(function(data, status, jqXHR) {

@@ -127,7 +127,9 @@ CCH.Objects.Map = function(args) {
 					}
 				}
 			});
-
+			$(window).trigger('cch-map-bbox-marker-added', {
+				marker : marker
+			});
 			return marker;
 		},
 		clearBoundingBoxMarkers: function() {

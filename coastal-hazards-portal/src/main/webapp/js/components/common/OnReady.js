@@ -78,19 +78,24 @@ $(document).ready(function() {
 		if (type === 'ITEM') {
 			var itemId = CCH.CONFIG.id;
 			splashUpdate('Loading Item ' + itemId);
+
+			var ssListener = function() {
+				CCH.ui.removeOverlay();
+				CCH.slideshow.stop();
+				$(CCH.cards.getCards()[0].pinButton).trigger('click');
+				$(window).off('cch-slideshow-slider-loaded', ssListener);
+			};
+			var removeMarkers = function() {
+				CCH.map.clearBoundingBoxMarkers();
+				$(window).off('cch-map-bbox-marker-added', removeMarkers);
+			};
+
+			$(window).on('cch-slideshow-slider-loaded', ssListener);
+			$(window).on('cch-map-bbox-marker-added', removeMarkers);
+
 			CCH.items.load({
 				items: [itemId],
 				callbacks: {
-					success: [
-						function() {
-							CCH.slideshow.stop();
-							CCH.ui.removeOverlay();
-							CCH.Util.updateItemPopularity({
-								item: itemId,
-								type: 'use'
-							});
-						}
-					],
 					error: [
 						function(jqXHR, textStatus, errorThrown) {
 							var continueLink = $('<a />').attr({
@@ -118,6 +123,20 @@ $(document).ready(function() {
 			});
 		} else if (type === 'VIEW') {
 			splashUpdate("Loading View " + CCH.CONFIG.id);
+			
+			var ssListener = function() {
+				CCH.ui.removeOverlay();
+				CCH.slideshow.stop();
+				$(window).off('cch-slideshow-slider-loaded', ssListener);
+			};
+
+			var removeMarkers = function() {
+				CCH.map.clearBoundingBoxMarkers();
+				$(window).off('cch-map-bbox-marker-added', removeMarkers);
+			}
+			$(window).on('cch-slideshow-slider-loaded', ssListener);
+			$(window).on('cch-map-bbox-marker-added', removeMarkers);
+			
 			CCH.session.load({
 				sid: CCH.CONFIG.id,
 				callbacks: {
@@ -129,12 +148,6 @@ $(document).ready(function() {
 							CCH.items.load({
 								items: idList,
 								callbacks: {
-									success: [
-										function() {
-											CCH.slideshow.stop();
-											CCH.ui.removeOverlay();
-										}
-									],
 									error: [
 										function(jqXHR, textStatus, errorThrown) {
 											var continueLink = $('<a />').attr({
