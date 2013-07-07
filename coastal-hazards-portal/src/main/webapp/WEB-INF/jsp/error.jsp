@@ -114,21 +114,21 @@
 				$('#error-title-error-path').html(errorPath);
 				var description;
 				var contact = {
-					subject: '',
+					subject: 'Error ' + errorCode + ': ' + errorPath,
 					content: ''
 				};
 				switch (errorCode) {
 					case 404 :
 						{
 							description = 'Unfortunately the page that you\'re searching for could not be found.';
-							contact.subject = 'Error 404: ' + errorPath;
 							contact.content = 'The application could not fine the path at ' + errorPath;
 							break;
 						}
-						case 500 : {
-								description = 'The server ran into an error while processing your request.';
-								contact.subject = 'Error 500: ' + errorPath;
-								contact.content = 'Error: ' + errorException;
+					case 500 :
+						{
+							description = 'The server ran into an error while processing your request.';
+							contact.content = 'An error occured while I attempted to access the application.\n\nError Provided By Server: ' + errorException;
+							break;
 						}
 				}
 
@@ -136,7 +136,7 @@
 				emailAttributes += contact.subject ? 'Subject=' + contact.subject : '';
 				emailAttributes += contact.content ? '&Body=' + contact.content : '';
 				$('#error-button-email').attr('href', 'mailto:CCH_Help@usgs.gov?' + emailAttributes);
-				
+
 				$('#error-title-error-description').html(description);
 			});
 		</script>

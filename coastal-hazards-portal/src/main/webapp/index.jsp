@@ -52,10 +52,11 @@
             <jsp:param name="development" value="false" />
         </jsp:include>
 		<script type="text/javascript">var CCH = {'Objects': {}};</script>
-        <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
+		<script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap-responsive<%= development ? "" : ".min"%>.css" />
         <script type="text/javascript" src="webjars/bootstrap/2.3.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="webjars/openlayers/2.13/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
     </head>
     <body>
 		<jsp:include page="components/application-overlay.jsp">
@@ -96,9 +97,6 @@
 				<input id="map-search-input" type="text" class="search-query" placeholder="Search...">
 			</form>
 		</span>
-
-        <script type="text/javascript" src="webjars/openlayers/2.13/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
-        <!--<script type="text/javascript" src="js/jquery-mousewheel/jquery-mousewheel.js"></script>-->
         <jsp:include page="js/iosslider/iosslider.jsp"> 
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
         </jsp:include>
@@ -131,14 +129,11 @@
         <script type="text/javascript" src="js/components/common/OWS.js"></script>
         <script type="text/javascript" src="js/components/common/UI.js"></script>
         <script type="text/javascript" src="js/components/common/OnReady.js"></script>
-
         <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.1.1/css/font-awesome<%= development ? "" : ".min"%>.css" />
-
         <script type="text/javascript">
 			$('#footer > .content').addClass('visible-desktop hidden-phone hidden-tablet');
         </script>
-		<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
-		<a id='multi-card-twitter-button' class='twitter-share-button hide' data-lang='en' data-count='none' data-hashtags='cch' data-text='Check out my pinned items on CCH!' data-url='http://go.usa.gov/random' data-counturl='sid=SomeRandomSessionId'></a>
+		<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 		<jsp:include page="components/item-search.jsp"></jsp:include>
     </body>

@@ -144,29 +144,6 @@ CCH.Objects.Slideshow = function(args) {
 			sliderList.css({
 				'height': sliderContainer.height() + 'px'
 			});
-			
-//			$('.slide').each(function(index, slide) {
-//				var title = $(slide).find('.description-title-row');
-//				var descr = $(slide).find('.description-description-row');
-//				var descrDiv = $(descr).find('p');
-//
-//				var slideHeight = title.height() + descrDiv.height();
-//				if (slideHeight > (sliderContainer.height() - 10)) {
-//					slideHeight = sliderContainer.height() - 10;
-//				}
-//
-//				$(slide).css({
-//					'height': slideHeight + 'px'
-//				});
-//
-//				descr.css({
-//					'height': slideHeight - title.height() + 'px'
-//				});
-//
-//				descrDiv.css({
-//					'max-height': descr.height()
-//				});
-//			});
 		},
 		createSlideshow: function(args) {
 			// A timer is necessary here - Not having one here causes the browser to
@@ -300,7 +277,9 @@ CCH.Objects.Slideshow = function(args) {
 					}));
 				} else if (currentSizing === 'small') {
 					LOG.debug('Slideshow.js:: Horizontal Slider Loading');
-					sliderContainer.iosSlider(defaultSliderOptions);
+					sliderContainer.iosSlider($.extend(defaultSliderOptions, {
+						scrollbarLocation : 'bottom'
+					}));
 				}
 
 				$(window).off('orientationchange', me.orientationChange);

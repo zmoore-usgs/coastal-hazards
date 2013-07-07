@@ -66,14 +66,20 @@ $(document).ready(function() {
 			buildMap();
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
-			// If the item doesn't exist, we allow the user to either continue to the main application or email us to tell us this happened
-			var continueLink = $('<a />').attr('href', CCH.CONFIG.contextPath).addClass('btn-error btn btn-mini').html('<br />Click to continue');
-			var emailLink = $('<a />').attr('href', 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (Item: ' + CCH.CONFIG.itemId + ' Error: ' + errorThrown + ')').addClass('btn-error btn btn-mini').html('<br />Send E-Mail To System Administrator');
+			var continueLink = $('<a />').attr({
+				'href': CCH.CONFIG.contextPath,
+				'role': 'button'
+			}).addClass('btn btn-large').html('<i class="icon-refresh"></i> Click to continue')
+
+			var emailLink = $('<a />').attr({
+				'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')',
+				'role': 'button'
+			}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
 
 			if (404 === jqXHR.status) {
-				$('#splash-status-update').html("<b>Item Not Found</b><br />The item you are attempting to view no longer exists.<br />");
+				splashUpdate("<b>Item Not Found</b><br /><br />We couldn't find the item you are looking for<br /><br />");
 			} else {
-				$('#splash-status-update').html("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br />");
+				splashUpdate("<b>There was an error attempting to load an item.</b><br />Either try to reload the application or contact the system administrator.<br /><br />");
 			}
 			$('#splash-status-update').append(continueLink);
 			$('#splash-status-update').append(emailLink);

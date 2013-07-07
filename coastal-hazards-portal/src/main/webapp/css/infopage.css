@@ -18,7 +18,7 @@ img {
 
 .info-title {
 	text-align: center;
-	font-size: 2em;
+	font-size: 1.5em;
 	margin-top: 10px;
 	margin-bottom: 10px;
 	font-weight: 600;
@@ -29,4 +29,11 @@ img {
 
 #info-row-info-fullwidth {
 	margin-top: 10px;
+}
+
+.btn {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left : 5px;
+	margin-right : 5px;
 }
