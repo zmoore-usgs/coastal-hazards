@@ -83,12 +83,12 @@ $(document).ready(function() {
 				callbacks: {
 					success: [
 						function() {
+							CCH.slideshow.stop();
+							CCH.ui.removeOverlay();
 							CCH.Util.updateItemPopularity({
 								item: itemId,
 								type: 'use'
 							});
-							CCH.ui.removeOverlay();
-							CCH.slideshow.stop();
 						}
 					],
 					error: [
@@ -131,8 +131,8 @@ $(document).ready(function() {
 								callbacks: {
 									success: [
 										function() {
-											CCH.ui.removeOverlay();
 											CCH.slideshow.stop();
+											CCH.ui.removeOverlay();
 										}
 									],
 									error: [

@@ -16,7 +16,9 @@ CCH.Objects.Items = function(args) {
 								$(window).trigger('cch.data.items.searched', data.items.length);
 								if (data && data.items && data.items.length) {
 									me.items = data.items;
-									$(window).trigger('cch.data.items.loaded');
+									$(window).trigger('cch.data.items.loaded', {
+										items: me.items
+									});
 								}
 							}
 						],
@@ -48,7 +50,9 @@ CCH.Objects.Items = function(args) {
 			if (!items.length) {
 				callbacks.success.unshift(function(data, status, jqXHR) {
 					me.items = data.items;
-					$(window).trigger('cch.data.items.loaded');
+					$(window).trigger('cch.data.items.loaded', {
+						items: me.items
+					});
 				});
 			} else {
 				callbacks.success.unshift(function(data, status, jqXHR) {
@@ -59,7 +63,9 @@ CCH.Objects.Items = function(args) {
 							callbacks: callbacks
 						});
 					} else {
-						$(window).trigger('cch.data.items.loaded');
+						$(window).trigger('cch.data.items.loaded', {
+							items: me.items
+						});
 					}
 				});
 			}
@@ -90,7 +96,7 @@ CCH.Objects.Items = function(args) {
 			$.ajax({
 				url: CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.item.endpoint + item,
 				dataType: 'json',
-				data: {
+				data: item ? '' : {
 					count: count,
 					bbox: bbox,
 					sortBy: sortBy,
