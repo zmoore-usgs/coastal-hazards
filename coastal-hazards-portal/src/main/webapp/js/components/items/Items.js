@@ -40,27 +40,24 @@ CCH.Objects.Items = function(args) {
 		},
 		load: function(args) {
 			args = args || {};
-			var items = args.items || [];
+			args.items = args.items || [];
 
-			var callbacks = args.callbacks || {};
-			callbacks.success = callbacks.success || [];
-			callbacks.error = callbacks.error || [];
+			args.callbacks = args.callbacks || {};
+			args.callbacks.success = args.callbacks.success || [];
+			args.callbacks.error = args.callbacks.error || [];
 
-			if (!items.length) {
-				callbacks.success.unshift(function(data, status, jqXHR) {
+			if (!args.items.length) {
+				args.callbacks.success.unshift(function(data, status, jqXHR) {
 					me.items = data.items;
 					$(window).trigger('cch.data.items.loaded', {
 						items: me.items
 					});
 				});
 			} else {
-				callbacks.success.unshift(function(data, status, jqXHR) {
+				args.callbacks.success.unshift(function(data, status, jqXHR) {
 					me.items.push(data);
-					if (items.length) {
-						me.search({
-							items: items,
-							callbacks: callbacks
-						});
+					if (args.items.length) {
+						me.search(args);
 					} else {
 						$(window).trigger('cch.data.items.loaded', {
 							items: me.items
@@ -69,10 +66,7 @@ CCH.Objects.Items = function(args) {
 				});
 			}
 
-			me.search({
-				items: items,
-				callbacks: callbacks
-			});
+			me.search(args);
 
 		},
 		search: function(args) {
@@ -83,7 +77,7 @@ CCH.Objects.Items = function(args) {
 			var sortBy = args.sortBy || '';
 			var items = args.items || [];
 			var itemId = items.pop() || '';
-			var item = '/' + itemId || '';
+			var item = itemId ? '/' + itemId : '';
 			var query = args.query || '';
 			var type = args.type || '';
 

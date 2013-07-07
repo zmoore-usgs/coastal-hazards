@@ -202,6 +202,8 @@ $(document).ready(function() {
 		}
 	} else {
 		CCH.items.load({
+			sortBy: 'popularity',
+			count : '10',
 			callbacks: {
 				success: [
 					function() {
