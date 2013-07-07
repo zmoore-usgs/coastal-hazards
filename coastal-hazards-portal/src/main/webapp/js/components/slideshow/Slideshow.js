@@ -250,21 +250,21 @@ CCH.Objects.Slideshow = function(args) {
 					scrollbarDrag: false,
 					// Executed when the slider has entered the range of a new slide,
 					onSlideChange: function(evt) {
-						$(window).trigger('cch-slideshow-slide-changed', evt);
 						LOG.debug('Slideshow.js:: Slide Changed');
+						$(window).trigger('cch-slideshow-slide-changed', evt);
 						me.toggleClassForActiveSlide();
 					},
 					// Executed when slider has finished loading initially
 					onSliderLoaded: function() {
-						$(window).trigger('cch-slideshow-slider-loaded');
 						LOG.debug('Slideshow.js:: Slider Loaded');
+						$(window).trigger('cch-slideshow-slider-loaded');
 						me.resize();
 						me.toggleClassForActiveSlide();
 					},
 					// Executed when the window has been resized or a device has been rotated
 					onSliderResize: function() {
-						$(window).trigger('cch-slideshow-slider-resized');
 						LOG.debug('Slideshow.js:: Slider Resized');
+						$(window).trigger('cch-slideshow-slider-resized');
 						me.resize();
 					}
 				};
@@ -284,8 +284,6 @@ CCH.Objects.Slideshow = function(args) {
 
 				$(window).off('orientationchange', me.orientationChange);
 				$(window).on('orientationchange', me.orientationChange);
-				me.updateSlides();
-				me.resize();
 			}, 1000, args);
 		}
 	});

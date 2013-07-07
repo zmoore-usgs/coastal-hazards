@@ -166,6 +166,7 @@ CCH.Objects.UI = function(args) {
 			return currentSizing;
 		},
 		sharemodalDisplayHandler: function(evt) {
+			$('#modal-share-summary-url-button').addClass('disabled');
 			$('#modal-share-summary-url-inputbox').val('');
 			$('#multi-card-twitter-button').empty();
 			CCH.session.writeSession({
@@ -182,6 +183,9 @@ CCH.Objects.UI = function(args) {
 										function(json, textStatus, jqXHR) {
 											var url = json.tinyUrl;
 											$('#modal-share-summary-url-inputbox').val(url);
+											$('#modal-share-summary-url-button').attr({
+												'href' : url
+											}).removeClass('disabled');
 											$('#modal-share-summary-url-inputbox').select();
 											twttr.widgets.createShareButton(
 													url,
@@ -206,6 +210,9 @@ CCH.Objects.UI = function(args) {
 										function(data, textStatus, jqXHR) {
 											var url = data.responseJSON.full_url;
 											$('#modal-share-summary-url-inputbox').val(url);
+											$('#modal-share-summary-url-button').attr({
+												'href' : url
+											}).removeClass('disabled');
 											$('#modal-share-summary-url-inputbox').select();
 											twttr.widgets.createShareButton(
 													url,
