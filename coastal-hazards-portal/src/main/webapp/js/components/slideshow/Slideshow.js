@@ -8,8 +8,8 @@ CCH.Objects.Slideshow = function(args) {
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
-				'cch.data.items.loaded': function(evt) {
-					me.createSlideshow(evt);
+				'cch.data.items.loaded': function(evt, args) {
+					me.createSlideshow(evt, args);
 				},
 				'cch.ui.resized': function(evt) {
 					me.createSlideshow(evt);
@@ -19,8 +19,8 @@ CCH.Objects.Slideshow = function(args) {
 					me.stop();
 				},
 				'cch.navbar.pinmenu.button.pin.click': function(evt, items) {
-					me.stop();
 					me.createSlideshow(items);
+					me.stop();
 				}
 			});
 			return me;
@@ -145,7 +145,7 @@ CCH.Objects.Slideshow = function(args) {
 				'height': sliderContainer.height() + 'px'
 			});
 		},
-		createSlideshow: function(args) {
+		createSlideshow: function(evt, args) {
 			// A timer is necessary here - Not having one here causes the browser to
 			// crash. Guessing it is a resize loop issue
 			setTimeout(function(args) {
@@ -250,21 +250,21 @@ CCH.Objects.Slideshow = function(args) {
 					scrollbarDrag: false,
 					// Executed when the slider has entered the range of a new slide,
 					onSlideChange: function(evt) {
-						me.toggleClassForActiveSlide();
 						$(window).trigger('cch-slideshow-slide-changed', evt);
 						LOG.debug('Slideshow.js:: Slide Changed');
+						me.toggleClassForActiveSlide();
 					},
 					// Executed when slider has finished loading initially
 					onSliderLoaded: function() {
-						me.toggleClassForActiveSlide();
-						me.resize();
 						$(window).trigger('cch-slideshow-slider-loaded');
 						LOG.debug('Slideshow.js:: Slider Loaded');
+						me.resize();
+						me.toggleClassForActiveSlide();
 					},
 					// Executed when the window has been resized or a device has been rotated
 					onSliderResize: function() {
 						$(window).trigger('cch-slideshow-slider-resized');
-						LOG.debug('Slideshow.js:: Slider Loaded');
+						LOG.debug('Slideshow.js:: Slider Resized');
 						me.resize();
 					}
 				};
@@ -278,14 +278,14 @@ CCH.Objects.Slideshow = function(args) {
 				} else if (currentSizing === 'small') {
 					LOG.debug('Slideshow.js:: Horizontal Slider Loading');
 					sliderContainer.iosSlider($.extend(defaultSliderOptions, {
-						scrollbarLocation : 'bottom'
+						scrollbarLocation: 'bottom'
 					}));
 				}
 
 				$(window).off('orientationchange', me.orientationChange);
 				$(window).on('orientationchange', me.orientationChange);
-				me.resize();
 				me.updateSlides();
+				me.resize();
 			}, 1000, args);
 		}
 	});
