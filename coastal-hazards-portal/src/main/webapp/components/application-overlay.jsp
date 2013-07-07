@@ -21,6 +21,8 @@
 		font-weight: bold;
 		text-rendering: optimizelegibility;
 		font-family: Verdana, Tahoma, Geneva, sans-serif;
+		margin-top: 5px;
+		margin-bottom: 5px;
 	}
 
 	#application-overlay-content {
@@ -31,8 +33,8 @@
 		color: #000000;
 		margin-left: 5%;
 		font-family: Verdana, Geneva, Tahoma, sans-serif;
-		font-size: 14px;
-		line-height: 20px;
+		font-size: 1.2em;
+		line-height: 1.2em;
 		text-align: center;
 		background-color: rgba(255, 255, 255, 0.5);
 		border-style: solid;
@@ -48,7 +50,7 @@
 		width: 100%;
 		margin-top: 10px;
 		font-size: 1.3em;
-		line: 1.3em;
+		line-height: 1.3em;
 	}
 
 	#application-overlay-description {
@@ -67,6 +69,64 @@
 		margin-bottom: 10px;
 		margin-left : 5px;
 		margin-right : 5px;
+		font-size: 0.75em;
+	}
+
+	/* This is when bootstrap switches to portrait */
+	@media (max-width: 767px) {
+		#application-overlay-title {
+			font-size: 2em; 
+		}
+
+		#application-overlay-content {
+			font-size: 1em;
+			line-height: 1em;
+			width: 98%;
+			margin-left: 1%;
+		}
+
+		#application-overlay-description-container {
+			font-size: 1em;
+			line-height: 1em;
+		}
+
+		#splash-status-update {
+			font-size: 1.2em;
+			line-height: 1.2em;
+		}
+
+		#splash-status-update .btn {
+			margin-top: 5px;
+			margin-bottom: 5px;
+			margin-left : 3px;
+			margin-right : 3px;
+			font-size: 0.7em;
+		}
+	}
+
+	/* This is the min-width of the application in application.css */
+	@media (max-width: 320px) {
+		#application-overlay-content {
+			width: 100%;
+			margin-left: 0px;
+		}
+
+		#application-overlay-description-container {
+			display: none;
+		}
+
+		#splash-status-update .btn {
+			margin-top: 3px;
+			margin-bottom: 3px;
+			margin-left : 2px;
+			margin-right : 2px;
+			font-size: 0.6em;
+		}
+		
+		#splash-status-update {
+			font-size: 1em;
+			line-height: 1em;
+		}
 	}
 </style>
 

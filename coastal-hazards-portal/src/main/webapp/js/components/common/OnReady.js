@@ -104,7 +104,7 @@ $(document).ready(function() {
 							}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
 
 							if (404 === jqXHR.status) {
-								splashUpdate("<b>Item Not Found</b><br />The item you are attempting to view no longer exists.<br /><br />");
+								splashUpdate("<b>Item Not Found</b><br /><br />The item you are attempting to view no longer exists<br /><br />");
 							} else {
 								splashUpdate("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br /><br />");
 							}
