@@ -15,32 +15,26 @@
 						<li id='app-navbar-pin-control-share-li'><a tabindex="-1" data-toggle="modal" role="button" href="#shareModal">Share View</a></li>
 					</ul>
 				</div>
-					<div id="shareModal" class="modal fade"  role="dialog" aria-labelledby="modal-label" aria-hidden="true">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-							<h4 id="modal-label">Share Your Coastal Change Hazards Portal View With Others</h4>
-						</div>
-						<div class="modal-body">
-							<div class="row-fluid">
-								<div class="well-small span12">
-									<div id="modal-share-summary-text-label">The Coastal Change Hazards Change Portal allows you to share your current view with others.</div>
+				<div id="shareModal" class="modal fade"  role="dialog" aria-labelledby="modal-label" aria-hidden="true">
+					<div class="modal-header">
+						<h4 id="modal-label">Share Your Coastal Change Hazards Portal View With Others</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row-fluid">
+							<div class="well well-small">
+								<div id="modal-share-summary-url-inputbox-div">
+									<input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." />
 								</div>
-								<div class="well-small span12">
-									<div id="modal-share-summary-url-label">You can share this URL with others to allow them to see your view...</div>
-									<div id="modal-share-summary-url-inputbox-div">
-										<input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." />
-									</div>
-								</div>
-								<div class="well-small span12">
-									<div id="modal-share-summary-url-label">You can also <span id='multi-card-twitter-button'></span> your view...</div>
-									
-								</div>
+								<a id="modal-share-summary-url-button" class="btn" target="_blank" role="button">View In Portal</a>
+								
 							</div>
-						</div>
-						<div class="modal-footer">
-							<a href="#" class="btn"  data-dismiss="modal" aria-hidden="true">Close</a>
+							<span class="pull-right" id='multi-card-twitter-button'></span>
 						</div>
 					</div>
+					<div class="modal-footer">
+						<a href="#" class="btn"  data-dismiss="modal" aria-hidden="true">Close</a>
+					</div>
+				</div>
 
 				<span id="app-navbar-item-search-container" class="pull-right">
 					<i class="icon-search"></i>
