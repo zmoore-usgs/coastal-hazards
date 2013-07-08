@@ -7,7 +7,7 @@ order to get the public mapping of where the application is at -->
 <Environment name="coastal-hazards.base.url" type="java.lang.String" value="/qa/coastalhazards" />
 
 <!-- Coastal hazards interacts with go.usa.gov for url minification -->
-<Environment name="coastal-hazards.go.usa.gov.login" type="java.lang.String" value="Your_usa_gov_login" />
+<Environment name="coastal-hazards.go.usa.gov.login" type="java.lang.String" value="USGS%20Coastal%20Hazards" />
 <Environment name="coastal-hazards.go.usa.gov.apikey" type="java.lang.String" value="Your_usa_gov_api_key" />
 <Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="http://go.usa.gov/api/" />
 
