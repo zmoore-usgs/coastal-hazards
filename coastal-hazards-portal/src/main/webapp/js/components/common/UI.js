@@ -77,9 +77,7 @@ CCH.Objects.UI = function(args) {
 			// pinnedResults may or may not be an empty array. If it is, 
 			// the full deck will be seen. Otherwise, if pinnedResults is
 			// populated, only pinned cards will be seen
-			$(window).trigger('cch.navbar.pinmenu.button.pin.click', {
-				items: items
-			});
+			$(window).trigger('cch.navbar.pinmenu.button.pin.click', {items : items});
 		},
 		navbarClearItemClickHandler: function() {
 			$(window).trigger('cch.navbar.pinmenu.item.clear.click');
