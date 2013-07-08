@@ -100,20 +100,6 @@
 					<div id='info-summary-and-links-container' class='span6'>
 						<%-- Summary Information --%>
 						<div id="info-summary"  class="well"></div>
-
-						<div class="row-fluid">
-							<div class='well well-small'>
-								<%-- Metadata Link --%>
-								<span id="metadata-link"></span>
-
-								<%-- Application Link --%>
-								<span id="application-link"></span>
-
-								<span id="social-link" class='pull-right'>
-									<a id='info-twitter-button'></a>
-								</span>
-							</div>
-						</div>
 					</div>
 
 				</div>
@@ -128,8 +114,22 @@
 							<span id='info-container-publications-list-span'></span>
 						</span>
 					</div>
-
 				</div>
+						
+				<div class="row-fluid">
+					<div class='well well-small span12'>
+						<%-- Metadata Link --%>
+						<span id="metadata-link"></span>
+
+						<%-- Application Link --%>
+						<span id="application-link"></span>
+
+						<span id="social-link" class='pull-right'>
+							<a id='info-twitter-button'></a>
+						</span>
+					</div>
+				</div>
+						
 				<div  id="footer-row"  class="row-fluid">
 					<jsp:include page="template/USGSFooter.jsp">
 						<jsp:param name="relPath" value="" />
