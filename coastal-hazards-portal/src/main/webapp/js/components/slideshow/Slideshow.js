@@ -19,7 +19,7 @@ CCH.Objects.Slideshow = function(args) {
 					me.stop();
 				},
 				'cch.navbar.pinmenu.button.pin.click': function(evt, items) {
-					me.createSlideshow(items);
+					me.createSlideshow(evt, items);
 					me.stop();
 				}
 			});
