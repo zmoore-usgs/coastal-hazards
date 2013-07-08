@@ -7,7 +7,6 @@ import java.security.NoSuchAlgorithmException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 
 /**
  *
@@ -17,7 +16,6 @@ public class SessionManager implements SessionIO {
     
     @PersistenceContext
     private EntityManager em;
-    private TypedQuery<Session> query;
             
     public SessionManager() {
         em = JPAHelper.getEntityManagerFactory().createEntityManager();
