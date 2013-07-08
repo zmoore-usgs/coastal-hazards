@@ -13,29 +13,28 @@ import javax.persistence.PersistenceContext;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class SessionManager implements SessionIO {
-    
-    @PersistenceContext
-    private EntityManager em;
-            
-    public SessionManager() {
-        em = JPAHelper.getEntityManagerFactory().createEntityManager();
-        //query = em.createQuery("select s from Session s where s.id = ?", Session.class);
-    }
 
     @Override
     public String load(String sessionID) throws SessionIOException {
-        Session session = em.find(Session.class, sessionID);
-		
         String jsonSession = null;
-		if (null != session) {
-			jsonSession = session.toJSON();
-		}
+        EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
+        try {
+            Session session = em.find(Session.class, sessionID);
+
+            
+            if (null != session) {
+                jsonSession = session.toJSON();
+            }
+        } finally {
+            JPAHelper.close(em);
+        }
         return jsonSession;
     }
 
     @Override
     public synchronized String save(String session) throws SessionIOException {
         String id = "ERR";
+        EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
@@ -47,6 +46,8 @@ public class SessionManager implements SessionIO {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
+        } finally {
+            JPAHelper.close(em);
         }
         return id;
     }

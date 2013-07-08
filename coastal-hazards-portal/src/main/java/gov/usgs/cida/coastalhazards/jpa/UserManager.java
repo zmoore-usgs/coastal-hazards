@@ -11,17 +11,16 @@ import javax.persistence.Query;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class UserManager {
-
-    @PersistenceContext
-    private EntityManager em;
-    
-    public UserManager() {
-        em = JPAHelper.getEntityManagerFactory().createEntityManager();
-    }
     
     public List<AuthorizedUser> loadAll() {
-        Query query = em.createQuery("select u from AuthorizedUser u");
-        List<AuthorizedUser> users = query.getResultList();
+        EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
+        List<AuthorizedUser> users;
+        try {
+            Query query = em.createQuery("select u from AuthorizedUser u");
+            users = query.getResultList();
+        } finally {
+            JPAHelper.close(em);
+        }
         return users;
     }
     

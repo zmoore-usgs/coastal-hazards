@@ -22,4 +22,16 @@ public class JPAHelper {
         return emf;
     }
     
+    public static void closeEntityManagerFactory() {
+        if (emf != null && emf.isOpen()) {
+            emf.close();
+        }
+    }
+    
+    public static void close(EntityManager em) {
+        if (em != null && em.isOpen()) {
+            em.close();
+        }
+    }
+    
 }
