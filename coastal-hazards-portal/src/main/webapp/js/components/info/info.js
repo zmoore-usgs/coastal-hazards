@@ -163,14 +163,17 @@ $(document).ready(function() {
 		});
 
 		var type = CCH.CONFIG.data.type;
-		if (type === "storms") {
-			layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'data/sld/redwhite/' + CCH.CONFIG.data.wmsService.layers + '/' + CCH.CONFIG.data.attr;
-			layer.params.STYLES = 'redwhite';
-		} else if (type === "historical") {
-			layer.params.STYLES = 'line';
-		} else if (type === "vulnerability") {
-			layer.params.STYLES = '';
-		}
+		if (me.type === "storms") {
+				// SLD will probably only work with one layer
+				// TODO - Fix with window.location.href but make sure actually works
+				layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/data/sld/redwhite/' + me.item.wmsService.layers + '/' + me.attr;
+				layer.params.STYLES = 'redwhite';
+			} else if (me.type === "historical") {
+				layer.params.STYLES = 'line';
+			} else if (me.type === "vulnerability") {
+				layer.params.STYLES = '';
+			}
+			return layer;
 		CCH.CONFIG.map.addLayer(layer);
 		CCH.CONFIG.map.zoomToExtent(bounds);
 
