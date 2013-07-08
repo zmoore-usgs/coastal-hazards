@@ -11,15 +11,9 @@ import javax.persistence.PersistenceContext;
  */
 public class ActivityManager {
 
-    @PersistenceContext
-    private EntityManager em;
-            
-    public ActivityManager() {
-        em = JPAHelper.getEntityManagerFactory().createEntityManager();
-    }
-
     public synchronized String hit(Activity activity) {
         String result = "{\"success\": false}";
+        EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
@@ -30,6 +24,8 @@ public class ActivityManager {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
+        } finally {
+            JPAHelper.close(em);
         }
         return result;
     }
