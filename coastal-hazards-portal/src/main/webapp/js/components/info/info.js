@@ -17,6 +17,25 @@ $(document).ready(function() {
 			CCH.CONFIG.data = data;
 			$(window).resize();
 
+			CCH.Util.getSLD({
+				contextPath: CCH.CONFIG.contextPath,
+				itemId : itemId,
+				callbacks : {
+					success : [
+						function(data, status, jqXHR) {
+							
+						}
+					],
+					error : [
+						function(jqXHR, textStatus, errorThrown) {
+							// Failed to get SLD from back-end
+							$('#info-legend').remove();
+							$('#info-graph').removeClass('span4').addClass('span6');
+						}
+					]
+				}
+			})
+
 			// Clear the overlay
 			$('#application-overlay').fadeOut(2000, function() {
 				$('#application-overlay').remove();

@@ -104,7 +104,8 @@
 
 				</div>
 				<div id='info-row-info-fullwidth' class='row-fluid'>
-					<div class='well span6'>
+					<div id="info-legend" class="well-small well span2"></div>
+					<div id="info-graph" class='well span4'>
 						<h1>Placeholder for some super-awesome graph</h1>
 					</div>
 					<div class='well span6'>
