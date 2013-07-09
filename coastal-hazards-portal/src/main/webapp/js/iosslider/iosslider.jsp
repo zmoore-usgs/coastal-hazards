@@ -14,7 +14,7 @@
 	}
 
 	/* slider */
-	.iosSlider .slider {
+	.slider {
 		/* required */
 		width: 100%;
 		height: 100%;
@@ -26,38 +26,5 @@
 		float: left;
 		position: relative;
 	}
-
-	.description-description-row {
-		overflow : auto;
-	}
-
-	#description-wrapper {
-		overflow: auto;
-		max-width: 100%;
-	}
-
-	.slider-slide-active {
-		opacity: 1;
-		filter: alpha(opacity=100);
-	}
-
-	.slider-slide-inactive {
-		opacity: 0.4;
-		filter: alpha(opacity=40);
-		overflow : hidden;
-	}
-
-	.slider-slide-inactive .description-container-large .description-button-row { 
-		display: none;
-	}
-	
-	.description-container-small btn {
-		height: auto;
-	}
-	
-	.description-container-small i {
-		font-size: 2em;
-	}
-	
 
 </style>

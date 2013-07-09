@@ -19,7 +19,7 @@ $(document).ready(function() {
 
 			CCH.Util.getSLD({
 				contextPath: CCH.CONFIG.contextPath,
-				itemId : itemId,
+				itemId : CCH.CONFIG.itemId,
 				callbacks : {
 					success : [
 						function(data, status, jqXHR) {

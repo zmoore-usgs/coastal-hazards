@@ -77,9 +77,7 @@
                 </div>
                 <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
                 <div id="content-row" class="row-fluid">
-                    <div id="map-wrapper" class="span7">
-                        <div id="map"></div>
-                    </div>
+					<div id="map" class="span7"></div>
                     <div id="description-wrapper" class="span5"></div>
                 </div>	
 
@@ -93,7 +91,7 @@
 			</div>
         </div>
 		<span id="map-search-container">
-			<form class="map-search-form map-search" action="javascript:void(0);">
+			<form id="map-search-form" action="javascript:void(0);">
 				<input id="map-search-input" type="text" class="search-query" placeholder="Search...">
 			</form>
 		</span>
