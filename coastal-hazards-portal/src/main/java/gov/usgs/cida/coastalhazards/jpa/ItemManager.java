@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -22,35 +21,36 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ItemManager {
 
-	@PersistenceContext
-	private EntityManager em;
-
-	public ItemManager() {
-		em = JPAHelper.getEntityManagerFactory().createEntityManager();
-	}
-
 	public String load(String itemId) {
 		String jsonItem = null;
-		
-		Item item = em.find(Item.class, itemId);
-		if (null != item) {
-			jsonItem = item.toJSON();
-		} else {
-			File onDiskItem = new File(FileUtils.getTempDirectory(), itemId);
-			if (onDiskItem.exists()) {
-				try {
-					jsonItem = IOUtils.toString(new FileInputStream(onDiskItem));
-				} catch (IOException ex) {
-					// Ignore - pass back null
-				}
-			}
-		}
-		
+        
+        EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
+        Item item;
+        try {
+            item = em.find(Item.class, itemId);
+
+            if (null != item) {
+                jsonItem = item.toJSON();
+            } else {
+                File onDiskItem = new File(FileUtils.getTempDirectory(), itemId);
+                if (onDiskItem.exists()) {
+                    try {
+                        jsonItem = IOUtils.toString(new FileInputStream(onDiskItem));
+                    } catch (IOException ex) {
+                        // Ignore - pass back null
+                    }
+                }
+            }
+        } finally {
+            JPAHelper.close(em);
+        }
 		return jsonItem;
 	}
 
 	public synchronized String save(String item) {
 		String id = "ERR";
+        
+        EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = em.getTransaction();
 		try {
 			transaction.begin();
@@ -62,7 +62,9 @@ public class ItemManager {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-		}
+		} finally {
+            JPAHelper.close(em);
+        }
 		return id;
 	}
 	
@@ -108,13 +110,21 @@ public class ItemManager {
             //do bbox stuff here
         }
         
-		Query query = em.createQuery(builder.toString(), Item.class);
-        if (count > 0) {
-            query.setMaxResults(count);
+        EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
+        String jsonResult = "";
+        try {
+            Query query = em.createQuery(builder.toString(), Item.class);
+            if (count > 0) {
+                query.setMaxResults(count);
+            }
+            List<Item> resultList = query.getResultList();
+            Map<String, List> resultMap = new HashMap<String, List>();
+            resultMap.put("items", resultList);
+            jsonResult = new Gson().toJson(resultMap, HashMap.class);
+        } finally {
+            JPAHelper.close(em);
         }
-		List<Item> resultList = query.getResultList();
-		Map<String, List> resultMap = new HashMap<String, List>();
-		resultMap.put("items", resultList);
-		return new Gson().toJson(resultMap, HashMap.class);
+		return jsonResult;
 	}
+    
 }
