@@ -17,14 +17,19 @@ CCH.Objects.Search = function(args) {
 	me.itemSearchModalWindow = args.itemSearchModalWindow;
 	me.popularityCb = args.popularityCb;
 	me.searchQuery = args.searchQuery;
-
 	return $.extend(me, {
 		init: function() {
-			me.bindSearchInput();
+			$(window).resize(function(evt) {
+				if (window.innerWidth > 320 && !document.getElementById('item-search-map').childNodes.length) {
+					me.buildMap();
+				}
+			});
+			me.bindGeolocationInput();
 			me.bindSearchModalButton();
 			me.itemSearchModalWindow.css('display', 'none');
+			return me;
 		},
-		bindSearchInput: function() {
+		bindGeolocationInput: function() {
 			me.searchbar.submit(function(evt) {
 				var query = me.searchQuery.val();
 				if (query) {
@@ -71,7 +76,7 @@ CCH.Objects.Search = function(args) {
 			me.west.html(extent.left.toFixed(4));
 			me.east.html(extent.right.toFixed(4));
 		},
-		bindSearchModalButton: function() {
+		buildMap: function() {
 			var miniMap = new OpenLayers.Map('item-search-map', {
 				projection: "EPSG:900913",
 				displayProjection: new OpenLayers.Projection("EPSG:900913")
@@ -99,14 +104,17 @@ CCH.Objects.Search = function(args) {
 					me.updateSearchBBOX(extent);
 				}
 			});
+		},
+		isMapVisible: function() {
+			return $('#item-search-row-map').css('display') !== 'none';
+		},
+		bindSearchModalButton: function() {
+			if (me.isMapVisible()) {
+				me.buildMap();
+			}
 
 			me.searchContainer.on({
 				'click': function() {
-					var popularityScores = CCH.CONFIG.popularity.results.map(function(result) {
-						return parseInt(result.hotness);
-					});
-					var lowestPopularityScore = popularityScores.min();
-					var highestPopularityScore = popularityScores.max();
 					me.modalContainer.modal('show');
 				}
 			});
@@ -114,19 +122,26 @@ CCH.Objects.Search = function(args) {
 			me.submitButton.on({
 				'click': function() {
 					me.modalContainer.modal('hide');
-					
-					$(window).trigger('cch.search.item.submit', {
-						'top': me.north.html(),
-						'bottom': me.south.html(),
-						'left': me.west.html(),
-						'right': me.east.html(),
+
+					var bboxSearch = {};
+					if (me.isMapVisible()) {
+						bboxSearch = {
+							'top': me.north.html(),
+							'bottom': me.south.html(),
+							'left': me.west.html(),
+							'right': me.east.html()
+						};
+					}
+
+					$(window).trigger('cch.search.item.submit', 
+					$.extend({
 						'popularity': me.popularityCb.is(':checked'),
 						'keywords': me.keywordInput.val(),
 						'themes': me.themeInput.find('option:selected').toArray().map(function(option) {
 							return option.value;
 						})
-					});
-					
+					}, bboxSearch));
+
 					CCH.slideshow.stop();
 				}
 			});

@@ -577,9 +577,7 @@ var publish = function(args) {
 				]
 			}
 		});
-
 	}
-
 };
 
 var publishButtonClickHandler = function() {

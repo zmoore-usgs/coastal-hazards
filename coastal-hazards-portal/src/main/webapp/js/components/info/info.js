@@ -98,7 +98,7 @@ $(document).ready(function() {
 					{
 						hashtags: 'USGS_CCH',
 						lang: 'en',
-						size: 'medium',
+						size: 'large',
 						text: CCH.CONFIG.data.summary.tiny.text
 					});
 
@@ -173,6 +173,5 @@ $(document).ready(function() {
 		}
 		CCH.CONFIG.map.addLayer(layer);
 		CCH.CONFIG.map.zoomToExtent(bounds);
-
 	};
 });
