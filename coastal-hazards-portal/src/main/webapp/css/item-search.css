@@ -1,6 +1,10 @@
+#item-search-modal[aria-hidden="false"] {
+	position: absolute;
+}
 
 #item-search-modal[aria-hidden="true"] {
 	z-index: -1;
+	position: fixed;
 }
 
 #item-search-map {
@@ -27,11 +31,4 @@
 
 #item-search-keyword-input {
 	width: 100%;
-}
-
-@media screen and (max-width: 320px) {
-	#item-search-row-map,
-	#item-search-input-table-row {
-		display: none;
-	}
 }

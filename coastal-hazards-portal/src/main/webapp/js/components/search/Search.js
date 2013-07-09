@@ -19,11 +19,6 @@ CCH.Objects.Search = function(args) {
 	me.searchQuery = args.searchQuery;
 	return $.extend(me, {
 		init: function() {
-			$(window).resize(function(evt) {
-				if (window.innerWidth > 320 && !document.getElementById('item-search-map').childNodes.length) {
-					me.buildMap();
-				}
-			});
 			me.bindGeolocationInput();
 			me.bindSearchModalButton();
 			me.itemSearchModalWindow.css('display', 'none');
@@ -109,9 +104,7 @@ CCH.Objects.Search = function(args) {
 			return $('#item-search-row-map').css('display') !== 'none';
 		},
 		bindSearchModalButton: function() {
-			if (me.isMapVisible()) {
-				me.buildMap();
-			}
+			me.buildMap();
 
 			me.searchContainer.on({
 				'click': function() {
@@ -123,24 +116,18 @@ CCH.Objects.Search = function(args) {
 				'click': function() {
 					me.modalContainer.modal('hide');
 
-					var bboxSearch = {};
-					if (me.isMapVisible()) {
-						bboxSearch = {
-							'top': me.north.html(),
-							'bottom': me.south.html(),
-							'left': me.west.html(),
-							'right': me.east.html()
-						};
-					}
-
-					$(window).trigger('cch.search.item.submit', 
-					$.extend({
-						'popularity': me.popularityCb.is(':checked'),
-						'keywords': me.keywordInput.val(),
-						'themes': me.themeInput.find('option:selected').toArray().map(function(option) {
-							return option.value;
-						})
-					}, bboxSearch));
+					$(window).trigger('cch.search.item.submit',
+							{
+								'top': me.north.html(),
+								'bottom': me.south.html(),
+								'left': me.west.html(),
+								'right': me.east.html(),
+								'popularity': me.popularityCb.is(':checked'),
+								'keywords': me.keywordInput.val(),
+								'themes': me.themeInput.find('option:selected').toArray().map(function(option) {
+									return option.value;
+								})
+							});
 
 					CCH.slideshow.stop();
 				}
