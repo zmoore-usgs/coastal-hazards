@@ -28,3 +28,10 @@
 #item-search-keyword-input {
 	width: 100%;
 }
+
+@media screen and (max-width: 320px) {
+	#item-search-row-map,
+	#item-search-input-table-row {
+		display: none;
+	}
+}

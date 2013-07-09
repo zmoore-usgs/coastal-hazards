@@ -6,7 +6,7 @@ CCH.Objects.Items = function(args) {
 		init: function(args) {
 			$(window).on('cch.search.item.submit', function(evt, data) {
 				me.search({
-					bbox: [data.left, data.bottom, data.right, data.top].toString(),
+					bbox: data.left ? [data.left, data.bottom, data.right, data.top].toString() : '',
 					query: data.keywords || '',
 					type: data.themes.toString() || '',
 					sortBy: data.popularity ? 'popularity' : '',
