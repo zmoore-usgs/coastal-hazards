@@ -130,7 +130,7 @@
         <script type="text/javascript" src="js/components/common/UI.js"></script>
         <script type="text/javascript" src="js/components/common/OnReady.js"></script>
         <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
-        <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.1.1/css/font-awesome<%= development ? "" : ".min"%>.css" />
+        <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.2.1/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <script type="text/javascript">
 			$('#footer > .content').addClass('visible-desktop hidden-phone hidden-tablet');
         </script>
