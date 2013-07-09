@@ -77,9 +77,7 @@
                 </div>
                 <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
                 <div id="content-row" class="row-fluid">
-                    <div id="map-wrapper" class="span7">
-                        <div id="map"></div>
-                    </div>
+					<div id="map" class="span7"></div>
                     <div id="description-wrapper" class="span5"></div>
                 </div>	
 
@@ -93,7 +91,7 @@
 			</div>
         </div>
 		<span id="map-search-container">
-			<form class="map-search-form map-search" action="javascript:void(0);">
+			<form id="map-search-form" action="javascript:void(0);">
 				<input id="map-search-input" type="text" class="search-query" placeholder="Search...">
 			</form>
 		</span>
@@ -130,7 +128,7 @@
         <script type="text/javascript" src="js/components/common/UI.js"></script>
         <script type="text/javascript" src="js/components/common/OnReady.js"></script>
         <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
-        <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.1.1/css/font-awesome<%= development ? "" : ".min"%>.css" />
+        <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.2.1/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <script type="text/javascript">
 			$('#footer > .content').addClass('visible-desktop hidden-phone hidden-tablet');
         </script>

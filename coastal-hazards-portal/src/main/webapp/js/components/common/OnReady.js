@@ -40,7 +40,7 @@ $(document).ready(function() {
 	splashUpdate("Initializing Search Subsystem...");
 	CCH.search = new CCH.Objects.Search({
 		itemSearchModalWindow: $('#item-search-modal'),
-		searchbar: $('.map-search-form'),
+		searchbar: $('#map-search-form'),
 		geocodeEndoint: CCH.CONFIG.data.sources.geocoding.endpoint,
 		modalContainer: $('#item-search-modal'),
 		north: $('#item-search-map-input-north'),

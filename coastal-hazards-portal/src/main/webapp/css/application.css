@@ -1,39 +1,22 @@
 /* ---------------------------------------------------------------------- UI */
-/* Because of a conflict between twitter bootstrap and openlayers */
+
+/* Conflict between bootstrap and the USGS header, right-hand side */
 #ccsa-area {
 	padding-top: 5px;
 }
 
+/* Because of a conflict between twitter bootstrap and openlayers */
 img { 
     max-width: none !important; 
 }
 
+/* 320 pixels is the minimum width that this application will support.
+	Anything smaller, scroll the app */
 #application-container {
 	min-width : 320px !important;
 }
 
-#application-spinner {
-    text-align: center;
-    display: none;
-}
-
-#header #banner-area {
-    background-image: url("../images/banner/banner.png");
-}
-
-
-#map-wrapper {
-	min-height : 150px;
-}
-
-#site-title {
-    line-height: 20px;
-}
-
-.popover {
-	max-width : 2000px !important;
-}
-
+/* OpenLayers-specific overrides */
 .baseLayersDiv > .labelSpan {
 	display : inline;
 }
@@ -41,52 +24,16 @@ img {
 	display : inline;
 }
 
-
-.description-description-row {
-	min-height : 100px;
+#header #banner-area {
+    background-image: url("../images/banner/banner.png");
 }
 
-.description-title {
-	font-size : 1.2em;
-	font-weight: bold;
-	text-align: center;
+#map {
+	min-height : 150px;
 }
 
-.description-container {
-	background-size: auto 100%;
-	background-repeat: no-repeat;
-	background-position: right top;
-}
-
-.slide-menu-icon {
-	font-size: 2em;
-}
-
-.slide-menu-icon:hover {
-	cursor: pointer;
-}
-
-.slider-slide-active .description-container-storms {
-	background-image : url("../images/cards/StormsActive.svg");
-}
-.slider-slide-inactive .description-container-storms {
-	background-image : url("../images/cards/StormsInactive.svg");
-}
-.slider-slide-active .description-container-vulnerability {
-	background-image : url("../images/cards/VulnerabilityActive.svg");
-}
-.slider-slide-inactive .description-container-vulnerability {
-	background-image : url("../images/cards/VulnerabilityInactive.svg");
-}
-.slider-slide-active .description-container-historical {
-	background-image : url("../images/cards/HistoricalActive.svg");
-}
-.slider-slide-inactive .description-container-historical {
-	background-image : url("../images/cards/HistoricalInactive.svg");
-}
-
-.slider-card-pinned i {
-	color : #FF0000; 
+#site-title {
+    line-height: 20px;
 }
 
 .marker-active {
@@ -115,20 +62,13 @@ img {
 	width: 180px;
 }
 
-.map-search-form {
+#map-search-form {
 	margin: 0px;
 	padding: 5px 5px 3px 3px;
 }
 
 #map-search-input {
 	width : 140px;
-}
-
-#map-search-icon {
-	margin-right: 5px;
-	color: #FFFFFF;
-	font-size: 18px;
-	width : 20px;
 }
 
 #shareModal[aria-hidden="true"] {
