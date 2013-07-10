@@ -186,6 +186,7 @@ $(document).ready(function() {
 			layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'data/sld/redwhite/' + CCH.CONFIG.data.wmsService.layers + '/' + CCH.CONFIG.data.attr;
 			layer.params.STYLES = 'redwhite';
 		} else if (type === "historical") {
+			layer.params.SLD = 'http://130.11.177.14:8080/coastal-hazards-portal/data/sld/' + CCH.CONFIG.data.id
 			layer.params.STYLES = 'line';
 		} else if (type === "vulnerability") {
 			layer.params.STYLES = '';
