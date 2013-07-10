@@ -9,22 +9,19 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     version="1.0.0"
-    xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd http://www.opengis.net/ows http://geoserver/schemas/sld/GetMap.xsd">
+    xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
     <sld:NamedLayer>
         <sld:Name>${it.id}</sld:Name>
         <sld:UserStyle>
+            <sld:Name>${it.commonSldName}</sld:Name>
             <sld:Title>Historical Shoreline ColorMap</sld:Title>
             <sld:FeatureTypeStyle>
                 <c:forEach var="i" begin="0" end="99">
                 <sld:Rule>
                     <ogc:Filter>
                         <ogc:PropertyIsLike wildCard="%" singleChar="." escape="!">
-                            <ogc:PropertyName>
-                                ${it.attr}
-                            </ogc:PropertyName>
-                            <ogc:Literal>
-                                %..<fmt:formatNumber minIntegerDigits="2" value="${i}" />
-                            </ogc:Literal>
+                            <ogc:PropertyName>${it.attr}</ogc:PropertyName>
+                            <ogc:Literal>%<fmt:formatNumber minIntegerDigits="2" value="${i}" /></ogc:Literal>
                         </ogc:PropertyIsLike>
                     </ogc:Filter>
                     <sld:LineSymbolizer>
