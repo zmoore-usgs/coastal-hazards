@@ -28,7 +28,12 @@ public abstract class SLDGenerator {
                 //something
                 break;
             case historical:
-                //something
+                Shorelines shorelines = new Shorelines(item);
+                if (shorelines.isValidAttr(item.getAttr())) {
+                    generator = shorelines;
+                } else {
+                    // do something for rates
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Type not found");
