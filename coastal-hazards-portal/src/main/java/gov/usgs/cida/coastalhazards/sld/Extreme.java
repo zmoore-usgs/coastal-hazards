@@ -48,10 +48,10 @@ public final class Extreme extends SLDGenerator {
         for (int i=0; i<getBinCount(); i++) {
             Map<String, Object> binMap = new LinkedHashMap<String,Object>();
             if (i > 0) {
-                binMap.put("lowerBound", getThresholds()[i]);
+                binMap.put("lowerBound", getThresholds()[i-1]);
             }
             if (i+1 < getBinCount()) {
-                binMap.put("upperBound", getThresholds()[i+1]);
+                binMap.put("upperBound", getThresholds()[i]);
             }
             binMap.put("color", colors[i]);
             bins.add(binMap);
