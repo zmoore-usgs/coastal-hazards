@@ -1,3 +1,5 @@
+<Environment name="coastal-hazards.public.url" type="java.lang.String" value="http://cida.usgs.gov/qa/coastalhazards" />
+
 <!-- Sets logging and script types that are loaded --> 
 <Environment name="coastal-hazards.development" type="java.lang.String" value="true" />
 

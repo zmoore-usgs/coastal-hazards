@@ -28,55 +28,10 @@ img {
     background-image: url("../images/banner/banner.png");
 }
 
-#map {
-	min-height : 150px;
-}
-
-#site-title {
-    line-height: 20px;
-}
-
-.marker-active {
-	border-color: #00CCFF !important;
-	background-color: rgba(0,102,255, 0.5);
-}
-
-.marker-inactive {
-	border-color: #00A3CC !important;
-	background-color: rgba(0,102,255, 0.5);
-}
-
-.marker-hover {
-	border-color: #8CE8FF !important;
-	background-color: rgba(0,102,255, 0.5);
-	opacity : 1.0 !important;
-}
-
-#map-search-container {
-	background-color: rgba(0, 60, 136, 0.5);
-	position: absolute;
-	top: 0;
-	padding: 0px 5px 5px 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	width: 180px;
-}
-
-#map-search-form {
-	margin: 0px;
-	padding: 5px 5px 3px 3px;
-}
-
-#map-search-input {
-	width : 140px;
-}
-
 #shareModal[aria-hidden="true"] {
 	z-index: -1;
 }
 
-@media print {
-	img {
-		max-width: none !important; 
-	}
+#site-title {
+    line-height: 20px;
 }

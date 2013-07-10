@@ -183,9 +183,10 @@ $(document).ready(function() {
 
 		var type = CCH.CONFIG.data.type;
 		if (type === "storms") {
-			layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'data/sld/redwhite/' + CCH.CONFIG.data.wmsService.layers + '/' + CCH.CONFIG.data.attr;
+			layer.params.SLD = CCH.CONFIG.publicUrl + '/data/sld/redwhite/' + CCH.CONFIG.data.wmsService.layers + '/' + CCH.CONFIG.data.attr;
 			layer.params.STYLES = 'redwhite';
 		} else if (type === "historical") {
+			layer.params.SLD = CCH.CONFIG.publicUrl + '/data/sld/' + CCH.CONFIG.data.id
 			layer.params.STYLES = 'line';
 		} else if (type === "vulnerability") {
 			layer.params.STYLES = '';

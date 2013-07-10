@@ -23,16 +23,6 @@ public class ItemManager {
 
 	public String load(String itemId) {
 		String jsonItem = null;
-
-        Item item = loadItem(itemId);
-        if (item != null) {
-            jsonItem = item.toJSON();
-        }
-        
-		return jsonItem;
-	}
-    
-    public Item loadItem(String itemId) {
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         Item item = null;
         try {
@@ -42,16 +32,28 @@ public class ItemManager {
                 File onDiskItem = new File(FileUtils.getTempDirectory(), itemId);
                 if (onDiskItem.exists()) {
                     try {
-                        String jsonItem = IOUtils.toString(new FileInputStream(onDiskItem));
+                        jsonItem = IOUtils.toString(new FileInputStream(onDiskItem));
                         item = Item.fromJSON(jsonItem);
                     } catch (IOException ex) {
                         // Ignore - pass back null
                     }
                 }
+            } else {
+                jsonItem = item.toJSON();
             }
         } finally {
             JPAHelper.close(em);
         }
+        if (item != null) {
+            jsonItem = item.toJSON();
+        }
+        
+		return jsonItem;
+	}
+    
+    public Item loadItem(String itemId) {
+        String jsonItem = load(itemId);
+        Item item = Item.fromJSON(jsonItem);
         return item;
     }
 

@@ -14,69 +14,73 @@ import javax.ws.rs.core.Response;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public final class Shorelines extends SLDGenerator {
-    
-    private static final String[] attrs = {"DATE", "DATE_"};
-    private static final int STROKE_WIDTH = 2;
+public final class Extreme extends SLDGenerator {
+
+    private static final String[] attrs = {"EXTREME1", "EXTREME2", "EXTREME3", "EXTREME4", "EXTREME5"};
+    private static final int STROKE_WIDTH = 3;
     private static final int STROKE_OPACITY = 1;
-    private static final String style = "shorelines";
-    private static final String[] colors = {"#ff0000", "#bf6c60", "#ffa640", "#a68500", "#86bf60", "#009952", "#007a99", "#0074d9", "#5630bf", "#f780ff", "#ff0066", "#ff8091", "#f20000", "#ff7340", "#bf9360", "#bfb960", "#44ff00", "#3df2b6", "#73cfe6", "#0066ff", "#9173e6", "#bf30a3", "#bf3069", "#a60000", "#a65b29", "#ffcc00", "#90d900", "#00d957", "#60bfac", "#0091d9", "#2200ff", "#b63df2", "#f279ba", "#a6293a"};
-    private static final int binCount = 34;
+    private static final String style = "extreme";
+    private static final float[] thresholds = {3.5f, 5.0f, 6.5f, 8.0f};
+    private static final String[] colors = {"#DFB8E6", "#C78CEB", "#AC64EE", "#9040F1", "#6F07F3"};
+    private static final int binCount = 5;
     
-    public Shorelines(Item item) {
+    public Extreme(Item item) {
         super(item);
     }
-
+    
+    @Override
+    public String[] getAttrs() {
+        return attrs;
+    }
+    
     @Override
     public Response generateSLD() {
-        return Response.ok(new Viewable("/shorelines.jsp", this)).build();
+        return Response.ok(new Viewable("/extreme.jsp", this)).build();
     }
-
+    
     @Override
     public Response generateSLDInfo() {
         Map<String, Object> sldInfo = new LinkedHashMap<String, Object>();
         sldInfo.put("title", item.getSummary().getTiny().getText());
-        sldInfo.put("units", "year");
+        sldInfo.put("units", "m");
         sldInfo.put("style", getStyle());
         List<Map<String,Object>> bins = new ArrayList<Map<String,Object>>();
         for (int i=0; i<getBinCount(); i++) {
-            List<Integer> years = new ArrayList<Integer>();
-            int j=i;
-            while(j<100) {
-                years.add(j);
-                j += getBinCount();
-            }
             Map<String, Object> binMap = new LinkedHashMap<String,Object>();
-            binMap.put("years", years);
-            binMap.put("color", getColors()[i]);
+            if (i > 0) {
+                binMap.put("lowerBound", getThresholds()[i-1]);
+            }
+            if (i+1 < getBinCount()) {
+                binMap.put("upperBound", getThresholds()[i]);
+            }
+            binMap.put("color", colors[i]);
             bins.add(binMap);
         }
         sldInfo.put("bins", bins);
         String toJson = new Gson().toJson(sldInfo, HashMap.class);
         return Response.ok(toJson).build();
     }
-
-    @Override
-    public String[] getAttrs() {
-        return attrs;
-    }
     
     public String getId() {
-        return this.item.getWmsService().getLayers();
+        return item.getWmsService().getLayers();
+    }
+
+    public String getAttr() {
+        return item.getAttr();
+    }
+
+    public float[] getThresholds() {
+        return thresholds;
+    }
+
+    public String[] getColors() {
+        return colors;
     }
     
     public int getBinCount() {
         return binCount;
     }
-    
-    public String getAttr() {
-        return item.getAttr();
-    }
-    
-    public String[] getColors() {
-        return colors;
-    }
-        
+
     @Override
     public String getStyle() {
         return style;
@@ -89,5 +93,4 @@ public final class Shorelines extends SLDGenerator {
     public int getSTROKE_OPACITY() {
         return STROKE_OPACITY;
     }
-
 }

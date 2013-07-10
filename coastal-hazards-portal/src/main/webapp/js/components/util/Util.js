@@ -6,7 +6,10 @@ CCH.Util = {
 		args.callbacks.error = args.callbacks.error || [];
 		$.ajax({
 			url: args.contextPath + '/data/sld/' + args.itemId,
-			contentType: 'application/json',
+			headers: {
+				'Accept': "application/json; charset=utf-8",
+				'Content-Type': "application/json; charset=utf-8"
+			},
 			dataType: 'json',
 			success: function(data, status, jqXHR) {
 				args.callbacks.success.each(function(cb) {
@@ -17,7 +20,7 @@ CCH.Util = {
 				args.callbacks.error.each(function(cb) {
 					cb.apply(this, [jqXHR, textStatus, errorThrown]);
 				});
-			} 
+			}
 		});
 	},
 	updateItemPopularity: function(args) {

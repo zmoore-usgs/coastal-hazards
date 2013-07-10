@@ -1,9 +1,7 @@
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
-
 <!DOCTYPE html>
-
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
 	{
@@ -16,13 +14,9 @@
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 
 %>
-
 <%
 	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
 %>
-
-
-
 <html lang="en">
     <head>
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" />

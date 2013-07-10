@@ -13,6 +13,7 @@
 %>
 <%
 	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -61,7 +62,8 @@
 						projection: "EPSG:3857",
 						initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
 						item: null,
-						emailLink: 'CCH_Help@usgs.gov'
+						emailLink: 'CCH_Help@usgs.gov',
+						publicUrl : '<%=publicUrl%>'
 					}
 				};
 		</script>
