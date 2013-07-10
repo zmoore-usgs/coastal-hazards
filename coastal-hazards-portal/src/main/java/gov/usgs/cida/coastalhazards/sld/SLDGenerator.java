@@ -18,10 +18,13 @@ public abstract class SLDGenerator {
         switch(item.getType()) {
             case storms:
                 Pcoi pcoi = new Pcoi(item);
+                Extreme extreme = new Extreme(item);
                 if (pcoi.isValidAttr(item.getAttr())) {
                     generator = pcoi;
+                } else if (extreme.isValidAttr(item.getAttr())) {
+                    generator = extreme;
                 } else {
-                    // other subtypes go here
+                    // more to come
                 }
                 break;
             case vulnerability:
