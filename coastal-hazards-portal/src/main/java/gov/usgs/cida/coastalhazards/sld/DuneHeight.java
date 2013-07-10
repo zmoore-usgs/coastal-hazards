@@ -14,36 +14,19 @@ import javax.ws.rs.core.Response;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public final class Pcoi extends SLDGenerator {
+public final class DuneHeight extends SLDGenerator {
 
-    private static final String[] attrs = {
-        "PCOL1",
-        "PCOL2",
-        "PCOL3",
-        "PCOL4",
-        "PCOL5",
-        "POVR1",
-        "POVR2",
-        "POVR3",
-        "POVR4",
-        "POVR5",
-        "PIND1",
-        "PIND2",
-        "PIND3",
-        "PIND4",
-        "PIND5",
-        "PCOL",
-        "POVR",
-        "PIND"
-    };
+    private static final String[] attrs = {"DHIGH", "DLOW"};
     private static final int STROKE_WIDTH = 3;
     private static final int STROKE_OPACITY = 1;
-    private static final String style = "pcoi";
-    private static final float[] thresholds = {0.0f, 10.0f, 25.0f, 50.0f, 75.0f, 90.0f};
-    private static final String[] colors = {"#FFFFFF", "#FFE6E6", "#FFCCCD", "#FF9C95", "#FF574A", "#FF0000"};
+    private static final String style = "dune";
+    private static final float[] thresholdsCrest = {2.0f, 3.5f, 5.0f, 6.5f, 8.0f};
+    private static final float[] thresholdsToe = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
+    private static final String[] colorsCrest = {"#D6C19D", "#BAA282", "#A18769", "#896B55", "#725642", "#5B4030"};
+    private static final String[] colorsToe = {"#D7F1AF", "#BBD190", "#A3B574", "#8C9C5A", "#768242", "#5F6A27"};
     private static final int binCount = 6;
     
-    public Pcoi(Item item) {
+    public DuneHeight(Item item) {
         super(item);
     }
     
@@ -54,21 +37,23 @@ public final class Pcoi extends SLDGenerator {
     
     @Override
     public Response generateSLD() {
-        return Response.ok(new Viewable("/pcoi.jsp", this)).build();
+        return Response.ok(new Viewable("/dune.jsp", this)).build();
     }
     
     @Override
     public Response generateSLDInfo() {
         Map<String, Object> sldInfo = new LinkedHashMap<String, Object>();
         sldInfo.put("title", item.getSummary().getTiny().getText());
-        sldInfo.put("units", "%");
+        sldInfo.put("units", "m");
         sldInfo.put("style", getStyle());
         List<Map<String,Object>> bins = new ArrayList<Map<String,Object>>();
         for (int i=0; i<getBinCount(); i++) {
             Map<String, Object> binMap = new LinkedHashMap<String,Object>();
-            binMap.put("lowerBound", getThresholds()[i]);
+            if (i > 0) {
+                binMap.put("lowerBound", getThresholds()[i-1]);
+            }
             if (i+1 < getBinCount()) {
-                binMap.put("upperBound", getThresholds()[i+1]);
+                binMap.put("upperBound", getThresholds()[i]);
             }
             binMap.put("color", getColors()[i]);
             bins.add(binMap);
@@ -87,17 +72,33 @@ public final class Pcoi extends SLDGenerator {
     }
 
     public float[] getThresholds() {
+        float[] thresholds;
+        if ("DHIGH".equalsIgnoreCase(item.getAttr())) {
+            thresholds = thresholdsCrest;
+        } else if ("DLOW".equalsIgnoreCase(item.getAttr())) {
+            thresholds = thresholdsToe;
+        } else {
+            throw new IllegalStateException("getThresholds() called on invalid attribute");
+        }
         return thresholds;
     }
 
     public String[] getColors() {
+        String[] colors;
+        if ("DHIGH".equalsIgnoreCase(item.getAttr())) {
+            colors = colorsCrest;
+        } else if ("DLOW".equalsIgnoreCase(item.getAttr())) {
+            colors = colorsToe;
+        } else {
+            throw new IllegalStateException("getColors() called on invalid attribute");
+        }
         return colors;
     }
     
     public int getBinCount() {
         return binCount;
     }
-    
+
     @Override
     public String getStyle() {
         return style;
