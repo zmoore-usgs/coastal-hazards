@@ -16,11 +16,12 @@ import javax.ws.rs.core.Response;
  */
 public final class Shorelines extends SLDGenerator {
     
-    public final int STROKE_WIDTH = 2;
-    public final int STROKE_OPACITY = 1;
-    private String[] attrs = {"DATE", "DATE_"};
-    private String[] colors = {"#ff0000", "#bf6c60", "#ffa640", "#a68500", "#86bf60", "#009952", "#007a99", "#0074d9", "#5630bf", "#f780ff", "#ff0066", "#ff8091", "#f20000", "#ff7340", "#bf9360", "#bfb960", "#44ff00", "#3df2b6", "#73cfe6", "#0066ff", "#9173e6", "#bf30a3", "#bf3069", "#a60000", "#a65b29", "#ffcc00", "#90d900", "#00d957", "#60bfac", "#0091d9", "#2200ff", "#b63df2", "#f279ba", "#a6293a"};
-    private final int binCount = 34;
+    private static final String[] attrs = {"DATE", "DATE_"};
+    private static final int STROKE_WIDTH = 2;
+    private static final int STROKE_OPACITY = 1;
+    private static final String style = "shorelines";
+    private static final String[] colors = {"#ff0000", "#bf6c60", "#ffa640", "#a68500", "#86bf60", "#009952", "#007a99", "#0074d9", "#5630bf", "#f780ff", "#ff0066", "#ff8091", "#f20000", "#ff7340", "#bf9360", "#bfb960", "#44ff00", "#3df2b6", "#73cfe6", "#0066ff", "#9173e6", "#bf30a3", "#bf3069", "#a60000", "#a65b29", "#ffcc00", "#90d900", "#00d957", "#60bfac", "#0091d9", "#2200ff", "#b63df2", "#f279ba", "#a6293a"};
+    private static final int binCount = 34;
     
     public Shorelines(Item item) {
         super(item);
@@ -36,17 +37,18 @@ public final class Shorelines extends SLDGenerator {
         Map<String, Object> sldInfo = new LinkedHashMap<String, Object>();
         sldInfo.put("title", item.getSummary().getTiny().getText());
         sldInfo.put("units", "year");
+        sldInfo.put("style", getStyle());
         List<Map<String,Object>> bins = new ArrayList<Map<String,Object>>();
-        for (int i=0; i<binCount; i++) {
+        for (int i=0; i<getBinCount(); i++) {
             List<Integer> years = new ArrayList<Integer>();
             int j=i;
             while(j<100) {
                 years.add(j);
-                j += binCount;
+                j += getBinCount();
             }
             Map<String, Object> binMap = new LinkedHashMap<String,Object>();
             binMap.put("years", years);
-            binMap.put("color", colors[i]);
+            binMap.put("color", getColors()[i]);
             bins.add(binMap);
         }
         sldInfo.put("bins", bins);
@@ -56,7 +58,7 @@ public final class Shorelines extends SLDGenerator {
 
     @Override
     public String[] getAttrs() {
-        return this.attrs;
+        return attrs;
     }
     
     public String getId() {
@@ -64,15 +66,20 @@ public final class Shorelines extends SLDGenerator {
     }
     
     public int getBinCount() {
-        return this.binCount;
+        return binCount;
     }
     
     public String getAttr() {
-        return this.item.getAttr();
+        return item.getAttr();
     }
     
     public String[] getColors() {
-        return this.colors;
+        return colors;
+    }
+        
+    @Override
+    public String getStyle() {
+        return style;
     }
 
     public int getSTROKE_WIDTH() {

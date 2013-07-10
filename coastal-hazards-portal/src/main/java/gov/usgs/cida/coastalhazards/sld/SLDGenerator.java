@@ -11,7 +11,6 @@ import org.apache.commons.lang.ArrayUtils;
 public abstract class SLDGenerator {
     
     protected Item item;
-    protected final String commonSldName = "cch";
     
     public static SLDGenerator getGenerator(Item item) {
         SLDGenerator generator = null;
@@ -54,13 +53,10 @@ public abstract class SLDGenerator {
     public abstract Response generateSLD();
     public abstract Response generateSLDInfo();
     public abstract String[] getAttrs();
+    public abstract String getStyle();
     
     public boolean isValidAttr(String attr) {
         return ArrayUtils.contains(getAttrs(), attr.toUpperCase());
-    }
-    
-    public String getCommonSldName() {
-        return commonSldName;
     }
     
 }

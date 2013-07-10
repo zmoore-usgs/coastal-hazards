@@ -16,12 +16,13 @@ import javax.ws.rs.core.Response;
  */
 public final class Extreme extends SLDGenerator {
 
-    private String[] attrs = {"EXTREME1", "EXTREME2", "EXTREME3", "EXTREME4", "EXTREME5"};
-    public final int STROKE_WIDTH = 3;
-    public final int STROKE_OPACITY = 1;
-    private float[] thresholds = {3.5f, 5.0f, 6.5f, 8.0f};
-    private String[] colors = {"#DFB8E6", "#C78CEB", "#AC64EE", "#9040F1", "#6F07F3"};
-    private int binCount = colors.length;
+    private static final String[] attrs = {"EXTREME1", "EXTREME2", "EXTREME3", "EXTREME4", "EXTREME5"};
+    private static final int STROKE_WIDTH = 3;
+    private static final int STROKE_OPACITY = 1;
+    private static final String style = "extreme";
+    private static final float[] thresholds = {3.5f, 5.0f, 6.5f, 8.0f};
+    private static final String[] colors = {"#DFB8E6", "#C78CEB", "#AC64EE", "#9040F1", "#6F07F3"};
+    private static final int binCount = 5;
     
     public Extreme(Item item) {
         super(item);
@@ -29,7 +30,7 @@ public final class Extreme extends SLDGenerator {
     
     @Override
     public String[] getAttrs() {
-        return this.attrs;
+        return attrs;
     }
     
     @Override
@@ -42,14 +43,15 @@ public final class Extreme extends SLDGenerator {
         Map<String, Object> sldInfo = new LinkedHashMap<String, Object>();
         sldInfo.put("title", item.getSummary().getTiny().getText());
         sldInfo.put("units", "m");
+        sldInfo.put("style", getStyle());
         List<Map<String,Object>> bins = new ArrayList<Map<String,Object>>();
-        for (int i=0; i<binCount; i++) {
+        for (int i=0; i<getBinCount(); i++) {
             Map<String, Object> binMap = new LinkedHashMap<String,Object>();
             if (i > 0) {
-                binMap.put("lowerBound", thresholds[i]);
+                binMap.put("lowerBound", getThresholds()[i]);
             }
-            if (i+1 < binCount) {
-                binMap.put("upperBound", thresholds[i+1]);
+            if (i+1 < getBinCount()) {
+                binMap.put("upperBound", getThresholds()[i+1]);
             }
             binMap.put("color", colors[i]);
             bins.add(binMap);
@@ -77,6 +79,11 @@ public final class Extreme extends SLDGenerator {
     
     public int getBinCount() {
         return binCount;
+    }
+
+    @Override
+    public String getStyle() {
+        return style;
     }
 
     public int getSTROKE_WIDTH() {

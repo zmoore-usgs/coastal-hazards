@@ -16,14 +16,15 @@ import javax.ws.rs.core.Response;
  */
 public final class DuneHeight extends SLDGenerator {
 
-    private String[] attrs = {"DHIGH", "DLOW"};
-    public final int STROKE_WIDTH = 3;
-    public final int STROKE_OPACITY = 1;
-    private float[] thresholdsCrest = {2.0f, 3.5f, 5.0f, 6.5f, 8.0f};
-    private float[] thresholdsToe = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
-    private String[] colorsCrest = {"#D6C19D", "#BAA282", "#A18769", "#896B55", "#725642", "#5B4030"};
-    private String[] colorsToe = {"#D7F1AF", "#BBD190", "#A3B574", "#8C9C5A", "#768242", "#5F6A27"};
-    private int binCount = 6;
+    private static final String[] attrs = {"DHIGH", "DLOW"};
+    private static final int STROKE_WIDTH = 3;
+    private static final int STROKE_OPACITY = 1;
+    private static final String style = "dune";
+    private static final float[] thresholdsCrest = {2.0f, 3.5f, 5.0f, 6.5f, 8.0f};
+    private static final float[] thresholdsToe = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
+    private static final String[] colorsCrest = {"#D6C19D", "#BAA282", "#A18769", "#896B55", "#725642", "#5B4030"};
+    private static final String[] colorsToe = {"#D7F1AF", "#BBD190", "#A3B574", "#8C9C5A", "#768242", "#5F6A27"};
+    private static final int binCount = 6;
     
     public DuneHeight(Item item) {
         super(item);
@@ -31,7 +32,7 @@ public final class DuneHeight extends SLDGenerator {
     
     @Override
     public String[] getAttrs() {
-        return this.attrs;
+        return attrs;
     }
     
     @Override
@@ -44,13 +45,14 @@ public final class DuneHeight extends SLDGenerator {
         Map<String, Object> sldInfo = new LinkedHashMap<String, Object>();
         sldInfo.put("title", item.getSummary().getTiny().getText());
         sldInfo.put("units", "m");
+        sldInfo.put("style", getStyle());
         List<Map<String,Object>> bins = new ArrayList<Map<String,Object>>();
-        for (int i=0; i<binCount; i++) {
+        for (int i=0; i<getBinCount(); i++) {
             Map<String, Object> binMap = new LinkedHashMap<String,Object>();
             if (i > 0) {
                 binMap.put("lowerBound", getThresholds()[i]);
             }
-            if (i+1 < binCount) {
+            if (i+1 < getBinCount()) {
                 binMap.put("upperBound", getThresholds()[i+1]);
             }
             binMap.put("color", getColors()[i]);
@@ -95,6 +97,11 @@ public final class DuneHeight extends SLDGenerator {
     
     public int getBinCount() {
         return binCount;
+    }
+
+    @Override
+    public String getStyle() {
+        return style;
     }
 
     public int getSTROKE_WIDTH() {

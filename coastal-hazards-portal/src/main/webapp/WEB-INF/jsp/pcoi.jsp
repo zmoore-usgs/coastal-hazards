@@ -12,7 +12,7 @@
     <sld:NamedLayer>
         <sld:Name>${it.id}</sld:Name>
         <sld:UserStyle>
-            <sld:Name>${it.commonSldName}</sld:Name>
+            <sld:Name>${it.style}</sld:Name>
             <sld:Title>Red to White ColorMap</sld:Title>
             <sld:FeatureTypeStyle>
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">

@@ -13,7 +13,7 @@
     <sld:NamedLayer>
         <sld:Name>${it.id}</sld:Name>
         <sld:UserStyle>
-            <sld:Name>${it.commonSldName}</sld:Name>
+            <sld:Name>${it.style}</sld:Name>
             <sld:Title>Historical Shoreline ColorMap</sld:Title>
             <sld:FeatureTypeStyle>
                 <c:forEach var="i" begin="0" end="99">

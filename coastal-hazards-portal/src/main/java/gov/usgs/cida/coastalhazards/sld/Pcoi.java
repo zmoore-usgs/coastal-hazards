@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response;
  */
 public final class Pcoi extends SLDGenerator {
 
-    private String[] attrs = {
+    private static final String[] attrs = {
         "PCOL1",
         "PCOL2",
         "PCOL3",
@@ -36,11 +36,12 @@ public final class Pcoi extends SLDGenerator {
         "POVR",
         "PIND"
     };
-    public final int STROKE_WIDTH = 3;
-    public final int STROKE_OPACITY = 1;
-    private float[] thresholds = {0.0f, 10.0f, 25.0f, 50.0f, 75.0f, 90.0f};
-    private String[] colors = {"#FFFFFF", "#FFE6E6", "#FFCCCD", "#FF9C95", "#FF574A", "#FF0000"};
-    private int binCount = 6;
+    private static final int STROKE_WIDTH = 3;
+    private static final int STROKE_OPACITY = 1;
+    private static final String style = "pcoi";
+    private static final float[] thresholds = {0.0f, 10.0f, 25.0f, 50.0f, 75.0f, 90.0f};
+    private static final String[] colors = {"#FFFFFF", "#FFE6E6", "#FFCCCD", "#FF9C95", "#FF574A", "#FF0000"};
+    private static final int binCount = 6;
     
     public Pcoi(Item item) {
         super(item);
@@ -48,7 +49,7 @@ public final class Pcoi extends SLDGenerator {
     
     @Override
     public String[] getAttrs() {
-        return this.attrs;
+        return attrs;
     }
     
     @Override
@@ -61,14 +62,15 @@ public final class Pcoi extends SLDGenerator {
         Map<String, Object> sldInfo = new LinkedHashMap<String, Object>();
         sldInfo.put("title", item.getSummary().getTiny().getText());
         sldInfo.put("units", "%");
+        sldInfo.put("style", getStyle());
         List<Map<String,Object>> bins = new ArrayList<Map<String,Object>>();
-        for (int i=0; i<binCount; i++) {
+        for (int i=0; i<getBinCount(); i++) {
             Map<String, Object> binMap = new LinkedHashMap<String,Object>();
-            binMap.put("lowerBound", thresholds[i]);
-            if (i+1 < binCount) {
-                binMap.put("upperBound", thresholds[i+1]);
+            binMap.put("lowerBound", getThresholds()[i]);
+            if (i+1 < getBinCount()) {
+                binMap.put("upperBound", getThresholds()[i+1]);
             }
-            binMap.put("color", colors[i]);
+            binMap.put("color", getColors()[i]);
             bins.add(binMap);
         }
         sldInfo.put("bins", bins);
@@ -94,6 +96,11 @@ public final class Pcoi extends SLDGenerator {
     
     public int getBinCount() {
         return binCount;
+    }
+    
+    @Override
+    public String getStyle() {
+        return style;
     }
 
     public int getSTROKE_WIDTH() {
