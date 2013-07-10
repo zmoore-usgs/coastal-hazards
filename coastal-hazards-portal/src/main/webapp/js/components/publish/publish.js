@@ -499,7 +499,7 @@ var publish = function(args) {
 	args = args || {};
 	if (CCH.config.attributes.length) {
 		var previewData = {
-			metadata: CCH.config.CCH.config.metadataUrl,
+			metadata: CCH.config.metadataToken,
 			wfsService: {
 				endpoint: CCH.config.endpoint.wfsCaps.service.onlineResource,
 				typeName: $('#publish-services-types').val()
