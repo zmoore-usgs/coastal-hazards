@@ -17,6 +17,25 @@ $(document).ready(function() {
 			CCH.CONFIG.data = data;
 			$(window).resize();
 
+			CCH.Util.getSLD({
+				contextPath: CCH.CONFIG.contextPath,
+				itemId : CCH.CONFIG.itemId,
+				callbacks : {
+					success : [
+						function(data, status, jqXHR) {
+							
+						}
+					],
+					error : [
+						function(jqXHR, textStatus, errorThrown) {
+							// Failed to get SLD from back-end
+							$('#info-legend').remove();
+							$('#info-graph').removeClass('span4').addClass('span6');
+						}
+					]
+				}
+			})
+
 			// Clear the overlay
 			$('#application-overlay').fadeOut(2000, function() {
 				$('#application-overlay').remove();
@@ -164,9 +183,10 @@ $(document).ready(function() {
 
 		var type = CCH.CONFIG.data.type;
 		if (type === "storms") {
-			layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'data/sld/redwhite/' + CCH.CONFIG.data.wmsService.layers + '/' + CCH.CONFIG.data.attr;
+			layer.params.SLD = CCH.CONFIG.publicUrl + '/data/sld/redwhite/' + CCH.CONFIG.data.wmsService.layers + '/' + CCH.CONFIG.data.attr;
 			layer.params.STYLES = 'redwhite';
 		} else if (type === "historical") {
+			layer.params.SLD = CCH.CONFIG.publicUrl + '/data/sld/' + CCH.CONFIG.data.id
 			layer.params.STYLES = 'line';
 		} else if (type === "vulnerability") {
 			layer.params.STYLES = '';

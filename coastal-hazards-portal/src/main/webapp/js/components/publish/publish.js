@@ -133,7 +133,7 @@ var wmsInputBoxBlurHandler = function(evt) {
 						slBox.off('change', wmsLayersDropdownChangeHandler);
 						slBox.empty();
 						if (caps && caps.capability.layers.length) {
-							CCH.config.endpoint.wfsFullpath = getFullEndpoint($('#publish-services-wms').val());
+							CCH.config.endpoint.wmsFullpath = getFullEndpoint($('#publish-services-wms').val());
 							CCH.config.endpoint.wmsValid = true;
 							CCH.config.endpoint.wmsCaps = caps;
 							caps.capability.layers.each(function(l) {
@@ -331,11 +331,20 @@ var wmsLayersDropdownChangeHandler = function(evt) {
 };
 
 var previewButtonClickHandler = function(evt) {
+	var formatEndpoint = function(e) {
+		var cutoffIndex = e.indexOf('?');
+		if (cutoffIndex !== -1) {
+			return e.substring(0, cutoffIndex);
+		} else {
+			return e;
+		}
+	}
+	
 	var btn = evt.target;
 	var attName = $(btn).attr('name');
 	var metadataToken = CCH.config.metadataToken;
-	var wfs = CCH.config.endpoint.wfsCaps.service.onlineResource;
-	var wms = CCH.config.endpoint.wmsCaps.service.href;
+	var wfs = formatEndpoint($('#publish-services-wfs').val());
+	var wms = formatEndpoint($('#publish-services-wms').val());
 	var wfsType = $('#publish-services-types').val();
 	var wmsLayers = $('#publish-services-layers').val();
 	var type = CCH.config.type;

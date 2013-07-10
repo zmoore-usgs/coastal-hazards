@@ -1,4 +1,25 @@
 CCH.Util = {
+	getSLD: function(args) {
+		args = args || {};
+		args.callbacks = args.callbacks || {};
+		args.callbacks.success = args.callbacks.success || [];
+		args.callbacks.error = args.callbacks.error || [];
+		$.ajax({
+			url: args.contextPath + '/data/sld/' + args.itemId,
+			contentType: 'application/json',
+			dataType: 'json',
+			success: function(data, status, jqXHR) {
+				args.callbacks.success.each(function(cb) {
+					cb.apply(this, [data, status, jqXHR]);
+				});
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				args.callbacks.error.each(function(cb) {
+					cb.apply(this, [jqXHR, textStatus, errorThrown]);
+				});
+			} 
+		});
+	},
 	updateItemPopularity: function(args) {
 		args = args || {};
 		var contextPath = args.contextPath;

@@ -18,7 +18,7 @@ img {
 
 .info-title {
 	text-align: center;
-	font-size: 1.5em;
+	font-size: 1.7em;
 	margin-top: 10px;
 	margin-bottom: 10px;
 	font-weight: 600;
@@ -27,13 +27,17 @@ img {
 	line-height: 1em;
 }
 
+#site-title {
+	line-height: 20px;
+}
+
 #info-row-info-fullwidth {
 	margin-top: 10px;
 }
 
-.btn {
-	margin-top: 10px;
-	margin-bottom: 10px;
+#metadata-link .btn {
+/*	margin-top: 10px;
+	margin-bottom: 10px;*/
 	margin-left : 5px;
 	margin-right : 5px;
 }
