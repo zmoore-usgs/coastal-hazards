@@ -19,12 +19,15 @@ public abstract class SLDGenerator {
             case storms:
                 Pcoi pcoi = new Pcoi(item);
                 Extreme extreme = new Extreme(item);
+                DuneHeight dune = new DuneHeight(item);
                 if (pcoi.isValidAttr(item.getAttr())) {
                     generator = pcoi;
                 } else if (extreme.isValidAttr(item.getAttr())) {
                     generator = extreme;
+                } else if (dune.isValidAttr(item.getAttr())){
+                    generator = dune;
                 } else {
-                    // more to come
+                    // mean water level here
                 }
                 break;
             case vulnerability:
