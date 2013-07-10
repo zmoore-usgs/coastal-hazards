@@ -17,39 +17,41 @@ import javax.ws.rs.core.Response;
 @Path("sld")
 public class SLDResource {
 
-    @GET
+	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_XML + ";qs=2")
 	public Response getSLD(@PathParam("id") String id) {
-        Response response;
-        
-        ItemManager manager = new ItemManager();
-        Item item = manager.loadItem(id);
-        if (item == null) {
-            response = Response.status(Response.Status.NOT_FOUND).build();
-        } else {
-            SLDGenerator generator = SLDGenerator.getGenerator(item);
-            response = generator.generateSLD();
-        }
-        
-        return response;
+		Response response = null;
+
+		ItemManager manager = new ItemManager();
+		Item item = manager.loadItem(id);
+		if (item == null) {
+			response = Response.status(Response.Status.NOT_FOUND).build();
+		} else {
+			SLDGenerator generator = SLDGenerator.getGenerator(item);
+			if (generator != null) {
+				response = generator.generateSLD();
+			}
+		}
+
+		return response;
 	}
-    
-    @GET
-    @Path("{id}")
-    @Produces(MediaType.APPLICATION_JSON + ";qs=1")
-    public Response getSLDInfo(@PathParam("id") String id) {
-        Response response;
-        
-        ItemManager manager = new ItemManager();
-        Item item = manager.loadItem(id);
-        if (item == null) {
-            response = Response.status(Response.Status.NOT_FOUND).build();
-        } else {
-            SLDGenerator generator = SLDGenerator.getGenerator(item);
-            response = generator.generateSLDInfo();
-        }
-        
-        return response;
-    }
+
+	@GET
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON + ";qs=1")
+	public Response getSLDInfo(@PathParam("id") String id) {
+		Response response;
+
+		ItemManager manager = new ItemManager();
+		Item item = manager.loadItem(id);
+		if (item == null) {
+			response = Response.status(Response.Status.NOT_FOUND).build();
+		} else {
+			SLDGenerator generator = SLDGenerator.getGenerator(item);
+			response = generator.generateSLDInfo();
+		}
+
+		return response;
+	}
 }
