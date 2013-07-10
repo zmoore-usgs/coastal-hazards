@@ -330,8 +330,7 @@ var wmsLayersDropdownChangeHandler = function(evt) {
 	CCH.config.bbox = bbox;
 };
 
-var previewButtonClickHandler = function(evt) {
-	var formatEndpoint = function(e) {
+var formatEndpoint = function(e) {
 		var cutoffIndex = e.indexOf('?');
 		if (cutoffIndex !== -1) {
 			return e.substring(0, cutoffIndex);
@@ -339,7 +338,8 @@ var previewButtonClickHandler = function(evt) {
 			return e;
 		}
 	}
-	
+
+var previewButtonClickHandler = function(evt) {
 	var btn = evt.target;
 	var attName = $(btn).attr('name');
 	var metadataToken = CCH.config.metadataToken;
@@ -510,11 +510,11 @@ var publish = function(args) {
 		var previewData = {
 			metadata: CCH.config.metadataToken,
 			wfsService: {
-				endpoint: CCH.config.endpoint.wfsCaps.service.onlineResource,
+				endpoint: formatEndpoint($('#publish-services-wfs').val()),
 				typeName: $('#publish-services-types').val()
 			},
 			wmsService: {
-				endpoint: CCH.config.endpoint.wmsCaps.service.href,
+				endpoint: formatEndpoint($('#publish-services-wms').val()),
 				layers: $('#publish-services-layers').val()
 			},
 			name: $('#publish-name-input').val(),
