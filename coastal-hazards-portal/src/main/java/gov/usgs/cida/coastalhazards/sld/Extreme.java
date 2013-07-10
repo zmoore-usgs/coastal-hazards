@@ -20,7 +20,7 @@ public final class Extreme extends SLDGenerator {
     public final int STROKE_WIDTH = 3;
     public final int STROKE_OPACITY = 1;
     private float[] thresholds = {3.5f, 5.0f, 6.5f, 8.0f};
-    private String[] colors = {"#DFB8E6", "#C78CEB", "#AC64F1", "#6F07F3"};
+    private String[] colors = {"#DFB8E6", "#C78CEB", "#AC64EE", "#9040F1", "#6F07F3"};
     private int binCount = colors.length;
     
     public Extreme(Item item) {

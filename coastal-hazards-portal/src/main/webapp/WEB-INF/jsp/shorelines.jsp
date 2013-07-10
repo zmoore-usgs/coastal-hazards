@@ -26,15 +26,9 @@
                     </ogc:Filter>
                     <sld:LineSymbolizer>
                         <sld:Stroke>
-                            <sld:CssParameter name="stroke">
-                                ${it.colors[i%it.binCount]}
-                            </sld:CssParameter>
-                            <sld:CssParameter name="stroke-width">
-                                ${it.STROKE_WIDTH}
-                            </sld:CssParameter>
-                            <sld:CssParameter name="stroke-opacity">
-                                ${it.STROKE_OPACITY}
-                            </sld:CssParameter>
+                            <sld:CssParameter name="stroke">${it.colors[i%it.binCount]}</sld:CssParameter>
+                            <sld:CssParameter name="stroke-width">${it.STROKE_WIDTH}</sld:CssParameter>
+                            <sld:CssParameter name="stroke-opacity">${it.STROKE_OPACITY}</sld:CssParameter>
                         </sld:Stroke>
                     </sld:LineSymbolizer>
                 </sld:Rule>

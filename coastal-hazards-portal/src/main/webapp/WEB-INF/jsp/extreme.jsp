@@ -18,44 +18,30 @@
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
                 <sld:Rule>
                     <ogc:Filter>
-                        <c:if test="${it.binCount-1 < i && i > 0}">
+                        <c:if test="${it.binCount-1 > i && i > 0}">
                         <ogc:And>
                         </c:if>
                             <c:if test="${i > 0}">
                             <ogc:PropertyIsGreaterThanOrEqualTo>
-                                <ogc:PropertyName>
-                                    ${it.attr}
-                                </ogc:PropertyName>
-                                <ogc:Literal>
-                                    ${it.thresholds[i]}
-                                </ogc:Literal>
+                                <ogc:PropertyName>${it.attr}</ogc:PropertyName>
+                                <ogc:Literal>${it.thresholds[i-1]}</ogc:Literal>
                             </ogc:PropertyIsGreaterThanOrEqualTo>
                             </c:if>
-                            <c:if test="${it.binCount-1 < i}">
+                            <c:if test="${it.binCount-1 > i}">
                             <ogc:PropertyIsLessThan>
-                                <ogc:PropertyName>
-                                    ${it.attr}
-                                </ogc:PropertyName>
-                                <ogc:Literal>
-                                    ${it.thresholds[i + 1]}
-                                </ogc:Literal>
+                                <ogc:PropertyName>${it.attr}</ogc:PropertyName>
+                                <ogc:Literal>${it.thresholds[i]}</ogc:Literal>
                             </ogc:PropertyIsLessThan>
                             </c:if>
-                        <c:if test="${it.binCount-1 < i && i > 0}">
+                        <c:if test="${it.binCount-1 > i && i > 0}">
                         </ogc:And>
                         </c:if>
                     </ogc:Filter>
                     <sld:LineSymbolizer>
                         <sld:Stroke>
-                            <sld:CssParameter name="stroke">
-                                ${it.colors[i]}
-                            </sld:CssParameter>
-                            <sld:CssParameter name="stroke-width">
-                                ${it.STROKE_WIDTH}
-                            </sld:CssParameter>
-                            <sld:CssParameter name="stroke-opacity">
-                                ${it.STROKE_OPACITY}
-                            </sld:CssParameter>
+                            <sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
+                            <sld:CssParameter name="stroke-width">${it.STROKE_WIDTH}</sld:CssParameter>
+                            <sld:CssParameter name="stroke-opacity">${it.STROKE_OPACITY}</sld:CssParameter>
                         </sld:Stroke>
                     </sld:LineSymbolizer>
                 </sld:Rule>

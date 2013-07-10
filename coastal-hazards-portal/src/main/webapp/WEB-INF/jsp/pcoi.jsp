@@ -22,36 +22,22 @@
                         <ogc:And>
                         </c:if>
                             <ogc:PropertyIsGreaterThanOrEqualTo>
-                                <ogc:PropertyName>
-                                    ${it.attr}
-                                </ogc:PropertyName>
-                                <ogc:Literal>
-                                    ${it.thresholds[i]}
-                                </ogc:Literal>
+                                <ogc:PropertyName>${it.attr}</ogc:PropertyName>
+                                <ogc:Literal>${it.thresholds[i]}</ogc:Literal>
                             </ogc:PropertyIsGreaterThanOrEqualTo>
                             <c:if test="${it.binCount-1 != i}">
                             <ogc:PropertyIsLessThan>
-                                <ogc:PropertyName>
-                                    ${it.attr}
-                                </ogc:PropertyName>
-                                <ogc:Literal>
-                                    ${it.thresholds[i + 1]}
-                                </ogc:Literal>
+                                <ogc:PropertyName>${it.attr}</ogc:PropertyName>
+                                <ogc:Literal>${it.thresholds[i + 1]}</ogc:Literal>
                             </ogc:PropertyIsLessThan>
                         </ogc:And>
                             </c:if>
                     </ogc:Filter>
                     <sld:LineSymbolizer>
                         <sld:Stroke>
-                            <sld:CssParameter name="stroke">
-                                ${it.colors[i]}
-                            </sld:CssParameter>
-                            <sld:CssParameter name="stroke-width">
-                                ${it.STROKE_WIDTH}
-                            </sld:CssParameter>
-                            <sld:CssParameter name="stroke-opacity">
-                                ${it.STROKE_OPACITY}
-                            </sld:CssParameter>
+                            <sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
+                            <sld:CssParameter name="stroke-width">${it.STROKE_WIDTH}</sld:CssParameter>
+                            <sld:CssParameter name="stroke-opacity">${it.STROKE_OPACITY}</sld:CssParameter>
                         </sld:Stroke>
                     </sld:LineSymbolizer>
                 </sld:Rule>
