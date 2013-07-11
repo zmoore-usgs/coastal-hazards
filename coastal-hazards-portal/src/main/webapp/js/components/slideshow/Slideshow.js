@@ -2,8 +2,8 @@ CCH.Objects.Slideshow = function(args) {
 	CCH.LOG.info('Slideshow.js::constructor:Slideshow class is initializing.');
 	var me = (this === window) ? {} : this;
 	args = args || {};
-	me.descriptionWrapper = $('#description-wrapper');
-	me.iossliderContainer = $('#iosslider-container');
+	me.descriptionWrapper = args.descriptionWrapper;
+	me.iossliderContainer = args.iossliderContainer;
 	me.stopped = false;
 	return $.extend(me, {
 		init: function() {

@@ -31,7 +31,10 @@ $(document).ready(function() {
 		shareTwitterBtn : $('#multi-card-twitter-button')
 	}).init();
 
-	CCH.slideshow = new CCH.Objects.Slideshow().init();
+	CCH.slideshow = new CCH.Objects.Slideshow({
+		descriptionWrapper : $('#description-wrapper'),
+		iossliderContainer : $('#iosslider-container')
+	}).init();
 
 	splashUpdate("Initializing Card Subsystem...");
 	CCH.cards = new CCH.Objects.Cards({

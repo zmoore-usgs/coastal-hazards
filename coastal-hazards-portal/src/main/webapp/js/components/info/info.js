@@ -7,7 +7,6 @@ $(document).ready(function() {
 	$(window).resize(function() {
 		var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
 		$('#info-content').css('height', contentRowHeight + 'px');
-		$('#map').css('height', $('#info-summary-and-links-container').height() + 'px');
 	});
 
 	// Load the item
@@ -16,6 +15,16 @@ $(document).ready(function() {
 		success: function(data, textStatus, jqXHR) {
 			CCH.CONFIG.item = data;
 			$(window).resize();
+
+			var graphic = {
+				vulnerability: '/images/cards/HistoricalActive.svg',
+				storms: '/images/cards/StormsActive.svg',
+				historical: '/images/cards/HistoricalActive.svg'
+			}
+
+			$('#info-graph img').attr({
+				src: CCH.CONFIG.contextPath + graphic[CCH.CONFIG.item.type]
+			});
 
 			CCH.Util.getSLD({
 				contextPath: CCH.CONFIG.contextPath,
@@ -37,6 +46,7 @@ $(document).ready(function() {
 										var gmlReader = new OpenLayers.Format.GML.v3();
 										var features = gmlReader.read(data);
 										var legend = CCH.Util.buildLegend({
+											type: CCH.CONFIG.item.type,
 											sld: sld,
 											features: features
 										});
@@ -46,8 +56,11 @@ $(document).ready(function() {
 										removeLegendContainer();
 									}
 								});
-							} else {
-								var legend = CCH.Util.buildLegend({sld: sld});
+							} else if (CCH.CONFIG.item.type === 'storms' || CCH.CONFIG.item.type === 'vulnerability') {
+								var legend = CCH.Util.buildLegend({
+									type: CCH.CONFIG.item.type,
+									sld: sld
+								});
 								$('#info-legend').append(legend);
 							}
 
@@ -134,7 +147,7 @@ $(document).ready(function() {
 	var removeLegendContainer = function() {
 		$('#info-legend').remove();
 		$('#info-graph').removeClass('span4').addClass('span6');
-	}
+	};
 
 	var createShareButton = function(url) {
 		twttr.ready(function(twttr) {
@@ -181,7 +194,6 @@ $(document).ready(function() {
 
 	var buildMap = function() {
 		var bounds = new OpenLayers.Bounds(CCH.CONFIG.item.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));
-		$('#map').css('height', $('#info-summary-and-links-container').height() + 'px');
 		CCH.CONFIG.map = new OpenLayers.Map('map', {
 			projection: CCH.CONFIG.projection,
 			displayProjection: new OpenLayers.Projection(CCH.CONFIG.projection),
