@@ -47,6 +47,19 @@ CCH.Util = {
 				legendTableBody.append(
 						legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear));
 			}
+		} else {
+			for (var bInd = 0; bInd < sld.bins.length; bInd++) {
+				var ub = sld.bins[bInd].upperBound || '...';
+				var lb = sld.bins[bInd].lowerBound + '' || '...';
+				var range = lb + ' -- ' + ub
+				var legendTableBodyTr = $('<tr />');
+				var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
+						$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', sld.bins[bInd].color).html('&nbsp;'));
+				var legendTableBodyTdRange = $('<td />').addClass('cch-ui-legend-table-body-td-range').append(
+						$('<div />').addClass('cch-ui-legend-table-body-div-range').html(range));
+				legendTableBody.append(
+						legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdRange));
+			}
 		}
 
 		legendDiv.append(legendTable.append(

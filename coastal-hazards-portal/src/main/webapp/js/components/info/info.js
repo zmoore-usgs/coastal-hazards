@@ -38,7 +38,7 @@ $(document).ready(function() {
 										var features = gmlReader.read(data);
 										var legend = CCH.Util.buildLegend({
 											sld: sld,
-											features : features
+											features: features
 										});
 										$('#info-legend').append(legend);
 									},
@@ -203,6 +203,8 @@ $(document).ready(function() {
 					layers: CCH.CONFIG.item.wmsService.layers,
 					version: '1.3.0',
 					crs: 'EPSG:3857',
+					sld: CCH.CONFIG.publicUrl + '/data/sld/' + CCH.CONFIG.item.id,
+					styles : 'cch',
 					transparent: true
 				}, {
 			singleTile: true,
@@ -211,16 +213,6 @@ $(document).ready(function() {
 			projection: 'EPSG:3857'
 		});
 
-		var type = CCH.CONFIG.item.type;
-		if (type === "storms") {
-			layer.params.SLD = CCH.CONFIG.publicUrl + '/data/sld/redwhite/' + CCH.CONFIG.item.wmsService.layers + '/' + CCH.CONFIG.item.attr;
-			layer.params.STYLES = 'redwhite';
-		} else if (type === "historical") {
-			layer.params.SLD = CCH.CONFIG.publicUrl + '/data/sld/' + CCH.CONFIG.item.id
-			layer.params.STYLES = 'line';
-		} else if (type === "vulnerability") {
-			layer.params.STYLES = '';
-		}
 		CCH.CONFIG.map.addLayer(layer);
 		CCH.CONFIG.map.zoomToExtent(bounds);
 	};

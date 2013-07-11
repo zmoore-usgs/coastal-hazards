@@ -65,7 +65,9 @@ CCH.Objects.Card = function(args) {
 					{
 						layers: me.item.wmsService.layers,
 						format: 'image/png',
-						transparent: true
+						transparent: true,
+						sld: CCH.CONFIG.publicUrl + '/data/sld/' + me.item.id,
+						styles: 'cch'
 					},
 			{
 				projection: 'EPSG:3857',
@@ -74,16 +76,6 @@ CCH.Objects.Card = function(args) {
 				isItemLayer: true, // CCH specific setting
 				bbox: me.bbox
 			});
-
-			if (me.type === "storms") {
-				layer.params.SLD = CCH.CONFIG.publicUrl + '/data/sld/redwhite/' + me.item.wmsService.layers + '/' + me.attr;
-				layer.params.STYLES = 'redwhite';
-			} else if (me.type === "historical") {
-				layer.params.SLD = CCH.CONFIG.publicUrl + '/data/sld/' + me.item.id
-				layer.params.STYLES = 'line';
-			} else if (me.type === "vulnerability") {
-				layer.params.STYLES = '';
-			}
 
 			return layer;
 		},
