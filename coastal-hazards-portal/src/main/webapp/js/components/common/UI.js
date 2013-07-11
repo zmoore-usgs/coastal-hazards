@@ -3,6 +3,7 @@ CCH.Objects.UI = function(args) {
 	CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 	var me = (this === window) ? {} : this;
 	me.search;
+	me.applicationOverlay = args.applicationOverlay;
 	me.mapdiv = args.mapdiv;
 	me.descriptionDiv = args.descriptionDiv;
 	me.magicResizeNumber = 767;
@@ -16,10 +17,12 @@ CCH.Objects.UI = function(args) {
 	me.headerRow = args.headerRow;
 	me.footerRow = args.footerRow;
 	me.mapSearchContainer = args.mapSearchContainer;
-	me.itemSearchModalWindow = args.itemSearchModalWindow;
 	me.ccsArea = args.ccsArea;
 	me.shareModal = args.shareModal;
-
+	me.shareUrlButton = args.shareUrlButton;
+	me.shareInput = args.shareInput;
+	me.shareTwitterBtn = args.shareTwitterBtn;
+	
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
 		init: function() {
@@ -27,6 +30,7 @@ CCH.Objects.UI = function(args) {
 			$(window).on({
 				'resize': me.windowResizeHandler,
 				'cch.data.items.searched': function(evt, count) {
+					// Display a notification with item count
 					$.pnotify({
 						text: 'Found ' + count + ' item' + (count === 1 ? '.' : 's.'),
 						styling: 'bootstrap',
@@ -39,7 +43,7 @@ CCH.Objects.UI = function(args) {
 			});
 			me.navbarPinButton.on('click', me.navbarMenuClickHandler);
 			me.navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
-			$('#shareModal').on('show', me.sharemodalDisplayHandler);
+			me.shareModal.on('show', me.sharemodalDisplayHandler);
 
 			// Header fix
 			me.ccsArea.find('br').first().remove();
@@ -77,26 +81,19 @@ CCH.Objects.UI = function(args) {
 			// pinnedResults may or may not be an empty array. If it is, 
 			// the full deck will be seen. Otherwise, if pinnedResults is
 			// populated, only pinned cards will be seen
-			$(window).trigger('cch.navbar.pinmenu.button.pin.click', {items : items});
+			$(window).trigger('cch.navbar.pinmenu.button.pin.click', {items: items});
 		},
 		navbarClearItemClickHandler: function() {
 			$(window).trigger('cch.navbar.pinmenu.item.clear.click');
 		},
-		windowResizeHandler: function(evt) {
+		windowResizeHandler: function() {
 			var currWidth = $(window).width();
 			var currentSizing = me.getCurrentSizing();
 			var contentRowHeight = $(window).height() - me.headerRow.height() - me.footerRow.height();
 			contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
 
 			if (currentSizing === 'small') {
-				$('body').css({
-					'padding-left': '0px',
-					'padding-right': '0px'
-				});
-				me.applicationContainer.css({
-					'padding-left': '0px',
-					'padding-right': '0px'
-				});
+				// In a profile view, we care about the height of the description container
 				var descriptionHeight = Math.round(contentRowHeight * .30);
 				if (descriptionHeight < 280) {
 					descriptionHeight = 280;
@@ -105,14 +102,6 @@ CCH.Objects.UI = function(args) {
 				me.mapdiv.height(contentRowHeight - descriptionHeight);
 
 			} else if (currentSizing === 'large') {
-				$('body').css({
-					'padding-left': '20px',
-					'padding-right': '20px'
-				});
-				me.applicationContainer.css({
-					'padding-left': '20px',
-					'padding-right': '20px'
-				});
 				me.mapdiv.height(contentRowHeight);
 				me.descriptionDiv.height(contentRowHeight);
 			}
@@ -124,10 +113,11 @@ CCH.Objects.UI = function(args) {
 				$(window).trigger('cch.ui.resized', currentSizing);
 			}
 
+			// Because the window was resized, the search container in the map
+			// needs to be repositioned
 			var mapPosition = me.mapdiv.position();
 			var mapHeight = me.mapdiv.height();
 			var mapWidth = me.mapdiv.width();
-
 			var searchContainerHeight = me.mapSearchContainer.height();
 			var searchContainerWidth = me.mapSearchContainer.width();
 			me.mapSearchContainer.css({
@@ -143,36 +133,37 @@ CCH.Objects.UI = function(args) {
 
 			$(window).resize();
 
-			$('#application-overlay').fadeOut(2000, function() {
-				$('#application-overlay').remove();
+			// Get rid of the overlay and clean it up out of memory and DOM
+			me.applicationOverlay.fadeOut(2000, function() {
+				me.applicationOverlay.remove();
 				$(window).trigger('cch.ui.overlay.removed');
 				splashUpdate = undefined;
-
+				me.applicationOverlay = undefined;
 			});
 		},
 		getCurrentSizing: function() {
 			// Bootstrap decides when to flip the application view based on 
 			// a specific width. 767px seems to be the point 
 			// https://github.com/twitter/bootstrap/blob/master/less/responsive-767px-max.less
-			var currWidth = me.previousWidth;
-			var currentSizing;
-			if (currWidth <= me.magicResizeNumber) {
-				currentSizing = 'small';
-			} else if (currWidth > me.magicResizeNumber) {
-				currentSizing = 'large';
+			if (me.previousWidth <= me.magicResizeNumber) {
+				return 'small';
+			} else if (me.previousWidth > me.magicResizeNumber) {
+				return 'large';
 			}
-			return currentSizing;
 		},
-		sharemodalDisplayHandler: function(evt) {
-			$('#modal-share-summary-url-button').addClass('disabled');
-			$('#modal-share-summary-url-inputbox').val('');
-			$('#multi-card-twitter-button').empty();
+		sharemodalDisplayHandler: function() {
+			me.shareUrlButton.addClass('disabled');
+			me.shareInput.val('');
+			me.shareTwitterBtn.empty();
+			
+			// A user has clicked on the share menu item. A session needs to be 
+			// created and a token retrieved...
 			CCH.session.writeSession({
 				callbacks: {
 					success: [
 						function(json, textStatus, jqXHR) {
 							var sid = json.sid;
-							var sessionUrl = window.location.origin + CCH.CONFIG.contextPath + '/ui/view/' + sid;
+							var sessionUrl = CCH.CONFIG.publicUrl + '/ui/view/' + sid;
 							CCH.Util.getMinifiedEndpoint({
 								contextPath: CCH.CONFIG.contextPath,
 								location: sessionUrl,
@@ -180,14 +171,14 @@ CCH.Objects.UI = function(args) {
 									success: [
 										function(json, textStatus, jqXHR) {
 											var url = json.tinyUrl;
-											$('#modal-share-summary-url-inputbox').val(url);
-											$('#modal-share-summary-url-button').attr({
-												'href' : url
+											me.shareInput.val(url);
+											me.shareUrlButton.attr({
+												'href': url
 											}).removeClass('disabled');
-											$('#modal-share-summary-url-inputbox').select();
+											me.shareInput.select();
 											twttr.widgets.createShareButton(
 													url,
-													$('#multi-card-twitter-button')[0],
+													me.shareTwitterBtn[0],
 													function(element) {
 														// Any callbacks that may be needed
 													},
@@ -207,14 +198,14 @@ CCH.Objects.UI = function(args) {
 									error: [
 										function(data, textStatus, jqXHR) {
 											var url = data.responseJSON.full_url;
-											$('#modal-share-summary-url-inputbox').val(url);
-											$('#modal-share-summary-url-button').attr({
-												'href' : url
+											me.shareInput.val(url);
+											me.shareUrlButton.attr({
+												'href': url
 											}).removeClass('disabled');
-											$('#modal-share-summary-url-inputbox').select();
+											me.shareInput.select();
 											twttr.widgets.createShareButton(
 													url,
-													$('#multi-card-twitter-button')[0],
+													me.shareTwitterBtn[0],
 													function(element) {
 														// Any callbacks that may be needed
 													},
@@ -232,8 +223,7 @@ CCH.Objects.UI = function(args) {
 										}
 									]
 								}
-							})
-
+							});
 						}
 					],
 					error: [
