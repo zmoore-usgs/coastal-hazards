@@ -14,35 +14,16 @@ import javax.ws.rs.core.Response;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public final class Pcoi extends SLDGenerator {
+public final class MeanWaterLevel extends SLDGenerator {
 
-    private static final String[] attrs = {
-        "PCOL1",
-        "PCOL2",
-        "PCOL3",
-        "PCOL4",
-        "PCOL5",
-        "POVR1",
-        "POVR2",
-        "POVR3",
-        "POVR4",
-        "POVR5",
-        "PIND1",
-        "PIND2",
-        "PIND3",
-        "PIND4",
-        "PIND5",
-        "PCOL",
-        "POVR",
-        "PIND"
-    };
+    private static final String[] attrs = {"MEAN1", "MEAN2", "MEAN3", "MEAN4", "MEAN5", "MEAN"};
     private static final int STROKE_WIDTH = 3;
     private static final int STROKE_OPACITY = 1;
-    private static final float[] thresholds = {0.0f, 10.0f, 25.0f, 50.0f, 75.0f, 90.0f};
-    private static final String[] colors = {"#FFFFFF", "#FFE6E6", "#FFCCCD", "#FF9C95", "#FF574A", "#FF0000"};
-    private static final int binCount = 6;
+    private static final float[] thresholds = {3.5f, 5.0f, 6.5f, 8.0f};
+    private static final String[] colors = {"#BFFFE9", "#7ABCE6", "#1F84E1", "#1945B8", "#070791"};
+    private static final int binCount = 5;
     
-    public Pcoi(Item item) {
+    public MeanWaterLevel(Item item) {
         super(item);
     }
     
@@ -53,23 +34,25 @@ public final class Pcoi extends SLDGenerator {
     
     @Override
     public Response generateSLD() {
-        return Response.ok(new Viewable("/pcoi.jsp", this)).build();
+        return Response.ok(new Viewable("/mean.jsp", this)).build();
     }
     
     @Override
     public Response generateSLDInfo() {
         Map<String, Object> sldInfo = new LinkedHashMap<String, Object>();
         sldInfo.put("title", item.getSummary().getTiny().getText());
-        sldInfo.put("units", "%");
+        sldInfo.put("units", "m");
         sldInfo.put("style", getStyle());
         List<Map<String,Object>> bins = new ArrayList<Map<String,Object>>();
         for (int i=0; i<getBinCount(); i++) {
             Map<String, Object> binMap = new LinkedHashMap<String,Object>();
-            binMap.put("lowerBound", getThresholds()[i]);
-            if (i+1 < getBinCount()) {
-                binMap.put("upperBound", getThresholds()[i+1]);
+            if (i > 0) {
+                binMap.put("lowerBound", getThresholds()[i-1]);
             }
-            binMap.put("color", getColors()[i]);
+            if (i+1 < getBinCount()) {
+                binMap.put("upperBound", getThresholds()[i]);
+            }
+            binMap.put("color", colors[i]);
             bins.add(binMap);
         }
         sldInfo.put("bins", bins);
@@ -96,7 +79,7 @@ public final class Pcoi extends SLDGenerator {
     public int getBinCount() {
         return binCount;
     }
-    
+
     @Override
     public String getStyle() {
         return style;

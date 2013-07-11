@@ -19,7 +19,6 @@ public final class DuneHeight extends SLDGenerator {
     private static final String[] attrs = {"DHIGH", "DLOW"};
     private static final int STROKE_WIDTH = 3;
     private static final int STROKE_OPACITY = 1;
-    private static final String style = "dune";
     private static final float[] thresholdsCrest = {2.0f, 3.5f, 5.0f, 6.5f, 8.0f};
     private static final float[] thresholdsToe = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
     private static final String[] colorsCrest = {"#D6C19D", "#BAA282", "#A18769", "#896B55", "#725642", "#5B4030"};

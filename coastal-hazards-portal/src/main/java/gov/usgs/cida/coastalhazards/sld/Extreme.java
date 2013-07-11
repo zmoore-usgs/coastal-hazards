@@ -16,10 +16,9 @@ import javax.ws.rs.core.Response;
  */
 public final class Extreme extends SLDGenerator {
 
-    private static final String[] attrs = {"EXTREME1", "EXTREME2", "EXTREME3", "EXTREME4", "EXTREME5"};
+    private static final String[] attrs = {"EXTREME1", "EXTREME2", "EXTREME3", "EXTREME4", "EXTREME5", "EXTREME"};
     private static final int STROKE_WIDTH = 3;
     private static final int STROKE_OPACITY = 1;
-    private static final String style = "extreme";
     private static final float[] thresholds = {3.5f, 5.0f, 6.5f, 8.0f};
     private static final String[] colors = {"#DFB8E6", "#C78CEB", "#AC64EE", "#9040F1", "#6F07F3"};
     private static final int binCount = 5;
