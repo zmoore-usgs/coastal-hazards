@@ -11,6 +11,7 @@ import org.apache.commons.lang.ArrayUtils;
 public abstract class SLDGenerator {
     
     protected Item item;
+    protected static final String style = "cch";
     
     public static SLDGenerator getGenerator(Item item) {
         SLDGenerator generator = null;
