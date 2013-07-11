@@ -32,7 +32,12 @@ public abstract class SLDGenerator {
                 }
                 break;
             case vulnerability:
-                //something
+                BayesianCVI bayes = new BayesianCVI(item);
+                if (bayes.isValidAttr(item.getAttr())) {
+                    generator = bayes;
+                } else {
+                    // hook up old-school cvi
+                }
                 break;
             case historical:
                 Shorelines shorelines = new Shorelines(item);

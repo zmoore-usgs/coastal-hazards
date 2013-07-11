@@ -35,7 +35,7 @@ public final class DuneHeight extends SLDGenerator {
     
     @Override
     public Response generateSLD() {
-        return Response.ok(new Viewable("/bins.jsp", this)).build();
+        return Response.ok(new Viewable("/bins_line.jsp", this)).build();
     }
     
     @Override
