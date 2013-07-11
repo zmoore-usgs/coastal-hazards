@@ -119,6 +119,11 @@ body {
 		max-height: none;
 	}
 
+	#banner-area,
+	.content {
+		display:none;
+	}
+	
 }
 
 @media (min-width: 767px) {
