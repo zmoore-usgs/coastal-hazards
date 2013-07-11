@@ -36,3 +36,8 @@
 #map-search-input {
 	width : 140px;
 }
+
+/* Fixes pink tile issue in OpenLayers map */
+.olImageLoadError {
+	display : none !important;
+}

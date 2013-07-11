@@ -54,3 +54,8 @@ img {
 	margin-left : 5px;
 	margin-right : 5px;
 }
+
+/* Fixes pink tile issue in OpenLayers map */
+.olImageLoadError {
+	display : none !important;
+}
