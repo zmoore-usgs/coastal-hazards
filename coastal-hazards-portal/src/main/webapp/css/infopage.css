@@ -16,8 +16,27 @@ img {
 	overflow-y: scroll;
 }
 
+.cch-ui-legend-table-body-div-color {
+	height: 10px;
+	border: #000000;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-botder-radius: 10px;
+}
+
 #cch-ui-legend-table-caption {
 	font-size: 1.2em;
+}
+
+#cch-ui-legend-table {
+	table-layout: fixed;
+}
+
+#cch-ui-legend-table tbody td {
+	padding : 2px;
+	vertical-align: middle;
 }
 
 #cch-ui-legend-table thead tr th:nth-child(2) {
