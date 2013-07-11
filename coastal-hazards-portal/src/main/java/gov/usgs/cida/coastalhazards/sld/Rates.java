@@ -21,7 +21,6 @@ public final class Rates extends SLDGenerator {
     private static final int STROKE_OPACITY = 1;
     private static final float[] thresholds = {-2.0f, -1.0f, 1.0f, 2.0f};
     private static final String[] colors = {"#ED2024", "#FCBF10", "#F6EB13", "#00B04F", "#ED2024"};
-    private static final int binCount = 5;
     
     public Rates(Item item) {
         super(item);
@@ -34,7 +33,7 @@ public final class Rates extends SLDGenerator {
     
     @Override
     public Response generateSLD() {
-        return Response.ok(new Viewable("/rates.jsp", this)).build();
+        return Response.ok(new Viewable("/bins.jsp", this)).build();
     }
     
     @Override
@@ -77,7 +76,7 @@ public final class Rates extends SLDGenerator {
     }
     
     public int getBinCount() {
-        return binCount;
+        return colors.length;
     }
 
     @Override

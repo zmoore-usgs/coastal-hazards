@@ -38,9 +38,8 @@ public final class Pcoi extends SLDGenerator {
     };
     private static final int STROKE_WIDTH = 3;
     private static final int STROKE_OPACITY = 1;
-    private static final float[] thresholds = {0.0f, 10.0f, 25.0f, 50.0f, 75.0f, 90.0f};
+    private static final float[] thresholds = {10.0f, 25.0f, 50.0f, 75.0f, 90.0f};
     private static final String[] colors = {"#FFFFFF", "#FFE6E6", "#FFCCCD", "#FF9C95", "#FF574A", "#FF0000"};
-    private static final int binCount = 6;
     
     public Pcoi(Item item) {
         super(item);
@@ -53,7 +52,7 @@ public final class Pcoi extends SLDGenerator {
     
     @Override
     public Response generateSLD() {
-        return Response.ok(new Viewable("/pcoi.jsp", this)).build();
+        return Response.ok(new Viewable("/bins.jsp", this)).build();
     }
     
     @Override
@@ -94,7 +93,7 @@ public final class Pcoi extends SLDGenerator {
     }
     
     public int getBinCount() {
-        return binCount;
+        return colors.length;
     }
     
     @Override

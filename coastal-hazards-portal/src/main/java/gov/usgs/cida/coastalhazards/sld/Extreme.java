@@ -21,7 +21,6 @@ public final class Extreme extends SLDGenerator {
     private static final int STROKE_OPACITY = 1;
     private static final float[] thresholds = {3.5f, 5.0f, 6.5f, 8.0f};
     private static final String[] colors = {"#DFB8E6", "#C78CEB", "#AC64EE", "#9040F1", "#6F07F3"};
-    private static final int binCount = 5;
     
     public Extreme(Item item) {
         super(item);
@@ -34,7 +33,7 @@ public final class Extreme extends SLDGenerator {
     
     @Override
     public Response generateSLD() {
-        return Response.ok(new Viewable("/extreme.jsp", this)).build();
+        return Response.ok(new Viewable("/bins.jsp", this)).build();
     }
     
     @Override
@@ -77,7 +76,7 @@ public final class Extreme extends SLDGenerator {
     }
     
     public int getBinCount() {
-        return binCount;
+        return colors.length;
     }
 
     @Override
