@@ -13,7 +13,7 @@
         <sld:Name>${it.id}</sld:Name>
         <sld:UserStyle>
             <sld:Name>${it.style}</sld:Name>
-            <sld:Title>Extreme water level ColorMap</sld:Title>
+            <sld:Title>Coastal Change Hazards Style</sld:Title>
             <sld:FeatureTypeStyle>
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
                 <sld:Rule>
