@@ -23,7 +23,8 @@ $(document).ready(function() {
 				callbacks : {
 					success : [
 						function(data, status, jqXHR) {
-							
+							var legend = CCH.Util.buildLegend({sld : data});
+							$('#info-legend').append(legend);
 						}
 					],
 					error : [
