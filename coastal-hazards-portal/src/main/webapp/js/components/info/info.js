@@ -188,14 +188,25 @@ $(document).ready(function() {
 			restrictedExtent: bounds
 		});
 
-		CCH.CONFIG.map.addLayer(new OpenLayers.Layer.XYZ("Ocean",
-				"http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/\${z}/\${y}/\${x}",
+		CCH.CONFIG.map.addLayer(new OpenLayers.Layer.XYZ("Light Gray Base",
+				"http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}",
 				{
 					sphericalMercator: true,
 					isBaseLayer: true,
 					numZoomLevels: 17,
 					wrapDateLine: true
-				}));
+				}
+		));
+
+		CCH.CONFIG.map.addLayer(new OpenLayers.Layer.XYZ("Light Gray Reference",
+				"http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/${z}/${y}/${x}",
+				{
+					sphericalMercator: true,
+					isBaseLayer: false,
+					numZoomLevels: 17,
+					wrapDateLine: true
+				}
+		));
 
 		var layer = new OpenLayers.Layer.WMS(CCH.CONFIG.item.id,
 				CCH.CONFIG.item.wmsService.endpoint,
@@ -204,7 +215,7 @@ $(document).ready(function() {
 					version: '1.3.0',
 					crs: 'EPSG:3857',
 					sld: CCH.CONFIG.publicUrl + '/data/sld/' + CCH.CONFIG.item.id,
-					styles : 'cch',
+					styles: 'cch',
 					transparent: true
 				}, {
 			singleTile: true,

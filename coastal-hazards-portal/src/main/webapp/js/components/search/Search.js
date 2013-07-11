@@ -77,12 +77,23 @@ CCH.Objects.Search = function(args) {
 				displayProjection: new OpenLayers.Projection("EPSG:900913")
 			});
 
-			miniMap.addLayer(new OpenLayers.Layer.XYZ("Shaded Relief",
-					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}",
+
+			miniMap.addLayer(new OpenLayers.Layer.XYZ("Light Gray Base",
+					"http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}",
 					{
 						sphericalMercator: true,
 						isBaseLayer: true,
-						numZoomLevels: 14,
+						numZoomLevels: 17,
+						wrapDateLine: true
+					}
+			));
+
+			miniMap.addLayer(new OpenLayers.Layer.XYZ("Light Gray Reference",
+					"http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/${z}/${y}/${x}",
+					{
+						sphericalMercator: true,
+						isBaseLayer: false,
+						numZoomLevels: 17,
 						wrapDateLine: true
 					}
 			));
