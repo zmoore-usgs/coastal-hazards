@@ -16,21 +16,36 @@ CCH.Util = {
 		var legendTableBody = $('<tbody />');
 
 		if (sld.style === 'shorelines') {
-			for (var binIndex = 0; binIndex < sld.bins.length; binIndex++) {
-				var legendTableBodyTr = $('<tr />');
-				var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color');
-				var legendTableBodyColorDiv = $('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', sld.bins[binIndex].color).html('&nbsp;');
-				var years = sld.bins[binIndex].years.map(function(year) {
-					return (year + '').length === 1 ? '\'0' + year : '\'' + year;
-				});
-				var legendTableBodyTdYear = $('<td />').addClass('cch-ui-legend-table-body-td-year');
-				var legendTableBodyYearDiv = $('<div />').addClass('cch-ui-legend-table-body-div-year').html(years.join(', '));
+			var features = args.features;
 
+			var years = features.map(function(f) {
+				return f.data['Date_'].split('/')[2];
+			}).unique().sort().reverse();
+
+			// Create a proper map to quickly look years up against
+			var yearToColor = {};
+			for (var bInd = 0; bInd < sld.bins.length; bInd++) {
+				sld.bins[bInd].years = sld.bins[bInd].years.map(function(y) {
+					return y < 10 ? '0' + y : '' + y;
+				});
+				for (var yInd = 0; yInd < 3; yInd++) {
+					var year = sld.bins[bInd].years[yInd];
+					// The tail end of the sld.bins doesn't have 3 indexes so check
+					if (year) {
+						yearToColor[year] = sld.bins[bInd].color;
+					}
+				}
+			}
+
+			for (var yInd = 0; yInd < years.length; yInd++) {
+				var year = years[yInd];
+				var legendTableBodyTr = $('<tr />');
+				var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
+						$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', yearToColor[years[yInd].substr(2)]).html('&nbsp;'));
+				var legendTableBodyTdYear = $('<td />').addClass('cch-ui-legend-table-body-td-year').append(
+						$('<div />').addClass('cch-ui-legend-table-body-div-year').html(years[yInd]));
 				legendTableBody.append(
-						legendTableBodyTr.append(
-						legendTableBodyTdColor.append(legendTableBodyColorDiv),
-						legendTableBodyTdYear.append(legendTableBodyYearDiv)
-						));
+						legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear));
 			}
 		}
 
