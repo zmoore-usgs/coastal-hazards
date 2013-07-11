@@ -11,6 +11,19 @@ img {
 	margin-right: 5px;
 }
 
+#cch-ui-legend-div {
+	max-height: 300px;
+	overflow-y: scroll;
+}
+
+#cch-ui-legend-table-caption {
+	font-size: 1.2em;
+}
+
+#cch-ui-legend-table thead tr th:nth-child(2) {
+	text-transform: capitalize; 
+}
+
 #info-summary {
 	font-size:1.3em;
 	line-height: 1.5em;

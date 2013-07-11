@@ -14,23 +14,48 @@ $(document).ready(function() {
 	$.ajax({
 		url: CCH.CONFIG.contextPath + '/data/item/' + CCH.CONFIG.itemId,
 		success: function(data, textStatus, jqXHR) {
-			CCH.CONFIG.data = data;
+			CCH.CONFIG.item = data;
 			$(window).resize();
 
 			CCH.Util.getSLD({
 				contextPath: CCH.CONFIG.contextPath,
-				itemId : CCH.CONFIG.itemId,
-				callbacks : {
-					success : [
+				itemId: CCH.CONFIG.itemId,
+				callbacks: {
+					success: [
 						function(data, status, jqXHR) {
-							
+							var sld = data;
+							if (CCH.CONFIG.item.type === 'historical') {
+								// - The legend builder is going to need the actual data from the shorelines layer
+								// 
+								// - Using the wmsService.layers info for a WMS request because that's properly
+								// formatted to go into this request. The wfsService has the fully qualified namespace
+								// which borks the WFS request
+								// 
+								// - Making an assumption that "Date_" is the attribute being used and is capitalized correctly
+								$.ajax(CCH.CONFIG.contextPath + '/cidags/ows?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&propertyName=Date_&typeName=' + CCH.CONFIG.item.wmsService.layers, {
+									success: function(data, textStatus, jqXHR) {
+										var gmlReader = new OpenLayers.Format.GML.v3();
+										var features = gmlReader.read(data);
+										var legend = CCH.Util.buildLegend({
+											sld: sld,
+											features : features
+										});
+										$('#info-legend').append(legend);
+									},
+									error: function(data, textStatus, jqXHR) {
+										removeLegendContainer();
+									}
+								});
+							} else {
+								var legend = CCH.Util.buildLegend({sld: sld});
+								$('#info-legend').append(legend);
+							}
+
 						}
 					],
-					error : [
+					error: [
 						function(jqXHR, textStatus, errorThrown) {
-							// Failed to get SLD from back-end
-							$('#info-legend').remove();
-							$('#info-graph').removeClass('span4').addClass('span6');
+							removeLegendContainer();
 						}
 					]
 				}
@@ -50,7 +75,7 @@ $(document).ready(function() {
 
 			// Create a "View Metadata" button
 			var metadataLink = $('<a />').attr({
-				'href': CCH.CONFIG.data.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
+				'href': CCH.CONFIG.item.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
 				'target': '_blank'
 			}).addClass('btn').html('View Metadata');
 
@@ -106,6 +131,11 @@ $(document).ready(function() {
 		}
 	});
 
+	var removeLegendContainer = function() {
+		$('#info-legend').remove();
+		$('#info-graph').removeClass('span4').addClass('span6');
+	}
+
 	var createShareButton = function(url) {
 		twttr.ready(function(twttr) {
 			twttr.widgets.createShareButton(
@@ -118,7 +148,7 @@ $(document).ready(function() {
 						hashtags: 'USGS_CCH',
 						lang: 'en',
 						size: 'large',
-						text: CCH.CONFIG.data.summary.tiny.text
+						text: CCH.CONFIG.item.summary.tiny.text
 					});
 
 			twttr.events.bind('tweet', function(event) {
@@ -150,7 +180,7 @@ $(document).ready(function() {
 	};
 
 	var buildMap = function() {
-		var bounds = new OpenLayers.Bounds(CCH.CONFIG.data.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));
+		var bounds = new OpenLayers.Bounds(CCH.CONFIG.item.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));
 		$('#map').css('height', $('#info-summary-and-links-container').height() + 'px');
 		CCH.CONFIG.map = new OpenLayers.Map('map', {
 			projection: CCH.CONFIG.projection,
@@ -167,10 +197,10 @@ $(document).ready(function() {
 					wrapDateLine: true
 				}));
 
-		var layer = new OpenLayers.Layer.WMS(CCH.CONFIG.data.id,
-				CCH.CONFIG.data.wmsService.endpoint,
+		var layer = new OpenLayers.Layer.WMS(CCH.CONFIG.item.id,
+				CCH.CONFIG.item.wmsService.endpoint,
 				{
-					layers: CCH.CONFIG.data.wmsService.layers,
+					layers: CCH.CONFIG.item.wmsService.layers,
 					version: '1.3.0',
 					crs: 'EPSG:3857',
 					transparent: true
@@ -181,12 +211,12 @@ $(document).ready(function() {
 			projection: 'EPSG:3857'
 		});
 
-		var type = CCH.CONFIG.data.type;
+		var type = CCH.CONFIG.item.type;
 		if (type === "storms") {
-			layer.params.SLD = CCH.CONFIG.publicUrl + '/data/sld/redwhite/' + CCH.CONFIG.data.wmsService.layers + '/' + CCH.CONFIG.data.attr;
+			layer.params.SLD = CCH.CONFIG.publicUrl + '/data/sld/redwhite/' + CCH.CONFIG.item.wmsService.layers + '/' + CCH.CONFIG.item.attr;
 			layer.params.STYLES = 'redwhite';
 		} else if (type === "historical") {
-			layer.params.SLD = CCH.CONFIG.publicUrl + '/data/sld/' + CCH.CONFIG.data.id
+			layer.params.SLD = CCH.CONFIG.publicUrl + '/data/sld/' + CCH.CONFIG.item.id
 			layer.params.STYLES = 'line';
 		} else if (type === "vulnerability") {
 			layer.params.STYLES = '';
