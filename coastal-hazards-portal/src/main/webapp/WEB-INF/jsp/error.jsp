@@ -40,6 +40,7 @@
 			var errorCode = <%=request.getAttribute("javax.servlet.error.status_code")%>;
 			var errorPath = '<%=request.getAttribute("javax.servlet.error.request_uri")%>';
 			var errorException = '<%=request.getAttribute("javax.servlet.error.exception")%>';
+			var method = '<%=request.getMethod()%>';
 		</script>
 		<style type="text/css">
 			body {
@@ -122,6 +123,12 @@
 						{
 							description = 'Unfortunately the page that you\'re searching for could not be found.';
 							contact.content = 'The application could not fine the path at ' + errorPath;
+							break;
+						}
+					case 405 :
+						{
+							description = 'The resource you\'re attempting to access cannot be accessed using ' + method;
+							contact.content = 'Method not allowed at ' + errorPath;
 							break;
 						}
 					case 500 :

@@ -49,7 +49,11 @@ public class SLDResource {
 			response = Response.status(Response.Status.NOT_FOUND).build();
 		} else {
 			SLDGenerator generator = SLDGenerator.getGenerator(item);
-			response = generator.generateSLDInfo();
+			if (generator == null) {
+				response = Response.status(Response.Status.NOT_FOUND).build();
+			} else {
+				response = generator.generateSLDInfo();
+			}
 		}
 
 		return response;
