@@ -27,28 +27,39 @@ $(document).ready(function() {
 						function(data, status, jqXHR) {
 							var sld = data;
 							if (CCH.CONFIG.item.type === 'historical') {
-								// - The legend builder is going to need the actual data from the shorelines layer
-								// 
-								// - Using the wmsService.layers info for a WMS request because that's properly
-								// formatted to go into this request. The wfsService has the fully qualified namespace
-								// which borks the WFS request
-								// 
-								// - Making an assumption that "Date_" is the attribute being used and is capitalized correctly
-								$.ajax(CCH.CONFIG.contextPath + '/cidags/ows?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&propertyName=Date_&typeName=' + CCH.CONFIG.item.wmsService.layers, {
-									success: function(data, textStatus, jqXHR) {
-										var gmlReader = new OpenLayers.Format.GML.v3();
-										var features = gmlReader.read(data);
-										var legend = CCH.Util.buildLegend({
-											type: CCH.CONFIG.item.type,
-											sld: sld,
-											features: features
-										});
-										$('#info-legend').append(legend);
-									},
-									error: function(data, textStatus, jqXHR) {
-										removeLegendContainer();
-									}
-								});
+								if (CCH.CONFIG.item.name === 'rates') {
+									var legend = CCH.Util.buildLegend({
+										type: CCH.CONFIG.item.type,
+										name: CCH.CONFIG.item.name,
+										sld: sld
+									});
+									$('#info-legend').append(legend);
+								} else {
+									// - The legend builder is going to need the actual data from the shorelines layer
+									// 
+									// - Using the wmsService.layers info for a WMS request because that's properly
+									// formatted to go into this request. The wfsService has the fully qualified namespace
+									// which borks the WFS request
+									// 
+									// - Making an assumption that "Date_" is the attribute being used and is capitalized correctly
+									$.ajax(CCH.CONFIG.contextPath + '/cidags/ows?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&propertyName=Date_&typeName=' + CCH.CONFIG.item.wmsService.layers, {
+										success: function(data, textStatus, jqXHR) {
+											var gmlReader = new OpenLayers.Format.GML.v3();
+											var features = gmlReader.read(data);
+											var legend = CCH.Util.buildLegend({
+												type: CCH.CONFIG.item.type,
+												name: CCH.CONFIG.item.name,
+												sld: sld,
+												features: features
+											});
+											$('#info-legend').append(legend);
+										},
+										error: function(data, textStatus, jqXHR) {
+											removeLegendContainer();
+										}
+									});
+								}
+
 							} else if (CCH.CONFIG.item.type === 'storms' || CCH.CONFIG.item.type === 'vulnerability') {
 								var legend = CCH.Util.buildLegend({
 									type: CCH.CONFIG.item.type,
