@@ -49,7 +49,7 @@
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/2.3.2/css/bootstrap-responsive.min.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/infopage.css" />
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/2.3.2/js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13/OpenLayers.js"></script>
+		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full.min.js"></script>
 
 		<jsp:include page="js/jsuri/jsuri.jsp"></jsp:include>
@@ -63,7 +63,7 @@
 						initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
 						item: null,
 						emailLink: 'CCH_Help@usgs.gov',
-						publicUrl : '<%=publicUrl%>'
+						publicUrl: '<%=publicUrl%>'
 					}
 				};
 		</script>
@@ -78,69 +78,68 @@
 					   Sed ac neque ut neque dictum accumsan. Cras lacinia rutrum risus, id viverra metus dictum sit amet." />
 			<jsp:param name="application-overlay-background-image" value="images/splash/splash_info.png" />
 		</jsp:include>
-		<div id="application-container" class="container-fluid">
-			<%-- Content Here --%>
-			<div id="info-content" class="container-fluid">
-				<div id="header-row" class="row-fluid">
-					<jsp:include page="template/USGSHeader.jsp">
-						<jsp:param name="relPath" value="" />
-						<jsp:param name="header-class" value="" />
-						<jsp:param name="site-title" value="USGS Coastal Change Hazards Portal" />
-					</jsp:include>
+		<%-- Content Here --%>
+		<div id="info-content" class="container-fluid">
+			<div id="header-row" class="row-fluid">
+				<jsp:include page="template/USGSHeader.jsp">
+					<jsp:param name="relPath" value="" />
+					<jsp:param name="header-class" value="" />
+					<jsp:param name="site-title" value="USGS Coastal Change Hazards Portal" />
+				</jsp:include>
+			</div>
+
+			<%-- Title --%>
+			<div id="info-row-title" class="info-title row-fluid">
+				<div id="info-title" class='span10 offset1'></div>
+			</div> 
+			<div class="row-fluid">
+				<%-- Left side --%>
+				<div class="span6">
+					<div id="info-row-map-and-summary">
+						<%-- Map --%>
+						<div id="map"></div>
+						<div id="info-row-control">
+							<div class='well well-small'>
+								<%-- Metadata Link --%>
+								<span id="metadata-link"></span>
+
+								<%-- Application Link --%>
+								<span id="application-link"></span>
+
+								<span id="social-link"></span>
+							</div>
+						</div>
+						<div class="row-fluid">
+							<div id="info-legend" class="well-small well span6"></div>
+							<div id="info-graph" class='well well-small span6'>
+								<img src=""></img>
+							</div>
+						</div>
+
+					</div>
+
 				</div>
 
-				<%-- Title --%>
-				<div id="info-row-title" class="info-title row-fluid">
-					<div id="info-title" class='span10 offset1'></div>
-				</div> 
-
-
-				<div id="info-row-map-and-summary" class="row-fluid">
-					<%-- Map --%>
-					<div id="map" class="span6"></div>
-
-					<div id='info-summary-and-links-container' class='span6'>
+				<%-- Right Side --%>
+				<div class="span6">
+					<div id='info-summary-and-links-container'>
 						<%-- Summary Information --%>
 						<div id="info-summary"  class="well"></div>
 					</div>
-
-				</div>
-				<div id='info-row-info-fullwidth' class='row-fluid'>
-					<div id="info-legend" class="well-small well span2"></div>
-					<div id="info-graph" class='well span4'>
-						<h1>Placeholder for some super-awesome graph</h1>
-					</div>
-					<div class='well span6'>
-						<%-- Publications --%>
-						<span id='info-container-publications'>
-							<span id='info-container-publications-label'>Publications: </span>
-							<span id='info-container-publications-list-span'></span>
-						</span>
+					<div class="well" id='info-container-publications'>
+						<span id='info-container-publications-label'>Publications: </span>
+						<span id='info-container-publications-list-span'></span>
 					</div>
 				</div>
-						
-				<div class="row-fluid">
-					<div class='well well-small span12'>
-						<%-- Metadata Link --%>
-						<span id="metadata-link"></span>
+			</div>
 
-						<%-- Application Link --%>
-						<span id="application-link"></span>
-
-						<span id="social-link" class='pull-right'>
-							<a id='info-twitter-button'></a>
-						</span>
-					</div>
-				</div>
-						
-				<div  id="footer-row"  class="row-fluid">
-					<jsp:include page="template/USGSFooter.jsp">
-						<jsp:param name="relPath" value="" />
-						<jsp:param name="footer-class" value="" />
-						<jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
-						<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Change%20Hazards%20Feedback'>Site Administrator</a>" />
-					</jsp:include>
-				</div>
+			<div  id="footer-row"  class="row-fluid">
+				<jsp:include page="template/USGSFooter.jsp">
+					<jsp:param name="relPath" value="" />
+					<jsp:param name="footer-class" value="" />
+					<jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
+					<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Change%20Hazards%20Feedback'>Site Administrator</a>" />
+				</jsp:include>
 			</div>
 		</div>
 	</body>

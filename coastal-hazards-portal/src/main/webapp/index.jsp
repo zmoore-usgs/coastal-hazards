@@ -50,7 +50,7 @@
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap-responsive<%= development ? "" : ".min"%>.css" />
         <script type="text/javascript" src="webjars/bootstrap/2.3.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
-        <script type="text/javascript" src="webjars/openlayers/2.13/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
+        <script type="text/javascript" src="webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
     </head>
     <body>
 		<jsp:include page="components/application-overlay.jsp">

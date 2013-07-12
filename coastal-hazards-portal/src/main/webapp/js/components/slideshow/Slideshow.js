@@ -2,8 +2,8 @@ CCH.Objects.Slideshow = function(args) {
 	CCH.LOG.info('Slideshow.js::constructor:Slideshow class is initializing.');
 	var me = (this === window) ? {} : this;
 	args = args || {};
-	me.descriptionWrapper = $('#description-wrapper');
-	me.iossliderContainer = $('#iosslider-container');
+	me.descriptionWrapper = args.descriptionWrapper;
+	me.iossliderContainer = args.iossliderContainer;
 	me.stopped = false;
 	return $.extend(me, {
 		init: function() {
@@ -93,11 +93,21 @@ CCH.Objects.Slideshow = function(args) {
 
 			var cardId = $(currentSlide).attr('id');
 			var card = CCH.cards.getById(cardId);
-			CCH.map.addBoundingBoxMarker({
-				card: card,
-				fromProjection: 'EPSG:4326',
-				slideOrder: currentSlideNumber
-			});
+			var marker = CCH.map.addBoundingBoxMarker({
+					card: card,
+					fromProjection: 'EPSG:4326',
+					slideOrder: currentSlideNumber
+				});
+			if (card.pinned) {
+				// If a card is pinned, we don't want to have the bounding box 
+				// over it to stick around. Fade it out the bounding box over 2 seconds
+				// and then remove it from the map
+				$(marker.div).animate({
+					opacity: 0.0
+				}, 2000, function() {
+					CCH.map.boxLayer.removeMarker(marker);
+				});
+			}
 		},
 		resize: function() {
 			if ('large' === CCH.ui.getCurrentSizing()) {
