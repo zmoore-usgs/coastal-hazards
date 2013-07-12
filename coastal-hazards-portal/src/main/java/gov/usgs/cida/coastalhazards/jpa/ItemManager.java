@@ -90,34 +90,38 @@ public class ItemManager {
 		return id;
 	}
 
-	public String query(String queryText, String type, String sortBy, int count, String bbox) {
+	public String query(String queryText, List<String> types, String sortBy, int count, String bbox) {
         StringBuilder builder = new StringBuilder();
         builder.append("select i from Item i");
         boolean hasQueryText = StringUtils.isNotBlank(queryText);
-        boolean hasType = StringUtils.isNotBlank(type);
+        boolean hasType = (null != types && !types.isEmpty());
         if (hasQueryText || hasType) {
             builder.append(" where ");
             if (hasQueryText) {
-                String[] words = queryText.split(" ");
-                
-                for (int i = 0; i<words.length; i++) {
-                    words[i] = "lower(i.summary.full.text) like lower('%" + words[i] + "%')";
-                }
-                String like = StringUtils.join(words, " or ");
-                builder.append(like);
+                builder.append(" lower(i.summary.keywords) like lower('%")
+                    .append(queryText)
+                    .append("%')");
             }
             if (hasQueryText && hasType) {
                 builder.append(" and");
             }
             if (hasType) {
-                builder.append(" i.type in('").append(type).append("')");
+                for (int i=0; i<types.size(); i++) {
+                    types.set(i, "'" + types.get(i) + "'");
+                }
+                String typeInString = StringUtils.join(types, ", ");
+                builder.append(" i.type in(")
+                    .append(typeInString)
+                    .append(")");
             }
         }
         if ("popularity".equals(sortBy)) {
             builder.append(" order by i.rank.totalScore desc");
+        } else if (false/*replace with other sort options */) {
+            // TODO add order by clause
         }
         if (StringUtils.isNotBlank(bbox)) {
-            //do bbox stuff here
+            //TODO bbox stuff here
         }
         
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
