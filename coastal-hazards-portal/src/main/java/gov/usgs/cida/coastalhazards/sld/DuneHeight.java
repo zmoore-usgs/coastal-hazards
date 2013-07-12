@@ -23,7 +23,6 @@ public final class DuneHeight extends SLDGenerator {
     private static final float[] thresholdsToe = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
     private static final String[] colorsCrest = {"#D6C19D", "#BAA282", "#A18769", "#896B55", "#725642", "#5B4030"};
     private static final String[] colorsToe = {"#D7F1AF", "#BBD190", "#A3B574", "#8C9C5A", "#768242", "#5F6A27"};
-    private static final int binCount = 6;
     
     public DuneHeight(Item item) {
         super(item);
@@ -36,7 +35,7 @@ public final class DuneHeight extends SLDGenerator {
     
     @Override
     public Response generateSLD() {
-        return Response.ok(new Viewable("/dune.jsp", this)).build();
+        return Response.ok(new Viewable("/bins_line.jsp", this)).build();
     }
     
     @Override
@@ -95,7 +94,15 @@ public final class DuneHeight extends SLDGenerator {
     }
     
     public int getBinCount() {
-        return binCount;
+        int count;
+        if ("DHIGH".equalsIgnoreCase(item.getAttr())) {
+            count = colorsCrest.length;
+        } else if ("DLOW".equalsIgnoreCase(item.getAttr())) {
+            count = colorsToe.length;
+        } else {
+            throw new IllegalStateException("getBinCount() called on invalid attribute");
+        }
+        return count;
     }
 
     @Override

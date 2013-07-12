@@ -21,7 +21,6 @@ public final class MeanWaterLevel extends SLDGenerator {
     private static final int STROKE_OPACITY = 1;
     private static final float[] thresholds = {3.5f, 5.0f, 6.5f, 8.0f};
     private static final String[] colors = {"#BFFFE9", "#7ABCE6", "#1F84E1", "#1945B8", "#070791"};
-    private static final int binCount = 5;
     
     public MeanWaterLevel(Item item) {
         super(item);
@@ -34,7 +33,7 @@ public final class MeanWaterLevel extends SLDGenerator {
     
     @Override
     public Response generateSLD() {
-        return Response.ok(new Viewable("/mean.jsp", this)).build();
+        return Response.ok(new Viewable("/bins_line.jsp", this)).build();
     }
     
     @Override
@@ -77,7 +76,7 @@ public final class MeanWaterLevel extends SLDGenerator {
     }
     
     public int getBinCount() {
-        return binCount;
+        return colors.length;
     }
 
     @Override

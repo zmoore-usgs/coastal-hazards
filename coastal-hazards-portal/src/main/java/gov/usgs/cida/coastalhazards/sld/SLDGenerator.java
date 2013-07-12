@@ -20,25 +20,32 @@ public abstract class SLDGenerator {
                 Pcoi pcoi = new Pcoi(item);
                 Extreme extreme = new Extreme(item);
                 DuneHeight dune = new DuneHeight(item);
+                MeanWaterLevel mean = new MeanWaterLevel(item);
                 if (pcoi.isValidAttr(item.getAttr())) {
                     generator = pcoi;
                 } else if (extreme.isValidAttr(item.getAttr())) {
                     generator = extreme;
                 } else if (dune.isValidAttr(item.getAttr())){
                     generator = dune;
-                } else {
-                    // mean water level here
+                } else if (mean.isValidAttr(item.getAttr())) {
+                    generator = mean;
                 }
                 break;
             case vulnerability:
-                //something
+                BayesianCVI bayes = new BayesianCVI(item);
+                if (bayes.isValidAttr(item.getAttr())) {
+                    generator = bayes;
+                } else {
+                    // hook up old-school cvi
+                }
                 break;
             case historical:
                 Shorelines shorelines = new Shorelines(item);
+                Rates rates = new Rates(item);
                 if (shorelines.isValidAttr(item.getAttr())) {
                     generator = shorelines;
-                } else {
-                    // do something for rates
+                } else if (rates.isValidAttr(item.getAttr())) {
+                    generator = rates;
                 }
                 break;
             default:

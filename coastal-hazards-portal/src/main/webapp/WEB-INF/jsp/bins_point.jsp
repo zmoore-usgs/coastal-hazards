@@ -13,7 +13,7 @@
         <sld:Name>${it.id}</sld:Name>
         <sld:UserStyle>
             <sld:Name>${it.style}</sld:Name>
-            <sld:Title>Extreme water level ColorMap</sld:Title>
+            <sld:Title>Coastal Change Hazards Style</sld:Title>
             <sld:FeatureTypeStyle>
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
                 <sld:Rule>
@@ -27,7 +27,7 @@
                                 <ogc:Literal>${it.thresholds[i-1]}</ogc:Literal>
                             </ogc:PropertyIsGreaterThanOrEqualTo>
                             </c:if>
-                            <c:if test="${it.binCount-1 > i}">
+                        <c:if test="${it.binCount-1 > i}">
                             <ogc:PropertyIsLessThan>
                                 <ogc:PropertyName>${it.attr}</ogc:PropertyName>
                                 <ogc:Literal>${it.thresholds[i]}</ogc:Literal>
@@ -37,13 +37,18 @@
                         </ogc:And>
                         </c:if>
                     </ogc:Filter>
-                    <sld:LineSymbolizer>
-                        <sld:Stroke>
-                            <sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
-                            <sld:CssParameter name="stroke-width">${it.STROKE_WIDTH}</sld:CssParameter>
-                            <sld:CssParameter name="stroke-opacity">${it.STROKE_OPACITY}</sld:CssParameter>
-                        </sld:Stroke>
-                    </sld:LineSymbolizer>
+                    <sld:PointSymbolizer>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>circle</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">${it.colors[i]}</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">${it.STROKE_OPACITY}</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                                <sld:Size>${it.STROKE_WIDTH}</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
                 </sld:Rule>
                 </c:forEach>
             </sld:FeatureTypeStyle>

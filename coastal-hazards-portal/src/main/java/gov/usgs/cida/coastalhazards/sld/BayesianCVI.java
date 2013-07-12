@@ -14,34 +14,15 @@ import javax.ws.rs.core.Response;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public final class Pcoi extends SLDGenerator {
+public final class BayesianCVI extends SLDGenerator {
 
-    private static final String[] attrs = {
-        "PCOL1",
-        "PCOL2",
-        "PCOL3",
-        "PCOL4",
-        "PCOL5",
-        "POVR1",
-        "POVR2",
-        "POVR3",
-        "POVR4",
-        "POVR5",
-        "PIND1",
-        "PIND2",
-        "PIND3",
-        "PIND4",
-        "PIND5",
-        "PCOL",
-        "POVR",
-        "PIND"
-    };
+    private static final String[] attrs = {"RSLR", "MWH", "TR", "E_RATE", "PEROS2", "PEROS1", "PSTABLE", "PACC1", "PACC2"};
     private static final int STROKE_WIDTH = 3;
     private static final int STROKE_OPACITY = 1;
-    private static final float[] thresholds = {10.0f, 25.0f, 50.0f, 75.0f, 90.0f};
-    private static final String[] colors = {"#FFFFFF", "#FFE6E6", "#FFCCCD", "#FF9C95", "#FF574A", "#FF0000"};
+    private static final float[] thresholds = {1.0f, 10.0f, 33.0f, 66.0f, 90.0f, 99.0f};
+    private static final String[] colors = {"#005CE6", "#00A884", "#55FF00", "#FFFF00", "#FFAA00", "#FF0000", "#734C00"};
     
-    public Pcoi(Item item) {
+    public BayesianCVI(Item item) {
         super(item);
     }
     
@@ -52,7 +33,7 @@ public final class Pcoi extends SLDGenerator {
     
     @Override
     public Response generateSLD() {
-        return Response.ok(new Viewable("/bins_line.jsp", this)).build();
+        return Response.ok(new Viewable("/bins_point.jsp", this)).build();
     }
     
     @Override
@@ -64,11 +45,13 @@ public final class Pcoi extends SLDGenerator {
         List<Map<String,Object>> bins = new ArrayList<Map<String,Object>>();
         for (int i=0; i<getBinCount(); i++) {
             Map<String, Object> binMap = new LinkedHashMap<String,Object>();
-            binMap.put("lowerBound", getThresholds()[i]);
-            if (i+1 < getBinCount()) {
-                binMap.put("upperBound", getThresholds()[i+1]);
+            if (i > 0) {
+                binMap.put("lowerBound", getThresholds()[i-1]);
             }
-            binMap.put("color", getColors()[i]);
+            if (i+1 < getBinCount()) {
+                binMap.put("upperBound", getThresholds()[i]);
+            }
+            binMap.put("color", colors[i]);
             bins.add(binMap);
         }
         sldInfo.put("bins", bins);
@@ -95,7 +78,7 @@ public final class Pcoi extends SLDGenerator {
     public int getBinCount() {
         return colors.length;
     }
-    
+
     @Override
     public String getStyle() {
         return style;
