@@ -63,7 +63,7 @@
 						initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
 						item: null,
 						emailLink: 'CCH_Help@usgs.gov',
-						publicUrl : '<%=publicUrl%>'
+						publicUrl: '<%=publicUrl%>'
 					}
 				};
 		</script>
@@ -103,12 +103,22 @@
 						<%-- Summary Information --%>
 						<div id="info-summary"  class="well"></div>
 					</div>
+				</div>
+				<div id="info-row-control" class="row-fluid">
+					<div class='well well-small span6'>
+						<%-- Metadata Link --%>
+						<span id="metadata-link"></span>
 
+						<%-- Application Link --%>
+						<span id="application-link"></span>
+
+						<span id="social-link"></span>
+					</div>
 				</div>
 				<div id='info-row-info-fullwidth' class='row-fluid'>
 					<div id="info-legend" class="well-small well span2"></div>
 					<div id="info-graph" class='well span4'>
-						<h1>Placeholder for some super-awesome graph</h1>
+						<img src=""></img>
 					</div>
 					<div class='well span6'>
 						<%-- Publications --%>
@@ -118,21 +128,7 @@
 						</span>
 					</div>
 				</div>
-						
-				<div class="row-fluid">
-					<div class='well well-small span12'>
-						<%-- Metadata Link --%>
-						<span id="metadata-link"></span>
 
-						<%-- Application Link --%>
-						<span id="application-link"></span>
-
-						<span id="social-link" class='pull-right'>
-							<a id='info-twitter-button'></a>
-						</span>
-					</div>
-				</div>
-						
 				<div  id="footer-row"  class="row-fluid">
 					<jsp:include page="template/USGSFooter.jsp">
 						<jsp:param name="relPath" value="" />

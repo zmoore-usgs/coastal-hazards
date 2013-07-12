@@ -5,7 +5,7 @@ CCH.Util = {
 		if (!sld) {
 			return null;
 		}
-
+		var type = args.type;
 		var legendDiv = $('<div />').attr({'id': 'cch-ui-legend-div'});
 		var legendTable = $('<table />').attr({'id': 'cch-ui-legend-table'}).addClass('table table-bordered table-hover');
 		var legendTableCaption = $('<caption />').attr({'id': 'cch-ui-legend-table-caption'}).html(sld.title);
@@ -15,7 +15,7 @@ CCH.Util = {
 				));
 		var legendTableBody = $('<tbody />');
 
-		if (sld.style === 'shorelines') {
+		if (type === 'historical') {
 			var features = args.features;
 
 			var years = features.map(function(f) {
@@ -47,11 +47,19 @@ CCH.Util = {
 				legendTableBody.append(
 						legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear));
 			}
-		} else {
+		} else if (type === 'storms' || type === 'vulnerability') {
 			for (var bInd = 0; bInd < sld.bins.length; bInd++) {
-				var ub = sld.bins[bInd].upperBound || '...';
-				var lb = sld.bins[bInd].lowerBound + '' || '...';
-				var range = lb + ' -- ' + ub
+				var ub = sld.bins[bInd].upperBound;
+				var lb = sld.bins[bInd].lowerBound;
+				var range = function(ub,lb){
+					if (lb && ub) {
+						return lb + ' to ' + ub;
+					} else if (lb && !ub) {
+						return '> ' + lb;
+					} else if (!lb && ub) {
+						return '< ' + ub;
+					}
+				}(ub,lb)
 				var legendTableBodyTr = $('<tr />');
 				var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
 						$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', sld.bins[bInd].color).html('&nbsp;'));

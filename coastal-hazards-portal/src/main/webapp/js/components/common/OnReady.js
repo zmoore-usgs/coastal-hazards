@@ -13,7 +13,7 @@ $(document).ready(function() {
 
 	splashUpdate("Initializing UI...");
 	CCH.ui = CCH.Objects.UI({
-		itemSearchModalWindow: $('#item-search-modal'),
+		applicationOverlay : $('#application-overlay'),
 		applicationContainer: $('#application-container'),
 		headerRow: $('#header-row'),
 		footerRow: $('#footer-row'),
@@ -25,10 +25,16 @@ $(document).ready(function() {
 		navbarShareMenuListItem: $('#app-navbar-pin-control-share-li'),
 		mapSearchContainer: $('#map-search-container'),
 		ccsArea: $('#ccsa-area'),
-		shareModal: $('#shareModal')
+		shareModal: $('#shareModal'),
+		shareUrlButton : $('#modal-share-summary-url-button'),
+		shareInput : $('#modal-share-summary-url-inputbox'),
+		shareTwitterBtn : $('#multi-card-twitter-button')
 	}).init();
 
-	CCH.slideshow = new CCH.Objects.Slideshow().init();
+	CCH.slideshow = new CCH.Objects.Slideshow({
+		descriptionWrapper : $('#description-wrapper'),
+		iossliderContainer : $('#iosslider-container')
+	}).init();
 
 	splashUpdate("Initializing Card Subsystem...");
 	CCH.cards = new CCH.Objects.Cards({

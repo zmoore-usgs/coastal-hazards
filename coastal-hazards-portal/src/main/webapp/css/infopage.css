@@ -3,6 +3,20 @@ img {
     max-width: none !important; 
 }
 
+#map {
+	height: 400px;
+}
+
+body {
+	padding-left: 10px !important;
+	padding-right:  10px !important;
+}
+
+#application-container {
+	padding-left: 10px;
+	padding-right:  10px;
+}
+
 .btn-error {
 	font-size: 1em;
 	padding-top: 6px;
@@ -13,15 +27,41 @@ img {
 
 #cch-ui-legend-div {
 	max-height: 300px;
-	overflow-y: scroll;
+	overflow-y: auto;
+}
+
+
+.cch-ui-legend-table-body-div-color {
+	height: 10px;
+	border: #000000;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-botder-radius: 10px;
 }
 
 #cch-ui-legend-table-caption {
 	font-size: 1.2em;
 }
 
+#cch-ui-legend-table {
+	table-layout: fixed;
+	height: 300px;
+}
+
+#cch-ui-legend-table tbody td {
+	padding : 2px;
+	vertical-align: middle;
+}
+
 #cch-ui-legend-table thead tr th:nth-child(2) {
 	text-transform: capitalize; 
+}
+
+#info-row-control iframe{
+	vertical-align: middle;
+	margin-left: 10px;
 }
 
 #info-summary {
@@ -49,8 +89,6 @@ img {
 }
 
 #metadata-link .btn {
-/*	margin-top: 10px;
-	margin-bottom: 10px;*/
 	margin-left : 5px;
 	margin-right : 5px;
 }
@@ -58,4 +96,48 @@ img {
 /* Fixes pink tile issue in OpenLayers map */
 .olImageLoadError {
 	display : none !important;
+}
+
+#info-graph img {
+	height: 100%;
+	width: 100%;
+}
+
+#info-graph {
+	text-align: center;
+	height: 300px;
+}
+
+@media (max-width: 440px) {
+	#info-title {
+		font-size: 0.65em;
+	}
+	
+	#info-row-control iframe{
+		margin-left: 5px;
+	}
+
+	#map {
+		height : 300px;
+	}
+}
+
+@media (max-width: 766px) {
+	#info-row-control iframe{
+		margin-top: 5px;
+		margin-left: 5px;
+	}
+	
+	#info-graph {
+		height: 100px;
+	}
+
+	#cch-ui-legend-div {
+		max-height: none;
+	}
+
+	#banner-area,
+	.content {
+		display:none;
+	}
 }
