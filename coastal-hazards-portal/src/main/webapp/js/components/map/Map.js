@@ -2,6 +2,7 @@ CCH.Objects.Map = function(args) {
 	var me = (this === window) ? {} : this;
 	me.initialExtent = CCH.CONFIG.map.initialExtent;
 	me.mapDivId = args.mapDiv;
+	me.bboxFadeoutDuration = 2000;
 	return $.extend(me, {
 		init: function() {
 			CCH.LOG.info('Map.js::init():Map class is initializing.');
@@ -82,16 +83,6 @@ CCH.Objects.Map = function(args) {
 			marker = new OpenLayers.Marker.Box(layerBounds);
 			me.boxLayer.addMarker(marker);
 
-			// Fade older markers out
-			var markerCt = me.boxLayer.markers.length;
-			for (var mInd = markerCt; mInd > 0; mInd--) {
-				var markerItem = me.boxLayer.markers[mInd - 1];
-				var opacity = Math.round((mInd / markerCt) * 10) / 10;
-				$(markerItem.div).css({
-					'opacity': opacity
-				});
-			}
-
 			// Alter the marker visually 
 			var markerDiv = $(marker.div);
 			markerDiv.addClass('marker-active').data({
@@ -135,8 +126,16 @@ CCH.Objects.Map = function(args) {
 		clearBoundingBoxMarkers: function() {
 			var markerCt = me.boxLayer.markers.length;
 			for (var mInd = markerCt; mInd > 0; mInd--) {
-				me.boxLayer.removeMarker(me.boxLayer.markers[mInd - 1]);
+				me.clearBoundingBoxMarker(me.boxLayer.markers[mInd - 1]);
 			}
+			$(window).trigger('cch-map-bbox-markers-removed');
+		},
+		clearBoundingBoxMarker: function(marker) {
+			$(marker.div).animate({
+				opacity: 0.0
+			}, me.bboxFadeoutDuration, function() {
+				CCH.map.boxLayer.removeMarker(marker);
+			});
 		},
 		zoomToBoundingBox: function(args) {
 			args = args || {};

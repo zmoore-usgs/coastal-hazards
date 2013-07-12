@@ -76,37 +76,36 @@ CCH.Objects.Slideshow = function(args) {
 			me.createSlideshow();
 		},
 		toggleClassForActiveSlide: function() {
+			// A new slide has come into focus. There are a few things that need 
+			// to be done.
+			var container = $('#iosslider-container');
+			var currentSlide = container.data().args.currentSlideObject;
+			var currentSlideNumber = container.data().args.currentSlideNumber;
+
+			// Visually inactivate ALL the slides
 			$('.slide').each(function(i, slide) {
 				$(slide).removeClass('slider-slide-active');
 				$(slide).addClass('slider-slide-inactive');
 			});
-			var container = $('#iosslider-container');
-			var currentSlide = container.data().args.currentSlideObject;
-			var currentSlideNumber = container.data().args.currentSlideNumber;
-			currentSlide.removeClass('slider-slide-inactive');
-			currentSlide.addClass('slider-slide-active');
 
-			CCH.map.boxLayer.markers.each(function(mrk) {
-				$(mrk.div).removeClass('marker-active');
-				$(mrk.div).addClass('marker-inactive');
-			});
+			// Only for the active slide, add the active class
+			currentSlide.toggleClass('slider-slide-inactive slider-slide-active');
 
 			var cardId = $(currentSlide).attr('id');
 			var card = CCH.cards.getById(cardId);
+
+			CCH.map.clearBoundingBoxMarkers();
 			var marker = CCH.map.addBoundingBoxMarker({
-					card: card,
-					fromProjection: 'EPSG:4326',
-					slideOrder: currentSlideNumber
-				});
-			if (card.pinned) {
+				card: card,
+				fromProjection: 'EPSG:4326',
+				slideOrder: currentSlideNumber
+			});
+
+			if (CCH.cards.getPinnedCount()) {
 				// If a card is pinned, we don't want to have the bounding box 
 				// over it to stick around. Fade it out the bounding box over 2 seconds
 				// and then remove it from the map
-				$(marker.div).animate({
-					opacity: 0.0
-				}, 2000, function() {
-					CCH.map.boxLayer.removeMarker(marker);
-				});
+				CCH.map.clearBoundingBoxMarker(marker);
 			}
 		},
 		resize: function() {
@@ -115,6 +114,27 @@ CCH.Objects.Slideshow = function(args) {
 			} else if ('small' === CCH.ui.getCurrentSizing()) {
 				me.resizeHorizontal();
 			}
+		},
+		/**
+		 * Displays the bounding boxes of all the cards for a short 
+		 * amount of time, then fades them out
+		 */
+		flashBoundingBoxes: function() {
+			var cards = CCH.cards.getCards();
+			var markers = [];
+			cards.each(function(card) {
+				markers.push(CCH.map.addBoundingBoxMarker({
+					card: card,
+					fromProjection: 'EPSG:4326'
+				}));
+			});
+			
+			// Keep the markers around for 1 second, then begin fadeout
+			setTimeout(function() {
+				markers.each(function(marker) {
+					CCH.map.clearBoundingBoxMarker(marker);
+				});
+			},1500);
 		},
 		resizeHorizontal: function() {
 			var descriptionWrapper = $('#description-wrapper');
@@ -162,7 +182,7 @@ CCH.Objects.Slideshow = function(args) {
 				args = args || {};
 				var currentSizing = CCH.ui.getCurrentSizing();
 				var classname = currentSizing === 'large' ? 'iosSliderVertical' : 'iosSlider';
-
+				var flashBb = args.flashBb || true;
 				// The slider will be rebuilt so destroy the old one
 				me.destroySlider();
 
@@ -269,6 +289,9 @@ CCH.Objects.Slideshow = function(args) {
 						LOG.debug('Slideshow.js:: Slider Loaded');
 						$(window).trigger('cch-slideshow-slider-loaded');
 						me.resize();
+						if (flashBb) {
+							me.flashBoundingBoxes();
+						}
 						me.toggleClassForActiveSlide();
 					},
 					// Executed when the window has been resized or a device has been rotated

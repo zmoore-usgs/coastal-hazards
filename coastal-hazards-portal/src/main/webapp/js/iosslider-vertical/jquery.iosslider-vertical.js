@@ -1430,10 +1430,14 @@
 						height: sliderMax[sliderNumber] + 'px'
 					});
 					
-					sliderMax[sliderNumber] = sliderMax[sliderNumber] * 2 - stageHeight + centeredSlideOffset * 2;
 					scrollerHeight = sliderMax[sliderNumber];
+					sliderMax[sliderNumber] = sliderMax[sliderNumber] * 2 - stageHeight + centeredSlideOffset * 2;
 					
-					shortContent = (scrollerHeight < stageHeight) ? true : false;
+					//TODO- THIS IS A HACK. This needs to be fixed eventually. 
+					// The behavior we want is to always have a slideshow going. The functionality
+					// here checks to see if there's room for that to happen and kills the slideshow
+					// if not. This is not what we want.
+					shortContent = false;//(scrollerHeight < stageHeight) ? true : false;
 
 					if(shortContent) {
 						
