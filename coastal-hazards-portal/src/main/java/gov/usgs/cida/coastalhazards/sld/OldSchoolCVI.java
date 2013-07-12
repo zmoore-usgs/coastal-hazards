@@ -20,7 +20,7 @@ public final class OldSchoolCVI extends SLDGenerator {
     private static final int STROKE_WIDTH = 3;
     private static final int STROKE_OPACITY = 1;
     private static final float[] thresholds = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
-    private static final String[] colors = {"#00FF00", "#3B6800", "#FFFF00", "#FEAC00", "#FF0000"};
+    private static final String[] colors = {"#006945", "#3B6800", "#FFFF00", "#FEAC00", "#FF0000"};
     private static final String[] categories = {"Very Low", "Low", "Moderate", "High", "Very High"};
     
     public OldSchoolCVI(Item item) {
