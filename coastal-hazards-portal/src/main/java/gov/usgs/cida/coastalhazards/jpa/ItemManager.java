@@ -94,7 +94,7 @@ public class ItemManager {
         StringBuilder builder = new StringBuilder();
         builder.append("select i from Item i");
         boolean hasQueryText = StringUtils.isNotBlank(queryText);
-        boolean hasType = (null != types && !types.isEmpty());
+        boolean hasType = (null != types && types.size() > 0 && StringUtils.isNotBlank(types.get(0)));
         if (hasQueryText || hasType) {
             builder.append(" where ");
             if (hasQueryText) {
