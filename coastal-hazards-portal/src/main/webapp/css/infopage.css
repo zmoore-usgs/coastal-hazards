@@ -12,10 +12,6 @@ body {
 	padding-right:  10px !important;
 }
 
-#application-container {
-	padding-left: 10px;
-	padding-right:  10px;
-}
 
 .btn-error {
 	font-size: 1em;
@@ -82,10 +78,6 @@ body {
 
 #site-title {
 	line-height: 20px;
-}
-
-#info-row-info-fullwidth {
-	margin-top: 10px;
 }
 
 #metadata-link .btn {

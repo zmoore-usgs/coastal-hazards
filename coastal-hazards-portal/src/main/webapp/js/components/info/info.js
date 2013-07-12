@@ -3,18 +3,11 @@ $(document).ready(function() {
 	// Header fix
 	$('#ccsa-area').find('br').first().remove();
 
-	// Bind the window resize to properly size the content area and the map within it
-	$(window).resize(function() {
-		var contentRowHeight = $(window).height() - $('#header-row').height() - $('#footer-row').height();
-		$('#info-content').css('height', contentRowHeight + 'px');
-	});
-
 	// Load the item
 	$.ajax({
 		url: CCH.CONFIG.contextPath + '/data/item/' + CCH.CONFIG.itemId,
 		success: function(data, textStatus, jqXHR) {
 			CCH.CONFIG.item = data;
-			$(window).resize();
 
 			var graphic = {
 				vulnerability: '/images/cards/HistoricalActive.svg',
