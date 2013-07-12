@@ -8,6 +8,7 @@ import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PathParam;
@@ -79,7 +80,7 @@ public class ItemResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchCards(
             @DefaultValue("") @QueryParam("query") String query,
-            @DefaultValue("") @QueryParam("type") String type,
+            @DefaultValue("") @QueryParam("type") List<String> type,
 			@DefaultValue("popularity") @QueryParam("sortBy") String sortBy,
 			@DefaultValue("-1") @QueryParam("count") int count,
 			@DefaultValue("") @QueryParam("bbox") String bbox) {

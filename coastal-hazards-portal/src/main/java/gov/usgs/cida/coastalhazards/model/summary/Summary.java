@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.model.summary;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,6 +23,7 @@ public class Summary implements Serializable {
     private Tiny tiny;
     private Medium medium;
     private Full full;
+    private String keywords;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -58,6 +60,15 @@ public class Summary implements Serializable {
 
     public void setFull(Full full) {
         this.full = full;
+    }
+
+    @Column(length = 2048)
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
     }
     
 }
