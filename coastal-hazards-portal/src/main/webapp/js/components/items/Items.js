@@ -16,9 +16,19 @@ CCH.Objects.Items = function(args) {
 								$(window).trigger('cch.data.items.searched', data.items.length);
 								if (data && data.items && data.items.length) {
 									me.items = data.items;
+									
+									// We don't want to kill off the pinned items 
+									// after a search. We wamt them to end up on the
+									// bottom of the slide, so append them to the 
+									// items array before we rebuild the slideshoe
+									var pinnedItems = CCH.cards.getPinnedCards().map(function(card) {
+										return card.item;
+									});
+									me.items = me.items.concat(pinnedItems);
 									$(window).trigger('cch.data.items.loaded', {
 										items: me.items
 									});
+									CCH.slideshow.stop();
 								}
 							}
 						],
