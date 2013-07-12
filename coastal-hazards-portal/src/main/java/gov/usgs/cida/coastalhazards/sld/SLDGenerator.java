@@ -33,10 +33,11 @@ public abstract class SLDGenerator {
                 break;
             case vulnerability:
                 BayesianCVI bayes = new BayesianCVI(item);
+                OldSchoolCVI oldSchool = new OldSchoolCVI(item);
                 if (bayes.isValidAttr(item.getAttr())) {
                     generator = bayes;
-                } else {
-                    // hook up old-school cvi
+                } else if(oldSchool.isValidAttr(item.getAttr())) {
+                    generator = oldSchool;
                 }
                 break;
             case historical:
