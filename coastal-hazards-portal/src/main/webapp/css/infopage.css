@@ -30,6 +30,7 @@ body {
 	overflow-y: auto;
 }
 
+
 .cch-ui-legend-table-body-div-color {
 	height: 10px;
 	border: #000000;
@@ -46,6 +47,7 @@ body {
 
 #cch-ui-legend-table {
 	table-layout: fixed;
+	height: 300px;
 }
 
 #cch-ui-legend-table tbody td {
@@ -55,6 +57,11 @@ body {
 
 #cch-ui-legend-table thead tr th:nth-child(2) {
 	text-transform: capitalize; 
+}
+
+#info-row-control iframe{
+	vertical-align: middle;
+	margin-left: 10px;
 }
 
 #info-summary {
@@ -98,6 +105,7 @@ body {
 
 #info-graph {
 	text-align: center;
+	height: 300px;
 }
 
 @media (max-width: 440px) {
@@ -105,12 +113,21 @@ body {
 		font-size: 0.65em;
 	}
 	
+	#info-row-control iframe{
+		margin-left: 5px;
+	}
+
 	#map {
 		height : 300px;
 	}
 }
 
 @media (max-width: 766px) {
+	#info-row-control iframe{
+		margin-top: 5px;
+		margin-left: 5px;
+	}
+	
 	#info-graph {
 		height: 100px;
 	}
@@ -122,12 +139,5 @@ body {
 	#banner-area,
 	.content {
 		display:none;
-	}
-	
-}
-
-@media (min-width: 767px) {
-	#info-graph {
-		height: 300px;
 	}
 }

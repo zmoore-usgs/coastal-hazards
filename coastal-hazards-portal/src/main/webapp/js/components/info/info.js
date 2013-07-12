@@ -89,13 +89,15 @@ $(document).ready(function() {
 			// Create a "View Metadata" button
 			var metadataLink = $('<a />').attr({
 				'href': CCH.CONFIG.item.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
-				'target': '_blank'
+				'target': '_blank',
+				'role': 'button'
 			}).addClass('btn').html('View Metadata');
 
 			// Create a "View in Portal" link to let the user view this in the portal
 			var applicationLink = $('<a />').attr({
 				'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId,
-				'target': '_blank'
+				'target': '_blank',
+				'role': 'button'
 			}).addClass('btn').html('View In Portal');
 
 			// Build the publications list for the item
@@ -153,7 +155,7 @@ $(document).ready(function() {
 		twttr.ready(function(twttr) {
 			twttr.widgets.createShareButton(
 					url,
-					$('#info-twitter-button')[0],
+					$('#social-link')[0],
 					function(element) {
 						// Any callbacks that may be needed
 					},
