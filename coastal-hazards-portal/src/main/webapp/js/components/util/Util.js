@@ -15,32 +15,32 @@ CCH.Util = {
 				));
 		var legendTableBody = $('<tbody />');
 
-		var buildVanillaSLD = function() {
+		var buildVanillaLegend = function() {
 			for (var bInd = 0; bInd < sld.bins.length; bInd++) {
-					var ub = sld.bins[bInd].upperBound;
-					var lb = sld.bins[bInd].lowerBound;
-					var range = function(ub, lb) {
-						if (lb && ub) {
-							return lb + ' to ' + ub;
-						} else if (lb && !ub) {
-							return '> ' + lb;
-						} else if (!lb && ub) {
-							return '< ' + ub;
-						}
-					}(ub, lb)
-					var legendTableBodyTr = $('<tr />');
-					var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
-							$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', sld.bins[bInd].color).html('&nbsp;'));
-					var legendTableBodyTdRange = $('<td />').addClass('cch-ui-legend-table-body-td-range').append(
-							$('<div />').addClass('cch-ui-legend-table-body-div-range').html(range));
-					legendTableBody.append(
-							legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdRange));
-				}
+				var ub = sld.bins[bInd].upperBound;
+				var lb = sld.bins[bInd].lowerBound;
+				var range = function(ub, lb) {
+					if (lb && ub) {
+						return lb + ' to ' + ub;
+					} else if (lb && !ub) {
+						return '> ' + lb;
+					} else if (!lb && ub) {
+						return '< ' + ub;
+					}
+				}(ub, lb)
+				var legendTableBodyTr = $('<tr />');
+				var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
+						$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', sld.bins[bInd].color).html('&nbsp;'));
+				var legendTableBodyTdRange = $('<td />').addClass('cch-ui-legend-table-body-td-range').append(
+						$('<div />').addClass('cch-ui-legend-table-body-div-range').html(range));
+				legendTableBody.append(
+						legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdRange));
+			}
 		}
 
 		if (type === 'historical') {
-			if (args.name === 'rates') {
-				buildVanillaSLD();
+			if (args.attr === 'rates') {
+				buildVanillaLegend();
 			} else {
 				var features = args.features;
 
@@ -75,11 +75,26 @@ CCH.Util = {
 				}
 			}
 
-		} else if (type === 'storms' || type === 'vulnerability') {
-			buildVanillaSLD();
+		} else if (type === 'storms') {
+			buildVanillaLegend();
+		} else if (type === 'vulnerability') {
+			if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(args.attr.toUpperCase()) !== -1) {
+				// Old school CVI
+				for (var bInd = 0; bInd < sld.bins.length; bInd++) {
+					var category = sld.bins[bInd].category;
+					var legendTableBodyTr = $('<tr />');
+					var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
+							$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', sld.bins[bInd].color).html('&nbsp;'));
+					var legendTableBodyTdRange = $('<td />').addClass('cch-ui-legend-table-body-td-range').append(
+							$('<div />').addClass('cch-ui-legend-table-body-div-range').html(category));
+					legendTableBody.append(
+							legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdRange));
+				}
+			} else {
+				// Bayesian
+				buildVanillaLegend();
+			}
 		}
-
-//		{"title":", National Assessment in Gulf of Mex.","units":"","style":"cch","bins":[{"category":"Very Low","color":"#006945"},{"category":"Low","color":"#3B6800"},{"category":"Moderate","color":"#FFFF00"},{"category":"High","color":"#FEAC00"},{"category":"Very High","color":"#FF0000"}]}
 
 		legendDiv.append(legendTable.append(
 				legendTableCaption,
