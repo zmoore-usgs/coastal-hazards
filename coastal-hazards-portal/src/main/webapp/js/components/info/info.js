@@ -1,5 +1,4 @@
 $(document).ready(function() {
-
 	// Header fix
 	$('#ccsa-area').find('br').first().remove();
 
@@ -254,7 +253,8 @@ $(document).ready(function() {
 					styles: 'cch',
 					transparent: true
 				}, {
-			singleTile: true,
+			singleTile: false,
+			displayInLayerSwitcher: false,
 			transparent: true,
 			isBaseLayer: false,
 			projection: 'EPSG:3857'
