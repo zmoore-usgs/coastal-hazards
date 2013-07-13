@@ -149,16 +149,19 @@ CCH.Objects.Map = function(args) {
 		},
 		zoomToActiveLayers: function() {
 			var activeLayers = me.map.getLayersBy('isItemLayer', true);
-			var bounds = null;
+			var bounds = new OpenLayers.Bounds();
 			if (activeLayers.length) {
-				bounds = new OpenLayers.Bounds();
+				// Zoom to pinned cards
 				for (var lIdx = 0; lIdx < activeLayers.length; lIdx++) {
 					var activeLayer = activeLayers[lIdx];
 					var layerBounds = OpenLayers.Bounds.fromArray(activeLayer.bbox).transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection);
 					bounds.extend(layerBounds);
 				}
 			} else {
-				bounds = OpenLayers.Bounds.fromArray(me.initialExtent);
+				// No pinned cards, zoom to the collective bbox of all cards
+				CCH.cards.getCards().each(function(card){
+					bounds.extend(OpenLayers.Bounds.fromArray(card.bbox).transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection));
+				});
 			}
 
 			me.map.zoomToExtent(bounds, false);
