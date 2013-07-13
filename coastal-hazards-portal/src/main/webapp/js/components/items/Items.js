@@ -103,7 +103,7 @@ CCH.Objects.Items = function(args) {
 					bbox: bbox,
 					sortBy: sortBy,
 					query: query.split(','),
-					type: type
+					type: type.split(',')
 				},
 				traditional: true,
 				success: function(data, status, jqXHR) {
