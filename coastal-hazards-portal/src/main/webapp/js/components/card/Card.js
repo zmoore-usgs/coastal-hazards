@@ -50,7 +50,7 @@ CCH.Objects.Card = function(args) {
 			// Link the title of the card to the info page for that card
 			var titleLink = $('<a />').addClass('description-title span11').attr({
 				'href': CCH.CONFIG.contextPath + '/ui/info/item/' + me.item.id,
-				'target': '_blank'
+				'target': 'portal_view_window'
 			}).html(me.summary.medium.title);
 
 			titleRow.append(me.pinButton, titleLink);
