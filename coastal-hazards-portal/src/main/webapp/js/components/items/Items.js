@@ -25,6 +25,18 @@ CCH.Objects.Items = function(args) {
 										return card.item;
 									});
 									me.items = me.items.concat(pinnedItems);
+									
+									// The expected behavior is for pinned items to 
+									// show up at the bottom of the list. concat() 
+									// does not care about uniqueness so we may have 
+									// pinned items that are duplicates of what came 
+									// in through the search. Go through the array and 
+									// delete off the top any duplicates which will be
+									// the unpinned version of the pinned item
+									me.items.remove(function(item) {
+										var dupeCount = me.items.count(item);
+										return dupeCount > 1;
+									})
 									$(window).trigger('cch.data.items.loaded', {
 										items: me.items
 									});
