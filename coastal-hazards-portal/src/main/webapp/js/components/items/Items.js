@@ -95,7 +95,6 @@ CCH.Objects.Items = function(args) {
 				success: [],
 				error: []
 			};
-
 			$.ajax({
 				url: CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.item.endpoint + item,
 				dataType: 'json',
@@ -103,9 +102,10 @@ CCH.Objects.Items = function(args) {
 					count: count,
 					bbox: bbox,
 					sortBy: sortBy,
-					query: query,
+					query: query.split(','),
 					type: type
 				},
+				traditional: true,
 				success: function(data, status, jqXHR) {
 					callbacks.success.each(function(cb) {
 						cb.apply(this, [data, status, jqXHR]);

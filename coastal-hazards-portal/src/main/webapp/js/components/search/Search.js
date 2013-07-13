@@ -126,7 +126,6 @@ CCH.Objects.Search = function(args) {
 			me.submitButton.on({
 				'click': function() {
 					me.modalContainer.modal('hide');
-
 					$(window).trigger('cch.search.item.submit', {
 						'top': me.north.html(),
 						'bottom': me.south.html(),
