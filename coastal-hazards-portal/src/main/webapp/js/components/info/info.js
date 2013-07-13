@@ -1,5 +1,4 @@
 $(document).ready(function() {
-
 	// Header fix
 	$('#ccsa-area').find('br').first().remove();
 
@@ -27,31 +26,49 @@ $(document).ready(function() {
 						function(data, status, jqXHR) {
 							var sld = data;
 							if (CCH.CONFIG.item.type === 'historical') {
-								// - The legend builder is going to need the actual data from the shorelines layer
-								// 
-								// - Using the wmsService.layers info for a WMS request because that's properly
-								// formatted to go into this request. The wfsService has the fully qualified namespace
-								// which borks the WFS request
-								// 
-								// - Making an assumption that "Date_" is the attribute being used and is capitalized correctly
-								$.ajax(CCH.CONFIG.contextPath + '/cidags/ows?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&propertyName=Date_&typeName=' + CCH.CONFIG.item.wmsService.layers, {
-									success: function(data, textStatus, jqXHR) {
-										var gmlReader = new OpenLayers.Format.GML.v3();
-										var features = gmlReader.read(data);
-										var legend = CCH.Util.buildLegend({
-											type: CCH.CONFIG.item.type,
-											sld: sld,
-											features: features
-										});
-										$('#info-legend').append(legend);
-									},
-									error: function(data, textStatus, jqXHR) {
-										removeLegendContainer();
-									}
-								});
-							} else if (CCH.CONFIG.item.type === 'storms' || CCH.CONFIG.item.type === 'vulnerability') {
+								if (CCH.CONFIG.item.name === 'rates') {
+									var legend = CCH.Util.buildLegend({
+										type: CCH.CONFIG.item.type,
+										name: CCH.CONFIG.item.name,
+										sld: sld
+									});
+									$('#info-legend').append(legend);
+								} else {
+									// - The legend builder is going to need the actual data from the shorelines layer
+									// 
+									// - Using the wmsService.layers info for a WMS request because that's properly
+									// formatted to go into this request. The wfsService has the fully qualified namespace
+									// which borks the WFS request
+									// 
+									// - Making an assumption that "Date_" is the attribute being used and is capitalized correctly
+									$.ajax(CCH.CONFIG.contextPath + '/cidags/ows?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&propertyName=Date_&typeName=' + CCH.CONFIG.item.wmsService.layers, {
+										success: function(data, textStatus, jqXHR) {
+											var gmlReader = new OpenLayers.Format.GML.v3();
+											var features = gmlReader.read(data);
+											var legend = CCH.Util.buildLegend({
+												type: CCH.CONFIG.item.type,
+												attr: CCH.CONFIG.item.name,
+												sld: sld,
+												features: features
+											});
+											$('#info-legend').append(legend);
+										},
+										error: function(data, textStatus, jqXHR) {
+											removeLegendContainer();
+										}
+									});
+								}
+
+							} else if (CCH.CONFIG.item.type === 'storms') {
 								var legend = CCH.Util.buildLegend({
 									type: CCH.CONFIG.item.type,
+									sld: sld
+								});
+								$('#info-legend').append(legend);
+							} else if (CCH.CONFIG.item.type === 'vulnerability') {
+								var legend = CCH.Util.buildLegend({
+									type: CCH.CONFIG.item.type,
+									attr: CCH.CONFIG.item.attr,
 									sld: sld
 								});
 								$('#info-legend').append(legend);
@@ -82,14 +99,14 @@ $(document).ready(function() {
 			// Create a "View Metadata" button
 			var metadataLink = $('<a />').attr({
 				'href': CCH.CONFIG.item.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
-				'target': '_blank',
+				'target': 'portal_metadata_window',
 				'role': 'button'
 			}).addClass('btn').html('View Metadata');
 
 			// Create a "View in Portal" link to let the user view this in the portal
 			var applicationLink = $('<a />').attr({
 				'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId,
-				'target': '_blank',
+				'target': 'portal_main_window',
 				'role': 'button'
 			}).addClass('btn').html('View In Portal');
 
@@ -101,7 +118,7 @@ $(document).ready(function() {
 					var li = $('<li />');
 					var a = $('<a />').attr({
 						'href': item.link,
-						'target': '_blank'
+						'target': 'portal_publication_window'
 					}).html(item.title);
 					li.append(a);
 					publist.append(li);
@@ -188,7 +205,18 @@ $(document).ready(function() {
 	};
 
 	var buildMap = function() {
-		var bounds = new OpenLayers.Bounds(CCH.CONFIG.item.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));
+		// Buffer the bounds of the layer by 10 degrees in each direction for the 
+		// restricted extend
+		var originalBounds = new OpenLayers.Bounds(CCH.CONFIG.item.bbox);
+		var extendedBounds = new OpenLayers.Bounds([
+			originalBounds.left - Math.abs(originalBounds.left * 0.1),
+			originalBounds.bottom - Math.abs(originalBounds.bottom * 0.1),
+			originalBounds.right + Math.abs(originalBounds.right * 0.1),
+			originalBounds.top + Math.abs(originalBounds.top * 0.1)
+		]);
+		originalBounds.extend(extendedBounds);
+		var bounds = originalBounds.transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));
+		
 		CCH.CONFIG.map = new OpenLayers.Map('map', {
 			projection: CCH.CONFIG.projection,
 			displayProjection: new OpenLayers.Projection(CCH.CONFIG.projection),
@@ -225,7 +253,8 @@ $(document).ready(function() {
 					styles: 'cch',
 					transparent: true
 				}, {
-			singleTile: true,
+			singleTile: false,
+			displayInLayerSwitcher: false,
 			transparent: true,
 			isBaseLayer: false,
 			projection: 'EPSG:3857'

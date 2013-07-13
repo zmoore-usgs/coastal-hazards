@@ -43,16 +43,11 @@ body {
 
 #cch-ui-legend-table {
 	table-layout: fixed;
-	height: 300px;
 }
 
 #cch-ui-legend-table tbody td {
 	padding : 2px;
 	vertical-align: middle;
-}
-
-#cch-ui-legend-table thead tr th:nth-child(2) {
-	text-transform: capitalize; 
 }
 
 #info-row-control iframe{
@@ -111,6 +106,10 @@ body {
 
 	#map {
 		height : 300px;
+	}
+	
+	.olControlZoom {
+		display: none;
 	}
 }
 

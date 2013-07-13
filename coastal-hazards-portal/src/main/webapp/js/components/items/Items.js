@@ -16,9 +16,19 @@ CCH.Objects.Items = function(args) {
 								$(window).trigger('cch.data.items.searched', data.items.length);
 								if (data && data.items && data.items.length) {
 									me.items = data.items;
+
+									// We don't want to kill off the pinned items 
+									// after a search. We wamt them to end up on the
+									// bottom of the slide, so append them to the 
+									// items array before we rebuild the slideshoe
+									var pinnedItems = CCH.cards.getPinnedCards().map(function(card) {
+										return card.item;
+									});
+									me.items = me.items.concat(pinnedItems);
 									$(window).trigger('cch.data.items.loaded', {
 										items: me.items
 									});
+									CCH.slideshow.stop();
 								}
 							}
 						],
@@ -85,17 +95,36 @@ CCH.Objects.Items = function(args) {
 				success: [],
 				error: []
 			};
-
+			var data = item ? '' : {
+				count: count,
+				bbox: bbox,
+				sortBy: sortBy,
+				query: query.split(','),
+				type: type.split(',')
+			};
+			
+			if (!item) {
+				if (!count) {
+					delete data.count;
+				}
+				if (!bbox) {
+					delete data.bbox;
+				}
+				if (!sortBy) {
+					delete data.sortBy;
+				}
+				if (!query || query.length === 0) {
+					delete data.query;
+				}
+				if (!type || type.length === 0) {
+					delete data.type;
+				}
+			}
 			$.ajax({
 				url: CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.item.endpoint + item,
 				dataType: 'json',
-				data: item ? '' : {
-					count: count,
-					bbox: bbox,
-					sortBy: sortBy,
-					query: query,
-					type: type
-				},
+				data: data,
+				traditional: true,
 				success: function(data, status, jqXHR) {
 					callbacks.success.each(function(cb) {
 						cb.apply(this, [data, status, jqXHR]);

@@ -15,43 +15,11 @@ CCH.Util = {
 				));
 		var legendTableBody = $('<tbody />');
 
-		if (type === 'historical') {
-			var features = args.features;
-
-			var years = features.map(function(f) {
-				return f.data['Date_'].split('/')[2];
-			}).unique().sort().reverse();
-
-			// Create a proper map to quickly look years up against
-			var yearToColor = {};
-			for (var bInd = 0; bInd < sld.bins.length; bInd++) {
-				sld.bins[bInd].years = sld.bins[bInd].years.map(function(y) {
-					return y < 10 ? '0' + y : '' + y;
-				});
-				for (var yInd = 0; yInd < 3; yInd++) {
-					var year = sld.bins[bInd].years[yInd];
-					// The tail end of the sld.bins doesn't have 3 indexes so check
-					if (year) {
-						yearToColor[year] = sld.bins[bInd].color;
-					}
-				}
-			}
-
-			for (var yInd = 0; yInd < years.length; yInd++) {
-				var year = years[yInd];
-				var legendTableBodyTr = $('<tr />');
-				var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
-						$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', yearToColor[years[yInd].substr(2)]).html('&nbsp;'));
-				var legendTableBodyTdYear = $('<td />').addClass('cch-ui-legend-table-body-td-year').append(
-						$('<div />').addClass('cch-ui-legend-table-body-div-year').html(years[yInd]));
-				legendTableBody.append(
-						legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear));
-			}
-		} else if (type === 'storms' || type === 'vulnerability') {
+		var buildVanillaLegend = function() {
 			for (var bInd = 0; bInd < sld.bins.length; bInd++) {
 				var ub = sld.bins[bInd].upperBound;
 				var lb = sld.bins[bInd].lowerBound;
-				var range = function(ub,lb){
+				var range = function(ub, lb) {
 					if (lb && ub) {
 						return lb + ' to ' + ub;
 					} else if (lb && !ub) {
@@ -59,7 +27,7 @@ CCH.Util = {
 					} else if (!lb && ub) {
 						return '< ' + ub;
 					}
-				}(ub,lb)
+				}(ub, lb)
 				var legendTableBodyTr = $('<tr />');
 				var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
 						$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', sld.bins[bInd].color).html('&nbsp;'));
@@ -67,6 +35,64 @@ CCH.Util = {
 						$('<div />').addClass('cch-ui-legend-table-body-div-range').html(range));
 				legendTableBody.append(
 						legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdRange));
+			}
+		}
+
+		if (type === 'historical') {
+			if (args.attr === 'rates') {
+				buildVanillaLegend();
+			} else {
+				var features = args.features;
+
+				var years = features.map(function(f) {
+					return f.data['Date_'].split('/')[2];
+				}).unique().sort().reverse();
+
+				// Create a proper map to quickly look years up against
+				var yearToColor = {};
+				for (var bInd = 0; bInd < sld.bins.length; bInd++) {
+					sld.bins[bInd].years = sld.bins[bInd].years.map(function(y) {
+						return y < 10 ? '0' + y : '' + y;
+					});
+					for (var yInd = 0; yInd < 3; yInd++) {
+						var year = sld.bins[bInd].years[yInd];
+						// The tail end of the sld.bins doesn't have 3 indexes so check
+						if (year) {
+							yearToColor[year] = sld.bins[bInd].color;
+						}
+					}
+				}
+
+				for (var yInd = 0; yInd < years.length; yInd++) {
+					var year = years[yInd];
+					var legendTableBodyTr = $('<tr />');
+					var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
+							$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', yearToColor[years[yInd].substr(2)]).html('&nbsp;'));
+					var legendTableBodyTdYear = $('<td />').addClass('cch-ui-legend-table-body-td-year').append(
+							$('<div />').addClass('cch-ui-legend-table-body-div-year').html(years[yInd]));
+					legendTableBody.append(
+							legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear));
+				}
+			}
+
+		} else if (type === 'storms') {
+			buildVanillaLegend();
+		} else if (type === 'vulnerability') {
+			if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(args.attr.toUpperCase()) !== -1) {
+				// Old school CVI
+				for (var bInd = 0; bInd < sld.bins.length; bInd++) {
+					var category = sld.bins[bInd].category;
+					var legendTableBodyTr = $('<tr />');
+					var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
+							$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', sld.bins[bInd].color).html('&nbsp;'));
+					var legendTableBodyTdRange = $('<td />').addClass('cch-ui-legend-table-body-td-range').append(
+							$('<div />').addClass('cch-ui-legend-table-body-div-range').html(category));
+					legendTableBody.append(
+							legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdRange));
+				}
+			} else {
+				// Bayesian
+				buildVanillaLegend();
 			}
 		}
 
