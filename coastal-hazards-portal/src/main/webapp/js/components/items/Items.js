@@ -36,7 +36,7 @@ CCH.Objects.Items = function(args) {
 									me.items.remove(function(item) {
 										var dupeCount = me.items.count(item);
 										return dupeCount > 1;
-									})
+									});
 									$(window).trigger('cch.data.items.loaded', {
 										items: me.items
 									});
