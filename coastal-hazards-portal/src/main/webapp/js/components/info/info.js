@@ -206,7 +206,18 @@ $(document).ready(function() {
 	};
 
 	var buildMap = function() {
-		var bounds = new OpenLayers.Bounds(CCH.CONFIG.item.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));
+		// Buffer the bounds of the layer by 10 degrees in each direction for the 
+		// restricted extend
+		var originalBounds = new OpenLayers.Bounds(CCH.CONFIG.item.bbox);
+		var extendedBounds = new OpenLayers.Bounds([
+			originalBounds.left - Math.abs(originalBounds.left * 0.1),
+			originalBounds.bottom - Math.abs(originalBounds.bottom * 0.1),
+			originalBounds.right + Math.abs(originalBounds.right * 0.1),
+			originalBounds.top + Math.abs(originalBounds.top * 0.1)
+		]);
+		originalBounds.extend(extendedBounds);
+		var bounds = originalBounds.transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));
+		
 		CCH.CONFIG.map = new OpenLayers.Map('map', {
 			projection: CCH.CONFIG.projection,
 			displayProjection: new OpenLayers.Projection(CCH.CONFIG.projection),
