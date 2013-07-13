@@ -48,7 +48,7 @@ $(document).ready(function() {
 											var features = gmlReader.read(data);
 											var legend = CCH.Util.buildLegend({
 												type: CCH.CONFIG.item.type,
-												name: CCH.CONFIG.item.name,
+												attr: CCH.CONFIG.item.name,
 												sld: sld,
 												features: features
 											});
@@ -60,9 +60,16 @@ $(document).ready(function() {
 									});
 								}
 
-							} else if (CCH.CONFIG.item.type === 'storms' || CCH.CONFIG.item.type === 'vulnerability') {
+							} else if (CCH.CONFIG.item.type === 'storms') {
 								var legend = CCH.Util.buildLegend({
 									type: CCH.CONFIG.item.type,
+									sld: sld
+								});
+								$('#info-legend').append(legend);
+							} else if (CCH.CONFIG.item.type === 'vulnerability') {
+								var legend = CCH.Util.buildLegend({
+									type: CCH.CONFIG.item.type,
+									attr: CCH.CONFIG.item.attr,
 									sld: sld
 								});
 								$('#info-legend').append(legend);
