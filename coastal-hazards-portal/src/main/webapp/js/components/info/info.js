@@ -100,14 +100,14 @@ $(document).ready(function() {
 			// Create a "View Metadata" button
 			var metadataLink = $('<a />').attr({
 				'href': CCH.CONFIG.item.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
-				'target': '_blank',
+				'target': 'portal_metadata_window',
 				'role': 'button'
 			}).addClass('btn').html('View Metadata');
 
 			// Create a "View in Portal" link to let the user view this in the portal
 			var applicationLink = $('<a />').attr({
 				'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId,
-				'target': '_blank',
+				'target': 'portal_main_window',
 				'role': 'button'
 			}).addClass('btn').html('View In Portal');
 
@@ -119,7 +119,7 @@ $(document).ready(function() {
 					var li = $('<li />');
 					var a = $('<a />').attr({
 						'href': item.link,
-						'target': '_blank'
+						'target': 'portal_publication_window'
 					}).html(item.title);
 					li.append(a);
 					publist.append(li);

@@ -26,6 +26,7 @@ CCH.Objects.UI = function(args) {
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
 		init: function() {
+			window.name = "portal_main_window";
 			// Bindings
 			$(window).on({
 				'resize': me.windowResizeHandler,
