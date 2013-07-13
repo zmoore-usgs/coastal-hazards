@@ -22,7 +22,7 @@ CCH.Objects.UI = function(args) {
 	me.shareUrlButton = args.shareUrlButton;
 	me.shareInput = args.shareInput;
 	me.shareTwitterBtn = args.shareTwitterBtn;
-	
+
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
 		init: function() {
@@ -40,6 +40,9 @@ CCH.Objects.UI = function(args) {
 						sticker: false,
 						icon: 'icon-search'
 					});
+				},
+				'cch.navbar.pinmenu.item.clear.click': function() {
+					me.navbarPinButton.removeClass('slider-card-pinned');
 				}
 			});
 			me.navbarPinButton.on('click', me.navbarMenuClickHandler);
@@ -156,7 +159,7 @@ CCH.Objects.UI = function(args) {
 			me.shareUrlButton.addClass('disabled');
 			me.shareInput.val('');
 			me.shareTwitterBtn.empty();
-			
+
 			// A user has clicked on the share menu item. A session needs to be 
 			// created and a token retrieved...
 			CCH.session.writeSession({
