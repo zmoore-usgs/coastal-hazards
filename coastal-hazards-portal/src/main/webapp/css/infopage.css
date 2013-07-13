@@ -107,6 +107,10 @@ body {
 	#map {
 		height : 300px;
 	}
+	
+	.olControlZoom {
+		display: none;
+	}
 }
 
 @media (max-width: 766px) {
