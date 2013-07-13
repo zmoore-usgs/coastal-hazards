@@ -30,7 +30,7 @@
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
         <jsp:include page="template/USGSHead.jsp">
-            <jsp:param name="relPath" value="" />
+            <jsp:param name="relPath" value="../../../" />
             <jsp:param name="shortName" value="USGS Coastal Change Hazards Portal" />
             <jsp:param name="title" value="USGS Coastal Change Hazards" />
             <jsp:param name="description" value="" />
