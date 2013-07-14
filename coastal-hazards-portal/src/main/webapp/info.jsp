@@ -111,8 +111,6 @@
 						<div id="map"></div>
 						<div id="info-row-control">
 							<div class='well well-small'>
-								<%-- Metadata Link --%>
-								<span id="metadata-link"></span>
 
 								<%-- Application Link --%>
 								<span id="application-link"></span>
@@ -141,6 +139,14 @@
 						<span id='info-container-publications-label'>Publications: </span>
 						<span id='info-container-publications-list-span'></span>
 					</div>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="well well-small"> <!-- view metadata" "download zip (full)" and "download zip (item)" -->
+					<%-- Metadata Link --%>
+					<span id="metadata-link"></span>
+					<span id="download-full-link"></span>
+					<span id="download-item-link"></span>
 				</div>
 			</div>
 

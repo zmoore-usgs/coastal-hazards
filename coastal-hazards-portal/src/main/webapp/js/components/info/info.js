@@ -99,14 +99,23 @@ $(document).ready(function() {
 				'href': CCH.CONFIG.item.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
 				'target': 'portal_metadata_window',
 				'role': 'button'
-			}).addClass('btn').html('View Metadata');
+			}).addClass('btn').html('<i class="icon-download"></i> View Metadata');
+			
+			// Create a "Download Full" button
+			var downloadFull = $('<a />').attr({
+				'role': 'button'
+			}).addClass('btn').html('<i class="icon-download"></i> Download Full Data');
+			
+			var downloadItem = $('<a />').attr({
+				'role': 'button'
+			}).addClass('btn').html('<i class="icon-download"></i> Download Item Data');
 
 			// Create a "View in Portal" link to let the user view this in the portal
 			var applicationLink = $('<a />').attr({
 				'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId,
 				'target': 'portal_main_window',
 				'role': 'button'
-			}).addClass('btn').html('View In Portal');
+			}).addClass('btn').html('<i class="icon-eye-open"></i> View In Portal');
 
 			// Build the publications list for the item
 			var publist = 'None Found';
@@ -127,6 +136,8 @@ $(document).ready(function() {
 			$('#info-summary').html(data.summary.full.text);
 			$('#info-container-publications-list-span').append(publist);
 			$('#metadata-link').append(metadataLink);
+			$('#download-full-link').append(downloadFull);
+			$('#download-item-link').append(downloadItem);
 			$('#application-link').append(applicationLink);
 
 			buildTwitterButton();
