@@ -41,8 +41,11 @@
 								<LinePlacement />
 							</LabelPlacement>
 							<Fill>
-								<CssParameter name="fill">#FFFFFF</CssParameter>
+								<CssParameter name="fill">#EEEEEE</CssParameter>
 							</Fill>
+							<Halo>
+								<CssParameter name="fill">#FFFFFF</CssParameter>
+							</Halo>
 							<Font>
 								<CssParameter name="font-family">Arial</CssParameter>
 								<CssParameter name="font-size">10</CssParameter>
