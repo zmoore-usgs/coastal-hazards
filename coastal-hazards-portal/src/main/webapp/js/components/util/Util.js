@@ -102,18 +102,18 @@ CCH.Util = {
 									});
 
 									var filter = new OpenLayers.Filter.Logical({
-										type: OpenLayers.Filter.Logical.AND,
+										type: OpenLayers.Filter.Logical.OR,
 										filters: filters
 									});
 									var filterObj = new OpenLayers.Format.Filter({version: "1.1.0"});
 									var xml = new OpenLayers.Format.XML();
 									var filterData = xml.write(filterObj.write(filter));
 									layer.mergeNewParams({
-										filter : filterData
+										filter: filterData
 									}, true);
 								} else {
 									layer.mergeNewParams({
-										filter : null
+										filter: null
 									}, true);
 									layer.redraw(true);
 								}
