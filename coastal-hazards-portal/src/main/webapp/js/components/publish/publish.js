@@ -169,7 +169,7 @@ var wmsInputBoxBlurHandler = function(evt) {
 var buildServiceEndpoint = function(endpoint) {
 	var updatedEndpoint = null;
 	var urlIndex = 0;
-	if (endpoint) {
+	if (endpoint && endpoint.toLowerCase().indexOf('http') !== -1) {
 		if (endpoint.toLowerCase().has('coastalmap.marine.usgs.gov')) {
 			urlIndex = endpoint.indexOf('cmgp/') + 5;
 			updatedEndpoint = contextPath + '/marine/' + endpoint.substring(urlIndex);
