@@ -638,7 +638,7 @@ var getFullEndpoint = function(val) {
 };
 
 var historicAttributes = ['date_', 'lrr', 'wlr', 'sce', 'nsm', 'epr'];
-var vulnAttributes = ['waverisk', 'tiderisk', 'sloperisk', 'errrisk', 'slrisk', 'geom', 'cvirisk', 'rslr', 'mwh', 'tr', 'e_rate', 'peros2', 'peros1', 'pstable', 'pacc1', 'pacc2'];
+var vulnAttributes = ['geom', 'waverisk', 'tiderisk', 'sloperisk', 'errrisk', 'slrisk', 'geom', 'cvirisk', 'rslr', 'mwh', 'tr', 'e_rate', 'peros2', 'peros1', 'pstable', 'pacc1', 'pacc2'];
 var stormAttributes = ['pcol','pcol1','pcol2','pcol3','pcol4','pcol5',
         'povw','povw1','povw2','povw3','povw4','povw5',
         'pind','pind1','pind2','pind3','pind4','pind5',
