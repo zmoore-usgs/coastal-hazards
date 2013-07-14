@@ -216,7 +216,7 @@ $(document).ready(function() {
 		]);
 		originalBounds.extend(extendedBounds);
 		var bounds = originalBounds.transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));
-		
+
 		CCH.CONFIG.map = new OpenLayers.Map('map', {
 			projection: CCH.CONFIG.projection,
 			displayProjection: new OpenLayers.Projection(CCH.CONFIG.projection),
@@ -257,7 +257,11 @@ $(document).ready(function() {
 			displayInLayerSwitcher: false,
 			transparent: true,
 			isBaseLayer: false,
-			projection: 'EPSG:3857'
+			projection: 'EPSG:3857',
+			type: 'cch-layer',
+			tileOptions: {
+				maxGetUrlLength: 2048
+			}
 		});
 
 		CCH.CONFIG.map.addLayer(layer);

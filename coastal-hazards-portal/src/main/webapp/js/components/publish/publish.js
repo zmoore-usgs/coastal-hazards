@@ -169,7 +169,7 @@ var wmsInputBoxBlurHandler = function(evt) {
 var buildServiceEndpoint = function(endpoint) {
 	var updatedEndpoint = null;
 	var urlIndex = 0;
-	if (endpoint) {
+	if (endpoint && endpoint.toLowerCase().indexOf('http') !== -1) {
 		if (endpoint.toLowerCase().has('coastalmap.marine.usgs.gov')) {
 			urlIndex = endpoint.indexOf('cmgp/') + 5;
 			updatedEndpoint = contextPath + '/marine/' + endpoint.substring(urlIndex);
@@ -288,11 +288,6 @@ var serviceTypesDropdownChangeHandler = function(evt) {
 								'value': name,
 							}).addClass('attr-checkbox');
 							var nameSpan = $('<span />').addClass('name-span').html(name);
-//							var invalidAttribute = combinedAttributes.indexOf(nameTlc) === -1;
-//							if (invalidAttribute) {
-//								nameSpan.addClass('muted');
-//								cb.attr('disabled', 'true');
-//							} else {
 							if (!CCH.config.type) {
 								// Using the attribute, match it to a type
 								CCH.config.type = deriveTypeFromAttribute(nameTlc);
@@ -644,5 +639,14 @@ var getFullEndpoint = function(val) {
 
 var historicAttributes = ['date_', 'lrr', 'wlr', 'sce', 'nsm', 'epr'];
 var vulnAttributes = ['waverisk', 'tiderisk', 'sloperisk', 'errrisk', 'slrisk', 'geom', 'cvirisk', 'rslr', 'mwh', 'tr', 'e_rate', 'peros2', 'peros1', 'pstable', 'pacc1', 'pacc2'];
-var stormAttributes = ['pcol1', 'pcol2', 'pcol3', 'pcol4', 'pcol5', 'povw1', 'povw2', 'povw3', 'povw4', 'povw5', 'pind1', 'pind2', 'pind3', 'pind4', 'pind5'];
+var stormAttributes = ['pcol','pcol1','pcol2','pcol3','pcol4','pcol5',
+        'povw','povw1','povw2','povw3','povw4','povw5',
+        'pind','pind1','pind2','pind3','pind4','pind5',
+        'dhigh','dlow','dhirms','dlorms',
+        'surge','surge1','surge2','surge3','surge4','surge5',
+        'setup','setup1','setup2','setup3','setup4','setup5',
+        'runup','runup1','runup2','runup3','runup4','runup5',
+        'mean','mean1','mean2','mean3','mean4','mean5',
+        'extreme','extreme1','extreme2','extreme3','extreme4','extreme5',
+        'tide'];
 var combinedAttributes = historicAttributes.concat(vulnAttributes, stormAttributes);
