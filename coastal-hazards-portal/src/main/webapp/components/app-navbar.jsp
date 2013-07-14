@@ -30,7 +30,7 @@
 
 <div id="shareModal" class="modal fade"  role="dialog" aria-labelledby="modal-label" aria-hidden="true">
 	<div class="modal-header">
-		<h4 id="modal-label">Using The Coastal Change Hazards Portal</h4>
+		<h4 id="modal-label">Share Your Coastal Change Hazards Portal View With Others</h4>
 	</div>
 	<div class="modal-body">
 		<div class="row-fluid">
@@ -51,11 +51,20 @@
 
 <div id="helpModal" class="modal fade"  role="dialog" aria-labelledby="modal-label" aria-hidden="true">
 	<div class="modal-header">
-		<h4 id="modal-help-label">Share Your Coastal Change Hazards Portal View With Others</h4>
+		<h4 id="modal-help-label">About The Coastal Change Hazards Portal</h4>
 	</div>
 	<div class="modal-body">
 		<div class="row-fluid">
-			Some help text here
+			<div id='modal-help-summary-container' class='well well-small'>
+				With more than half of the American people living along our Nation's coasts, 
+				extreme beach and cliff erosion can dramatically alter coastal ecosystems, 
+				cause billions of dollars' worth of coastal development, and even threaten 
+				human life. Through projects like the National Assessment of Coastal Change 
+				Hazards and regional studies of nearshore processes, the US Geological Survey 
+				is uncovering the science behind coastal change hazards and providing data, 
+				tools, and scientific knowledge to help coastal planners, resource managers, 
+				and emergency operations as they work to reduce risk along our coastlines.
+			</div>
 		</div>
 	</div>
 	<div class="modal-footer">

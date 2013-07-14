@@ -26,8 +26,10 @@ CCH.Objects.UI = function(args) {
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
 		init: function() {
+			// This window name is used for the info window to launch into when 
+			// a user chooses to go back to the portal
 			window.name = "portal_main_window";
-			// Bindings
+			
 			$(window).on({
 				'resize': me.windowResizeHandler,
 				'cch.data.items.searched': function(evt, count) {
@@ -275,7 +277,6 @@ CCH.Objects.UI = function(args) {
 			$('#splash-status-update').append(continueLink);
 			$('#splash-status-update').append(emailLink);
 			$('#splash-spinner').fadeOut(2000);
-			LOG.error(args.errorThrown + ' : ' + jqXHR.responseText);
 		}
 	});
 };
