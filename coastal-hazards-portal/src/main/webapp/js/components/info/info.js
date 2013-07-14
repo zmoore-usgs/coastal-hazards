@@ -274,6 +274,6 @@ $(document).ready(function() {
 		});
 		
 		CCH.CONFIG.map.addLayer(layer);
-		CCH.CONFIG.map.zoomToExtent(bounds);
+		CCH.CONFIG.map.zoomToExtent(new OpenLayers.Bounds(CCH.CONFIG.item.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')));
 	};
 });
