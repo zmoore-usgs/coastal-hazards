@@ -103,9 +103,10 @@ CCH.Util = {
 										featureType: name
 									}),
 									styleMap: new OpenLayers.StyleMap({
+										strokeColor: "#000000",
+										strokeDashstyle : 'dot',
 										strokeWidth: 2,
-										strokeColor: "#0000FF",
-										strokeDashstyle : 'dot'
+										strokeOpacity : 1
 									}),
 									filter: new OpenLayers.Filter.Logical({
 										type: OpenLayers.Filter.Logical.OR,
