@@ -32,33 +32,6 @@
 							</sld:Stroke>
 						</sld:LineSymbolizer>
 					</sld:Rule>
-					<sld:Rule>
-						<TextSymbolizer>
-							<Label>
-								<ogc:PropertyName>${it.attr}</ogc:PropertyName>
-							</Label>
-							<LabelPlacement>
-								<LinePlacement />
-							</LabelPlacement>
-							<Fill>
-								<CssParameter name="fill">#EEEEEE</CssParameter>
-							</Fill>
-							<Halo>
-								<CssParameter name="fill">#FFFFFF</CssParameter>
-							</Halo>
-							<Font>
-								<CssParameter name="font-family">Arial</CssParameter>
-								<CssParameter name="font-size">10</CssParameter>
-								<CssParameter name="font-style">normal</CssParameter>
-								<CssParameter name="font-weight">bold</CssParameter>
-							</Font>
-							<VendorOption name="followLine">true</VendorOption>
-							<VendorOption name="followLine">true</VendorOption>
-							<VendorOption name="maxAngleDelta">90</VendorOption>
-							<VendorOption name="maxDisplacement">400</VendorOption>
-							<VendorOption name="repeat">150</VendorOption>
-						</TextSymbolizer>
-					</sld:Rule>
                 </c:forEach>
             </sld:FeatureTypeStyle>
         </sld:UserStyle>
