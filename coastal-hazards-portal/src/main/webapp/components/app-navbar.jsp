@@ -15,34 +15,54 @@
 						<li id='app-navbar-pin-control-share-li'><a tabindex="-1" data-toggle="modal" role="button" href="#shareModal">Share View</a></li>
 					</ul>
 				</div>
-				<div id="shareModal" class="modal fade"  role="dialog" aria-labelledby="modal-label" aria-hidden="true">
-					<div class="modal-header">
-						<h4 id="modal-label">Share Your Coastal Change Hazards Portal View With Others</h4>
-					</div>
-					<div class="modal-body">
-						<div class="row-fluid">
-							<div class="well well-small">
-								<div id="modal-share-summary-url-inputbox-div">
-									<input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." />
-								</div>
-								<a id="modal-share-summary-url-button" class="btn" target="portal_view_window" role="button">View In Portal</a>
-								
-							</div>
-							<span class="pull-right" id='multi-card-twitter-button'></span>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<a href="#" class="btn"  data-dismiss="modal" aria-hidden="true">Close</a>
-					</div>
+				<div id='app-navbar-help-search-container' class='pull-right'>
+					<span id="app-navbar-help-container">
+						<a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="icon-info-sign"></i></a>
+					</span>
+					<span id="app-navbar-item-search-container">
+						<i class="icon-search"></i>
+					</span>
 				</div>
-
-				<span id="app-navbar-item-search-container" class="pull-right">
-					<i class="icon-search"></i>
-				</span>
             </div>
         </div>
     </div>
 </div>
+
+<div id="shareModal" class="modal fade"  role="dialog" aria-labelledby="modal-label" aria-hidden="true">
+	<div class="modal-header">
+		<h4 id="modal-label">Using The Coastal Change Hazards Portal</h4>
+	</div>
+	<div class="modal-body">
+		<div class="row-fluid">
+			<div class="well well-small">
+				<div id="modal-share-summary-url-inputbox-div">
+					<input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." />
+				</div>
+				<a id="modal-share-summary-url-button" class="btn" target="portal_view_window" role="button">View In Portal</a>
+
+			</div>
+			<span class="pull-right" id='multi-card-twitter-button'></span>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn"  data-dismiss="modal" aria-hidden="true">Close</a>
+	</div>
+</div>
+
+<div id="helpModal" class="modal fade"  role="dialog" aria-labelledby="modal-label" aria-hidden="true">
+	<div class="modal-header">
+		<h4 id="modal-help-label">Share Your Coastal Change Hazards Portal View With Others</h4>
+	</div>
+	<div class="modal-body">
+		<div class="row-fluid">
+			Some help text here
+		</div>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn"  data-dismiss="modal" aria-hidden="true">Close</a>
+	</div>
+</div>
+
 <script type="text/javascript">
 	$('#site-title').remove();
 </script>
