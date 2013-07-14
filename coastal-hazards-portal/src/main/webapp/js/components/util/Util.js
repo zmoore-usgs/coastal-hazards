@@ -70,7 +70,7 @@ CCH.Util = {
 					var legendTableBodyTr = $('<tr />');
 					var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
 							$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', yearToColor[years[yInd].substr(2)]).html('&nbsp;'));
-					var valueContainer = $('<div />').addClass('cch-ui-legend-table-body-div-year').html(years[yInd]);
+					var valueContainer = $('<div />').attr({'id': 'cch-ui-legend-table-body-div-year-' + years[yInd]}).addClass('cch-ui-legend-table-body-div-year').html(years[yInd]);
 					var viewButton = $('<button />').attr({
 						'cch-year': years[yInd],
 						'data-toggle': 'button'
@@ -89,35 +89,37 @@ CCH.Util = {
 									}
 								});
 
-								var layer = CCH.CONFIG.map.getLayersBy('type', 'cch-layer')[0];
-								if (years.length) {
-									var filters = [];
-
-									years.each(function(ind, year) {
-										filters.push(new OpenLayers.Filter.Comparison({
-											type: OpenLayers.Filter.Comparison.LIKE,
-											property: CCH.CONFIG.item.attr,
-											value: '*' + year
-										}));
-									});
-
-									var filter = new OpenLayers.Filter.Logical({
-										type: OpenLayers.Filter.Logical.OR,
-										filters: filters
-									});
-									var filterObj = new OpenLayers.Format.Filter({version: "1.1.0"});
-									var xml = new OpenLayers.Format.XML();
-									var filterData = xml.write(filterObj.write(filter));
-									layer.mergeNewParams({
-										filter: filterData
-									}, true);
-								} else {
-									layer.mergeNewParams({
-										filter: null
-									}, true);
-									layer.redraw(true);
+								var layer = CCH.CONFIG.map.getLayersBy('type', 'cch-layer-dotted')[0];
+								if (layer) {
+									CCH.CONFIG.map.removeLayer(layer);
 								}
 
+								var ns = CCH.CONFIG.item.wmsService.layers.split(':')[0];
+								var name = CCH.CONFIG.item.wmsService.layers.split(':')[1];
+								layer = new OpenLayers.Layer.Vector("WFS", {
+									strategies: [new OpenLayers.Strategy.BBOX()],
+									protocol: new OpenLayers.Protocol.WFS({
+										url: CCH.CONFIG.contextPath + '/cidags/'+ns+'/wfs',
+										featureType: name
+									}),
+									styleMap: new OpenLayers.StyleMap({
+										strokeWidth: 2,
+										strokeColor: "#0000FF",
+										strokeDashstyle : 'dot'
+									}),
+									filter: new OpenLayers.Filter.Logical({
+										type: OpenLayers.Filter.Logical.OR,
+										filters: years.map(function(idx, yr) {
+											return new OpenLayers.Filter.Comparison({
+												type: OpenLayers.Filter.Comparison.LIKE,
+												property: CCH.CONFIG.item.attr,
+												value: '*' + yr
+											})
+										})
+									})
+								});
+								layer.type = 'cch-layer-dotted';
+								CCH.CONFIG.map.addLayer(layer);
 							}, 100);
 						}
 					});
@@ -125,6 +127,7 @@ CCH.Util = {
 					var legendTableBodyTdYear = $('<td />').addClass('cch-ui-legend-table-body-td-year').append(valueContainer);
 					legendTableBody.append(legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear));
 				}
+
 			}
 
 		} else if (type === 'storms') {
