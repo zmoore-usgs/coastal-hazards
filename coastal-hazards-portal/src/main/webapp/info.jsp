@@ -77,9 +77,9 @@
 						publicUrl: '<%=publicUrl%>'
 					}
 				};
-		</script>
+			</script>
 
-		<script type="text/javascript" src="<%=baseUrl%>/js/components/util/Util.js"></script>
+			<script type="text/javascript" src="<%=baseUrl%>/js/components/util/Util.js"></script>
 		<script type="text/javascript" src='<%=baseUrl%>/js/components/info/info.js'></script>
     </head>
     <body>

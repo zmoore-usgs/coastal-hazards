@@ -272,7 +272,7 @@ $(document).ready(function() {
 				maxGetUrlLength: 2048
 			}
 		});
-
+		
 		CCH.CONFIG.map.addLayer(layer);
 		CCH.CONFIG.map.zoomToExtent(bounds);
 	};
