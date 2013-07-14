@@ -48,7 +48,7 @@ CCH.Util = {
 				var features = args.features;
 
 				var years = features.map(function(f) {
-					return f.data['Date_'].split('/')[2];
+					return f.data[CCH.CONFIG.item.attr].split('/')[2];
 				}).unique().sort().reverse();
 
 				// Create a proper map to quickly look years up against
@@ -96,7 +96,7 @@ CCH.Util = {
 									years.each(function(ind, year) {
 										filters.push(new OpenLayers.Filter.Comparison({
 											type: OpenLayers.Filter.Comparison.LIKE,
-											property: "Date_",
+											property: CCH.CONFIG.item.attr,
 											value: '*' + year
 										}));
 									});
