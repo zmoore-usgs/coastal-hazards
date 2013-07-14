@@ -237,6 +237,23 @@ CCH.Objects.UI = function(args) {
 					]
 				}
 			});
+		},
+		displayLoadingError: function(args) {
+			var continueLink = $('<a />').attr({
+				'href': CCH.CONFIG.contextPath,
+				'role': 'button'
+			}).addClass('btn btn-large').html('<i class="icon-refresh"></i> Click to continue')
+
+			var emailLink = $('<a />').attr({
+				'href': args.mailTo,
+				'role': 'button'
+			}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
+			
+			splashUpdate(args.splashMessage);
+			$('#splash-status-update').append(continueLink);
+			$('#splash-status-update').append(emailLink);
+			$('#splash-spinner').fadeOut(2000);
+			LOG.error(args.errorThrown + ' : ' + jqXHR.responseText);
 		}
 	});
 };
