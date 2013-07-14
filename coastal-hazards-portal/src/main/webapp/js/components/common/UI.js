@@ -26,8 +26,10 @@ CCH.Objects.UI = function(args) {
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
 		init: function() {
+			// This window name is used for the info window to launch into when 
+			// a user chooses to go back to the portal
 			window.name = "portal_main_window";
-			// Bindings
+			
 			$(window).on({
 				'resize': me.windowResizeHandler,
 				'cch.data.items.searched': function(evt, count) {
@@ -195,7 +197,14 @@ CCH.Objects.UI = function(args) {
 													});
 
 											twttr.events.bind('tweet', function(event) {
-												// TODO: What to do when this view has been tweeted? Anything?
+												$.pnotify({
+													text: 'Your view has been tweeted. Thank you.',
+													styling: 'bootstrap',
+													type: 'info',
+													nonblock: true,
+													sticker: false,
+													icon: 'icon-twitter'
+												});
 											});
 										}
 									],
@@ -222,7 +231,14 @@ CCH.Objects.UI = function(args) {
 													});
 
 											twttr.events.bind('tweet', function(event) {
-												// TODO: What to do when this view has been tweeted? Anything?
+												$.pnotify({
+													text: 'Your view has been tweeted. Thank you.',
+													styling: 'bootstrap',
+													type: 'info',
+													nonblock: true,
+													sticker: false,
+													icon: 'icon-twitter'
+												});
 											});
 										}
 									]
@@ -232,11 +248,35 @@ CCH.Objects.UI = function(args) {
 					],
 					error: [
 						function(data, textStatus, jqXHR) {
-							// TODO: Handle error condition
+							$('#shareModal').modal('hide');
+							$.pnotify({
+								text: 'We apologize, but we could not create a share url for this session!',
+								styling: 'bootstrap',
+								type: 'error',
+								nonblock: true,
+								sticker: false,
+								icon: 'icon-warning-sign'
+							});
 						}
 					]
 				}
 			});
+		},
+		displayLoadingError: function(args) {
+			var continueLink = $('<a />').attr({
+				'href': CCH.CONFIG.contextPath,
+				'role': 'button'
+			}).addClass('btn btn-large').html('<i class="icon-refresh"></i> Click to continue')
+
+			var emailLink = $('<a />').attr({
+				'href': args.mailTo,
+				'role': 'button'
+			}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
+
+			splashUpdate(args.splashMessage);
+			$('#splash-status-update').append(continueLink);
+			$('#splash-status-update').append(emailLink);
+			$('#splash-spinner').fadeOut(2000);
 		}
 	});
 };

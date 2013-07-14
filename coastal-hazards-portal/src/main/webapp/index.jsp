@@ -62,9 +62,9 @@
     <body>
 
 		<jsp:include page="components/application-overlay.jsp">
-			<jsp:param name="application-overlay-description" value="Maecenas eu placerat ante. Fusce ut neque justo, et aliquet enim. In hac habitasse platea dictumst. <br />
-					   Nullam commodo neque erat, vitae facilisis erat. Cras at mauris ut tortor vestibulum fringilla vel sed metus. Donec interdum purus a justo feugiat rutrum. <br />
-					   Sed ac neque ut neque dictum accumsan. Cras lacinia rutrum risus, id viverra metus dictum sit amet." />
+			<jsp:param name="application-overlay-description" value="USGS coastal change hazards research produces data, 
+					   knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
+					   here. They can be used to increase awareness and provide a basis for decision making." />
 			<jsp:param name="application-overlay-background-image" value="images/splash/splash.svg" />
 		</jsp:include>
 		<div id="application-container" class="container-fluid">

@@ -13,7 +13,7 @@ $(document).ready(function() {
 
 	splashUpdate("Initializing UI...");
 	CCH.ui = CCH.Objects.UI({
-		applicationOverlay : $('#application-overlay'),
+		applicationOverlay: $('#application-overlay'),
 		applicationContainer: $('#application-container'),
 		headerRow: $('#header-row'),
 		footerRow: $('#footer-row'),
@@ -26,14 +26,14 @@ $(document).ready(function() {
 		mapSearchContainer: $('#map-search-container'),
 		ccsArea: $('#ccsa-area'),
 		shareModal: $('#shareModal'),
-		shareUrlButton : $('#modal-share-summary-url-button'),
-		shareInput : $('#modal-share-summary-url-inputbox'),
-		shareTwitterBtn : $('#multi-card-twitter-button')
+		shareUrlButton: $('#modal-share-summary-url-button'),
+		shareInput: $('#modal-share-summary-url-inputbox'),
+		shareTwitterBtn: $('#multi-card-twitter-button')
 	}).init();
 
 	CCH.slideshow = new CCH.Objects.Slideshow({
-		descriptionWrapper : $('#description-wrapper'),
-		iossliderContainer : $('#iosslider-container')
+		descriptionWrapper: $('#description-wrapper'),
+		iossliderContainer: $('#iosslider-container')
 	}).init();
 
 	splashUpdate("Initializing Card Subsystem...");
@@ -61,8 +61,6 @@ $(document).ready(function() {
 		searchQuery: $('.search-query')
 	}).init();
 
-
-
 	splashUpdate("Initializing Map...");
 	CCH.map = new CCH.Objects.Map({
 		mapDiv: 'map'
@@ -88,7 +86,9 @@ $(document).ready(function() {
 			var ssListener = function() {
 				CCH.ui.removeOverlay();
 				CCH.slideshow.stop();
+				// Pin the single item loaded when it gets loaded
 				$(CCH.cards.getCards()[0].pinButton).trigger('click');
+				// This is a one-time only listener, so unhook it here
 				$(window).off('cch-slideshow-slider-loaded', ssListener);
 			};
 			var removeMarkers = function() {
@@ -99,37 +99,27 @@ $(document).ready(function() {
 			$(window).on('cch-slideshow-slider-loaded', ssListener);
 			$(window).on('cch-map-bbox-marker-added', removeMarkers);
 
+			// Only add an error handler. The success handler will be the vanilla
+			// handler done by CCH.items.load()
 			CCH.items.load({
 				items: [itemId],
 				callbacks: {
 					error: [
 						function(jqXHR, textStatus, errorThrown) {
-							var continueLink = $('<a />').attr({
-								'href': CCH.CONFIG.contextPath,
-								'role': 'button'
-							}).addClass('btn btn-large').html('<i class="icon-refresh"></i> Click to continue')
-
-							var emailLink = $('<a />').attr({
-								'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')',
-								'role': 'button'
-							}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
-
-							if (404 === jqXHR.status) {
-								splashUpdate("<b>Item Not Found</b><br /><br />The item you are attempting to view no longer exists<br /><br />");
-							} else {
-								splashUpdate("<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br /><br />");
-							}
-							$('#splash-status-update').append(continueLink);
-							$('#splash-status-update').append(emailLink);
-							LOG.error(errorThrown + ' : ' + jqXHR.responseText);
-							$('#splash-spinner').fadeOut(2000);
+							CCH.ui.displayLoadingError({
+								errorThrown: errorThrown,
+								splashMessage: 404 === jqXHR.status ?
+										'<b>Item Not Found</b><br /><br />The item you are attempting to view no longer exists<br /><br />' :
+										'<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br /><br />',
+								mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')'
+							});
 						}
 					]
 				}
 			});
 		} else if (type === 'VIEW') {
 			splashUpdate("Loading View " + CCH.CONFIG.id);
-			
+
 			var ssListener = function() {
 				CCH.ui.removeOverlay();
 				CCH.slideshow.stop();
@@ -142,38 +132,33 @@ $(document).ready(function() {
 			}
 			$(window).on('cch-slideshow-slider-loaded', ssListener);
 			$(window).on('cch-map-bbox-marker-added', removeMarkers);
-			
+
+			// Begin by trying to load the session from the incoming url
 			CCH.session.load({
 				sid: CCH.CONFIG.id,
 				callbacks: {
 					success: [
 						function() {
+							// Figure out which ids come with this session
 							var idList = CCH.session.getSession().items.map(function(i) {
 								return i.id
 							});
+							// Load those items
 							CCH.items.load({
 								items: idList,
 								callbacks: {
 									error: [
+										// The application will fail on the first
+										// item not found. TODO: Should we not break here
+										// and keep going?
 										function(jqXHR, textStatus, errorThrown) {
-											var continueLink = $('<a />').attr({
-												'href': CCH.CONFIG.contextPath,
-												'role': 'button'
-											}).addClass('btn btn-large').html('<i class="icon-refresh"></i> Click to continue')
-
-											var emailLink = $('<a />').attr({
-												'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')',
-												'role': 'button'
-											}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
-
-											if (404 === jqXHR.status) {
-												splashUpdate("<b>Item Not Found</b><br /><br />We couldn't find an item you are looking for<br /><br />");
-											} else {
-												splashUpdate("<b>There was an error attempting to load an item.</b><br />Either try to reload the application or contact the system administrator.<br /><br />");
-											}
-											$('#splash-status-update').append(continueLink);
-											$('#splash-status-update').append(emailLink);
-											$('#splash-spinner').fadeOut(2000);
+											CCH.ui.displayLoadingError({
+												errorThrown: errorThrown,
+												splashMessage: 404 === jqXHR.status ?
+														'<b>Item Not Found</b><br /><br />We couldn\'t find the view you are looking for<br /><br />' :
+														'<b>There was an error attempting to load the view.</b><br />Either try to reload the application or contact the system administrator.<br /><br />',
+												mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')'
+											});
 										}
 									]
 								}
@@ -182,34 +167,24 @@ $(document).ready(function() {
 					],
 					error: [
 						function(jqXHR, textStatus, errorThrown) {
-							var continueLink = $('<a />').attr({
-								'href': CCH.CONFIG.contextPath,
-								'role': 'button'
-							}).addClass('btn btn-large').html('<i class="icon-refresh"></i> Click to continue')
-
-							var emailLink = $('<a />').attr({
-								'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')',
-								'role': 'button'
-							}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
-
-							if (404 === jqXHR.status) {
-								splashUpdate("<b>View Not Found</b><br /><br />The view you are trying to load may no longer exist<br /><br />");
-							} else {
-								splashUpdate("<b>There was an error attempting to load your view.</b><br /><br />Either try to reload the application or contact the system administrator.<br /><br />");
-							}
-							$('#splash-status-update').append(continueLink);
-							$('#splash-status-update').append(emailLink);
-							LOG.error(errorThrown + ' : ' + jqXHR.responseText);
-							$('#splash-spinner').fadeOut(2000);
+							CCH.ui.displayLoadingError({
+								errorThrown: errorThrown,
+								splashMessage: 404 === jqXHR.status ?
+										'<b>View Not Found</b><br /><br />The view you are trying to load may no longer exist<br /><br />' :
+										'<b>There was an error attempting to load your view.</b><br /><br />Either try to reload the application or contact the system administrator.<br /><br />',
+								mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')'
+							});
 						}
 					]
 				}
 			});
 		}
 	} else {
+		// A user is not coming in through the session or the view, so just load
+		// the 10 most popular items and begin the slideshow when completed
 		CCH.items.load({
 			sortBy: 'popularity',
-			count : '10',
+			count: '10',
 			callbacks: {
 				success: [
 					function() {
@@ -218,23 +193,13 @@ $(document).ready(function() {
 				],
 				error: [
 					function(jqXHR, textStatus, errorThrown) {
-						var continueLink = $('<a />')
-								.attr({
-							'href': CCH.CONFIG.contextPath,
-							'role': 'button'})
-								.addClass('btn btn-large')
-								.html('<i class="icon-refresh"></i> Click to try again');
-
-						var emailLink = $('<a />').attr({
-							'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')',
-							'role': 'button'
-						}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
-
-						splashUpdate("<b>Application Error</b><br />Coastal Change Hazards Portal could not find any items to display.<br />Due to this error, the application can not function properly.<br /><br />");
-						$('#splash-status-update').append(continueLink);
-						$('#splash-status-update').append(emailLink);
-						LOG.error(errorThrown + ' : ' + jqXHR.responseText);
-						$('#splash-spinner').fadeOut(2000);
+						CCH.ui.displayLoadingError({
+							errorThrown: errorThrown,
+							splashMessage: 404 === jqXHR.status ?
+									'<b>View Not Found</b><br /><br />The view you are trying to load may no longer exist<br /><br />' :
+									'<b>There was an error attempting to load your view.</b><br /><br />Either try to reload the application or contact the system administrator.<br /><br />',
+							mailTo : 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
+						});
 					}
 				]
 			}
