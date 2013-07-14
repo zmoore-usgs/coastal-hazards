@@ -39,9 +39,7 @@ $(document).ready(function() {
 									// - Using the wmsService.layers info for a WMS request because that's properly
 									// formatted to go into this request. The wfsService has the fully qualified namespace
 									// which borks the WFS request
-									// 
-									// - Making an assumption that "Date_" is the attribute being used and is capitalized correctly
-									$.ajax(CCH.CONFIG.contextPath + '/cidags/ows?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&propertyName=Date_&typeName=' + CCH.CONFIG.item.wmsService.layers, {
+									$.ajax(CCH.CONFIG.contextPath + '/cidags/ows?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&propertyName='+CCH.CONFIG.item.attr+'&typeName=' + CCH.CONFIG.item.wmsService.layers, {
 										success: function(data, textStatus, jqXHR) {
 											var gmlReader = new OpenLayers.Format.GML.v3();
 											var features = gmlReader.read(data);

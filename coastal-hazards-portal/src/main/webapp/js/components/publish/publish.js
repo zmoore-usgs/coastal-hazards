@@ -307,11 +307,11 @@ var serviceTypesDropdownChangeHandler = function(evt) {
 	});
 };
 var deriveTypeFromAttribute = function(name) {
-	if (historicAttributes.indexOf(name) !== -1) {
+	if (historicAttributes.indexOf(name.toLowerCase()) !== -1) {
 		return 'historical';
-	} else if (vulnAttributes.indexOf(name) !== -1) {
+	} else if (vulnAttributes.indexOf(name.toLowerCase()) !== -1) {
 		return 'vulnerability';
-	} else if (stormAttributes.indexOf(name) !== -1) {
+	} else if (stormAttributes.indexOf(name.toLowerCase()) !== -1) {
 		return 'storms';
 	} else {
 		return '';
@@ -649,4 +649,3 @@ var stormAttributes = ['pcol','pcol1','pcol2','pcol3','pcol4','pcol5',
         'mean','mean1','mean2','mean3','mean4','mean5',
         'extreme','extreme1','extreme2','extreme3','extreme4','extreme5',
         'tide'];
-var combinedAttributes = historicAttributes.concat(vulnAttributes, stormAttributes);
