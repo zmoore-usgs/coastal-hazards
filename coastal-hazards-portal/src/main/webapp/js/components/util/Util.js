@@ -1,4 +1,7 @@
 CCH.Util = {
+	/** 
+	 * Creates a legend for display in the info page
+	 */
 	buildLegend: function(args) {
 		args = args || {};
 		var sld = args.sld;
@@ -64,14 +67,63 @@ CCH.Util = {
 				}
 
 				for (var yInd = 0; yInd < years.length; yInd++) {
-					var year = years[yInd];
 					var legendTableBodyTr = $('<tr />');
 					var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
 							$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', yearToColor[years[yInd].substr(2)]).html('&nbsp;'));
-					var legendTableBodyTdYear = $('<td />').addClass('cch-ui-legend-table-body-td-year').append(
-							$('<div />').addClass('cch-ui-legend-table-body-div-year').html(years[yInd]));
-					legendTableBody.append(
-							legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear));
+					var valueContainer = $('<div />').addClass('cch-ui-legend-table-body-div-year').html(years[yInd]);
+					var viewButton = $('<button />').attr({
+						'cch-year': years[yInd],
+						'data-toggle': 'button'
+					}).
+							addClass('btn btn-small pull-right cch-ui-legend-table-body-div-year-toggle').
+							append($('<i />').addClass('icon-eye-open')).
+							on({
+						'click': function(evt) {
+							setTimeout(function() {
+								var years = $('.cch-ui-legend-table-body-div-year-toggle').map(function(idx, btn) {
+									var year = $(btn).attr('cch-year');
+									if ($(btn).hasClass('active')) {
+										return year;
+									} else {
+										return null;
+									}
+								});
+
+								var layer = CCH.CONFIG.map.getLayersBy('type', 'cch-layer')[0];
+								if (years.length) {
+									var filters = [];
+
+									years.each(function(ind, year) {
+										filters.push(new OpenLayers.Filter.Comparison({
+											type: OpenLayers.Filter.Comparison.LIKE,
+											property: "Date_",
+											value: '*' + year
+										}));
+									});
+
+									var filter = new OpenLayers.Filter.Logical({
+										type: OpenLayers.Filter.Logical.AND,
+										filters: filters
+									});
+									var filterObj = new OpenLayers.Format.Filter({version: "1.1.0"});
+									var xml = new OpenLayers.Format.XML();
+									var filterData = xml.write(filterObj.write(filter));
+									layer.mergeNewParams({
+										filter : filterData
+									}, true);
+								} else {
+									layer.mergeNewParams({
+										filter : null
+									}, true);
+									layer.redraw(true);
+								}
+
+							}, 100);
+						}
+					});
+					valueContainer.append(viewButton);
+					var legendTableBodyTdYear = $('<td />').addClass('cch-ui-legend-table-body-td-year').append(valueContainer);
+					legendTableBody.append(legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear));
 				}
 			}
 
