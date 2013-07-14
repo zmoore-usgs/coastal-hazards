@@ -195,7 +195,14 @@ CCH.Objects.UI = function(args) {
 													});
 
 											twttr.events.bind('tweet', function(event) {
-												// TODO: What to do when this view has been tweeted? Anything?
+												$.pnotify({
+													text: 'Your view has been tweeted. Thank you.',
+													styling: 'bootstrap',
+													type: 'info',
+													nonblock: true,
+													sticker: false,
+													icon: 'icon-twitter'
+												});
 											});
 										}
 									],
@@ -222,7 +229,14 @@ CCH.Objects.UI = function(args) {
 													});
 
 											twttr.events.bind('tweet', function(event) {
-												// TODO: What to do when this view has been tweeted? Anything?
+												$.pnotify({
+													text: 'Your view has been tweeted. Thank you.',
+													styling: 'bootstrap',
+													type: 'info',
+													nonblock: true,
+													sticker: false,
+													icon: 'icon-twitter'
+												});
 											});
 										}
 									]
@@ -232,7 +246,15 @@ CCH.Objects.UI = function(args) {
 					],
 					error: [
 						function(data, textStatus, jqXHR) {
-							// TODO: Handle error condition
+							$('#shareModal').modal('hide');
+							$.pnotify({
+								text: 'We apologize, but we could not create a share url for this session!',
+								styling: 'bootstrap',
+								type: 'error',
+								nonblock: true,
+								sticker: false,
+								icon: 'icon-warning-sign'
+							});
 						}
 					]
 				}
@@ -248,7 +270,7 @@ CCH.Objects.UI = function(args) {
 				'href': args.mailTo,
 				'role': 'button'
 			}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
-			
+
 			splashUpdate(args.splashMessage);
 			$('#splash-status-update').append(continueLink);
 			$('#splash-status-update').append(emailLink);

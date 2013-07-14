@@ -133,6 +133,7 @@ $(document).ready(function() {
 			$(window).on('cch-slideshow-slider-loaded', ssListener);
 			$(window).on('cch-map-bbox-marker-added', removeMarkers);
 
+			// Begin by trying to load the session from the incoming url
 			CCH.session.load({
 				sid: CCH.CONFIG.id,
 				callbacks: {
