@@ -29,6 +29,7 @@
 				}
 			}
 		</script>
+		<META HTTP-EQUIV="X-UA-Compatible" CONTENT="IE=Edge"/>
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" />
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE" />
         <META HTTP-EQUIV="EXPIRES" CONTENT="0" />

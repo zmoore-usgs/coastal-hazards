@@ -129,7 +129,7 @@ $(document).ready(function() {
 			var removeMarkers = function() {
 				CCH.map.clearBoundingBoxMarkers();
 				$(window).off('cch-map-bbox-marker-added', removeMarkers);
-			}
+			};
 			$(window).on('cch-slideshow-slider-loaded', ssListener);
 			$(window).on('cch-map-bbox-marker-added', removeMarkers);
 
