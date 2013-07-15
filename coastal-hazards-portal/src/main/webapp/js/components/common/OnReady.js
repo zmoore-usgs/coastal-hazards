@@ -138,15 +138,28 @@ $(document).ready(function() {
 				sid: CCH.CONFIG.id,
 				callbacks: {
 					success: [
-						function() {
+						function(json, textStatus, jqXHR) {
 							// Figure out which ids come with this session
 							var idList = CCH.session.getSession().items.map(function(i) {
-								return i.id
+								return i.id;
 							});
+							//Memoize the incoming bbox
+							var bbox = json.bbox;
 							// Load those items
 							CCH.items.load({
 								items: idList,
 								callbacks: {
+									success : [
+										function(json, textStatus, jqXHR) {
+											// We want to zoom to the bounding box of the
+											// session and not just the pinned cards
+											var itemsLoadedListener = function() {
+												CCH.map.getMap().zoomToExtent(new OpenLayers.Bounds(bbox));
+												$(window).off('cch-map-bbox-marker-added', itemsLoadedListener);
+											};
+											$(window).on('cch-slideshow-slider-loaded', itemsLoadedListener);
+										}
+									],
 									error: [
 										// The application will fail on the first
 										// item not found. TODO: Should we not break here
