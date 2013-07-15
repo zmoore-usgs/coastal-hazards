@@ -5,6 +5,7 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,17 +91,25 @@ public class ItemManager {
 		return id;
 	}
 
-	public String query(String queryText, List<String> types, String sortBy, int count, String bbox) {
+	public String query(List<String> queryText, List<String> types, String sortBy, int count, String bbox) {
         StringBuilder builder = new StringBuilder();
         builder.append("select i from Item i");
-        boolean hasQueryText = StringUtils.isNotBlank(queryText);
-        boolean hasType = (null != types && types.size() > 0 && StringUtils.isNotBlank(types.get(0)));
+        boolean hasQueryText = isEmpty(queryText);
+        boolean hasType = isEmpty(types);
         if (hasQueryText || hasType) {
             builder.append(" where ");
             if (hasQueryText) {
-                builder.append(" lower(i.summary.keywords) like lower('%")
-                    .append(queryText)
-                    .append("%')");
+				List<String> likes = new ArrayList<String>();
+				for (String keyword : queryText) {
+					if (StringUtils.isNotBlank(keyword)) {
+						StringBuilder likeBuilder = new StringBuilder();
+						likeBuilder.append(" lower(i.summary.keywords) like lower('%")
+							.append(keyword)
+							.append("%')");
+						likes.add(likeBuilder.toString());
+					}
+				}
+				builder.append(StringUtils.join(likes, " or"));
             }
             if (hasQueryText && hasType) {
                 builder.append(" and");
@@ -139,6 +148,18 @@ public class ItemManager {
             JPAHelper.close(em);
         }
 		return jsonResult;
+	}
+	
+	private boolean isEmpty(List<String> args) {
+		boolean result = false;
+		if (args != null) {
+			for (String str : args) {
+				if (StringUtils.isNotBlank(str)) {
+					result = true;
+				}
+			}
+		}
+		return result;
 	}
     
 }

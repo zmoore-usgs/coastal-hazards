@@ -23,13 +23,18 @@
                             <ogc:Literal>${it.thresholds[i]}</ogc:Literal>
                         </ogc:PropertyIsEqualTo>
                     </ogc:Filter>
-                    <sld:LineSymbolizer>
-                        <sld:Stroke>
-                            <sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
-                            <sld:CssParameter name="stroke-width">${it.STROKE_WIDTH}</sld:CssParameter>
-                            <sld:CssParameter name="stroke-opacity">${it.STROKE_OPACITY}</sld:CssParameter>
-                        </sld:Stroke>
-                    </sld:LineSymbolizer>
+                    <sld:PointSymbolizer>
+                        <sld:Graphic>
+                            <sld:Mark>
+                                <sld:WellKnownName>circle</sld:WellKnownName>
+                                <sld:Fill>
+                                    <sld:CssParameter name="fill">${it.colors[i]}</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">${it.STROKE_OPACITY}</sld:CssParameter>
+                                </sld:Fill>
+                            </sld:Mark>
+                                <sld:Size>${it.STROKE_WIDTH}</sld:Size>
+                        </sld:Graphic>
+                    </sld:PointSymbolizer>
                 </sld:Rule>
                 </c:forEach>
             </sld:FeatureTypeStyle>

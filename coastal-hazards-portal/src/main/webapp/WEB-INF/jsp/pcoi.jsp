@@ -18,10 +18,22 @@
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
                 <sld:Rule>
                     <ogc:Filter>
-                        <ogc:PropertyIsEqualTo>
+                        <c:if test="${it.binCount-1 > i}">
+                        <ogc:And>
+                        </c:if>
+                            <ogc:PropertyIsGreaterThanOrEqualTo>
                             <ogc:PropertyName>${it.attr}</ogc:PropertyName>
-                            <ogc:Literal>${it.thresholds[i]}</ogc:Literal>
-                        </ogc:PropertyIsEqualTo>
+                                <ogc:Literal>${it.thresholds[i]}</ogc:Literal>
+                            </ogc:PropertyIsGreaterThanOrEqualTo>
+                        <c:if test="${it.binCount-1 > i}">
+                            <ogc:PropertyIsLessThan>
+                                <ogc:PropertyName>${it.attr}</ogc:PropertyName>
+                            <ogc:Literal>${it.thresholds[i+1]}</ogc:Literal>
+                            </ogc:PropertyIsLessThan>
+                            </c:if>
+                        <c:if test="${it.binCount-1 > i}">
+                        </ogc:And>
+                        </c:if>
                     </ogc:Filter>
                     <sld:LineSymbolizer>
                         <sld:Stroke>

@@ -38,8 +38,8 @@ public final class Pcoi extends SLDGenerator {
     };
     private static final int STROKE_WIDTH = 3;
     private static final int STROKE_OPACITY = 1;
-    private static final float[] thresholds = {10.0f, 25.0f, 50.0f, 75.0f, 90.0f};
-    private static final String[] colors = {"#FFFFFF", "#FFE6E6", "#FFCCCD", "#FF9C95", "#FF574A", "#FF0000"};
+    private static final float[] thresholds = {0.0f, 10.0f, 25.0f, 50.0f, 75.0f, 90.0f};
+    private static final String[] colors = {"#FFFFFE", "#FFE6E6", "#FFCCCD", "#FF9C95", "#FF574A", "#FF0000"};
     
     public Pcoi(Item item) {
         super(item);
@@ -52,7 +52,7 @@ public final class Pcoi extends SLDGenerator {
     
     @Override
     public Response generateSLD() {
-        return Response.ok(new Viewable("/bins_line.jsp", this)).build();
+        return Response.ok(new Viewable("/pcoi.jsp", this)).build();
     }
     
     @Override
@@ -64,11 +64,9 @@ public final class Pcoi extends SLDGenerator {
         List<Map<String,Object>> bins = new ArrayList<Map<String,Object>>();
         for (int i=0; i<getBinCount(); i++) {
             Map<String, Object> binMap = new LinkedHashMap<String,Object>();
-            if (i > 0) {
-                binMap.put("lowerBound", getThresholds()[i-1]);
-            }
-            if (i+1 < getBinCount()) {
-                binMap.put("upperBound", getThresholds()[i]);
+            binMap.put("lowerBound", getThresholds()[i]);
+            if (i < getBinCount() - 1) {
+                binMap.put("upperBound", getThresholds()[i+1]);
             }
             binMap.put("color", getColors()[i]);
             bins.add(binMap);
