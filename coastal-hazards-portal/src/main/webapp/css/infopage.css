@@ -50,6 +50,10 @@ body {
 	vertical-align: middle;
 }
 
+#cch-ui-legend-table tbody td:nth-child(3) {
+	border-left: none;
+}
+
 #info-row-control iframe{
 	vertical-align: middle;
 	margin-left: 10px;
