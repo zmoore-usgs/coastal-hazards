@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.DefaultValue;
@@ -98,21 +100,31 @@ public class ItemResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response postCard(String content) {
-		final String id = itemManager.save(content);
-		Response response;
-		if (null == id) {
-			response = Response.status(Response.Status.BAD_REQUEST).build();
-		} else {
-			Map<String, Object> ok = new HashMap<String, Object>() {
-				private static final long serialVersionUID = 2398472L;
+	public Response postCard(String content, @Context HttpServletRequest request) {
+        Response response;
+        HttpSession session = request.getSession();
+        if (session == null) {
+            response = Response.status(Response.Status.BAD_REQUEST).build();
+        } else {
+            Boolean valid = (session.getAttribute("sessionValid") == null) ? false : (Boolean)session.getAttribute("sessionValid");
+            if (valid) {
+                final String id = itemManager.save(content);
 
-				{
-					put("id", id);
-				}
-			};
-			response = Response.ok(new Gson().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
-		}
+                if (null == id) {
+                    response = Response.status(Response.Status.BAD_REQUEST).build();
+                } else {
+                    Map<String, Object> ok = new HashMap<String, Object>() {
+                        private static final long serialVersionUID = 2398472L;
+                        {
+                            put("id", id);
+                        }
+                    };
+                    response = Response.ok(new Gson().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+                }
+            } else {
+                response = Response.status(Response.Status.UNAUTHORIZED).build();
+            }
+        }
 		return response;
 	}
 
