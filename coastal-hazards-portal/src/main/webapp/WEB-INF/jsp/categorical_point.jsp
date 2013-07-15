@@ -18,10 +18,10 @@
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
                 <sld:Rule>
                     <ogc:Filter>
-                        <ogc:PropertyEqualTo>
+                        <ogc:PropertyIsEqualTo>
                             <ogc:PropertyName>${it.attr}</ogc:PropertyName>
                             <ogc:Literal>${it.thresholds[i]}</ogc:Literal>
-                        </ogc:PropertyEqualTo>
+                        </ogc:PropertyIsEqualTo>
                     </ogc:Filter>
                     <sld:PointSymbolizer>
                         <sld:Graphic>
