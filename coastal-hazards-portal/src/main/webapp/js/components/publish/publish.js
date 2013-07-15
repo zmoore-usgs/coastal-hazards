@@ -285,14 +285,13 @@ var serviceTypesDropdownChangeHandler = function(evt) {
 							var li = $('<li />').attr('id', 'li-' + name);
 							var cb = $('<input />').attr({
 								'type': 'checkbox',
-								'value': name,
+								'value': name
 							}).addClass('attr-checkbox');
 							var nameSpan = $('<span />').addClass('name-span').html(name);
 							if (!CCH.config.type) {
 								// Using the attribute, match it to a type
 								CCH.config.type = deriveTypeFromAttribute(nameTlc);
 							}
-//							}
 							var previewButton = $('<button />').addClass('publish-preview-button btn disabled').attr('id', 'btn-preview-' + name).attr('name', name).html('Preview');
 							var controls = $('<span />').addClass('publish-container-actions').append(previewButton);
 							li.append(cb, nameSpan, controls);
@@ -332,7 +331,7 @@ var formatEndpoint = function(e) {
 		} else {
 			return e;
 		}
-	}
+	};
 
 var previewButtonClickHandler = function(evt) {
 	var btn = evt.target;
@@ -376,7 +375,7 @@ var previewButtonClickHandler = function(evt) {
 				}
 			]
 		}
-	})
+	});
 };
 
 var publishPreview = function(args) {
@@ -408,7 +407,7 @@ var publishPreview = function(args) {
 			}
 		}
 	});
-}
+};
 
 var publishMetadata = function(args) {
 	args = args || {};
@@ -638,7 +637,7 @@ var getFullEndpoint = function(val) {
 };
 
 var historicAttributes = ['date_', 'lrr', 'wlr', 'sce', 'nsm', 'epr'];
-var vulnAttributes = ['geom', 'waverisk', 'tiderisk', 'sloperisk', 'errrisk', 'slrisk', 'geom', 'cvirisk', 'rslr', 'mwh', 'tr', 'e_rate', 'peros2', 'peros1', 'pstable', 'pacc1', 'pacc2'];
+var vulnAttributes = ['waverisk', 'tiderisk', 'sloperisk', 'errrisk', 'slrisk', 'geom', 'cvirisk', 'rslr', 'mwh', 'tr', 'e_rate', 'peros2', 'peros1', 'pstable', 'pacc1', 'pacc2'];
 var stormAttributes = ['pcol','pcol1','pcol2','pcol3','pcol4','pcol5',
         'povw','povw1','povw2','povw3','povw4','povw5',
         'pind','pind1','pind2','pind3','pind4','pind5',

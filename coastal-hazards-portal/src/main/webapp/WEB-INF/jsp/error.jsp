@@ -1,3 +1,4 @@
+<%@ page isErrorPage="true"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>

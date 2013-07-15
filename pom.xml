@@ -370,11 +370,6 @@
                 <artifactId>jersey-servlet</artifactId>
                 <version>1.17.1</version>
             </dependency>
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-atom</artifactId>
-                <version>1.17.1</version>
-            </dependency>
 <!--            <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-core</artifactId>
