@@ -11,9 +11,9 @@
 }
 
 .description-container {
-	background-size: auto 100%;
+	background-size: contain;
 	background-repeat: no-repeat;
-	background-position: right top;
+	background-position: 20% top;
 }
 
 #description-wrapper {

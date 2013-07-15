@@ -16,10 +16,6 @@
 	height: auto;
 }
 
-#app-navbar-item-search-container:hover {
-	cursor: pointer;
-	color: #D6DCE6;
-}
 
 #item-search-input-table-row{
 	text-align: center;

@@ -39,9 +39,7 @@ $(document).ready(function() {
 									// - Using the wmsService.layers info for a WMS request because that's properly
 									// formatted to go into this request. The wfsService has the fully qualified namespace
 									// which borks the WFS request
-									// 
-									// - Making an assumption that "Date_" is the attribute being used and is capitalized correctly
-									$.ajax(CCH.CONFIG.contextPath + '/cidags/ows?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&propertyName=Date_&typeName=' + CCH.CONFIG.item.wmsService.layers, {
+									$.ajax(CCH.CONFIG.contextPath + '/cidags/ows?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&propertyName='+CCH.CONFIG.item.attr+'&typeName=' + CCH.CONFIG.item.wmsService.layers, {
 										success: function(data, textStatus, jqXHR) {
 											var gmlReader = new OpenLayers.Format.GML.v3();
 											var features = gmlReader.read(data);
@@ -101,14 +99,25 @@ $(document).ready(function() {
 				'href': CCH.CONFIG.item.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
 				'target': 'portal_metadata_window',
 				'role': 'button'
-			}).addClass('btn').html('View Metadata');
+			}).addClass('btn').html('<i class="icon-download"></i> View Metadata');
+			
+			// These two download buttons have no function at this time so we
+			// will hide them for the time being
+			// Create a "Download Full" button
+			var downloadFull = $('<a />').attr({
+				'role': 'button'
+			}).addClass('btn hidden').html('<i class="icon-download"></i> Download Full Data');
+			// Create a "Download Item" button
+			var downloadItem = $('<a />').attr({
+				'role': 'button'
+			}).addClass('btn hidden').html('<i class="icon-download"></i> Download Item Data');
 
 			// Create a "View in Portal" link to let the user view this in the portal
 			var applicationLink = $('<a />').attr({
 				'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId,
 				'target': 'portal_main_window',
 				'role': 'button'
-			}).addClass('btn').html('View In Portal');
+			}).addClass('btn').html('<i class="icon-eye-open"></i> View In Portal');
 
 			// Build the publications list for the item
 			var publist = 'None Found';
@@ -129,6 +138,8 @@ $(document).ready(function() {
 			$('#info-summary').html(data.summary.full.text);
 			$('#info-container-publications-list-span').append(publist);
 			$('#metadata-link').append(metadataLink);
+			$('#download-full-link').append(downloadFull);
+			$('#download-item-link').append(downloadItem);
 			$('#application-link').append(applicationLink);
 
 			buildTwitterButton();
@@ -216,7 +227,7 @@ $(document).ready(function() {
 		]);
 		originalBounds.extend(extendedBounds);
 		var bounds = originalBounds.transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));
-		
+
 		CCH.CONFIG.map = new OpenLayers.Map('map', {
 			projection: CCH.CONFIG.projection,
 			displayProjection: new OpenLayers.Projection(CCH.CONFIG.projection),
@@ -257,10 +268,14 @@ $(document).ready(function() {
 			displayInLayerSwitcher: false,
 			transparent: true,
 			isBaseLayer: false,
-			projection: 'EPSG:3857'
+			projection: 'EPSG:3857',
+			type: 'cch-layer',
+			tileOptions: {
+				maxGetUrlLength: 2048
+			}
 		});
-
+		
 		CCH.CONFIG.map.addLayer(layer);
-		CCH.CONFIG.map.zoomToExtent(bounds);
+		CCH.CONFIG.map.zoomToExtent(new OpenLayers.Bounds(CCH.CONFIG.item.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')));
 	};
 });

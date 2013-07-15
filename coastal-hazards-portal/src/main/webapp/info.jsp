@@ -18,6 +18,17 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+		<script type="text/javascript">
+			/* This application does not support <IE9 - Stop early if <IE9*/
+			if (navigator.appName == 'Microsoft Internet Explorer') {
+				if (new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) !== null) {
+					if (parseFloat(RegExp.$1) < 9) {
+						alert("We apologize, but this application does not support Internet Explorer versions lower than 9.0.\n\nOther supported browsers are Firefox, Chrome and Safari.");
+						window.location = 'http://windows.microsoft.com/en-us/internet-explorer/downloads/ie-9/worldwide-languages';
+					}
+				}
+			}
+		</script>
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" />
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE" />
         <META HTTP-EQUIV="EXPIRES" CONTENT="0" />
@@ -66,9 +77,9 @@
 						publicUrl: '<%=publicUrl%>'
 					}
 				};
-		</script>
+			</script>
 
-		<script type="text/javascript" src="<%=baseUrl%>/js/components/util/Util.js"></script>
+			<script type="text/javascript" src="<%=baseUrl%>/js/components/util/Util.js"></script>
 		<script type="text/javascript" src='<%=baseUrl%>/js/components/info/info.js'></script>
     </head>
     <body>
@@ -100,8 +111,6 @@
 						<div id="map"></div>
 						<div id="info-row-control">
 							<div class='well well-small'>
-								<%-- Metadata Link --%>
-								<span id="metadata-link"></span>
 
 								<%-- Application Link --%>
 								<span id="application-link"></span>
@@ -130,6 +139,14 @@
 						<span id='info-container-publications-label'>Publications: </span>
 						<span id='info-container-publications-list-span'></span>
 					</div>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="well well-small"> <!-- view metadata" "download zip (full)" and "download zip (item)" -->
+					<%-- Metadata Link --%>
+					<span id="metadata-link"></span>
+					<span id="download-full-link"></span>
+					<span id="download-item-link"></span>
 				</div>
 			</div>
 

@@ -28,10 +28,6 @@ img {
     background-image: url("../images/banner/banner.png");
 }
 
-#shareModal[aria-hidden="true"] {
-	z-index: -1;
-}
-
 #site-title {
     line-height: 20px;
 }

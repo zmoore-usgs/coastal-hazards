@@ -88,14 +88,57 @@
 	font-size: 2em;
 }
 
+/* Setting this zIndex manually fixes
+ an issue seen on mobile browsers with
+ hidden modal windows blocking use of 
+ containers they're in front of. This 
+ can probably be done to set all 
+ .modal[aria-hidden="true"] zo -1 zIndex,
+ but I was somewhat concerned of side
+ effects from doing it application-wide */
+#helpModal[aria-hidden="true"],
+#shareModal[aria-hidden="true"] {
+    z-index: -1;
+}
+
+#app-navbar-help-search-container {
+	margin-top: 5px;
+}
+
+#app-navbar-help-container {
+	font-size: 25px;
+	height: 40px;
+	margin-right: 2px;
+}
+
+#app-navbar-help-container a:hover {
+	background-color: #345280;
+}
+
+#app-navbar-help-container i {
+	display: inherit;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+#app-navbar-help-container i:hover {
+	cursor: pointer;
+	color: #D6DCE6;
+}
+
+#app-navbar-item-search-container:hover {
+	cursor: pointer;
+	color: #D6DCE6;
+}
+
 #app-navbar-item-search-container {
 	color: #FFFFFF;
 	font-size: 25px;
 	height: 40px;
+	margin-left: 2px;
 }
 
 #app-navbar-item-search-container i {
-	padding: 5px;
 	display: inherit;
 }
 

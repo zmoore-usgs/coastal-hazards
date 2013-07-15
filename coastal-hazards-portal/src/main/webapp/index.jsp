@@ -19,6 +19,17 @@
 %>
 <html lang="en">
     <head>
+		<script type="text/javascript">
+			/* This application does not support <IE9 - Stop early if <IE9*/
+			if (navigator.appName == 'Microsoft Internet Explorer') {
+				if (new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) !== null) {
+					if (parseFloat(RegExp.$1) < 9) {
+						alert("We apologize, but this application does not support Internet Explorer versions lower than 9.0.\n\nOther supported browsers are Firefox, Chrome and Safari.");
+						window.location = 'http://windows.microsoft.com/en-us/internet-explorer/downloads/ie-9/worldwide-languages';
+					}
+				}
+			}
+		</script>
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" />
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE" />
         <META HTTP-EQUIV="EXPIRES" CONTENT="0" />
@@ -28,10 +39,6 @@
 		<meta NAME="apple-mobile-web-app-capable" CONTENT="yes" /> 
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
-        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-        <!--[if lt IE 9]>
-        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="shortName" value="USGS Coastal Change Hazards Portal" />
@@ -53,10 +60,11 @@
         <script type="text/javascript" src="webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
     </head>
     <body>
+
 		<jsp:include page="components/application-overlay.jsp">
-			<jsp:param name="application-overlay-description" value="Maecenas eu placerat ante. Fusce ut neque justo, et aliquet enim. In hac habitasse platea dictumst. <br />
-					   Nullam commodo neque erat, vitae facilisis erat. Cras at mauris ut tortor vestibulum fringilla vel sed metus. Donec interdum purus a justo feugiat rutrum. <br />
-					   Sed ac neque ut neque dictum accumsan. Cras lacinia rutrum risus, id viverra metus dictum sit amet." />
+			<jsp:param name="application-overlay-description" value="USGS coastal change hazards research produces data, 
+					   knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
+					   here. They can be used to increase awareness and provide a basis for decision making." />
 			<jsp:param name="application-overlay-background-image" value="images/splash/splash.svg" />
 		</jsp:include>
 		<div id="application-container" class="container-fluid">

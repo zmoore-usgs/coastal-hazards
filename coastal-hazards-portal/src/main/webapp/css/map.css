@@ -35,6 +35,7 @@
 
 #map-search-input {
 	width : 140px;
+	font-size: 1.2em;
 }
 
 /* Fixes pink tile issue in OpenLayers map */
@@ -45,5 +46,16 @@
 @media (max-width: 440px) {
 	.olControlZoom {
 		display: none;
+	}
+
+	#map-search-container {
+		width: 90px;
+	}
+
+	#map-search-input {
+		height: 0.8em;
+		width : 60px;
+		font-size: 1em;
+		
 	}
 }

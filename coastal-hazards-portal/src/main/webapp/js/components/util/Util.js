@@ -1,4 +1,7 @@
 CCH.Util = {
+	/** 
+	 * Creates a legend for display in the info page
+	 */
 	buildLegend: function(args) {
 		args = args || {};
 		var sld = args.sld;
@@ -27,7 +30,7 @@ CCH.Util = {
 					} else if (!lb && ub) {
 						return '< ' + ub;
 					}
-				}(ub, lb)
+				}(ub, lb);
 				var legendTableBodyTr = $('<tr />');
 				var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
 						$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', sld.bins[bInd].color).html('&nbsp;'));
@@ -36,16 +39,15 @@ CCH.Util = {
 				legendTableBody.append(
 						legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdRange));
 			}
-		}
+		};
 
 		if (type === 'historical') {
 			if (args.attr === 'rates') {
 				buildVanillaLegend();
 			} else {
-				var features = args.features;
-
-				var years = features.map(function(f) {
-					return f.data['Date_'].split('/')[2];
+				legendDiv.addClass('btn-group').attr({'data-toggle': 'buttons-radio'});
+				var years = args.features.map(function(f) {
+					return f.data[CCH.CONFIG.item.attr].split('/')[2];
 				}).unique().sort().reverse();
 
 				// Create a proper map to quickly look years up against
@@ -64,14 +66,77 @@ CCH.Util = {
 				}
 
 				for (var yInd = 0; yInd < years.length; yInd++) {
-					var year = years[yInd];
 					var legendTableBodyTr = $('<tr />');
 					var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
 							$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', yearToColor[years[yInd].substr(2)]).html('&nbsp;'));
-					var legendTableBodyTdYear = $('<td />').addClass('cch-ui-legend-table-body-td-year').append(
-							$('<div />').addClass('cch-ui-legend-table-body-div-year').html(years[yInd]));
-					legendTableBody.append(
-							legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear));
+					var legendTableBodyTdButton = $('<td />');
+					var valueContainer = $('<div />').attr({'id': 'cch-ui-legend-table-body-div-year-' + years[yInd]}).addClass('cch-ui-legend-table-body-div-year').html(years[yInd]);
+					var viewButton = $('<button />').attr({
+						'cch-year': years[yInd],
+						'type': 'button'
+					}).
+							addClass('btn btn-small pull-right cch-ui-legend-table-body-div-year-toggle').
+							append($('<i />').addClass('icon-eye-open')).
+							on({
+						'click': function(evt) {
+							// Bootstrap radio toggle buttons don't let you un-toggle 
+							// a button that's currently toggled so if a user presses an
+							// active button, that means we should pop it up and 
+							// un-highlight everything
+							var tgt = $(evt.target);
+							if (tgt.hasClass('active')) {
+								tgt.removeClass('active');
+								evt.stopImmediatePropagation();
+							}
+							
+							setTimeout(function() {
+								var years = $('.cch-ui-legend-table-body-div-year-toggle').map(function(idx, btn) {
+									var year = $(btn).attr('cch-year');
+									if ($(btn).hasClass('active')) {
+										return year;
+									} else {
+										return null;
+									}
+								});
+
+								var layer = CCH.CONFIG.map.getLayersBy('type', 'cch-layer-dotted')[0];
+								if (layer) {
+									CCH.CONFIG.map.removeLayer(layer);
+								}
+
+								var ns = CCH.CONFIG.item.wmsService.layers.split(':')[0];
+								var name = CCH.CONFIG.item.wmsService.layers.split(':')[1];
+								layer = new OpenLayers.Layer.Vector("WFS", {
+									strategies: [new OpenLayers.Strategy.BBOX()],
+									protocol: new OpenLayers.Protocol.WFS({
+										url: CCH.CONFIG.contextPath + '/cidags/' + ns + '/wfs',
+										featureType: name
+									}),
+									styleMap: new OpenLayers.StyleMap({
+										strokeColor: "#000000",
+										strokeDashstyle: 'dot',
+										strokeWidth: 2,
+										strokeOpacity: 1
+									}),
+									filter: new OpenLayers.Filter.Logical({
+										type: OpenLayers.Filter.Logical.OR,
+										filters: years.map(function(idx, yr) {
+											return new OpenLayers.Filter.Comparison({
+												type: OpenLayers.Filter.Comparison.LIKE,
+												property: CCH.CONFIG.item.attr,
+												value: '*' + yr
+											})
+										})
+									})
+								});
+								layer.type = 'cch-layer-dotted';
+								CCH.CONFIG.map.addLayer(layer);
+							}, 100);
+						}
+					});
+					legendTableBodyTdButton.append(viewButton);
+					var legendTableBodyTdYear = $('<td />').addClass('cch-ui-legend-table-body-td-year').append(valueContainer);
+					legendTableBody.append(legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear, legendTableBodyTdButton));
 				}
 			}
 

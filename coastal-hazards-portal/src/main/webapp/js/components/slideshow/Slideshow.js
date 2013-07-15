@@ -317,6 +317,11 @@ CCH.Objects.Slideshow = function(args) {
 
 				$(window).off('orientationchange', me.orientationChange);
 				$(window).on('orientationchange', me.orientationChange);
+				// Adding a resize trigger here will help the application resize 
+				// properly after the slideshow has been created. Without this here
+				// the application often causes weird sizing issues due to incomplete 
+				// resizing. This trigger ensures proper sizing.
+				$(window).resize();
 			}, 1000, args);
 		}
 	});
