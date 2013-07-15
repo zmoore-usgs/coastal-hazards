@@ -1,6 +1,7 @@
 package gov.usgs.cida.coastalhazards.sld;
 
 import com.google.gson.Gson;
+import com.sun.jersey.api.view.Viewable;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
@@ -46,6 +47,26 @@ public class PcoiTest {
         String color = (String)bin.get("color");
         assertEquals(lowerBound, 0.0f, 0.01f);
         assertEquals(color, "#00FF00");
+    }
+    
+    @Test
+    public void testGenerateSLD() {
+        Item item = new Item();
+        item.setAttr("PCOL1");
+        item.setId("abcde");
+        item.setType(Item.Type.storms);
+        WMSService wmsService = new WMSService();
+        wmsService.setLayers("0");
+        item.setWmsService(wmsService);
+        Summary summary = new Summary();
+        Tiny tiny = new Tiny();
+        tiny.setText("Pcoi");
+        summary.setTiny(tiny);
+        item.setSummary(summary);
+        
+        Pcoi pcoi = new Pcoi(item);
+        Response response = pcoi.generateSLD();
+        Viewable sld = (Viewable)response.getEntity();
     }
 
 }
