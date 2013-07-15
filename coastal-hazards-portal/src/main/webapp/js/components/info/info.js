@@ -45,7 +45,7 @@ $(document).ready(function() {
 											var features = gmlReader.read(data);
 											var legend = CCH.Util.buildLegend({
 												type: CCH.CONFIG.item.type,
-												attr: CCH.CONFIG.item.name,
+												attr: CCH.CONFIG.item.attr,
 												sld: sld,
 												features: features
 											});
