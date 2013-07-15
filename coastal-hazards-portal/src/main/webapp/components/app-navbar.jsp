@@ -75,6 +75,22 @@
 				and emergency operations as they work to reduce risk along our coastlines.
 			</div>
 		</div>
+
+		<div id="canned-views-row" class="row-fluid">
+<!--			<div id="modal-canned-views-description" class="span12">
+				Canned views : 
+			</div>-->
+			<div class="well well-small span4">
+				<a href="http://go.usa.gov/j26H" target="_self"><img src="images/views/canned/historical.png" /><br />Historical</a>
+			</div>
+			<div class="well well-small span4">
+				<a href="http://go.usa.gov/j2Ph" target="_self"><img src="images/views/canned/vulnerability.png" /><br />Vulnerability</a>
+			</div>
+			<div class="well well-small span4">
+				<a href="http://go.usa.gov/j2mR" target="_self"><img src="images/views/canned/storms.png" /><br />Storms</a>
+			</div>
+		</div>
+
 	</div>
 	<div class="modal-footer">
 		<a href="#" class="btn"  data-dismiss="modal" aria-hidden="true">Close</a>

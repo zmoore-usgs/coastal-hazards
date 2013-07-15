@@ -101,6 +101,11 @@
     z-index: -1;
 }
 
+#canned-views-row img {
+	width: 100%;
+	height: 100%;
+}
+
 #app-navbar-search-historical-container img {
     height: 25px;
     margin-bottom: 10px;
@@ -182,3 +187,4 @@
 	font-size: 1.5em;
 	line-height: 1.5em;
 }
+

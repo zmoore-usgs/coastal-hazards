@@ -50,6 +50,9 @@ CCH.Objects.UI = function(args) {
 			me.navbarPinButton.on('click', me.navbarMenuClickHandler);
 			me.navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
 			me.shareModal.on('show', me.sharemodalDisplayHandler);
+			$('#helpModal').on('show', function() {
+				$('.modal-body', this).css({width: 'auto', height: 'auto', 'max-height': '100%'});
+			})
 			$('#app-navbar-search-storms-container').tooltip({
 				title: 'View All Storms',
 				placement: 'left'
@@ -89,7 +92,7 @@ CCH.Objects.UI = function(args) {
 			// on start. If not, show it. The user has to opt-in to have it shown 
 			// next time
 			if (!$.cookie('cch_display_welcome') || $.cookie('cch_display_welcome') === 'true') {
-				$.cookie('cch_display_welcome', 'false', { path: '/' });
+				$.cookie('cch_display_welcome', 'false', {path: '/'});
 				me.displayStartupModalWindow()
 			}
 
@@ -110,20 +113,20 @@ CCH.Objects.UI = function(args) {
 				'type': 'checkbox',
 				'checked': 'checked'
 			}))));
-			
+
 			var removeCheck = function() {
 				$('#set-modal-display-cookie-container').remove();
 				$('#helpModal').off('hidden', removeCheck);
 			};
-			
+
 			$('#set-modal-display-cookie-cb').on('change', function(evt) {
 				if (evt.target.checked) {
-					$.cookie('cch_display_welcome', 'false', { path: '/' });
+					$.cookie('cch_display_welcome', 'false', {path: '/'});
 				} else {
-					$.cookie('cch_display_welcome', 'true', { path: '/' });
+					$.cookie('cch_display_welcome', 'true', {path: '/'});
 				}
 			});
-			
+
 			$('#helpModal').on('hidden', removeCheck);
 			$('#helpModal').modal('toggle');
 		},
