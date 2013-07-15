@@ -34,7 +34,9 @@ public final class OldSchoolCVI extends SLDGenerator {
     
     @Override
     public Response generateSLD() {
-        return Response.ok(new Viewable("/categorical_line.jsp", this)).build();
+        // old school is actually line, but to render bayes categorical, need it to be point
+        //return Response.ok(new Viewable("/categorical_line.jsp", this)).build();
+        return Response.ok(new Viewable("/categorical_point.jsp", this)).build();
     }
     
     @Override
