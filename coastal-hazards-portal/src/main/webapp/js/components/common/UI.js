@@ -29,7 +29,7 @@ CCH.Objects.UI = function(args) {
 			// This window name is used for the info window to launch into when 
 			// a user chooses to go back to the portal
 			window.name = "portal_main_window";
-			
+
 			$(window).on({
 				'resize': me.windowResizeHandler,
 				'cch.data.items.searched': function(evt, count) {
@@ -50,7 +50,36 @@ CCH.Objects.UI = function(args) {
 			me.navbarPinButton.on('click', me.navbarMenuClickHandler);
 			me.navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
 			me.shareModal.on('show', me.sharemodalDisplayHandler);
-
+			$('#app-navbar-search-storms-container').tooltip({
+				title: 'View All Storms',
+				placement: 'left'
+			});
+			$('#app-navbar-search-storms-container').on('click', function() {
+				$(window).trigger('cch.search.item.submit', {
+					'popularity': true,
+					'themes': ['storms']
+				});
+			});
+			$('#app-navbar-search-vulnerability-container').tooltip({
+				title: 'View All Vulnerability',
+				placement: 'left'
+			});
+			$('#app-navbar-search-vulnerability-container').on('click', function() {
+				$(window).trigger('cch.search.item.submit', {
+					'popularity': true,
+					'themes': ['vulnerability']
+				});
+			});
+			$('#app-navbar-search-historical-container').tooltip({
+				title: 'View All Historical',
+				placement: 'left'
+			});
+			$('#app-navbar-search-historical-container').on('click', function() {
+				$(window).trigger('cch.search.item.submit', {
+					'popularity': true,
+					'themes': ['historical']
+				});
+			});
 			// Header fix
 			me.ccsArea.find('br').first().remove();
 
