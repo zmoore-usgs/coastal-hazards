@@ -16,6 +16,15 @@
 					</ul>
 				</div>
 				<div id='app-navbar-help-search-container' class='pull-right'>
+					<span id='app-navbar-search-storms-container'>
+						<img src='images/cards/StormsActive.svg' />
+					</span>
+					<span id='app-navbar-search-historical-container'>
+						<img src='images/cards/HistoricalActive.svg' />
+					</span>
+					<span id='app-navbar-search-vulnerability-container'>
+						<img src='images/cards/VulnerabilityActive.svg' />
+					</span>
 					<span id="app-navbar-help-container">
 						<a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="icon-info-sign"></i></a>
 					</span>
