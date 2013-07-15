@@ -79,7 +79,7 @@ public class ItemResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchCards(
-            @DefaultValue("") @QueryParam("query") String query,
+            @DefaultValue("") @QueryParam("query") List<String> query,
             @DefaultValue("") @QueryParam("type") List<String> type,
 			@DefaultValue("popularity") @QueryParam("sortBy") String sortBy,
 			@DefaultValue("-1") @QueryParam("count") int count,
