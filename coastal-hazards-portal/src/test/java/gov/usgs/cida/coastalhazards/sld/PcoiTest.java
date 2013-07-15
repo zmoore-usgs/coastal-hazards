@@ -46,7 +46,7 @@ public class PcoiTest {
         Double lowerBound = (Double)bin.get("lowerBound");
         String color = (String)bin.get("color");
         assertEquals(lowerBound, 0.0f, 0.01f);
-        assertEquals(color, "#00FF00");
+        assertEquals(color, "#FFFFFE");
     }
     
     @Test
