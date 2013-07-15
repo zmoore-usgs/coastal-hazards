@@ -9,6 +9,7 @@ $(document).ready(function() {
 
 	CCH.LOG = LOG;
 
+	splashUpdate("Initializing Session Subsystem...");
 	CCH.session = new CCH.Objects.Session().init();
 
 	splashUpdate("Initializing UI...");
@@ -31,6 +32,7 @@ $(document).ready(function() {
 		shareTwitterBtn: $('#multi-card-twitter-button')
 	}).init();
 
+	splashUpdate("Initializing Slideshow...");
 	CCH.slideshow = new CCH.Objects.Slideshow({
 		descriptionWrapper: $('#description-wrapper'),
 		iossliderContainer: $('#iosslider-container')
