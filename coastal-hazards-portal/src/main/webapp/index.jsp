@@ -118,6 +118,7 @@
 			<jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
+		<jsp:include page="js/jquery-cookie/jquery-cookie.jsp"></jsp:include>
 		<script type="text/javascript" src="js/components/util/Util.js"></script>
         <script type="text/javascript" src="js/components/slideshow/Slideshow.js"></script>
         <script type="text/javascript" src="js/components/search/Search.js"></script>

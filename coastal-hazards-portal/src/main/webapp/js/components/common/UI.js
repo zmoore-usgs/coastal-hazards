@@ -84,8 +84,48 @@ CCH.Objects.UI = function(args) {
 			me.ccsArea.find('br').first().remove();
 
 			$(window).resize();
+
+			// Check for cookie to tell us if user has disabled the modal window 
+			// on start. If not, show it. The user has to opt-in to have it shown 
+			// next time
+			if (!$.cookie('cch_display_welcome') || $.cookie('cch_display_welcome') === 'true') {
+				$.cookie('cch_display_welcome', 'false', { path: '/' });
+				me.displayStartupModalWindow()
+			}
+
 			$(window).trigger('cch.ui.initialized');
 			return me;
+		},
+		displayStartupModalWindow: function() {
+			$('#helpModal .modal-footer').prepend(
+					$('<div />').attr({
+				'id': 'set-modal-display-cookie-container'
+			}).addClass('pull-left')
+					.append(
+					$('<label />').attr({
+				'for': 'set-modal-display-cookie-cb-label'
+			}).html('Don\'t show this again ').append(
+					$('<input />').attr({
+				'id': 'set-modal-display-cookie-cb',
+				'type': 'checkbox',
+				'checked': 'checked'
+			}))));
+			
+			var removeCheck = function() {
+				$('#set-modal-display-cookie-container').remove();
+				$('#helpModal').off('hidden', removeCheck);
+			};
+			
+			$('#set-modal-display-cookie-cb').on('change', function(evt) {
+				if (evt.target.checked) {
+					$.cookie('cch_display_welcome', 'false', { path: '/' });
+				} else {
+					$.cookie('cch_display_welcome', 'true', { path: '/' });
+				}
+			});
+			
+			$('#helpModal').on('hidden', removeCheck);
+			$('#helpModal').modal('toggle');
 		},
 		navbarMenuClickHandler: function() {
 			// Check to see if any cards are pinned
