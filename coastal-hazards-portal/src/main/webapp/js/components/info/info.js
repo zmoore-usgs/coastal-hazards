@@ -30,6 +30,7 @@ $(document).ready(function() {
 									var legend = CCH.Util.buildLegend({
 										type: CCH.CONFIG.item.type,
 										name: CCH.CONFIG.item.name,
+										attr: CCH.CONFIG.item.attr,
 										sld: sld
 									});
 									$('#info-legend').append(legend);
