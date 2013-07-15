@@ -65,7 +65,7 @@ public final class Pcoi extends SLDGenerator {
         for (int i=0; i<getBinCount(); i++) {
             Map<String, Object> binMap = new LinkedHashMap<String,Object>();
             binMap.put("lowerBound", getThresholds()[i]);
-            if (i < getBinCount()) {
+            if (i < getBinCount() - 1) {
                 binMap.put("upperBound", getThresholds()[i+1]);
             }
             binMap.put("color", getColors()[i]);
