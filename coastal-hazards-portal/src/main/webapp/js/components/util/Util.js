@@ -30,7 +30,7 @@ CCH.Util = {
 					} else if (!lb && ub) {
 						return '< ' + ub;
 					}
-				}(ub, lb)
+				}(ub, lb);
 				var legendTableBodyTr = $('<tr />');
 				var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
 						$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', sld.bins[bInd].color).html('&nbsp;'));
@@ -39,15 +39,14 @@ CCH.Util = {
 				legendTableBody.append(
 						legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdRange));
 			}
-		}
+		};
 
 		if (type === 'historical') {
 			if (args.attr === 'rates') {
 				buildVanillaLegend();
 			} else {
-				var features = args.features;
-
-				var years = features.map(function(f) {
+				legendDiv.addClass('btn-group').attr({'data-toggle': 'buttons-radio'});
+				var years = args.features.map(function(f) {
 					return f.data[CCH.CONFIG.item.attr].split('/')[2];
 				}).unique().sort().reverse();
 
@@ -70,15 +69,26 @@ CCH.Util = {
 					var legendTableBodyTr = $('<tr />');
 					var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
 							$('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', yearToColor[years[yInd].substr(2)]).html('&nbsp;'));
+					var legendTableBodyTdButton = $('<td />');
 					var valueContainer = $('<div />').attr({'id': 'cch-ui-legend-table-body-div-year-' + years[yInd]}).addClass('cch-ui-legend-table-body-div-year').html(years[yInd]);
 					var viewButton = $('<button />').attr({
 						'cch-year': years[yInd],
-						'data-toggle': 'button'
+						'type': 'button'
 					}).
 							addClass('btn btn-small pull-right cch-ui-legend-table-body-div-year-toggle').
 							append($('<i />').addClass('icon-eye-open')).
 							on({
 						'click': function(evt) {
+							// Bootstrap radio toggle buttons don't let you un-toggle 
+							// a button that's currently toggled so if a user presses an
+							// active button, that means we should pop it up and 
+							// un-highlight everything
+							var tgt = $(evt.target);
+							if (tgt.hasClass('active')) {
+								tgt.removeClass('active');
+								evt.stopImmediatePropagation();
+							}
+							
 							setTimeout(function() {
 								var years = $('.cch-ui-legend-table-body-div-year-toggle').map(function(idx, btn) {
 									var year = $(btn).attr('cch-year');
@@ -99,14 +109,14 @@ CCH.Util = {
 								layer = new OpenLayers.Layer.Vector("WFS", {
 									strategies: [new OpenLayers.Strategy.BBOX()],
 									protocol: new OpenLayers.Protocol.WFS({
-										url: CCH.CONFIG.contextPath + '/cidags/'+ns+'/wfs',
+										url: CCH.CONFIG.contextPath + '/cidags/' + ns + '/wfs',
 										featureType: name
 									}),
 									styleMap: new OpenLayers.StyleMap({
 										strokeColor: "#000000",
-										strokeDashstyle : 'dot',
+										strokeDashstyle: 'dot',
 										strokeWidth: 2,
-										strokeOpacity : 1
+										strokeOpacity: 1
 									}),
 									filter: new OpenLayers.Filter.Logical({
 										type: OpenLayers.Filter.Logical.OR,
@@ -124,11 +134,10 @@ CCH.Util = {
 							}, 100);
 						}
 					});
-					valueContainer.append(viewButton);
+					legendTableBodyTdButton.append(viewButton);
 					var legendTableBodyTdYear = $('<td />').addClass('cch-ui-legend-table-body-td-year').append(valueContainer);
-					legendTableBody.append(legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear));
+					legendTableBody.append(legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear, legendTableBodyTdButton));
 				}
-
 			}
 
 		} else if (type === 'storms') {

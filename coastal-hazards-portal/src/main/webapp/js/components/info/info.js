@@ -101,14 +101,16 @@ $(document).ready(function() {
 				'role': 'button'
 			}).addClass('btn').html('<i class="icon-download"></i> View Metadata');
 			
+			// These two download buttons have no function at this time so we
+			// will hide them for the time being
 			// Create a "Download Full" button
 			var downloadFull = $('<a />').attr({
 				'role': 'button'
-			}).addClass('btn').html('<i class="icon-download"></i> Download Full Data');
-			
+			}).addClass('btn hidden').html('<i class="icon-download"></i> Download Full Data');
+			// Create a "Download Item" button
 			var downloadItem = $('<a />').attr({
 				'role': 'button'
-			}).addClass('btn').html('<i class="icon-download"></i> Download Item Data');
+			}).addClass('btn hidden').html('<i class="icon-download"></i> Download Item Data');
 
 			// Create a "View in Portal" link to let the user view this in the portal
 			var applicationLink = $('<a />').attr({
