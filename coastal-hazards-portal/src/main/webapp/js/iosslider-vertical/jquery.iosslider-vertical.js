@@ -506,12 +506,16 @@
 						if(!settings.infiniteSlider) {
 							nodeOffset = (nodeOffset > (sliderMin[sliderNumber] * -1)) ? sliderMin[sliderNumber] * -1 : nodeOffset;
 							nodeOffset = (nodeOffset < (sliderMax[sliderNumber] * -1)) ? sliderMax[sliderNumber] * -1 : nodeOffset;
+							//TODO: Had to hack this in because this was causing browsers to crash - never-ending loop
+							if (distanceOffsetArray[distanceOffsetArray.length - 1] === nodeOffset) {
+								break;
+							}
 						}
 						
 					}
 					
 					distanceOffsetArray[distanceOffsetArray.length] = nodeOffset;
-
+					
 				}
 				
 				distanceOffsetArray[distanceOffsetArray.length] = tempChildrenOffsets[newChildOffset];

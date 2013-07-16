@@ -306,7 +306,8 @@ CCH.Objects.Slideshow = function(args) {
 					sliderContainer.iosSliderVertical($.extend(defaultSliderOptions, {
 						// Currently mouse wheel scrolling is not fully compatible with browsers.
 						// Causes an infinite loop in the vertical script that causes a crash
-						mousewheelScroll: false
+						mousewheelScroll: true,
+						mousewheelScrollOverflow : true
 					}));
 				} else if (currentSizing === 'small') {
 					LOG.debug('Slideshow.js:: Horizontal Slider Loading');
