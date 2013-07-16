@@ -81,7 +81,7 @@
 
 		<div id="canned-views-row" class="row-fluid">
 			<div class="well well-small span4">
-				<a href="http://go.usa.gov/j26H" target="_self"><img src="images/views/canned/historical.png" /><br />Historical</a>
+				<a href="http://go.usa.gov/jTrk" target="_self"><img src="images/views/canned/historical.png" /><br />Historical</a>
 			</div>
 			<div class="well well-small span4">
 				<a href="http://go.usa.gov/j2Ph" target="_self"><img src="images/views/canned/vulnerability.png" /><br />Vulnerability</a>
