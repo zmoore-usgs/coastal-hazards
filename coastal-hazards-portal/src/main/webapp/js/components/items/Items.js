@@ -52,7 +52,7 @@ CCH.Objects.Items = function(args) {
 										});
 										CCH.slideshow.stop();
 									}
-									$(window).trigger('cch.data.items.searched', me.items.length);
+									$(window).trigger('cch.data.items.searched', items.length);
 								} else {
 									$(window).trigger('cch.data.items.searched', 0);
 								}
