@@ -42,7 +42,8 @@ CCH.Util = {
 		};
 
 		if (type === 'historical') {
-			if (args.attr === 'rates') {
+			var ratesAttributes = ["LRR", "WLR", "SCE", "NSM", "EPR"];
+			if (ratesAttributes.indexOf(args.attr.toUpperCase()) !== -1) {
 				buildVanillaLegend();
 			} else {
 				legendDiv.addClass('btn-group').attr({'data-toggle': 'buttons-radio'});

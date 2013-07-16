@@ -2,6 +2,14 @@ var CCH = CCH || {};
 $(document).ready(function() {
 	splashUpdate("Loading Main module...");
 
+	$(document).ajaxStart(function() {
+		$('body').css('cursor', 'wait');
+	});
+	
+	$(document).ajaxStop(function() {
+		$('body').css('cursor', 'default');
+	});
+
 	splashUpdate("Initializing Logging...");
 	initializeLogging({
 		LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
@@ -151,7 +159,7 @@ $(document).ready(function() {
 							CCH.items.load({
 								items: idList,
 								callbacks: {
-									success : [
+									success: [
 										function(json, textStatus, jqXHR) {
 											// We want to zoom to the bounding box of the
 											// session and not just the pinned cards
@@ -213,7 +221,7 @@ $(document).ready(function() {
 							splashMessage: 404 === jqXHR.status ?
 									'<b>View Not Found</b><br /><br />The view you are trying to load may no longer exist<br /><br />' :
 									'<b>There was an error attempting to load your view.</b><br /><br />Either try to reload the application or contact the system administrator.<br /><br />',
-							mailTo : 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
+							mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
 						});
 					}
 				]

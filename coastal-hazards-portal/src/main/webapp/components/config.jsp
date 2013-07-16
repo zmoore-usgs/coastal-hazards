@@ -5,6 +5,7 @@
 <%@page import="org.slf4j.Logger"%>
 <%@page import="org.slf4j.LoggerFactory"%>
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
+
 	{
 		try {
 			props = props.addJNDIContexts(new String[0]);
@@ -29,9 +30,9 @@
 		idType: '${param.idType}',
 		development: <%= development%>,
 		ajaxTimeout: 300000,
-		contextPath : '${param.baseUrl}',
-		emailLink : 'CCH_Help@usgs.gov',
-		publicUrl : '<%=publicUrl%>',
+		contextPath: '${param.baseUrl}',
+		emailLink: 'CCH_Help@usgs.gov',
+		publicUrl: '<%=publicUrl%>',
 		popupHandling: {
 			isVisible: false,
 			clickedAway: false,
