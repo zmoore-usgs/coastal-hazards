@@ -17,16 +17,15 @@
 <%
 	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
 %>
-<html lang="en">
+<html lang="en"> 
     <head>
 		<script type="text/javascript">
 			/* This application does not support <IE9 - Stop early if <IE9*/
-			if (navigator.appName == 'Microsoft Internet Explorer') {
-				if (new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) !== null) {
-					if (parseFloat(RegExp.$1) < 9) {
-						alert("We apologize, but this application does not support Internet Explorer versions lower than 9.0.\n\nOther supported browsers are Firefox, Chrome and Safari.");
-						window.location = 'http://windows.microsoft.com/en-us/internet-explorer/downloads/ie-9/worldwide-languages';
-					}
+			if (navigator.appName === 'Microsoft Internet Explorer') {
+				var ua = navigator.userAgent;
+				if (ua.toLowerCase().indexOf('msie 6') !== -1 || ua.toLowerCase().indexOf('msie 7') !== -1 || ua.toLowerCase().indexOf('msie 8') !== -1) {
+					alert("We apologize, but this application does not support Internet Explorer versions lower than 9.0.\n\nOther supported browsers are Firefox, Chrome and Safari.");
+					window.location = 'http://windows.microsoft.com/en-us/internet-explorer/downloads/ie-9/worldwide-languages';
 				}
 			}
 		</script>
@@ -119,19 +118,19 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="js/jquery-cookie/jquery-cookie.jsp"></jsp:include>
-		<script type="text/javascript" src="js/components/util/Util.js"></script>
-        <script type="text/javascript" src="js/components/slideshow/Slideshow.js"></script>
-        <script type="text/javascript" src="js/components/search/Search.js"></script>
-        <script type="text/javascript" src="js/components/session/Session.js"></script>
-        <script type="text/javascript" src="js/components/map/Map.js"></script>
-        <script type="text/javascript" src="js/components/card/Card.js"></script>
-        <script type="text/javascript" src="js/components/card/Cards.js"></script>
-        <script type="text/javascript" src="js/components/items/Items.js"></script>
-        <script type="text/javascript" src="js/components/popularity/Popularity.js"></script>
-        <script type="text/javascript" src="js/components/common/OWS.js"></script>
-        <script type="text/javascript" src="js/components/common/UI.js"></script>
-        <script type="text/javascript" src="js/components/common/OnReady.js"></script>
-        <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+			<script type="text/javascript" src="js/components/util/Util.js"></script>
+			<script type="text/javascript" src="js/components/slideshow/Slideshow.js"></script>
+			<script type="text/javascript" src="js/components/search/Search.js"></script>
+			<script type="text/javascript" src="js/components/session/Session.js"></script>
+			<script type="text/javascript" src="js/components/map/Map.js"></script>
+			<script type="text/javascript" src="js/components/card/Card.js"></script>
+			<script type="text/javascript" src="js/components/card/Cards.js"></script>
+			<script type="text/javascript" src="js/components/items/Items.js"></script>
+			<script type="text/javascript" src="js/components/popularity/Popularity.js"></script>
+			<script type="text/javascript" src="js/components/common/OWS.js"></script>
+			<script type="text/javascript" src="js/components/common/UI.js"></script>
+			<script type="text/javascript" src="js/components/common/OnReady.js"></script>
+			<script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.2.1/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <script type="text/javascript">
 			$('#footer > .content').addClass('visible-desktop hidden-phone hidden-tablet');
