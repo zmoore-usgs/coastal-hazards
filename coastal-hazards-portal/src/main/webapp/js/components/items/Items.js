@@ -46,15 +46,13 @@ CCH.Objects.Items = function(args) {
 									// and load them in the view
 									if (items.length) {
 										me.items = items;
-										$(window).trigger('cch.data.items.searched', me.items.length);
+										
 										$(window).trigger('cch.data.items.loaded', {
 											items: me.items
 										});
 										CCH.slideshow.stop();
-									} else {
-										// Otherwise, just respond that we returned 0 results
-										$(window).trigger('cch.data.items.searched', 0);
 									}
+									$(window).trigger('cch.data.items.searched', me.items.length);
 								} else {
 									$(window).trigger('cch.data.items.searched', 0);
 								}

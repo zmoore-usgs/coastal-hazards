@@ -5,7 +5,7 @@
 
 				<h4 class="app-navbar-brand visible-desktop hidden-tablet hidden-phone">USGS Coastal Change Hazards Portal</h4>
                 <h4 class="app-navbar-brand hidden-desktop visible-tablet hidden-phone">Coastal Change Hazards Portal</h4>
-				<h4 class="app-navbar-brand hidden-desktop hidden-tablet visible-phone">USGS CCH</h4>
+				<h4 class="app-navbar-brand hidden-desktop hidden-tablet visible-phone">CCH</h4>
 
 				<div id="app-navbar-pin-control" class="btn-group">
 					<button id='app-navbar-pin-control-button' class="btn btn-mini disabled"><i id='app-navbar-pin-control-icon' class="icon-pushpin muted"></i>&nbsp;<span id='app-navbar-pin-control-pincount'>0</span></button>
