@@ -104,7 +104,7 @@
 #modal-help-summary-container {
 	font-size: 1.2em;
 	font-family: Verdana,Arial,Helvetica,sans-serif;
-	
+
 }
 
 #canned-views-row img {
@@ -192,5 +192,18 @@
 #modal-share-summary-twitter-label{
 	font-size: 1.5em;
 	line-height: 1.5em;
+}
+
+@media (max-width: 440px) {
+	#app-navbar-search-storms-container img,
+	#app-navbar-search-historical-container img,
+	#app-navbar-search-vulnerability-container img{
+		height: 20px;
+	}
+
+	#app-navbar-help-search-container {
+		margin-right: -10px;
+	}
+
 }
 
