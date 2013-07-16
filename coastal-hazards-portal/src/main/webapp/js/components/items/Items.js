@@ -13,9 +13,8 @@ CCH.Objects.Items = function(args) {
 					callbacks: {
 						success: [
 							function(data, status, jqXHR) {
-								$(window).trigger('cch.data.items.searched', data.items.length);
 								if (data && data.items && data.items.length) {
-									me.items = data.items;
+									var items = data.items;
 
 									// We don't want to kill off the pinned items 
 									// after a search. We wamt them to end up on the
@@ -24,8 +23,8 @@ CCH.Objects.Items = function(args) {
 									var pinnedItems = CCH.cards.getPinnedCards().map(function(card) {
 										return card.item;
 									});
-									me.items = me.items.concat(pinnedItems);
-									
+									items = items.concat(pinnedItems);
+
 									// The expected behavior is for pinned items to 
 									// show up at the bottom of the list. concat() 
 									// does not care about uniqueness so we may have 
@@ -33,14 +32,31 @@ CCH.Objects.Items = function(args) {
 									// in through the search. Go through the array and 
 									// delete off the top any duplicates which will be
 									// the unpinned version of the pinned item
-									me.items.remove(function(item) {
-										var dupeCount = me.items.count(item);
-										return dupeCount > 1;
+
+									// We are also currently filtering geospatial
+									// using the front-end due to hibernate being 
+									// a little b :/
+									items.remove(function(item) {
+										var isDupe = this.count(item) > 1;
+										var intersectsBoundBox = new OpenLayers.Bounds(item.bbox).intersectsBounds(new OpenLayers.Bounds(CCH.search.getCurrentBBOX()));
+										return isDupe || !intersectsBoundBox;
 									});
-									$(window).trigger('cch.data.items.loaded', {
-										items: me.items
-									});
-									CCH.slideshow.stop();
+									
+									// If items were found, return the items that were found
+									// and load them in the view
+									if (items.length) {
+										me.items = items;
+										$(window).trigger('cch.data.items.searched', me.items.length);
+										$(window).trigger('cch.data.items.loaded', {
+											items: me.items
+										});
+										CCH.slideshow.stop();
+									} else {
+										// Otherwise, just respond that we returned 0 results
+										$(window).trigger('cch.data.items.searched', 0);
+									}
+								} else {
+									$(window).trigger('cch.data.items.searched', 0);
 								}
 							}
 						],
@@ -114,7 +130,7 @@ CCH.Objects.Items = function(args) {
 				query: query.split(','),
 				type: type.split(',')
 			};
-			
+
 			if (!item) {
 				if (!count) {
 					delete data.count;

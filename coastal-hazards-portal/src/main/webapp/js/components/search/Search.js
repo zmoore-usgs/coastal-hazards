@@ -71,6 +71,14 @@ CCH.Objects.Search = function(args) {
 			me.west.html(extent.left.toFixed(4));
 			me.east.html(extent.right.toFixed(4));
 		},
+		getCurrentBBOX: function() {
+			return [
+				parseFloat(me.west.html()),
+				parseFloat(me.south.html()),
+				parseFloat(me.east.html()),
+				parseFloat(me.north.html())
+			];
+		},
 		buildMap: function() {
 			var miniMap = new OpenLayers.Map('item-search-map', {
 				projection: "EPSG:900913",
