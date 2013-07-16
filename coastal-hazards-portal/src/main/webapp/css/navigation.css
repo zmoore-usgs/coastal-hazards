@@ -101,6 +101,12 @@
     z-index: -1;
 }
 
+#modal-help-summary-container {
+	font-size: 1.2em;
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	
+}
+
 #canned-views-row img {
 	width: 100%;
 	height: 100%;

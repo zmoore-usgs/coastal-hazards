@@ -51,7 +51,7 @@ CCH.Objects.UI = function(args) {
 			me.navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
 			me.shareModal.on('show', me.sharemodalDisplayHandler);
 			$('#helpModal').on('show', function() {
-				$('.modal-body', this).css({width: 'auto', height: 'auto', 'max-height': '100%'});
+				$('#help-modal-body').css('max-height', window.innerHeight - window.innerHeight * 0.2)
 			})
 			$('#app-navbar-search-storms-container').tooltip({
 				title: 'View All Storms',

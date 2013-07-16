@@ -62,13 +62,16 @@
 	<div class="modal-header">
 		<h4 id="modal-help-label">About The Coastal Change Hazards Portal</h4>
 	</div>
-	<div class="modal-body">
+	<div id="help-modal-body" class="modal-body">
 		<div class="row-fluid">
 			<div id='modal-help-summary-container' class='well well-small'>
 				With more than half of the American people living along our Nation's coasts, 
 				extreme beach and cliff erosion can dramatically alter coastal ecosystems, 
 				cause billions of dollars' worth of coastal development, and even threaten 
-				human life. Through projects like the National Assessment of Coastal Change 
+				human life. 
+				<br />
+				<br />
+				Through projects like the National Assessment of Coastal Change 
 				Hazards and regional studies of nearshore processes, the US Geological Survey 
 				is uncovering the science behind coastal change hazards and providing data, 
 				tools, and scientific knowledge to help coastal planners, resource managers, 
@@ -77,9 +80,6 @@
 		</div>
 
 		<div id="canned-views-row" class="row-fluid">
-<!--			<div id="modal-canned-views-description" class="span12">
-				Canned views : 
-			</div>-->
 			<div class="well well-small span4">
 				<a href="http://go.usa.gov/j26H" target="_self"><img src="images/views/canned/historical.png" /><br />Historical</a>
 			</div>
