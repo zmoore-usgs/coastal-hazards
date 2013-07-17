@@ -61,12 +61,13 @@ public class NaNWriter {
         GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
 		
 		double[][] pts = {
-				{ 1001, 2001, Double.NaN },
+				// { 1001, 2001, Double.NaN },
 				{ 1002, 2002, -1.0e39},
 				{ 1003, 2003, 42.123 },
 				{ 1004, 2004, Double.MAX_VALUE },
 				{ 1005, 2005, Double.MIN_VALUE },
-				{ 1006, 2006, 1999 }
+				{ 1006, 2006, 1999 },
+				{ 1007, 2007, - Double.MAX_VALUE }
 		};
 		
         Transaction tx = new DefaultTransaction("create");
