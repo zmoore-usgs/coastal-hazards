@@ -83,7 +83,7 @@ public class ZipInterpolator {
 	}
 
 	private void copy(InputStream fis, OutputStream zos) throws IOException {
-		byte[] buf = new byte[8*1064];
+		byte[] buf = new byte[8*1024];
 		int ct = 0;
 		do {
 			ct = fis.read(buf);

@@ -13,27 +13,27 @@ public class FileHelperTest {
 		ZipEntry ze;
 		
 		ze = new ZipEntry(".hidden_thing");
-		assertTrue(ze.getName(),FileHelper.entryIsMacBundle(ze));
+		assertTrue(ze.getName(),FileHelper.entryIsHidden(ze));
 		
 		ze = new ZipEntry(".hidden_dir/");
-		assertTrue(ze.getName(),FileHelper.entryIsMacBundle(ze));
+		assertTrue(ze.getName(),FileHelper.entryIsHidden(ze));
 
 		ze = new ZipEntry("SOME_MACOSX_BUNDLE/");
 		assertTrue(ze.isDirectory());
 		
-		assertTrue(ze.getName(),FileHelper.entryIsMacBundle(ze));
+		assertTrue(ze.getName(),FileHelper.entryIsHidden(ze));
 		
 		ze = new ZipEntry("Another_MacOSX_Bundle/");
-		assertTrue(ze.getName(),FileHelper.entryIsMacBundle(ze));
+		assertTrue(ze.getName(),FileHelper.entryIsHidden(ze));
 		
 		ze = new ZipEntry("NOT_MACOSX_BUNDLE");
-		assertFalse(ze.getName(),FileHelper.entryIsMacBundle(ze));
+		assertFalse(ze.getName(),FileHelper.entryIsHidden(ze));
 		
 		ze = new ZipEntry("unhidden_thing");
-		assertFalse(ze.getName(),FileHelper.entryIsMacBundle(ze));
+		assertFalse(ze.getName(),FileHelper.entryIsHidden(ze));
 
 		ze = new ZipEntry("unhidden_dir/");
-		assertFalse(ze.getName(),FileHelper.entryIsMacBundle(ze));
+		assertFalse(ze.getName(),FileHelper.entryIsHidden(ze));
 		
 	}
 

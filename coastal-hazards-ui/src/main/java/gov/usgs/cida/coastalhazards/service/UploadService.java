@@ -100,30 +100,32 @@ public class UploadService extends HttpServlet {
             return;
         }
         Enumeration<? extends ZipEntry> entries = new ZipFile(uploadDestinationFile).entries();
-        boolean needsMacFix = false;
+        boolean hasHidden = false;
         boolean needsLidarExplosion = false;
         while (entries.hasMoreElements()) {
             ZipEntry entry = entries.nextElement();
-            if (FileHelper.entryIsMacBundle(entry)) {
-                needsMacFix = true;
+            if (FileHelper.entryIsHidden(entry)) {
+                hasHidden = true;
             }
             if (entry.getName().endsWith("_uncertainty.dbf")) {
             	needsLidarExplosion = true;
             }
         }
-        if (needsMacFix) {
-            FileHelper.fixMacZip(uploadDestinationFile);
+        if (hasHidden) {
+            FileHelper.removeHiddenEntries(uploadDestinationFile);
         }
         
         if (needsLidarExplosion) {
+        	// add another zipfile to the upload directory, with exploded point data
         	ZipInterpolator exploder = new ZipInterpolator();
         	
         	try {
-				uploadDestinationFile = exploder.explode(uploadDestinationFile);
-				// make a new destinationDirectory, as downstream code expects that directory to hold exactly one zipfile
-				destinationDirectoryChild = UUID.randomUUID().toString();
-		        uploadDestinationDirectory = new File(new File(uploadDirectory), destinationDirectoryChild);
-		        uploadDestinationFile.renameTo(new File(uploadDestinationDirectory,fileName));
+        		File xplodedFile = exploder.explode(uploadDestinationFile);
+        		
+                responseMap.put("pts-file-checksum", Long.toString(FileUtils.checksumCRC32(xplodedFile)));
+                responseMap.put("pts-file-size", Long.toString(FileUtils.sizeOf(xplodedFile)));
+                responseMap.put("pts-file-name", xplodedFile.getName());
+
 			} catch (Exception e) {
 				throw new RuntimeException("Problem exploding shapefile zip file", e);
 			}
