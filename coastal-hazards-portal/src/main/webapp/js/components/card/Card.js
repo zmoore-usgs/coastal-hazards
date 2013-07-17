@@ -13,20 +13,28 @@ CCH.Objects.Card = function(args) {
 	me.size = args.size;
 	me.pinned = false;
 	me.pinButton = null;
+	me.layer = null;
 
 	return $.extend(me, {
-		init: function() {
-			return me;
+		init: function(args) {
+			args = args || {};
+			return me.buildCard({
+				size: CCH.ui.getCurrentSizing()
+			});
 		},
-		create: function() {
+		buildCard: function(args) {
 			me.container = $('<div />').addClass('description-container container-fluid');
-			var titleRow = $('<div />').addClass('description-title-row row-fluid');
-			var descriptionRow = $('<div />').addClass('description-description-row row-fluid');
-			me.pinButton = $('<button />')
-					.addClass('btn  span1')
-					.attr('type', 'button')
+			var titleRow = $('<div />').addClass('description-title-row row-fluid unselectable');
+			var descriptionRow = $('<div />').addClass('description-description-row row-fluid').
+					append($('<p />').addClass('slide-description').html(me.summary.medium.text));
+
+			me.container.
+					addClass('description-container-' + args.size + ' description-container-' + me.type).
+					append(titleRow, descriptionRow);
+
+			me.pinButton = $('<span />')
 					.append($('<i />')
-					.addClass('slide-menu-icon-zoom-in icon-eye-open slide-button muted'))
+					.addClass('slide-menu-icon icon-pushpin muted pull-left'))
 					.on({
 				'mouseover': function(evt) {
 					$(this).find('i').removeClass('muted');
@@ -35,42 +43,41 @@ CCH.Objects.Card = function(args) {
 					$(this).find('i').addClass('muted');
 				},
 				'click': function() {
-					$(me).trigger('card-button-pin-clicked');
+					$(me).trigger('card-button-pin-clicked', me);
 				}
 			});
 
-			if (me.type === 'storms') {
-				me.container.addClass('description-container-storms');
-			} else if (me.type === 'vulnerability') {
-				me.container.addClass('description-container-vulnerability');
-			} else {
-				me.container.addClass('description-container-historical');
-			}
+			// Link the title of the card to the info page for that card
+			var titleLink = $('<a />').addClass('description-title span11').attr({
+				'href': CCH.CONFIG.contextPath + '/ui/info/item/' + me.item.id,
+				'target': 'portal_view_window'
+			}).html(me.summary.medium.title);
 
-			var titleColumn = $('<span />').addClass('description-title span10').html(me.name);
+			titleRow.append(me.pinButton, titleLink);
+			me.layer = me.buildLayer();
 
-			titleRow.append(me.pinButton, titleColumn);
-
-			descriptionRow.append($('<p />').addClass('slide-vertical-description').html(me.summary.medium));
-
-			me.container.append(titleRow, descriptionRow);
-			if (me.size === 'large') {
-				me.container.addClass('description-container-large');
-			} else if (me.size === 'small') {
-				me.container.addClass('description-container-small');
-			}
-
-			me.container.data('card', me);
-
-			return me.container;
+			return me;
 		},
-		getAllCards: function() {
-			var descriptionContainers = $('.description-container');
-			var cards = [];
-			for (var contIdx = 0; contIdx < descriptionContainers.length; contIdx++) {
-				cards.push($(descriptionContainers[contIdx]).data('card'));
-			}
-			return cards;
+		buildLayer: function() {
+			var layer = new OpenLayers.Layer.WMS(
+					me.item.id,
+					me.item.wmsService.endpoint,
+					{
+						layers: me.item.wmsService.layers,
+						format: 'image/png',
+						transparent: true,
+						sld: CCH.CONFIG.publicUrl + '/data/sld/' + me.item.id,
+						styles: 'cch'
+					},
+			{
+				projection: 'EPSG:3857',
+				isBaseLayer: false,
+				displayInLayerSwitcher: false,
+				isItemLayer: true, // CCH specific setting
+				bbox: me.bbox
+			});
+
+			return layer;
 		},
 		pin: function() {
 			me.pinButton.addClass('slider-card-pinned');

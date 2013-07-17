@@ -1,36 +1,42 @@
 var CCH = CCH || {};
 CCH.Objects.Cards = function(args) {
+	args = args || {};
 	var me = (this === window) ? {} : this;
-	me.currentApplicationSize;
 	me.pinnedCount;
+	me.navPinControlCount = args.navPinControlCount;
+	me.navPinControlButton = args.navPinControlButton;
+	me.navPinControlDropdownButton = args.navPinControlDropdownButton;
+	me.cards = [];
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
-				'cch.ui.resized': function(evt, size) {
-					me.currentApplicationSize = size;
-				},
 				'cch.navbar.pinmenu.item.clear.click': function(evt) {
 					me.unpinAllCards();
 				},
 				'cch.ui.initialized': function(evt) {
+					me.updatePinnedCount();
+				},
+				'cch.data.session.loaded.true': function(evt) {
 					me.updatePinnedCount();
 				}
 			});
 
 			return me;
 		},
+		/**
+		 * Builds a card to add to the card container 
+		 */
 		buildCard: function(args) {
 			var item = CCH.items.getById({
 				'id': args.itemId
 			});
 
 			var card = new CCH.Objects.Card({
-				item: item,
-				size: me.currentApplicationSize
-			});
+				'item': item
+			}).init();
 
 			$(card).on({
-				'card-button-pin-clicked': function(evt) {
+				'card-button-pin-clicked': function(evt, card) {
 					var card = evt.currentTarget;
 					var toggledOn = CCH.session.toggleItem(card.item);
 					if (toggledOn) {
@@ -39,10 +45,31 @@ CCH.Objects.Cards = function(args) {
 						card.unpin();
 					}
 					me.updatePinnedCount();
+					$(me).trigger('card-button-pin-clicked', card);
+				},
+				'card-pinned': function(evt, card) {
+					CCH.Util.updateItemPopularity({
+						item: card.item.id,
+						type: 'use'
+					});
+					$(me).trigger('card-pinned', card);
 				}
 			});
 
-			return card.create();
+			return card;
+		},
+		addCard: function(card) {
+			if (me.cards.indexOf(card) === -1) {
+				me.cards.push(card);
+			}
+		},
+		getById: function(id) {
+			return me.cards.find(function(card) {
+				return card.item.id === id;
+			});
+		},
+		getCards: function() {
+			return me.cards;
 		},
 		unpinAllCards: function() {
 			var pinnedCards = me.getPinnedCards();
@@ -52,10 +79,8 @@ CCH.Objects.Cards = function(args) {
 		},
 		getPinnedCards: function() {
 			var pinnedCards = [];
-			var cardContainers = $('.description-container');
-			for (var ccIdx = 0; ccIdx < cardContainers.length; ccIdx++) {
-				var cardContainer = cardContainers[ccIdx];
-				var card = $(cardContainer).data('card');
+			for (var ccIdx = 0; ccIdx < me.cards.length; ccIdx++) {
+				var card = me.cards[ccIdx];
 				if (card.pinned) {
 					pinnedCards.push(card);
 				}
@@ -65,15 +90,18 @@ CCH.Objects.Cards = function(args) {
 		getPinnedCount: function() {
 			return me.pinnedCount;
 		},
+		/**
+		 * Updates the count of pinned items in the navigation bar's pin control
+		 */
 		updatePinnedCount: function() {
 			me.pinnedCount = CCH.session.getPinnedCount();
-			$('#app-navbar-pin-control-pincount').html(me.pinnedCount);
+			me.navPinControlCount.html(me.pinnedCount);
 			if (me.pinnedCount > 0) {
-				$('#app-navbar-pin-control-button').removeClass('disabled');
-				$('#app-navbar-pin-control-dropdown-button').removeClass('disabled');
+				me.navPinControlButton.removeClass('disabled');
+				me.navPinControlDropdownButton.removeClass('disabled');
 			} else {
-				$('#app-navbar-pin-control-button').addClass('disabled');
-				$('#app-navbar-pin-control-dropdown-button').addClass('disabled');
+				me.navPinControlButton.addClass('disabled');
+				me.navPinControlDropdownButton.addClass('disabled');
 			}
 			return me.pinnedCount;
 		}

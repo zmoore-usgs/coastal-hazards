@@ -1,3 +1,12 @@
+#item-search-modal[aria-hidden="false"] {
+	position: absolute;
+}
+
+#item-search-modal[aria-hidden="true"] {
+	z-index: -1;
+	position: fixed;
+}
+
 #item-search-map {
 	height : 200px;
 }
@@ -7,10 +16,6 @@
 	height: auto;
 }
 
-#app-navbar-item-search-container:hover {
-	cursor: pointer;
-	color: #D6DCE6;
-}
 
 #item-search-input-table-row{
 	text-align: center;

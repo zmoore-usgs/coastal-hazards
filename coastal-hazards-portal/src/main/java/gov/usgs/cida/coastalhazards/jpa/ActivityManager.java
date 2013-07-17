@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.jpa;
 
 import gov.usgs.cida.coastalhazards.model.Activity;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -10,22 +11,21 @@ import javax.persistence.PersistenceContext;
  */
 public class ActivityManager {
 
-    @PersistenceContext
-    private EntityManager em;
-            
-    public ActivityManager() {
-        em = JPAHelper.getEntityManagerFactory().createEntityManager();
-    }
-
-    public String hit(Activity activity) {
+    public synchronized String hit(Activity activity) {
         String result = "{\"success\": false}";
+        EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
+        EntityTransaction transaction = em.getTransaction();
         try {
-            em.getTransaction().begin();
+            transaction.begin();
             em.persist(activity);
-            em.getTransaction().commit();
+            transaction.commit();
             result = "{\"success\": true}";
         } catch (Exception ex) {
-            em.getTransaction().rollback();
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+        } finally {
+            JPAHelper.close(em);
         }
         return result;
     }

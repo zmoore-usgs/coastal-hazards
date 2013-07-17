@@ -11,21 +11,22 @@ CCH.Objects.Search = function(args) {
 	me.popularityInput = args.popularityInput;
 	me.popularityRange = args.popularityRange;
 	me.searchContainer = args.searchContainer;
-	me.slider = args.slider;
 	me.submitButton = args.submitButton;
 	me.keywordInput = args.keywordInput;
 	me.themeInput = args.themeInput;
 	me.itemSearchModalWindow = args.itemSearchModalWindow;
-	
+	me.popularityCb = args.popularityCb;
+	me.searchQuery = args.searchQuery;
 	return $.extend(me, {
-		init : function() {
-			me.bindSearchInput();
+		init: function() {
+			me.bindGeolocationInput();
 			me.bindSearchModalButton();
 			me.itemSearchModalWindow.css('display', 'none');
+			return me;
 		},
-		bindSearchInput: function() {
+		bindGeolocationInput: function() {
 			me.searchbar.submit(function(evt) {
-				var query = $('.search-query').val();
+				var query = me.searchQuery.val();
 				if (query) {
 					$.ajax({
 						type: 'GET',
@@ -61,78 +62,88 @@ CCH.Objects.Search = function(args) {
 				});
 			});
 		},
-		bindSearchModalButton: function() {
+		transformBBOX3857to4326: function(extent) {
+			return extent.transform(new OpenLayers.Projection('EPSG:3857'), new OpenLayers.Projection('EPSG:4326'));
+		},
+		updateSearchBBOX: function(extent) {
+			me.north.html(extent.top.toFixed(4));
+			me.south.html(extent.bottom.toFixed(4));
+			me.west.html(extent.left.toFixed(4));
+			me.east.html(extent.right.toFixed(4));
+		},
+		getCurrentBBOX: function() {
+			return [
+				parseFloat(me.west.html()),
+				parseFloat(me.south.html()),
+				parseFloat(me.east.html()),
+				parseFloat(me.north.html())
+			];
+		},
+		buildMap: function() {
 			var miniMap = new OpenLayers.Map('item-search-map', {
 				projection: "EPSG:900913",
 				displayProjection: new OpenLayers.Projection("EPSG:900913")
 			});
 
-			miniMap.addLayer(new OpenLayers.Layer.XYZ("Shaded Relief",
-					"http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}",
+
+			miniMap.addLayer(new OpenLayers.Layer.XYZ("Light Gray Base",
+					"http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}",
 					{
 						sphericalMercator: true,
 						isBaseLayer: true,
-						numZoomLevels: 14,
+						numZoomLevels: 17,
+						wrapDateLine: true
+					}
+			));
+
+			miniMap.addLayer(new OpenLayers.Layer.XYZ("Light Gray Reference",
+					"http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/${z}/${y}/${x}",
+					{
+						sphericalMercator: true,
+						isBaseLayer: false,
+						numZoomLevels: 17,
 						wrapDateLine: true
 					}
 			));
 
 			miniMap.zoomToMaxExtent();
-			me.north.html(miniMap.getExtent().top);
-			me.south.html(miniMap.getExtent().bottom);
-			me.west.html(miniMap.getExtent().left);
-			me.east.html(miniMap.getExtent().right);
+			var extent = me.transformBBOX3857to4326(miniMap.getExtent());
+			me.updateSearchBBOX(extent);
+
 
 			miniMap.events.on({
 				'moveend': function(evt) {
 					var map = evt.object;
-					me.north.html(map.getExtent().top);
-					me.south.html(map.getExtent().bottom);
-					me.west.html(map.getExtent().left);
-					me.east.html(map.getExtent().right);
+					var extent = me.transformBBOX3857to4326(map.getExtent());
+					me.updateSearchBBOX(extent);
 				}
 			});
+		},
+		isMapVisible: function() {
+			return $('#item-search-row-map').css('display') !== 'none';
+		},
+		bindSearchModalButton: function() {
+			me.buildMap();
 
 			me.searchContainer.on({
 				'click': function() {
-					var popularityScores = CCH.CONFIG.popularity.results.map(function(result) {
-						return parseInt(result.hotness);
-					});
-					var lowestPopularityScore = popularityScores.min();
-					var highestPopularityScore = popularityScores.max();
-					me.slider.slider({
-						range: "min",
-						value: highestPopularityScore,
-						min: lowestPopularityScore,
-						max: highestPopularityScore,
-						slide: function(event, ui) {
-							me.popularityInput.html(ui.value);
-						}
-					});
-
-					me.popularityInput.html(me.popularityRange.slider("value"));
 					me.modalContainer.modal('show');
 				}
 			});
 
 			me.submitButton.on({
 				'click': function() {
-					var query = {
+					me.modalContainer.modal('hide');
+					$(window).trigger('cch.search.item.submit', {
 						'top': me.north.html(),
 						'bottom': me.south.html(),
 						'left': me.west.html(),
 						'right': me.east.html(),
-						'popularity': me.popularityInput.html(),
-						'keywords': me.keywordInput.html(),
+						'popularity': me.popularityCb.is(':checked'),
+						'keywords': me.keywordInput.val(),
 						'themes': me.themeInput.find('option:selected').toArray().map(function(option) {
 							return option.value;
 						})
-					};
-
-					me.modalContainer.modal('hide');
-
-					$(window).trigger('cch.search.item.submit', {
-						query: query
 					});
 				}
 			});

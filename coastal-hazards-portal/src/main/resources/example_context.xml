@@ -1,13 +1,37 @@
-<!-- Sets logging and script types that are loaded --> 
-<Environment name="development" type="java.lang.String" value="true" />
+<Environment name="coastal-hazards.public.url" type="java.lang.String" value="http://cida.usgs.gov/qa/coastalhazards" />
 
+<!-- Sets logging and script types that are loaded --> 
+<Environment name="coastal-hazards.development" type="java.lang.String" value="true" />
+
+<!-- This is only necessary on public facing URLs. The Jersey framework seems to clobber contextPath in the 
+request object. Therefore, a quick fix is to use this value, set on public facing servers (qa/prod) in
+order to get the public mapping of where the application is at -->
+<Environment name="coastal-hazards.base.url" type="java.lang.String" value="/qa/coastalhazards" />
+
+<!-- Coastal hazards interacts with go.usa.gov for url minification -->
+<Environment name="coastal-hazards.go.usa.gov.login" type="java.lang.String" value="USGS%20Coastal%20Hazards" />
+<Environment name="coastal-hazards.go.usa.gov.apikey" type="java.lang.String" value="Your_usa_gov_api_key" />
+<Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="http://go.usa.gov/api/" />
+
+<!-- The maximum file size that is allowed to the server - Set to 0 to disable size checking -->
+<Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="15728640" />
+
+<!-- The parameter that the application uses to get the name of the incoming file - qqfile is used by default -->
+<Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="qqfile" />
+
+<!-- The base directory for the project's file structure - the default will be a "coastal-hazards" directory in the system's temp dir-->
+<Environment name="coastal-hazards.files.directory.base" type="java.lang.String" value="/opt/tomcat/instance/default/data/coastal-hazards" />
+<!-- Work Directory. Typically where files are temporarily stored after uploading, unzipping, etc. Default will be /work - sits in coastal-hazards.files.directory.base -->
+<Environment name="coastal-hazards.files.directory.work" type="java.lang.String" value="/work" />
+<!-- Directory in which uploads are held. Default will be /upload - sits in coastal-hazards.files.directory.base -->
+<Environment name="coastal-hazards.files.directory.upload" type="java.lang.String" value="/upload" />
+
+			
 <!-- URL Forwarding Configuration -->
 <Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/coastal-hazards-geoserver" />
 <Environment name="coastal-hazards.stpetearcserver.endpoint" type="java.lang.String" value="http://olga.er.usgs.gov/stpgis/services" />
+<Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="http://coastalmap.marine.usgs.gov/cmgp" />
+<Environment name="coastal-hazards.cidags.endpoint" type="java.lang.String" value="http://cida.usgs.gov/DSASweb/geoserver" />
+<Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="http://cida.usgs.gov/qa/coastalhazards/csw" />
+<Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="http://127.0.0.1/pycsw-wsgi" />
 <Environment name="coastal-hazards.geocoding.endpoint" type="java.lang.String" value="http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find" />
-
-<!-- Coastal hazards interacts with go.usa.gov for url minification -->
-<Environment name="coastal-hazards.go.usa.gov.login" type="java.lang.String" value="Your URL-Encoded Login Here - Example Ivan%20Suftin" />
-<Environment name="coastal-hazards.go.usa.gov.apikey" type="java.lang.String" value="Your API Key Here" />
-<Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="http://go.usa.gov/api/" />
-

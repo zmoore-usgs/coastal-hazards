@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
-import gov.usgs.cida.coastalhazards.metadata.MetadataValidator;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.FormUploadHandler;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
@@ -22,7 +21,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.xpath.XPathExpressionException;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -36,17 +34,14 @@ public class MetadataResource {
 
 	private static int FILE_UPLOAD_MAX_SIZE = 15728640;
 	private static String FILENAME_PARAM = "qqfile";
-	private static DynamicReadOnlyProperties props = null;
 	private static File UPLOAD_DIR;
 
 	public MetadataResource() {
 		super();
-		props = JNDISingleton.getInstance();
 		UPLOAD_DIR = new File(FileUtils.getTempDirectoryPath() + "/metadata-upload");
 	}
 
 	@POST
-	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response acceptMetadata(@Context HttpServletRequest req) throws IOException {
 		int maxFileSize = FILE_UPLOAD_MAX_SIZE;
@@ -112,29 +107,6 @@ public class MetadataResource {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(responseContent).build();
 		} else {
 			return Response.ok(IOUtils.toString(new FileInputStream(readFile)), MediaType.APPLICATION_XML_TYPE).build();
-		}
-	}
-
-	@GET
-	@Path("/validate/{fid}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response validateMetadata(@PathParam("fid") String fid) throws IOException, XPathExpressionException {
-		File readFile = new File(UPLOAD_DIR, fid);
-		Map<String, Boolean> responseContent = new HashMap<String, Boolean>();
-		if (!readFile.exists()) {
-			return Response.status(Response.Status.NOT_FOUND).build();
-		} else if (!readFile.canRead()) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new Gson().toJson(new HashMap<String, String>() {
-				private static final long serialVersionUID = 1L;
-				{
-					put("message", "Metadata Not Accessible");
-				}
-			})).build();
-		} else {
-			MetadataValidator validator = new MetadataValidator(readFile);
-			// TODO: Use the validator. Currently it's throwing an exception
-			responseContent.put("isValid", true/*validator.validateFGDC()*/);
-			return Response.ok(new Gson().toJson(responseContent), MediaType.APPLICATION_JSON_TYPE).build();
 		}
 	}
 }

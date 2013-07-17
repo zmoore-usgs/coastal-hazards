@@ -1,12 +1,20 @@
 CCH.Objects.Map = function(args) {
-	var mapDivId = args.mapDiv;
 	var me = (this === window) ? {} : this;
 	me.initialExtent = CCH.CONFIG.map.initialExtent;
+	me.mapDivId = args.mapDiv;
+	me.bboxFadeoutDuration = 2000;
 	return $.extend(me, {
 		init: function() {
 			CCH.LOG.info('Map.js::init():Map class is initializing.');
 
-			me.map = new OpenLayers.Map(mapDivId, {
+			// Bind application event handlers
+			$(window).on('cch.data.session.loaded.true', function() {
+				// A session has been loaded. The map will be rebuilt from the session
+				me.updateFromSession();
+			});
+
+			CCH.LOG.debug('Map.js::init():Building map object');
+			me.map = new OpenLayers.Map(me.mapDivId, {
 				projection: CCH.CONFIG.map.projection,
 				displayProjection: new OpenLayers.Projection(CCH.CONFIG.map.projection)
 			});
@@ -28,17 +36,16 @@ CCH.Objects.Map = function(args) {
 			CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);
 			me.map.zoomToExtent(me.initialExtent, true);
 
+			CCH.LOG.debug('Map.js::init():Binding map event handlers');
 			me.map.events.on({
-				'moveend': me.moveendCallack,
+				'moveend': me.moveendCallback,
 				'addlayer': me.addlayerCallback,
 				'changelayer': me.changelayerCallback
 			});
 
-			if (!CCH.session.getSession().baselayer) {
-				me.updateSession();
-			} else {
-				me.updateFromSession();
-			}
+			CCH.LOG.debug('Map.js::init():Replacing map graphics');
+			$('#OpenLayers_Control_MaximizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-maximize.png');
+			$('#OpenLayers_Control_MinimizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-minimize.png');
 
 			return me;
 		},
@@ -53,7 +60,8 @@ CCH.Objects.Map = function(args) {
 		 */
 		addBoundingBoxMarker: function(args) {
 			args = args || {};
-			var bbox = args.bbox;
+			var card = args.card;
+			var bbox = card.bbox;
 			var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913");
 			var layerBounds = OpenLayers.Bounds.fromArray(bbox);
 			var slideOrder = args.slideOrder;
@@ -77,42 +85,32 @@ CCH.Objects.Map = function(args) {
 
 			// Alter the marker visually 
 			var markerDiv = $(marker.div);
-			markerDiv.addClass('marker-active');
-			markerDiv.on({
+			markerDiv.addClass('marker-active').data({
+				'slideOrder': slideOrder,
+				'bounds': layerBounds,
+				'cardId': card.item.id
+			}).on({
 				'mouseover': function() {
 					$(this).addClass('marker-hover');
 				},
 				'mouseout': function() {
 					$(this).removeClass('marker-hover');
-				}
-			});
-
-			// Fade older markers out
-			var markerCt = me.boxLayer.markers.length;
-			for (var mInd = markerCt; mInd > 0; mInd--) {
-				var markerItem = me.boxLayer.markers[mInd - 1];
-				var opacity = Math.round((mInd / markerCt) * 10) / 10;
-				$(markerItem.div).css({
-					'opacity': opacity
-				});
-			}
-
-			markerDiv.data('slideOrder', slideOrder);
-			markerDiv.data('bounds', layerBounds);
-			markerDiv.on({
-				click: function(evt) {
+				},
+				'click': function(evt) {
 					var target = $(evt.target);
 					var slideOrder = target.data('slideOrder');
 					var bbox = target.data('bounds');
+					var cardId = target.data('cardId');
+					var card = CCH.cards.getById(cardId);
+					CCH.slideshow.goToSlide(slideOrder);
+					CCH.slideshow.stop();
 
-					CCH.Slideshow.slider('goToSlide', slideOrder);
-					CCH.Slideshow.slider('autoSlidePause');
+					setTimeout(function(args) {
+						me.clearBoundingBoxMarkers();
+					}, 1500);
 
-					me.clearBoundingBoxMarkers();
 
-					var card = $('.slide:nth-child(' + slideOrder + ') .description-container').data('card');
 					var isPinned = card.pinned;
-
 					if (!isPinned) {
 						card.pinButton.trigger('click');
 					} else {
@@ -120,14 +118,24 @@ CCH.Objects.Map = function(args) {
 					}
 				}
 			});
-
+			$(window).trigger('cch-map-bbox-marker-added', {
+				marker: marker
+			});
 			return marker;
 		},
 		clearBoundingBoxMarkers: function() {
 			var markerCt = me.boxLayer.markers.length;
 			for (var mInd = markerCt; mInd > 0; mInd--) {
-				me.boxLayer.removeMarker(me.boxLayer.markers[mInd - 1]);
+				me.clearBoundingBoxMarker(me.boxLayer.markers[mInd - 1]);
 			}
+			$(window).trigger('cch-map-bbox-markers-removed');
+		},
+		clearBoundingBoxMarker: function(marker) {
+			$(marker.div).animate({
+				opacity: 0.0
+			}, me.bboxFadeoutDuration, function() {
+				CCH.map.boxLayer.removeMarker(marker);
+			});
 		},
 		zoomToBoundingBox: function(args) {
 			args = args || {};
@@ -141,35 +149,63 @@ CCH.Objects.Map = function(args) {
 		},
 		zoomToActiveLayers: function() {
 			var activeLayers = me.map.getLayersBy('isItemLayer', true);
-			var bounds = null;
+			var bounds = new OpenLayers.Bounds();
 			if (activeLayers.length) {
-				bounds = new OpenLayers.Bounds();
+				// Zoom to pinned cards
 				for (var lIdx = 0; lIdx < activeLayers.length; lIdx++) {
 					var activeLayer = activeLayers[lIdx];
 					var layerBounds = OpenLayers.Bounds.fromArray(activeLayer.bbox).transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection);
 					bounds.extend(layerBounds);
 				}
 			} else {
-				bounds = OpenLayers.Bounds.fromArray(me.initialExtent);
+				// No pinned cards, zoom to the collective bbox of all cards
+				CCH.cards.getCards().each(function(card){
+					bounds.extend(OpenLayers.Bounds.fromArray(card.bbox).transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection));
+				});
 			}
 
 			me.map.zoomToExtent(bounds, false);
 		},
 		updateFromSession: function() {
-			CCH.LOG.info('Map.js::updateFromSession()');
+			CCH.LOG.info('Map.js::updateFromSession():Map being recreated from session');
+			var session = CCH.session.getSession();
+
+			// Becaue we don't want these events to write back to the session, 
+			// unhook the event handlers for map events tied to session writing.
+			// They will be rehooked later
 			me.map.events.un({
 				'moveend': me.moveendCallback,
 				'addlayer': me.addlayerCallback,
 				'changelayer': me.changelayerCallback
 			});
-			var session = CCH.session.getSession();
-			var sessionBaselayer = me.map.getLayersByName(session.baselayer);
-			if (sessionBaselayer.length) {
-				me.map.setBaseLayer(sessionBaselayer[0]);
+
+			// If the session holds items, they will be loaded and if they are pinned,
+			// the map will zoom to those items that are pinned. However, if there 
+			// are no items in the session or if none are pinned, zoom to the bounding box 
+			// provided in the session
+			if (!session.items.length) {
+				me.map.setCenter([session.center[0], session.center[1]]);
+				me.map.zoomToScale(session.scale);
 			}
-			me.map.setCenter([session.center[0], session.center[1]]);
-			me.map.zoomToScale(session.scale);
-			
+
+			// A session will have a base layer set. Check if the base layer is 
+			// different from the current base layer. If so, switch to that base layer
+			if (session.baselayer && session.baselayer !== me.map.baseLayer.name) {
+				// Try to find the named base layer from the configuration object's
+				// list of layers. If found, set it to the map's new base layer
+				var baselayer = CCH.CONFIG.map.layers.baselayers.find(function(bl) {
+					return bl.name === session.baselayer;
+				});
+
+				if (baselayer) {
+					// The base layer from the config object has been found.
+					// Add it to the map as a new baselayer
+					me.map.setBaseLayer(baselayer);
+				}
+			}
+
+			// We're done altering the map to fit the session. Let's re-register those 
+			// events we disconnected earlier
 			me.map.events.on({
 				'moveend': me.moveendCallback,
 				'addlayer': me.addlayerCallback,
@@ -282,34 +318,8 @@ CCH.Objects.Map = function(args) {
 		},
 		displayData: function(args) {
 			var card = args.card;
-			var item = card.item;
-			var type = card.type;
-			if (me.map.getLayersByName(card.name).length !== -1) {
-				var layer = new OpenLayers.Layer.WMS(
-						card.name,
-						item.wmsService.endpoint,
-						{
-							layers: item.wmsService.layers,
-							format: 'image/png',
-							transparent: true
-						},
-				{
-					projection: 'EPSG:3857',
-					isBaseLayer: false,
-					displayInLayerSwitcher: false,
-					isItemLayer: true, // CCH specific setting
-					bbox: card.bbox
-				});
-
-				if (type === "vulnerability") {
-					// SLD will probably only work with one layer
-					// TODO - Fix with window.location.href but make sure actually works
-					layer.params.SLD = 'http://cida.usgs.gov/qa/coastalhazards/' + 'rest/sld/redwhite/' + item.wmsService.layers + '/' + card.attr;
-					layer.params.STYLES = 'redwhite';
-				} else if (type === "historical" || type === "storms") {
-					layer.params.STYLES = 'line';
-				}
-
+			if (me.map.getLayersByName(card.item.id).length === 0) {
+				var layer = card.layer;
 				me.map.addLayer(layer);
 				layer.redraw(true);
 			}

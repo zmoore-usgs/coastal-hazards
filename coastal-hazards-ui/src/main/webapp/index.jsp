@@ -384,7 +384,7 @@
                     <jsp:param name="relPath" value="" />
                     <jsp:param name="header-class" value="" />
                     <jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
-                    <jsp:param name="contact-info" value="<a href='mailto:jread@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Jordan Read</a>" />
+                    <jsp:param name="contact-info" value="<a href='mailto:DSAS_Help@usgs.gov?Subject=DSASWeb%20Feedback'>Site Administrator</a>" />
                 </jsp:include>
                 <p id="footer-page-version-info">Application Version: <%= props.get("application.version") %></p>
             </div>
@@ -424,14 +424,14 @@
     <script type="text/javascript" src="js/jquery-ui/jquery-ui-1.10.0.custom.min.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading UI Framework...");</script>
-	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap<%= development ? ".min" : "" %>.css" />
-	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.1/css/bootstrap-responsive<%= development ? ".min" : "" %>.css" />
+	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap<%= development ? ".min" : "" %>.css" />
+	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap-responsive<%= development ? ".min" : "" %>.css" />
 	<link type="text/css" rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
-	<script type="text/javascript" src="webjars/bootstrap/2.3.1/js/bootstrap<%= development ? ".min" : "" %>.js"></script>
-    <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.1.1/css/font-awesome<%= development ? ".min" : "" %>.css" />
+	<script type="text/javascript" src="webjars/bootstrap/2.3.2/js/bootstrap<%= development ? ".min" : "" %>.js"></script>
+    <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.2.1/css/font-awesome<%= development ? ".min" : "" %>.css" />
 
     <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
-    <script type="text/javascript" src="webjars/openlayers/2.12/OpenLayers<%= development ? ".debug" : "" %>.js"></script>
+    <script type="text/javascript" src="webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : "" %>.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading JS Utilities...");</script>
     <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min" %>.js"></script>

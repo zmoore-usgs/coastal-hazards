@@ -1,35 +1,22 @@
 /* ---------------------------------------------------------------------- UI */
+
+/* Conflict between bootstrap and the USGS header, right-hand side */
+#ccsa-area {
+	padding-top: 5px;
+}
+
 /* Because of a conflict between twitter bootstrap and openlayers */
 img { 
     max-width: none !important; 
 }
 
+/* 320 pixels is the minimum width that this application will support.
+	Anything smaller, scroll the app */
 #application-container {
 	min-width : 320px !important;
 }
 
-#application-spinner {
-    text-align: center;
-    display: none;
-}
-
-#header #banner-area {
-    background-image: url("../images/banner/banner.png");
-}
-
-
-#map-wrapper {
-	min-height : 150px;
-}
-
-#site-title {
-    line-height: 20px;
-}
-
-.popover {
-	max-width : 2000px !important;
-}
-
+/* OpenLayers-specific overrides */
 .baseLayersDiv > .labelSpan {
 	display : inline;
 }
@@ -37,82 +24,34 @@ img {
 	display : inline;
 }
 
-.slide-menu-icon-twitter {
-	color : #7EB3CD;
+#header #banner-area {
+    background-image: url("../images/banner/banner.png");
 }
 
-.description-description-row {
-	min-height : 100px;
+#site-title {
+    line-height: 20px;
 }
 
-.description-title {
-	font-size : 1.2em;
-	font-weight: bold;
-	text-align: center;
+@media (max-width: 766px) {
+	body {
+		padding-left: 0px !important;
+		padding-right:  0px !important;
+	}
+
+	#application-container {
+		padding-left: 0px;
+		padding-right:  0px;
+	}
 }
 
-.description-container {
-	background-size: auto 80%;
-	background-repeat: no-repeat;
-	background-position: right top;
-}
+@media (min-width: 767px) {
+	body {
+		padding-left: 20px !important;
+		padding-right:  20px !important;
+	}
 
-.slider-slide-active .description-container-storms {
-	background-image : url("../images/cards/StormsActive.svg");
-}
-.slider-slide-inactive .description-container-storms {
-	background-image : url("../images/cards/StormsInactive.svg");
-}
-.slider-slide-active .description-container-vulnerability {
-	background-image : url("../images/cards/VulnerabilityActive.svg");
-}
-.slider-slide-inactive .description-container-vulnerability {
-	background-image : url("../images/cards/VulnerabilityInactive.svg");
-}
-.slider-slide-active .description-container-historical {
-	background-image : url("../images/cards/HistoricalActive.svg");
-}
-.slider-slide-inactive .description-container-historical {
-	background-image : url("../images/cards/HistoricalInactive.svg");
-}
-
-.slider-card-pinned i {
-	color : #008F00; 
-}
-
-.marker-active {
-	border-color: #00CCFF !important;
-	background-color: rgba(0,102,255, 0.5);
-}
-
-.marker-inactive {
-	border-color: #00A3CC !important;
-	background-color: rgba(0,102,255, 0.5);
-}
-
-.marker-hover {
-	border-color: #8CE8FF !important;
-	background-color: rgba(0,102,255, 0.5);
-	opacity : 1.0 !important;
-}
-
-#map-search-container {
-	background-color: rgba(0, 60, 136, 0.5);
-	position: absolute;
-	top: 0;
-	padding: 0px 5px 5px 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	width: 180px;
-}
-
-#app-navbar-search-input {
-	width : 120px;
-}
-
-#app-navbar-search-icon {
-	margin-right: 5px;
-	color: #FFFFFF;
-	font-size: 18px;
-	width : 20px;
+	#application-container {
+		padding-left: 20px;
+		padding-right:  20px;
+	}
 }

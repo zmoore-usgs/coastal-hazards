@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet author="jiwalker" id="change5-1">
+        <createTable tableName="tinygov">
+            <column name="full_url" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tiny_url" type="VARCHAR(64)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jiwalker" id="change5-2">
+        <addPrimaryKey columnNames="full_url" constraintName="tinygov_pkey" tableName="tinygov"/>
+    </changeSet>
+</databaseChangeLog>

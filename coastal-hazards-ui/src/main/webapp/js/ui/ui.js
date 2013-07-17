@@ -40,6 +40,8 @@ var UI = function() {
 			this.bindWindowResize();
 			this.addIntroContent();
 			$(window).resize();
+			// Header fix
+			$('#ccsa-area').find('br').first().remove();
 			splashUpdate("Checking for browser compatibility...");
 			if (﻿$.browser.msie && parseInt($.browser.version) < ﻿ 9) {
 				var modal = $('<div />')

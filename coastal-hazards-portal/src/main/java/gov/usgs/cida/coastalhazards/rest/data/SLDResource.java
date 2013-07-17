@@ -1,11 +1,14 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import java.awt.Color;
+import gov.usgs.cida.coastalhazards.jpa.ItemManager;
+import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.sld.SLDGenerator;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -14,110 +17,45 @@ import javax.ws.rs.core.MediaType;
 @Path("sld")
 public class SLDResource {
 
-	private static final int NUMBER_OF_BINS = 10;
-	private static final int STROKE_WIDTH = 3;
+	@GET
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_XML + ";qs=2")
+	public Response getSLD(@PathParam("id") String id) {
+		Response response = null;
+
+		ItemManager manager = new ItemManager();
+		Item item = manager.loadItem(id);
+		if (item == null) {
+			response = Response.status(Response.Status.NOT_FOUND).build();
+		} else {
+			SLDGenerator generator = SLDGenerator.getGenerator(item);
+			if (generator != null) {
+				response = generator.generateSLD();
+			}
+		}
+
+		return response;
+	}
 
 	@GET
-	@Path("redwhite/{id}/{attr}")
-	@Produces(MediaType.APPLICATION_XML)
-	public String getRedWhiteSLD(
-			@PathParam("id") String id,
-			@PathParam("attr") String attr) {
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON + ";qs=1")
+	public Response getSLDInfo(@PathParam("id") String id) {
+		Response response;
 
-		float[] thresholds = makeSteps(0.0f, 100.1f, NUMBER_OF_BINS + 1);
-		String[] colors = makeColors("#FFFFFF", "#FF0000", NUMBER_OF_BINS);
-
-		StringBuilder sld = new StringBuilder();
-		sld.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-				.append("<sld:StyledLayerDescriptor")
-				.append(" xmlns=\"http://www.opengis.net/ogc\"")
-				.append(" xmlns:sld=\"http://www.opengis.net/sld\"")
-				.append(" xmlns:ogc=\"http://www.opengis.net/ogc\"")
-				.append(" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"")
-				.append(" xmlns:xlink=\"http://www.w3.org/1999/xlink\"")
-				.append(" version=\"1.0.0\"")
-				.append(" xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd\">")
-				.append("<sld:NamedLayer>")
-				.append("<sld:Name>")
-				.append(id)
-				.append("</sld:Name>")
-				.append("<sld:UserStyle>")
-				.append("<sld:Name>redwhite</sld:Name>")
-				.append("<sld:Title>Red to White ColorMap</sld:Title>")
-				.append("<sld:FeatureTypeStyle>");
-
-		for (int i = 0; i < NUMBER_OF_BINS; i++) {
-			sld.append("<sld:Rule>")
-					.append("<ogc:Filter>")
-					.append("<ogc:And>")
-					.append("<ogc:PropertyIsGreaterThanOrEqualTo>")
-					.append("<ogc:PropertyName>")
-					.append(attr)
-					.append("</ogc:PropertyName>")
-					.append("<ogc:Literal>")
-					.append(thresholds[i])
-					.append("</ogc:Literal>")
-					.append("</ogc:PropertyIsGreaterThanOrEqualTo>")
-					.append("<ogc:PropertyIsLessThan>")
-					.append("<ogc:PropertyName>")
-					.append(attr)
-					.append("</ogc:PropertyName>")
-					.append("<ogc:Literal>")
-					.append(thresholds[i + 1])
-					.append("</ogc:Literal>")
-					.append("</ogc:PropertyIsLessThan>")
-					.append("</ogc:And>")
-					.append("</ogc:Filter>")
-					.append("<sld:LineSymbolizer>")
-					.append("<sld:Stroke>")
-					.append("<sld:CssParameter name=\"stroke\">")
-					.append(colors[i])
-					.append("</sld:CssParameter>")
-					.append("<sld:CssParameter name=\"stroke-width\">")
-					.append(STROKE_WIDTH)
-					.append("</sld:CssParameter>")
-					.append("<sld:CssParameter name=\"stroke-opacity\">")
-					.append(1)
-					.append("</sld:CssParameter>")
-					.append("</sld:Stroke>")
-					.append("</sld:LineSymbolizer>")
-					.append("</sld:Rule>");
+		ItemManager manager = new ItemManager();
+		Item item = manager.loadItem(id);
+		if (item == null) {
+			response = Response.status(Response.Status.NOT_FOUND).build();
+		} else {
+			SLDGenerator generator = SLDGenerator.getGenerator(item);
+			if (generator == null) {
+				response = Response.status(Response.Status.NOT_FOUND).build();
+			} else {
+				response = generator.generateSLDInfo();
+			}
 		}
 
-		sld.append("</sld:FeatureTypeStyle>")
-				.append("</sld:UserStyle>")
-				.append("</sld:NamedLayer>")
-				.append("</sld:StyledLayerDescriptor>");
-
-		return sld.toString();
-	}
-
-	protected static float[] makeSteps(float start, float end, int count) {
-		float[] steps = new float[count];
-		if (count < 2) {
-			throw new IllegalArgumentException("Count must be 2 or more");
-		}
-		// range is negative if end < start
-		float range = end - start;
-		float stepSize = range / (count - 1);
-		for (int i = 0; i < count; i++) {
-			steps[i] = start + (stepSize * i);
-		}
-		return steps;
-	}
-
-	protected static String[] makeColors(String hexStart, String hexEnd, int count) {
-		String[] result = new String[count];
-		Color startColor = Color.decode(hexStart);
-		Color endColor = Color.decode(hexEnd);
-		float[] reds = makeSteps((float) startColor.getRed(), (float) endColor.getRed(), count);
-		float[] greens = makeSteps((float) startColor.getGreen(), (float) endColor.getGreen(), count);
-		float[] blues = makeSteps((float) startColor.getBlue(), (float) endColor.getBlue(), count);
-		for (int i = 0; i < count; i++) {
-			int rgb = (int) blues[i] | ((int) greens[i] << 8) | ((int) reds[i] << 16);
-			String gradient = String.format("#%06X", (0xFFFFFF & rgb));
-			result[i] = gradient;
-		}
-		return result;
+		return response;
 	}
 }

@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.model;
 
+import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import gov.usgs.cida.coastalhazards.gson.serializer.DoubleSerializer;
@@ -9,7 +10,10 @@ import gov.usgs.cida.utilities.IdGenerator;
 import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -23,13 +27,19 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "item")
 public class Item implements Serializable {
+    
+    public enum Type {
+        storms,
+        vulnerability,
+        historical;
+    }
 
 	private static final long serialVersionUID = 1L;
 	private static final int doublePrecision = 5;
 	private String id;
 	private String name;
 	private String metadata;
-	private String type;
+	private Type type;
 	private String attr;
     private transient Rank rank;
 	private double[] bbox;
@@ -55,6 +65,7 @@ public class Item implements Serializable {
 		this.metadata = metadata;
 	}
 
+    @Embedded
 	public WFSService getWfsService() {
 		return wfsService;
 	}
@@ -63,6 +74,7 @@ public class Item implements Serializable {
 		this.wfsService = wfsService;
 	}
 
+    @Embedded
 	public WMSService getWmsService() {
 		return wmsService;
 	}
@@ -79,11 +91,12 @@ public class Item implements Serializable {
 		this.name = name;
 	}
 
-	public String getType() {
+    @Enumerated(EnumType.STRING)
+	public Type getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(Type type) {
 		this.type = type;
 	}
 

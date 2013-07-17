@@ -1,7 +1,10 @@
 /*
-    This file is loaded by the usgs-template overlay
+    This file is loaded by the usgs-template overlay. It loads all of the other
+	css files used in this application
 */
 @charset "UTF-8";
 @import "application.css";
+@import "card.css";
 @import "navigation.css";
 @import "item-search.css";
+@import "map.css";

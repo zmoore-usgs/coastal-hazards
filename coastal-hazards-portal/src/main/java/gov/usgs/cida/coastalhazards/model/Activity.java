@@ -22,11 +22,18 @@ import javax.persistence.TemporalType;
 public class Activity implements Serializable {
     
     public enum ActivityType {
+		// When the item is viewed in the info page
         USE,
+		// When tweeted from the info page
         TWEET,
+		// When scraped from NWS
         WEATHER,
+		// When the item is published
         PUBLISH,
-        UPDATE;
+		// When the item is updated with new information
+        UPDATE,
+		// Zero value but no decay - useful for search purposes 
+        INSERT;
     }
 
     private long id;

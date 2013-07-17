@@ -1,6 +1,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
+<%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="org.slf4j.Logger"%>
 <%@page import="org.slf4j.LoggerFactory"%>
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
@@ -13,16 +14,25 @@
 		}
 	}
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
+	String publicContext = props.getProperty("coastal-hazards.public.context");
 	String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
 	String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
 	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
+	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
+%>
+<%
+	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
 %>
 <script type="text/javascript">
 	splashUpdate("Setting configuration...");
 	CCH.CONFIG = {
-		incomingSessionId : '${param.sessionId}',
+		id: '${param.id}',
+		idType: '${param.idType}',
 		development: <%= development%>,
 		ajaxTimeout: 300000,
+		contextPath: '${param.baseUrl}',
+		emailLink: 'CCH_Help@usgs.gov',
+		publicUrl: '<%=publicUrl%>',
 		popupHandling: {
 			isVisible: false,
 			clickedAway: false,
@@ -74,33 +84,6 @@
 								wrapDateLine: true
 							}
 					),
-					new OpenLayers.Layer.XYZ("Terrain",
-							"http://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/\${z}/\${y}/\${x}",
-							{
-								sphericalMercator: true,
-								isBaseLayer: true,
-								numZoomLevels: 14,
-								wrapDateLine: true
-							}
-					),
-					new OpenLayers.Layer.XYZ("Shaded Relief",
-							"http://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/\${z}/\${y}/\${x}",
-							{
-								sphericalMercator: true,
-								isBaseLayer: true,
-								numZoomLevels: 14,
-								wrapDateLine: true
-							}
-					),
-					new OpenLayers.Layer.XYZ("Physical",
-							"http://services.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/\${z}/\${y}/\${x}",
-							{
-								sphericalMercator: true,
-								isBaseLayer: true,
-								numZoomLevels: 9,
-								wrapDateLine: true
-							}
-					),
 					new OpenLayers.Layer.XYZ("Ocean",
 							"http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/\${z}/\${y}/\${x}",
 							{
@@ -108,17 +91,7 @@
 								isBaseLayer: true,
 								numZoomLevels: 17,
 								wrapDateLine: true
-							}
-					),
-					new OpenLayers.Layer.XYZ("ESRI World Imagery",
-							"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/\${z}/\${y}/\${x}",
-							{
-								sphericalMercator: true,
-								isBaseLayer: true,
-								numZoomLevels: 20,
-								wrapDateLine: true
-							}
-					)
+							})
 				]
 			}
 		},
@@ -133,13 +106,13 @@
 					'proxy': 'stpgis/'
 				},
 				'item': {
-					'endpoint': '<%=request.getContextPath()%>/data/item'
+					'endpoint': '/data/item'
 				},
 				'geocoding': {
 					'endpoint': '<%=geocodeEndpoint%>'
 				},
-				'session' : {
-					'endpoint' : '<%=request.getContextPath()%>/data/view/'
+				'session': {
+					'endpoint': '/data/view/'
 				}
 			}
 		}
