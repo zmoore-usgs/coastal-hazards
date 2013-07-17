@@ -47,11 +47,13 @@ public class Xploder {
 	
 	private int geomIdx = -1;
 	private FeatureWriter<SimpleFeatureType, SimpleFeature> featureWriter;
-	private Map<Integer,Double>  uncyMap;
+	private Map<UncyKey,Double>  uncyMap;
 	private int dfltUncyIdx = -1;
 	private DbaseFileHeader dbfHdr;
 	private Transaction tx;
     private GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
+
+	private int surveyIDIdx;
 
 	private static int locateField(DbaseFileHeader hdr, String nm, Class<?> expected) {
 		int idx = -1;
@@ -74,7 +76,77 @@ public class Xploder {
 		return idx;
 	}
 	
-	private static Map<Integer,Double> readUncyFromDBF(String fn) throws Exception {
+	/** Key to point-by-point uncertainty. Must be hashable and ordered (used as lookup key).
+	 * 
+	 * @author rhayes
+	 *
+	 */
+	public static class UncyKey implements Comparable<UncyKey>{
+		private final int idx;
+		private final String surveyID;
+		
+		public UncyKey(int idx, String surveyID) {
+			this.idx = idx;
+			this.surveyID = surveyID;
+		}
+
+		public int getIdx() {
+			return idx;
+		}
+
+		public String getSurveyID() {
+			return surveyID;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + idx;
+			result = prime * result
+					+ ((surveyID == null) ? 0 : surveyID.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			UncyKey other = (UncyKey) obj;
+			if (idx != other.idx)
+				return false;
+			if (surveyID == null) {
+				if (other.surveyID != null)
+					return false;
+			} else if (!surveyID.equals(other.surveyID))
+				return false;
+			return true;
+		}
+
+		@Override
+		public int compareTo(UncyKey o) {
+			int v;
+			
+			v = Integer.compare(idx, o.idx);
+			if (v != 0) {
+				return v;
+			}
+			if (surveyID == null) {
+				if (o.surveyID == null) {
+					return 0;
+				}
+			}
+			v = surveyID.compareTo(o.surveyID);
+			return v;
+		}
+		
+	}
+	
+	private static Map<UncyKey,Double> readUncyFromDBF(String fn) throws Exception {
 		
 		ShpFiles shpFile = new ShpFiles(fn);
 		Charset charset = Charset.defaultCharset();
@@ -86,16 +158,19 @@ public class Xploder {
 		
 		int uncyIdx = locateField(hdr, "uncy", Double.class);
 		int idIdx = locateField(hdr, "id", Number.class);
+		int surveyIdx = locateField(hdr,  "surveyID", String.class);
 		
-		Map<Integer,Double> value = new HashMap<Integer,Double>();
+		Map<UncyKey,Double> value = new HashMap<UncyKey,Double>();
 		
 		while (rdr.hasNext()) {
 			Object[] ff = rdr.readEntry();
 			
 			Integer i = ((Number)ff[idIdx]).intValue();
 			Double d = (Double)ff[uncyIdx];
+			String surveyID = (String)ff[surveyIdx];
 			
-			value.put(i, d);
+			UncyKey key = new UncyKey(i, surveyID);
+			value.put(key, d);
 		}
 		
 		rdr.close();
@@ -108,6 +183,7 @@ public class Xploder {
 	public int processShape(ShapeAndAttributes sap) throws Exception {
 
 		Double defaultUncertainty = (Double)sap.row.read(dfltUncyIdx);
+		String surveyID = (String)sap.row.read(surveyIDIdx);
 		
 		int ptCt = 0;
 		
@@ -120,7 +196,8 @@ public class Xploder {
 			if ( ! Double.isNaN(md)) {
 				int mi = (int)md;
 				
-				Double uv = uncyMap.get(mi);
+				UncyKey key = new UncyKey(mi, surveyID);
+				Double uv = uncyMap.get(key);
 				if (uv != null) {
 					uncy = uv;
 				}
@@ -281,7 +358,8 @@ public class Xploder {
 		
 		dbfHdr = rdr.getDbfHeader();
 		dfltUncyIdx = locateField(dbfHdr, "uncy", Double.class);
-		
+		surveyIDIdx = locateField(dbfHdr, "surveyID", String.class);
+
 		uncyMap = readUncyFromDBF(fn + "_uncertainty.dbf");
 		return rdr;
 	}
