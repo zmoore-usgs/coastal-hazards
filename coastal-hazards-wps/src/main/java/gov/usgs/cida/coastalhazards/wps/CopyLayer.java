@@ -82,16 +82,17 @@ public class CopyLayer implements GeoServerProcess {
 		Hints hints = GeoTools.getDefaultHints().clone();
 		ReferencingFactoryFinder.scanForPlugins();
 		ThreadedEpsgFactory epsgFactory = new ThreadedHsqlEpsgFactory(hints);
-		FeatureCollection<SimpleFeatureType, SimpleFeature> fc;
-		
+		FeatureCollection<SimpleFeatureType, SimpleFeature> fc = (FeatureCollection<SimpleFeatureType, SimpleFeature>) gUtils.getFeatureCollection(sourceFeatureSource);
+
+		CoordinateReferenceSystem targetCRS;
 		if (StringUtils.isNotBlank(declaredSRS)) {
-			fc = new ReprojectingFeatureCollection(simpleFeatureCollection, epsgFactory.createCoordinateReferenceSystem(declaredSRS));
+			targetCRS = new ReprojectingFeatureCollection(simpleFeatureCollection, epsgFactory.createCoordinateReferenceSystem(declaredSRS)).getSchema().getGeometryDescriptor().getCoordinateReferenceSystem();
 		} else {
-			fc = (FeatureCollection<SimpleFeatureType, SimpleFeature>) gUtils.getFeatureCollection(sourceFeatureSource);
+			targetCRS = ((FeatureCollection<SimpleFeatureType, SimpleFeature>) gUtils.getFeatureCollection(sourceFeatureSource)).getSchema().getGeometryDescriptor().getCoordinateReferenceSystem();
 		}
-		
+
 		LayerImportUtil importer = new LayerImportUtil(catalog, importProc);
-		String response = importer.importLayer((SimpleFeatureCollection) DataUtilities.collection(fc), targetWorkspace, targetStore, sourceLayer, fc.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
+		String response = importer.importLayer((SimpleFeatureCollection) DataUtilities.collection(fc), targetWorkspace, targetStore, sourceLayer, targetCRS, ProjectionPolicy.REPROJECT_TO_DECLARED);
 
 		return response;
 	}
