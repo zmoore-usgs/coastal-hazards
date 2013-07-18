@@ -32,8 +32,9 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 
 /*
- * $Id$ @author
- * aaime @author Ian Schneider
+ * $Id$ 
+ * @author aaime 
+ * @author Ian Schneider
  */
 /**
  * The default JTS handler for shapefile. Currently uses the default JTS

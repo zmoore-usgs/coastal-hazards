@@ -43,6 +43,8 @@ import com.vividsolutions.jtsexample.geom.ExtendedCoordinate;
  */
 public class Xploder {
 
+	public static final String PTS_SUFFIX = "_pts";
+
 	private static Logger logger = LoggerFactory.getLogger(Xploder.class);
 	
 	private int geomIdx = -1;
@@ -241,7 +243,7 @@ public class Xploder {
 		
 		// duplicate input schema, except replace geometry with Point
 		SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
-		typeBuilder.setName(sourceSchema.getName());
+		typeBuilder.setName(sourceSchema.getName() + PTS_SUFFIX);
 		typeBuilder.setCRS(sourceSchema.getCoordinateReferenceSystem());
 		
 		geomIdx = -1;
@@ -253,14 +255,7 @@ public class Xploder {
 				typeBuilder.add(ad.getLocalName(), Point.class);
 				geomIdx = idx;
 			} else {
-				typeBuilder.add(ad.getLocalName(), ad.getType().getBinding());
-				
-				// Do not use this index for uncy column, as this include the geometry column in the count
-				// while the dbf record does not.
-				
-				/*if ("uncy".equalsIgnoreCase(ad.getLocalName())) {
-					dfltUncyIdx = idx;
-				}*/
+				typeBuilder.add(ad.getLocalName(), ad.getType().getBinding());				
 			}
 			idx++;
 		}
@@ -268,7 +263,7 @@ public class Xploder {
 
 		logger.debug("Output feature type is {}", outputFeatureType);
 		
-		File fout = new File(fn + "_pts.shp");
+		File fout = new File(fn + PTS_SUFFIX + ".shp");
 		
 		Map<String, Serializable> connect = new HashMap<String, Serializable> ();
 		connect.put("url", fout.toURI().toURL());

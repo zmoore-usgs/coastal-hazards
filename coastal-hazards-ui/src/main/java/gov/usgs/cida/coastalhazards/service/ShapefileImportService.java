@@ -42,10 +42,12 @@ import org.xml.sax.InputSource;
 /**
  *
  * @author isuftin
+ * @author rhayes
  */
 public class ShapefileImportService extends HttpServlet {
 
-    private static final String PTS_SUFFIX = "_pts";
+    private static final String PTS_SUFFIX = gov.usgs.cida.coastalhazards.uncy.Xploder.PTS_SUFFIX;
+    
 	private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ShapefileImportService.class);
     private static DynamicReadOnlyProperties props = null;
