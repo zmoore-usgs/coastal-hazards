@@ -3,15 +3,10 @@ package gov.usgs.cida.coastalhazards.wps;
 import gov.usgs.cida.coastalhazards.util.GeoserverUtils;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import java.io.IOException;
-import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.feature.ReprojectingFeatureCollection;
 import org.geoserver.wps.gs.GeoServerProcess;
@@ -29,7 +24,6 @@ import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.ReferencingFactoryFinder;
-import org.geotools.referencing.factory.epsg.DirectEpsgFactory;
 import org.geotools.referencing.factory.epsg.ThreadedEpsgFactory;
 import org.geotools.referencing.factory.epsg.ThreadedHsqlEpsgFactory;
 import org.opengis.feature.Feature;
@@ -38,9 +32,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystem;
 
 /**
  *
