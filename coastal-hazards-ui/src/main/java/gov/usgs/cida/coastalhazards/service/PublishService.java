@@ -49,7 +49,7 @@ public class PublishService extends HttpServlet {
 	private static final String GEOSERVER_USER_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.username";
 	private static final String GEOSERVER_PASS_PARAM_CONFIG_KEY = "coastal-hazards.geoserver.password";
 	private static final String PUBLISHED_WS_PARAM_CONFIG_KEY = "coastal-hazards.workspace.published";
-	private static final String CSW_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.csw.endpoint";
+	private static final String CSW_ENDPOINT_PARAM_CONFIG_KEY = "coastal-hazards.csw.internal.endpoint";
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -61,7 +61,7 @@ public class PublishService extends HttpServlet {
 		geoserverPassword = props.getProperty(GEOSERVER_PASS_PARAM_CONFIG_KEY);
 		publishedWorkspaceName = props.getProperty(PUBLISHED_WS_PARAM_CONFIG_KEY, "published");
 		geoserverHandler = new GeoserverHandler(geoserverEndpoint, geoserverUsername, geoserverPassword);
-		cswEndpoint = props.getProperty(CSW_ENDPOINT_PARAM_CONFIG_KEY, "http://localhost/pycsw-wsgi");
+		cswEndpoint = props.getProperty(CSW_ENDPOINT_PARAM_CONFIG_KEY, "http://127.0.0.1/pycsw-wsgi");
 		cswHandler = new CSWHandler(cswEndpoint);
 	}
 
