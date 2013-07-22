@@ -15,6 +15,7 @@
 		<module>coastal-hazards-portal</module>
 		<module>coastal-hazards-commons</module>
         <module>coastal-hazards-liquibase</module>
+        <module>coastal-hazards-uncy-reader</module>
 	</modules>
   
 	<issueManagement>

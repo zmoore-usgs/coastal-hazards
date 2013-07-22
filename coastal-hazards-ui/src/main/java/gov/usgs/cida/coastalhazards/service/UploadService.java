@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.service;
 
+import gov.usgs.cida.coastalhazards.uncy.Xploder;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
 import gov.usgs.cida.utilities.communication.FormUploadHandler;
@@ -99,17 +100,35 @@ public class UploadService extends HttpServlet {
             return;
         }
         Enumeration<? extends ZipEntry> entries = new ZipFile(uploadDestinationFile).entries();
-        Boolean needsMacFix = false;
+        boolean hasHidden = false;
+        boolean needsLidarExplosion = false;
         while (entries.hasMoreElements()) {
             ZipEntry entry = entries.nextElement();
-            String entryName = entry.getName();
-            if ((entry.isDirectory() && entryName.toLowerCase().contains("MACOSX"))
-                    || entryName.charAt(0) == '.') {
-                needsMacFix = true;
+            if (FileHelper.entryIsHidden(entry)) {
+                hasHidden = true;
+            }
+            if (entry.getName().endsWith("_uncertainty.dbf")) {
+            	needsLidarExplosion = true;
             }
         }
-        if (needsMacFix) {
-            FileHelper.fixMacZip(uploadDestinationFile);
+        if (hasHidden) {
+            FileHelper.removeHiddenEntries(uploadDestinationFile);
+        }
+        
+        if (needsLidarExplosion) {
+        	// add another zipfile to the upload directory, with exploded point data
+        	ZipInterpolator exploder = new ZipInterpolator();
+        	
+        	try {
+        		File xplodedFile = exploder.explode(uploadDestinationFile);
+        		
+                responseMap.put("pts-file-checksum", Long.toString(FileUtils.checksumCRC32(xplodedFile)));
+                responseMap.put("pts-file-size", Long.toString(FileUtils.sizeOf(xplodedFile)));
+                responseMap.put("pts-file-name", xplodedFile.getName());
+
+			} catch (Exception e) {
+				throw new RuntimeException("Problem exploding shapefile zip file", e);
+			}
         }
 
         responseMap.put("file-token", destinationDirectoryChild);

@@ -42,10 +42,13 @@ import org.xml.sax.InputSource;
 /**
  *
  * @author isuftin
+ * @author rhayes
  */
 public class ShapefileImportService extends HttpServlet {
 
-    private static final long serialVersionUID = 1L;
+    private static final String PTS_SUFFIX = gov.usgs.cida.coastalhazards.uncy.Xploder.PTS_SUFFIX;
+    
+	private static final long serialVersionUID = 1L;
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ShapefileImportService.class);
     private static DynamicReadOnlyProperties props = null;
     private static String uploadDirectory = null;
@@ -191,16 +194,57 @@ public class ShapefileImportService extends HttpServlet {
 
         FileFilter zipFileFilter = new WildcardFileFilter("*.zip");
 
-        // We assume there is only one file per directory
-        shapeFile = fileDirectoryHandle.listFiles(zipFileFilter)[0];
+        // Upload directory might contain both input shapefile and shapefile_pts
+        File[] zipFiles = fileDirectoryHandle.listFiles(zipFileFilter);
+        File pts_File = null;
+        shapeFile = null;
+        for (File file : zipFiles) {
+        	if (file.getName().endsWith(PTS_SUFFIX + ".zip")) {
+        		pts_File = file;
+        	} else {
+        		shapeFile = file;
+        	}
+        }
+        
+		if (shapeFile == null) {
+            responseMap.put("error", "No input located");
+            RequestResponseHelper.sendErrorResponse(response, responseMap);
+            return;
+		}
+		
+        responseMap.put("file-token", fileToken);
+        responseMap.put("endpoint", geoserverEndpoint);
+
         name = StringUtils.isBlank(featureName) ? FilenameUtils.removeExtension(shapeFile.getName()) : featureName;
+
+        if (pts_File != null) {
+        	String pts_name = name + PTS_SUFFIX;
+            HttpResponse pts_importResponse = geoserverHandler.importFeaturesFromFile(pts_File, workspace, store, pts_name);
+            String pts_responseText = IOUtils.toString(pts_importResponse.getEntity().getContent());
+
+            if (!pts_responseText.toLowerCase().contains("ows:exception")) {
+                responseMap.put("pts_feature", pts_responseText);
+            } else {
+                InputSource source = new InputSource(new StringReader(pts_responseText));
+                XPath xPath = XPathFactory.newInstance().newXPath();
+                NodeList list;
+                String error = "";
+                try {
+                    list = (NodeList) xPath.evaluate("//*[local-name()='ExceptionText']", source, XPathConstants.NODESET);
+                    error = list.item(0).getTextContent();
+                } catch (XPathExpressionException ex) {
+                    Logger.getLogger(ShapefileImportService.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                responseMap.put("pts_error", error);
+            }
+        }
+
         HttpResponse importResponse = geoserverHandler.importFeaturesFromFile(shapeFile, workspace, store, name);
         String responseText = IOUtils.toString(importResponse.getEntity().getContent());
 
         if (!responseText.toLowerCase().contains("ows:exception")) {
-            responseMap.put("file-token", fileToken);
             responseMap.put("feature", responseText);
-            responseMap.put("endpoint", geoserverEndpoint);
             RequestResponseHelper.sendSuccessResponse(response, responseMap);
         } else {
             InputSource source = new InputSource(new StringReader(responseText));
@@ -214,10 +258,10 @@ public class ShapefileImportService extends HttpServlet {
                 Logger.getLogger(ShapefileImportService.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            responseMap.put("file-token", fileToken);
             responseMap.put("error", error);
             RequestResponseHelper.sendErrorResponse(response, responseMap);
         }
+        
     }
 
     @Override

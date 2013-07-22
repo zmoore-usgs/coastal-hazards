@@ -14,8 +14,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -611,26 +613,35 @@ public class FileHelper {
         }
     }
 
-    public static void fixMacZip(File zipFile) throws IOException {
+    public static void removeHiddenEntries(File zipFile) throws IOException {
+        Set<String> hiddenFiles = new HashSet<String>();
+
         ZipFile zf = new ZipFile(zipFile);
-        Enumeration<? extends ZipEntry> entries = zf.entries();
-        List<String> zipEntry = new ArrayList<String>();
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
-            String entryName = entry.getName();
-            if ((entry.isDirectory() && entryName.toLowerCase().contains("MACOSX")) || entryName.charAt(0) == '.') {
-                zipEntry.add(entry.getName());
-            }
+        try {
+	        Enumeration<? extends ZipEntry> entries = zf.entries();
+	        while (entries.hasMoreElements()) {
+	            ZipEntry entry = entries.nextElement();
+	            if (entryIsHidden(entry)) {
+	                hiddenFiles.add(entry.getName());
+	            }
+	        }
+        } finally {
+        	IOUtils.closeQuietly(zf);
         }
 
-        if (!zipEntry.isEmpty()) {
-            deleteZipEntries(zipFile, zipEntry.toArray(new String[0]));
+        if (!hiddenFiles.isEmpty()) {
+            deleteZipEntries(zipFile, hiddenFiles);
         }
     }
 
+	public static boolean entryIsHidden(ZipEntry entry) {
+        String entryName = entry.getName();
+		return (entry.isDirectory() && entryName.toLowerCase().contains("macosx")) || entryName.charAt(0) == '.';
+	}
+
     // http://www.javaer.org/java/1-zip/3-delete-zipentry-from-zip-file
     public static void deleteZipEntries(File zipFile,
-            String[] files) throws IOException {
+            Collection<String> files) throws IOException {
         // get a temp file
         File tempFile = File.createTempFile(zipFile.getName(), null);
         // delete it, otherwise you cannot rename your existing zip to it.
@@ -648,13 +659,7 @@ public class FileHelper {
             ZipEntry entry = zin.getNextEntry();
             while (entry != null) {
                 String name = entry.getName();
-                boolean toBeDeleted = false;
-                for (String f : files) {
-                    if (f.equals(name)) {
-                        toBeDeleted = true;
-                        break;
-                    }
-                }
+                boolean toBeDeleted = files.contains(name);
                 if (!toBeDeleted) {
                     // Add ZIP entry to output stream.
                     zout.putNextEntry(new ZipEntry(name));
