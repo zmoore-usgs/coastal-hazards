@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jtsexample.geom.ExtendedCoordinate;
 
@@ -188,6 +189,13 @@ public class Xploder {
 		String surveyID = (String)sap.row.read(surveyIDIdx);
 		
 		int ptCt = 0;
+		MultiLineString shape = (MultiLineString) sap.record.shape();
+		int recordNum = sap.record.number;
+		
+		if (shape.getNumGeometries() > 1) {
+			logger.error("Can only handle input with one LineString per Shape, this file has {} for shape {}", shape.getNumGeometries(), sap.record.toString());
+			throw new RuntimeException("Can only handle input with one LineString per Shape");
+		}
 		
 		for (Point p : sap) {
 			ExtendedCoordinate ec = (ExtendedCoordinate)p.getCoordinate();
@@ -206,7 +214,7 @@ public class Xploder {
 			}
 			
 			// write new point-thing-with-uncertainty
-			writePoint(p, sap.row, uncy);
+			writePoint(p, sap.row, uncy, recordNum);
 			
 			ptCt ++;
 		}
@@ -215,7 +223,7 @@ public class Xploder {
 		
 	}
 
-	public void writePoint(Point p, DbaseFileReader.Row row, double uncy) throws Exception {
+	public void writePoint(Point p, DbaseFileReader.Row row, double uncy, int recordNum) throws Exception {
 		
 		SimpleFeature writeFeature = featureWriter.next();
 		
@@ -224,7 +232,8 @@ public class Xploder {
 		writeFeature.setAttribute(0, np);
 
 		// copy them other attributes over, replacing uncy
-		for (int i = 0; i < dbfHdr.getNumFields(); i++) {
+		int i;
+		for (i = 0; i < dbfHdr.getNumFields(); i++) {
 			Object value;
 			if (i == dfltUncyIdx) {
 				value = uncy;
@@ -233,6 +242,8 @@ public class Xploder {
 			}
 			writeFeature.setAttribute(i+1, value);
 		}
+		// Add record attribute
+		writeFeature.setAttribute(i+1, recordNum);
 		
 		featureWriter.write();
 	}
@@ -259,6 +270,7 @@ public class Xploder {
 			}
 			idx++;
 		}
+		typeBuilder.add("inShape", Integer.class);
 		SimpleFeatureType outputFeatureType = typeBuilder.buildFeatureType();
 
 		logger.debug("Output feature type is {}", outputFeatureType);
