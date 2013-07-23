@@ -30,7 +30,9 @@ import org.opengis.feature.type.GeometryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jtsexample.geom.ExtendedCoordinate;
@@ -192,38 +194,44 @@ public class Xploder {
 		MultiLineString shape = (MultiLineString) sap.record.shape();
 		int recordNum = sap.record.number;
 		
-		if (shape.getNumGeometries() > 1) {
-			logger.error("Can only handle input with one LineString per Shape, this file has {} for shape {}", shape.getNumGeometries(), sap.record.toString());
-			throw new RuntimeException("Can only handle input with one LineString per Shape");
-		}
+		int numGeom = shape.getNumGeometries();
 		
-		for (Point p : sap) {
-			ExtendedCoordinate ec = (ExtendedCoordinate)p.getCoordinate();
+		for (int gx = 0; gx < numGeom; gx++) {
+			Geometry geometry = shape.getGeometryN(gx);
 			
-			double uncy = defaultUncertainty;
-			
-			double md = ec.getM();
-			if ( ! Double.isNaN(md)) {
-				int mi = (int)md;
+			PointIterator pIterator = new PointIterator(geometry);
+			while (pIterator.hasNext()) {
+				Point p = pIterator.next();
 				
-				UncyKey key = new UncyKey(mi, surveyID);
-				Double uv = uncyMap.get(key);
-				if (uv != null) {
-					uncy = uv;
+				ExtendedCoordinate ec = (ExtendedCoordinate)p.getCoordinate();
+				
+				double uncy = defaultUncertainty;
+				
+				double md = ec.getM();
+				if ( ! Double.isNaN(md)) {
+					int mi = (int)md;
+					
+					UncyKey key = new UncyKey(mi, surveyID);
+					Double uv = uncyMap.get(key);
+					if (uv != null) {
+						uncy = uv;
+					}
 				}
+				
+				// write new point-thing-with-uncertainty
+				String segmentID = recordNum + ":" + (gx+1);
+				writePoint(p, sap.row, uncy, segmentID);
+				
+				ptCt ++;
+				
 			}
-			
-			// write new point-thing-with-uncertainty
-			writePoint(p, sap.row, uncy, recordNum);
-			
-			ptCt ++;
 		}
 		
 		return ptCt;
 		
 	}
 
-	public void writePoint(Point p, DbaseFileReader.Row row, double uncy, int recordNum) throws Exception {
+	public void writePoint(Point p, DbaseFileReader.Row row, double uncy, String recordNum) throws Exception {
 		
 		SimpleFeature writeFeature = featureWriter.next();
 		
@@ -270,7 +278,7 @@ public class Xploder {
 			}
 			idx++;
 		}
-		typeBuilder.add("inShape", Integer.class);
+		typeBuilder.add("inShape", String.class);
 		SimpleFeatureType outputFeatureType = typeBuilder.buildFeatureType();
 
 		logger.debug("Output feature type is {}", outputFeatureType);
