@@ -626,7 +626,9 @@ public class FileHelper {
 	            }
 	        }
         } finally {
-        	IOUtils.closeQuietly(zf);
+        	// Do not go gentle into that good night, 
+        	// throw an Exception 'gainst the dying of the write
+        	zf.close();
         }
 
         if (!hiddenFiles.isEmpty()) {
@@ -673,8 +675,8 @@ public class FileHelper {
             }
         } finally {
             IOUtils.closeQuietly(zin);
-            IOUtils.closeQuietly(zout);
             FileUtils.deleteQuietly(tempFile);
+            zout.close();
         }
 
     }
@@ -707,7 +709,7 @@ public class FileHelper {
                 IOUtils.copy(fis, zos);
                 IOUtils.closeQuietly(fis);
             }
-            IOUtils.closeQuietly(zos);
+            zos.close();
             return zipFile;
         } finally {
             IOUtils.closeQuietly(zos);
