@@ -87,7 +87,7 @@
 
 		<div id="canned-views-row" class="row-fluid">
 			<div class="well well-small span4">
-				<a href="http://go.usa.gov/jTrk" target="_self"><img src="images/views/canned/historical.png" /><br /><b>Shoreline Change</b><br />Historical positions and rates of change</a>
+				<a href="http://go.usa.gov/jXCe" target="_self"><img src="images/views/canned/historical.png" /><br /><b>Shoreline Change</b><br />Historical positions and rates of change</a>
 			</div>
 			<div class="well well-small span4">
 				<a href="http://go.usa.gov/jKnB" target="_self"><img src="images/views/canned/vulnerability.png" /><br /><b>Sea-Level Rise</b>Vulnerability</a>
