@@ -23,6 +23,11 @@
 			<artifactId>coastal-hazards-commons</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.coastalhazards</groupId>
+            <artifactId>coastal-hazards-uncy-reader</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>it.geosolutions</groupId>
 			<artifactId>geoserver-manager</artifactId>
@@ -216,8 +221,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.5.1</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
                     <goal>process-resources</goal>
 				</configuration>
 			</plugin>
