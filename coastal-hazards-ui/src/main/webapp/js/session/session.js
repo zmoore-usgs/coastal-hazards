@@ -603,12 +603,17 @@ var Session = function(name, isPerm) {
                 'type' : 'hidden',
                 'name' : 'filename'
             }).val('cch_session_' + me.getCurrentSessionKey() + '.json')).
+					append(
+            $('<input />').attr({
+                'type' : 'hidden',
+                'name' : 'encoding'
+            }).val('UTF-8')).
                 append(
             $('<input />').attr({
                 'type' : 'hidden',
                 'name' : 'data'
-            }).val(localStorage['coastal-hazards']))
-            $('body').append(exportForm)
+            }).val(localStorage['coastal-hazards']));
+            $('body').append(exportForm);
             exportForm.attr('action', 'service/export');
             exportForm.submit();
             exportForm.remove();
