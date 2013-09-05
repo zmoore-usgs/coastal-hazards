@@ -50,7 +50,7 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="<%= development %>" />
         </jsp:include>
-		<script type="text/javascript" src="webjars/jquery/1.8.3/jquery<%= development ? ".min" : "" %>.js"></script>
+		<script type="text/javascript" src="webjars/jquery/1.8.3/jquery<%= development ?  "" : ".min" %>.js"></script>
     </head>
     
     <body>
@@ -424,11 +424,11 @@
     <script type="text/javascript" src="js/jquery-ui/jquery-ui-1.10.0.custom.min.js"></script>
 
     <script type="text/javascript">splashUpdate("Loading UI Framework...");</script>
-	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap<%= development ? ".min" : "" %>.css" />
-	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap-responsive<%= development ? ".min" : "" %>.css" />
+	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap<%= development ?  "" : ".min" %>.css" />
+	<link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap-responsive<%= development ? "" : ".min"%>.css" />
 	<link type="text/css" rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
-	<script type="text/javascript" src="webjars/bootstrap/2.3.2/js/bootstrap<%= development ? ".min" : "" %>.js"></script>
-    <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.2.1/css/font-awesome<%= development ? ".min" : "" %>.css" />
+	<script type="text/javascript" src="webjars/bootstrap/2.3.2/js/bootstrap<%= development ?  "" : ".min" %>.js"></script>
+    <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.2.1/css/font-awesome<%= development ?  "" : ".min" %>.css" />
 
     <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
     <script type="text/javascript" src="webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : "" %>.js"></script>
