@@ -41,7 +41,7 @@ public class ExportService extends HttpServlet {
         String filename = request.getParameter("filename");
         String data = request.getParameter("data");
         String type = request.getParameter("type");
-        String encoding = "base64"; // hardcode this for now
+        String encoding = StringUtils.isNotBlank(request.getParameter("encoding")) && request.getParameter("encoding").toLowerCase().equals("utf-8") ? request.getParameter("encoding") : "base64";
         String shortName = request.getParameter("shortName");
         String url = request.getRequestURL().toString();
 
@@ -126,7 +126,7 @@ public class ExportService extends HttpServlet {
         if ("base64".equalsIgnoreCase(encoding)) {
             dataByteArr = new BASE64Decoder().decodeBuffer(data.toString());
         } else {
-            dataByteArr = data.toString().getBytes("UTF-8");
+            dataByteArr = data.getBytes(encoding);
         }
         int length = dataByteArr.length;
 
@@ -138,7 +138,7 @@ public class ExportService extends HttpServlet {
             response.setHeader("Content-Disposition", "attachment;filename=" + filename);
             response.setHeader("Pragma", "no-cache");
             response.setHeader("Expires", "0");
-
+			
             in = new ByteArrayInputStream(dataByteArr);
             out = response.getOutputStream();
             IOUtils.copy(in, out);
