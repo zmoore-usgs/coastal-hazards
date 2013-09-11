@@ -221,9 +221,14 @@ public class ItemResource {
                 factory.setNamespaceAware(true);
                 Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(data.getBytes()));
                 JXPathContext ctx = JXPathContext.newContext(doc.getDocumentElement());
-                Node exText = (Node) ctx.selectSingleNode("//wps:ExceptionText/text()");
-                if (exText != null) {
-                    error = exText.getTextContent();
+                ctx.registerNamespace("ows", "http://www.opengis.net/ows/1.1");
+                List<Node> nodes = ctx.selectNodes("ows:Exception/ows:ExceptionText/text()");
+                if (nodes != null && !nodes.isEmpty()) {
+                    StringBuilder builder = new StringBuilder();
+                    for (Node node : nodes) {
+                        builder.append(node.getTextContent()).append(System.lineSeparator());
+                    }
+                    error = builder.toString();
                 }
                 throw new RuntimeException(error);
             }
