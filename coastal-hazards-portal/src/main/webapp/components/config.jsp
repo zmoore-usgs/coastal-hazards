@@ -18,7 +18,7 @@
 	String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
 	String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
 	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
-	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
+	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://marine.usgs.gov/coastalchangehazardsportal");
 %>
 <%
 	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
@@ -30,7 +30,7 @@
 		idType: '${param.idType}',
 		development: <%= development%>,
 		ajaxTimeout: 300000,
-		contextPath: '${param.baseUrl}',
+		contextPath: '<%=baseUrl%>',
 		emailLink: 'CCH_Help@usgs.gov',
 		publicUrl: '<%=publicUrl%>',
 		popupHandling: {
