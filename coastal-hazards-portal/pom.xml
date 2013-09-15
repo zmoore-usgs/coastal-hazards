@@ -10,7 +10,7 @@
 	<artifactId>coastal-hazards-portal</artifactId>
 	<packaging>war</packaging>
 
-	<name>Coastal Hazards Portal</name>
+	<name>Coastal Hazards Portal (CCHP)</name>
 
 	<dependencies>
 		<dependency>
