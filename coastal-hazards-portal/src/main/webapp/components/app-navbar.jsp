@@ -43,6 +43,7 @@
 	url for their current view (calculated on the fly) and a tweet button --%>
 <div id="shareModal" class="modal fade"  role="dialog" aria-labelledby="modal-label" aria-hidden="true">
 	<div class="modal-header">
+		<button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
 		<h4 id="modal-label">Share Your Coastal Change Hazards Portal View With Others</h4>
 	</div>
 	<div class="modal-body">
@@ -66,6 +67,7 @@
 	a user clicks the info icon in the upper right of the application --%>
 <div id="helpModal" class="modal fade"  role="dialog" aria-labelledby="modal-label" aria-hidden="true">
 	<div class="modal-header">
+		<button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
 		<h4 id="modal-help-label">About The Coastal Change Hazards Portal</h4>
 	</div>
 	<div id="help-modal-body" class="modal-body">
