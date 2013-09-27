@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet author="jiwalker" id="change7">
+        <createView viewName="ranking" replaceIfExists="true">
+            SELECT overall_ranking.id, overall_ranking.total_score
+                FROM ( SELECT score_by_id_and_pop_type.id, sum(score_by_id_and_pop_type.activity_type_score) AS total_score
+                        FROM ( SELECT id_days.id, id_days.type,
+                                CASE
+                                    WHEN (id_days.type = 0) THEN LEAST(sum((((id_days.life_span)::double precision - id_days.days_ago) * (id_days.multiplier)::double precision)), (1000)::double precision)
+                                    WHEN (id_days.type = 1) THEN LEAST(sum((((id_days.life_span)::double precision - id_days.days_ago) * (id_days.multiplier)::double precision)), (1000)::double precision)
+                                    WHEN (id_days.type = 2) THEN LEAST(sum((((id_days.life_span)::double precision - id_days.days_ago) * (id_days.multiplier)::double precision)), (800)::double precision)
+                                    WHEN (id_days.type = 3) THEN LEAST(sum((((id_days.life_span)::double precision - id_days.days_ago) * (id_days.multiplier)::double precision)), (1200)::double precision)
+                                    WHEN (id_days.type = 4) THEN LEAST(sum((((id_days.life_span)::double precision - id_days.days_ago) * (id_days.multiplier)::double precision)), (500)::double precision)
+                                    WHEN (id_days.type = 5) THEN (0)::double precision ELSE NULL::double precision
+                                END AS activity_type_score
+                            FROM ( SELECT activity.itemid AS id, (date_part('epoch'::text, (now() - (activity.activity_timestamp)::timestamp with time zone)) / (86400)::double precision) AS days_ago, activity.type,
+                                    CASE
+                                        WHEN (activity.type = 0) THEN 1
+                                        WHEN (activity.type = 1) THEN 2
+                                        WHEN (activity.type = 2) THEN 75
+                                        WHEN (activity.type = 3) THEN 100
+                                        WHEN (activity.type = 4) THEN 50
+                                        WHEN (activity.type = 5) THEN 0
+                                        ELSE NULL::integer
+                                    END AS multiplier,
+                                    CASE
+                                        WHEN (activity.type = 0) THEN 7
+                                        WHEN (activity.type = 1) THEN 10
+                                        WHEN (activity.type = 2) THEN 5
+                                        WHEN (activity.type = 3) THEN 14
+                                        WHEN (activity.type = 4) THEN 14
+                                        WHEN (activity.type = 5) THEN 0
+                                        ELSE NULL::integer
+                                    END AS life_span
+                                FROM activity) id_days
+                            WHERE (((((((id_days.type = 0) AND (id_days.days_ago &lt;= (id_days.life_span)::double precision)) OR ((id_days.type = 1) AND (id_days.days_ago &lt;= (id_days.life_span)::double precision))) OR ((id_days.type = 2) AND (id_days.days_ago &lt;= (id_days.life_span)::double precision))) OR ((id_days.type = 3) AND (id_days.days_ago &lt;= (id_days.life_span)::double precision))) OR ((id_days.type = 4) AND (id_days.days_ago &lt;= (id_days.life_span)::double precision))) OR (id_days.type = 5))
+                        GROUP BY id_days.id, id_days.type) score_by_id_and_pop_type
+                    GROUP BY score_by_id_and_pop_type.id) overall_ranking
+                ORDER BY overall_ranking.total_score DESC;
+        </createView>
+     
+    </changeSet>
+</databaseChangeLog>
