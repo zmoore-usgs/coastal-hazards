@@ -1,10 +1,20 @@
-<!-- Sets logging and script types that are loaded --> 
+<!--
+development: Sets whether or not to load debug versions of scripts, levels 
+for logging and possibly other container-specific settings.  Typically, we keep 
+this set to true on localhost for developing as well as on the development tier 
+server. This variable may either be set to false on QA and production tiers or 
+not exist. The effect is the same. -->
 <Environment name="development" type="java.lang.String" value="true" />
 
-<!-- The maximum file size that is allowed to the server - Set to 0 to disable size checking -->
+<!-- 
+coastal-hazards.files.upload.max-size: The maximum file size that is allowed to 
+the server - Set to 0 to disable size checking -->
 <Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="15728640" />
 
-<!-- The parameter that the application uses to get the name of the incoming file - qqfile is used by default -->
+<!-- 
+coastal-hazards.files.upload.filename-param: The parameter that the application 
+uses to get the name of the incoming file - “qqfile” is used by default. This 
+should probably be left at default. -->
 <Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="qqfile" />
 
 <!-- The base directory for the project's file structure - the default will be a "coastal-hazards" directory in the system's temp dir-->

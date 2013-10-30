@@ -11,7 +11,7 @@
 	<artifactId>coastal-hazards-ui</artifactId>
 	<packaging>war</packaging>
 
-	<name>Coastal Hazards UI</name>
+	<name>Coastal Hazards UI (DSASWeb)</name>
 
 	<properties>
 		<slf4j.version>1.7.2</slf4j.version>
