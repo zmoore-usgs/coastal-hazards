@@ -1,4 +1,15 @@
 /* ---------------------------------------------------------------------- UI */
+#banner-area {
+    display: none;
+}
+
+#page-info {
+    display: none;
+}
+
+#gov-buttons {
+    display: none;
+}
 
 /* Conflict between bootstrap and the USGS header, right-hand side */
 #ccsa-area {

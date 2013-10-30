@@ -11,7 +11,7 @@
             <pattern>%d{HH:mm:ss} %p %c{1}: %m%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${catalina.base}/logs/coastal-hazards/coastal-hazards-portal.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${catalina.base}/logs/coastal-hazards/coastal-hazards-portal.%d{yyyy-MM-dd}.gz</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <timeBasedFileNamingAndTriggeringPolicy

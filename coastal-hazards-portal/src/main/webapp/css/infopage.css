@@ -1,3 +1,15 @@
+#banner-area {
+    display: none;
+}
+
+#page-info {
+    display: none;
+}
+
+#gov-buttons {
+    display: none;
+}
+
 /* Bootstrap Fix */
 img { 
     max-width: none !important; 
