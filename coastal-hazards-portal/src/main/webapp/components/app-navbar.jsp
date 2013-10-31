@@ -104,8 +104,3 @@
 		<a href="#" class="btn"  data-dismiss="modal" aria-hidden="true">Close</a>
 	</div>
 </div>
-
-<%-- This removes the site title placed by the USGS overlay. We provide our own ---%>
-<script type="text/javascript">
-	$('#site-title').remove();
-</script>
