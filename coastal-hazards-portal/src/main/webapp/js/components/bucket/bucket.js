@@ -18,11 +18,10 @@ CCH.Objects.Bucket = function (args) {
         CCH.LOG.debug('UI.js::countChanged: Bucket count changed.');
         var count = me.getCount(),
             bucketImage = $(me.BUCKET_IMAGE_ID),
-            time = '?' + new Date().getTime(),
-            src = me.IMAGE_LOCATION_BUCKET_WITHOUT_SAND + time;
+            src = me.IMAGE_LOCATION_BUCKET_WITHOUT_SAND;
 
         if (count > 0) {
-            src = me.IMAGE_LOCATION_BUCKET_WITH_SAND + time;
+            src = me.IMAGE_LOCATION_BUCKET_WITH_SAND;
         }
 
         if (bucketImage.attr('img') !== src) {
@@ -59,6 +58,9 @@ CCH.Objects.Bucket = function (args) {
             } else {
                 throw 'setCount called with a double. Only integers allowed';
             }
+            
+            me.countChanged();
+            
             return count;
         },
         increaseCount: function () {

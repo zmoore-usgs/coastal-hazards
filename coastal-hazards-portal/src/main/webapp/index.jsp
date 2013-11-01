@@ -3,7 +3,6 @@
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <!DOCTYPE html>
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
-
 	{
 		try {
 			props = props.addJNDIContexts(new String[0]);
@@ -12,13 +11,10 @@
 		}
 	}
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
-
 %>
-<%
-	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
-%>
+<% String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");%>
 <html lang="en"> 
-    <head>
+    <head profile="http://www.w3.org/2005/10/profile">
 		<script type="text/javascript">
 			/* This application does not support <IE9 - Stop early if <IE9*/
 			if (navigator.appName === 'Microsoft Internet Explorer') {
@@ -30,29 +26,11 @@
 			}
 		</script>
         <title>USGS Coastal Change Hazards Portal</title>
-		<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
-        <meta http-equiv="Cache-control" content="no-cache" />
-        <meta http-equiv="Cache-control" content="no-store" />
-        <meta http-equiv="PRAGMA" content="NO-CACHE" />
-        <meta http-equiv="expires" content="0" />
-        <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8" />
-        <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1" />
-		<meta name="apple-mobile-web-app-capable" content="yes" /> 
-        <meta name="description" content="USGS coastal change hazards research produces data, knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available here. They can be used to increase awareness and provide a basis for decision making." />
-        <meta name="author" content="Ivan Suftin, Tom Kunicki, Jordan Walker, Jordan Read, Carl Schroedl" />
-        <meta name="keywords" content="" />
-        <meta name="publisher" content="" />
-        <meta name="country" content="USA">
-        <meta name="language" content="en" />
-        <meta name="revised" content="" />
-        <meta name="review" content="" />
-        <meta name="expires" content="never" />
-        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-        <link rel="icon" href="favicon.ico" type="image/x-icon" />
-        <link type="text/css" rel="stylesheet" href="css/custom.css" />
+        <jsp:include page="components/head.jsp"></jsp:include>
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap-responsive<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.2.1/css/font-awesome<%= development ? "" : ".min"%>.css" />
+        <link type="text/css" rel="stylesheet" href="css/custom.css" />
     </head>
     <body>
 
@@ -115,6 +93,7 @@
         <script type="text/javascript" src="js/components/items/Items.js"></script>
         <script type="text/javascript" src="js/components/popularity/Popularity.js"></script>
         <script type="text/javascript" src="js/components/common/OWS.js"></script>
+        <script type="text/javascript" src="js/components/bucket/bucket.js"></script>
         <script type="text/javascript" src="js/components/common/UI.js"></script>
         <script type="text/javascript" src="js/components/common/OnReady.js"></script>
         <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>

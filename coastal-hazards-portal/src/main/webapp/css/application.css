@@ -1,4 +1,213 @@
 /* ---------------------------------------------------------------------- UI */
+
+/* 
+    Because of a conflict between twitter bootstrap and openlayers
+    See: https://github.com/openlayers/openlayers/pull/755
+*/
+img { 
+    max-width: none !important; 
+}
+
+/* 
+    320 pixels is the minimum width that this application will support.
+    Anything smaller, scroll the app
+*/
+#application-container {
+    min-width : 320px !important;
+}
+
+#app-navbar-container {
+	width: auto;
+}
+
+.app-navbar-container {
+    height: 50px;
+}
+
+#app-navbar-bucket-button-container {
+    background-color: #8CE8FF;
+}
+
+#app-navbar-bucket-button-container .app-navbar-bucket-text {
+    color: #FFFFFF;
+    top: 10px;
+}
+
+
+#app-navbar-bucket-button-container img {
+    height: 45px;
+    position: relative;
+}
+
+#app-navbar-bucket-triangle {
+    left: -35px;
+    position: relative;
+}
+
+#app-navbar-bucket-button-count {
+    font-size: 1.1em;
+    font-weight: bold;
+    left: -45px;
+    text-align: right;
+    width: 30px;
+    position: relative;
+    display: inline-block;
+}
+
+
+#app-navbar-site-title-container {
+    float: left;
+    height: 45px;
+    margin-top: 5px;
+}
+
+#app-navbar-site-title-container h3 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    line-height: none;
+}
+
+#app-navbar-coop-logo-img {
+    float: left;
+    height: 50px;
+    margin-right: 15px;
+}
+
+#app-navbar-inner {
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	border-radius: 0;
+	background-color: #345280 !important;
+	background-image: none;
+	background-repeat: no-repeat;
+	border: none;
+	box-shadow: none;
+	padding-left: 0px;
+	filter: none; /* Fixes an IE issue that bootstrap adds */
+}
+
+#app-navbar-pin-control-icon {
+	font-size: 2em;
+}
+
+#app-navbar-pin-control-caret {
+	font-size: 2em;
+}
+
+/* OpenLayers-specific overrides */
+.baseLayersDiv > .labelSpan {
+    display : inline;
+}
+.dataLayersDiv > .labelSpan {
+    display : inline;
+}
+
+@media (max-width: 766px) {
+    body {
+        padding-left: 0px !important;
+        padding-right:  0px !important;
+    }
+
+    #application-container {
+        padding-left: 0px;
+        padding-right:  0px;
+    }
+}
+
+@media (min-width: 767px) {
+    body {
+        padding-left: 20px !important;
+        padding-right:  20px !important;
+    }
+
+    #application-container {
+        padding-left: 20px;
+        padding-right:  20px;
+    }
+}
+
+.description-description-row {
+	min-height : 100px;
+	overflow : auto;
+}
+
+.description-title {
+	font-size : 1.2em;
+	font-weight: bold;
+	text-align: center;
+}
+
+.description-container {
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: 20% top;
+}
+
+#description-wrapper {
+	overflow: auto;
+	max-width: 100%;
+}
+
+.slider {
+	width: 100%;
+	height: 100%;
+}
+
+.slider-slide-active {
+	opacity: 1;
+	filter: alpha(opacity=100);
+}
+
+.slider-slide-inactive {
+	opacity: 0.4;
+	filter: alpha(opacity=40);
+	overflow : hidden;
+}
+
+.slider-slide-inactive .description-container-large .description-button-row { 
+	display: none;
+}
+
+.description-container-small btn {
+	height: auto;
+}
+
+.description-container-small i {
+	font-size: 2em;
+}
+
+
+.slide-menu-icon {
+	font-size: 2em;
+}
+
+.slide-menu-icon:hover {
+	cursor: pointer;
+}
+
+.slider-slide-active .description-container-storms {
+	background-image : url("../images/cards/StormsActive.svg");
+}
+.slider-slide-inactive .description-container-storms {
+	background-image : url("../images/cards/StormsInactive.svg");
+}
+.slider-slide-active .description-container-vulnerability {
+	background-image : url("../images/cards/VulnerabilityActive.svg");
+}
+.slider-slide-inactive .description-container-vulnerability {
+	background-image : url("../images/cards/VulnerabilityInactive.svg");
+}
+.slider-slide-active .description-container-historical {
+	background-image : url("../images/cards/HistoricalActive.svg");
+}
+.slider-slide-inactive .description-container-historical {
+	background-image : url("../images/cards/HistoricalInactive.svg");
+}
+
+.slider-card-pinned i {
+	color : #FF0000; 
+}
+
 #banner-area {
     display: none;
 }
@@ -11,58 +220,345 @@
     display: none;
 }
 
-/* Conflict between bootstrap and the USGS header, right-hand side */
-#ccsa-area {
-	padding-top: 5px;
-}
-
-/* Because of a conflict between twitter bootstrap and openlayers */
+/* Bootstrap Fix */
 img { 
     max-width: none !important; 
 }
 
-/* 320 pixels is the minimum width that this application will support.
-	Anything smaller, scroll the app */
-#application-container {
-	min-width : 320px !important;
+#map {
+	height: 400px;
 }
 
-/* OpenLayers-specific overrides */
-.baseLayersDiv > .labelSpan {
-	display : inline;
-}
-.dataLayersDiv > .labelSpan {
-	display : inline;
+body {
+	padding-left: 10px !important;
+	padding-right:  10px !important;
 }
 
-#header #banner-area {
-    background-image: url("../images/banner/banner.png");
+
+.btn-error {
+	font-size: 1em;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+#cch-ui-legend-div {
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+
+.cch-ui-legend-table-body-div-color {
+	height: 10px;
+	border: #000000;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-botder-radius: 10px;
+}
+
+#cch-ui-legend-table-caption {
+	font-size: 1.2em;
+}
+
+#cch-ui-legend-table {
+	table-layout: fixed;
+}
+
+#cch-ui-legend-table tbody td {
+	padding : 2px;
+	vertical-align: middle;
+}
+
+#cch-ui-legend-table tbody td:nth-child(3) {
+	border-left: none;
+}
+
+#info-row-control iframe{
+	vertical-align: middle;
+	margin-left: 10px;
+}
+
+#info-summary {
+	font-size:1.3em;
+	line-height: 1.5em;
+}
+
+.info-title {
+	text-align: center;
+	font-size: 1.7em;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	font-weight: 600;
+	letter-spacing: 3px;
+	color: #666;
+	line-height: 1em;
 }
 
 #site-title {
-    line-height: 20px;
+	line-height: 20px;
+}
+
+#metadata-link .btn {
+	margin-left : 5px;
+	margin-right : 5px;
+}
+
+/* Fixes pink tile issue in OpenLayers map */
+.olImageLoadError {
+	display : none !important;
+}
+
+#info-graph img {
+	height: 100%;
+	width: 100%;
+}
+
+#info-graph {
+	text-align: center;
+	height: 300px;
+}
+
+@media (max-width: 440px) {
+	#info-title {
+		font-size: 0.65em;
+	}
+	
+	#info-row-control iframe{
+		margin-left: 5px;
+	}
+
+	#map {
+		height : 300px;
+	}
+	
+	.olControlZoom {
+		display: none;
+	}
 }
 
 @media (max-width: 766px) {
-	body {
-		padding-left: 0px !important;
-		padding-right:  0px !important;
+	#info-row-control iframe{
+		margin-top: 5px;
+		margin-left: 5px;
+	}
+	
+	#info-graph {
+		height: 100px;
 	}
 
-	#application-container {
-		padding-left: 0px;
-		padding-right:  0px;
+	#cch-ui-legend-div {
+		max-height: none;
+	}
+
+	#banner-area,
+	.content {
+		display:none;
 	}
 }
 
-@media (min-width: 767px) {
-	body {
-		padding-left: 20px !important;
-		padding-right:  20px !important;
+#item-search-modal[aria-hidden="false"] {
+	position: absolute;
+}
+
+#item-search-modal[aria-hidden="true"] {
+	z-index: -1;
+	position: fixed;
+}
+
+#item-search-map {
+	height : 200px;
+}
+
+#item-search-modal-body {
+	max-height: 100% !important;
+	height: auto;
+}
+
+
+#item-search-input-table-row{
+	text-align: center;
+}
+
+.item-search-row-map-input {
+	background-color: #EEEEEE;
+}
+
+#item-search-keyword-input {
+	width: 100%;
+}
+
+#map {
+	min-height : 150px;
+}
+
+.marker-active {
+	border-color: #00CCFF !important;
+	background-color: rgba(0,102,255, 0.5);
+}
+
+.marker-inactive {
+	border-color: #00A3CC !important;
+	background-color: rgba(0,102,255, 0.5);
+}
+
+.marker-hover {
+	border-color: #8CE8FF !important;
+	background-color: rgba(0,102,255, 0.5);
+	opacity : 1.0 !important;
+}
+
+#map-search-container {
+	background-color: rgba(0, 60, 136, 0.5);
+	position: absolute;
+	top: 0;
+	padding: 0px 5px 5px 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	width: 180px;
+}
+
+#map-search-form {
+	margin: 0px;
+	padding: 5px 5px 3px 3px;
+}
+
+#map-search-input {
+	width : 140px;
+	font-size: 1.2em;
+}
+
+/* Fixes pink tile issue in OpenLayers map */
+.olImageLoadError {
+	display : none !important;
+}
+
+@media (max-width: 440px) {
+	.olControlZoom {
+		display: none;
 	}
 
-	#application-container {
-		padding-left: 20px;
-		padding-right:  20px;
+	#map-search-container {
+		width: 90px;
+	}
+
+	#map-search-input {
+		height: 0.8em;
+		width : 60px;
+		font-size: 1em;
+		
 	}
 }
+
+#app-navbar {
+    margin-bottom: 0px;
+}
+.nav-stacked li.active a img {
+    height: 3.5em;
+    width: 4.5em;
+}
+.nav-stacked li a img {
+    height: 2.5em;
+    width: 3.5em;
+}
+.nav-pills.nav-stacked > li > a {
+    text-align: center;
+}
+
+#nav {
+	text-align: center;
+}
+
+#nav a:hover {
+	text-decoration: none;
+}
+
+#nav .accordion-toggle {
+	color : #333333;
+}
+
+#nav .accordion-toggle i{
+	font-size: 400%;
+}
+
+#nav .accordion-body .accordion-group-item{
+	padding-bottom: 1em;
+}
+
+.app-navbar-brand {
+	color: #FFFFFF;
+	padding-right: 15px;
+	float: left;
+}
+
+/* Setting this zIndex manually fixes
+ an issue seen on mobile browsers with
+ hidden modal windows blocking use of 
+ containers they're in front of. This 
+ can probably be done to set all 
+ .modal[aria-hidden="true"] zo -1 zIndex,
+ but I was somewhat concerned of side
+ effects from doing it application-wide */
+#helpModal[aria-hidden="true"],
+#shareModal[aria-hidden="true"] {
+    z-index: -1;
+}
+
+#modal-help-summary-container {
+	font-size: 1.2em;
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+
+}
+
+#canned-views-row img {
+	width: 100%;
+	height: 100%;
+}
+
+
+#app-navbar-help-container {
+	font-size: 25px;
+	height: 40px;
+	margin-right: 15px;
+    margin-top: 10px;
+}
+
+#app-navbar-help-container a:hover {
+	background-color: #345280;
+}
+
+#app-navbar-help-container i {
+	display: inherit;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+#app-navbar-help-container i:hover {
+	cursor: pointer;
+	color: #D6DCE6;
+}
+
+#modal-share-summary-url-inputbox{
+	width: 97%;
+	font-size: 2em;
+    height: 1.6em;
+    line-height: 2em;
+}
+
+#modal-share-summary-text-label {
+	font-size : 1.5em;
+}
+#modal-share-summary-twitter-label{
+	font-size: 1.5em;
+	line-height: 1.5em;
+}
+
+@media (max-width: 440px) {
+	#app-navbar-help-search-container {
+		margin-right: -10px;
+	}
+
+}
+
