@@ -22,6 +22,7 @@ CCH.Objects.UI = function(args) {
 	me.shareUrlButton = args.shareUrlButton;
 	me.shareInput = args.shareInput;
 	me.shareTwitterBtn = args.shareTwitterBtn;
+    me.bucket = new CCH.Objects.Bucket();
 
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {
@@ -53,36 +54,6 @@ CCH.Objects.UI = function(args) {
 			$('#helpModal').on('show', function() {
 				$('#help-modal-body').css('max-height', window.innerHeight - window.innerHeight * 0.2)
 			})
-			$('#app-navbar-search-storms-container').tooltip({
-				title: 'View All Storms',
-				placement: 'left'
-			});
-			$('#app-navbar-search-storms-container').on('click', function() {
-				$(window).trigger('cch.search.item.submit', {
-					'popularity': true,
-					'themes': ['storms']
-				});
-			});
-			$('#app-navbar-search-vulnerability-container').tooltip({
-				title: 'View All Vulnerability',
-				placement: 'left'
-			});
-			$('#app-navbar-search-vulnerability-container').on('click', function() {
-				$(window).trigger('cch.search.item.submit', {
-					'popularity': true,
-					'themes': ['vulnerability']
-				});
-			});
-			$('#app-navbar-search-historical-container').tooltip({
-				title: 'View All Historical',
-				placement: 'left'
-			});
-			$('#app-navbar-search-historical-container').on('click', function() {
-				$(window).trigger('cch.search.item.submit', {
-					'popularity': true,
-					'themes': ['historical']
-				});
-			});
 			// Header fix
 			me.ccsArea.find('br').first().remove();
 
