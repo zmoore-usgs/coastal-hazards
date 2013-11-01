@@ -49,9 +49,9 @@ CCH.Objects.Bucket = function (args) {
         },
         setCount: function (args) {
             args = args || {};
-            var count = args.count,
+            var count = parseInt(args.count, 10),
                 bucketContainer = $(me.BUCKET_COUNT_CONTAINER_ID);
-            if (count % 1 === 0) {
+            if (!isNaN(count) && count % 1 === 0) {
                 if (count !== undefined && !isNaN(count)) {
                     bucketContainer.html(count);
                 }
