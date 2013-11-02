@@ -51,7 +51,7 @@ CCH.Objects.CombinedSearch = function (args) {
 
         var target = evt.currentTarget,
             toggleTextContainer = $('#' + me.DD_TOGGLE_TEXT_CONTAINER_ID),
-            clickedLinkText = target.text,
+            clickedLinkText = target.innerHTML,
             parentListEl = target.parentElement,
             allItems = $('.' + me.DD_TOGGLE_MENU_ITEMS_CLASS);
 
@@ -253,15 +253,24 @@ CCH.Objects.CombinedSearch = function (args) {
     });
 
     // Any link that is enabled and clicked, register that as a change
-    $('#' + me.DD_TOGGLE_MENU_ID + ' li:not([class~="disabled"]) a').on('click', function (evt) {
+    $('#' + me.DD_TOGGLE_MENU_ID + ' li a[tabindex="-1"]').on('click', function (evt) {
         me.criteriaChanged(evt);
     });
-    
-    // Any disabled link, don't do anything. Default behavior is to accept the click 
-    // but this is especially bad on touch devices since disabled links need to be 
+
+    // This is a fix for how bootstrap deals with submenu list-item and anchor 
+    // defsault behavior.
+    // For the submenu, don't do anything. Default behavior is to accept the click 
+    // but this is bad on touch devices since disabled links need to be 
     // clicked in order to expand a submenu
-    $('#' + me.DD_TOGGLE_MENU_ID + ' li[class~="disabled"]').on('click', function (evt) {
-        evt.stopImmediatePropagation();
+    $('#' + me.DD_TOGGLE_MENU_ID + ' li[class~="dropdown-submenu"]').on('click', function (evt) {
+        // Check to see if we are propagating at the moment. If so, that means 
+        // that we are not the target of what was clicked and we should not stop
+        // further propagation. Otherwise, what was clicked was a toggle node 
+        // for the submenu and it should just open the submenu and that's all, so
+        // stop propagation
+        if (evt.currentTarget === evt.target.parentElement) {
+             evt.stopImmediatePropagation();
+        }
     });
 
     CCH.LOG.debug('CCH.Objects.Bucket::constructor: UI class initialized.');

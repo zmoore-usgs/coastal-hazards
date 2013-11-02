@@ -22,7 +22,7 @@
                             <li class="disabled app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-all" tabindex="-1" href="#">All</a></li>
                             <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-location" tabindex="-1" href="#">Location</a></li>
                             <li class="dropdown-submenu disabled">
-                                <a id="app-navbar-search-dropdown-toggle-choice-items-all" tabindex="-1">Items</a>
+                                <a id="app-navbar-search-dropdown-toggle-choice-items-all">Items</a>
                                 <ul id="app-navbar-search-dropdown-menu-items" class="dropdown-menu">
                                     <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-item-all" tabindex="-1" href="#">All Items</a></li>
                                     <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-item-storms" tabindex="-1" href="#">Storms</a></li>
