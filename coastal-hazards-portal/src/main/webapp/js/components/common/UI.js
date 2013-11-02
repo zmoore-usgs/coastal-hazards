@@ -23,6 +23,7 @@ CCH.Objects.UI = function(args) {
 	me.shareInput = args.shareInput;
 	me.shareTwitterBtn = args.shareTwitterBtn;
     me.bucket = new CCH.Objects.Bucket();
+    me.combinedSearch = new CCH.Objects.CombinedSearch();
 
 	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 	return $.extend(me, {

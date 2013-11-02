@@ -68,7 +68,7 @@
         </jsp:include>
         <script type="text/javascript" src="webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="webjars/bootstrap/2.3.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
-		<jsp:include page="components/config.jsp">
+        <jsp:include page="components/config.jsp">
 			<jsp:param name="id" value="${it.id}" /> 
 			<jsp:param name="idType" value="${it.type}" /> 
 			<jsp:param name="baseUrl" value="<%=baseUrl%>" /> 
@@ -94,6 +94,7 @@
         <script type="text/javascript" src="js/components/popularity/Popularity.js"></script>
         <script type="text/javascript" src="js/components/common/OWS.js"></script>
         <script type="text/javascript" src="js/components/bucket/bucket.js"></script>
+        <script type="text/javascript" src="js/components/search/combined-search.js"></script>
         <script type="text/javascript" src="js/components/common/UI.js"></script>
         <script type="text/javascript" src="js/components/common/OnReady.js"></script>
         <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>

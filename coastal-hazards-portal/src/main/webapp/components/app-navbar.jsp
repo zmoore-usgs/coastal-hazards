@@ -1,36 +1,60 @@
-<div id="app-navbar-container" class="container">
-    <div id="app-navbar" class="navbar">
-        <div id="app-navbar-inner" class="navbar-inner container">
-            <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
+<div id="app-navbar-container" class="span12 navbar">
+    <div id="app-navbar-inner" class="navbar-inner">
+        <div class="container">
+            <img id="app-navbar-coop-logo-img" class="app-navbar-item-container" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
 
             <%-- Playing with bootstrap here to show different text for the 
                  application title as the screen narrows --%>
-            <div id="app-navbar-site-title-container">
-                <h3 class="app-navbar-brand visible-desktop hidden-tablet hidden-phone">USGS Coastal Change Hazards Portal</h3>
-                <h3 class="app-navbar-brand hidden-desktop visible-tablet hidden-phone">Coastal Change Hazards Portal</h3>
-                <h3 class="app-navbar-brand hidden-desktop hidden-tablet visible-phone">CCH</h3>
+            <div id="app-navbar-site-title-container" class="app-navbar-item-container">
+                <h3 class="app-navbar-title visible-desktop hidden-tablet hidden-phone">USGS Coastal Change Hazards Portal</h3>
+                <h3 class="app-navbar-title hidden-desktop visible-tablet hidden-phone">Coastal Change Hazards Portal</h3>
+                <h3 class="app-navbar-title hidden-desktop hidden-tablet visible-phone">CCH</h3>
             </div>
 
-            <div id="app-navbar-pin-control" class="btn-group">
+            <div id="app-navbar-search-container" class="app-navbar-item-container">
+                <div id="app-navbar-search-control" class="input-prepend input-append">
+                    <div class="btn-group">
+                        <a id='app-navbar-search-dropdown-toggle' class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            <span id="app-navbar-search-container-select-button-text">All</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul id="app-navbar-search-dropdown-menu" class="dropdown-menu">
+                            <li class="disabled app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-all" tabindex="-1" href="#">All</a></li>
+                            <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-location" tabindex="-1" href="#">Location</a></li>
+                            <li class="dropdown-submenu">
+                                <a id="app-navbar-search-dropdown-toggle-choice-items-all" tabindex="-1" href="#">Items</a>
+                                <ul id="app-navbar-search-dropdown-menu-items" class="dropdown-menu">
+                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-item-storms" tabindex="-1" href="#">Storms</a></li>
+                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-item-sea-level-rise" tabindex="-1" href="#">Sea Level Rise</a></li>
+                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-item-all" tabindex="-1" href="#">Shoreline Change</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <input id="app-navbar-search-input" type="text" placeholder="Search..." />
+                    <button id="app-navbar-search-submit-button" class="btn" type="button"><i class="icon-search"></i></button>
+                </div>
+            </div>
+
+            <div id="app-navbar-bucket-button-container" class="app-navbar-item-container">
+                <img id="app-navbar-bucket" alt="Items Bucket" src="images/banner/bucket/bucket-no-sand.svg" />
+                <span id="app-navbar-bucket-button-count" class="app-navbar-bucket-text">0</span>
+                <%-- Downwards facing triangle --%>
+                <span id="app-navbar-bucket-triangle" class="app-navbar-bucket-text">&#9660;</span>
+            </div>
+<!--
+            <div id='app-navbar-help-container' class='app-navbar-item-container'>
+                <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="icon-info-sign"></i></a>
+            </div>
+
+            <div id="app-navbar-pin-control" class="btn-group app-navbar-item-container">
                 <button id='app-navbar-pin-control-button' class="btn btn-mini disabled"><i id='app-navbar-pin-control-icon' class="icon-pushpin muted"></i>&nbsp;<span id='app-navbar-pin-control-pincount'>0</span></button>
                 <button id='app-navbar-pin-control-dropdown-button' class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown"><span id='app-navbar-pin-control-caret' class="icon-caret-down"></span></button>
                 <ul class="dropdown-menu">
                     <li id='app-navbar-pin-control-clear-li'><a id='app-navbar-pin-control-clear' href="#">Clear View</a></li>
                     <li id='app-navbar-pin-control-share-li'><a tabindex="-1" data-toggle="modal" role="button" href="#shareModal">Share View</a></li>
                 </ul>
-            </div>
-
-            <span id="app-navbar-bucket-button-container" class="pull-right app-navbar-container">
-                <img id="app-navbar-bucket" alt="Items Bucket" src="images/banner/bucket/bucket-no-sand.svg" />
-                <span id="app-navbar-bucket-button-count" class="app-navbar-bucket-text">0</span>
-                <%-- Downwards facing triangle --%>
-                <span id="app-navbar-bucket-triangle" class="app-navbar-bucket-text">&#9660;</span>
-            </span>
-
-            <div id='app-navbar-help-container' class='pull-right  app-navbar-container'>
-                <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="icon-info-sign"></i></a>
-            </div>
-
+            </div>-->
         </div>
     </div>
 </div>

@@ -3,7 +3,7 @@
 /*global CCH*/
 CCH.Objects.Bucket = function (args) {
     "use strict";
-    CCH.LOG.info('bucket.js::constructor: Bucket class is initializing.');
+    CCH.LOG.info('CCH.Objects.Bucket::constructor: Bucket class is initializing.');
 
     var me = (this === window) ? {} : this;
 
@@ -15,7 +15,7 @@ CCH.Objects.Bucket = function (args) {
     me.IMAGE_LOCATION_BUCKET_WITHOUT_SAND = 'images/banner/bucket/bucket-no-sand.svg';
 
     me.countChanged = function () {
-        CCH.LOG.debug('UI.js::countChanged: Bucket count changed.');
+        CCH.LOG.debug('CCH.Objects.Bucket::countChanged: Bucket count changed.');
         var count = me.getCount(),
             bucketImage = $(me.BUCKET_IMAGE_ID),
             src = me.IMAGE_LOCATION_BUCKET_WITHOUT_SAND;
@@ -33,7 +33,7 @@ CCH.Objects.Bucket = function (args) {
         return true;
     };
 
-    CCH.LOG.debug('bucket.js::constructor: UI class initialized.');
+    CCH.LOG.debug('CCH.Objects.Bucket::constructor: UI class initialized.');
 
     return $.extend(me, {
         getCount: function () {

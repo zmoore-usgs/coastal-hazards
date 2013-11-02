@@ -1,5 +1,67 @@
-var CCH = CCH || {};
-CCH.Objects.Search = function(args) {
+/*jslint browser: true*/
+/*jslint plusplus: true */
+/*global $*/
+/*global CCH*/
+CCH.Objects.Search = function (args) {
+    "use strict";
+    var me = (this === window) ? {} : this;
+
+    if (!args) {
+        throw 'arguments not found';
+    }
+
+    me.GEOCODE_SERVICE_ENDPOINT = args.geocodeServiceEndpoint;
+
+    $.extend(me, args);
+
+    me.submitLocationSearch = function (args) {
+        if (!args) {
+            throw 'arguments required';
+        }
+
+        var criteria = args.criteria || '',
+            maxLocations = args.maxLocations || 20,
+            callbacks = args.callbacks || {
+                success : [],
+                error : []
+            },
+            scope = args.scope || this;
+
+        $.ajax({
+            type: 'GET',
+            url: me.GEOCODE_SERVICE_ENDPOINT,
+            context : scope,
+            data: {
+                text: criteria,
+                maxLocations: maxLocations,
+                outFields: '*',
+                f: 'pjson',
+                outSR: '3785'
+            },
+            contentType: 'application/json',
+            dataType: 'jsonp',
+            success: function (data, statusText, xhrResponse) {
+                var cbIndex = 0;
+                for (cbIndex; cbIndex < callbacks.success.length; cbIndex++) {
+                    callbacks.success[cbIndex].apply(this, [data, statusText, xhrResponse]);
+                }
+            },
+            error : function (jqXHR, textStatus, errorThrown) {
+                var cbIndex = 0;
+                for (cbIndex; cbIndex < callbacks.error.length; cbIndex++) {
+                    callbacks.error[cbIndex].apply(this, [jqXHR, textStatus, errorThrown]);
+                }
+            }
+        });
+    };
+
+    return {
+        submitLocationSearch : me.submitLocationSearch
+    };
+
+};
+
+CCH.Objects.defunctSearch = function(args) {
 	var me = (this === window) ? {} : this;
 	me.searchbar = args.searchbar;
 	me.geocodeEndoint = args.geocodeEndoint;
