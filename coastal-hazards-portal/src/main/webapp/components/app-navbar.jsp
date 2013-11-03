@@ -11,6 +11,7 @@
                 <h3 class="app-navbar-title hidden-desktop hidden-tablet visible-phone">CCH</h3>
             </div>
 
+            <%-- The combined search container - gets added to the header bar --%>
             <div id="app-navbar-search-container" class="app-navbar-item-container">
                 <div id="app-navbar-search-control" class="input-prepend input-append">
                     <div class="btn-group">
@@ -24,16 +25,37 @@
                             <li class="dropdown-submenu disabled">
                                 <a id="app-navbar-search-dropdown-toggle-choice-items-all">Items</a>
                                 <ul id="app-navbar-search-dropdown-menu-items" class="dropdown-menu">
-                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-item-all" tabindex="-1" href="#">All Items</a></li>
-                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-item-storms" tabindex="-1" href="#">Storms</a></li>
-                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-item-sea-level-vulnerability" tabindex="-1" href="#">Vulnerability</a></li>
-                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-item-shoreline-historical" tabindex="-1" href="#">Historical</a></li>
+                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-items-allitems" tabindex="-1" href="#">All Items</a></li>
+                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-items-storms" tabindex="-1" href="#">Storms</a></li>
+                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-items-vulnerability" tabindex="-1" href="#">Vulnerability</a></li>
+                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-items-historical" tabindex="-1" href="#">Historical</a></li>
                                 </ul>
                             </li>
                         </ul>
                     </div>
                     <input id="app-navbar-search-input" type="text" placeholder="Search..." />
                     <button id="app-navbar-search-submit-button" class="btn" type="button"><i class="icon-search"></i></button>
+                </div>
+            </div>
+            <%-- This series of menus appear when a user clicks on the search input box --%>
+            <div class="hide">
+                <div id="app-navbar-search-input-context-menu-all">
+                    I am a context menu that appears when "All" is selected
+                </div>
+                <div id="app-navbar-search-input-context-menu-location">
+                    I am a context menu that appears when "Location" is selected
+                </div>
+                <div id="app-navbar-search-input-context-menu-items-allitems">
+                    I am a context menu that appears when "All Items" is selected
+                </div>
+                <div id="app-navbar-search-input-context-menu-items-storms">
+                    I am a context menu that appears when "Storms" is selected
+                </div>
+                <div id="app-navbar-search-input-context-menu-items-vulnerability">
+                    I am a context menu that appears when "Vulnerability" is selected
+                </div>
+                <div id="app-navbar-search-input-context-menu-items-historical">
+                    I am a context menu that appears when "Historical" is selected
                 </div>
             </div>
 
@@ -59,7 +81,7 @@
         </div>
     </div>
 </div>
-
+                
 <%-- This modal window appears when a user selects to share their session. It includes the 
     url for their current view (calculated on the fly) and a tweet button --%>
 <div id="shareModal" class="modal fade"  role="dialog" aria-labelledby="modal-label" aria-hidden="true">
