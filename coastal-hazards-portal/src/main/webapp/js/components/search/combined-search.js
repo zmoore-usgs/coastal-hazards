@@ -20,13 +20,16 @@ CCH.Objects.CombinedSearch = function (args) {
     me.DD_TOGGLE_MENU_ITEMS_CHOICE_ALL_ID = 'app-navbar-search-dropdown-toggle-choice-item-all';
     me.INPUT_ID = 'app-navbar-search-input';
     me.SUBMIT_BUTTON_ID = 'app-navbar-search-submit-button';
-
+    me.POPOVER_TARGET_ID = me.INPUT_ID;
+    
     // Results Popover id/class string constants
     me.GEO_RESULTS_CONTAINER_ID = 'results-popover-geolocation-results-container';
     me.GEO_RESULTS_DESCRIPTION_CONTAINER_ID = 'results-popover-geolocation-results-description-container';
     me.GEO_RESULTS_LIST_CONTAINER_ID = 'results-popover-geolocation-results-list-container';
     me.GEO_RESULTS_LIST = 'results-popover-geolocation-results-list';
-
+    
+    // Ajax spinner 
+    me.DD_TOGGLE_SPINNER_IMG_LOCATION = 'images/spinner/ajax-loader.gif';
     // Internally used objects
     me.search = new CCH.Objects.Search({
         geocodeServiceEndpoint: CCH.CONFIG.data.sources.geocoding.endpoint
@@ -46,23 +49,14 @@ CCH.Objects.CombinedSearch = function (args) {
         }
     };
 
-    me.criteriaChanged = function (evt, args) {
+    me.criteriaChanged = function (args) {
         args = args || {};
 
-        var target = evt.currentTarget,
-            toggleTextContainer = $('#' + me.DD_TOGGLE_TEXT_CONTAINER_ID),
-            clickedLinkText = target.innerHTML,
-            parentListEl = target.parentElement,
-            allItems = $('.' + me.DD_TOGGLE_MENU_ITEMS_CLASS);
-
-        // First, remove the disabled class from all list elements
-        allItems.removeClass('disabled');
-
-        // Add the disabled class to the selected item
-        $(parentListEl).addClass('disabled');
+        var toggleTextContainer = $('#' + me.DD_TOGGLE_TEXT_CONTAINER_ID),
+            criteria = args.criteria;
 
         // Put the text for the selected item in the menu
-        toggleTextContainer.html(clickedLinkText);
+        toggleTextContainer.html(criteria);
     };
 
     me.performSpatialSearch = function (args) {
@@ -104,6 +98,10 @@ CCH.Objects.CombinedSearch = function (args) {
             types;
 
         if (criteria) {
+            
+            me.destroyPopover();
+            me.displaySpinner();
+            
             if (type === 'location') {
                 // Search by location
                 me.performSpatialSearch({
@@ -111,6 +109,9 @@ CCH.Objects.CombinedSearch = function (args) {
                     scope : me,
                     callbacks : {
                         success : [
+                            function () {
+                                me.hideSpinner();
+                            },
                             function (data) {
                                 if (data) {
                                     var locations = data.locations;
@@ -121,6 +122,9 @@ CCH.Objects.CombinedSearch = function (args) {
                             }
                         ],
                         error : [
+                            function () {
+                                me.hideSpinner();
+                            },
                             function (jqXHR, textStatus, errorThrown) {
                                 CCH.LOG.warn('CCH.Objects.CombinedSearch:: Could not complete geo-search:' + errorThrown);
                             }
@@ -231,21 +235,55 @@ CCH.Objects.CombinedSearch = function (args) {
 
         return container;
     };
+    
+    me.buildSearchContextHelpView = function (args) {
+        args = args || {};
+        
+        var criteria = args.criteria,
+            a = 1;
+        
+    };
 
     me.displayResultsPopover = function (args) {
         args = args || {};
 
+        me.destroyPopover();
+        
         var locationContainer = me.buildLocationResultsView({
             locations : args.locations
         }),
-            resultsPopover = $('#' + me.INPUT_ID).popover({
+            popover = $('#' + me.INPUT_ID).popover({
                 html : true,
                 placement : 'bottom',
                 title : 'Search Results',
                 content : locationContainer
             });
+        
+        popover.popover('show');
+    };
 
-        resultsPopover.popover('show');
+    me.destroyPopover = function () {
+        if ($('#' + me.INPUT_ID).popover !== null) {
+            $('#' + me.POPOVER_TARGET_ID).popover('hide');
+            $('#' + me.POPOVER_TARGET_ID).popover('destroy');
+        }
+    };
+    
+    me.displaySpinner = function () {
+        var spinnerImage = $('<img />').attr({
+           src : me.DD_TOGGLE_SPINNER_IMG_LOCATION,
+           alt : '',
+           id : 'app-navbar-search-spinner-image'
+        });
+        
+        $('#' + me.SUBMIT_BUTTON_ID).empty();
+        $('#' + me.SUBMIT_BUTTON_ID).append(spinnerImage);
+    };
+    
+    me.hideSpinner = function () {
+        var magnifyingGlass = $('<i />').addClass('icon-search');
+        $('#' + me.SUBMIT_BUTTON_ID).empty();
+        $('#' + me.SUBMIT_BUTTON_ID).append(magnifyingGlass);
     };
 
     $('#' + me.SUBMIT_BUTTON_ID).on('click', function (evt) {
@@ -254,7 +292,20 @@ CCH.Objects.CombinedSearch = function (args) {
 
     // Any link that is enabled and clicked, register that as a change
     $('#' + me.DD_TOGGLE_MENU_ID + ' li a[tabindex="-1"]').on('click', function (evt) {
-        me.criteriaChanged(evt);
+        var target = evt.currentTarget,
+            criteria = target.innerHTML,
+            parentListEl = target.parentElement,
+            allItems = $('.' + me.DD_TOGGLE_MENU_ITEMS_CLASS);
+        
+        // First, remove the disabled class from all list elements
+        allItems.removeClass('disabled');
+
+        // Add the disabled class to the selected item
+        $(parentListEl).addClass('disabled');
+        
+        me.criteriaChanged({
+            criteria : criteria
+        });
     });
 
     // This is a fix for how bootstrap deals with submenu list-item and anchor 
@@ -269,9 +320,21 @@ CCH.Objects.CombinedSearch = function (args) {
         // for the submenu and it should just open the submenu and that's all, so
         // stop propagation
         if (evt.currentTarget === evt.target.parentElement) {
-             evt.stopImmediatePropagation();
+            evt.stopImmediatePropagation();
         }
     });
+    
+    $('#' + me.INPUT_ID).on('focus', function (evt) {
+        var criteria = document.getElementById(me.DD_TOGGLE_TEXT_CONTAINER_ID).innerHTML.toLowerCase();
+        
+        me.buildSearchContextHelpView({
+            criteria : criteria
+        });
+    });
 
-    CCH.LOG.debug('CCH.Objects.Bucket::constructor: UI class initialized.');
+    // Preload required images
+    CCH.LOG.trace('CCH.Objects.CombinedSearch::constructor: Pre-loading images.');
+    $.get(me.DD_TOGGLE_SPINNER_IMG_LOCATION);
+
+    CCH.LOG.debug('CCH.Objects.CombinedSearch::constructor: UI class initialized.');
 };

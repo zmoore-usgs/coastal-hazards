@@ -131,6 +131,10 @@
     z-index: 1110;
 }
 
+#app-navbar-search-spinner-image {
+    width: 13px;
+}
+
 #results-popover-geolocation-results-container {
     position : relative;
 }
