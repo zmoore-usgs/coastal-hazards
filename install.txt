@@ -94,8 +94,8 @@ coastal-hazards.go.usa.gov.endpoint: The go.usa.gov endpoint used for creating m
 Used In: CCHP
 Example: <Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="http://go.usa.gov/api/" />
 
-coastal-hazards.go.usa.gov.endpoint: Specifies where the back-end proxy server should send connections to for Geoserver
-Used In: CCHP
+coastal-hazards.geoserver.endpoint: Specifies where the back-end proxy server should send connections to for Geoserver
+Used In: CCHP, DSASWeb
 Example: <Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/coastal-hazards-geoserver" />
 
 coastal-hazards.stpetearcserver.endpoint: Specifies where the back-end proxy server should send connections to for St Petersburg’s server
@@ -121,6 +121,22 @@ Example: <Environment name="coastal-hazards.csw.internal.endpoint" type="java.la
 coastal-hazards.geocoding.endpoint: Endpoint used to make geospatial searches.
 Used In: CCHP
 Example: <Environment name="coastal-hazards.geocoding.endpoint" type="java.lang.String" value="http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find" />
+
+coastal-hazards.geocoding.endpoint: Data directory where GeoServer stores its files. 
+Used In: DSASWeb
+Example: <Environment name="coastal-hazards.geoserver.datadir" type="java.lang.String" value="/Users/isuftin/Source/CIDA/coastal-hazards/coastal-hazards-geoserver/target/geoserver/data" />
+
+coastal-hazards.geoserver.username: User name used for Geoserver
+Used In: DSASWeb
+Example: <Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="supply.your.own" />
+
+coastal-hazards.geoserver.password: Password name used for Geoserver
+Used In: DSASWeb
+Example: <Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="supply.your.own" />
+
+coastal-hazards.n52.endpoint: Specifies where the application should look for the web processing endpoint
+Used In: DSASWeb
+Example: <Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="http://localhost:8080/coastal-hazards-n52" />
 
 Coastal Change Hazards Portal
 

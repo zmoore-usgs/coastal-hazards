@@ -25,6 +25,7 @@
 %>
 <script type="text/javascript">
 	splashUpdate("Setting configuration...");
+    var CCH = {'Objects': {}};
 	CCH.CONFIG = {
 		id: '${param.id}',
 		idType: '${param.idType}',

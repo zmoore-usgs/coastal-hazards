@@ -29,18 +29,23 @@ should probably be left at default. -->
 <!-- gov.usgs.cida.n52.wps.config.location which is path to wps_config.xml file. Rserve connection won't work without -->
 <Environment name="gov.usgs.cida.n52.wps.config.location" type="java.lang.String" value="/Users/isuftin/Server/8080/7.0.35/data/coastal-hazards/n52/wps_config.xml" />
 
-<!-- GeoServer Config -->
-<!-- 
-coastal-hazards.geoserver.datadir - 
-Data Directory. Where GeoServer stores its files. 
-The combination of coastal-hazards.files.directory.base + coastal-hazards.files.directory.data should also
-be set in Geoserver's bin/setenv.sh as GEOSERVER_DATA_DIR 
-Example: JAVA_OPTS="$JAVA_OPTS -DGEOSERVER_DATA_DIR=/path/to/your/data/dir"
--->
+<!--
+coastal-hazards.geocoding.endpoint: Data directory where GeoServer stores its files. -->
 <Environment name="coastal-hazards.geoserver.datadir" type="java.lang.String" value="/Users/isuftin/Source/CIDA/coastal-hazards/coastal-hazards-geoserver/target/geoserver/data" />
-<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="admin" />
+
+<!--
+coastal-hazards.geoserver.username: User name used for Geoserver -->
+<Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="supply.your.own" />
+
+<!--
+coastal-hazards.geoserver.password: Password used for Geoserver-->
 <Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="supply.your.own" />
 
-<!-- URL Forwarding Configuration -->
+<!--
+coastal-hazards.geoserver.endpoint: Specifies where the back-end proxy server 
+should send connections to for Geoserver-->
 <Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/coastal-hazards-geoserver" />
+
+<!--
+coastal-hazards.n52.endpoint: Specifies where the application should look for the web processing endpoint -->
 <Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="http://localhost:8080/coastal-hazards-n52" />
