@@ -58,6 +58,11 @@ CCH.Objects.Bucket = function (args) {
 
         return true;
     };
+    
+    // Preload required images
+    CCH.LOG.trace('CCH.Objects.Bucket::constructor: Pre-loading images.');
+    $.get(me.IMAGE_LOCATION_BUCKET_WITH_SAND);
+    $.get(me.IMAGE_LOCATION_BUCKET_WITHOUT_SAND);
 
     CCH.LOG.debug('CCH.Objects.Bucket::constructor: UI class initialized.');
 

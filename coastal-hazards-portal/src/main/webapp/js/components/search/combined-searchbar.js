@@ -45,6 +45,18 @@ CCH.Objects.CombinedSearch = function (args) {
         geocodeServiceEndpoint: CCH.CONFIG.data.sources.geocoding.endpoint
     });
 
+    me.resizeContainer = function () {
+        var parentContainerWidth = $('#' + me.CONTAINER_ID).parent()[0].clientWidth,
+            parentContainerVisibleItems = $('#' + me.CONTAINER_ID).parent().children(':not(.hide)'),
+            childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
+                return $(el).width();
+            }),
+            currentInputWidth = $('#' + me.INPUT_ID).width(),
+            idealInputWidth = parentContainerWidth - (childrenCombinedWidth - currentInputWidth) - 50;
+
+        $('#' + me.INPUT_ID).width(idealInputWidth);
+    };
+
     me.submitButtonClicked = function (evt, args) {
         args = args || {};
 
@@ -350,6 +362,8 @@ CCH.Objects.CombinedSearch = function (args) {
         me.criteriaChanged({
             criteria : criteria
         });
+
+        me.resizeContainer();
     });
 
     // This is a fix for how bootstrap deals with submenu list-item and anchor 
@@ -390,12 +404,14 @@ CCH.Objects.CombinedSearch = function (args) {
             me.hidePopover();
         }
     });
-    
+
+    $(window).on('resize', me.resizeContainer);
+
     // Clicking enter in the input box should submit the search
     $('#' + me.INPUT_ID).on('keyup', function (evt) {
         var keyCode = evt.keyCode,
             enterKeyCode = 13;
-            
+
         if (keyCode === enterKeyCode) {
             $('#' + me.SUBMIT_BUTTON_ID).trigger('click');
         }

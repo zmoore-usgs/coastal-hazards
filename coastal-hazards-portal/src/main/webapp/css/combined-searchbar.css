@@ -1,5 +1,5 @@
 #app-navbar-search-container {
-    margin-right: 5px; 
+    margin-right: 25px; 
 }
 
 /*
@@ -20,11 +20,15 @@ Resets bootstrap's max-width requirement for popovers'
 }
 
 #app-navbar-search-input {
-    height : 34px;
+    height : 30px;
 }
 
 #app-navbar-search-control {
-    margin-top: 2px;
+    margin-top: 5px;
+}
+
+#app-navbar-search-control .btn-large {
+    padding: 9px 19px !important;
 }
 
 #app-navbar-search-spinner-image {
