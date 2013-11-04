@@ -1,0 +1,26 @@
+/*
+Make sure this appears above map elements
+*/
+#app-navbar-search-container .dropdown-menu {
+    z-index: 1110;
+}
+
+#app-navbar-search-dropdown-toggle popover {
+    z-index: 1110;
+}
+
+/*
+Resets bootstrap's max-width requirement for popovers'
+*/
+#app-navbar-search-context-popover.popover {
+    max-width: none !important;
+}
+
+#app-navbar-search-control {
+    margin-top: 10px;
+}
+
+#app-navbar-search-spinner-image {
+    width: 13px;
+}
+

@@ -116,32 +116,6 @@
     font-size: 2em;
 }
 
-/*
-    Make sure this appears above map elements
-*/
-#app-navbar-search-container .dropdown-menu {
-    z-index: 1110;
-}
-
-#app-navbar-search-control {
-    margin-top: 10px;
-}
-
-#app-navbar-search-dropdown-toggle popover {
-    z-index: 1110;
-}
-
-#app-navbar-search-spinner-image {
-    width: 13px;
-}
-
-/*
-Resets bootstrap's mac-width requirement for popovers'
-*/
-#app-navbar-search-context-popover.popover {
-    max-width: none !important;
-}
-
 #results-popover-geolocation-results-container {
     position : relative;
 }
