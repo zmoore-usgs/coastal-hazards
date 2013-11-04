@@ -12,7 +12,7 @@
 .app-navbar-item-container {
     height: 50px;
     display: inline;
-    
+
 }
 
 .app-navbar-title {
@@ -133,6 +133,13 @@
 
 #app-navbar-search-spinner-image {
     width: 13px;
+}
+
+/*
+Resets bootstrap's mac-width requirement for popovers'
+*/
+#app-navbar-search-context-popover.popover {
+    max-width: none !important;
 }
 
 #results-popover-geolocation-results-container {

@@ -27,7 +27,7 @@ CCH.Objects.CombinedSearch = function (args) {
     me.GEO_RESULTS_CONTAINER_ID = 'results-popover-geolocation-results-container';
     me.GEO_RESULTS_DESCRIPTION_CONTAINER_ID = 'results-popover-geolocation-results-description-container';
     me.GEO_RESULTS_LIST_CONTAINER_ID = 'results-popover-geolocation-results-list-container';
-    me.GEO_RESULTS_LIST = 'results-popover-geolocation-results-list';
+    me.GEO_RESULTS_LIST_ID = 'results-popover-geolocation-results-list';
 
     me.inputControlPopover = $('#' + me.POPOVER_TARGET_ID).popover({
         html : true,
@@ -131,6 +131,8 @@ CCH.Objects.CombinedSearch = function (args) {
                                         content : resultsPopover,
                                         title : 'Search Results'
                                     });
+                                    
+                                    $('#' + me.GEO_RESULTS_LIST_ID + ' option').first().trigger('click')
                                 }
                             }
                         ],
@@ -202,13 +204,8 @@ CCH.Objects.CombinedSearch = function (args) {
             id : me.GEO_RESULTS_LIST_CONTAINER_ID
         });
         resulstList = $('<select />').attr({
-            id :  me.GEO_RESULTS_LIST
+            id :  me.GEO_RESULTS_LIST_ID
         });
-
-        listOption = $('<option />').attr({
-            value : ''
-        }).html('');
-        resulstList.append(listOption);
 
         for (locationsIndex; locationsIndex < locations.length; locationsIndex++) {
             location = locations[locationsIndex];
@@ -371,9 +368,11 @@ CCH.Objects.CombinedSearch = function (args) {
         }
     });
 
-    // Bootstrap attaches focus event handling to this input box. Unbind that and 
-    // bind the input box for focus in order to display a context menu
-
+    // The behavior for the search box should be:
+    // - When clicking in the input box, display contextual menu
+    // - When clicking in the contextual menu, don't clear the contextual menu
+    // - When clicking back in the input box, keep the contextual menu
+    // - When clicking anywhere else, clear the contextual menu
     $('body').on('click', function (evt) {
         var target = $(evt.target),
             criteria = document.getElementById(me.DD_TOGGLE_TEXT_CONTAINER_ID).innerHTML.toLowerCase(),
@@ -390,7 +389,16 @@ CCH.Objects.CombinedSearch = function (args) {
         } else if (!isClickedPopover && !isClickedInputBox) {
             me.hidePopover();
         }
-
+    });
+    
+    // Clicking enter in the input box should submit the search
+    $('#' + me.INPUT_ID).on('keyup', function (evt) {
+        var keyCode = evt.keyCode,
+            enterKeyCode = 13;
+            
+        if (keyCode === enterKeyCode) {
+            $('#' + me.SUBMIT_BUTTON_ID).trigger('click');
+        }
     });
 
     // Preload required images
