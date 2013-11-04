@@ -94,7 +94,7 @@
         <script type="text/javascript" src="js/components/popularity/Popularity.js"></script>
         <script type="text/javascript" src="js/components/common/OWS.js"></script>
         <script type="text/javascript" src="js/components/bucket/bucket.js"></script>
-        <script type="text/javascript" src="js/components/search/combined-search.js"></script>
+        <script type="text/javascript" src="js/components/search/combined-searchbar.js"></script>
         <script type="text/javascript" src="js/components/common/UI.js"></script>
         <script type="text/javascript" src="js/components/common/OnReady.js"></script>
         <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>

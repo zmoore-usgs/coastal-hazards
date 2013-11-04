@@ -12,16 +12,7 @@
             </div>
 
             <jsp:include page="combined-searchbar.jsp"></jsp:include>
-
-            <div class="app-navbar-item-container">
-                <span id="app-navbar-bucket-button-container">
-                    <span id="app-navbar-bucket-button-count">0</span>
-                </span>
-            </div>
-            <div class="app-navbar-item-container">
-                <%-- Downwards facing triangle --%>
-                <span id="app-navbar-bucket-triangle">&#9660;</span>
-            </div>
+            <jsp:include page="bucket.jsp"></jsp:include>
             <!--
                         <div id='app-navbar-help-container' class='app-navbar-item-container'>
                             <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="icon-info-sign"></i></a>
