@@ -4,7 +4,7 @@
 /*global CCH*/
 CCH.Objects.CombinedSearch = function (args) {
     "use strict";
-    CCH.LOG.info('CCH.Objects.CombinedSearch::constructor: Bucket class is initializing.');
+    CCH.LOG.info('CCH.Objects.CombinedSearch::constructor: CombinedSearch class is initializing.');
 
     var me = (this === window) ? {} : this;
 

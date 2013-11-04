@@ -50,33 +50,6 @@
 
 }
 
-#app-navbar-bucket-button-container .app-navbar-bucket-text {
-    color: #000000;
-    top: 10px;
-}
-
-
-#app-navbar-bucket-button-container img {
-    height: 45px;
-    position: relative;
-}
-
-#app-navbar-bucket-triangle {
-    left: -35px;
-    position: relative;
-}
-
-#app-navbar-bucket-button-count {
-    font-size: 1.1em;
-    font-weight: bold;
-    left: -45px;
-    text-align: right;
-    width: 30px;
-    position: relative;
-    display: inline-block;
-}
-
-
 #app-navbar-site-title-container {
     float: left;
     height: 45px;
@@ -106,6 +79,7 @@
     box-shadow: none;
     padding-left: 0px;
     filter: none; /* Fixes an IE issue that bootstrap adds */
+    height: 50px;
 }
 
 #app-navbar-pin-control-icon {
