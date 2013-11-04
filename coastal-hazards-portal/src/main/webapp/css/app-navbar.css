@@ -4,6 +4,8 @@
 
 #app-navbar-container {
     z-index: 1005;
+    /* override bootstrap default behavior */
+    margin-bottom: 4px; 
 }
 
 /* 
