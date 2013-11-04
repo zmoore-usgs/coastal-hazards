@@ -21,7 +21,7 @@ CCH.Objects.CombinedSearch = function (args) {
     me.INPUT_ID = 'app-navbar-search-input';
     me.SUBMIT_BUTTON_ID = 'app-navbar-search-submit-button';
     me.POPOVER_TARGET_ID = me.INPUT_ID;
-    me.POPOVER_SEARCH_CONFIG_ID = 'app-navbar-search-context-popover';
+    me.POPOVER_ID = 'app-navbar-search-context-popover';
 
     // Results Popover id/class string constants
     me.GEO_RESULTS_CONTAINER_ID = 'results-popover-geolocation-results-container';
@@ -123,7 +123,7 @@ CCH.Objects.CombinedSearch = function (args) {
                                 if (data) {
                                     var locations = data.locations,
                                         resultsPopover = me.buildLocationResultsView({
-                                            locations : args.locations
+                                            locations : locations
                                         });
 
                                     me.displayPopover({
@@ -277,28 +277,28 @@ CCH.Objects.CombinedSearch = function (args) {
         me.displayPopover({
             content : content,
             title : 'Search ' + criteria,
-            id : me.POPOVER_SEARCH_CONFIG_ID
+            id : me.POPOVER_ID
         });
     };
 
     me.displayPopover = function (args) {
         args = args || {};
 
-        var content = args.content,
+        var content = args.content.clone(true, true),
             title = args.title,
-            popover = me.inputControlPopover.data('popover')
+            popover = me.inputControlPopover.data('popover');
 
         content.attr({
             'id': content.attr('id') + new Date().getMilliseconds()
         });
-        
+
         popover.options.title = title;
-        popover.options.content = content.html();
+        popover.options.content = content;
 
         popover.show();
-        
+
         popover.$tip.attr({
-            id : me.POPOVER_SEARCH_CONFIG_ID
+            id : me.POPOVER_ID
         });
     };
 
@@ -373,14 +373,14 @@ CCH.Objects.CombinedSearch = function (args) {
 
     // Bootstrap attaches focus event handling to this input box. Unbind that and 
     // bind the input box for focus in order to display a context menu
-    
+
     $('body').on('click', function (evt) {
         var target = $(evt.target),
             criteria = document.getElementById(me.DD_TOGGLE_TEXT_CONTAINER_ID).innerHTML.toLowerCase(),
-            isClickedPopover = $('#' + me.POPOVER_SEARCH_CONFIG_ID).find(target).length > 0,
-            isPopoverVisible = $('#' + me.POPOVER_SEARCH_CONFIG_ID).length > 0,
+            isClickedPopover = $('#' + me.POPOVER_ID).find(target).length > 0,
+            isPopoverVisible = $('#' + me.POPOVER_ID).length > 0,
             isClickedInputBox = $(target).attr('id') === me.POPOVER_TARGET_ID;
-            
+
         if (!isClickedPopover && isClickedInputBox) {
             if (!isPopoverVisible) {
                 me.buildSearchContextHelpView({
@@ -390,7 +390,7 @@ CCH.Objects.CombinedSearch = function (args) {
         } else if (!isClickedPopover && !isClickedInputBox) {
             me.hidePopover();
         }
-        
+
     });
 
     // Preload required images
