@@ -150,15 +150,6 @@
 					<span id="download-item-link"></span>
 				</div>
 			</div>
-
-			<div  id="footer-row"  class="row-fluid">
-				<jsp:include page="template/USGSFooter.jsp">
-					<jsp:param name="relPath" value="" />
-					<jsp:param name="footer-class" value="" />
-					<jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
-					<jsp:param name="contact-info" value="<a href='mailto:CCH_Help@usgs.gov?Subject=Coastal%20Change%20Hazards%20Feedback'>Site Administrator</a>" />
-				</jsp:include>
-			</div>
 		</div>
 	</body>
 </html>

@@ -4,7 +4,4 @@
 */
 @charset "UTF-8";
 @import "application.css";
-@import "card.css";
-@import "navigation.css";
-@import "item-search.css";
-@import "map.css";
+@import "navbar.css";

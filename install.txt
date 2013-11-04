@@ -1,0 +1,145 @@
+Coastal Change Hazards Project Setup
+
+Geoserver
+Our development and production environments for Geoserver has been using Tomcat and these instructions are for the Tomcat container
+
+Setting up the external data directory - http://docs.geoserver.org/stable/en/user/datadirectory/data-dir-setting.html
+First you should create a $CATALINA_BASE/data directory and decide whether you want a data directory specific to each Geoserver instance you have per project. In my case, I created a cch-geoserver directory under the data directory.
+
+Next, you should edit $CATALINA_BASE/bin/setenv.sh and make sure it calls to catalinaopts.sh. The default tomcat container should do this by default, but make sure the following line is in setenv.sh:
+. $CATALINA_BASE/bin/catalinaopts.sh
+
+Now you should edit or create a the catalinaopts.sh file in $CATALINA_BASE/bin/catalinaopts.sh. The main thing to make sure of is that catalinaopts.sh points GeoServer to a specific data directory:
+CATALINA_OPTS="-DGEOSERVER_DATA_DIR=/wherever/your/data/directory/resides/data/cch-geoserver" 
+When Geoserver loads up, it uses this the GEOSERVER_DATA_DIR variable to look for the data directory instead of looking within its own directory within the target directory which gets recreated every time Geoserver gets redeployed.
+
+At this point, you should be ready to launch Geoserver. Once Geoserver launches, it should create data inside the data directory you specified. However, it will not have copied all of the overlay content into the data directory so you won't have shape files or styles that you need. You should be able to copy all content from the data directory inside of the running Geoserver's exploded web app directory.
+
+Setting the password for the admin account
+The final change needed is to set the admin password. Because we do not include the administrator password with our source, you will need to go into your data directory's "security" directory and open the file named masterpw.info.  This file contains the randomly generated password that's set when Geoserver first deploys. You need to use this password to log in as root to Geoserver. Once logged in, go to the "Security/Users,Groups, Roles " and click on the "Users/Groups" tab. Click on "admin" in the "Username" section and set the password in the Password/Confirm Password section. 
+
+Restart Geoserver and verify that you are able to log in via the admin account using the password you just set. If you are able to log in, you should delete the masterpw.info file.
+
+Setting up environment variables for Geoserver for container optimization - http://docs.geoserver.org/stable/en/user/production/container.html
+Edit $CATALINA_BASE/bin/catalinaopts.sh accordingly.
+
+An example of my environment variables in catalinaopts.sh:
+CATALINA_OPTS="$CATALINA_OPTS -server"
+CATALINA_OPTS="$CATALINA_OPTS -XX:MaxPermSize=1024m"
+CATALINA_OPTS="$CATALINA_OPTS -Xmx1024m"
+CATALINA_OPTS="$CATALINA_OPTS -Xms1024m"
+CATALINA_OPTS="$CATALINA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
+CATALINA_OPTS="$CATALINA_OPTS -XX:HeapDumpPath=$CATALINA_HOME/heapdumps/default"
+CATALINA_OPTS="$CATALINA_OPTS -XX:+CMSClassUnloadingEnabled"
+CATALINA_OPTS="$CATALINA_OPTS -XX:SoftRefLRUPolicyMSPerMB=36000"
+CATALINA_OPTS="$CATALINA_OPTS -XX:+UseParallelGC"
+
+
+Web Processing Services - N52 Framework
+
+The 52North Web Processing framework has been updated to allow having its main configuration xml file to be set separate from the deployed application. This allows us to not have the requirement to put sensitive information into the application source code as well as have per-container, per-stack configuration.
+
+Creating an external wps_config.xml
+
+Create a directory somewhere on your hard drive that will hold the external xml file. I use the external data directory I’ve created for the geoserver data directory. In my case it’s:
+$CATALINA_BASE/data/coastal-hazards
+
+Copy the file from https://github.com/USGS-CIDA/coastal-hazards/blob/master/coastal-hazards-n52/src/main/webapp/config/wps_config.xml to the directory you created
+
+The wps_config.xml file requires you to set the location, username and password for the R server.
+
+In $CATALINA_BASE/conf/context.xml you should add an environment node within the surrounding server node that points to where your external wps_config.xml file lies.
+
+Example:
+<Environment name="gov.usgs.cida.n52.wps.config.location" type="java.lang.String" value="/home/developer_user/Server/8080/7.0.35/data/coastal-hazards/n52/wps_config.xml"/>
+
+Start your application server and once your web application comes up, verify that you can go to:
+http://localhost:8080/coastal-hazards-n52/WebProcessingService?Service=WPS&Request=GetCapabilities
+Substitute the hostname and port for your local environment
+
+JNDI Variables
+
+The following are JNDI variables set in $CATALINA_BASE/conf/context.xml that are set for both Coastal Change Hazards Portal (CCHP) and DSASWeb:
+
+development: Sets whether or not to load debug versions of scripts, levels for logging and possibly other container-specific settings.  Typically, we keep this set to true on localhost for developing as well as on the development tier server. This variable may either be set to false on QA and production tiers or not exist. The effect is the same. 
+Used In: CCHP, DSASWeb
+Example: 
+<Environment name="development" type="java.lang.String" value="true" />
+
+coastal-hazards.files.upload.max-size: The maximum file size that is allowed to the server - Set to 0 to disable size checking
+Used In: DSASWeb
+Example: <Environment name="coastal-hazards.files.upload.max-size" type="java.lang.String" value="15728640" />
+
+coastal-hazards.public.url: Used for mapping service calls requested by application services
+Used In: CCHP
+Example: <Environment name="coastal-hazards.public.url" type="java.lang.String" value="http://marine.usgs.gov/coastalchangehazardsportal" />
+
+coastal-hazards.files.upload.filename-param: The parameter that the application uses to get the name of the incoming file - “qqfile” is used by default. This should probably be left at default.
+Used In: DSASWeb
+Example: <Environment name="coastal-hazards.files.upload.filename-param" type="java.lang.String" value="qqfile" />
+
+coastal-hazards.base.url: This is only necessary on public facing URLs. The Jersey framework seems to clobber contextPath in the request object. Therefore, a quick fix is to use this value, set on public facing servers (qa/prod) in order to get the public mapping of where the application is located.
+Used In: CCHP
+Example: <Environment name="coastal-hazards.base.url" type="java.lang.String" value="/qa/coastalhazards" />
+
+coastal-hazards.go.usa.gov.login: The user name used for creating go.usa.gov url minification
+Used In: CCHP
+Example: <Environment name="coastal-hazards.go.usa.gov.login" type="java.lang.String" value="USGS%20Coastal%20Hazards" />
+
+coastal-hazards.go.usa.gov.apikey: The API key used by go.usa.gov. This API key can be obtained by creating a user account with go.usa.gov
+Used In: CCHP
+Example: <Environment name="coastal-hazards.go.usa.gov.apikey" type="java.lang.String" value="Your_usa_gov_api_key" />
+
+coastal-hazards.go.usa.gov.endpoint: The go.usa.gov endpoint used for creating minified urls
+Used In: CCHP
+Example: <Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="http://go.usa.gov/api/" />
+
+coastal-hazards.geoserver.endpoint: Specifies where the back-end proxy server should send connections to for Geoserver
+Used In: CCHP, DSASWeb
+Example: <Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/coastal-hazards-geoserver" />
+
+coastal-hazards.stpetearcserver.endpoint: Specifies where the back-end proxy server should send connections to for St Petersburg’s server
+Used In: CCHP
+Example: <Environment name="coastal-hazards.stpetearcserver.endpoint" type="java.lang.String" value="http://olga.er.usgs.gov/stpgis/services" />
+
+coastal-hazards.marine.endpoint: Specifies where the back-end proxy server should send connections to for St Petersburg’s server
+Used In: CCHP
+Example: <Environment name="coastal-hazards.marine.endpoint" type="java.lang.String" value="http://coastalmap.marine.usgs.gov/cmgp" />
+
+coastal-hazards.cidags.endpoint: Specifies where the back-end proxy server should send connections to for DSASWeb geoserver connections
+Used In: CCHP
+Example: <Environment name="coastal-hazards.cidags.endpoint" type="java.lang.String" value="http://cida.usgs.gov/DSASweb/geoserver" />
+
+coastal-hazards.csw.endpoint: Specifies where the back-end proxy server should send connections to for Coastal Hazards’ CSW Server
+Used In: CCHP
+Example: <Environment name="coastal-hazards.csw.endpoint" type="java.lang.String" value="http://cida.usgs.gov/qa/coastalhazards/csw" />
+
+coastal-hazards.csw.endpoint: Used for local csw transactions.
+Used In: CCHP
+Example: <Environment name="coastal-hazards.csw.internal.endpoint" type="java.lang.String" value="http://127.0.0.1/pycsw-wsgi" />
+
+coastal-hazards.geocoding.endpoint: Endpoint used to make geospatial searches.
+Used In: CCHP
+Example: <Environment name="coastal-hazards.geocoding.endpoint" type="java.lang.String" value="http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find" />
+
+coastal-hazards.geocoding.endpoint: Data directory where GeoServer stores its files. 
+Used In: DSASWeb
+Example: <Environment name="coastal-hazards.geoserver.datadir" type="java.lang.String" value="/Users/isuftin/Source/CIDA/coastal-hazards/coastal-hazards-geoserver/target/geoserver/data" />
+
+coastal-hazards.geoserver.username: User name used for Geoserver
+Used In: DSASWeb
+Example: <Environment name="coastal-hazards.geoserver.username" type="java.lang.String" value="supply.your.own" />
+
+coastal-hazards.geoserver.password: Password name used for Geoserver
+Used In: DSASWeb
+Example: <Environment name="coastal-hazards.geoserver.password" type="java.lang.String" value="supply.your.own" />
+
+coastal-hazards.n52.endpoint: Specifies where the application should look for the web processing endpoint
+Used In: DSASWeb
+Example: <Environment name="coastal-hazards.n52.endpoint" type="java.lang.String" value="http://localhost:8080/coastal-hazards-n52" />
+
+Coastal Change Hazards Portal
+
+The configuration for coastal hazards portal is primarily limited to setting JNDI environment variables.  You must be sure that Tomcat has a Postgres JDBC driver installed. By default, Tomcat comes with Postgres driver at $CATALINA_BASE/lib/postgresql.jar
+
+

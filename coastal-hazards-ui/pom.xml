@@ -1,147 +1,147 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>gov.usgs.cida.coastalhazards</groupId>
-		<artifactId>coastal-hazards</artifactId>
-		<version>1.1.1-SNAPSHOT</version>
-	</parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>gov.usgs.cida.coastalhazards</groupId>
+        <artifactId>coastal-hazards</artifactId>
+        <version>1.1.1-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>coastal-hazards-ui</artifactId>
-	<packaging>war</packaging>
+    <artifactId>coastal-hazards-ui</artifactId>
+    <packaging>war</packaging>
 
-	<name>Coastal Hazards UI</name>
+    <name>Coastal Hazards UI (DSASWeb)</name>
 
-	<properties>
-		<slf4j.version>1.7.2</slf4j.version>
-	</properties>
+    <properties>
+        <slf4j.version>1.7.2</slf4j.version>
+    </properties>
 
-	<dependencies>
+    <dependencies>
         <dependency>
-			<groupId>gov.usgs.cida.coastalhazards</groupId>
-			<artifactId>coastal-hazards-commons</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+            <groupId>gov.usgs.cida.coastalhazards</groupId>
+            <artifactId>coastal-hazards-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>gov.usgs.cida.coastalhazards</groupId>
             <artifactId>coastal-hazards-uncy-reader</artifactId>
             <version>${project.version}</version>
         </dependency>
-		<dependency>
-			<groupId>it.geosolutions</groupId>
-			<artifactId>geoserver-manager</artifactId>
-			<version>1.5</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>jcl-over-slf4j</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<artifactId>proxy-utils</artifactId>
-			<groupId>gov.usgs.cida</groupId>
-			<exclusions>
-				<exclusion>
-					<artifactId>jcl-over-slf4j</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>commons-lang</artifactId>
-					<groupId>commons-lang</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>gov.usgs.cida</groupId>
-			<artifactId>dynamicProperties</artifactId>
-		</dependency>
-		<!-- Normal Servlet dependencies -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>javax.servlet.jsp-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet.jsp.jstl</groupId>
-			<artifactId>jstl-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<!-- JS Templates -->
-		<dependency>
-			<groupId>gov.usgs.cida.jslibs</groupId>
-			<artifactId>usgs-template</artifactId>
-			<type>war</type>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>jquery</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>bootstrap</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>gov.usgs.cida.jslibs</groupId>
-			<artifactId>log4js</artifactId>
-			<type>war</type>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>openlayers</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>gov.usgs.cida.jslibs</groupId>
-			<artifactId>dygraphs-core</artifactId>
-            <type>war</type>
-		</dependency>
-		<dependency>
-			<groupId>gov.usgs.cida.jslibs</groupId>
-			<artifactId>jquery-fineuploader</artifactId>
-            <type>war</type>
-		</dependency>
-		<dependency>
-			<groupId>gov.usgs.cida.jslibs</groupId>
-			<artifactId>jquery-tablesorter</artifactId>
+        <dependency>
+            <groupId>it.geosolutions</groupId>
+            <artifactId>geoserver-manager</artifactId>
+            <version>1.5</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <artifactId>proxy-utils</artifactId>
+            <groupId>gov.usgs.cida</groupId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-lang</artifactId>
+                    <groupId>commons-lang</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida</groupId>
+            <artifactId>dynamicProperties</artifactId>
+        </dependency>
+        <!-- Normal Servlet dependencies -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>javax.servlet.jsp-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp.jstl</groupId>
+            <artifactId>jstl-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- JS Templates -->
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>usgs-template</artifactId>
             <type>war</type>
         </dependency>
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>sugar</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>jquery</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>log4js</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>openlayers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>dygraphs-core</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>jquery-fineuploader</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>jquery-tablesorter</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>sugar</artifactId>
+        </dependency>
         
-		<!-- Commons -->
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpcore</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
+        <!-- Commons -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-shapefile</artifactId>
@@ -158,81 +158,81 @@
             <artifactId>xercesImpl</artifactId>
             <version>2.11.0</version>
         </dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-web-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>log4j-over-slf4j</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<artifactId>slf4j-api</artifactId>
-			<groupId>org.slf4j</groupId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>gov.usgs.cida.owsutils</groupId>
-			<artifactId>cida-owsutils-geoserver</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>font-awesome</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openid4java</groupId>
-			<artifactId>openid4java</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>gov.usgs.cida.jslibs</groupId>
-			<artifactId>bootstrojs</artifactId>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <artifactId>slf4j-api</artifactId>
+            <groupId>org.slf4j</groupId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.owsutils</groupId>
+            <artifactId>cida-owsutils-geoserver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>font-awesome</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openid4java</groupId>
+            <artifactId>openid4java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>bootstrojs</artifactId>
             <type>war</type>
-		</dependency>
-	</dependencies>
+        </dependency>
+    </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.5.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <goal>process-resources</goal>
-				</configuration>
-			</plugin>
-		</plugins>
+                </configuration>
+            </plugin>
+        </plugins>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
-		<finalName>${project.artifactId}</finalName>
-	</build>
+        <finalName>${project.artifactId}</finalName>
+    </build>
 </project>
