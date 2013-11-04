@@ -4,6 +4,6 @@
 */
 @charset "UTF-8";
 @import "application.css";
-@import "navbar.css";
+@import "app-navbar.css";
 @import "combined-searchbar.css";
 @import "navbar-bucket.css";

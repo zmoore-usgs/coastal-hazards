@@ -1,10 +1,13 @@
+#app-navbar-search-container {
+    margin-right: 5px; 
+}
+
 /*
 Make sure this appears above map elements
 */
 #app-navbar-search-container .dropdown-menu {
     z-index: 1110;
 }
-
 #app-navbar-search-dropdown-toggle popover {
     z-index: 1110;
 }
@@ -16,11 +19,14 @@ Resets bootstrap's max-width requirement for popovers'
     max-width: none !important;
 }
 
+#app-navbar-search-input {
+    height : 34px;
+}
+
 #app-navbar-search-control {
-    margin-top: 10px;
+    margin-top: 2px;
 }
 
 #app-navbar-search-spinner-image {
     width: 13px;
 }
-

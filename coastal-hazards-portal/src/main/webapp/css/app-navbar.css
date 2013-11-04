@@ -21,10 +21,10 @@
 }
 
 #app-navbar-help-container {
-    font-size: 25px;
-    height: 40px;
-    margin-right: 15px;
-    margin-top: 10px;
+    font-size: 32px;
+    height: 50px;
+    position: relative;
+    top: 8px;
 }
 
 #app-navbar-help-container a:hover {

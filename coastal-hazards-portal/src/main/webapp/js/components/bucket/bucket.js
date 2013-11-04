@@ -50,12 +50,11 @@ CCH.Objects.Bucket = function (args) {
         }
 
         // TODO: Not sure what we're doing after 999
+        // TODO: Make 0-99 text larger
 
-//        if (bucketContainer.css('backgroundImage') !== src) {
-            bucketContainer.css({
-                'backgroundImage' : 'url("'+src+'")'
-            });
-//        }
+        bucketContainer.css({
+            'backgroundImage' : 'url("' + src + '")'
+        });
 
         return true;
     };

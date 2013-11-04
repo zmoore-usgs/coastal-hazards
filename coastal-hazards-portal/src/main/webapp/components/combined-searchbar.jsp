@@ -2,7 +2,7 @@
 <div id="app-navbar-search-container" class="app-navbar-item-container">
     <div id="app-navbar-search-control" class="input-prepend input-append">
         <div class="btn-group">
-            <a id='app-navbar-search-dropdown-toggle' class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+            <a id='app-navbar-search-dropdown-toggle' class="btn btn-large dropdown-toggle" data-toggle="dropdown" href="#">
                 <span id="app-navbar-search-container-select-button-text">All</span>
                 <span class="caret"></span>
             </a>
@@ -21,7 +21,7 @@
             </ul>
         </div>
         <input id="app-navbar-search-input" type="text" placeholder="Search..." />
-        <button id="app-navbar-search-submit-button" class="btn" type="button"><i class="icon-search"></i></button>
+        <button id="app-navbar-search-submit-button" class="btn btn-large" type="button"><i class="icon-search"></i></button>
     </div>
 </div>
 <%-- This series of menus appear when a user clicks on the search input box --%>
