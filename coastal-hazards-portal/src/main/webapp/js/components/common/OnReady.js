@@ -32,7 +32,6 @@ $(document).ready(function() {
 		navbarDropdownIcon: $('#app-navbar-pin-control-icon'),
 		navbarClearMenuItem: $('#app-navbar-pin-control-clear'),
 		navbarShareMenuListItem: $('#app-navbar-pin-control-share-li'),
-		mapSearchContainer: $('#map-search-container'),
 		ccsArea: $('#ccsa-area'),
 		shareModal: $('#shareModal'),
 		shareUrlButton: $('#modal-share-summary-url-button'),
@@ -52,24 +51,6 @@ $(document).ready(function() {
 		navPinControlButton: $('#app-navbar-pin-control-button'),
 		navPinControlDropdownButton: $('#app-navbar-pin-control-dropdown-button')
 	}).init();
-
-	splashUpdate("Initializing Search Subsystem...");
-//	CCH.search = new CCH.Objects.Search({
-//		itemSearchModalWindow: $('#item-search-modal'),
-//		searchbar: $('#map-search-form'),
-//		geocodeEndoint: CCH.CONFIG.data.sources.geocoding.endpoint,
-//		modalContainer: $('#item-search-modal'),
-//		north: $('#item-search-map-input-north'),
-//		south: $('#item-search-map-input-south'),
-//		east: $('#item-search-map-input-east'),
-//		west: $('#item-search-map-input-west'),
-//		searchContainer: $('#app-navbar-item-search-container'),
-//		submitButton: $('#item-search-submit'),
-//		keywordInput: $('#item-search-keyword-input'),
-//		themeInput: $('#item-search-theme-input'),
-//		popularityCb: $('#popularity-sort-checkbox'),
-//		searchQuery: $('.search-query')
-//	}).init();
 
 	splashUpdate("Initializing Map...");
 	CCH.map = new CCH.Objects.Map({

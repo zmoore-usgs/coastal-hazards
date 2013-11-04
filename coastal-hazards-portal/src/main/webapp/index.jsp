@@ -44,21 +44,19 @@
 
 			<div id="header-row" class="row-fluid">
 				<jsp:include page="components/app-navbar.jsp"></jsp:include>
+            </div>
+            <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
+            <div id="content-row" class="row-fluid">
+                <div id="map" class="span9"></div>
+                <div id="description-wrapper" class="span3"></div>
+            </div>	
+            <div  id="footer-row"  class="row-fluid">
+                <div class="container">
+                    &nbsp;
                 </div>
-                <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
-                <div id="content-row" class="row-fluid">
-					<div id="map" class="span7"></div>
-                    <div id="description-wrapper" class="span5"></div>
-                </div>	
-
-                <div  id="footer-row"  class="row-fluid">
-			</div>
+            </div>
         </div>
-		<span id="map-search-container">
-			<form id="map-search-form" action="javascript:void(0);">
-				<input id="map-search-input" type="text" class="search-query" placeholder="Search...">
-			</form>
-		</span>
+
         <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
         <jsp:include page="js/iosslider/iosslider.jsp"> 
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 

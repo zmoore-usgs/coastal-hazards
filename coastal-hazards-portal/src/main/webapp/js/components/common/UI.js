@@ -16,7 +16,6 @@ CCH.Objects.UI = function(args) {
 	me.applicationContainer = args.applicationContainer;
 	me.headerRow = args.headerRow;
 	me.footerRow = args.footerRow;
-	me.mapSearchContainer = args.mapSearchContainer;
 	me.ccsArea = args.ccsArea;
 	me.shareModal = args.shareModal;
 	me.shareUrlButton = args.shareUrlButton;
@@ -139,7 +138,7 @@ CCH.Objects.UI = function(args) {
 		windowResizeHandler: function() {
 			var currWidth = $(window).width();
 			var currentSizing = me.getCurrentSizing();
-			var contentRowHeight = $(window).height() - me.headerRow.height() - me.footerRow.height();
+			var contentRowHeight = $(window).height() - me.headerRow.outerHeight(true) - me.footerRow.outerHeight(true);
 			contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
 
 			if (currentSizing === 'small') {
@@ -168,13 +167,6 @@ CCH.Objects.UI = function(args) {
 			var mapPosition = me.mapdiv.position();
 			var mapHeight = me.mapdiv.height();
 			var mapWidth = me.mapdiv.width();
-			var searchContainerHeight = me.mapSearchContainer.height();
-			var searchContainerWidth = me.mapSearchContainer.width();
-			me.mapSearchContainer.css({
-				top: mapPosition.top + mapHeight - searchContainerHeight - 10,
-				left: mapPosition.left + mapWidth - searchContainerWidth - 20,
-				zIndex: 1004
-			});
 
 			me.previousWidth = currWidth;
 		},
