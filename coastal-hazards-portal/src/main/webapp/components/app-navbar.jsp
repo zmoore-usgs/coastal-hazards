@@ -17,7 +17,7 @@
                 <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="icon-info-sign"></i></a>
             </div>
 
-            <jsp:include page="bucket.jsp"></jsp:include>
+            <jsp:include page="navbar-bucket.jsp"></jsp:include>
 
                 <!--
                 

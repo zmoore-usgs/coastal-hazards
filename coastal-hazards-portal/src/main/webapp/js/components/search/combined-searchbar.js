@@ -1,6 +1,7 @@
 /*jslint browser: true*/
 /*jslint plusplus: true */
 /*global $*/
+/*global splashUpdate*/
 /*global CCH*/
 CCH.Objects.CombinedSearch = function (args) {
     "use strict";
@@ -50,7 +51,7 @@ CCH.Objects.CombinedSearch = function (args) {
         var parentContainerWidth = $('#' + me.CONTAINER_ID).parent()[0].clientWidth,
             parentContainerVisibleItems = $('#' + me.CONTAINER_ID).parent().children(':not(.hide)'),
             childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
-                return $(el).width();
+                return $(el).outerWidth(true);
             }),
             currentInputWidth = $('#' + me.INPUT_ID).width(),
             idealInputWidth = parentContainerWidth - (childrenCombinedWidth - currentInputWidth) - 50;
@@ -145,7 +146,7 @@ CCH.Objects.CombinedSearch = function (args) {
                                         title : 'Search Results'
                                     });
                                     
-                                    $('#' + me.GEO_RESULTS_LIST_ID + ' option').first().trigger('click')
+                                    $('#' + me.GEO_RESULTS_LIST_ID + ' option').first().trigger('click');
                                 }
                             }
                         ],
