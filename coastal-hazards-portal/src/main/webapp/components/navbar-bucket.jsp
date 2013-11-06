@@ -1,5 +1,5 @@
 <div class="app-navbar-item-container app-navbar-bucket-container">
-    <span id="app-navbar-bucket-button-container">
+    <span id="app-navbar-bucket-button-container" class="app-navbar-bucket-button-container-unpopulated">
         <span id="app-navbar-bucket-button-count">0</span>
     </span>
 </div>
