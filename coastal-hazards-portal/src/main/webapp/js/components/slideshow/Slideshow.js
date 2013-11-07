@@ -2,9 +2,15 @@ CCH.Objects.Slideshow = function(args) {
 	CCH.LOG.info('Slideshow.js::constructor:Slideshow class is initializing.');
 	var me = (this === window) ? {} : this;
 	args = args || {};
-	me.descriptionWrapper = args.descriptionWrapper;
-	me.iossliderContainer = args.iossliderContainer;
-	me.stopped = false;
+	me.DESCRIPTION_WRAPPER_ID = args.descriptionWrapperId || 'description-wrapper';
+	me.isStopped = false;
+    
+    // Listens To: 
+    // window : 'cch.data.items.loaded'
+    // window : 'cch.ui.resized'
+    // window : 'cch.navbar.pinmenu.item.clear.click'
+    // window : 'cch.navbar.pinmenu.button.pin.click'
+    
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
@@ -26,7 +32,7 @@ CCH.Objects.Slideshow = function(args) {
 			return me;
 		},
 		stop: function() {
-			me.stopped = true;
+			me.isStopped = true;
 			var container = $('#iosslider-container'),
                 isSmall = CCH.ui.isSmall();
 			if (!isSmall) {
@@ -190,7 +196,7 @@ CCH.Objects.Slideshow = function(args) {
 				me.destroySlider();
 
 				sliderContainer.append(slideList);
-				me.descriptionWrapper.append(sliderContainer);
+				$('#' + me.DESCRIPTION_WRAPPER_ID).append(sliderContainer);
 
 				// Build the card deck with items coming in from the arguments
 				// or the list of items in the CCH.items object
@@ -269,7 +275,7 @@ CCH.Objects.Slideshow = function(args) {
 					// Tab key can be used to navigate the slider forward
 					tabToAdvance: true,
 					// Enables automatic cycling through slides
-					autoSlide: !me.stopped,
+					autoSlide: !me.isStopped,
 					// The time (in milliseconds) required for all automatic animations to move between slides
 					autoSlideTransTimer: 1500,
 					// A jQuery selection (ex. $('.unselectable') ), each element returned by the selector will become removed from touch/click move events

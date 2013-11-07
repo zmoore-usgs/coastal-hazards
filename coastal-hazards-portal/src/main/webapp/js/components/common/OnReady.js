@@ -36,17 +36,16 @@ $(document).ready(function() {
         helpModalBodyId: 'help-modal-body'
 	});
     
-	splashUpdate("Initializing Slideshow...");
-	CCH.slideshow = new CCH.Objects.Slideshow({
-		descriptionWrapper: $('#description-wrapper'),
-		iossliderContainer: $('#iosslider-container')
-	}).init();
-
 	splashUpdate("Initializing Card Subsystem...");
 	CCH.cards = new CCH.Objects.Cards({
 		navPinControlCount: $('#app-navbar-pin-control-pincount'),
 		navPinControlButton: $('#app-navbar-pin-control-button'),
 		navPinControlDropdownButton: $('#app-navbar-pin-control-dropdown-button')
+	}).init();
+    
+	splashUpdate("Initializing Slideshow...");
+	CCH.slideshow = new CCH.Objects.Slideshow({
+		descriptionWrapperId: 'description-wrapper'
 	}).init();
 
 	splashUpdate("Initializing Map...");
