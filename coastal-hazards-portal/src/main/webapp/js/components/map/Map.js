@@ -61,7 +61,7 @@ CCH.Objects.Map = function(args) {
 		addBoundingBoxMarker: function(args) {
 			args = args || {};
 			var card = args.card;
-			var bbox = card.bbox;
+			var bbox = card.getBoundingBox();
 			var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913");
 			var layerBounds = OpenLayers.Bounds.fromArray(bbox);
 			var slideOrder = args.slideOrder;
@@ -88,7 +88,7 @@ CCH.Objects.Map = function(args) {
 			markerDiv.addClass('marker-active').data({
 				'slideOrder': slideOrder,
 				'bounds': layerBounds,
-				'cardId': card.item.id
+				'cardId': card.getItemId()
 			}).on({
 				'mouseover': function() {
 					$(this).addClass('marker-hover');

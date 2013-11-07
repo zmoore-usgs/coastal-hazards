@@ -5,7 +5,7 @@ CCH.Objects.Slideshow = function(args) {
 	me.DESCRIPTION_WRAPPER_ID = args.descriptionWrapperId || 'description-wrapper';
 	me.isStopped = false;
     
-    // Listens To: 
+    // Listeners: 
     // window : 'cch.data.items.loaded'
     // window : 'cch.ui.resized'
     // window : 'cch.navbar.pinmenu.item.clear.click'
@@ -211,7 +211,7 @@ CCH.Objects.Slideshow = function(args) {
 					var slide = $('<div />')
 							.addClass('slide well well-small')
 							.attr('id', result.id)
-							.append(card.container);
+							.append(card.getContainer());
 					slideList.append(slide);
 
 					// Append handlers to the card
@@ -256,7 +256,7 @@ CCH.Objects.Slideshow = function(args) {
 
 					// After the event handlers are set, pin the card if it needs
 					// to be pinned
-					if (CCH.session.getPinnedItemIds().indexOf(card.item.id) !== -1) {
+					if (CCH.session.getPinnedItemIds().indexOf(card.getItemId()) !== -1) {
 						card.pin();
 					}
 				});

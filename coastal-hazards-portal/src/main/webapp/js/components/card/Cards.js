@@ -1,12 +1,19 @@
-var CCH = CCH || {};
 CCH.Objects.Cards = function(args) {
+    
 	args = args || {};
-	var me = (this === window) ? {} : this;
-	me.pinnedCount;
+	
+    var me = (this === window) ? {} : this;
+	
+    me.pinnedCount;
 	me.navPinControlCount = args.navPinControlCount;
 	me.navPinControlButton = args.navPinControlButton;
 	me.navPinControlDropdownButton = args.navPinControlDropdownButton;
 	me.cards = [];
+    
+    // Listeners:
+    // Card: 'card-button-pin-clicked'
+    // Card: 'card-pinned'
+    
 	return $.extend(me, {
 		init: function() {
 			$(window).on({
@@ -26,14 +33,14 @@ CCH.Objects.Cards = function(args) {
 		/**
 		 * Builds a card to add to the card container 
 		 */
-		buildCard: function(args) {
+		buildCard: function (args) {
 			var item = CCH.items.getById({
 				'id': args.itemId
 			});
 
 			var card = new CCH.Objects.Card({
 				'item': item
-			}).init();
+			});
 
 			$(card).on({
 				'card-button-pin-clicked': function(evt, card) {
@@ -65,7 +72,7 @@ CCH.Objects.Cards = function(args) {
 		},
 		getById: function(id) {
 			return me.cards.find(function(card) {
-				return card.item.id === id;
+				return card.getItemId() === id;
 			});
 		},
 		getCards: function() {
