@@ -19,17 +19,19 @@ CCH.Objects.Card = function(args) {
 		init: function(args) {
 			args = args || {};
 			return me.buildCard({
-				size: CCH.ui.getCurrentSizing()
+				isSmall: CCH.ui.isSmall()
 			});
 		},
 		buildCard: function(args) {
 			me.container = $('<div />').addClass('description-container container-fluid');
-			var titleRow = $('<div />').addClass('description-title-row row-fluid unselectable');
-			var descriptionRow = $('<div />').addClass('description-description-row row-fluid').
-					append($('<p />').addClass('slide-description').html(me.summary.medium.text));
+			var titleRow = $('<div />').addClass('description-title-row row-fluid unselectable'),
+                descriptionRow = $('<div />').addClass('description-description-row row-fluid').
+					append($('<p />').addClass('slide-description').html(me.summary.medium.text)),
+                isSmall = args.isSmall,
+                sizeDescription = isSmall ? 'small' : 'large';
 
 			me.container.
-					addClass('description-container-' + args.size + ' description-container-' + me.type).
+					addClass('description-container-' + sizeDescription + ' description-container-' + me.type).
 					append(titleRow, descriptionRow);
 
 			me.pinButton = $('<span />')

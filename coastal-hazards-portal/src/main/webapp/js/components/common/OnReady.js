@@ -1,4 +1,3 @@
-var CCH = CCH || {};
 $(document).ready(function() {
 	splashUpdate("Loading Main module...");
 
@@ -35,8 +34,8 @@ $(document).ready(function() {
 		shareTwitterBtnId: 'multi-card-twitter-button',
         helpModalId: 'helpModal',
         helpModalBodyId: 'help-modal-body'
-	}).init();
-
+	});
+    
 	splashUpdate("Initializing Slideshow...");
 	CCH.slideshow = new CCH.Objects.Slideshow({
 		descriptionWrapper: $('#description-wrapper'),

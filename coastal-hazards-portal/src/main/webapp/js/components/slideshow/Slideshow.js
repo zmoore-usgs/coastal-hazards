@@ -27,38 +27,38 @@ CCH.Objects.Slideshow = function(args) {
 		},
 		stop: function() {
 			me.stopped = true;
-			var container = $('#iosslider-container');
-			var currentSizing = CCH.ui.getCurrentSizing();
-			if (currentSizing === 'large') {
+			var container = $('#iosslider-container'),
+                isSmall = CCH.ui.isSmall();
+			if (!isSmall) {
 				container.iosSliderVertical('autoSlidePause');
-			} else if (currentSizing === 'small') {
+			} else {
 				container.iosSlider('autoSlidePause');
 			}
 		},
 		start: function() {
-			var container = $('#iosslider-container');
-			var currentSizing = CCH.ui.getCurrentSizing();
-			if (currentSizing === 'large') {
+			var container = $('#iosslider-container'),
+                isSmall = CCH.ui.isSmall();
+			if (!isSmall) {
 				container.iosSliderVertical('autoSlidePlay');
-			} else if (currentSizing === 'small') {
+			} else {
 				container.iosSlider('autoSlidePlay');
 			}
 		},
 		goToSlide: function(slide) {
-			var container = $('#iosslider-container');
-			var currentSizing = CCH.ui.getCurrentSizing();
-			if (currentSizing === 'large') {
+			var container = $('#iosslider-container'),
+                isSmall = CCH.ui.isSmall();
+			if (!isSmall) {
 				container.iosSliderVertical('goToSlide', slide);
-			} else if (currentSizing === 'small') {
+			} else {
 				container.iosSlider('goToSlide', slide);
 			}
 		},
 		updateSlides: function() {
-			var container = $('#iosslider-container');
-			var currentSizing = CCH.ui.getCurrentSizing();
-			if (currentSizing === 'large') {
+			var container = $('#iosslider-container'),
+                isSmall = CCH.ui.isSmall();
+			if (!isSmall) {
 				container.iosSliderVertical('update');
-			} else if (currentSizing === 'small') {
+			} else {
 				container.iosSlider('update');
 			}
 		},
@@ -109,9 +109,9 @@ CCH.Objects.Slideshow = function(args) {
 			}
 		},
 		resize: function() {
-			if ('large' === CCH.ui.getCurrentSizing()) {
+			if (!CCH.ui.isSmall()) {
 				me.resizeVertical();
-			} else if ('small' === CCH.ui.getCurrentSizing()) {
+			} else {
 				me.resizeHorizontal();
 			}
 		},
@@ -180,15 +180,15 @@ CCH.Objects.Slideshow = function(args) {
 			// crash. Guessing it is a resize loop issue
 			setTimeout(function(args) {
 				args = args || {};
-				var currentSizing = CCH.ui.getCurrentSizing();
-				var classname = currentSizing === 'large' ? 'iosSliderVertical' : 'iosSlider';
-				var flashBb = args.flashBb || true;
+				var isSmall = CCH.ui.isSmall(),
+                    classname = isSmall ? 'iosSlider' : 'iosSliderVertical',
+                    flashBb = args.flashBb || true,
+                    sliderContainer = $('<div />').addClass(classname).attr('id', 'iosslider-container'),
+                    slideList = $('<div />').addClass('slider').attr('id', 'iosslider-slider');
+                    
 				// The slider will be rebuilt so destroy the old one
 				me.destroySlider();
 
-				// Create the slider container that will house the slides
-				var sliderContainer = $('<div />').addClass(classname).attr('id', 'iosslider-container');
-				var slideList = $('<div />').addClass('slider').attr('id', 'iosslider-slider');
 				sliderContainer.append(slideList);
 				me.descriptionWrapper.append(sliderContainer);
 
@@ -301,7 +301,7 @@ CCH.Objects.Slideshow = function(args) {
 						me.resize();
 					}
 				};
-				if (currentSizing === 'large') {
+				if (!isSmall) {
 					LOG.debug('Slideshow.js:: Vertical Slider Loading');
 					sliderContainer.iosSliderVertical($.extend(defaultSliderOptions, {
 						// Currently mouse wheel scrolling is not fully compatible with browsers.
@@ -309,7 +309,7 @@ CCH.Objects.Slideshow = function(args) {
 						mousewheelScroll: true,
 						mousewheelScrollOverflow : true
 					}));
-				} else if (currentSizing === 'small') {
+				} else {
 					LOG.debug('Slideshow.js:: Horizontal Slider Loading');
 					sliderContainer.iosSlider($.extend(defaultSliderOptions, {
 						scrollbarLocation: 'bottom'

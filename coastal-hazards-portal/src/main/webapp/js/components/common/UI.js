@@ -53,7 +53,7 @@ CCH.Objects.UI = function (args) {
 
     me.windowResizeHandler = function () {
         var currWidth = $(window).width(),
-            currentSizing = me.getCurrentSizing(),
+            isSmall = me.isSmall(),
             headerRow = $('#' + me.HEADER_ROW_ID),
             footerRow = $('#' + me.FOOTER_ROW_ID),
             map = $('#' + me.MAP_DIV_ID),
@@ -63,7 +63,7 @@ CCH.Objects.UI = function (args) {
 
         contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
 
-        if (currentSizing === 'small') {
+        if (isSmall) {
             // In a profile view, we care about the height of the description container
             descriptionHeight = Math.round(contentRowHeight * 0.30);
             if (descriptionHeight < 280) {
@@ -72,7 +72,7 @@ CCH.Objects.UI = function (args) {
             descriptionDiv.height(descriptionHeight);
             map.height(contentRowHeight - descriptionHeight);
 
-        } else if (currentSizing === 'large') {
+        } else {
             map.height(contentRowHeight);
             descriptionDiv.height(contentRowHeight);
         }
@@ -81,7 +81,7 @@ CCH.Objects.UI = function (args) {
         // fit into the new layout
         if ((me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) ||
                 (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber)) {
-            $(window).trigger('cch.ui.resized', currentSizing);
+            $(window).trigger('cch.ui.resized', isSmall);
         }
 
         me.previousWidth = currWidth;
@@ -205,7 +205,7 @@ CCH.Objects.UI = function (args) {
                                             }
                                         );
 
-                                        twttr.events.bind('tweet', function() {
+                                        twttr.events.bind('tweet', function () {
                                             $.pnotify({
                                                 text: 'Your view has been tweeted. Thank you.',
                                                 styling: 'bootstrap',
@@ -222,7 +222,7 @@ CCH.Objects.UI = function (args) {
                     }
                 ],
                 error: [
-                    function() {
+                    function () {
                         $('#shareModal').modal('hide');
                         $.pnotify({
                             text: 'We apologize, but we could not create a share url for this session!',
@@ -280,85 +280,88 @@ CCH.Objects.UI = function (args) {
     me.navbarClearItemClickHandler = function () {
         $(window).trigger('cch.navbar.pinmenu.item.clear.click');
     };
+    
+    me.removeOverlay = function () {
+        splashUpdate("Starting Application...");
+
+        var applicationOverlay = $('#' + me.APPLICATION_OVERLAY_ID);
+
+        $(window).resize();
+
+        // Get rid of the overlay and clean it up out of memory and DOM
+        applicationOverlay.fadeOut(2000, function () {
+            applicationOverlay.remove();
+            $(window).trigger('cch.ui.overlay.removed');
+        });
+    };
+    
+    
+    me.isSmall = function () {
+        // Bootstrap decides when to flip the application view based on 
+        // a specific width. 767px seems to be the point 
+        // https://github.com/twitter/bootstrap/blob/master/less/responsive-767px-max.less
+        return me.previousWidth <= me.magicResizeNumber;
+    };
+
+    me.displayLoadingError = function (args) {
+        var continueLink = $('<a />').attr({
+            'href': CCH.CONFIG.contextPath,
+            'role': 'button'
+        }).addClass('btn btn-large').html('<i class="icon-refresh"></i> Click to continue'),
+            emailLink = $('<a />').attr({
+                'href': args.mailTo,
+                'role': 'button'
+            }).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
+
+        splashUpdate(args.splashMessage);
+
+        $('#splash-status-update').append(continueLink);
+        $('#splash-status-update').append(emailLink);
+        $('#splash-spinner').fadeOut(2000);
+    };
+
+    // Init
+    {
+        var navbarPinButton = $('#' + me.NAVBAR_PIN_BUTTON_ID),
+            navbarClearMenuItem = $('#' + me.NAVBAR_CLEAR_MENU_ITEM_ID),
+            shareModal = $('#' + me.SHARE_MODAL_ID),
+            ccsaArea = $('#' + me.CCSA_AREA_ID),
+            helpModal = $('#' + me.HELP_MODAL_ID);
+
+        // This window name is used for the info window to launch into when 
+        // a user chooses to go back to the portal
+        window.name = "portal_main_window";
+
+        $(window).on({
+            'resize': me.windowResizeHandler,
+            'cch.data.items.searched': me.itemsSearchedHandler,
+            'cch.navbar.pinmenu.item.clear.click': me.pinmenuItemClickHandler
+        });
+
+        navbarPinButton.on('click', me.navbarMenuClickHandler);
+        navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
+        shareModal.on('show', me.sharemodalDisplayHandler);
+        helpModal.on('show', me.helpModalDisplayHandler);
+
+        // Header fix
+        ccsaArea.find('br').first().remove();
+
+        // Check for cookie to tell us if user has disabled the modal window 
+        // on start. If not, show it. The user has to opt-in to have it shown 
+        // next time
+        if (!$.cookie('cch_display_welcome') || $.cookie('cch_display_welcome') === 'true') {
+            $.cookie('cch_display_welcome', 'false', {path: '/'});
+            me.displayStartupModalWindow();
+        }
+
+        $(window).trigger('cch.ui.initialized');
+    }
 
     CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 
-    return $.extend(me, {
-        init: function () {
-            var navbarPinButton = $('#' + me.NAVBAR_PIN_BUTTON_ID),
-                navbarClearMenuItem = $('#' + me.NAVBAR_CLEAR_MENU_ITEM_ID),
-                shareModal = $('#' + me.SHARE_MODAL_ID),
-                ccsaArea = $('#' + me.CCSA_AREA_ID),
-                helpModal = $('#' + me.HELP_MODAL_ID);
-
-            // This window name is used for the info window to launch into when 
-            // a user chooses to go back to the portal
-            window.name = "portal_main_window";
-
-            $(window).on({
-                'resize': me.windowResizeHandler,
-                'cch.data.items.searched': me.itemsSearchedHandler,
-                'cch.navbar.pinmenu.item.clear.click': me.pinmenuItemClickHandler
-            });
-
-            navbarPinButton.on('click', me.navbarMenuClickHandler);
-            navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
-            shareModal.on('show', me.sharemodalDisplayHandler);
-            helpModal.on('show', me.helpModalDisplayHandler);
-
-            // Header fix
-            ccsaArea.find('br').first().remove();
-
-            // Check for cookie to tell us if user has disabled the modal window 
-            // on start. If not, show it. The user has to opt-in to have it shown 
-            // next time
-            if (!$.cookie('cch_display_welcome') || $.cookie('cch_display_welcome') === 'true') {
-                $.cookie('cch_display_welcome', 'false', {path: '/'});
-                me.displayStartupModalWindow();
-            }
-
-            $(window).trigger('cch.ui.initialized');
-
-            return me;
-        },
-        removeOverlay: function () {
-            splashUpdate("Starting Application...");
-
-            var applicationOverlay = $('#' + me.APPLICATION_OVERLAY_ID);
-
-            $(window).resize();
-
-            // Get rid of the overlay and clean it up out of memory and DOM
-            applicationOverlay.fadeOut(2000, function () {
-                applicationOverlay.remove();
-                $(window).trigger('cch.ui.overlay.removed');
-            });
-        },
-        getCurrentSizing: function () {
-            // Bootstrap decides when to flip the application view based on 
-            // a specific width. 767px seems to be the point 
-            // https://github.com/twitter/bootstrap/blob/master/less/responsive-767px-max.less
-            if (me.previousWidth <= me.magicResizeNumber) {
-                return 'small';
-            }
-
-            return 'large';
-        },
-        displayLoadingError: function (args) {
-            var continueLink = $('<a />').attr({
-                'href': CCH.CONFIG.contextPath,
-                'role': 'button'
-            }).addClass('btn btn-large').html('<i class="icon-refresh"></i> Click to continue'),
-                emailLink = $('<a />').attr({
-                    'href': args.mailTo,
-                    'role': 'button'
-                }).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
-
-            splashUpdate(args.splashMessage);
-
-            $('#splash-status-update').append(continueLink);
-            $('#splash-status-update').append(emailLink);
-            $('#splash-spinner').fadeOut(2000);
-        }
-    });
+    return {
+        removeOverlay: me.removeOverlay,
+        isSmall: me.isSmall,
+        displayLoadingError: me.displayLoadingError
+    };
 };
