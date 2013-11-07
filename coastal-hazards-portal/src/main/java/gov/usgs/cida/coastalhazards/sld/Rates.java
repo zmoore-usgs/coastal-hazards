@@ -2,7 +2,7 @@ package gov.usgs.cida.coastalhazards.sld;
 
 import com.google.gson.Gson;
 import com.sun.jersey.api.view.Viewable;
-import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.DataItem;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -22,7 +22,7 @@ public final class Rates extends SLDGenerator {
     private static final float[] thresholds = {-2.0f, -1.0f, 1.0f, 2.0f};
     private static final String[] colors = {"#ED2024", "#FCBF10", "#F6EB13", "#00B04F", "#29ADE3"};
     
-    public Rates(Item item) {
+    public Rates(DataItem item) {
         super(item);
     }
     

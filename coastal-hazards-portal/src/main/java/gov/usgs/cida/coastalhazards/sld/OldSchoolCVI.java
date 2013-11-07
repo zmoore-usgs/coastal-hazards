@@ -2,7 +2,7 @@ package gov.usgs.cida.coastalhazards.sld;
 
 import com.google.gson.Gson;
 import com.sun.jersey.api.view.Viewable;
-import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.DataItem;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -23,7 +23,7 @@ public final class OldSchoolCVI extends SLDGenerator {
     private static final String[] colors = {"#006945", "#3B6800", "#FFFF00", "#FEAC00", "#FF0000"};
     private static final String[] categories = {"Very Low", "Low", "Moderate", "High", "Very High"};
     
-    public OldSchoolCVI(Item item) {
+    public OldSchoolCVI(DataItem item) {
         super(item);
     }
     

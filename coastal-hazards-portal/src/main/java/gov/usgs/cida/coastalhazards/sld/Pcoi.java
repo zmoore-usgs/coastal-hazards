@@ -2,7 +2,7 @@ package gov.usgs.cida.coastalhazards.sld;
 
 import com.google.gson.Gson;
 import com.sun.jersey.api.view.Viewable;
-import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.DataItem;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -41,7 +41,7 @@ public final class Pcoi extends SLDGenerator {
     private static final float[] thresholds = {0.0f, 10.0f, 25.0f, 50.0f, 75.0f, 90.0f};
     private static final String[] colors = {"#FFFFFE", "#FFE6E6", "#FFCCCD", "#FF9C95", "#FF574A", "#FF0000"};
     
-    public Pcoi(Item item) {
+    public Pcoi(DataItem item) {
         super(item);
     }
     

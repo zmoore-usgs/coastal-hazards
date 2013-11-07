@@ -1,23 +1,15 @@
 package gov.usgs.cida.coastalhazards.model;
 
-import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import gov.usgs.cida.coastalhazards.gson.ItemAdapter;
 import gov.usgs.cida.coastalhazards.gson.serializer.DoubleSerializer;
-import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
-import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
 import gov.usgs.cida.utilities.IdGenerator;
 import java.io.Serializable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 /**
@@ -25,131 +17,56 @@ import javax.persistence.Table;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Entity
-@Table(name = "item")
+@Table(name = "item_parent")
 public class Item implements Serializable {
     
-    public enum Type {
-        storms,
-        vulnerability,
-        historical;
+    public enum ItemType {
+        aggregation,
+        data,
+        splitter;
     }
 
-	private static final long serialVersionUID = 1L;
-	private static final int doublePrecision = 5;
-	private String id;
-	private String name;
-	private String metadata;
-	private Type type;
-	private String attr;
-    private transient Rank rank;
-	private double[] bbox;
-	private WFSService wfsService;
-	private WMSService wmsService;
-	private Summary summary;
+    private static final long serialVersionUID = 2L;
+    private static final int doublePrecision = 5;
+    
+    public static final String ITEM_TYPE = "itemType";
+    
+    protected String id;
+    protected ItemType itemType;
 
-	@Id
-	public String getId() {
+    @Id
+    public String getId() {
 		return id;
 	}
 
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	@Column(name = "metadata")
-	public String getMetadata() {
-		return metadata;
-	}
-
-	public void setMetadata(String metadata) {
-		this.metadata = metadata;
-	}
-
-    @Embedded
-	public WFSService getWfsService() {
-		return wfsService;
-	}
-
-	public void setWfsService(WFSService wfsService) {
-		this.wfsService = wfsService;
-	}
-
-    @Embedded
-	public WMSService getWmsService() {
-		return wmsService;
-	}
-
-	public void setWmsService(WMSService wmsService) {
-		this.wmsService = wmsService;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
+    
     @Enumerated(EnumType.STRING)
-	public Type getType() {
-		return type;
-	}
-
-	public void setType(Type type) {
-		this.type = type;
-	}
-
-	public String getAttr() {
-		return attr;
-	}
-
-	public void setAttr(String attr) {
-		this.attr = attr;
-	}
-
-    @OneToOne
-    @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
-    public Rank getRank() {
-        return rank;
+    public ItemType getItemType() {
+        return itemType;
     }
 
-    public void setRank(Rank rank) {
-        this.rank = rank;
+    public void setItemType(ItemType itemType) {
+        this.itemType = itemType;
     }
+    
+    public static Item fromJSON(String json) {
 
-	public double[] getBbox() {
-		return bbox;
-	}
-
-	public void setBbox(double[] bbox) {
-		this.bbox = bbox;
-	}
-
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(columnDefinition = "summary_id")
-	public Summary getSummary() {
-		return summary;
-	}
-
-	public void setSummary(Summary summary) {
-		this.summary = summary;
-	}
-
-	public static Item fromJSON(String json) {
-
-		Item item;
+		Item node;
 		GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Item.class, new ItemAdapter());
 //        gsonBuilder.registerTypeAdapter(Geometry.class, new GeometryDeserializer());
 //        gsonBuilder.registerTypeAdapter(Envelope.class, new EnvelopeDeserializer());
 //        gsonBuilder.registerTypeAdapter(CoordinateSequence.class, new CoordinateSequenceDeserializer());
 		Gson gson = gsonBuilder.create();
 
-		item = gson.fromJson(json, Item.class);
-		if (item.getId() == null) {
-			item.setId(IdGenerator.generate());
+		node = gson.fromJson(json, Item.class);
+		if (node.getId() == null) {
+			node.setId(IdGenerator.generate());
 		}
-		return item;
+		return node;
 	}
 
 	public String toJSON() {

@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
+import gov.usgs.cida.coastalhazards.model.DataItem;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
@@ -43,8 +44,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
- * Could also be called item or layer or some other way of describing a singular
- * thing
+ * 
  *
  * @author jordan
  */
@@ -66,7 +66,7 @@ public class ItemResource {
 
 	/**
 	 * Retrieves representation of an instance of
-	 * gov.usgs.cida.coastalhazards.rest.TestResource
+ gov.usgs.cida.coastalhazards.model.DataItem
 	 *
 	 * @param id
 	 * @return an instance of java.lang.String
@@ -101,7 +101,8 @@ public class ItemResource {
 	/**
 	 * Only allows one card to be posted at a time for now
 	 *
-	 * @param content
+	 * @param content Posted content as text string (should be JSON)
+     * @param request passed through context of request
 	 * @return
 	 */
 	@POST
@@ -143,18 +144,24 @@ public class ItemResource {
         Response response = Response.serverError().build();
         
         Item item = Item.fromJSON(content);
+        DataItem data = null;
+        if (item instanceof DataItem) {
+            data = (DataItem)item;
+        } else {
+            throw new IllegalStateException("items must currently be data items");
+        }
         try {
-            String jsonSummary = getSummaryFromWPS(item.getMetadata(), item.getAttr());
+            String jsonSummary = getSummaryFromWPS(data.getMetadata(), data.getAttr());
             // this is not actually summary json object, so we need to change that a bit
             Summary summary = gson.fromJson(jsonSummary, Summary.class);
-            item.setSummary(summary);
+            data.setSummary(summary);
         } catch (Exception ex) {
             Map<String,String> err = new HashMap<String, String>();
             err.put("message", ex.getMessage());
             response = Response.serverError().entity(new Gson().toJson(err, HashMap.class)).build();
         }
-        if (item.getSummary() != null) {
-            final String id = itemManager.savePreview(item);
+        if (data.getSummary() != null) {
+            final String id = itemManager.savePreview(data);
 
             if (null == id) {
                 response = Response.status(Response.Status.BAD_REQUEST).build();
@@ -172,6 +179,16 @@ public class ItemResource {
 		return response;
 	}
     
+    /**
+     * I really don't like this in its current form, we should rethink this process and move this around
+     * 
+     * @param metadataId id of metadata file to send to R process
+     * @param attr attribute summary is for
+     * @return
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException 
+     */
     private String getSummaryFromWPS(String metadataId, String attr) throws IOException, ParserConfigurationException, SAXException {
         MetadataResource metadata = new MetadataResource();
         Response response = metadata.getFileById(metadataId);

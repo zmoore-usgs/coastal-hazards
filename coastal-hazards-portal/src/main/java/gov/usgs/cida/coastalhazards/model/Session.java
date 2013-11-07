@@ -26,7 +26,7 @@ public class Session implements Serializable {
 	private double scale;
 	private double[] bbox;
 	private double[] center;
-	private List<Item> items;
+	private List<DataItem> items;
 
 	/**
 	 * Checks that the session has all required properties set
@@ -115,11 +115,11 @@ public class Session implements Serializable {
 		@JoinColumn(name = "session_id", referencedColumnName = "id")},
 			inverseJoinColumns = {
 		@JoinColumn(name = "item_id", referencedColumnName = "id")})
-	public List<Item> getItems() {
+	public List<DataItem> getItems() {
 		return items;
 	}
 
-	public void setItems(List<Item> items) {
+	public void setItems(List<DataItem> items) {
 		this.items = items;
 	}
 }

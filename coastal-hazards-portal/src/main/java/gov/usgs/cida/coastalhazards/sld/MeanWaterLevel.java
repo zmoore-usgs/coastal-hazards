@@ -2,7 +2,7 @@ package gov.usgs.cida.coastalhazards.sld;
 
 import com.google.gson.Gson;
 import com.sun.jersey.api.view.Viewable;
-import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.DataItem;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -22,7 +22,7 @@ public final class MeanWaterLevel extends SLDGenerator {
     private static final float[] thresholds = {3.5f, 5.0f, 6.5f, 8.0f};
     private static final String[] colors = {"#BFFFE9", "#7ABCE6", "#1F84E1", "#1945B8", "#070791"};
     
-    public MeanWaterLevel(Item item) {
+    public MeanWaterLevel(DataItem item) {
         super(item);
     }
     
