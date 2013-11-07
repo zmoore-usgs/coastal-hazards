@@ -2,41 +2,39 @@ var CCH = CCH || {};
 $(document).ready(function() {
 	splashUpdate("Loading Main module...");
 
-	$(document).ajaxStart(function() {
-		$('body').css('cursor', 'wait');
-	});
-	
-	$(document).ajaxStop(function() {
-		$('body').css('cursor', 'default');
-	});
-
-	splashUpdate("Initializing Logging...");
+    splashUpdate("Initializing Logging...");
 	initializeLogging({
 		LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
 	});
-
-	CCH.LOG = LOG;
+    CCH.LOG = LOG;
+    
+	$(document).ajaxStart(function() {
+		$('body').css('cursor', 'wait');
+	});
+	$(document).ajaxStop(function() {
+		$('body').css('cursor', 'default');
+	});
 
 	splashUpdate("Initializing Session Subsystem...");
 	CCH.session = new CCH.Objects.Session().init();
 
 	splashUpdate("Initializing UI...");
 	CCH.ui = CCH.Objects.UI({
-		applicationOverlay: $('#application-overlay'),
-		applicationContainer: $('#application-container'),
-		headerRow: $('#header-row'),
-		footerRow: $('#footer-row'),
-		mapdiv: $('#map'),
-		descriptionDiv: $('#description-wrapper'),
-		navbarPinButton: $('#app-navbar-pin-control-button'),
-		navbarDropdownIcon: $('#app-navbar-pin-control-icon'),
-		navbarClearMenuItem: $('#app-navbar-pin-control-clear'),
-		navbarShareMenuListItem: $('#app-navbar-pin-control-share-li'),
-		ccsArea: $('#ccsa-area'),
-		shareModal: $('#shareModal'),
-		shareUrlButton: $('#modal-share-summary-url-button'),
-		shareInput: $('#modal-share-summary-url-inputbox'),
-		shareTwitterBtn: $('#multi-card-twitter-button')
+		applicationOverlayId: 'application-overlay',
+		headerRowId: 'header-row',
+		footerRowId: 'footer-row',
+		mapdivId: 'map',
+		descriptionDivId: 'description-wrapper',
+		navbarPinButtonId: 'app-navbar-pin-control-button',
+		navbarDropdownIconId: 'app-navbar-pin-control-icon',
+		navbarClearMenuItemId: 'app-navbar-pin-control-clear',
+		ccsAreaId: 'ccsa-area',
+		shareModalId: 'shareModal',
+		shareUrlButtonId: 'modal-share-summary-url-button',
+		shareInputId: 'modal-share-summary-url-inputbox',
+		shareTwitterBtnId: 'multi-card-twitter-button',
+        helpModalId: 'helpModal',
+        helpModalBodyId: 'help-modal-body'
 	}).init();
 
 	splashUpdate("Initializing Slideshow...");

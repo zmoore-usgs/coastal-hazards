@@ -16,14 +16,6 @@ img {
     min-width : 320px !important;
 }
 
-/* OpenLayers-specific overrides */
-.baseLayersDiv > .labelSpan {
-    display : inline;
-}
-.dataLayersDiv > .labelSpan {
-    display : inline;
-}
-
 #footer-row {
     background-color: #345280 !important;
     height: 20px;
