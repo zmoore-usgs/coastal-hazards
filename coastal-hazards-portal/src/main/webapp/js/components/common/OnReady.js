@@ -38,15 +38,15 @@ $(document).ready(function() {
     
 	splashUpdate("Initializing Card Subsystem...");
 	CCH.cards = new CCH.Objects.Cards({
-		navPinControlCount: $('#app-navbar-pin-control-pincount'),
-		navPinControlButton: $('#app-navbar-pin-control-button'),
-		navPinControlDropdownButton: $('#app-navbar-pin-control-dropdown-button')
-	}).init();
+		navPinControlCountId: $('#app-navbar-pin-control-pincount'),
+		navPinControlButtonId: $('#app-navbar-pin-control-button'),
+		navPinControlDropdownButtonId: $('#app-navbar-pin-control-dropdown-button')
+	});
     
 	splashUpdate("Initializing Slideshow...");
 	CCH.slideshow = new CCH.Objects.Slideshow({
 		descriptionWrapperId: 'description-wrapper'
-	}).init();
+	});
 
 	splashUpdate("Initializing Map...");
 	CCH.map = new CCH.Objects.Map({

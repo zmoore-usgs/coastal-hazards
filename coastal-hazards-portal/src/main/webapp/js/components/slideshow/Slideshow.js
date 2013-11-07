@@ -2,6 +2,7 @@ CCH.Objects.Slideshow = function(args) {
 	CCH.LOG.info('Slideshow.js::constructor:Slideshow class is initializing.');
 	var me = (this === window) ? {} : this;
 	args = args || {};
+    
 	me.DESCRIPTION_WRAPPER_ID = args.descriptionWrapperId || 'description-wrapper';
 	me.isStopped = false;
     
@@ -11,26 +12,24 @@ CCH.Objects.Slideshow = function(args) {
     // window : 'cch.navbar.pinmenu.item.clear.click'
     // window : 'cch.navbar.pinmenu.button.pin.click'
     
+    $(window).on({
+        'cch.data.items.loaded': function(evt, args) {
+            me.createSlideshow(evt, args);
+        },
+        'cch.ui.resized': function(evt) {
+            me.createSlideshow(evt);
+        },
+        'cch.navbar.pinmenu.item.clear.click': function(evt) {
+            me.createSlideshow(evt);
+            me.stop();
+        },
+        'cch.navbar.pinmenu.button.pin.click': function(evt, items) {
+            me.createSlideshow(evt, items);
+            me.stop();
+        }
+    });
+    
 	return $.extend(me, {
-		init: function() {
-			$(window).on({
-				'cch.data.items.loaded': function(evt, args) {
-					me.createSlideshow(evt, args);
-				},
-				'cch.ui.resized': function(evt) {
-					me.createSlideshow(evt);
-				},
-				'cch.navbar.pinmenu.item.clear.click': function(evt) {
-					me.createSlideshow(evt);
-					me.stop();
-				},
-				'cch.navbar.pinmenu.button.pin.click': function(evt, items) {
-					me.createSlideshow(evt, items);
-					me.stop();
-				}
-			});
-			return me;
-		},
 		stop: function() {
 			me.isStopped = true;
 			var container = $('#iosslider-container'),
@@ -69,7 +68,7 @@ CCH.Objects.Slideshow = function(args) {
 			}
 		},
 		destroySlider: function() {
-			CCH.cards.cards.length = 0;
+			CCH.cards.getCards().length = 0;
 			var container = $('#iosslider-container');
 			container.empty();
 			container.iosSliderVertical('destroy');

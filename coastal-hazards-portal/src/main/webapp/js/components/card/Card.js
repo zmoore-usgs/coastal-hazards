@@ -1,5 +1,4 @@
 /*jslint browser: true*/
-/*jslint plusplus: true */
 /*global $*/
 /*global window*/
 /*global OpenLayers*/
@@ -27,7 +26,7 @@ CCH.Objects.Card = function (args) {
     me.pinButton = null;
     me.layer = null;
     me.sizeDescription = CCH.ui.isSmall() ? 'small' : 'large';
-    
+
     me.pinButton = $('<span />')
             .append($('<i />')
                     .addClass('slide-menu-icon icon-pushpin muted pull-left'))
