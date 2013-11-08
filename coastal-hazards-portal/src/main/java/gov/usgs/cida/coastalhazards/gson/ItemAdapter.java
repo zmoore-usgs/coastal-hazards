@@ -13,7 +13,6 @@ import gov.usgs.cida.coastalhazards.model.AggregationItem;
 import gov.usgs.cida.coastalhazards.model.DataItem;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Item.ItemType;
-import gov.usgs.cida.coastalhazards.model.SplitterItem;
 import java.lang.reflect.Type;
 
 /**
@@ -50,9 +49,6 @@ public class ItemAdapter implements JsonSerializer<Item>, JsonDeserializer<Item>
                 break;
             case data:
                 clazz = DataItem.class;
-                break;
-            case splitter:
-                clazz = SplitterItem.class;
                 break;
             default:
                 // not of any type?

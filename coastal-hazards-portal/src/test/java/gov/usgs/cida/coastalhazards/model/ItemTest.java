@@ -70,14 +70,6 @@ public class ItemTest {
        Item item = Item.fromJSON(itemJSON);
        assertThat(item.getId(), is(equalTo("abc123")));
     }
-
-    /**
-     * Test of toJSON method, of class Item.
-     */
-    @Test
-    public void testToJSON() {
-        assertTrue(true);
-    }
     
     @Test(expected=IllegalArgumentException.class)
     public void testTypeEnum() {
@@ -85,8 +77,6 @@ public class ItemTest {
         assertThat(type1, is(equalTo(Item.ItemType.aggregation)));
         Item.ItemType type2 = Item.ItemType.valueOf("data");
         assertThat(type2, is(equalTo(Item.ItemType.data)));
-        Item.ItemType type3 = Item.ItemType.valueOf("splitter");
-        assertThat(type3, is(equalTo(Item.ItemType.splitter)));
         Item.ItemType type4 = Item.ItemType.valueOf("foo");
         assertThat(type4, is(not(equalTo(Item.ItemType.aggregation))));
     }

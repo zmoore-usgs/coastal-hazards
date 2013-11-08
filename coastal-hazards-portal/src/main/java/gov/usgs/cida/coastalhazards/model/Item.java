@@ -4,12 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import gov.usgs.cida.coastalhazards.gson.ItemAdapter;
 import gov.usgs.cida.coastalhazards.gson.serializer.DoubleSerializer;
+import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.utilities.IdGenerator;
 import java.io.Serializable;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -22,8 +26,7 @@ public class Item implements Serializable {
     
     public enum ItemType {
         aggregation,
-        data,
-        splitter;
+        data;
     }
 
     private static final long serialVersionUID = 2L;
@@ -33,6 +36,8 @@ public class Item implements Serializable {
     
     protected String id;
     protected ItemType itemType;
+    protected double[] bbox;
+    protected Summary summary;
 
     @Id
     public String getId() {
@@ -51,6 +56,24 @@ public class Item implements Serializable {
     public void setItemType(ItemType itemType) {
         this.itemType = itemType;
     }
+    
+	public double[] getBbox() {
+		return bbox;
+	}
+
+	public void setBbox(double[] bbox) {
+		this.bbox = bbox;
+	}
+    
+    @OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(columnDefinition = "summary_id")
+	public Summary getSummary() {
+		return summary;
+	}
+
+	public void setSummary(Summary summary) {
+		this.summary = summary;
+	}
     
     public static Item fromJSON(String json) {
 

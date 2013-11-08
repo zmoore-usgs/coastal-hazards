@@ -31,9 +31,6 @@ public class AggregationItem extends Item {
 	private String metadata;
 	private String attr;
     private transient Rank rank;
-	private double[] bbox;
-	private WFSService wfsService;
-	private WMSService wmsService;
 	private Summary summary;
 
 	@Id
@@ -49,24 +46,6 @@ public class AggregationItem extends Item {
 
 	public void setMetadata(String metadata) {
 		this.metadata = metadata;
-	}
-
-    @Embedded
-	public WFSService getWfsService() {
-		return wfsService;
-	}
-
-	public void setWfsService(WFSService wfsService) {
-		this.wfsService = wfsService;
-	}
-
-    @Embedded
-	public WMSService getWmsService() {
-		return wmsService;
-	}
-
-	public void setWmsService(WMSService wmsService) {
-		this.wmsService = wmsService;
 	}
 
 	public String getName() {
@@ -95,14 +74,6 @@ public class AggregationItem extends Item {
         this.rank = rank;
     }
 
-	public double[] getBbox() {
-		return bbox;
-	}
-
-	public void setBbox(double[] bbox) {
-		this.bbox = bbox;
-	}
-
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(columnDefinition = "summary_id")
 	public Summary getSummary() {
@@ -114,25 +85,13 @@ public class AggregationItem extends Item {
 	}
 
 	public static AggregationItem fromJSON(String json) {
-
-		AggregationItem aggregator;
-		GsonBuilder gsonBuilder = new GsonBuilder();
-//        gsonBuilder.registerTypeAdapter(Geometry.class, new GeometryDeserializer());
-//        gsonBuilder.registerTypeAdapter(Envelope.class, new EnvelopeDeserializer());
-//        gsonBuilder.registerTypeAdapter(CoordinateSequence.class, new CoordinateSequenceDeserializer());
-		Gson gson = gsonBuilder.create();
-
-		aggregator = gson.fromJson(json, AggregationItem.class);
-		if (aggregator.getId() == null) {
-			aggregator.setId(IdGenerator.generate());
-		}
+		AggregationItem aggregator = null;
+		Item item = Item.fromJSON(json);
+        if (item instanceof AggregationItem) {
+            aggregator = (AggregationItem)item;
+        } else {
+            throw new IllegalArgumentException("JSON input must be of aggregation type");
+        }
 		return aggregator;
-	}
-
-	public String toJSON() {
-		return new GsonBuilder()
-				.registerTypeAdapter(Double.class, new DoubleSerializer(doublePrecision))
-				.create()
-				.toJson(this);
 	}
 }
