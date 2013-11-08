@@ -10,8 +10,6 @@ CCH.Objects.CombinedSearch = function (args) {
 
     var me = (this === window) ? {} : this;
 
-    $.extend(me, args);
-
     // Application Navbar id/class string constants
     me.CONTAINER_ID = 'app-navbar-search-container';
     me.DD_TOGGLE_ID = 'app-navbar-search-dropdown-toggle';

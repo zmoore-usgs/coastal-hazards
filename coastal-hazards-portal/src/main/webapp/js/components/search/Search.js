@@ -13,8 +13,6 @@ CCH.Objects.Search = function (args) {
 
     me.GEOCODE_SERVICE_ENDPOINT = args.geocodeServiceEndpoint;
 
-    $.extend(me, args);
-
     me.submitLocationSearch = function (args) {
         if (!args) {
             throw 'arguments required';
@@ -60,7 +58,7 @@ CCH.Objects.Search = function (args) {
         }
 
         var criteria = args.criteria || '',
-            count = args.count || 20,
+            count = args.count || '',
             bbox = args.bbox || null,
             sortBy = args.sortBy || null,
             items = args.items || [],
@@ -262,6 +260,7 @@ CCH.Objects.deprecatedSearch = function(args) {
 			me.submitButton.on({
 				'click': function() {
 					me.modalContainer.modal('hide');
+                    
 					$(window).trigger('cch.search.item.submit', {
 						'top': me.north.html(),
 						'bottom': me.south.html(),

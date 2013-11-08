@@ -57,20 +57,21 @@ $(document).ready(function() {
 	CCH.ows = new CCH.Objects.OWS().init();
 
 	splashUpdate("Initializing Items");
-	CCH.items = new CCH.Objects.Items().init();
+	CCH.items = new CCH.Objects.Items();
 
 	// Decide how to load the application. 
 	// Depending on the 'idType' string, the application can be loaded either through:
 	// 'ITEM' = Load a single item from the database
 	// 'VIEW' = Load a session which can have zero, one or more items
 	// '' = Load the application normally
-	if (CCH.CONFIG.idType) {
-		var type = CCH.CONFIG.idType;
-		if (type === 'ITEM') {
-			var itemId = CCH.CONFIG.id;
+    var type = (CCH.CONFIG.params.type + String()).toLowerCase(),
+        itemId = CCH.CONFIG.id,
+        ssListener;
+	if (type) {
+		if (type === 'item') {
 			splashUpdate('Loading Item ' + itemId);
 
-			var ssListener = function() {
+			ssListener = function() {
 				CCH.ui.removeOverlay();
 				CCH.slideshow.stop();
 				// Pin the single item loaded when it gets loaded
@@ -104,10 +105,10 @@ $(document).ready(function() {
 					]
 				}
 			});
-		} else if (type === 'VIEW') {
+		} else if (type === 'view') {
 			splashUpdate("Loading View " + CCH.CONFIG.id);
 
-			var ssListener = function() {
+			ssListener = function() {
 				CCH.ui.removeOverlay();
 				CCH.slideshow.stop();
 				$(window).off('cch-slideshow-slider-loaded', ssListener);
