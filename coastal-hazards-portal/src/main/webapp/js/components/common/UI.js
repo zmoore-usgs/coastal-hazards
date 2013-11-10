@@ -376,6 +376,7 @@ CCH.Objects.UI = function (args) {
         removeOverlay: me.removeOverlay,
         isSmall: me.isSmall,
         displayLoadingError: me.displayLoadingError,
-        bucketSlide: me.bucketSlide
+        bucketSlide: me.bucketSlide,
+        bucket: me.bucket
     };
 };

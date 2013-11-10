@@ -24,8 +24,8 @@ CCH.Objects.BucketSlide = function (args) {
     me.animationTime = 1500;
     me.placement = 'right';
     me.displayTab = true;
-    me.startClosed = false;
     me.isSmall = args.isSmall;
+    me.startClosed = !me.isSmall();
     me.isInitialized = false;
     me.isClosed = me.startClosed;
 
@@ -68,17 +68,33 @@ CCH.Objects.BucketSlide = function (args) {
             slideTab = $('#' + me.SLIDE_TAB_ID),
             slideContent = $('#' + me.SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth(),
-            windowHeight = $(window).outerHeight();
+            windowHeight = $(window).outerHeight(),
+            dropShadowWidth = 7;
+
         if (me.isSmall()) {
-            slideContainer.offset(toExtent);
+            if (me.isClosed) {
+                slideContainer.offset({
+                    left: windowWidth + dropShadowWidth - slideTab.outerWidth(),
+                    top: toExtent.top
+                });
+            } else {
+                slideContainer.offset(toExtent);
+            }
             slideContainer.width(windowWidth - toExtent.left);
             slideContainer.height(windowHeight - 10);
             slideContent.width(slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth);
             slideTab.offset({
-                left : slideContainer.offset().left + 2
+                left: slideContainer.offset().left + 2
             });
         } else {
-            slideContainer.offset(toExtent);
+            if (me.isClosed) {
+                slideContainer.offset({
+                    left: windowWidth + dropShadowWidth,
+                    top: toExtent.top
+                });
+            } else {
+                slideContainer.offset(toExtent);
+            }
             slideContainer.width(windowWidth - toExtent.left);
             slideContainer.height($('#' + me.MAP_DIV_ID).outerHeight());
             slideContent.width(slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth);
@@ -101,7 +117,7 @@ CCH.Objects.BucketSlide = function (args) {
         return extents;
     };
 
-    $(window).on('cch.ui.resized', function(args) {
+    $(window).on('cch.ui.resized', function (args) {
         me.resized(args);
     });
 

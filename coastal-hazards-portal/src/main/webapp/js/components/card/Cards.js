@@ -23,7 +23,7 @@ CCH.Objects.Cards = function(args) {
         me.NAV_PIN_CONTROL_COUNT_ID.html(me.pinnedCount);
 
         CCH.ui.bucket.setCount({count: me.pinnedCount});
-
+        
         if (me.pinnedCount > 0) {
             me.NAV_PIN_CONTROL_BUTTON_ID.removeClass('disabled');
             me.NAV_PIN_CONTROL_DROPDOWN_BUTTON_ID.removeClass('disabled');

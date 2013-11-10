@@ -3,19 +3,28 @@
     z-index: 2000;
 }
 
-
 /*
 No tab shown on large display. Toggled via button in bar
 */
 @media (min-width: 767px) {
     #application-slide-bucket-tab {
         visibility: hidden;
+        display: none;
         width: 0px;
+        height: 0px;
     }
 
     #application-slide-bucket-tab img {
         visibility: hidden;
         width: 0px;
+        height: 0px;
+    }
+
+    #application-slide-bucket-content {
+        border-top-left-radius: 10px 10px;
+        -webkit-border-top-left-radius: 10px 10px;
+        border-bottom-left-radius: 10px 10px;
+        -webkit-border-bottom-left-radius: 10px 10px;
     }
 }
 
@@ -45,6 +54,11 @@ No tab shown on large display. Toggled via button in bar
     #application-slide-bucket-tab img {
         height : 60px;
         width: 40px;
+    }
+
+    #application-slide-bucket-content {
+        border-bottom-left-radius: 10px 10px;
+        -webkit-border-bottom-left-radius: 10px 10px;
     }
 }
 
