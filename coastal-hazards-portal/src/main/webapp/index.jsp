@@ -32,25 +32,31 @@
         <link type="text/css" rel="stylesheet" href="webjars/font-awesome/3.2.1/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="css/custom.css" />
     </head>
+    
     <body>
-
 		<jsp:include page="components/application-overlay.jsp">
 			<jsp:param name="application-overlay-description" value="USGS coastal change hazards research produces data, 
 					   knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
 					   here. They can be used to increase awareness and provide a basis for decision making." />
 			<jsp:param name="application-overlay-background-image" value="images/splash/splash.svg" />
 		</jsp:include>
+        <div id="application-slide-bucket-container" class="application-slide-container">
+            <span id="application-slide-bucket-tab" class="application-slide-tab">
+                <img alt="Bucket Slider Tab Image" src="images/banner/bucket/bucket-no-sand.svg" />
+            </span>
+            <span id="application-slide-bucket-content" class="application-slide-content">CONTENT</span>
+        </div>
 		<div id="application-container" class="container-fluid">
-
+            
 			<div id="header-row" class="row-fluid">
 				<jsp:include page="components/app-navbar.jsp"></jsp:include>
             </div>
             <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
             <div id="content-row" class="row-fluid">
                 <div id="map" class="span9"></div>
-                <div id="description-wrapper" class="span3"></div>
+                <div id="slide-container-wrapper" class="span3"></div>
             </div>	
-            <div  id="footer-row"  class="row-fluid">
+            <div id="footer-row"  class="row-fluid">
                 <div class="container">
                     &nbsp;
                 </div>
@@ -81,6 +87,8 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="js/jquery-cookie/jquery-cookie.jsp"></jsp:include>
+        <script type="text/javascript" src="js/components/slide/Slide.js"></script>
+        <script type="text/javascript" src="js/components/slide/BucketSlide.js"></script>
         <script type="text/javascript" src="js/components/util/Util.js"></script>
         <script type="text/javascript" src="js/components/slideshow/Slideshow.js"></script>
         <script type="text/javascript" src="js/components/search/Search.js"></script>
