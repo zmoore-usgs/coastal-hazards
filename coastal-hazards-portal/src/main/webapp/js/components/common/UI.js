@@ -14,7 +14,7 @@ CCH.Objects.UI = function (args) {
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
     me.FOOTER_ROW_ID = args.footerRowId || 'footer-row';
     me.MAP_DIV_ID = args.mapdivId || 'map';
-    me.DESCRIPTION_DIV_ID = args.descriptionDivId || 'description-wrapper';
+    me.SLIDE_CONTAINER_DIV_ID = args.slideContainerDivId || 'slide-container-wrapper';
     me.NAVBAR_PIN_BUTTON_ID = args.navbarPinButtonId || 'app-navbar-pin-control-button';
     me.NAVBAR_PIN_CONTROL_ICON_ID = args.navbarDropdownIconId || 'app-navbar-pin-control-icon';
     me.NAVBAR_CLEAR_MENU_ITEM_ID = args.navbarClearMenuItemId || 'app-navbar-pin-control-clear';
@@ -25,19 +25,24 @@ CCH.Objects.UI = function (args) {
     me.SHARE_TWITTER_BUTTON_ID = args.shareTwitterBtnId || 'multi-card-twitter-button';
     me.HELP_MODAL_ID = args.helpModalId || 'helpModal';
     me.HELP_MODAL_BODY_ID = args.helpModalBodyId || 'help-modal-body';
-
+    me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId || 'application-slide-bucket-container';
+    
     me.magicResizeNumber = 767;
     me.minimumHeight = args.minimumHeight || 480;
     me.previousWidth = $(window).width();
     me.bucket = new CCH.Objects.Bucket();
     me.combinedSearch = new CCH.Objects.CombinedSearch();
-
+    
     // Triggers:
-    // 'cch.ui.resized'
-    // 'cch.navbar.pinmenu.button.pin.click'
-    // 'cch.navbar.pinmenu.item.clear.click'
-    // 'cch.ui.initialized'
-    // 'cch.ui.overlay.removed'
+    // window: 'cch.ui.resized'
+    // window: 'cch.ui.redimensioned'
+    // window: 'cch.navbar.pinmenu.button.pin.click'
+    // window: 'cch.navbar.pinmenu.item.clear.click'
+    // window: 'cch.ui.initialized'
+    // window: 'cch.ui.overlay.removed'
+
+    // Listeners:
+    // me.bucket : 'app-navbar-button-clicked'
 
     me.itemsSearchedHandler = function (evt, count) {
         // Display a notification with item count
@@ -57,7 +62,7 @@ CCH.Objects.UI = function (args) {
             headerRow = $('#' + me.HEADER_ROW_ID),
             footerRow = $('#' + me.FOOTER_ROW_ID),
             map = $('#' + me.MAP_DIV_ID),
-            descriptionDiv = $('#' + me.DESCRIPTION_DIV_ID),
+            slideDiv = $('#' + me.SLIDE_CONTAINER_DIV_ID),
             descriptionHeight,
             contentRowHeight = $(window).height() - headerRow.outerHeight(true) - footerRow.outerHeight(true);
 
@@ -69,21 +74,20 @@ CCH.Objects.UI = function (args) {
             if (descriptionHeight < 280) {
                 descriptionHeight = 280;
             }
-            descriptionDiv.height(descriptionHeight);
+            slideDiv.height(descriptionHeight);
             map.height(contentRowHeight - descriptionHeight);
-
         } else {
             map.height(contentRowHeight);
-            descriptionDiv.height(contentRowHeight);
+            slideDiv.height(contentRowHeight);
         }
 
         // Check if the application was resized. If so, re-initialize the slideshow to easily
         // fit into the new layout
         if ((me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) ||
                 (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber)) {
-            $(window).trigger('cch.ui.resized', isSmall);
+            $(window).trigger('cch.ui.redimensioned', isSmall);
         }
-
+        $(window).trigger('cch.ui.resized', isSmall);
         me.previousWidth = currWidth;
     };
 
@@ -319,6 +323,12 @@ CCH.Objects.UI = function (args) {
         $('#splash-status-update').append(emailLink);
         $('#splash-spinner').fadeOut(2000);
     };
+    
+    me.bucketSlide = new CCH.Objects.BucketSlide({
+        containerId : 'application-slide-bucket-container',
+        mapdivId : me.MAP_DIV_ID,
+        isSmall : me.isSmall
+    });
 
     // Init
     {
@@ -326,7 +336,8 @@ CCH.Objects.UI = function (args) {
             navbarClearMenuItem = $('#' + me.NAVBAR_CLEAR_MENU_ITEM_ID),
             shareModal = $('#' + me.SHARE_MODAL_ID),
             ccsaArea = $('#' + me.CCSA_AREA_ID),
-            helpModal = $('#' + me.HELP_MODAL_ID);
+            helpModal = $('#' + me.HELP_MODAL_ID),
+            bucket = me.bucket;
 
         // This window name is used for the info window to launch into when 
         // a user chooses to go back to the portal
@@ -337,12 +348,14 @@ CCH.Objects.UI = function (args) {
             'cch.data.items.searched': me.itemsSearchedHandler,
             'cch.navbar.pinmenu.item.clear.click': me.pinmenuItemClickHandler
         });
-
+        $(bucket).on('app-navbar-button-clicked', function () {
+            me.bucketSlide.toggle();
+        });
         navbarPinButton.on('click', me.navbarMenuClickHandler);
         navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
         shareModal.on('show', me.sharemodalDisplayHandler);
         helpModal.on('show', me.helpModalDisplayHandler);
-
+        
         // Header fix
         ccsaArea.find('br').first().remove();
 
@@ -353,15 +366,16 @@ CCH.Objects.UI = function (args) {
             $.cookie('cch_display_welcome', 'false', {path: '/'});
             me.displayStartupModalWindow();
         }
-
+        
         $(window).trigger('cch.ui.initialized');
     }
-
+    
     CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 
     return {
         removeOverlay: me.removeOverlay,
         isSmall: me.isSmall,
-        displayLoadingError: me.displayLoadingError
+        displayLoadingError: me.displayLoadingError,
+        bucketSlide: me.bucketSlide
     };
 };

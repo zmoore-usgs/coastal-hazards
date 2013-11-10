@@ -60,6 +60,10 @@ CCH.Objects.Bucket = function (args) {
         return count;
     };
     
+    $('#' + me.BUCKET_CONTAINER_ID).on('click', function () {
+        $(me).trigger('app-navbar-button-clicked');
+    });
+    
     // Preload required images
     CCH.LOG.trace('CCH.Objects.Bucket::constructor: Pre-loading images.');
     $.get(me.IMAGE_LOCATION_BUCKET_WITH_SAND);

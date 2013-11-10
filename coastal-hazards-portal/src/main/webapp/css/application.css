@@ -1,5 +1,9 @@
 /* ---------------------------------------------------------------------- UI */
 
+body {
+    overflow: hidden;
+}
+
 /* 
     Because of a conflict between twitter bootstrap and openlayers
     See: https://github.com/openlayers/openlayers/pull/755
@@ -63,7 +67,7 @@ img {
     background-position: 20% top;
 }
 
-#description-wrapper {
+#slide-container-wrapper {
     overflow: auto;
     max-width: 100%;
 }

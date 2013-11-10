@@ -3,12 +3,12 @@ CCH.Objects.Slideshow = function(args) {
 	var me = (this === window) ? {} : this;
 	args = args || {};
     
-	me.DESCRIPTION_WRAPPER_ID = args.descriptionWrapperId || 'description-wrapper';
+	me.SLIDE_CONTAINER_WRAPPER_ID = args.slideContainerId || 'slide-container-wrapper';
 	me.isStopped = false;
     
     // Listeners: 
     // window : 'cch.data.items.loaded'
-    // window : 'cch.ui.resized'
+    // window : 'cch.ui.redimensioned'
     // window : 'cch.navbar.pinmenu.item.clear.click'
     // window : 'cch.navbar.pinmenu.button.pin.click'
     
@@ -16,7 +16,7 @@ CCH.Objects.Slideshow = function(args) {
         'cch.data.items.loaded': function(evt, args) {
             me.createSlideshow(evt, args);
         },
-        'cch.ui.resized': function(evt) {
+        'cch.ui.redimensioned': function(evt) {
             me.createSlideshow(evt);
         },
         'cch.navbar.pinmenu.item.clear.click': function(evt) {
@@ -142,7 +142,7 @@ CCH.Objects.Slideshow = function(args) {
 			},1500);
 		},
 		resizeHorizontal: function() {
-			var descriptionWrapper = $('#description-wrapper');
+			var descriptionWrapper = $('#' + me.SLIDE_CONTAINER_WRAPPER_ID);
 			var sliderContainer = $('.iosSlider');
 			var sliderList = $('.slider');
 
@@ -174,7 +174,7 @@ CCH.Objects.Slideshow = function(args) {
 			var sliderContainer = $('.iosSliderVertical');
 			var sliderList = $('.slider');
 			sliderContainer.css({
-				'height': $('#description-wrapper').height() + 'px'
+				'height': $('#' + me.SLIDE_CONTAINER_WRAPPER_ID).height() + 'px'
 			});
 			sliderList.css({
 				'height': sliderContainer.height() + 'px'
@@ -195,7 +195,7 @@ CCH.Objects.Slideshow = function(args) {
 				me.destroySlider();
 
 				sliderContainer.append(slideList);
-				$('#' + me.DESCRIPTION_WRAPPER_ID).append(sliderContainer);
+				$('#' + me.SLIDE_CONTAINER_WRAPPER_ID).append(sliderContainer);
 
 				// Build the card deck with items coming in from the arguments
 				// or the list of items in the CCH.items object

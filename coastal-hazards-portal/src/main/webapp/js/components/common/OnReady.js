@@ -23,7 +23,7 @@ $(document).ready(function() {
 		headerRowId: 'header-row',
 		footerRowId: 'footer-row',
 		mapdivId: 'map',
-		descriptionDivId: 'description-wrapper',
+		slideContainerDivId: 'slide-container-wrapper',
 		navbarPinButtonId: 'app-navbar-pin-control-button',
 		navbarDropdownIconId: 'app-navbar-pin-control-icon',
 		navbarClearMenuItemId: 'app-navbar-pin-control-clear',
@@ -33,7 +33,8 @@ $(document).ready(function() {
 		shareInputId: 'modal-share-summary-url-inputbox',
 		shareTwitterBtnId: 'multi-card-twitter-button',
         helpModalId: 'helpModal',
-        helpModalBodyId: 'help-modal-body'
+        helpModalBodyId: 'help-modal-body',
+        slideBucketContainerId: 'application-slide-bucket-container'
 	});
     
 	splashUpdate("Initializing Card Subsystem...");
@@ -45,7 +46,7 @@ $(document).ready(function() {
     
 	splashUpdate("Initializing Slideshow...");
 	CCH.slideshow = new CCH.Objects.Slideshow({
-		descriptionWrapperId: 'description-wrapper'
+		slideContainerId: 'slide-container-wrapper'
 	});
 
 	splashUpdate("Initializing Map...");

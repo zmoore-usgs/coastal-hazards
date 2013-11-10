@@ -1,0 +1,61 @@
+#application-slide-bucket-container {
+    position: absolute;
+    z-index: 2000;
+}
+
+
+/*
+No tab shown on large display. Toggled via button in bar
+*/
+@media (min-width: 767px) {
+    #application-slide-bucket-tab {
+        visibility: hidden;
+        width: 0px;
+    }
+
+    #application-slide-bucket-tab img {
+        visibility: hidden;
+        width: 0px;
+    }
+}
+
+@media (max-width: 766px) {
+    #application-slide-bucket-tab {
+        height : 60px;
+        width: 40px;
+        background-color: #00CCFF;
+        display: inline-block;
+        background-color: #F5F5F5;
+        border-left: 2px solid #E3E3E3;
+        border-top: 2px solid #E3E3E3;
+        border-bottom: 2px solid #E3E3E3;
+        z-index: 2001;
+        border-top-left-radius: 40px 10px;
+        -webkit-border-top-left-radius: 40px 10px;
+        border-bottom-left-radius: 40px 10px;
+        -webkit-border-bottom-left-radius: 40px 10px;
+        box-shadow: -5px 5px 2px #888888;
+        float: left;
+    }
+
+    #application-slide-bucket-tab:hover {
+        cursor: pointer;
+    }
+
+    #application-slide-bucket-tab img {
+        height : 60px;
+        width: 40px;
+    }
+}
+
+#application-slide-bucket-content {
+    background-color: #F5F5F5;
+    border-bottom: 2px solid #E3E3E3;
+    border-top: 2px solid #E3E3E3;
+    border-left: 2px solid #E3E3E3;
+    height: 100%;
+    float: right;
+    display: inline-block;
+    z-index: 2000;
+    box-shadow: -5px 5px 2px #888888;
+}
