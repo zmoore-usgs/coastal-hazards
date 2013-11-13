@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-updateDb</actionName>
+            <displayName>updateDb</displayName>
+            <goals>
+                <goal>liquibase:update</goal>
+            </goals>
+            <activatedProfiles>
+                <activatedProfile>liquibase-test</activatedProfile>
+            </activatedProfiles>
+        </action>
+    </actions>

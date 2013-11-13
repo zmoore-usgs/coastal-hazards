@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd"/>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
     <changeSet author="jiwalker (generated)" id="1383341885474-1" context="test">
-        <loadData encoding="UTF-8" file="data/activity.csv" quotchar="&quot;" separator="," tableName="activity">
+        <loadData encoding="UTF-8" file="./data/activity.csv" quotchar="&quot;" separator="," tableName="activity">
             <column header="id" name="id" type="NUMERIC"/>
             <column header="activity_timestamp" name="activity_timestamp" type="DATE"/>
             <column header="itemid" name="itemid" type="STRING"/>
@@ -31,18 +31,29 @@
         </loadData>
     </changeSet>
     <changeSet author="jiwalker (generated)" id="1383341885474-6" context="test">
-        <loadData encoding="UTF-8" file="data/item.csv" quotchar="&quot;" separator="," tableName="item">
+        <loadData encoding="UTF-8" file="data/data_item.csv" quotchar="&quot;" separator="," tableName="item">
             <column header="id" name="id" type="STRING"/>
             <column header="attr" name="attr" type="STRING"/>
-            <column header="bbox" name="bbox" type="STRING"/>
             <column header="metadata" name="metadata" type="STRING"/>
             <column header="name" name="name" type="STRING"/>
             <column header="type" name="type" type="STRING"/>
-            <column header="summary_id" name="summary_id" type="NUMERIC"/>
             <column header="wfs_endpoint" name="wfs_endpoint" type="STRING"/>
             <column header="wfs_typename" name="wfs_typename" type="STRING"/>
             <column header="wms_endpoint" name="wms_endpoint" type="STRING"/>
             <column header="wms_layers" name="wms_layers" type="STRING"/>
+        </loadData>
+    </changeSet>
+    <changeSet author="jiwalker (generated)" id="1383341885474-13" context="test">
+        <loadData encoding="UTF-8" file="data/item_parent.csv" quotchar="&quot;" separator="," tableName="item">
+            <column header="id" name="id" type="STRING"/>
+            <column header="bbox" name="bbox" type="STRING"/>
+            <column header="item_type" name="item_type" type="STRING"/>
+            <column header="summary_id" name="summary_id" type="STRING"/>
+        </loadData>
+    </changeSet>
+    <changeSet author="jiwalker (generated)" id="1383341885474-14" context="test">
+        <loadData encoding="UTF-8" file="data/aggregation_item.csv" quotchar="&quot;" separator="," tableName="item">
+            <column header="id" name="id" type="STRING"/>
         </loadData>
     </changeSet>
     <changeSet author="jiwalker (generated)" id="1383341885474-8" context="test">

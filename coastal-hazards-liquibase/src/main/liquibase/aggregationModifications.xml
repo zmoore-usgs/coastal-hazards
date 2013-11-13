@@ -21,6 +21,7 @@
         <renameTable newTableName="data_item" oldTableName="item" />
     
         <!-- Add parent table for shared item data -->
+        <!-- Need to do proper foreign keys -->
         <createTable tableName="item_parent">
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
