@@ -19,7 +19,7 @@ import javax.persistence.Table;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Entity
-@Table(name = "item")
+@Table(name = "data_item")
 public class DataItem extends Item {
     
     // This will go away, replaced by root nodes
@@ -110,7 +110,7 @@ public class DataItem extends Item {
         if (item instanceof DataItem) {
             dataItem = (DataItem)item;
         } else {
-            throw new IllegalArgumentException("JSON input must be of item type, data");
+            throw new IllegalArgumentException("JSON input must be of type data");
         }
 		return dataItem;
 	}

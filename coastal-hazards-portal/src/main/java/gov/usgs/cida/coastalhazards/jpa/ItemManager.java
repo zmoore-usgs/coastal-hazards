@@ -137,12 +137,12 @@ public class ItemManager {
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         String jsonResult = "";
         try {
-            Query query = em.createQuery(builder.toString(), DataItem.class);
+            Query query = em.createQuery(builder.toString(), Item.class);
             if (count > 0) {
                 query.setMaxResults(count);
             }
             List<DataItem> resultList = query.getResultList();
-            Map<String, List> resultMap = new HashMap<String, List>();
+            Map<String, List> resultMap = new HashMap<>();
             resultMap.put("items", resultList);
             jsonResult = new Gson().toJson(resultMap, HashMap.class);
         } finally {

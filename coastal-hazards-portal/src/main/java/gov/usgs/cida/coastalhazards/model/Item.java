@@ -8,10 +8,13 @@ import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.utilities.IdGenerator;
 import java.io.Serializable;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -22,6 +25,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "item_parent")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Item implements Serializable {
     
     public enum ItemType {
@@ -32,7 +36,7 @@ public class Item implements Serializable {
     private static final long serialVersionUID = 2L;
     private static final int doublePrecision = 5;
     
-    public static final String ITEM_TYPE = "itemType";
+    public static final String ITEM_TYPE = "item_type";
     
     protected String id;
     protected ItemType itemType;
@@ -49,6 +53,7 @@ public class Item implements Serializable {
 	}
     
     @Enumerated(EnumType.STRING)
+    @Column(name = ITEM_TYPE)
     public ItemType getItemType() {
         return itemType;
     }

@@ -5,6 +5,8 @@
         <non-jta-data-source>java:comp/env/jdbc/coastalhazards</non-jta-data-source>
         <class>gov.usgs.cida.coastalhazards.model.Session</class>
         <class>gov.usgs.cida.coastalhazards.model.Item</class>
+        <class>gov.usgs.cida.coastalhazards.model.DataItem</class>
+        <class>gov.usgs.cida.coastalhazards.model.AggregationItem</class>
         <class>gov.usgs.cida.coastalhazards.model.Rank</class>
         <class>gov.usgs.cida.coastalhazards.model.Activity</class>
         <class>gov.usgs.cida.coastalhazards.model.AuthorizedUser</class>

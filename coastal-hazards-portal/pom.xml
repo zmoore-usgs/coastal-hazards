@@ -129,7 +129,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.2.2.Final</version>
+            <version>4.2.7.SP1</version>
         </dependency>
         <dependency>
             <groupId>com.vividsolutions</groupId>
