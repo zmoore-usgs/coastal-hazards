@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="jiwalker" id="aggregationModifications">
+        
+        <!-- Add aggregation item table to hold data unique to aggregations -->
+        <createTable tableName="aggregation_item">
+            <column name="id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="aggregation_relationships">
+            <column name="aggregation_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <!-- Switch item to data_item for subclass join -->
+        <renameTable newTableName="data_item" oldTableName="item" />
+    
+        <!-- Add parent table for shared item data -->
+        <createTable tableName="item_parent">
+            <column name="id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bbox" type="BYTEA"/>
+            <column name="item_type" type="VARCHAR(32)"/>
+            <column name="summary_id" type="INT4"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
