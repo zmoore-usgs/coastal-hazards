@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
-    <changeSet author="jiwalker (generated)" id="1383341885474-1" context="test">
-        <loadData encoding="UTF-8" file="data/activity.csv" quotchar="&quot;" separator="," tableName="activity">
+    <changeSet author="jiwalker (generated)" id="setActivities" context="test">
+        <loadUpdateData primaryKey="id" encoding="UTF-8" file="data/activity.csv" quotchar="&quot;" separator="," tableName="activity">
             <column header="id" name="id" type="NUMERIC"/>
             <column header="activity_timestamp" name="activity_timestamp" type="DATE"/>
             <column header="itemid" name="itemid" type="STRING"/>
             <column header="type" name="type" type="NUMERIC"/>
-        </loadData>
+        </loadUpdateData>
     </changeSet>
     <changeSet author="jiwalker (generated)" id="1383341885474-2" context="test">
         <loadData encoding="UTF-8" file="data/authorized_users.csv" quotchar="&quot;" separator="," tableName="authorized_users">
@@ -30,6 +30,24 @@
             <column header="title" name="title" type="STRING"/>
         </loadData>
     </changeSet>
+    <changeSet author="jiwalker (generated)" id="1383341885474-11" context="test">
+        <loadData encoding="UTF-8" file="data/summary.csv" quotchar="&quot;" separator="," tableName="summary">
+            <column header="id" name="id" type="NUMERIC"/>
+            <column header="medium_text" name="medium_text" type="STRING"/>
+            <column header="medium_title" name="medium_title" type="STRING"/>
+            <column header="tiny_text" name="tiny_text" type="STRING"/>
+            <column header="full_id" name="full_id" type="NUMERIC"/>
+            <column header="keywords" name="keywords" type="STRING"/>
+        </loadData>
+    </changeSet>
+    <changeSet author="jiwalker (generated)" id="1383341885474-13" context="test">
+        <loadData encoding="UTF-8" file="data/item_parent.csv" quotchar="&quot;" separator="," tableName="item_parent">
+            <column header="id" name="id" type="STRING"/>
+            <column header="bbox" name="bbox" type="STRING"/>
+            <column header="item_type" name="item_type" type="STRING"/>
+            <column header="summary_id" name="summary_id" type="STRING"/>
+        </loadData>
+    </changeSet>
     <changeSet author="jiwalker (generated)" id="1383341885474-6" context="test">
         <loadData encoding="UTF-8" file="data/data_item.csv" quotchar="&quot;" separator="," tableName="data_item">
             <column header="id" name="id" type="STRING"/>
@@ -43,23 +61,9 @@
             <column header="wms_layers" name="wms_layers" type="STRING"/>
         </loadData>
     </changeSet>
-    <changeSet author="jiwalker (generated)" id="1383341885474-13" context="test">
-        <loadData encoding="UTF-8" file="data/item_parent.csv" quotchar="&quot;" separator="," tableName="item_parent">
-            <column header="id" name="id" type="STRING"/>
-            <column header="bbox" name="bbox" type="STRING"/>
-            <column header="item_type" name="item_type" type="STRING"/>
-            <column header="summary_id" name="summary_id" type="STRING"/>
-        </loadData>
-    </changeSet>
     <changeSet author="jiwalker (generated)" id="1383341885474-14" context="test">
         <loadData encoding="UTF-8" file="data/aggregation_item.csv" quotchar="&quot;" separator="," tableName="aggregation_item">
             <column header="id" name="id" type="STRING"/>
-        </loadData>
-    </changeSet>
-    <changeSet author="jiwalker (generated)" id="1383341885474-8" context="test">
-        <loadData encoding="UTF-8" file="data/session_item.csv" quotchar="&quot;" separator="," tableName="session_item">
-            <column header="session_id" name="session_id" type="STRING"/>
-            <column header="item_id" name="item_id" type="STRING"/>
         </loadData>
     </changeSet>
     <changeSet author="jiwalker (generated)" id="1383341885474-9" context="test">
@@ -71,14 +75,10 @@
             <column header="scale" name="scale" type="NUMERIC"/>
         </loadData>
     </changeSet>
-    <changeSet author="jiwalker (generated)" id="1383341885474-11" context="test">
-        <loadData encoding="UTF-8" file="data/summary.csv" quotchar="&quot;" separator="," tableName="summary">
-            <column header="id" name="id" type="NUMERIC"/>
-            <column header="medium_text" name="medium_text" type="STRING"/>
-            <column header="medium_title" name="medium_title" type="STRING"/>
-            <column header="tiny_text" name="tiny_text" type="STRING"/>
-            <column header="full_id" name="full_id" type="NUMERIC"/>
-            <column header="keywords" name="keywords" type="STRING"/>
+    <changeSet author="jiwalker (generated)" id="1383341885474-8" context="test">
+        <loadData encoding="UTF-8" file="data/session_item.csv" quotchar="&quot;" separator="," tableName="session_item">
+            <column header="session_id" name="session_id" type="STRING"/>
+            <column header="item_id" name="item_id" type="STRING"/>
         </loadData>
     </changeSet>
     <changeSet author="jiwalker (generated)" id="1383341885474-12" context="test">
