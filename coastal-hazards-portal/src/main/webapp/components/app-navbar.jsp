@@ -13,11 +13,11 @@
 
             <jsp:include page="combined-searchbar.jsp"></jsp:include>
 
+            <jsp:include page="navbar-bucket.jsp"></jsp:include>
+            
             <div id='app-navbar-help-container' class='app-navbar-item-container'>
                 <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="icon-info-sign"></i></a>
             </div>
-
-            <jsp:include page="navbar-bucket.jsp"></jsp:include>
 
                 <!--
                 

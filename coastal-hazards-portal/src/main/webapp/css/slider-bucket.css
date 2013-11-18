@@ -43,7 +43,6 @@ No tab shown on large display. Toggled via button in bar
         -webkit-border-top-left-radius: 40px 10px;
         border-bottom-left-radius: 40px 10px;
         -webkit-border-bottom-left-radius: 40px 10px;
-        box-shadow: -5px 5px 2px #888888;
         float: left;
     }
 
@@ -71,5 +70,4 @@ No tab shown on large display. Toggled via button in bar
     float: right;
     display: inline-block;
     z-index: 2000;
-    box-shadow: -5px 5px 2px #888888;
 }
