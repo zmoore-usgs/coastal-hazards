@@ -21,7 +21,7 @@ CCH.Objects.BucketSlide = function (args) {
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
 
     me.borderWidth = 2;
-    me.animationTime = 1500;
+    me.animationTime = 500;
     me.placement = 'right';
     me.displayTab = true;
     me.isSmall = args.isSmall;
