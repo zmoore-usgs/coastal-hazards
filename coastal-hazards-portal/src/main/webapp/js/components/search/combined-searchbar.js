@@ -9,25 +9,27 @@ CCH.Objects.CombinedSearch = function (args) {
     CCH.LOG.info('CCH.Objects.CombinedSearch::constructor: CombinedSearch class is initializing.');
 
     var me = (this === window) ? {} : this;
-
+    
+    args = args || {};
+    
     // Application Navbar id/class string constants
-    me.CONTAINER_ID = 'app-navbar-search-container';
-    me.DD_TOGGLE_ID = 'app-navbar-search-dropdown-toggle';
-    me.DD_TOGGLE_MENU_ITEMS_CLASS = 'app-navbar-search-dropdown-item';
-    me.DD_TOGGLE_TEXT_CONTAINER_ID = 'app-navbar-search-container-select-button-text';
-    me.DD_TOGGLE_MENU_ID = 'app-navbar-search-dropdown-menu';
+    me.CONTAINER_ID = args.containerId || 'app-navbar-search-container';
+    me.DD_TOGGLE_ID = args.toggleId || 'app-navbar-search-dropdown-toggle';
+    me.DD_TOGGLE_MENU_ITEMS_CLASS = args.toggleMenuItemClass || 'app-navbar-search-dropdown-item';
+    me.DD_TOGGLE_TEXT_CONTAINER_ID = args.toggleTextContainerId || 'app-navbar-search-container-select-button-text';
+    me.DD_TOGGLE_MENU_ID = args.toggleMenuId || 'app-navbar-search-dropdown-menu';
     me.DD_TOGGLE_MENU_ITEMS_CHOICE_SUBMENU_ID = 'app-navbar-search-dropdown-toggle-choice-items-all';
     me.DD_TOGGLE_MENU_ITEMS_CHOICE_ALL_ID = 'app-navbar-search-dropdown-toggle-choice-item-all';
-    me.INPUT_ID = 'app-navbar-search-input';
-    me.SUBMIT_BUTTON_ID = 'app-navbar-search-submit-button';
+    me.INPUT_ID = args.inputId || 'app-navbar-search-input';
+    me.SUBMIT_BUTTON_ID = args.submitButtonId || 'app-navbar-search-submit-button';
     me.POPOVER_TARGET_ID = me.INPUT_ID;
-    me.POPOVER_ID = 'app-navbar-search-context-popover';
+    me.POPOVER_ID = args.popoverId || 'app-navbar-search-context-popover';
 
     // Results Popover id/class string constants
-    me.GEO_RESULTS_CONTAINER_ID = 'results-popover-geolocation-results-container';
-    me.GEO_RESULTS_DESCRIPTION_CONTAINER_ID = 'results-popover-geolocation-results-description-container';
-    me.GEO_RESULTS_LIST_CONTAINER_ID = 'results-popover-geolocation-results-list-container';
-    me.GEO_RESULTS_LIST_ID = 'results-popover-geolocation-results-list';
+    me.GEO_RESULTS_CONTAINER_ID = args.geoResultsContainerId || 'results-popover-geolocation-results-container';
+    me.GEO_RESULTS_DESCRIPTION_CONTAINER_ID = args.geoResultsDescriptionContainerId || 'results-popover-geolocation-results-description-container';
+    me.GEO_RESULTS_LIST_CONTAINER_ID = args.geoResultsListContainerId || 'results-popover-geolocation-results-list-container';
+    me.GEO_RESULTS_LIST_ID = args.geoResultsListId || 'results-popover-geolocation-results-list';
 
     me.inputControlPopover = $('#' + me.POPOVER_TARGET_ID).popover({
         html : true,
@@ -269,17 +271,8 @@ CCH.Objects.CombinedSearch = function (args) {
         case 'location':
             content = $('#app-navbar-search-input-context-menu-location');
             break;
-        case 'all items':
-            content = $('#app-navbar-search-input-context-menu-items-allitems');
-            break;
-        case 'storms':
-            content = $('#app-navbar-search-input-context-menu-items-storms');
-            break;
-        case 'vulnerability':
-            content = $('#app-navbar-search-input-context-menu-items-vulnerability');
-            break;
-        case 'historical':
-            content = $('#app-navbar-search-input-context-menu-items-historical');
+        case 'items':
+            content = $('#app-navbar-search-input-context-menu-items');
             break;
         }
 
@@ -364,22 +357,6 @@ CCH.Objects.CombinedSearch = function (args) {
         });
 
         me.resizeContainer();
-    });
-
-    // This is a fix for how bootstrap deals with submenu list-item and anchor 
-    // defsault behavior.
-    // For the submenu, don't do anything. Default behavior is to accept the click 
-    // but this is bad on touch devices since disabled links need to be 
-    // clicked in order to expand a submenu
-    $('#' + me.DD_TOGGLE_MENU_ID + ' li[class~="dropdown-submenu"]').on('click', function (evt) {
-        // Check to see if we are propagating at the moment. If so, that means 
-        // that we are not the target of what was clicked and we should not stop
-        // further propagation. Otherwise, what was clicked was a toggle node 
-        // for the submenu and it should just open the submenu and that's all, so
-        // stop propagation
-        if (evt.currentTarget === evt.target.parentElement) {
-            evt.stopImmediatePropagation();
-        }
     });
 
     // The behavior for the search box should be:

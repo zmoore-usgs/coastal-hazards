@@ -9,15 +9,7 @@
             <ul id="app-navbar-search-dropdown-menu" class="dropdown-menu">
                 <li class="disabled app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-all" tabindex="-1" href="#">All</a></li>
                 <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-location" tabindex="-1" href="#">Location</a></li>
-                <li class="dropdown-submenu disabled">
-                    <a id="app-navbar-search-dropdown-toggle-choice-items-all">Items</a>
-                    <ul id="app-navbar-search-dropdown-menu-items" class="dropdown-menu">
-                        <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-items-allitems" tabindex="-1" href="#">All Items</a></li>
-                        <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-items-storms" tabindex="-1" href="#">Storms</a></li>
-                        <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-items-vulnerability" tabindex="-1" href="#">Vulnerability</a></li>
-                        <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-items-historical" tabindex="-1" href="#">Historical</a></li>
-                    </ul>
-                </li>
+                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-items" tabindex="-1" href="#">Items</a></li>
             </ul>
         </div>
         <input id="app-navbar-search-input" type="text" placeholder="Search..." />
@@ -32,16 +24,23 @@
     <div id="app-navbar-search-input-context-menu-location">
         I am a context menu that appears when "Location" is selected
     </div>
-    <div id="app-navbar-search-input-context-menu-items-allitems">
-        I am a context menu that appears when "All Items" is selected
-    </div>
-    <div id="app-navbar-search-input-context-menu-items-storms">
-        I am a context menu that appears when "Storms" is selected
-    </div>
-    <div id="app-navbar-search-input-context-menu-items-vulnerability">
-        I am a context menu that appears when "Vulnerability" is selected
-    </div>
-    <div id="app-navbar-search-input-context-menu-items-historical">
-        I am a context menu that appears when "Historical" is selected
+    <div id="app-navbar-search-input-context-menu-items">
+        <div id="app-navbar-search-input-context-menu-items-well" class="container-fluid well well-small">
+            <label class="checkbox inline">
+                <input type="checkbox" id="app-navbar-search-input-context-menu-items-checkbox-vulnerability" class="app-navbar-search-input-context-menu-items-checkbox" checked="checked" value="vulnerability"> 
+                Vulnerability
+            </label>
+            <label class="checkbox inline">
+                <input type="checkbox" id="app-navbar-search-input-context-menu-items-checkbox-storms" class="app-navbar-search-input-context-menu-items-checkbox" checked="checked" value="storms"> 
+                Storms
+            </label>
+            <label class="checkbox inline">
+                <input type="checkbox" id="app-navbar-search-input-context-menu-items-checkbox-historical" class="app-navbar-search-input-context-menu-items-checkbox" checked="checked" value="historical"> 
+                Historical
+            </label>
+        </div>
+        <div class="container-fluid pull-right">
+            Using this context menu, you are able to select which types of objects to search for.
+        </div>
     </div>
 </div>
