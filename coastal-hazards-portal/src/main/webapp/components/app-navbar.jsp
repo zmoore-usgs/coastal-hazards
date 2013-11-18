@@ -1,8 +1,9 @@
 <div id="app-navbar-container" class="span12 navbar">
     <div id="app-navbar-inner" class="navbar-inner">
         <div class="container">
-            <img id="app-navbar-coop-logo-img" class="app-navbar-item-container" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
-
+            <a href=".">
+                <img id="app-navbar-coop-logo-img" class="app-navbar-item-container" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
+            </a>
             <%-- Playing with bootstrap here to show different text for the 
                  application title as the screen narrows --%>
             <div id="app-navbar-site-title-container" class="app-navbar-item-container">
