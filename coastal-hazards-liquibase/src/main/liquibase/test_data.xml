@@ -8,6 +8,22 @@
             <column header="type" name="type" type="NUMERIC"/>
         </loadUpdateData>
     </changeSet>
+    <changeSet id="add_bboxes" author="jiwalker">
+        <loadUpdateData tableName="bbox" primaryKey="id" file="data/bbox.csv" encoding="UTF-8" quotchar="&quot;" separator=",">
+            <column header="id" name="id" type="NUMERIC"/>
+            <column header="minx" name="minx" type="NUMERIC"/>
+            <column header="miny" name="miny" type="NUMERIC"/>
+            <column header="maxx" name="maxx" type="NUMERIC"/>
+            <column header="maxy" name="maxy" type="NUMERIC"/>
+        </loadUpdateData>
+    </changeSet>
+    <changeSet id="add_centers" author="jiwalker">
+        <loadUpdateData tableName="center" primaryKey="id" file="data/center.csv" encoding="UTF-8" quotchar="&quot;" separator=",">
+            <column header="id" name="id" type="NUMERIC"/>
+            <column header="x" name="x" type="NUMERIC"/>
+            <column header="y" name="y" type="NUMERIC"/>
+        </loadUpdateData>
+    </changeSet>
     <changeSet author="jiwalker (generated)" id="1383341885474-2" context="test">
         <loadData encoding="UTF-8" file="data/authorized_users.csv" quotchar="&quot;" separator="," tableName="authorized_users">
             <column header="id" name="id" type="NUMERIC"/>
@@ -41,16 +57,11 @@
         </loadData>
     </changeSet>
     <changeSet author="jiwalker (generated)" id="1383341885474-13" context="test">
-        <loadData encoding="UTF-8" file="data/item_parent.csv" quotchar="&quot;" separator="," tableName="item_parent">
+        <loadData encoding="UTF-8" file="data/item.csv" quotchar="&quot;" separator="," tableName="item">
             <column header="id" name="id" type="STRING"/>
-            <column header="bbox" name="bbox" type="STRING"/>
+            <column header="bbox_id" name="bbox_id" type="STRING"/>
             <column header="item_type" name="item_type" type="STRING"/>
             <column header="summary_id" name="summary_id" type="STRING"/>
-        </loadData>
-    </changeSet>
-    <changeSet author="jiwalker (generated)" id="1383341885474-6" context="test">
-        <loadData encoding="UTF-8" file="data/data_item.csv" quotchar="&quot;" separator="," tableName="data_item">
-            <column header="id" name="id" type="STRING"/>
             <column header="attr" name="attr" type="STRING"/>
             <column header="metadata" name="metadata" type="STRING"/>
             <column header="name" name="name" type="STRING"/>
@@ -61,17 +72,12 @@
             <column header="wms_layers" name="wms_layers" type="STRING"/>
         </loadData>
     </changeSet>
-    <changeSet author="jiwalker (generated)" id="1383341885474-14" context="test">
-        <loadData encoding="UTF-8" file="data/aggregation_item.csv" quotchar="&quot;" separator="," tableName="aggregation_item">
-            <column header="id" name="id" type="STRING"/>
-        </loadData>
-    </changeSet>
     <changeSet author="jiwalker (generated)" id="1383341885474-9" context="test">
         <loadData encoding="UTF-8" file="data/session_table.csv" quotchar="&quot;" separator="," tableName="session_table">
             <column header="id" name="id" type="STRING"/>
             <column header="map_base_layer" name="map_base_layer" type="STRING"/>
-            <column header="bounding_box" name="bounding_box" type="STRING"/>
-            <column header="center" name="center" type="STRING"/>
+            <column header="bbox_id" name="bbox_id" type="STRING"/>
+            <column header="center_id" name="center_id" type="STRING"/>
             <column header="scale" name="scale" type="NUMERIC"/>
         </loadData>
     </changeSet>

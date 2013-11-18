@@ -94,7 +94,7 @@
                                     <propertyFile>${liquibase.properties}</propertyFile>
                                     <schemas>public</schemas>
                                     <outputDefaultSchema>true</outputDefaultSchema>
-                                    <contexts>test</contexts>
+                                    <contexts>default</contexts>
                                 </configuration>
                                 <goals>
                                     <goal>update</goal>
@@ -105,6 +105,38 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>drop-all-data</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>dropAllData</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <version>${liquibase.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <configuration>
+                                    <changeLogFile>src/main/liquibase/changeLog.xml</changeLogFile>
+                                    <propertyFile>${liquibase.properties}</propertyFile>
+                                    <schemas>public</schemas>
+                                    <outputDefaultSchema>true</outputDefaultSchema>
+                                    <contexts>default</contexts>
+                                </configuration>
+                                <goals>
+                                    <goal>dropAll</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
-
 </project>
