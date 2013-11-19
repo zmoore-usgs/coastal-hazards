@@ -19,6 +19,8 @@ CCH.Objects.BucketSlide = function (args) {
     me.MAP_DIV_ID = args.mapdivId || 'map';
     me.SLIDE_TAB_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-tab').attr('id');
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
+    me.CARD_TEMPLATE_ID = 'application-slide-bucket-container-card-template';
+    me.SLIDE_CONTENT_CONTAINER = 'application-slide-bucket-content-container';
 
     me.borderWidth = 2;
     me.animationTime = 500;
@@ -42,7 +44,7 @@ CCH.Objects.BucketSlide = function (args) {
 
     me.close = function () {
         var container = $('#' + me.SLIDE_CONTAINER_ID),
-            tab = $('#' + me.SLIDE_TAB_ID)
+            tab = $('#' + me.SLIDE_TAB_ID);
         container.animate({
             left: $(window).width() - tab.outerWidth()
         }, me.animationTime, function () {
@@ -67,7 +69,7 @@ CCH.Objects.BucketSlide = function (args) {
             slideTab = $('#' + me.SLIDE_TAB_ID),
             slideContent = $('#' + me.SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth(),
-            windowHeight = $(window).outerHeight()
+            windowHeight = $(window).outerHeight();
 
         if (me.isSmall()) {
             if (me.isClosed) {
@@ -114,6 +116,41 @@ CCH.Objects.BucketSlide = function (args) {
         return extents;
     };
 
+    me.addCard = function (args) {
+        args = args || {};
+
+        if (args.card) {
+            $('#' + me.SLIDE_CONTENT_CONTAINER).append(args.card);
+        }
+    };
+
+    me.createCard = function (args) {
+        args = args || {};
+        var id = args.id || new Date().getMilliseconds(),
+            image = args.image || 'https://2.gravatar.com/avatar/15fcf61ab6fb824d11f355d7a99a1bbf?d=https%3A%2F%2Fidenticons.github.com%2Fd55c695700043438ce4162cbe589e072.png',
+            title = args.title || 'Title Not Provided',
+            content = args.content || 'Description Not Provided',
+            imageContainerClass = 'application-slide-bucket-container-card-image',
+            titleContainerClass = 'application-slide-bucket-container-card-title',
+            descriptionContainerClass = 'application-slide-bucket-container-card-description',
+            newCard = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
+            imageContainer = newCard.find('.' + imageContainerClass),
+            titleContainer = newCard.find('.' + titleContainerClass),
+            titleContainerPNode = newCard.find('.' + titleContainerClass + ' p'),
+            descriptionContainer = newCard.find('.' + descriptionContainerClass);
+
+        newCard.attr('id', 'application-slide-bucket-container-card-' + id);
+        imageContainer.attr({
+            'id' : imageContainerClass + '-' + id,
+            'src' : image
+        });
+        titleContainer.attr('id', titleContainerClass + '-' + id);
+        titleContainerPNode.html(title);
+        descriptionContainer.attr('id', descriptionContainerClass + '-' + id).html(content);
+        
+        return newCard;
+    };
+
     $(window).on('cch.ui.resized', function (args) {
         me.resized(args);
     });
@@ -124,6 +161,8 @@ CCH.Objects.BucketSlide = function (args) {
         open: me.open,
         close: me.close,
         toggle : me.toggle,
+        addCard : me.addCard,
+        createCard : me.createCard,
         isClosed : me.isClosed
     };
 };

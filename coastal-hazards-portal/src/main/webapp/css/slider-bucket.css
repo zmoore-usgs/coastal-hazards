@@ -3,6 +3,17 @@
     z-index: 2000;
 }
 
+#application-slide-bucket-content-container {
+    height: 97%;
+    margin-top: 10px;
+    overflow: scroll;
+}
+
+.application-slide-bucket-container-card-image {
+    height: 100%;
+    width: 100%;
+}
+
 /*
 No tab shown on large display. Toggled via button in bar
 */
