@@ -10,7 +10,6 @@
 }
 
 .application-slide-bucket-container-card-image {
-    height: 100%;
     width: 100%;
 }
 
@@ -69,6 +68,10 @@ No tab shown on large display. Toggled via button in bar
     #application-slide-bucket-content {
         border-bottom-left-radius: 10px 10px;
         -webkit-border-bottom-left-radius: 10px 10px;
+    }
+
+    .application-slide-bucket-container-card-image {
+        width: auto;
     }
 }
 
