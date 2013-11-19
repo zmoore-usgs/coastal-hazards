@@ -57,8 +57,8 @@ public class Item implements Serializable {
     private Summary summary;
     private String name;
 	private String metadata;
-    /** @deprecated */
-	private DataItem.Type type;
+    /** @deprecated or rename to theme */
+	private Type type;
 	private String attr;
     /** @deprecated */
     private transient Rank rank;
@@ -142,11 +142,11 @@ public class Item implements Serializable {
 	}
 
     @Enumerated(EnumType.STRING)
-	public DataItem.Type getType() {
+	public Item.Type getType() {
 		return type;
 	}
 
-	public void setType(DataItem.Type type) {
+	public void setType(Item.Type type) {
 		this.type = type;
 	}
 

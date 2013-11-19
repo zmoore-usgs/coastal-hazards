@@ -2,7 +2,7 @@ package gov.usgs.cida.coastalhazards.sld;
 
 import com.google.gson.Gson;
 import com.sun.jersey.api.view.Viewable;
-import gov.usgs.cida.coastalhazards.model.DataItem;
+import gov.usgs.cida.coastalhazards.model.Item;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -22,7 +22,7 @@ public final class BayesianCVI extends SLDGenerator {
     private static final float[] thresholds = {1.0f, 10.0f, 33.0f, 66.0f, 90.0f, 99.0f};
     private static final String[] colors = {"#005CE6", "#00A884", "#55FF00", "#FFFF00", "#FFAA00", "#FF0000", "#734C00"};
     
-    public BayesianCVI(DataItem item) {
+    public BayesianCVI(Item item) {
         super(item);
     }
     

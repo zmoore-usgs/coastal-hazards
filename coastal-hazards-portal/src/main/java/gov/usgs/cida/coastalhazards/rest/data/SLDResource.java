@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
-import gov.usgs.cida.coastalhazards.model.DataItem;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.sld.SLDGenerator;
 import javax.ws.rs.GET;
@@ -29,14 +28,9 @@ public class SLDResource {
 		if (item == null) {
 			response = Response.status(Response.Status.NOT_FOUND).build();
 		} else {
-            if (item instanceof DataItem) {
-                DataItem dataItem = (DataItem)item;
-                SLDGenerator generator = SLDGenerator.getGenerator(dataItem);
-                if (generator != null) {
-                    response = generator.generateSLD();
-                }
-            } else {
-                throw new UnsupportedOperationException("SLD only works on Data Items");
+            SLDGenerator generator = SLDGenerator.getGenerator(item);
+            if (generator != null) {
+                response = generator.generateSLD();
             }
 		}
 
@@ -54,16 +48,11 @@ public class SLDResource {
 		if (item == null) {
 			response = Response.status(Response.Status.NOT_FOUND).build();
 		} else {
-			if (item instanceof DataItem) {
-                DataItem dataItem = (DataItem)item;
-                SLDGenerator generator = SLDGenerator.getGenerator(dataItem);
-                if (generator == null) {
-                    response = Response.status(Response.Status.NOT_FOUND).build();
-                } else {
-                    response = generator.generateSLDInfo();
-                }
+            SLDGenerator generator = SLDGenerator.getGenerator(item);
+            if (generator == null) {
+                response = Response.status(Response.Status.NOT_FOUND).build();
             } else {
-                throw new UnsupportedOperationException("SLD only works on Data Items");
+                response = generator.generateSLDInfo();
             }
 		}
 

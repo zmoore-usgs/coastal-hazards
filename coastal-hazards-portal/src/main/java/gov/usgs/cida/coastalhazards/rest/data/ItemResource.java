@@ -2,7 +2,6 @@ package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
-import gov.usgs.cida.coastalhazards.model.DataItem;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
@@ -144,24 +143,19 @@ public class ItemResource {
         Response response = Response.serverError().build();
         
         Item item = Item.fromJSON(content);
-        DataItem data = null;
-        if (item instanceof DataItem) {
-            data = (DataItem)item;
-        } else {
-            throw new IllegalStateException("items must currently be data items");
-        }
+
         try {
-            String jsonSummary = getSummaryFromWPS(data.getMetadata(), data.getAttr());
+            String jsonSummary = getSummaryFromWPS(item.getMetadata(), item.getAttr());
             // this is not actually summary json object, so we need to change that a bit
             Summary summary = gson.fromJson(jsonSummary, Summary.class);
-            data.setSummary(summary);
+            item.setSummary(summary);
         } catch (Exception ex) {
             Map<String,String> err = new HashMap<String, String>();
             err.put("message", ex.getMessage());
             response = Response.serverError().entity(new Gson().toJson(err, HashMap.class)).build();
         }
-        if (data.getSummary() != null) {
-            final String id = itemManager.savePreview(data);
+        if (item.getSummary() != null) {
+            final String id = itemManager.savePreview(item);
 
             if (null == id) {
                 response = Response.status(Response.Status.BAD_REQUEST).build();

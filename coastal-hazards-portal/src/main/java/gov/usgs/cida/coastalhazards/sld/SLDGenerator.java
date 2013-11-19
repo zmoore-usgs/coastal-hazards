@@ -1,9 +1,5 @@
 package gov.usgs.cida.coastalhazards.sld;
 
-import gov.usgs.cida.coastalhazards.model.DataItem;
-import static gov.usgs.cida.coastalhazards.model.DataItem.Type.historical;
-import static gov.usgs.cida.coastalhazards.model.DataItem.Type.storms;
-import static gov.usgs.cida.coastalhazards.model.DataItem.Type.vulnerability;
 import gov.usgs.cida.coastalhazards.model.Item;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang.ArrayUtils;
@@ -14,10 +10,10 @@ import org.apache.commons.lang.ArrayUtils;
  */
 public abstract class SLDGenerator {
     
-    protected DataItem item;
+    protected Item item;
     protected static final String style = "cch";
     
-    public static SLDGenerator getGenerator(DataItem item) {
+    public static SLDGenerator getGenerator(Item item) {
         SLDGenerator generator = null;
         switch(item.getType()) {
             case storms:
@@ -59,7 +55,7 @@ public abstract class SLDGenerator {
         return generator;
     }
     
-    public SLDGenerator(DataItem item) {
+    public SLDGenerator(Item item) {
         this.item = item;
     }
     

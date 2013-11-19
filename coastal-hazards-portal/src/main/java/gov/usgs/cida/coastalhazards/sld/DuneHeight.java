@@ -2,7 +2,7 @@ package gov.usgs.cida.coastalhazards.sld;
 
 import com.google.gson.Gson;
 import com.sun.jersey.api.view.Viewable;
-import gov.usgs.cida.coastalhazards.model.DataItem;
+import gov.usgs.cida.coastalhazards.model.Item;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -24,7 +24,7 @@ public final class DuneHeight extends SLDGenerator {
     private static final String[] colorsCrest = {"#D6C19D", "#BAA282", "#A18769", "#896B55", "#725642", "#5B4030"};
     private static final String[] colorsToe = {"#D7F1AF", "#BBD190", "#A3B574", "#8C9C5A", "#768242", "#5F6A27"};
     
-    public DuneHeight(DataItem item) {
+    public DuneHeight(Item item) {
         super(item);
     }
     

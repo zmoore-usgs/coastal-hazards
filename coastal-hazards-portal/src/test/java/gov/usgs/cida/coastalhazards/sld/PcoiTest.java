@@ -2,10 +2,11 @@ package gov.usgs.cida.coastalhazards.sld;
 
 import com.google.gson.Gson;
 import com.sun.jersey.api.view.Viewable;
-import gov.usgs.cida.coastalhazards.model.DataItem;
+import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.model.summary.Tiny;
+import gov.usgs.cida.coastalhazards.sld.Pcoi;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +25,10 @@ public class PcoiTest {
      */
     @Test
     public void testGenerateSLDInfo() {
-        DataItem item = new DataItem();
+        Item item = new Item();
         item.setAttr("PCOL1");
         item.setId("abcde");
-        item.setType(DataItem.Type.storms);
+        item.setType(Item.Type.storms);
         WMSService wmsService = new WMSService();
         wmsService.setLayers("0");
         item.setWmsService(wmsService);
@@ -51,10 +52,10 @@ public class PcoiTest {
     
     @Test
     public void testGenerateSLD() {
-        DataItem item = new DataItem();
+        Item item = new Item();
         item.setAttr("PCOL1");
         item.setId("abcde");
-        item.setType(DataItem.Type.storms);
+        item.setType(Item.Type.storms);
         WMSService wmsService = new WMSService();
         wmsService.setLayers("0");
         item.setWmsService(wmsService);

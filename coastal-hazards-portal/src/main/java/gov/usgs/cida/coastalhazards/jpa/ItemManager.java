@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
 import com.google.gson.Gson;
-import gov.usgs.cida.coastalhazards.model.DataItem;
 import gov.usgs.cida.coastalhazards.model.Item;
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,7 +54,7 @@ public class ItemManager {
     
     public Item loadItem(String itemId) {
         String jsonItem = load(itemId);
-        Item item = DataItem.fromJSON(jsonItem);
+        Item item = Item.fromJSON(jsonItem);
         return item;
     }
 
@@ -80,7 +79,7 @@ public class ItemManager {
 		return id;
 	}
 	
-	public String savePreview(DataItem item) {
+	public String savePreview(Item item) {
         String id = item.getId();
 		try {
 			File onDiskItem = new File(FileUtils.getTempDirectory(), id);
