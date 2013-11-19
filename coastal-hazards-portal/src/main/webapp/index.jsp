@@ -40,12 +40,8 @@
 					   here. They can be used to increase awareness and provide a basis for decision making." />
 			<jsp:param name="application-overlay-background-image" value="images/splash/splash.svg" />
 		</jsp:include>
-        <div id="application-slide-bucket-container" class="application-slide-container">
-            <span id="application-slide-bucket-tab" class="application-slide-tab">
-                <img alt="Bucket Slider Tab Image" src="images/banner/bucket/bucket-no-sand.svg" />
-            </span>
-            <span id="application-slide-bucket-content" class="application-slide-content">CONTENT</span>
-        </div>
+        <jsp:include page="components/slider-bucket.jsp"></jsp:include>
+        <jsp:include page="components/slider-search.jsp"></jsp:include>
 		<div id="application-container" class="container-fluid">
             
 			<div id="header-row" class="row-fluid">
@@ -89,6 +85,7 @@
 		<jsp:include page="js/jquery-cookie/jquery-cookie.jsp"></jsp:include>
         <script type="text/javascript" src="js/components/slide/Slide.js"></script>
         <script type="text/javascript" src="js/components/slide/BucketSlide.js"></script>
+        <script type="text/javascript" src="js/components/slide/SearchSlide.js"></script>
         <script type="text/javascript" src="js/components/util/Util.js"></script>
         <script type="text/javascript" src="js/components/slideshow/Slideshow.js"></script>
         <script type="text/javascript" src="js/components/search/Search.js"></script>
