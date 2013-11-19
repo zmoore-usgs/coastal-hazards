@@ -3,6 +3,7 @@ package gov.usgs.cida.coastalhazards.model;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import gov.usgs.cida.coastalhazards.gson.adapter.BboxAdapter;
+import gov.usgs.cida.coastalhazards.gson.adapter.CenterAdapter;
 import gov.usgs.cida.coastalhazards.gson.adapter.DoubleSerializer;
 import gov.usgs.cida.utilities.string.StringHelper;
 import java.io.Serializable;
@@ -44,6 +45,7 @@ public class Session implements Serializable {
 		return new GsonBuilder()
 				.registerTypeAdapter(Double.class, new DoubleSerializer(doublePrecision))
                 .registerTypeAdapter(Bbox.class, new BboxAdapter())
+                .registerTypeAdapter(Center.class, new CenterAdapter())
 				.create()
 				.toJson(this);
 	}
@@ -53,7 +55,8 @@ public class Session implements Serializable {
 
 		Session session;
 		GsonBuilder gsonBuilder = new GsonBuilder()
-            .registerTypeAdapter(Bbox.class, new BboxAdapter());
+            .registerTypeAdapter(Bbox.class, new BboxAdapter())
+            .registerTypeAdapter(Center.class, new CenterAdapter());
 //        gsonBuilder.registerTypeAdapter(Geometry.class, new GeometryDeserializer());
 //        gsonBuilder.registerTypeAdapter(Envelope.class, new EnvelopeDeserializer());
 //        gsonBuilder.registerTypeAdapter(CoordinateSequence.class, new CoordinateSequenceDeserializer());

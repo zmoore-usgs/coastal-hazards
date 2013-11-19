@@ -1,6 +1,5 @@
-package gov.usgs.cida.coastalhazards.gson.serializer;
+package gov.usgs.cida.coastalhazards.gson.adapter;
 
-import gov.usgs.cida.coastalhazards.gson.adapter.DoubleSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.Serializable;
