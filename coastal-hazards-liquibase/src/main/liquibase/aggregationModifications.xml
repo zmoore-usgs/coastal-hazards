@@ -21,16 +21,16 @@
     <changeSet id="fix_bbox" author="jiwalker">
         <dropColumn tableName="item" columnName="bbox" />
         <addColumn tableName="item">
-            <column name="bbox_id" type="INT8" />
+            <column name="bbox_id" type="INT4" />
         </addColumn>
         
         <dropColumn tableName="session_table" columnName="bounding_box" />
         <addColumn tableName="session_table">
-            <column name="bbox_id" type="INT8" />
+            <column name="bbox_id" type="INT4" />
         </addColumn>
     
         <createTable tableName="bbox">
-            <column name="id" type="INT8">
+            <column name="id" type="INT4">
                 <constraints nullable="false"/>
             </column>
             <column name="minx" type="double precision" />
@@ -45,11 +45,11 @@
     <changeSet id="fix_center" author="jiwalker">
         <dropColumn tableName="session_table" columnName="center" />
         <addColumn tableName="session_table">
-            <column name="center_id" type="INT8" />
+            <column name="center_id" type="INT4" />
         </addColumn>
     
         <createTable tableName="center">
-            <column name="id" type="INT8">
+            <column name="id" type="INT4">
                 <constraints nullable="false"/>
             </column>
             <column name="x" type="double precision" />
