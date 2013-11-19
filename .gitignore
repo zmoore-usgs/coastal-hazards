@@ -1,12 +1,29 @@
+# Created by http://gitignore.io
+
+### NetBeans ###
+nbproject/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+build.xml
+build.properties
+
+
+### Java ###
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+### Maven ###
 target/
+
+### Project Specific ###
 /coastal-hazards-geoserver/src/main/webapp/META-INF/
 /coastal-hazards-n52/src/main/webapp/META-INF/
-nb-configuration.xml
-nbactions.xml
 
-#vim swap files:
-.*sw[po]
-.project
-.settings
-.classpath
-.Rproj.user
