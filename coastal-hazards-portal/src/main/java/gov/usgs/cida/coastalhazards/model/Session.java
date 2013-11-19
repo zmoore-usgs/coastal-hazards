@@ -2,11 +2,10 @@ package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import gov.usgs.cida.coastalhazards.gson.adapter.BboxAdapter;
 import gov.usgs.cida.coastalhazards.gson.adapter.DoubleSerializer;
-import gov.usgs.cida.utilities.file.FileHelper;
 import gov.usgs.cida.utilities.string.StringHelper;
 import java.io.Serializable;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import javax.persistence.*;
@@ -44,6 +43,7 @@ public class Session implements Serializable {
 	public String toJSON() {
 		return new GsonBuilder()
 				.registerTypeAdapter(Double.class, new DoubleSerializer(doublePrecision))
+                .registerTypeAdapter(Bbox.class, new BboxAdapter())
 				.create()
 				.toJson(this);
 	}
@@ -52,7 +52,8 @@ public class Session implements Serializable {
 		String id = StringHelper.makeSHA1Hash(json);
 
 		Session session;
-		GsonBuilder gsonBuilder = new GsonBuilder();
+		GsonBuilder gsonBuilder = new GsonBuilder()
+            .registerTypeAdapter(Bbox.class, new BboxAdapter());
 //        gsonBuilder.registerTypeAdapter(Geometry.class, new GeometryDeserializer());
 //        gsonBuilder.registerTypeAdapter(Envelope.class, new EnvelopeDeserializer());
 //        gsonBuilder.registerTypeAdapter(CoordinateSequence.class, new CoordinateSequenceDeserializer());

@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import gov.usgs.cida.coastalhazards.gson.adapter.BboxAdapter;
 import gov.usgs.cida.coastalhazards.gson.adapter.DoubleSerializer;
 import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
 import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
@@ -188,6 +189,7 @@ public class Item implements Serializable {
 	public String toJSON() {
 		return new GsonBuilder()
 				.registerTypeAdapter(Double.class, new DoubleSerializer(doublePrecision))
+                .registerTypeAdapter(Bbox.class, new BboxAdapter())
 				.create()
 				.toJson(this);
 	}
@@ -196,7 +198,7 @@ public class Item implements Serializable {
 
 		Item node;
 		GsonBuilder gsonBuilder = new GsonBuilder();
-//        gsonBuilder.registerTypeAdapter(Item.class, new ItemAdapter());
+        gsonBuilder.registerTypeAdapter(Bbox.class, new BboxAdapter());
 //        gsonBuilder.registerTypeAdapter(Geometry.class, new GeometryDeserializer());
 //        gsonBuilder.registerTypeAdapter(Envelope.class, new EnvelopeDeserializer());
 //        gsonBuilder.registerTypeAdapter(CoordinateSequence.class, new CoordinateSequenceDeserializer());
