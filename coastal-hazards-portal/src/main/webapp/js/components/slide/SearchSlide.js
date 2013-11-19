@@ -3,12 +3,12 @@
 /*global $*/
 /*global CCH*/
 /*global splashUpdate*/
-CCH.Objects.BucketSlide = function (args) {
+CCH.Objects.SearchSlide = function (args) {
     "use strict";
     args = args || {};
 
     if (!args.containerId) {
-        throw 'containerId is required when initializing a bucket slide';
+        throw 'containerId is required when initializing a search slide';
     }
     var me = (this === window) ? {} : this;
 
@@ -16,18 +16,16 @@ CCH.Objects.BucketSlide = function (args) {
     // window: 'cch.ui.resized'
 
     me.SLIDE_CONTAINER_ID = args.containerId;
-    me.MAP_DIV_ID = args.mapdivId || 'map';
     me.SLIDE_TAB_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-tab').attr('id');
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
-    me.CARD_TEMPLATE_ID = 'application-slide-bucket-container-card-template';
-    me.SLIDE_CONTENT_CONTAINER = 'application-slide-bucket-content-container';
-
+    me.APP_CONTAINER_ID = 'content-row';
+    
     me.borderWidth = 2;
     me.animationTime = 500;
     me.placement = 'right';
     me.displayTab = true;
     me.isSmall = args.isSmall;
-    me.startClosed = !me.isSmall();
+    me.startClosed = true;
     me.isInitialized = false;
     me.isClosed = me.startClosed;
 
@@ -44,9 +42,10 @@ CCH.Objects.BucketSlide = function (args) {
 
     me.close = function () {
         var container = $('#' + me.SLIDE_CONTAINER_ID),
-            tab = $('#' + me.SLIDE_TAB_ID);
+            tab = $('#' + me.SLIDE_TAB_ID),
+            dropShadowWidth = 7;
         container.animate({
-            left: $(window).width() - tab.outerWidth()
+            left: $(window).width() - tab.outerWidth() + dropShadowWidth
         }, me.animationTime, function () {
             me.isClosed = true;
         });
@@ -68,13 +67,14 @@ CCH.Objects.BucketSlide = function (args) {
             slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             slideTab = $('#' + me.SLIDE_TAB_ID),
             slideContent = $('#' + me.SLIDE_CONTENT_ID),
+            appContainerId = $('#' + me.APP_CONTAINER_ID),
             windowWidth = $(window).outerWidth(),
-            windowHeight = $(window).outerHeight();
+            windowHeight = $(window).outerHeight()
 
         if (me.isSmall()) {
             if (me.isClosed) {
                 slideContainer.offset({
-                    left: windowWidth  - slideTab.outerWidth(),
+                    left: windowWidth - slideTab.outerWidth(),
                     top: toExtent.top
                 });
             } else {
@@ -96,63 +96,29 @@ CCH.Objects.BucketSlide = function (args) {
                 slideContainer.offset(toExtent);
             }
             slideContainer.width(windowWidth - toExtent.left);
-            slideContainer.height($('#' + me.MAP_DIV_ID).outerHeight());
+            slideContainer.height(appContainerId.outerHeight());
             slideContent.width(slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth);
         }
     };
 
     me.getExtents = function () {
-        var extents = {
+        var appContainerId = $('#' + me.APP_CONTAINER_ID),
+            extents = {
                 large: {
-                    top: $('#' + me.MAP_DIV_ID).offset().top,
-                    left: $('#' + me.MAP_DIV_ID).outerWidth() + $('#' + me.MAP_DIV_ID).offset().left
+                    top: appContainerId.offset().top,
+                    left: appContainerId.offset().left + 10
                 },
                 small: {
-                    top: 10,
-                    left: 10
+                    top: appContainerId.offset().top,
+                    left: appContainerId.offset().left
                 }
             };
 
         return extents;
     };
 
-    me.addCard = function (args) {
-        args = args || {};
-
-        if (args.card) {
-            $('#' + me.SLIDE_CONTENT_CONTAINER).append(args.card);
-        }
-    };
-
-    me.createCard = function (args) {
-        args = args || {};
-        var id = args.id || new Date().getMilliseconds(),
-            image = args.image || 'https://2.gravatar.com/avatar/15fcf61ab6fb824d11f355d7a99a1bbf?d=https%3A%2F%2Fidenticons.github.com%2Fd55c695700043438ce4162cbe589e072.png',
-            title = args.title || 'Title Not Provided',
-            content = args.content || 'Description Not Provided',
-            imageContainerClass = 'application-slide-bucket-container-card-image',
-            titleContainerClass = 'application-slide-bucket-container-card-title',
-            descriptionContainerClass = 'application-slide-bucket-container-card-description',
-            newCard = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
-            imageContainer = newCard.find('.' + imageContainerClass),
-            titleContainer = newCard.find('.' + titleContainerClass),
-            titleContainerPNode = newCard.find('.' + titleContainerClass + ' p'),
-            descriptionContainer = newCard.find('.' + descriptionContainerClass);
-
-        newCard.attr('id', 'application-slide-bucket-container-card-' + id);
-        imageContainer.attr({
-            'id' : imageContainerClass + '-' + id,
-            'src' : image
-        });
-        titleContainer.attr('id', titleContainerClass + '-' + id);
-        titleContainerPNode.html(title);
-        descriptionContainer.attr('id', descriptionContainerClass + '-' + id).html(content);
-        
-        return newCard;
-    };
-
     $(window).on('cch.ui.resized', function (args) {
-        me.resized(args);
+        me.resized(args); 
     });
 
     $('#' + me.SLIDE_TAB_ID).on('click', me.toggle);
@@ -161,8 +127,6 @@ CCH.Objects.BucketSlide = function (args) {
         open: me.open,
         close: me.close,
         toggle : me.toggle,
-        addCard : me.addCard,
-        createCard : me.createCard,
         isClosed : me.isClosed
     };
 };

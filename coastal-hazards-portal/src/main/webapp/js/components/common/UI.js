@@ -26,6 +26,7 @@ CCH.Objects.UI = function (args) {
     me.HELP_MODAL_ID = args.helpModalId || 'helpModal';
     me.HELP_MODAL_BODY_ID = args.helpModalBodyId || 'help-modal-body';
     me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId || 'application-slide-bucket-container';
+    me.SEARCH_SLIDE_CONTAINER_ID = args.slideSearchContainerId || 'application-slide-search-container';
     
     me.magicResizeNumber = 767;
     me.minimumHeight = args.minimumHeight || 480;
@@ -325,11 +326,16 @@ CCH.Objects.UI = function (args) {
     };
     
     me.bucketSlide = new CCH.Objects.BucketSlide({
-        containerId : 'application-slide-bucket-container',
+        containerId : me.BUCKET_SLIDE_CONTAINER_ID,
         mapdivId : me.MAP_DIV_ID,
         isSmall : me.isSmall
     });
-
+    
+    me.searchSlide = new CCH.Objects.SearchSlide({
+        containerId : me.SEARCH_SLIDE_CONTAINER_ID,
+        isSmall : me.isSmall
+    });
+    
     // Init
     {
         var navbarPinButton = $('#' + me.NAVBAR_PIN_BUTTON_ID),
@@ -377,6 +383,7 @@ CCH.Objects.UI = function (args) {
         isSmall: me.isSmall,
         displayLoadingError: me.displayLoadingError,
         bucketSlide: me.bucketSlide,
+        searchSlide: me.searchSlide,
         bucket: me.bucket
     };
 };

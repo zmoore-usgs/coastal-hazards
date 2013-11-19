@@ -1,36 +1,46 @@
-#application-slide-bucket-container {
+#application-slide-search-container {
     position: absolute;
     z-index: 2000;
 }
 
-#application-slide-bucket-content-container {
-    height: 97%;
-    margin-top: 10px;
-    overflow: scroll;
+#application-slide-search-content {
+    background-color: #F5F5F5;
+    border-bottom: 2px solid #E3E3E3;
+    border-top: 2px solid #E3E3E3;
+    border-left: 2px solid #E3E3E3;
+    height: 100%;
+    float: right;
+    display: inline-block;
+    z-index: 2000;
 }
 
-.application-slide-bucket-container-card-image {
-    width: 100%;
+#application-slide-search-tab-icon-container {
+    margin-left: 7px;
+    margin-top: 12px;
+}
+
+#application-slide-search-tab-icon-container i {
+    font-size: 2em;
 }
 
 /*
 No tab shown on large display. Toggled via button in bar
 */
 @media (min-width: 767px) {
-    #application-slide-bucket-tab {
+    #application-slide-search-tab {
         visibility: hidden;
         display: none;
         width: 0px;
         height: 0px;
     }
 
-    #application-slide-bucket-tab img {
+    #application-slide-search-tab img {
         visibility: hidden;
         width: 0px;
         height: 0px;
     }
 
-    #application-slide-bucket-content {
+    #application-slide-search-content {
         border-top-left-radius: 10px 10px;
         -webkit-border-top-left-radius: 10px 10px;
         border-bottom-left-radius: 10px 10px;
@@ -39,7 +49,7 @@ No tab shown on large display. Toggled via button in bar
 }
 
 @media (max-width: 766px) {
-    #application-slide-bucket-tab {
+    #application-slide-search-tab {
         height : 60px;
         width: 40px;
         background-color: #00CCFF;
@@ -56,32 +66,17 @@ No tab shown on large display. Toggled via button in bar
         float: left;
     }
 
-    #application-slide-bucket-tab:hover {
+    #application-slide-search-tab:hover {
         cursor: pointer;
     }
 
-    #application-slide-bucket-tab img {
+    #application-slide-search-tab img {
         height : 60px;
         width: 40px;
     }
 
-    #application-slide-bucket-content {
+    #application-slide-search-content {
         border-bottom-left-radius: 10px 10px;
         -webkit-border-bottom-left-radius: 10px 10px;
     }
-
-    .application-slide-bucket-container-card-image {
-        width: auto;
-    }
-}
-
-#application-slide-bucket-content {
-    background-color: #F5F5F5;
-    border-bottom: 2px solid #E3E3E3;
-    border-top: 2px solid #E3E3E3;
-    border-left: 2px solid #E3E3E3;
-    height: 100%;
-    float: right;
-    display: inline-block;
-    z-index: 2000;
 }
