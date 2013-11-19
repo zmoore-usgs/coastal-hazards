@@ -26,7 +26,7 @@ public class ItemTest {
 "            \"name\": \"Linear Regression Rate of shorelines in eastern Kauai, HI\",\n" +
 "            \"type\": \"historical\",\n" +
 "            \"attr\": \"LRR\",\n" +
-"            \"bbox\": [-159.35, 21.96, -159.29, 22.17],\n" +
+"            \"bbox\": {\"minx\":-159.35, \"miny\":21.96, \"maxx\":-159.29, \"maxy\":22.17},\n" +
 "            \"summary\": {" +
 "               \"tiny\": {" +
 "                   \"text\": \"Linear Regression Rate of shorelines in eastern Kauai, HI\"" +

@@ -24,9 +24,9 @@ public class Session implements Serializable {
 	private transient String id;
 	private String baselayer;
 	private double scale;
-	private double[] bbox;
-	private double[] center;
-	private List<DataItem> items;
+	private Bbox bbox;
+	private Center center;
+	private List<Item> items;
 
 	/**
 	 * Checks that the session has all required properties set
@@ -36,9 +36,9 @@ public class Session implements Serializable {
 	@Transient
 	boolean isValid() {
 		return (id != null && baselayer != null && !baselayer.isEmpty()
-				&& scale > 0.0 && bbox != null && bbox.length == 4
-				&& center != null && center.length == 2);// &&
-		// items != null);
+				&& scale > 0.0 && bbox != null //&& bbox.length == 4 (bbox.isValid?)
+				&& center != null // && center.length == 2); (center.isValid?)
+                );
 	}
 
 	public String toJSON() {
@@ -90,21 +90,23 @@ public class Session implements Serializable {
 		this.scale = scale;
 	}
 
-	@Column(name = "bounding_box")
-	public double[] getBbox() {
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(columnDefinition = "bbox_id")
+	public Bbox getBbox() {
 		return bbox;
 	}
 
-	public void setBbox(double[] bbox) {
+	public void setBbox(Bbox bbox) {
 		this.bbox = bbox;
 	}
 
-	@Column(name = "center")
-	public double[] getCenter() {
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(columnDefinition = "center_id")
+	public Center getCenter() {
 		return center;
 	}
 
-	public void setCenter(double[] center) {
+	public void setCenter(Center center) {
 		this.center = center;
 	}
 
@@ -115,11 +117,11 @@ public class Session implements Serializable {
 		@JoinColumn(name = "session_id", referencedColumnName = "id")},
 			inverseJoinColumns = {
 		@JoinColumn(name = "item_id", referencedColumnName = "id")})
-	public List<DataItem> getItems() {
+	public List<Item> getItems() {
 		return items;
 	}
 
-	public void setItems(List<DataItem> items) {
+	public void setItems(List<Item> items) {
 		this.items = items;
 	}
 }
