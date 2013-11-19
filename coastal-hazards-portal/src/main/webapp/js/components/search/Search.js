@@ -33,6 +33,7 @@ CCH.Objects.Search = function (args) {
             data: {
                 text: criteria,
                 maxLocations: maxLocations,
+                sourceCountry : 'USA',
                 outFields: '*',
                 f: 'pjson',
                 outSR: '3785'

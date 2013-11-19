@@ -23,7 +23,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.borderWidth = 2;
     me.animationTime = 500;
     me.placement = 'right';
-    me.displayTab = true;
+    me.displayTab = false;
     me.isSmall = args.isSmall;
     me.startClosed = true;
     me.isInitialized = false;
@@ -106,7 +106,7 @@ CCH.Objects.SearchSlide = function (args) {
             extents = {
                 large: {
                     top: appContainerId.offset().top,
-                    left: appContainerId.offset().left + 10
+                    left: appContainerId.offset().left + 150
                 },
                 small: {
                     top: appContainerId.offset().top,

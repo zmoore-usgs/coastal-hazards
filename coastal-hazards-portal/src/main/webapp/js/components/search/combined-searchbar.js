@@ -54,7 +54,7 @@ CCH.Objects.CombinedSearch = function (args) {
                 return $(el).outerWidth(true);
             }),
             currentInputWidth = $('#' + me.INPUT_ID).width(),
-            idealInputWidth = parentContainerWidth - (childrenCombinedWidth - currentInputWidth) - 50;
+            idealInputWidth = parentContainerWidth - (childrenCombinedWidth - currentInputWidth) - 10;
 
         $('#' + me.INPUT_ID).width(idealInputWidth);
     };

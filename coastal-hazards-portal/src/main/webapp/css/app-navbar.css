@@ -88,6 +88,7 @@
     padding-left: 0px;
     filter: none; /* Fixes an IE issue that bootstrap adds */
     height: 50px;
+    padding-right: 0px;
 }
 
 #app-navbar-pin-control-icon {

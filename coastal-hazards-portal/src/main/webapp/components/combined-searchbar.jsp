@@ -13,7 +13,7 @@
             </ul>
         </div>
         <input id="app-navbar-search-input" type="text" placeholder="Search..." />
-        <button id="app-navbar-search-submit-button" class="btn btn-large" type="button"><i class="icon-search"></i></button>
+        <button id="app-navbar-search-submit-button" class="btn btn-large" type="button"><i class="fa fa-search"></i></button>
     </div>
 </div>
 <%-- This series of menus appear when a user clicks on the search input box --%>
