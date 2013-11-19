@@ -2,7 +2,7 @@ package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import gov.usgs.cida.coastalhazards.gson.serializer.DoubleSerializer;
+import gov.usgs.cida.coastalhazards.gson.adapter.DoubleSerializer;
 import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
 import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
