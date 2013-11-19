@@ -1,6 +1,6 @@
 <div id="application-slide-bucket-container" class="application-slide-container">
     <div id="application-slide-bucket-tab" class="application-slide-tab">
-        <img alt="Bucket Slider Tab Image" src="images/banner/bucket/bucket-no-sand.svg" />
+        <i class=""></i>
     </div>
     <div id="application-slide-bucket-content" class="application-slide-content">
         <div id="application-slide-bucket-content-container" class="container-fluid">
@@ -22,10 +22,10 @@
         </div>
         <div class="row-fluid text-center">
             <div class="btn-group">
-                <button class="application-slide-bucket-container-card-button-bucket btn btn-mini application-slide-bucket-container-card-template-button" type="button"><i class="icon-star-empty"></i></button>
+                <button class="application-slide-bucket-container-card-button-bucket btn btn-mini application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-star"></i></button>
                 <button class="application-slide-bucket-container-card-button-remove btn btn-mini application-slide-bucket-container-card-template-button" type="button"><i class="icon-remove"></i></button>
-                <button class="application-slide-bucket-container-card-button-info btn btn-mini application-slide-bucket-container-card-template-button" type="button"><i class="icon-info-sign"></i></button>
-                <button class="application-slide-bucket-container-card-button-ok btn btn-mini application-slide-bucket-container-card-template-button" type="button"><i class="icon-ok"></i></button>
+                <button class="application-slide-bucket-container-card-button-info btn btn-mini application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-info-circle"></i></button>
+                <button class="application-slide-bucket-container-card-button-ok btn btn-mini application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-check"></i></button>
             </div>
         </div>
     </div>

@@ -48,8 +48,8 @@ $(document).ready(function() {
 	CCH.slideshow = new CCH.Objects.Slideshow({
 		slideContainerId: 'slide-container-wrapper'
 	});
-
-	splashUpdate("Initializing Map...");
+    
+    splashUpdate("Initializing Map...");
 	CCH.map = new CCH.Objects.Map({
 		mapDiv: 'map'
 	}).init();
