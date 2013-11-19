@@ -292,7 +292,8 @@ CCH.Objects.UI = function (args) {
         var applicationOverlay = $('#' + me.APPLICATION_OVERLAY_ID);
 
         $(window).resize();
-
+        CCH.map.getMap().updateSize();
+        
         // Get rid of the overlay and clean it up out of memory and DOM
         applicationOverlay.fadeOut(2000, function () {
             applicationOverlay.remove();
