@@ -27,13 +27,15 @@
 	splashUpdate("Setting configuration...");
     var CCH = {'Objects': {}};
 	CCH.CONFIG = {
-		id: '${param.id}',
-		idType: '${param.idType}',
 		development: <%= development%>,
 		ajaxTimeout: 300000,
 		contextPath: '<%=baseUrl%>',
 		emailLink: 'CCH_Help@usgs.gov',
 		publicUrl: '<%=publicUrl%>',
+        params: {
+            id : '${param.id}',
+            type : '${param.idType}' 
+        },
 		popupHandling: {
 			isVisible: false,
 			clickedAway: false,

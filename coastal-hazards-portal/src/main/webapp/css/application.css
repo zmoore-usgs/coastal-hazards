@@ -1,5 +1,9 @@
 /* ---------------------------------------------------------------------- UI */
 
+body {
+    overflow: hidden;
+}
+
 /* 
     Because of a conflict between twitter bootstrap and openlayers
     See: https://github.com/openlayers/openlayers/pull/755
@@ -16,12 +20,10 @@ img {
     min-width : 320px !important;
 }
 
-/* OpenLayers-specific overrides */
-.baseLayersDiv > .labelSpan {
-    display : inline;
-}
-.dataLayersDiv > .labelSpan {
-    display : inline;
+#footer-row {
+    background-color: #345280 !important;
+    height: 20px;
+    margin-top: 5px;
 }
 
 @media (max-width: 766px) {
@@ -65,7 +67,7 @@ img {
     background-position: 20% top;
 }
 
-#description-wrapper {
+#slide-container-wrapper {
     overflow: auto;
     max-width: 100%;
 }
@@ -332,26 +334,6 @@ body {
     opacity : 1.0 !important;
 }
 
-#map-search-container {
-    background-color: rgba(0, 60, 136, 0.5);
-    position: absolute;
-    top: 0;
-    padding: 0px 5px 5px 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    width: 180px;
-}
-
-#map-search-form {
-    margin: 0px;
-    padding: 5px 5px 3px 3px;
-}
-
-#map-search-input {
-    width : 140px;
-    font-size: 1.2em;
-}
-
 /* Fixes pink tile issue in OpenLayers map */
 .olImageLoadError {
     display : none !important;
@@ -360,17 +342,6 @@ body {
 @media (max-width: 440px) {
     .olControlZoom {
         display: none;
-    }
-
-    #map-search-container {
-        width: 90px;
-    }
-
-    #map-search-input {
-        height: 0.8em;
-        width : 60px;
-        font-size: 1em;
-
     }
 }
 

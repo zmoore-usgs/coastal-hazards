@@ -1,0 +1,43 @@
+#app-navbar-search-container {
+    margin-right: 25px; 
+}
+
+/*
+Make sure this appears above map elements
+*/
+#app-navbar-search-container .dropdown-menu {
+    z-index: 1110;
+}
+#app-navbar-search-dropdown-toggle popover {
+    z-index: 1110;
+}
+
+/*
+Resets bootstrap's max-width requirement for popovers'
+*/
+#app-navbar-search-context-popover.popover {
+    max-width: none !important;
+}
+
+#app-navbar-search-input {
+    height : 30px;
+    font-size : 26px;
+    color: #777777;
+}
+
+#app-navbar-search-control {
+    margin-top: 5px;
+}
+
+#app-navbar-search-control .btn-large {
+    padding: 9px 19px !important;
+}
+
+#app-navbar-search-spinner-image {
+    width: 16px;
+}
+
+#app-navbar-search-input-context-menu-items-well {
+    display: flex;
+    justify-content: space-between;
+}

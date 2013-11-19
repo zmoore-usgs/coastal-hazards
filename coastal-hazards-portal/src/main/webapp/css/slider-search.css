@@ -1,0 +1,82 @@
+#application-slide-search-container {
+    position: absolute;
+    z-index: 2000;
+}
+
+#application-slide-search-content {
+    background-color: #F5F5F5;
+    border-bottom: 2px solid #E3E3E3;
+    border-top: 2px solid #E3E3E3;
+    border-left: 2px solid #E3E3E3;
+    height: 100%;
+    float: right;
+    display: inline-block;
+    z-index: 2000;
+}
+
+#application-slide-search-tab-icon-container {
+    margin-left: 7px;
+    margin-top: 12px;
+}
+
+#application-slide-search-tab-icon-container i {
+    font-size: 2em;
+}
+
+/*
+No tab shown on large display. Toggled via button in bar
+*/
+@media (min-width: 767px) {
+    #application-slide-search-tab {
+        visibility: hidden;
+        display: none;
+        width: 0px;
+        height: 0px;
+    }
+
+    #application-slide-search-tab img {
+        visibility: hidden;
+        width: 0px;
+        height: 0px;
+    }
+
+    #application-slide-search-content {
+        border-top-left-radius: 10px 10px;
+        -webkit-border-top-left-radius: 10px 10px;
+        border-bottom-left-radius: 10px 10px;
+        -webkit-border-bottom-left-radius: 10px 10px;
+    }
+}
+
+@media (max-width: 766px) {
+    #application-slide-search-tab {
+        height : 60px;
+        width: 40px;
+        background-color: #00CCFF;
+        display: inline-block;
+        background-color: #F5F5F5;
+        border-left: 2px solid #E3E3E3;
+        border-top: 2px solid #E3E3E3;
+        border-bottom: 2px solid #E3E3E3;
+        z-index: 2001;
+        border-top-left-radius: 40px 10px;
+        -webkit-border-top-left-radius: 40px 10px;
+        border-bottom-left-radius: 40px 10px;
+        -webkit-border-bottom-left-radius: 40px 10px;
+        float: left;
+    }
+
+    #application-slide-search-tab:hover {
+        cursor: pointer;
+    }
+
+    #application-slide-search-tab img {
+        height : 60px;
+        width: 40px;
+    }
+
+    #application-slide-search-content {
+        border-bottom-left-radius: 10px 10px;
+        -webkit-border-bottom-left-radius: 10px 10px;
+    }
+}

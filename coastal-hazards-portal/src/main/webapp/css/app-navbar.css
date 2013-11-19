@@ -4,6 +4,8 @@
 
 #app-navbar-container {
     z-index: 1005;
+    /* override bootstrap default behavior */
+    margin-bottom: 4px; 
 }
 
 /* 
@@ -12,7 +14,7 @@
 .app-navbar-item-container {
     height: 50px;
     display: inline;
-    
+
 }
 
 .app-navbar-title {
@@ -21,10 +23,10 @@
 }
 
 #app-navbar-help-container {
-    font-size: 25px;
-    height: 40px;
-    margin-right: 15px;
-    margin-top: 10px;
+    font-size: 32px;
+    height: 50px;
+    position: relative;
+    top: 8px;
 }
 
 #app-navbar-help-container a:hover {
@@ -50,33 +52,6 @@
 
 }
 
-#app-navbar-bucket-button-container .app-navbar-bucket-text {
-    color: #000000;
-    top: 10px;
-}
-
-
-#app-navbar-bucket-button-container img {
-    height: 45px;
-    position: relative;
-}
-
-#app-navbar-bucket-triangle {
-    left: -35px;
-    position: relative;
-}
-
-#app-navbar-bucket-button-count {
-    font-size: 1.1em;
-    font-weight: bold;
-    left: -45px;
-    text-align: right;
-    width: 30px;
-    position: relative;
-    display: inline-block;
-}
-
-
 #app-navbar-site-title-container {
     float: left;
     height: 45px;
@@ -90,9 +65,15 @@
 }
 
 #app-navbar-coop-logo-img {
-    float: left;
-    height: 50px;
+    height: 100%;
+}
+
+#app-navbar-coop-logo-img-container {
     margin-right: 15px;
+    height: 51px;
+    width: 126px;
+    margin-right: 15px;
+    float: left;
 }
 
 #app-navbar-inner {
@@ -106,6 +87,7 @@
     box-shadow: none;
     padding-left: 0px;
     filter: none; /* Fixes an IE issue that bootstrap adds */
+    height: 50px;
 }
 
 #app-navbar-pin-control-icon {
@@ -114,25 +96,6 @@
 
 #app-navbar-pin-control-caret {
     font-size: 2em;
-}
-
-/*
-    Make sure this appears above map elements
-*/
-#app-navbar-search-container .dropdown-menu {
-    z-index: 1110;
-}
-
-#app-navbar-search-control {
-    margin-top: 10px;
-}
-
-#app-navbar-search-dropdown-toggle popover {
-    z-index: 1110;
-}
-
-#app-navbar-search-spinner-image {
-    width: 13px;
 }
 
 #results-popover-geolocation-results-container {

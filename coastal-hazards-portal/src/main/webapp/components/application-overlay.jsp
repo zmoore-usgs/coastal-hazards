@@ -9,6 +9,7 @@
 		background-attachment: fixed;
 		background-position: center center;
 		background-repeat: no-repeat;
+        background-size: contain;
 		z-index: 9999;
 	}
 
@@ -28,7 +29,7 @@
 	#application-overlay-content {
 		height: auto;
 		position: relative;
-		top: 15%;
+		top: 50%;
 		width: 90%;
 		color: #000000;
 		margin-left: 5%;
@@ -36,7 +37,7 @@
 		font-size: 1.2em;
 		line-height: 1.2em;
 		text-align: center;
-		background-color: rgba(255, 255, 255, 0.5);
+		background-color: rgba(255, 255, 255, 0.8);
 		border-style: solid;
 		border-color: #EBEBEB;
 		border-width: 2px;

@@ -1,39 +1,63 @@
 /*jslint browser: true*/
 /*jslint plusplus: true */
 /*global $*/
+/*global splashUpdate*/
 /*global CCH*/
 CCH.Objects.CombinedSearch = function (args) {
     "use strict";
-    CCH.LOG.info('CCH.Objects.CombinedSearch::constructor: Bucket class is initializing.');
+    splashUpdate("Initializing Search Subsystem...");
+    CCH.LOG.info('CCH.Objects.CombinedSearch::constructor: CombinedSearch class is initializing.');
 
     var me = (this === window) ? {} : this;
-
-    $.extend(me, args);
-
+    
+    args = args || {};
+    
     // Application Navbar id/class string constants
-    me.CONTAINER_ID = 'app-navbar-search-container';
-    me.DD_TOGGLE_ID = 'app-navbar-search-dropdown-toggle';
-    me.DD_TOGGLE_MENU_ITEMS_CLASS = 'app-navbar-search-dropdown-item';
-    me.DD_TOGGLE_TEXT_CONTAINER_ID = 'app-navbar-search-container-select-button-text';
-    me.DD_TOGGLE_MENU_ID = 'app-navbar-search-dropdown-menu';
+    me.CONTAINER_ID = args.containerId || 'app-navbar-search-container';
+    me.DD_TOGGLE_ID = args.toggleId || 'app-navbar-search-dropdown-toggle';
+    me.DD_TOGGLE_MENU_ITEMS_CLASS = args.toggleMenuItemClass || 'app-navbar-search-dropdown-item';
+    me.DD_TOGGLE_TEXT_CONTAINER_ID = args.toggleTextContainerId || 'app-navbar-search-container-select-button-text';
+    me.DD_TOGGLE_MENU_ID = args.toggleMenuId || 'app-navbar-search-dropdown-menu';
     me.DD_TOGGLE_MENU_ITEMS_CHOICE_SUBMENU_ID = 'app-navbar-search-dropdown-toggle-choice-items-all';
     me.DD_TOGGLE_MENU_ITEMS_CHOICE_ALL_ID = 'app-navbar-search-dropdown-toggle-choice-item-all';
-    me.INPUT_ID = 'app-navbar-search-input';
-    me.SUBMIT_BUTTON_ID = 'app-navbar-search-submit-button';
+    me.INPUT_ID = args.inputId || 'app-navbar-search-input';
+    me.SUBMIT_BUTTON_ID = args.submitButtonId || 'app-navbar-search-submit-button';
     me.POPOVER_TARGET_ID = me.INPUT_ID;
-    
+    me.POPOVER_ID = args.popoverId || 'app-navbar-search-context-popover';
+
     // Results Popover id/class string constants
-    me.GEO_RESULTS_CONTAINER_ID = 'results-popover-geolocation-results-container';
-    me.GEO_RESULTS_DESCRIPTION_CONTAINER_ID = 'results-popover-geolocation-results-description-container';
-    me.GEO_RESULTS_LIST_CONTAINER_ID = 'results-popover-geolocation-results-list-container';
-    me.GEO_RESULTS_LIST = 'results-popover-geolocation-results-list';
-    
+    me.GEO_RESULTS_CONTAINER_ID = args.geoResultsContainerId || 'results-popover-geolocation-results-container';
+    me.GEO_RESULTS_DESCRIPTION_CONTAINER_ID = args.geoResultsDescriptionContainerId || 'results-popover-geolocation-results-description-container';
+    me.GEO_RESULTS_LIST_CONTAINER_ID = args.geoResultsListContainerId || 'results-popover-geolocation-results-list-container';
+    me.GEO_RESULTS_LIST_ID = args.geoResultsListId || 'results-popover-geolocation-results-list';
+
+    me.inputControlPopover = $('#' + me.POPOVER_TARGET_ID).popover({
+        html : true,
+        placement : 'bottom',
+        trigger : 'manual',
+        content : 'test',
+        title : 'test'
+    });
+
     // Ajax spinner 
     me.DD_TOGGLE_SPINNER_IMG_LOCATION = 'images/spinner/ajax-loader.gif';
+
     // Internally used objects
     me.search = new CCH.Objects.Search({
         geocodeServiceEndpoint: CCH.CONFIG.data.sources.geocoding.endpoint
     });
+
+    me.resizeContainer = function () {
+        var parentContainerWidth = $('#' + me.CONTAINER_ID).parent()[0].clientWidth,
+            parentContainerVisibleItems = $('#' + me.CONTAINER_ID).parent().children(':not(.hide)'),
+            childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
+                return $(el).outerWidth(true);
+            }),
+            currentInputWidth = $('#' + me.INPUT_ID).width(),
+            idealInputWidth = parentContainerWidth - (childrenCombinedWidth - currentInputWidth) - 50;
+
+        $('#' + me.INPUT_ID).width(idealInputWidth);
+    };
 
     me.submitButtonClicked = function (evt, args) {
         args = args || {};
@@ -98,10 +122,9 @@ CCH.Objects.CombinedSearch = function (args) {
             types;
 
         if (criteria) {
-            
-            me.destroyPopover();
+            me.hidePopover();
             me.displaySpinner();
-            
+
             if (type === 'location') {
                 // Search by location
                 me.performSpatialSearch({
@@ -109,22 +132,26 @@ CCH.Objects.CombinedSearch = function (args) {
                     scope : me,
                     callbacks : {
                         success : [
-                            function () {
-                                me.hideSpinner();
-                            },
+                            me.hideSpinner,
                             function (data) {
                                 if (data) {
-                                    var locations = data.locations;
-                                    me.displayResultsPopover({
-                                        locations : locations
+                                    var locations = data.locations,
+                                        resultsPopover = me.buildLocationResultsView({
+                                            locations : locations
+                                        });
+
+                                    me.displayPopover({
+                                        locations : locations,
+                                        content : resultsPopover,
+                                        title : 'Search Results'
                                     });
+                                    
+                                    $('#' + me.GEO_RESULTS_LIST_ID + ' option').first().trigger('click');
                                 }
                             }
                         ],
                         error : [
-                            function () {
-                                me.hideSpinner();
-                            },
+                            me.hideSpinner,
                             function (jqXHR, textStatus, errorThrown) {
                                 CCH.LOG.warn('CCH.Objects.CombinedSearch:: Could not complete geo-search:' + errorThrown);
                             }
@@ -191,13 +218,8 @@ CCH.Objects.CombinedSearch = function (args) {
             id : me.GEO_RESULTS_LIST_CONTAINER_ID
         });
         resulstList = $('<select />').attr({
-            id :  me.GEO_RESULTS_LIST
+            id :  me.GEO_RESULTS_LIST_ID
         });
-
-        listOption = $('<option />').attr({
-            value : ''
-        }).html('');
-        resulstList.append(listOption);
 
         for (locationsIndex; locationsIndex < locations.length; locationsIndex++) {
             location = locations[locationsIndex];
@@ -235,57 +257,84 @@ CCH.Objects.CombinedSearch = function (args) {
 
         return container;
     };
-    
+
     me.buildSearchContextHelpView = function (args) {
         args = args || {};
-        
+
         var criteria = args.criteria,
-            a = 1;
-        
+            content;
+
+        switch (criteria.toLowerCase()) {
+        case 'all':
+            content = $('#app-navbar-search-input-context-menu-all');
+            break;
+        case 'location':
+            content = $('#app-navbar-search-input-context-menu-location');
+            break;
+        case 'items':
+            content = $('#app-navbar-search-input-context-menu-items');
+            break;
+        }
+
+        me.displayPopover({
+            content : content,
+            title : 'Search ' + criteria,
+            id : me.POPOVER_ID
+        });
     };
 
-    me.displayResultsPopover = function (args) {
+    me.displayPopover = function (args) {
         args = args || {};
 
-        me.destroyPopover();
-        
-        var locationContainer = me.buildLocationResultsView({
-            locations : args.locations
-        }),
-            popover = $('#' + me.INPUT_ID).popover({
-                html : true,
-                placement : 'bottom',
-                title : 'Search Results',
-                content : locationContainer
-            });
-        
-        popover.popover('show');
+        var content = args.content.clone(true, true),
+            title = args.title,
+            popover = me.inputControlPopover.data('popover');
+
+        content.attr({
+            'id': content.attr('id') + new Date().getMilliseconds()
+        });
+
+        popover.options.title = title;
+        popover.options.content = content;
+
+        popover.show();
+
+        popover.$tip.attr({
+            id : me.POPOVER_ID
+        });
     };
 
-    me.destroyPopover = function () {
-        if ($('#' + me.INPUT_ID).popover !== null) {
-            $('#' + me.POPOVER_TARGET_ID).popover('hide');
-            $('#' + me.POPOVER_TARGET_ID).popover('destroy');
-        }
+    me.hidePopover = function () {
+        var popover = me.inputControlPopover.data('popover');
+        popover.hide();
     };
-    
+
+    /**
+     * Displays a spinner in the button used to submit a search,
+     * replacing the magnifying glass
+     */
     me.displaySpinner = function () {
         var spinnerImage = $('<img />').attr({
-           src : me.DD_TOGGLE_SPINNER_IMG_LOCATION,
-           alt : '',
-           id : 'app-navbar-search-spinner-image'
-        });
-        
+                src : me.DD_TOGGLE_SPINNER_IMG_LOCATION,
+                alt : '',
+                id : 'app-navbar-search-spinner-image'
+            });
+
         $('#' + me.SUBMIT_BUTTON_ID).empty();
         $('#' + me.SUBMIT_BUTTON_ID).append(spinnerImage);
     };
-    
+
+    /**
+     * Hides the spinner in the button used to submit a search,
+     * restoring the magnifying glass
+     */
     me.hideSpinner = function () {
         var magnifyingGlass = $('<i />').addClass('icon-search');
         $('#' + me.SUBMIT_BUTTON_ID).empty();
         $('#' + me.SUBMIT_BUTTON_ID).append(magnifyingGlass);
     };
 
+    // Bind the search submit button
     $('#' + me.SUBMIT_BUTTON_ID).on('click', function (evt) {
         me.submitButtonClicked(evt);
     });
@@ -296,40 +345,53 @@ CCH.Objects.CombinedSearch = function (args) {
             criteria = target.innerHTML,
             parentListEl = target.parentElement,
             allItems = $('.' + me.DD_TOGGLE_MENU_ITEMS_CLASS);
-        
+
         // First, remove the disabled class from all list elements
         allItems.removeClass('disabled');
 
         // Add the disabled class to the selected item
         $(parentListEl).addClass('disabled');
-        
+
         me.criteriaChanged({
             criteria : criteria
         });
+
+        me.resizeContainer();
     });
 
-    // This is a fix for how bootstrap deals with submenu list-item and anchor 
-    // defsault behavior.
-    // For the submenu, don't do anything. Default behavior is to accept the click 
-    // but this is bad on touch devices since disabled links need to be 
-    // clicked in order to expand a submenu
-    $('#' + me.DD_TOGGLE_MENU_ID + ' li[class~="dropdown-submenu"]').on('click', function (evt) {
-        // Check to see if we are propagating at the moment. If so, that means 
-        // that we are not the target of what was clicked and we should not stop
-        // further propagation. Otherwise, what was clicked was a toggle node 
-        // for the submenu and it should just open the submenu and that's all, so
-        // stop propagation
-        if (evt.currentTarget === evt.target.parentElement) {
-            evt.stopImmediatePropagation();
+    // The behavior for the search box should be:
+    // - When clicking in the input box, display contextual menu
+    // - When clicking in the contextual menu, don't clear the contextual menu
+    // - When clicking back in the input box, keep the contextual menu
+    // - When clicking anywhere else, clear the contextual menu
+    $('body').on('click', function (evt) {
+        var target = $(evt.target),
+            criteria = document.getElementById(me.DD_TOGGLE_TEXT_CONTAINER_ID).innerHTML.toLowerCase(),
+            isClickedPopover = $('#' + me.POPOVER_ID).find(target).length > 0,
+            isPopoverVisible = $('#' + me.POPOVER_ID).length > 0,
+            isClickedInputBox = $(target).attr('id') === me.POPOVER_TARGET_ID;
+
+        if (!isClickedPopover && isClickedInputBox) {
+            if (!isPopoverVisible) {
+                me.buildSearchContextHelpView({
+                    criteria : criteria
+                });
+            }
+        } else if (!isClickedPopover && !isClickedInputBox) {
+            me.hidePopover();
         }
     });
-    
-    $('#' + me.INPUT_ID).on('focus', function (evt) {
-        var criteria = document.getElementById(me.DD_TOGGLE_TEXT_CONTAINER_ID).innerHTML.toLowerCase();
-        
-        me.buildSearchContextHelpView({
-            criteria : criteria
-        });
+
+    $(window).on('resize', me.resizeContainer);
+
+    // Clicking enter in the input box should submit the search
+    $('#' + me.INPUT_ID).on('keyup', function (evt) {
+        var keyCode = evt.keyCode,
+            enterKeyCode = 13;
+
+        if (keyCode === enterKeyCode) {
+            $('#' + me.SUBMIT_BUTTON_ID).trigger('click');
+        }
     });
 
     // Preload required images

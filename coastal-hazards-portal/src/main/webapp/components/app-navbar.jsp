@@ -1,8 +1,9 @@
 <div id="app-navbar-container" class="span12 navbar">
     <div id="app-navbar-inner" class="navbar-inner">
         <div class="container">
-            <img id="app-navbar-coop-logo-img" class="app-navbar-item-container" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
-
+            <a href="." id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+                <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
+            </a>
             <%-- Playing with bootstrap here to show different text for the 
                  application title as the screen narrows --%>
             <div id="app-navbar-site-title-container" class="app-navbar-item-container">
@@ -11,54 +12,27 @@
                 <h3 class="app-navbar-title hidden-desktop hidden-tablet visible-phone">CCH</h3>
             </div>
 
-            <div id="app-navbar-search-container" class="app-navbar-item-container">
-                <div id="app-navbar-search-control" class="input-prepend input-append">
-                    <div class="btn-group">
-                        <a id='app-navbar-search-dropdown-toggle' class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                            <span id="app-navbar-search-container-select-button-text">All</span>
-                            <span class="caret"></span>
-                        </a>
-                        <ul id="app-navbar-search-dropdown-menu" class="dropdown-menu">
-                            <li class="disabled app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-all" tabindex="-1" href="#">All</a></li>
-                            <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-location" tabindex="-1" href="#">Location</a></li>
-                            <li class="dropdown-submenu disabled">
-                                <a id="app-navbar-search-dropdown-toggle-choice-items-all">Items</a>
-                                <ul id="app-navbar-search-dropdown-menu-items" class="dropdown-menu">
-                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-item-all" tabindex="-1" href="#">All Items</a></li>
-                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-item-storms" tabindex="-1" href="#">Storms</a></li>
-                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-item-sea-level-vulnerability" tabindex="-1" href="#">Vulnerability</a></li>
-                                    <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-item-shoreline-historical" tabindex="-1" href="#">Historical</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <input id="app-navbar-search-input" type="text" placeholder="Search..." />
-                    <button id="app-navbar-search-submit-button" class="btn" type="button"><i class="icon-search"></i></button>
+            <jsp:include page="combined-searchbar.jsp"></jsp:include>
+
+            <jsp:include page="navbar-bucket.jsp"></jsp:include>
+
+                <div id='app-navbar-help-container' class='app-navbar-item-container'>
+                    <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="icon-info-sign"></i></a>
                 </div>
-            </div>
 
-            <div id="app-navbar-bucket-button-container" class="app-navbar-item-container">
-                <img id="app-navbar-bucket" alt="Items Bucket" src="images/banner/bucket/bucket-no-sand.svg" />
-                <span id="app-navbar-bucket-button-count" class="app-navbar-bucket-text">0</span>
-                <%-- Downwards facing triangle --%>
-                <span id="app-navbar-bucket-triangle" class="app-navbar-bucket-text">&#9660;</span>
+                <!--
+                
+                            <div id="app-navbar-pin-control" class="btn-group app-navbar-item-container">
+                                <button id='app-navbar-pin-control-button' class="btn btn-mini disabled"><i id='app-navbar-pin-control-icon' class="icon-pushpin muted"></i>&nbsp;<span id='app-navbar-pin-control-pincount'>0</span></button>
+                                <button id='app-navbar-pin-control-dropdown-button' class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown"><span id='app-navbar-pin-control-caret' class="icon-caret-down"></span></button>
+                                <ul class="dropdown-menu">
+                                    <li id='app-navbar-pin-control-clear-li'><a id='app-navbar-pin-control-clear' href="#">Clear View</a></li>
+                                    <li id='app-navbar-pin-control-share-li'><a tabindex="-1" data-toggle="modal" role="button" href="#shareModal">Share View</a></li>
+                                </ul>
+                            </div>-->
             </div>
-<!--
-            <div id='app-navbar-help-container' class='app-navbar-item-container'>
-                <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="icon-info-sign"></i></a>
-            </div>
-
-            <div id="app-navbar-pin-control" class="btn-group app-navbar-item-container">
-                <button id='app-navbar-pin-control-button' class="btn btn-mini disabled"><i id='app-navbar-pin-control-icon' class="icon-pushpin muted"></i>&nbsp;<span id='app-navbar-pin-control-pincount'>0</span></button>
-                <button id='app-navbar-pin-control-dropdown-button' class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown"><span id='app-navbar-pin-control-caret' class="icon-caret-down"></span></button>
-                <ul class="dropdown-menu">
-                    <li id='app-navbar-pin-control-clear-li'><a id='app-navbar-pin-control-clear' href="#">Clear View</a></li>
-                    <li id='app-navbar-pin-control-share-li'><a tabindex="-1" data-toggle="modal" role="button" href="#shareModal">Share View</a></li>
-                </ul>
-            </div>-->
         </div>
     </div>
-</div>
 
 <%-- This modal window appears when a user selects to share their session. It includes the 
     url for their current view (calculated on the fly) and a tweet button --%>
