@@ -106,8 +106,6 @@ CCH.Objects.CombinedSearch = function (args) {
             types;
 
         if (criteria) {
-            me.hidePopover();
-
             if (type === 'location') {
                 // Search by location
                 me.performSpatialSearch({
