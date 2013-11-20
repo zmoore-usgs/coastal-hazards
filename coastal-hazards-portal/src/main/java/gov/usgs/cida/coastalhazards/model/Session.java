@@ -2,11 +2,11 @@ package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import gov.usgs.cida.coastalhazards.gson.serializer.DoubleSerializer;
-import gov.usgs.cida.utilities.file.FileHelper;
+import gov.usgs.cida.coastalhazards.gson.adapter.BboxAdapter;
+import gov.usgs.cida.coastalhazards.gson.adapter.CenterAdapter;
+import gov.usgs.cida.coastalhazards.gson.adapter.DoubleSerializer;
 import gov.usgs.cida.utilities.string.StringHelper;
 import java.io.Serializable;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import javax.persistence.*;
@@ -24,8 +24,8 @@ public class Session implements Serializable {
 	private transient String id;
 	private String baselayer;
 	private double scale;
-	private double[] bbox;
-	private double[] center;
+	private Bbox bbox;
+	private Center center;
 	private List<Item> items;
 
 	/**
@@ -36,14 +36,16 @@ public class Session implements Serializable {
 	@Transient
 	boolean isValid() {
 		return (id != null && baselayer != null && !baselayer.isEmpty()
-				&& scale > 0.0 && bbox != null && bbox.length == 4
-				&& center != null && center.length == 2);// &&
-		// items != null);
+				&& scale > 0.0 && bbox != null //&& bbox.length == 4 (bbox.isValid?)
+				&& center != null // && center.length == 2); (center.isValid?)
+                );
 	}
 
 	public String toJSON() {
 		return new GsonBuilder()
 				.registerTypeAdapter(Double.class, new DoubleSerializer(doublePrecision))
+                .registerTypeAdapter(Bbox.class, new BboxAdapter())
+                .registerTypeAdapter(Center.class, new CenterAdapter())
 				.create()
 				.toJson(this);
 	}
@@ -52,7 +54,9 @@ public class Session implements Serializable {
 		String id = StringHelper.makeSHA1Hash(json);
 
 		Session session;
-		GsonBuilder gsonBuilder = new GsonBuilder();
+		GsonBuilder gsonBuilder = new GsonBuilder()
+            .registerTypeAdapter(Bbox.class, new BboxAdapter())
+            .registerTypeAdapter(Center.class, new CenterAdapter());
 //        gsonBuilder.registerTypeAdapter(Geometry.class, new GeometryDeserializer());
 //        gsonBuilder.registerTypeAdapter(Envelope.class, new EnvelopeDeserializer());
 //        gsonBuilder.registerTypeAdapter(CoordinateSequence.class, new CoordinateSequenceDeserializer());
@@ -90,21 +94,23 @@ public class Session implements Serializable {
 		this.scale = scale;
 	}
 
-	@Column(name = "bounding_box")
-	public double[] getBbox() {
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(columnDefinition = "bbox_id")
+	public Bbox getBbox() {
 		return bbox;
 	}
 
-	public void setBbox(double[] bbox) {
+	public void setBbox(Bbox bbox) {
 		this.bbox = bbox;
 	}
 
-	@Column(name = "center")
-	public double[] getCenter() {
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(columnDefinition = "center_id")
+	public Center getCenter() {
 		return center;
 	}
 
-	public void setCenter(double[] center) {
+	public void setCenter(Center center) {
 		this.center = center;
 	}
 

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="jiwalker" id="add_item_type">
+        <comment>Switch item to contain type differentiation</comment>
+        <addColumn tableName="item">
+            <column name="item_type" type="VARCHAR(32)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="add_children_table" author="jiwalker">
+        <createTable tableName="aggregation_children">
+            <column name="aggregation_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="aggregation_id" baseTableName="aggregation_children" constraintName="fk_aggregation_children_agg_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item"/>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="aggregation_children" constraintName="fk_aggregation_children_item_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item"/>
+    </changeSet>
+    <changeSet id="fix_bbox" author="jiwalker">
+        <dropColumn tableName="item" columnName="bbox" />
+        <addColumn tableName="item">
+            <column name="bbox_id" type="INT4" />
+        </addColumn>
+        
+        <dropColumn tableName="session_table" columnName="bounding_box" />
+        <addColumn tableName="session_table">
+            <column name="bbox_id" type="INT4" />
+        </addColumn>
+    
+        <createTable tableName="bbox">
+            <column name="id" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="minx" type="double precision" />
+            <column name="miny" type="double precision" />
+            <column name="maxx" type="double precision" />
+            <column name="maxy" type="double precision" />
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="bbox_pkey" tableName="bbox"/>
+        <addForeignKeyConstraint baseTableName="item" baseColumnNames="bbox_id" constraintName="fk_item_bbox" referencedTableName="bbox" referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="session_table" baseColumnNames="bbox_id" constraintName="fk_session_bbox" referencedTableName="bbox" referencedColumnNames="id" />
+    </changeSet>
+    <changeSet id="fix_center" author="jiwalker">
+        <dropColumn tableName="session_table" columnName="center" />
+        <addColumn tableName="session_table">
+            <column name="center_id" type="INT4" />
+        </addColumn>
+    
+        <createTable tableName="center">
+            <column name="id" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="x" type="double precision" />
+            <column name="y" type="double precision" />
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="center_pkey" tableName="center"/>
+        <addForeignKeyConstraint baseTableName="session_table" baseColumnNames="center_id" constraintName="fk_session_center" referencedTableName="center" referencedColumnNames="id" />
+    </changeSet>
+</databaseChangeLog>

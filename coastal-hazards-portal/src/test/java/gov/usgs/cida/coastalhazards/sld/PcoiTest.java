@@ -6,6 +6,7 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.model.summary.Tiny;
+import gov.usgs.cida.coastalhazards.sld.Pcoi;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

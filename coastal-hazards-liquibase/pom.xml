@@ -1,42 +1,181 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>gov.usgs.cida.coastalhazards</groupId>
-		<artifactId>coastal-hazards</artifactId>
-		<version>1.1.1-SNAPSHOT</version>
-	</parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>gov.usgs.cida.coastalhazards</groupId>
+        <artifactId>coastal-hazards</artifactId>
+        <version>1.1.1-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>coastal-hazards-liquibase</artifactId>
-	<packaging>jar</packaging>
+    <artifactId>coastal-hazards-liquibase</artifactId>
+    <packaging>jar</packaging>
 
-	<name>Coastal Hazards Liquibase Changesets</name>
+    <name>Coastal Hazards Liquibase Changesets</name>
+    
+    <properties>
+        <!-- set liquibase.properties in settings.xml to point to db password -->
+        <liquibase.version>3.0.7</liquibase.version>
+    </properties>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>cida-public</id>
+            <name>CIDA plugin repository</name>
+            <url>http://cida.usgs.gov/maven/cida-public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+    
     <dependencies>
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
-            <version>2.0.5</version>
+            <version>${liquibase.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.2-1003-jdbc4</version>
         </dependency>
     </dependencies>
-
-	<build>
-		<plugins>
-<!--            <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <version>2.0.5</version>
-                <executions>
-                    <execution>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>update</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>-->
-		</plugins>
-		<finalName>${project.artifactId}</finalName>
-	</build>
-
+    
+    <profiles>
+        <profile>
+            <id>update-db</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>updateDb</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <version>${liquibase.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <configuration>
+                                    <changeLogFile>src/main/liquibase/changeLog.xml</changeLogFile>
+                                    <propertyFile>${liquibase.properties}</propertyFile>
+                                    <schemas>public</schemas>
+                                    <outputDefaultSchema>true</outputDefaultSchema>
+                                    <contexts>default</contexts>
+                                </configuration>
+                                <goals>
+                                    <goal>update</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- Be careful with this so it does not get run on important data -->
+            <id>drop-all-data</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>dropAllData</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <version>${liquibase.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <configuration>
+                                    <changeLogFile>src/main/liquibase/changeLog.xml</changeLogFile>
+                                    <propertyFile>${liquibase.properties}</propertyFile>
+                                    <schemas>public</schemas>
+                                    <outputDefaultSchema>true</outputDefaultSchema>
+                                    <contexts>default</contexts>
+                                </configuration>
+                                <goals>
+                                    <goal>dropAll</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>load-test-data</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>runTestData</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <version>${liquibase.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <configuration>
+                                    <changeLogFile>src/main/liquibase/test_data.xml</changeLogFile>
+                                    <propertyFile>${liquibase.properties}</propertyFile>
+                                    <schemas>public</schemas>
+                                    <outputDefaultSchema>true</outputDefaultSchema>
+                                    <contexts>test</contexts>
+                                </configuration>
+                                <goals>
+                                    <goal>update</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>rollback-test-data</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>rollbackTestData</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <version>${liquibase.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <configuration>
+                                    <changeLogFile>src/main/liquibase/test_data.xml</changeLogFile>
+                                    <propertyFile>${liquibase.properties}</propertyFile>
+                                    <schemas>public</schemas>
+                                    <outputDefaultSchema>true</outputDefaultSchema>
+                                    
+                                    <!-- rollback specific tags -->
+                                    <rollbackTag>test_data</rollbackTag>
+                                    <clearCheckSums>true</clearCheckSums>
+                                    
+                                    <contexts>test</contexts>
+                                </configuration>
+                                <goals>
+                                    <goal>rollback</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
