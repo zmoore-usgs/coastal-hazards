@@ -44,7 +44,8 @@ CCH.Objects.UI = function (args) {
 
     // Listeners:
     // me.bucket : 'app-navbar-button-clicked'
-
+    // me.combinedSearch : 'combined-searchbar-search-performed'
+    
     me.itemsSearchedHandler = function (evt, count) {
         // Display a notification with item count
         $.pnotify({
@@ -331,7 +332,6 @@ CCH.Objects.UI = function (args) {
         mapdivId : me.MAP_DIV_ID,
         isSmall : me.isSmall
     });
-    
     me.searchSlide = new CCH.Objects.SearchSlide({
         containerId : me.SEARCH_SLIDE_CONTAINER_ID,
         isSmall : me.isSmall
@@ -343,8 +343,7 @@ CCH.Objects.UI = function (args) {
             navbarClearMenuItem = $('#' + me.NAVBAR_CLEAR_MENU_ITEM_ID),
             shareModal = $('#' + me.SHARE_MODAL_ID),
             ccsaArea = $('#' + me.CCSA_AREA_ID),
-            helpModal = $('#' + me.HELP_MODAL_ID),
-            bucket = me.bucket;
+            helpModal = $('#' + me.HELP_MODAL_ID);
 
         // This window name is used for the info window to launch into when 
         // a user chooses to go back to the portal
@@ -355,13 +354,23 @@ CCH.Objects.UI = function (args) {
             'cch.data.items.searched': me.itemsSearchedHandler,
             'cch.navbar.pinmenu.item.clear.click': me.pinmenuItemClickHandler
         });
-        $(bucket).on('app-navbar-button-clicked', function () {
+        $(me.bucket).on('app-navbar-button-clicked', function () {
             me.bucketSlide.toggle();
+        });
+        $(me.combinedSearch).on('combined-searchbar-search-performed', function (evt, args) {
+            args = args || {};
+            
+            var data = args.data;
+    
+            if (data && data.locations && data.locations.length > 0) {
+                me.searchSlide.displaySearchResults(args);
+            }
         });
         navbarPinButton.on('click', me.navbarMenuClickHandler);
         navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
         shareModal.on('show', me.sharemodalDisplayHandler);
         helpModal.on('show', me.helpModalDisplayHandler);
+        
         
         // Header fix
         ccsaArea.find('br').first().remove();

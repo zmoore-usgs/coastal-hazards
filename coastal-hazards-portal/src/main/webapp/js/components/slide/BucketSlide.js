@@ -127,28 +127,21 @@ CCH.Objects.BucketSlide = function (args) {
     me.createCard = function (args) {
         args = args || {};
         var id = args.id || new Date().getMilliseconds(),
-            image = args.image || 'https://2.gravatar.com/avatar/15fcf61ab6fb824d11f355d7a99a1bbf?d=https%3A%2F%2Fidenticons.github.com%2Fd55c695700043438ce4162cbe589e072.png',
             title = args.title || 'Title Not Provided',
             content = args.content || 'Description Not Provided',
-            imageContainerClass = 'application-slide-bucket-container-card-image',
             titleContainerClass = 'application-slide-bucket-container-card-title',
             descriptionContainerClass = 'application-slide-bucket-container-card-description',
-            newCard = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
-            imageContainer = newCard.find('.' + imageContainerClass),
-            titleContainer = newCard.find('.' + titleContainerClass),
-            titleContainerPNode = newCard.find('.' + titleContainerClass + ' p'),
-            descriptionContainer = newCard.find('.' + descriptionContainerClass);
+            newItem = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
+            titleContainer = newItem.find('.' + titleContainerClass),
+            titleContainerPNode = newItem.find('.' + titleContainerClass + ' p'),
+            descriptionContainer = newItem.find('.' + descriptionContainerClass);
 
-        newCard.attr('id', 'application-slide-bucket-container-card-' + id);
-        imageContainer.attr({
-            'id' : imageContainerClass + '-' + id,
-            'src' : image
-        });
+        newItem.attr('id', 'application-slide-bucket-container-card-' + id);
         titleContainer.attr('id', titleContainerClass + '-' + id);
         titleContainerPNode.html(title);
         descriptionContainer.attr('id', descriptionContainerClass + '-' + id).html(content);
         
-        return newCard;
+        return newItem;
     };
 
     $(window).on('cch.ui.resized', function (args) {

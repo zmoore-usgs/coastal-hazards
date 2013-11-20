@@ -106,6 +106,9 @@ CCH.Objects.CombinedSearch = function (args) {
             types;
 
         if (criteria) {
+            
+            me.displaySpinner();
+            
             if (type === 'location') {
                 // Search by location
                 me.performSpatialSearch({
@@ -116,7 +119,10 @@ CCH.Objects.CombinedSearch = function (args) {
                             me.hideSpinner,
                             function (data) {
                                 if (data) {
-                                    $('#' + me.GEO_RESULTS_LIST_ID + ' option').first().trigger('click');
+                                    $(me).trigger('combined-searchbar-search-performed', {
+                                        'type' : 'location',
+                                        'data' : data
+                                    });
                                 }
                             }
                         ],
@@ -142,11 +148,13 @@ CCH.Objects.CombinedSearch = function (args) {
                     count : args.count || 20,
                     callbacks : {
                         success : [
+                            me.hideSpinner,
                             function (data) {
                                 var a = 1;
                             }
                         ],
                         error : [
+                            me.hideSpinner,
                             function (jqXHR, textStatus, errorThrown) {
                                 CCH.LOG.warn('CCH.Objects.CombinedSearch:: Could not complete items search:' + errorThrown);
                             }
@@ -155,77 +163,6 @@ CCH.Objects.CombinedSearch = function (args) {
                 });
             }
         }
-    };
-
-    me.buildLocationResultsView = function (args) {
-        args = args || {};
-
-        var locations = args.locations,
-            location,
-            locationsIndex = 0,
-            container,
-            titleRow,
-            titleSpan,
-            resultsDescriptionRow,
-            resultDescriptionSpan,
-            resultsListRow,
-            resultsListSpan,
-            resulstList,
-            listOption;
-
-        container = $('<div />').
-            attr({
-                id : me.GEO_RESULTS_CONTAINER_ID
-            }).addClass('container-fluid');
-        titleRow = $('<div />').addClass('row-fluid');
-        titleSpan = $('<div />').addClass('span8 offset4').html('Geolocation Results');
-        resultsDescriptionRow = $('<div />').addClass('row-fluid');
-        resultDescriptionSpan = $('<div />').attr({
-            id : me.GEO_RESULTS_DESCRIPTION_CONTAINER_ID
-        });
-        resultsListRow = $('<div />').addClass('row span12');
-        resultsListSpan = $('<div />').attr({
-            id : me.GEO_RESULTS_LIST_CONTAINER_ID
-        });
-        resulstList = $('<select />').attr({
-            id :  me.GEO_RESULTS_LIST_ID
-        });
-
-        for (locationsIndex; locationsIndex < locations.length; locationsIndex++) {
-            location = locations[locationsIndex];
-            listOption = $('<option />').attr({
-                value : locationsIndex
-            }).html(location.name);
-            resulstList.append(listOption);
-        }
-
-        container.append(titleRow.append(titleSpan), [
-            resultsDescriptionRow.append(resultDescriptionSpan),
-            resultsDescriptionRow.append(resultDescriptionSpan),
-            resultsListRow.append(resultsListSpan.append(resulstList))
-        ]);
-
-        container.data({
-            locations : locations
-        });
-
-        resulstList.find('option').on('click', function (evt) {
-            var locationsData = container.data('locations'),
-                locationIndex = parseInt(evt.currentTarget.getAttribute('value'), 10),
-                chosenLocation,
-                name;
-
-            if (!isNaN(locationIndex)) {
-                chosenLocation = locationsData[locationIndex];
-                name = chosenLocation.name;
-                $('#' + me.GEO_RESULTS_DESCRIPTION_CONTAINER_ID).html(name);
-            } else {
-                $('#' + me.GEO_RESULTS_DESCRIPTION_CONTAINER_ID).html('');
-            }
-
-        });
-
-        return container;
     };
     
     /**
@@ -248,7 +185,7 @@ CCH.Objects.CombinedSearch = function (args) {
      * restoring the magnifying glass
      */
     me.hideSpinner = function () {
-        var magnifyingGlass = $('<i />').addClass('icon-search');
+        var magnifyingGlass = $('<i />').addClass('fa fa-search');
         $('#' + me.SUBMIT_BUTTON_ID).empty();
         $('#' + me.SUBMIT_BUTTON_ID).append(magnifyingGlass);
     };
