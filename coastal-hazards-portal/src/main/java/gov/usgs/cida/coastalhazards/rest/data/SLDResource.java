@@ -28,10 +28,10 @@ public class SLDResource {
 		if (item == null) {
 			response = Response.status(Response.Status.NOT_FOUND).build();
 		} else {
-			SLDGenerator generator = SLDGenerator.getGenerator(item);
-			if (generator != null) {
-				response = generator.generateSLD();
-			}
+            SLDGenerator generator = SLDGenerator.getGenerator(item);
+            if (generator != null) {
+                response = generator.generateSLD();
+            }
 		}
 
 		return response;
@@ -48,12 +48,12 @@ public class SLDResource {
 		if (item == null) {
 			response = Response.status(Response.Status.NOT_FOUND).build();
 		} else {
-			SLDGenerator generator = SLDGenerator.getGenerator(item);
-			if (generator == null) {
-				response = Response.status(Response.Status.NOT_FOUND).build();
-			} else {
-				response = generator.generateSLDInfo();
-			}
+            SLDGenerator generator = SLDGenerator.getGenerator(item);
+            if (generator == null) {
+                response = Response.status(Response.Status.NOT_FOUND).build();
+            } else {
+                response = generator.generateSLDInfo();
+            }
 		}
 
 		return response;

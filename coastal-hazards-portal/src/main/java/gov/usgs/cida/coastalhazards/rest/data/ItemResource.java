@@ -43,8 +43,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
- * Could also be called item or layer or some other way of describing a singular
- * thing
+ * 
  *
  * @author jordan
  */
@@ -66,7 +65,7 @@ public class ItemResource {
 
 	/**
 	 * Retrieves representation of an instance of
-	 * gov.usgs.cida.coastalhazards.rest.TestResource
+ gov.usgs.cida.coastalhazards.model.DataItem
 	 *
 	 * @param id
 	 * @return an instance of java.lang.String
@@ -101,7 +100,8 @@ public class ItemResource {
 	/**
 	 * Only allows one card to be posted at a time for now
 	 *
-	 * @param content
+	 * @param content Posted content as text string (should be JSON)
+     * @param request passed through context of request
 	 * @return
 	 */
 	@POST
@@ -143,6 +143,7 @@ public class ItemResource {
         Response response = Response.serverError().build();
         
         Item item = Item.fromJSON(content);
+
         try {
             String jsonSummary = getSummaryFromWPS(item.getMetadata(), item.getAttr());
             // this is not actually summary json object, so we need to change that a bit
@@ -172,6 +173,16 @@ public class ItemResource {
 		return response;
 	}
     
+    /**
+     * I really don't like this in its current form, we should rethink this process and move this around
+     * 
+     * @param metadataId id of metadata file to send to R process
+     * @param attr attribute summary is for
+     * @return
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException 
+     */
     private String getSummaryFromWPS(String metadataId, String attr) throws IOException, ParserConfigurationException, SAXException {
         MetadataResource metadata = new MetadataResource();
         Response response = metadata.getFileById(metadataId);

@@ -14,10 +14,13 @@ public class JPAHelper {
     @PersistenceUnit
     private static EntityManagerFactory emf = null;
 
-    
     public static EntityManagerFactory getEntityManagerFactory() {
+        return getEntityManagerFactory("coastalhazards");
+    }
+    
+    public static EntityManagerFactory getEntityManagerFactory(String unit) {
         if (emf == null) {
-            emf = Persistence.createEntityManagerFactory("coastalhazards");
+            emf = Persistence.createEntityManagerFactory(unit);
         }
         return emf;
     }
