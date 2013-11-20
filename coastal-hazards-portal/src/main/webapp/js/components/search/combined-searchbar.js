@@ -3,6 +3,19 @@
 /*global $*/
 /*global splashUpdate*/
 /*global CCH*/
+
+/**
+ * A widget that is used as the search mechanism throughout the application
+ * 
+ * Events Emitted:
+ * 'combined-searchbar-search-performed'
+ * 
+ * Events Listened To:
+ * window.resize
+ * 
+ * @param {type} args
+ * @returns {undefined}
+ */
 CCH.Objects.CombinedSearch = function (args) {
     "use strict";
     splashUpdate("Initializing Search Subsystem...");
@@ -102,15 +115,12 @@ CCH.Objects.CombinedSearch = function (args) {
 
         var criteria = args.criteria + String(),
             type = args.type.toLowerCase(),
-            itemsArray = ['storms', 'sea level rise', 'shoreline change'],
+            itemsArray = ['extreme storms', 'shoreline change', 'sea-level rise'],
             types;
 
         if (criteria) {
-            
-            me.displaySpinner();
-            
             if (type === 'location') {
-                // Search by location
+                me.displaySpinner();
                 me.performSpatialSearch({
                     criteria : criteria,
                     scope : me,
@@ -134,8 +144,10 @@ CCH.Objects.CombinedSearch = function (args) {
                         ]
                     }
                 });
-            } else if (type === 'all items' || itemsArray.indexOf(type) !== -1) {
-                if (type === 'all items') {
+            } else if (type === 'products' || itemsArray.indexOf(type) !== -1) {
+                me.displaySpinner();
+                
+                if (type === 'products') {
                     types = itemsArray;
                 } else {
                     types = [type];

@@ -19,8 +19,9 @@ CCH.Objects.SearchSlide = function (args) {
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
     me.APP_CONTAINER_ID = 'content-row';
     me.LOCATION_CARD_TEMPLATE_ID = 'application-slide-search-location-card-template';
-    me.SLIDE_SEARCH_CONTAINER_ID = 'application-slide-search-content-container';
-    
+    me.SLIDE_SEARCH_CONTAINER_ID = 'application-slide-search-location-results-content-container';
+    me.SLIDE_SEARCH_CONTAINER_PARENT_ID = 'application-slide-search-content-container';
+
     me.borderWidth = 2;
     me.animationTime = 500;
     me.placement = 'right';
@@ -67,7 +68,7 @@ CCH.Objects.SearchSlide = function (args) {
             slideContent = $('#' + me.SLIDE_CONTENT_ID),
             appContainerId = $('#' + me.APP_CONTAINER_ID),
             windowWidth = $(window).outerWidth(),
-            windowHeight = $(window).outerHeight()
+            windowHeight = $(window).outerHeight();
 
         if (me.isSmall()) {
             if (me.isClosed) {
@@ -111,7 +112,6 @@ CCH.Objects.SearchSlide = function (args) {
 
         return extents;
     };
-    
 
     me.displaySearchResults = function (args) {
         args = args || {};
@@ -135,7 +135,7 @@ CCH.Objects.SearchSlide = function (args) {
             }
             break;
         }
-        
+
         if (items.length) {
             $('#' + me.SLIDE_SEARCH_CONTAINER_ID).append(items);
         }
@@ -163,7 +163,7 @@ CCH.Objects.SearchSlide = function (args) {
             region = attributes.Region,
             subregion = attributes.Subregion,
             newRow,
-            buildRow = function(col1data, col2data) {
+            buildRow = function (col1data, col2data) {
                 return $('<tr />').append(
                     $('<td />').html(col1data),
                     $('<td />').html(col2data)
@@ -197,6 +197,21 @@ CCH.Objects.SearchSlide = function (args) {
 
     $(window).on('cch.ui.resized', function (args) {
         me.resized(args);
+    });
+
+    $('body').on('click', function (evt) {
+        if (!me.isClosed) {
+            var target = $(evt.target),
+                targetId = target.attr('id') || '',
+                parentContainer = $('#' + me.SLIDE_SEARCH_CONTAINER_PARENT_ID),
+                clickOutsideContainer = parentContainer.attr('id') !== targetId
+                    && parentContainer.find(evt.target).length === 0;
+
+            if (clickOutsideContainer) {
+                // The click came from outside the container
+                me.toggle();
+            }
+        }
     });
 
     return {

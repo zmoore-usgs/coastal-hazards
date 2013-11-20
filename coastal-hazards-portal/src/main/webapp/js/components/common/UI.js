@@ -4,6 +4,26 @@
 /*global CCH*/
 /*global twttr*/
 /*global splashUpdate*/
+
+/**
+ *  Central control object for the user interface
+ * 
+ * 
+ *  Events Emitted:
+ *  window: 'cch.ui.resized'
+ *  window: 'cch.ui.redimensioned'
+ *  window: 'cch.navbar.pinmenu.button.pin.click'
+ *  window: 'cch.navbar.pinmenu.item.clear.click'
+ *  window: 'cch.ui.initialized'
+ *  window: 'cch.ui.overlay.removed'
+
+ *  Events Listened To:
+ *  this.bucket : 'app-navbar-button-clicked'
+ *  this.combinedSearch : 'combined-searchbar-search-performed'
+ *  
+ * @param {type} args
+ * @returns {CCH.Objects.UI.Anonym$22}
+ */
 CCH.Objects.UI = function (args) {
     "use strict";
     CCH.LOG.info('UI.js::constructor: UI class is initializing.');
