@@ -22,22 +22,6 @@ CCH.Objects.CombinedSearch = function (args) {
     me.DD_TOGGLE_MENU_ITEMS_CHOICE_ALL_ID = 'app-navbar-search-dropdown-toggle-choice-item-all';
     me.INPUT_ID = args.inputId || 'app-navbar-search-input';
     me.SUBMIT_BUTTON_ID = args.submitButtonId || 'app-navbar-search-submit-button';
-    me.POPOVER_TARGET_ID = me.INPUT_ID;
-    me.POPOVER_ID = args.popoverId || 'app-navbar-search-context-popover';
-
-    // Results Popover id/class string constants
-    me.GEO_RESULTS_CONTAINER_ID = args.geoResultsContainerId || 'results-popover-geolocation-results-container';
-    me.GEO_RESULTS_DESCRIPTION_CONTAINER_ID = args.geoResultsDescriptionContainerId || 'results-popover-geolocation-results-description-container';
-    me.GEO_RESULTS_LIST_CONTAINER_ID = args.geoResultsListContainerId || 'results-popover-geolocation-results-list-container';
-    me.GEO_RESULTS_LIST_ID = args.geoResultsListId || 'results-popover-geolocation-results-list';
-
-    me.inputControlPopover = $('#' + me.POPOVER_TARGET_ID).popover({
-        html : true,
-        placement : 'bottom',
-        trigger : 'manual',
-        content : 'test',
-        title : 'test'
-    });
 
     // Ajax spinner 
     me.DD_TOGGLE_SPINNER_IMG_LOCATION = 'images/spinner/ajax-loader.gif';
@@ -78,7 +62,7 @@ CCH.Objects.CombinedSearch = function (args) {
 
         var toggleTextContainer = $('#' + me.DD_TOGGLE_TEXT_CONTAINER_ID),
             criteria = args.criteria;
-
+        
         // Put the text for the selected item in the menu
         toggleTextContainer.html(criteria);
     };
@@ -123,7 +107,6 @@ CCH.Objects.CombinedSearch = function (args) {
 
         if (criteria) {
             me.hidePopover();
-            me.displaySpinner();
 
             if (type === 'location') {
                 // Search by location
@@ -135,17 +118,6 @@ CCH.Objects.CombinedSearch = function (args) {
                             me.hideSpinner,
                             function (data) {
                                 if (data) {
-                                    var locations = data.locations,
-                                        resultsPopover = me.buildLocationResultsView({
-                                            locations : locations
-                                        });
-
-                                    me.displayPopover({
-                                        locations : locations,
-                                        content : resultsPopover,
-                                        title : 'Search Results'
-                                    });
-                                    
                                     $('#' + me.GEO_RESULTS_LIST_ID + ' option').first().trigger('click');
                                 }
                             }
@@ -257,58 +229,7 @@ CCH.Objects.CombinedSearch = function (args) {
 
         return container;
     };
-
-    me.buildSearchContextHelpView = function (args) {
-        args = args || {};
-
-        var criteria = args.criteria,
-            content;
-
-        switch (criteria.toLowerCase()) {
-        case 'all':
-            content = $('#app-navbar-search-input-context-menu-all');
-            break;
-        case 'location':
-            content = $('#app-navbar-search-input-context-menu-location');
-            break;
-        case 'items':
-            content = $('#app-navbar-search-input-context-menu-items');
-            break;
-        }
-
-        me.displayPopover({
-            content : content,
-            title : 'Search ' + criteria,
-            id : me.POPOVER_ID
-        });
-    };
-
-    me.displayPopover = function (args) {
-        args = args || {};
-
-        var content = args.content.clone(true, true),
-            title = args.title,
-            popover = me.inputControlPopover.data('popover');
-
-        content.attr({
-            'id': content.attr('id') + new Date().getMilliseconds()
-        });
-
-        popover.options.title = title;
-        popover.options.content = content;
-
-        popover.show();
-
-        popover.$tip.attr({
-            id : me.POPOVER_ID
-        });
-    };
-
-    me.hidePopover = function () {
-        var popover = me.inputControlPopover.data('popover');
-        popover.hide();
-    };
-
+    
     /**
      * Displays a spinner in the button used to submit a search,
      * replacing the magnifying glass
@@ -342,7 +263,7 @@ CCH.Objects.CombinedSearch = function (args) {
     // Any link that is enabled and clicked, register that as a change
     $('#' + me.DD_TOGGLE_MENU_ID + ' li a[tabindex="-1"]').on('click', function (evt) {
         var target = evt.currentTarget,
-            criteria = target.innerHTML,
+            criteria = target.title,
             parentListEl = target.parentElement,
             allItems = $('.' + me.DD_TOGGLE_MENU_ITEMS_CLASS);
 
@@ -357,29 +278,6 @@ CCH.Objects.CombinedSearch = function (args) {
         });
 
         me.resizeContainer();
-    });
-
-    // The behavior for the search box should be:
-    // - When clicking in the input box, display contextual menu
-    // - When clicking in the contextual menu, don't clear the contextual menu
-    // - When clicking back in the input box, keep the contextual menu
-    // - When clicking anywhere else, clear the contextual menu
-    $('body').on('click', function (evt) {
-        var target = $(evt.target),
-            criteria = document.getElementById(me.DD_TOGGLE_TEXT_CONTAINER_ID).innerHTML.toLowerCase(),
-            isClickedPopover = $('#' + me.POPOVER_ID).find(target).length > 0,
-            isPopoverVisible = $('#' + me.POPOVER_ID).length > 0,
-            isClickedInputBox = $(target).attr('id') === me.POPOVER_TARGET_ID;
-
-        if (!isClickedPopover && isClickedInputBox) {
-            if (!isPopoverVisible) {
-                me.buildSearchContextHelpView({
-                    criteria : criteria
-                });
-            }
-        } else if (!isClickedPopover && !isClickedInputBox) {
-            me.hidePopover();
-        }
     });
 
     $(window).on('resize', me.resizeContainer);
