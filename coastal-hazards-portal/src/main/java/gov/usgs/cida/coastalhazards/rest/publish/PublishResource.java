@@ -1,6 +1,7 @@
 package gov.usgs.cida.coastalhazards.rest.publish;
 
 import com.google.gson.Gson;
+import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
 import gov.usgs.cida.coastalhazards.rest.data.MetadataResource;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
@@ -87,10 +88,10 @@ public class PublishResource {
             }
             String url = cswExternalEndpoint + "?service=CSW&request=GetRecordById&version=2.0.2&typeNames=fgdc:metadata&id=" + identifier +"&outputSchema=http://www.opengis.net/cat/csw/csdgm&elementSetName=full";
             responseContent.put("metadata", url);
-            response = Response.ok(new Gson().toJson(responseContent, HashMap.class)).build();
+            response = Response.ok(GsonSingleton.getInstance().toJson(responseContent, HashMap.class)).build();
         } catch (Exception ex) {
             responseContent.put("message", ex.getMessage() == null ? "NPE" : ex.getMessage());
-            response = Response.serverError().entity(new Gson().toJson(responseContent, HashMap.class)).build();
+            response = Response.serverError().entity(GsonSingleton.getInstance().toJson(responseContent, HashMap.class)).build();
         }
         return response;
     }

@@ -1,6 +1,7 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
+import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
 import gov.usgs.cida.coastalhazards.session.io.SessionIO;
 import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
 import gov.usgs.cida.coastalhazards.jpa.SessionManager;
@@ -63,7 +64,7 @@ public class SessionResource {
 		} else {
 			Map<String, Object> ok = new HashMap<String, Object>();
 			ok.put("sid", sid);
-			response = Response.ok(new Gson().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+			response = Response.ok(GsonSingleton.getInstance().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;
 	}

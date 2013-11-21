@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
 import gov.usgs.cida.coastalhazards.gson.adapter.BboxAdapter;
 import gov.usgs.cida.coastalhazards.gson.adapter.CenterAdapter;
 import gov.usgs.cida.coastalhazards.gson.adapter.DoubleSerializer;
@@ -20,7 +21,6 @@ import javax.persistence.*;
 public class Session implements Serializable {
 
 	private static final long serialVersionUID = 1234567L;
-	private static final int doublePrecision = 10;
 	private transient String id;
 	private String baselayer;
 	private double scale;
@@ -42,11 +42,7 @@ public class Session implements Serializable {
 	}
 
 	public String toJSON() {
-		return new GsonBuilder()
-				.registerTypeAdapter(Double.class, new DoubleSerializer(doublePrecision))
-                .registerTypeAdapter(Bbox.class, new BboxAdapter())
-                .registerTypeAdapter(Center.class, new CenterAdapter())
-				.create()
+		return GsonSingleton.getInstance()
 				.toJson(this);
 	}
 
@@ -54,13 +50,7 @@ public class Session implements Serializable {
 		String id = StringHelper.makeSHA1Hash(json);
 
 		Session session;
-		GsonBuilder gsonBuilder = new GsonBuilder()
-            .registerTypeAdapter(Bbox.class, new BboxAdapter())
-            .registerTypeAdapter(Center.class, new CenterAdapter());
-//        gsonBuilder.registerTypeAdapter(Geometry.class, new GeometryDeserializer());
-//        gsonBuilder.registerTypeAdapter(Envelope.class, new EnvelopeDeserializer());
-//        gsonBuilder.registerTypeAdapter(CoordinateSequence.class, new CoordinateSequenceDeserializer());
-		Gson gson = gsonBuilder.create();
+		Gson gson = GsonSingleton.getInstance();
 
 		session = gson.fromJson(json, Session.class);
 		session.setId(id);
