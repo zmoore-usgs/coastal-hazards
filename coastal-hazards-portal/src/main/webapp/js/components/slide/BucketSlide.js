@@ -149,7 +149,7 @@ CCH.Objects.BucketSlide = function (args) {
     });
 
     $('#' + me.SLIDE_TAB_ID).on('click', me.toggle);
-
+    CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');
     return {
         open: me.open,
         close: me.close,

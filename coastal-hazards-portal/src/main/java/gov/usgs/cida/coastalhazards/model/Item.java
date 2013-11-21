@@ -37,9 +37,13 @@ public class Item implements Serializable {
         aggregation,
         data;
     }
-    
+
+    //There's a translation from the back-end to the UI for these terms:
+    // storms = Extreme Storms
+    // vulnerability = Shoreline Change
+    // historical = Sea Level Rise
     public enum Type {
-        storms,
+        storms, 
         vulnerability,
         historical;
     }

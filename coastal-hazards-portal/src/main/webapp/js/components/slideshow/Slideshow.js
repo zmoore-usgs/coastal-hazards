@@ -15,6 +15,7 @@ CCH.Objects.Slideshow = function(args) {
     $(window).on({
         'cch.data.items.loaded': function(evt, args) {
             me.createSlideshow(evt, args);
+            me.stop();
         },
         'cch.ui.redimensioned': function(evt) {
             me.createSlideshow(evt);
