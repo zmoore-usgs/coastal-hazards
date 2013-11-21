@@ -65,6 +65,7 @@
                                 <configuration>
                                     <changeLogFile>src/main/liquibase/test_data.xml</changeLogFile>
                                     <schemas>public</schemas>
+                                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                                     <outputDefaultSchema>true</outputDefaultSchema>
                                     <contexts>test</contexts>
                                 </configuration>
@@ -97,6 +98,7 @@
                                 <configuration>
                                     <changeLogFile>src/main/liquibase/test_data.xml</changeLogFile>
                                     <schemas>public</schemas>
+                                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                                     
                                     <!-- rollback specific tags -->
                                     <rollbackTag>test_data</rollbackTag>
@@ -123,6 +125,7 @@
                 <version>${liquibase.version}</version>
                 <configuration>
                     <changeLogFile>src/main/liquibase/changeLog.xml</changeLogFile>
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                     <schemas>public</schemas>
                     <contexts>default</contexts>
                 </configuration>
