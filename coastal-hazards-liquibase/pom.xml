@@ -13,8 +13,13 @@
     <name>Coastal Hazards Liquibase Changesets</name>
     
     <properties>
-        <!-- set liquibase.properties in settings.xml to point to db password -->
         <liquibase.version>3.0.7</liquibase.version>
+        <!-- For goals to run these properties must be set in settings.xml
+        <liquibase.driver></liquibase.driver>
+        <liquibase.url></liquibase.url>
+        <liquibase.username></liquibase.username>
+        <liquibase.password></liquibase.password>
+        -->
     </properties>
 
     <pluginRepositories>
@@ -58,7 +63,6 @@
                                 <phase>process-resources</phase>
                                 <configuration>
                                     <changeLogFile>src/main/liquibase/changeLog.xml</changeLogFile>
-                                    <propertyFile>${liquibase.properties}</propertyFile>
                                     <schemas>public</schemas>
                                     <outputDefaultSchema>true</outputDefaultSchema>
                                     <contexts>default</contexts>
@@ -92,7 +96,6 @@
                                 <phase>process-resources</phase>
                                 <configuration>
                                     <changeLogFile>src/main/liquibase/changeLog.xml</changeLogFile>
-                                    <propertyFile>${liquibase.properties}</propertyFile>
                                     <schemas>public</schemas>
                                     <outputDefaultSchema>true</outputDefaultSchema>
                                     <contexts>default</contexts>
@@ -125,7 +128,6 @@
                                 <phase>process-resources</phase>
                                 <configuration>
                                     <changeLogFile>src/main/liquibase/test_data.xml</changeLogFile>
-                                    <propertyFile>${liquibase.properties}</propertyFile>
                                     <schemas>public</schemas>
                                     <outputDefaultSchema>true</outputDefaultSchema>
                                     <contexts>test</contexts>
@@ -158,7 +160,6 @@
                                 <phase>process-resources</phase>
                                 <configuration>
                                     <changeLogFile>src/main/liquibase/test_data.xml</changeLogFile>
-                                    <propertyFile>${liquibase.properties}</propertyFile>
                                     <schemas>public</schemas>
                                     <outputDefaultSchema>true</outputDefaultSchema>
                                     
