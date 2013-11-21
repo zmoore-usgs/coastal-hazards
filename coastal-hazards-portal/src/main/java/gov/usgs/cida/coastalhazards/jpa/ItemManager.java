@@ -1,6 +1,7 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
 import com.google.gson.Gson;
+import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
 import gov.usgs.cida.coastalhazards.model.Item;
 import java.io.File;
 import java.io.FileInputStream;
@@ -141,9 +142,9 @@ public class ItemManager {
                 query.setMaxResults(count);
             }
             List<Item> resultList = query.getResultList();
-            Map<String, List> resultMap = new HashMap<>();
+            Map<String, List<Item>> resultMap = new HashMap<>();
             resultMap.put("items", resultList);
-            jsonResult = new Gson().toJson(resultMap, HashMap.class);
+            jsonResult = GsonSingleton.getInstance().toJson(resultMap, HashMap.class);
         } finally {
             JPAHelper.close(em);
         }

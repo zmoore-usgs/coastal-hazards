@@ -2,8 +2,8 @@ package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
 import gov.usgs.cida.coastalhazards.gson.adapter.BboxAdapter;
-import gov.usgs.cida.coastalhazards.gson.adapter.DoubleSerializer;
 import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
 import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
@@ -45,7 +45,6 @@ public class Item implements Serializable {
     }
 
     private static final long serialVersionUID = 1L;
-    private static final int doublePrecision = 5;
     
     public static final String ITEM_TYPE = "item_type";
     // matches enum above, needed for annotations
@@ -187,22 +186,14 @@ public class Item implements Serializable {
     }
 
 	public String toJSON() {
-		return new GsonBuilder()
-				.registerTypeAdapter(Double.class, new DoubleSerializer(doublePrecision))
-                .registerTypeAdapter(Bbox.class, new BboxAdapter())
-				.create()
+		return GsonSingleton.getInstance()
 				.toJson(this);
 	}
     
     public static Item fromJSON(String json) {
 
 		Item node;
-		GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Bbox.class, new BboxAdapter());
-//        gsonBuilder.registerTypeAdapter(Geometry.class, new GeometryDeserializer());
-//        gsonBuilder.registerTypeAdapter(Envelope.class, new EnvelopeDeserializer());
-//        gsonBuilder.registerTypeAdapter(CoordinateSequence.class, new CoordinateSequenceDeserializer());
-		Gson gson = gsonBuilder.create();
+		Gson gson = GsonSingleton.getInstance();
 
 		node = gson.fromJson(json, Item.class);
 		if (node.getId() == null) {
