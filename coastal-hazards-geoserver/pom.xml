@@ -13,8 +13,8 @@
     <name>Coastal Hazards Geoserver</name>
 
 	<properties>
-		<gs.version>2.3.2</gs.version>
-		<gt.version>9.2</gt.version>
+		<gs.version>2.4.1</gs.version>
+		<gt.version>10.1</gt.version>
 	</properties>
 
     <repositories>
@@ -23,6 +23,11 @@
 			<name>CIDA Public Nexus</name>
 			<url>http://cida.usgs.gov/maven/cida-public/</url>
 		</repository>
+        <repository>
+            <id>nexus</id>
+            <name>CIDA Nexus</name>
+            <url>http://internal.cida.usgs.gov/maven/content/groups/public/</url>
+        </repository>
         <repository>
             <id>opengeo</id>
             <url>http://repo.opengeo.org/</url>
@@ -57,11 +62,12 @@
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
+			<version>2.7.1</version>
 		</dependency>
         <dependency>
             <groupId>gov.usgs.cida.geoserver</groupId>
             <artifactId>geoserver</artifactId>
-            <version>${gs.version}-3</version>
+            <version>${gs.version}-1-SNAPSHOT</version>
             <type>war</type>
         </dependency>
         <dependency>

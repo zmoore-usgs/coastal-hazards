@@ -1,0 +1,26 @@
+<dataStore>
+  <id>DataStoreInfoImpl--2a6e53ce:14239da8d86:-7ffa</id>
+  <name>Southeast</name>
+  <type>Web Feature Server</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--2a6e53ce:14239da8d86:-7ffc</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="WFSDataStoreFactory:PROTOCOL">true</entry>
+    <entry key="WFSDataStoreFactory:WFS_STRATEGY">arcgis</entry>
+    <entry key="usedefaultsrs">false</entry>
+    <entry key="WFSDataStoreFactory:GET_CAPABILITIES_URL">http://olga.er.usgs.gov/stpgis/services/Vulnerability/SE_erosion_hazards/MapServer/WFSServer?request=getCapabilities</entry>
+    <entry key="namespace">http://simplysibley.com</entry>
+    <entry key="WFSDataStoreFactory:MAXFEATURES">0</entry>
+    <entry key="WFSDataStoreFactory:TRY_GZIP">true</entry>
+    <entry key="WFSDataStoreFactory:LENIENT">false</entry>
+    <entry key="WFSDataStoreFactory:TIMEOUT">3000</entry>
+    <entry key="WFSDataStoreFactory:BUFFER_SIZE">10</entry>
+    <entry key="WFSDataStoreFactory:FILTER_COMPLIANCE">0</entry>
+    <entry key="WFSDataStoreFactory:ENCODING">UTF-8</entry>
+    <entry key="WFSDataStoreFactory:AXIS_ORDER_FILTER">Compliant</entry>
+    <entry key="WFSDataStoreFactory:AXIS_ORDER">Compliant</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

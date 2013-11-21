@@ -1,6 +1,7 @@
 package gov.usgs.cida.coastalhazards.util;
 
 import java.io.File;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -111,12 +112,12 @@ public class GeoserverSweeperStartupListener implements InitializingBean {
 
 	private class Sweeper implements Runnable {
 
-		private Boolean deleteEmptyStores;
-		private Boolean deleteEmptyWorkspaces;
-		private Long maxAge;
-		private Long runEveryMs;
-		private String[] readOnlyWorkspaces;
-		private Catalog catalog;
+		private final Boolean deleteEmptyStores;
+		private final Boolean deleteEmptyWorkspaces;
+		private final Long maxAge;
+		private final Long runEveryMs;
+		private final String[] readOnlyWorkspaces;
+		private final Catalog catalog;
 
 		public Sweeper(Catalog catalog, Long maxAge, String[] readOnlyWorkspaces, Long runEveryMs, Boolean deleteEmptyStores, Boolean deleteEmptyWorkspaces) {
 			this.catalog = catalog;
@@ -156,22 +157,27 @@ public class GeoserverSweeperStartupListener implements InitializingBean {
 								if (!resourceNames.isEmpty()) {
 									for (Name resourceName : resourceNames) {
 										FeatureSource<? extends FeatureType, ? extends Feature> featureSource = da.getFeatureSource(resourceName);
-										File featureSourceFile = new File(featureSource.getDataStore().getInfo().getSource());
-										Long fileAge = featureSourceFile.lastModified();
+										URI dataSource = featureSource.getDataStore().getInfo().getSource();
+										if ("file".equals(dataSource.getScheme())) {
+											File featureSourceFile = new File(dataSource);
+											Long fileAge = featureSourceFile.lastModified();
 
-										if (currentTime - fileAge > this.maxAge) {
-											LayerInfo layerInfo = catalog.getLayerByName(resourceName);
-											catalog.detach(layerInfo);
-											catalog.remove(layerInfo);
-											String filePrefix = featureSourceFile.getName().substring(0, featureSourceFile.getName().lastIndexOf("."));
-											Collection<File> fileList = FileUtils.listFiles(featureSourceFile.getParentFile(), FileFilterUtils.prefixFileFilter(filePrefix), null);
-											for (File file : fileList) {
-												if (FileUtils.deleteQuietly(file)) {
-													LOGGER.log(Level.INFO, "Expired layer file removed @ {0}", file.getPath());
+											if (currentTime - fileAge > this.maxAge) {
+												LayerInfo layerInfo = catalog.getLayerByName(resourceName);
+												catalog.detach(layerInfo);
+												catalog.remove(layerInfo);
+												String filePrefix = featureSourceFile.getName().substring(0, featureSourceFile.getName().lastIndexOf("."));
+												Collection<File> fileList = FileUtils.listFiles(featureSourceFile.getParentFile(), FileFilterUtils.prefixFileFilter(filePrefix), null);
+												for (File file : fileList) {
+													if (FileUtils.deleteQuietly(file)) {
+														LOGGER.log(Level.INFO, "Expired layer file removed @ {0}", file.getPath());
+													}
 												}
 											}
+											// If the store is empty now, it will be deleted in the next pass
+										} else {
+											LOGGER.log(Level.INFO, "Source {0} is not a file", resourceName.toString());
 										}
-										// If the store is empty now, it will be deleted in the next pass
 									}
 								} else if (this.deleteEmptyStores) {
 									LOGGER.log(Level.INFO, "Found empty store '{0}'. Store will be removed", dsInfo.getName());
