@@ -11,8 +11,8 @@
                 <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-location" title="Location" tabindex="-1" href="#">Location</a></li>
                 <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products" title="Products" tabindex="-1" href="#">Products</a></li>
                 <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-extreme-storms" title="Extreme Storms" tabindex="-1" href="#">Products - Extreme Storms</a></li>
-                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-shoreline-change" title="Shoreline Change" tabindex="-1" href="#">Products - Shoreline Change</a></li>
-                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-sealevel-rise" title="Sea-level Rise" tabindex="-1" href="#">Products - Sea-level Rise</a></li>
+                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-shoreline-vulnerability" title="Shoreline Change" tabindex="-1" href="#">Products - Shoreline Change</a></li>
+                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-sealevel-historical" title="Sea-level Rise" tabindex="-1" href="#">Products - Sea-level Rise</a></li>
             </ul>
         </div>
         <input id="app-navbar-search-input" type="text" placeholder="Search..." />

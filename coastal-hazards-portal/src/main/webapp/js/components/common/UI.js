@@ -20,6 +20,7 @@
  *  Events Listened To:
  *  this.bucket : 'app-navbar-button-clicked'
  *  this.combinedSearch : 'combined-searchbar-search-performed'
+ *  this.combinedSearch: 'combined-searchbar-search-performing'
  *  
  * @param {type} args
  * @returns {CCH.Objects.UI.Anonym$22}
@@ -356,19 +357,21 @@ CCH.Objects.UI = function (args) {
         containerId : me.SEARCH_SLIDE_CONTAINER_ID,
         isSmall : me.isSmall
     });
-    
-    // Init
-    {
+
+    me.init = (function () {
         var navbarPinButton = $('#' + me.NAVBAR_PIN_BUTTON_ID),
             navbarClearMenuItem = $('#' + me.NAVBAR_CLEAR_MENU_ITEM_ID),
             shareModal = $('#' + me.SHARE_MODAL_ID),
-            ccsaArea = $('#' + me.CCSA_AREA_ID),
             helpModal = $('#' + me.HELP_MODAL_ID);
 
         // This window name is used for the info window to launch into when 
         // a user chooses to go back to the portal
         window.name = "portal_main_window";
 
+        navbarPinButton.on('click', me.navbarMenuClickHandler);
+        navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
+        shareModal.on('show', me.sharemodalDisplayHandler);
+        helpModal.on('show', me.helpModalDisplayHandler);
         $(window).on({
             'resize': me.windowResizeHandler,
             'cch.data.items.searched': me.itemsSearchedHandler,
@@ -378,22 +381,12 @@ CCH.Objects.UI = function (args) {
             me.bucketSlide.toggle();
         });
         $(me.combinedSearch).on('combined-searchbar-search-performed', function (evt, args) {
-            args = args || {};
-            
-            var data = args.data;
-    
-            if (data && data.locations && data.locations.length > 0) {
-                me.searchSlide.displaySearchResults(args);
-            }
+            me.searchSlide.displaySearchResults(args);
         });
-        navbarPinButton.on('click', me.navbarMenuClickHandler);
-        navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
-        shareModal.on('show', me.sharemodalDisplayHandler);
-        helpModal.on('show', me.helpModalDisplayHandler);
-        
-        
-        // Header fix
-        ccsaArea.find('br').first().remove();
+        $(me.combinedSearch).on('combined-searchbar-search-performing', function () {
+            me.searchSlide.close();
+            me.searchSlide.clear();
+        });
 
         // Check for cookie to tell us if user has disabled the modal window 
         // on start. If not, show it. The user has to opt-in to have it shown 
@@ -402,11 +395,11 @@ CCH.Objects.UI = function (args) {
             $.cookie('cch_display_welcome', 'false', {path: '/'});
             me.displayStartupModalWindow();
         }
-        
+
         $(window).trigger('cch.ui.initialized');
-    }
-    
-    CCH.LOG.debug('UI.js::constructor: UI class initialized.');
+
+        CCH.LOG.debug('UI.js::constructor: UI class initialized.');
+    }());
 
     return {
         removeOverlay: me.removeOverlay,

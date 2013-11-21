@@ -69,7 +69,7 @@ CCH.Objects.Bucket = function (args) {
     $.get(me.IMAGE_LOCATION_BUCKET_WITH_SAND);
     $.get(me.IMAGE_LOCATION_BUCKET_WITHOUT_SAND);
 
-    CCH.LOG.debug('CCH.Objects.Bucket::constructor: UI class initialized.');
+    CCH.LOG.debug('CCH.Objects.Bucket::constructor: Bucket class initialized.');
 
     return $.extend(me, {
         getCount: function () {
