@@ -105,8 +105,8 @@
 
 			<div class="row-fluid">
 				<div class="well well-large">
-					<a id="error-button-email" class="btn btn-large" role="button"><i class="icon-envelope"></i> Contact Us</a>
-					<a class="btn btn-large" role="button" href="<%=baseUrl%>"><i class="icon-refresh"></i> Go To Portal</a>
+					<a id="error-button-email" class="btn btn-large" role="button"><i class="fa fa-envelope"></i> Contact Us</a>
+					<a class="btn btn-large" role="button" href="<%=baseUrl%>"><i class="fa fa-refresh"></i> Go To Portal</a>
 				</div>
 			</div>
 		</div>

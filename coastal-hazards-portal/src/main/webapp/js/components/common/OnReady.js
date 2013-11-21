@@ -1,58 +1,55 @@
-var CCH = CCH || {};
 $(document).ready(function() {
 	splashUpdate("Loading Main module...");
 
-	$(document).ajaxStart(function() {
-		$('body').css('cursor', 'wait');
-	});
-	
-	$(document).ajaxStop(function() {
-		$('body').css('cursor', 'default');
-	});
-
-	splashUpdate("Initializing Logging...");
+    splashUpdate("Initializing Logging...");
 	initializeLogging({
 		LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
 	});
-
-	CCH.LOG = LOG;
+    CCH.LOG = LOG;
+    
+	$(document).ajaxStart(function() {
+		$('body').css('cursor', 'wait');
+	});
+	$(document).ajaxStop(function() {
+		$('body').css('cursor', 'default');
+	});
 
 	splashUpdate("Initializing Session Subsystem...");
 	CCH.session = new CCH.Objects.Session().init();
 
 	splashUpdate("Initializing UI...");
 	CCH.ui = CCH.Objects.UI({
-		applicationOverlay: $('#application-overlay'),
-		applicationContainer: $('#application-container'),
-		headerRow: $('#header-row'),
-		footerRow: $('#footer-row'),
-		mapdiv: $('#map'),
-		descriptionDiv: $('#description-wrapper'),
-		navbarPinButton: $('#app-navbar-pin-control-button'),
-		navbarDropdownIcon: $('#app-navbar-pin-control-icon'),
-		navbarClearMenuItem: $('#app-navbar-pin-control-clear'),
-		navbarShareMenuListItem: $('#app-navbar-pin-control-share-li'),
-		ccsArea: $('#ccsa-area'),
-		shareModal: $('#shareModal'),
-		shareUrlButton: $('#modal-share-summary-url-button'),
-		shareInput: $('#modal-share-summary-url-inputbox'),
-		shareTwitterBtn: $('#multi-card-twitter-button')
-	}).init();
-
-	splashUpdate("Initializing Slideshow...");
-	CCH.slideshow = new CCH.Objects.Slideshow({
-		descriptionWrapper: $('#description-wrapper'),
-		iossliderContainer: $('#iosslider-container')
-	}).init();
-
+		applicationOverlayId: 'application-overlay',
+		headerRowId: 'header-row',
+		footerRowId: 'footer-row',
+		mapdivId: 'map',
+		slideContainerDivId: 'slide-container-wrapper',
+		navbarPinButtonId: 'app-navbar-pin-control-button',
+		navbarDropdownIconId: 'app-navbar-pin-control-icon',
+		navbarClearMenuItemId: 'app-navbar-pin-control-clear',
+		ccsAreaId: 'ccsa-area',
+		shareModalId: 'shareModal',
+		shareUrlButtonId: 'modal-share-summary-url-button',
+		shareInputId: 'modal-share-summary-url-inputbox',
+		shareTwitterBtnId: 'multi-card-twitter-button',
+        helpModalId: 'helpModal',
+        helpModalBodyId: 'help-modal-body',
+        slideBucketContainerId: 'application-slide-bucket-container'
+	});
+    
 	splashUpdate("Initializing Card Subsystem...");
 	CCH.cards = new CCH.Objects.Cards({
-		navPinControlCount: $('#app-navbar-pin-control-pincount'),
-		navPinControlButton: $('#app-navbar-pin-control-button'),
-		navPinControlDropdownButton: $('#app-navbar-pin-control-dropdown-button')
-	}).init();
-
-	splashUpdate("Initializing Map...");
+		navPinControlCountId: $('#app-navbar-pin-control-pincount'),
+		navPinControlButtonId: $('#app-navbar-pin-control-button'),
+		navPinControlDropdownButtonId: $('#app-navbar-pin-control-dropdown-button')
+	});
+    
+	splashUpdate("Initializing Slideshow...");
+	CCH.slideshow = new CCH.Objects.Slideshow({
+		slideContainerId: 'slide-container-wrapper'
+	});
+    
+    splashUpdate("Initializing Map...");
 	CCH.map = new CCH.Objects.Map({
 		mapDiv: 'map'
 	}).init();
@@ -61,20 +58,21 @@ $(document).ready(function() {
 	CCH.ows = new CCH.Objects.OWS().init();
 
 	splashUpdate("Initializing Items");
-	CCH.items = new CCH.Objects.Items().init();
+	CCH.items = new CCH.Objects.Items();
 
 	// Decide how to load the application. 
 	// Depending on the 'idType' string, the application can be loaded either through:
 	// 'ITEM' = Load a single item from the database
 	// 'VIEW' = Load a session which can have zero, one or more items
 	// '' = Load the application normally
-	if (CCH.CONFIG.idType) {
-		var type = CCH.CONFIG.idType;
-		if (type === 'ITEM') {
-			var itemId = CCH.CONFIG.id;
+    var type = (CCH.CONFIG.params.type + String()).toLowerCase(),
+        itemId = CCH.CONFIG.id,
+        ssListener;
+	if (type) {
+		if (type === 'item') {
 			splashUpdate('Loading Item ' + itemId);
 
-			var ssListener = function() {
+			ssListener = function() {
 				CCH.ui.removeOverlay();
 				CCH.slideshow.stop();
 				// Pin the single item loaded when it gets loaded
@@ -108,10 +106,10 @@ $(document).ready(function() {
 					]
 				}
 			});
-		} else if (type === 'VIEW') {
+		} else if (type === 'view') {
 			splashUpdate("Loading View " + CCH.CONFIG.id);
 
-			var ssListener = function() {
+			ssListener = function() {
 				CCH.ui.removeOverlay();
 				CCH.slideshow.stop();
 				$(window).off('cch-slideshow-slider-loaded', ssListener);

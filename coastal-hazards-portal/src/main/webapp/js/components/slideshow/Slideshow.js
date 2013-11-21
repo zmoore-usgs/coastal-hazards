@@ -2,68 +2,74 @@ CCH.Objects.Slideshow = function(args) {
 	CCH.LOG.info('Slideshow.js::constructor:Slideshow class is initializing.');
 	var me = (this === window) ? {} : this;
 	args = args || {};
-	me.descriptionWrapper = args.descriptionWrapper;
-	me.iossliderContainer = args.iossliderContainer;
-	me.stopped = false;
+    
+	me.SLIDE_CONTAINER_WRAPPER_ID = args.slideContainerId || 'slide-container-wrapper';
+	me.isStopped = false;
+    
+    // Listeners: 
+    // window : 'cch.data.items.loaded'
+    // window : 'cch.ui.redimensioned'
+    // window : 'cch.navbar.pinmenu.item.clear.click'
+    // window : 'cch.navbar.pinmenu.button.pin.click'
+    
+    $(window).on({
+        'cch.data.items.loaded': function(evt, args) {
+            me.createSlideshow(evt, args);
+            me.stop();
+        },
+        'cch.ui.redimensioned': function(evt) {
+            me.createSlideshow(evt);
+        },
+        'cch.navbar.pinmenu.item.clear.click': function(evt) {
+            me.createSlideshow(evt);
+            me.stop();
+        },
+        'cch.navbar.pinmenu.button.pin.click': function(evt, items) {
+            me.createSlideshow(evt, items);
+            me.stop();
+        }
+    });
+    
 	return $.extend(me, {
-		init: function() {
-			$(window).on({
-				'cch.data.items.loaded': function(evt, args) {
-					me.createSlideshow(evt, args);
-				},
-				'cch.ui.resized': function(evt) {
-					me.createSlideshow(evt);
-				},
-				'cch.navbar.pinmenu.item.clear.click': function(evt) {
-					me.createSlideshow(evt);
-					me.stop();
-				},
-				'cch.navbar.pinmenu.button.pin.click': function(evt, items) {
-					me.createSlideshow(evt, items);
-					me.stop();
-				}
-			});
-			return me;
-		},
 		stop: function() {
-			me.stopped = true;
-			var container = $('#iosslider-container');
-			var currentSizing = CCH.ui.getCurrentSizing();
-			if (currentSizing === 'large') {
+			me.isStopped = true;
+			var container = $('#iosslider-container'),
+                isSmall = CCH.ui.isSmall();
+			if (!isSmall) {
 				container.iosSliderVertical('autoSlidePause');
-			} else if (currentSizing === 'small') {
+			} else {
 				container.iosSlider('autoSlidePause');
 			}
 		},
 		start: function() {
-			var container = $('#iosslider-container');
-			var currentSizing = CCH.ui.getCurrentSizing();
-			if (currentSizing === 'large') {
+			var container = $('#iosslider-container'),
+                isSmall = CCH.ui.isSmall();
+			if (!isSmall) {
 				container.iosSliderVertical('autoSlidePlay');
-			} else if (currentSizing === 'small') {
+			} else {
 				container.iosSlider('autoSlidePlay');
 			}
 		},
 		goToSlide: function(slide) {
-			var container = $('#iosslider-container');
-			var currentSizing = CCH.ui.getCurrentSizing();
-			if (currentSizing === 'large') {
+			var container = $('#iosslider-container'),
+                isSmall = CCH.ui.isSmall();
+			if (!isSmall) {
 				container.iosSliderVertical('goToSlide', slide);
-			} else if (currentSizing === 'small') {
+			} else {
 				container.iosSlider('goToSlide', slide);
 			}
 		},
 		updateSlides: function() {
-			var container = $('#iosslider-container');
-			var currentSizing = CCH.ui.getCurrentSizing();
-			if (currentSizing === 'large') {
+			var container = $('#iosslider-container'),
+                isSmall = CCH.ui.isSmall();
+			if (!isSmall) {
 				container.iosSliderVertical('update');
-			} else if (currentSizing === 'small') {
+			} else {
 				container.iosSlider('update');
 			}
 		},
 		destroySlider: function() {
-			CCH.cards.cards.length = 0;
+			CCH.cards.getCards().length = 0;
 			var container = $('#iosslider-container');
 			container.empty();
 			container.iosSliderVertical('destroy');
@@ -109,9 +115,9 @@ CCH.Objects.Slideshow = function(args) {
 			}
 		},
 		resize: function() {
-			if ('large' === CCH.ui.getCurrentSizing()) {
+			if (!CCH.ui.isSmall()) {
 				me.resizeVertical();
-			} else if ('small' === CCH.ui.getCurrentSizing()) {
+			} else {
 				me.resizeHorizontal();
 			}
 		},
@@ -137,7 +143,7 @@ CCH.Objects.Slideshow = function(args) {
 			},1500);
 		},
 		resizeHorizontal: function() {
-			var descriptionWrapper = $('#description-wrapper');
+			var descriptionWrapper = $('#' + me.SLIDE_CONTAINER_WRAPPER_ID);
 			var sliderContainer = $('.iosSlider');
 			var sliderList = $('.slider');
 
@@ -169,7 +175,7 @@ CCH.Objects.Slideshow = function(args) {
 			var sliderContainer = $('.iosSliderVertical');
 			var sliderList = $('.slider');
 			sliderContainer.css({
-				'height': $('#description-wrapper').height() + 'px'
+				'height': $('#' + me.SLIDE_CONTAINER_WRAPPER_ID).height() + 'px'
 			});
 			sliderList.css({
 				'height': sliderContainer.height() + 'px'
@@ -180,17 +186,17 @@ CCH.Objects.Slideshow = function(args) {
 			// crash. Guessing it is a resize loop issue
 			setTimeout(function(args) {
 				args = args || {};
-				var currentSizing = CCH.ui.getCurrentSizing();
-				var classname = currentSizing === 'large' ? 'iosSliderVertical' : 'iosSlider';
-				var flashBb = args.flashBb || true;
+				var isSmall = CCH.ui.isSmall(),
+                    classname = isSmall ? 'iosSlider' : 'iosSliderVertical',
+                    flashBb = args.flashBb || true,
+                    sliderContainer = $('<div />').addClass(classname).attr('id', 'iosslider-container'),
+                    slideList = $('<div />').addClass('slider').attr('id', 'iosslider-slider');
+                    
 				// The slider will be rebuilt so destroy the old one
 				me.destroySlider();
 
-				// Create the slider container that will house the slides
-				var sliderContainer = $('<div />').addClass(classname).attr('id', 'iosslider-container');
-				var slideList = $('<div />').addClass('slider').attr('id', 'iosslider-slider');
 				sliderContainer.append(slideList);
-				me.descriptionWrapper.append(sliderContainer);
+				$('#' + me.SLIDE_CONTAINER_WRAPPER_ID).append(sliderContainer);
 
 				// Build the card deck with items coming in from the arguments
 				// or the list of items in the CCH.items object
@@ -205,7 +211,7 @@ CCH.Objects.Slideshow = function(args) {
 					var slide = $('<div />')
 							.addClass('slide well well-small')
 							.attr('id', result.id)
-							.append(card.container);
+							.append(card.getContainer());
 					slideList.append(slide);
 
 					// Append handlers to the card
@@ -250,7 +256,7 @@ CCH.Objects.Slideshow = function(args) {
 
 					// After the event handlers are set, pin the card if it needs
 					// to be pinned
-					if (CCH.session.getPinnedItemIds().indexOf(card.item.id) !== -1) {
+					if (CCH.session.getPinnedItemIds().indexOf(card.getItemId()) !== -1) {
 						card.pin();
 					}
 				});
@@ -269,7 +275,7 @@ CCH.Objects.Slideshow = function(args) {
 					// Tab key can be used to navigate the slider forward
 					tabToAdvance: true,
 					// Enables automatic cycling through slides
-					autoSlide: !me.stopped,
+					autoSlide: !me.isStopped,
 					// The time (in milliseconds) required for all automatic animations to move between slides
 					autoSlideTransTimer: 1500,
 					// A jQuery selection (ex. $('.unselectable') ), each element returned by the selector will become removed from touch/click move events
@@ -301,7 +307,7 @@ CCH.Objects.Slideshow = function(args) {
 						me.resize();
 					}
 				};
-				if (currentSizing === 'large') {
+				if (!isSmall) {
 					LOG.debug('Slideshow.js:: Vertical Slider Loading');
 					sliderContainer.iosSliderVertical($.extend(defaultSliderOptions, {
 						// Currently mouse wheel scrolling is not fully compatible with browsers.
@@ -309,7 +315,7 @@ CCH.Objects.Slideshow = function(args) {
 						mousewheelScroll: true,
 						mousewheelScrollOverflow : true
 					}));
-				} else if (currentSizing === 'small') {
+				} else {
 					LOG.debug('Slideshow.js:: Horizontal Slider Loading');
 					sliderContainer.iosSlider($.extend(defaultSliderOptions, {
 						scrollbarLocation: 'bottom'

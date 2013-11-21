@@ -1,8 +1,9 @@
 <div id="app-navbar-container" class="span12 navbar">
     <div id="app-navbar-inner" class="navbar-inner">
         <div class="container">
-            <img id="app-navbar-coop-logo-img" class="app-navbar-item-container" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
-
+            <a href="." id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+                <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
+            </a>
             <%-- Playing with bootstrap here to show different text for the 
                  application title as the screen narrows --%>
             <div id="app-navbar-site-title-container" class="app-navbar-item-container">
@@ -13,11 +14,11 @@
 
             <jsp:include page="combined-searchbar.jsp"></jsp:include>
 
-            <div id='app-navbar-help-container' class='app-navbar-item-container'>
-                <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="icon-info-sign"></i></a>
-            </div>
-
             <jsp:include page="navbar-bucket.jsp"></jsp:include>
+
+                <div id='app-navbar-help-container' class='app-navbar-item-container'>
+                    <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="fa fa-info-circle"></i></a>
+                </div>
 
                 <!--
                 

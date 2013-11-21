@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.gson.serializer;
+package gov.usgs.cida.coastalhazards.gson.adapter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

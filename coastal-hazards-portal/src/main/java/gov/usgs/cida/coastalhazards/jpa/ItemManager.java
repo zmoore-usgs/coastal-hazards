@@ -1,6 +1,7 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
 import com.google.gson.Gson;
+import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
 import gov.usgs.cida.coastalhazards.model.Item;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,12 +24,12 @@ import org.apache.commons.lang.StringUtils;
 public class ItemManager {
 
 	public String load(String itemId) {
-		String jsonItem = null;
+ 		String jsonItem = null;
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         Item item = null;
         try {
             item = em.find(Item.class, itemId);
-
+            
             if (null == item) {
                 File onDiskItem = new File(FileUtils.getTempDirectory(), itemId);
                 if (onDiskItem.exists()) {
@@ -141,9 +142,9 @@ public class ItemManager {
                 query.setMaxResults(count);
             }
             List<Item> resultList = query.getResultList();
-            Map<String, List> resultMap = new HashMap<String, List>();
+            Map<String, List<Item>> resultMap = new HashMap<>();
             resultMap.put("items", resultList);
-            jsonResult = new Gson().toJson(resultMap, HashMap.class);
+            jsonResult = GsonSingleton.getInstance().toJson(resultMap, HashMap.class);
         } finally {
             JPAHelper.close(em);
         }

@@ -1,6 +1,7 @@
 package gov.usgs.cida.utilities.gov.usa.go;
 
 import com.google.gson.Gson;
+import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.HttpClientSingleton;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
@@ -78,7 +79,7 @@ public class GoUsaGovUtils {
     
     public static String getUrlFromResponse(String response) {
         String result = null;
-        Map<String, Object> map = new Gson().fromJson(response, HashMap.class);
+        Map<String, Object> map = GsonSingleton.getInstance().fromJson(response, HashMap.class);
         if (map.containsKey("response")) {
             Map<String, Object> responseMap = (Map)map.get("response");
             if (responseMap.containsKey("data")) {

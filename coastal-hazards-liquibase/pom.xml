@@ -1,42 +1,135 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>gov.usgs.cida.coastalhazards</groupId>
-		<artifactId>coastal-hazards</artifactId>
-		<version>1.1.1-SNAPSHOT</version>
-	</parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>gov.usgs.cida.coastalhazards</groupId>
+        <artifactId>coastal-hazards</artifactId>
+        <version>1.1.1-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>coastal-hazards-liquibase</artifactId>
-	<packaging>jar</packaging>
+    <artifactId>coastal-hazards-liquibase</artifactId>
+    <packaging>jar</packaging>
 
-	<name>Coastal Hazards Liquibase Changesets</name>
+    <name>Coastal Hazards Liquibase Changesets</name>
+    
+    <properties>
+        <liquibase.version>3.0.7</liquibase.version>
+        <db.schema>cch-portal</db.schema>
+        <!-- For goals to run these properties must be set in settings.xml
+        <liquibase.driver></liquibase.driver>
+        <liquibase.url></liquibase.url>
+        <liquibase.username></liquibase.username>
+        <liquibase.password></liquibase.password>
+        -->
+    </properties>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>cida-public</id>
+            <name>CIDA plugin repository</name>
+            <url>http://cida.usgs.gov/maven/cida-public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+    
     <dependencies>
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
-            <version>2.0.5</version>
+            <version>${liquibase.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.2-1003-jdbc4</version>
         </dependency>
     </dependencies>
-
-	<build>
-		<plugins>
-<!--            <plugin>
+    
+    <profiles>
+        <profile>
+            <id>load-test-data</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>runTestData</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <version>${liquibase.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <configuration>
+                                    <changeLogFile>src/main/liquibase/test_data.xml</changeLogFile>
+                                    <schemas>public</schemas>
+                                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                                    <outputDefaultSchema>true</outputDefaultSchema>
+                                    <contexts>test</contexts>
+                                </configuration>
+                                <goals>
+                                    <goal>update</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>rollback-test-data</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>rollbackTestData</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <version>${liquibase.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <configuration>
+                                    <changeLogFile>src/main/liquibase/test_data.xml</changeLogFile>
+                                    <schemas>public</schemas>
+                                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                                    
+                                    <!-- rollback specific tags -->
+                                    <rollbackTag>test_data</rollbackTag>
+                                    <clearCheckSums>true</clearCheckSums>
+                                    
+                                    <contexts>test</contexts>
+                                </configuration>
+                                <goals>
+                                    <goal>rollback</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    
+    <build>
+        <plugins>
+            <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
-                <version>2.0.5</version>
-                <executions>
-                    <execution>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>update</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>-->
-		</plugins>
-		<finalName>${project.artifactId}</finalName>
-	</build>
-
+                <version>${liquibase.version}</version>
+                <configuration>
+                    <changeLogFile>src/main/liquibase/changeLog.xml</changeLogFile>
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                    <schemas>public</schemas>
+                    <contexts>default</contexts>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

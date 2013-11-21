@@ -1,5 +1,5 @@
 #app-navbar-search-container {
-    margin-right: 25px; 
+    margin-right: 5px; 
 }
 
 /*
@@ -35,4 +35,9 @@ Resets bootstrap's max-width requirement for popovers'
 
 #app-navbar-search-spinner-image {
     width: 16px;
+}
+
+#app-navbar-search-input-context-menu-items-well {
+    display: flex;
+    justify-content: space-between;
 }

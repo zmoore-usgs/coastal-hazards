@@ -1,318 +1,412 @@
-var CCH = CCH || {};
-CCH.Objects.UI = function(args) {
-	CCH.LOG.info('UI.js::constructor: UI class is initializing.');
-	var me = (this === window) ? {} : this;
-	me.search;
-	me.applicationOverlay = args.applicationOverlay;
-	me.mapdiv = args.mapdiv;
-	me.descriptionDiv = args.descriptionDiv;
-	me.magicResizeNumber = 767;
-	me.minimumHeight = args.minimumHeight || 480;
-	me.previousWidth = $(window).width();
-	me.navbarPinButton = args.navbarPinButton;
-	me.navbarPinDropdownButton = args.navbarDropdownIcon;
-	me.navbarClearMenuItem = args.navbarClearMenuItem;
-	me.navbarShareMenuListItem = args.navbarShareMenuListItem;
-	me.applicationContainer = args.applicationContainer;
-	me.headerRow = args.headerRow;
-	me.footerRow = args.footerRow;
-	me.ccsArea = args.ccsArea;
-	me.shareModal = args.shareModal;
-	me.shareUrlButton = args.shareUrlButton;
-	me.shareInput = args.shareInput;
-	me.shareTwitterBtn = args.shareTwitterBtn;
+/*jslint browser: true*/
+/*jslint plusplus: true */
+/*global $*/
+/*global CCH*/
+/*global twttr*/
+/*global splashUpdate*/
+
+/**
+ *  Central control object for the user interface
+ * 
+ * 
+ *  Events Emitted:
+ *  window: 'cch.ui.resized'
+ *  window: 'cch.ui.redimensioned'
+ *  window: 'cch.navbar.pinmenu.button.pin.click'
+ *  window: 'cch.navbar.pinmenu.item.clear.click'
+ *  window: 'cch.ui.initialized'
+ *  window: 'cch.ui.overlay.removed'
+
+ *  Events Listened To:
+ *  this.bucket : 'app-navbar-button-clicked'
+ *  this.combinedSearch : 'combined-searchbar-search-performed'
+ *  this.combinedSearch: 'combined-searchbar-search-performing'
+ *  
+ * @param {type} args
+ * @returns {CCH.Objects.UI.Anonym$22}
+ */
+CCH.Objects.UI = function (args) {
+    "use strict";
+    CCH.LOG.info('UI.js::constructor: UI class is initializing.');
+
+    var me = (this === window) ? {} : this;
+
+    me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
+    me.HEADER_ROW_ID = args.headerRowId || 'header-row';
+    me.FOOTER_ROW_ID = args.footerRowId || 'footer-row';
+    me.MAP_DIV_ID = args.mapdivId || 'map';
+    me.SLIDE_CONTAINER_DIV_ID = args.slideContainerDivId || 'slide-container-wrapper';
+    me.NAVBAR_PIN_BUTTON_ID = args.navbarPinButtonId || 'app-navbar-pin-control-button';
+    me.NAVBAR_PIN_CONTROL_ICON_ID = args.navbarDropdownIconId || 'app-navbar-pin-control-icon';
+    me.NAVBAR_CLEAR_MENU_ITEM_ID = args.navbarClearMenuItemId || 'app-navbar-pin-control-clear';
+    me.CCSA_AREA_ID = args.ccsAreaId || 'ccsa-area';
+    me.SHARE_MODAL_ID = args.shareModalId || 'shareModal';
+    me.SHARE_URL_BUTTON_ID = args.shareUrlButtonId || 'modal-share-summary-url-button';
+    me.SHARE_INPUT_ID = args.shareInputId || 'modal-share-summary-url-inputbox';
+    me.SHARE_TWITTER_BUTTON_ID = args.shareTwitterBtnId || 'multi-card-twitter-button';
+    me.HELP_MODAL_ID = args.helpModalId || 'helpModal';
+    me.HELP_MODAL_BODY_ID = args.helpModalBodyId || 'help-modal-body';
+    me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId || 'application-slide-bucket-container';
+    me.SEARCH_SLIDE_CONTAINER_ID = args.slideSearchContainerId || 'application-slide-search-container';
+    
+    me.magicResizeNumber = 767;
+    me.minimumHeight = args.minimumHeight || 480;
+    me.previousWidth = $(window).width();
     me.bucket = new CCH.Objects.Bucket();
     me.combinedSearch = new CCH.Objects.CombinedSearch();
+    
+    // Triggers:
+    // window: 'cch.ui.resized'
+    // window: 'cch.ui.redimensioned'
+    // window: 'cch.navbar.pinmenu.button.pin.click'
+    // window: 'cch.navbar.pinmenu.item.clear.click'
+    // window: 'cch.ui.initialized'
+    // window: 'cch.ui.overlay.removed'
 
-	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
-	return $.extend(me, {
-		init: function() {
-			// This window name is used for the info window to launch into when 
-			// a user chooses to go back to the portal
-			window.name = "portal_main_window";
+    // Listeners:
+    // me.bucket : 'app-navbar-button-clicked'
+    // me.combinedSearch : 'combined-searchbar-search-performed'
+    
+    me.itemsSearchedHandler = function (evt, count) {
+        // Display a notification with item count
+        $.pnotify({
+            text: 'Found ' + count + ' item' + (count === 1 ? '.' : 's.'),
+            styling: 'bootstrap',
+            type: 'info',
+            nonblock: true,
+            sticker: false,
+            icon: 'icon-search'
+        });
+    };
 
-			$(window).on({
-				'resize': me.windowResizeHandler,
-				'cch.data.items.searched': function(evt, count) {
-					// Display a notification with item count
-					$.pnotify({
-						text: 'Found ' + count + ' item' + (count === 1 ? '.' : 's.'),
-						styling: 'bootstrap',
-						type: 'info',
-						nonblock: true,
-						sticker: false,
-						icon: 'icon-search'
-					});
-				},
-				'cch.navbar.pinmenu.item.clear.click': function() {
-					me.navbarPinButton.removeClass('slider-card-pinned');
-				}
-			});
-			me.navbarPinButton.on('click', me.navbarMenuClickHandler);
-			me.navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
-			me.shareModal.on('show', me.sharemodalDisplayHandler);
-			$('#helpModal').on('show', function() {
-				$('#help-modal-body').css('max-height', window.innerHeight - window.innerHeight * 0.2)
-			})
-			// Header fix
-			me.ccsArea.find('br').first().remove();
+    me.windowResizeHandler = function () {
+        var currWidth = $(window).width(),
+            isSmall = me.isSmall(),
+            headerRow = $('#' + me.HEADER_ROW_ID),
+            footerRow = $('#' + me.FOOTER_ROW_ID),
+            map = $('#' + me.MAP_DIV_ID),
+            slideDiv = $('#' + me.SLIDE_CONTAINER_DIV_ID),
+            descriptionHeight,
+            contentRowHeight = $(window).height() - headerRow.outerHeight(true) - footerRow.outerHeight(true);
 
-			$(window).resize();
+        contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
 
-			// Check for cookie to tell us if user has disabled the modal window 
-			// on start. If not, show it. The user has to opt-in to have it shown 
-			// next time
-			if (!$.cookie('cch_display_welcome') || $.cookie('cch_display_welcome') === 'true') {
-				$.cookie('cch_display_welcome', 'false', {path: '/'});
-				me.displayStartupModalWindow()
-			}
+        if (isSmall) {
+            // In a profile view, we care about the height of the description container
+            descriptionHeight = Math.round(contentRowHeight * 0.30);
+            if (descriptionHeight < 280) {
+                descriptionHeight = 280;
+            }
+            slideDiv.height(descriptionHeight);
+            map.height(contentRowHeight - descriptionHeight);
+        } else {
+            map.height(contentRowHeight);
+            slideDiv.height(contentRowHeight);
+        }
 
-			$(window).trigger('cch.ui.initialized');
-			return me;
-		},
-		displayStartupModalWindow: function() {
-			$('#helpModal .modal-footer').prepend(
-					$('<div />').attr({
-				'id': 'set-modal-display-cookie-container'
-			}).addClass('pull-left')
-					.append(
-					$('<label />').attr({
-				'for': 'set-modal-display-cookie-cb-label'
-			}).html('Don\'t show this again ').append(
-					$('<input />').attr({
-				'id': 'set-modal-display-cookie-cb',
-				'type': 'checkbox',
-				'checked': 'checked'
-			}))));
+        // Check if the application was resized. If so, re-initialize the slideshow to easily
+        // fit into the new layout
+        if ((me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) ||
+                (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber)) {
+            $(window).trigger('cch.ui.redimensioned', isSmall);
+        }
+        $(window).trigger('cch.ui.resized', isSmall);
+        me.previousWidth = currWidth;
+    };
 
-			var removeCheck = function() {
-				$('#set-modal-display-cookie-container').remove();
-				$('#helpModal').off('hidden', removeCheck);
-			};
+    me.pinmenuItemClickHandler = function () {
+        $('#' + me.NAVBAR_PIN_BUTTON_ID).removeClass('slider-card-pinned');
+    };
 
-			$('#set-modal-display-cookie-cb').on('change', function(evt) {
-				if (evt.target.checked) {
-					$.cookie('cch_display_welcome', 'false', {path: '/'});
-				} else {
-					$.cookie('cch_display_welcome', 'true', {path: '/'});
-				}
-			});
+    me.navbarMenuClickHandler = function () {
+        // Check to see if any cards are pinned
+        var pinnedCardIds = CCH.session.getPinnedItemIds(),
+            pinControlIcon = $('#' + me.NAVBAR_PIN_CONTROL_ICON_ID),
+            items = null,
+            pcIdx,
+            id,
+            isResultMatched = function (result) {
+                return result.id === id;
+            };
 
-			$('#helpModal').on('hidden', removeCheck);
-			$('#helpModal').modal('toggle');
-		},
-		navbarMenuClickHandler: function() {
-			// Check to see if any cards are pinned
-			var pinnedCardIds = CCH.session.getPinnedItemIds();
-			var items = null;
+        if (pinnedCardIds.length) {
+            // Toggle how the button looks
+            pinControlIcon.toggleClass('muted');
+            $('#' + me.NAVBAR_PIN_BUTTON_ID).toggleClass('slider-card-pinned');
 
-			if (pinnedCardIds.length) {
-				// Toggle how the button looks
-				me.navbarPinDropdownButton.toggleClass('muted');
-				me.navbarPinButton.toggleClass('slider-card-pinned');
+            // Check if button is active
+            if (!pinControlIcon.hasClass('muted')) {
+                // If cards are pinned, show only pinned cards
+                // Otherwise, show all cards
+                // TODO- This functionality should probably be in Cards
+                items = [];
+                for (pcIdx = 0; pcIdx < pinnedCardIds.length; pcIdx++) {
+                    id = pinnedCardIds[pcIdx];
+                    items.push(CCH.session.getSession().items.find(isResultMatched));
+                }
+                CCH.map.zoomToActiveLayers();
+            }
+        }
 
-				// Check if button is active
-				if (!me.navbarPinDropdownButton.hasClass('muted')) {
-					// If cards are pinned, show only pinned cards
-					// Otherwise, show all cards
-					// TODO- This functionality should probably be in Cards
-					items = [];
-					for (var pcIdx = 0; pcIdx < pinnedCardIds.length; pcIdx++) {
-						var id = pinnedCardIds[pcIdx];
-						items.push(CCH.session.getSession().items.find(function(result) {
-							return result.id === id;
-						}));
-					}
-					CCH.map.zoomToActiveLayers();
-				}
-			}
+        // pinnedResults may or may not be an empty array. If it is, 
+        // the full deck will be seen. Otherwise, if pinnedResults is
+        // populated, only pinned cards will be seen
+        $(window).trigger('cch.navbar.pinmenu.button.pin.click', {items: items});
+    };
 
-			// pinnedResults may or may not be an empty array. If it is, 
-			// the full deck will be seen. Otherwise, if pinnedResults is
-			// populated, only pinned cards will be seen
-			$(window).trigger('cch.navbar.pinmenu.button.pin.click', {items: items});
-		},
-		navbarClearItemClickHandler: function() {
-			$(window).trigger('cch.navbar.pinmenu.item.clear.click');
-		},
-		windowResizeHandler: function() {
-			var currWidth = $(window).width();
-			var currentSizing = me.getCurrentSizing();
-			var contentRowHeight = $(window).height() - me.headerRow.outerHeight(true) - me.footerRow.outerHeight(true);
-			contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
+    me.sharemodalDisplayHandler = function () {
+        $('#' + me.SHARE_URL_BUTTON_ID).addClass('disabled');
+        $('#' + me.SHARE_INPUT_ID).val('');
+        $('#' + me.SHARE_TWITTER_BUTTON_ID).empty();
 
-			if (currentSizing === 'small') {
-				// In a profile view, we care about the height of the description container
-				var descriptionHeight = Math.round(contentRowHeight * .30);
-				if (descriptionHeight < 280) {
-					descriptionHeight = 280;
-				}
-				me.descriptionDiv.height(descriptionHeight);
-				me.mapdiv.height(contentRowHeight - descriptionHeight);
+        // A user has clicked on the share menu item. A session needs to be 
+        // created and a token retrieved...
+        CCH.session.writeSession({
+            callbacks: {
+                success: [
+                    function (json) {
+                        var sid = json.sid,
+                            sessionUrl = CCH.CONFIG.publicUrl + '/ui/view/' + sid;
+                        CCH.Util.getMinifiedEndpoint({
+                            contextPath: CCH.CONFIG.contextPath,
+                            location: sessionUrl,
+                            callbacks: {
+                                success: [
+                                    function (json) {
+                                        var url = json.tinyUrl,
+                                            shareInput = $('#' + me.SHARE_INPUT_ID);
 
-			} else if (currentSizing === 'large') {
-				me.mapdiv.height(contentRowHeight);
-				me.descriptionDiv.height(contentRowHeight);
-			}
+                                        shareInput.val(url);
+                                        $('#' + me.SHARE_URL_BUTTON_ID).attr({
+                                            'href': url
+                                        }).removeClass('disabled');
+                                        shareInput.select();
+                                        twttr.widgets.createShareButton(
+                                            url,
+                                            $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
+                                            function (element) {
+                                                // Any callbacks that may be needed
+                                            },
+                                            {
+                                                hashtags: 'USGS_CCH',
+                                                lang: 'en',
+                                                size: 'large',
+                                                text: 'Check out my CCH View!',
+                                                count: 'none'
+                                            }
+                                        );
 
-			// Check if the application was resized. If so, re-initialize the slideshow to easily
-			// fit into the new layout
-			if ((me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) ||
-					(me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber)) {
-				$(window).trigger('cch.ui.resized', currentSizing);
-			}
+                                        twttr.events.bind('tweet', function () {
+                                            $.pnotify({
+                                                text: 'Your view has been tweeted. Thank you.',
+                                                styling: 'bootstrap',
+                                                type: 'info',
+                                                nonblock: true,
+                                                sticker: false,
+                                                icon: 'icon-twitter'
+                                            });
+                                        });
+                                    }
+                                ],
+                                error: [
+                                    function (data) {
+                                        var url = data.responseJSON.full_url,
+                                            shareInput = $('#' + me.SHARE_INPUT_ID);
+                                        shareInput.val(url);
+                                        $('#' + me.SHARE_URL_BUTTON_ID).attr({
+                                            'href': url
+                                        }).removeClass('disabled');
+                                        shareInput.select();
+                                        twttr.widgets.createShareButton(
+                                            url,
+                                            $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
+                                            function (element) {
+                                                // Any callbacks that may be needed
+                                            },
+                                            {
+                                                hashtags: 'USGS_CCH',
+                                                lang: 'en',
+                                                size: 'large',
+                                                text: 'Check out my CCH View!',
+                                                count: 'none'
+                                            }
+                                        );
 
-			// Because the window was resized, the search container in the map
-			// needs to be repositioned
-			var mapPosition = me.mapdiv.position();
-			var mapHeight = me.mapdiv.height();
-			var mapWidth = me.mapdiv.width();
+                                        twttr.events.bind('tweet', function () {
+                                            $.pnotify({
+                                                text: 'Your view has been tweeted. Thank you.',
+                                                styling: 'bootstrap',
+                                                type: 'info',
+                                                nonblock: true,
+                                                sticker: false,
+                                                icon: 'icon-twitter'
+                                            });
+                                        });
+                                    }
+                                ]
+                            }
+                        });
+                    }
+                ],
+                error: [
+                    function () {
+                        $('#shareModal').modal('hide');
+                        $.pnotify({
+                            text: 'We apologize, but we could not create a share url for this session!',
+                            styling: 'bootstrap',
+                            type: 'error',
+                            nonblock: true,
+                            sticker: false,
+                            icon: 'icon-warning-sign'
+                        });
+                    }
+                ]
+            }
+        });
+    };
 
-			me.previousWidth = currWidth;
-		},
-		removeOverlay: function() {
-			splashUpdate("Starting Application...");
+    me.helpModalDisplayHandler = function () {
+        $('#' + me.HELP_MODAL_BODY_ID).css('max-height', window.innerHeight - window.innerHeight * 0.2);
+    };
 
-			$(window).resize();
+    me.displayStartupModalWindow = function () {
+        $('#helpModal .modal-footer').prepend(
+            $('<div />').attr({
+                'id': 'set-modal-display-cookie-container'
+            }).addClass('pull-left')
+                .append(
+                    $('<label />').attr({
+                        'for': 'set-modal-display-cookie-cb-label'
+                    }).html('Don\'t show this again ').append(
+                        $('<input />').attr({
+                            'id': 'set-modal-display-cookie-cb',
+                            'type': 'checkbox',
+                            'checked': 'checked'
+                        })
+                    )
+                )
+        );
 
-			// Get rid of the overlay and clean it up out of memory and DOM
-			me.applicationOverlay.fadeOut(2000, function() {
-				me.applicationOverlay.remove();
-				$(window).trigger('cch.ui.overlay.removed');
-				splashUpdate = undefined;
-				me.applicationOverlay = undefined;
-			});
-		},
-		getCurrentSizing: function() {
-			// Bootstrap decides when to flip the application view based on 
-			// a specific width. 767px seems to be the point 
-			// https://github.com/twitter/bootstrap/blob/master/less/responsive-767px-max.less
-			if (me.previousWidth <= me.magicResizeNumber) {
-				return 'small';
-			} else if (me.previousWidth > me.magicResizeNumber) {
-				return 'large';
-			}
-		},
-		sharemodalDisplayHandler: function() {
-			me.shareUrlButton.addClass('disabled');
-			me.shareInput.val('');
-			me.shareTwitterBtn.empty();
+        var removeCheck = function () {
+            $('#set-modal-display-cookie-container').remove();
+            $('#helpModal').off('hidden', removeCheck);
+        };
 
-			// A user has clicked on the share menu item. A session needs to be 
-			// created and a token retrieved...
-			CCH.session.writeSession({
-				callbacks: {
-					success: [
-						function(json, textStatus, jqXHR) {
-							var sid = json.sid;
-							var sessionUrl = CCH.CONFIG.publicUrl + '/ui/view/' + sid;
-							CCH.Util.getMinifiedEndpoint({
-								contextPath: CCH.CONFIG.contextPath,
-								location: sessionUrl,
-								callbacks: {
-									success: [
-										function(json, textStatus, jqXHR) {
-											var url = json.tinyUrl;
-											me.shareInput.val(url);
-											me.shareUrlButton.attr({
-												'href': url
-											}).removeClass('disabled');
-											me.shareInput.select();
-											twttr.widgets.createShareButton(
-													url,
-													me.shareTwitterBtn[0],
-													function(element) {
-														// Any callbacks that may be needed
-													},
-													{
-														hashtags: 'USGS_CCH',
-														lang: 'en',
-														size: 'large',
-														text: 'Check out my CCH View!',
-														count: 'none'
-													});
+        $('#set-modal-display-cookie-cb').on('change', function (evt) {
+            if (evt.target.checked) {
+                $.cookie('cch_display_welcome', 'false', {path: '/'});
+            } else {
+                $.cookie('cch_display_welcome', 'true', {path: '/'});
+            }
+        });
 
-											twttr.events.bind('tweet', function(event) {
-												$.pnotify({
-													text: 'Your view has been tweeted. Thank you.',
-													styling: 'bootstrap',
-													type: 'info',
-													nonblock: true,
-													sticker: false,
-													icon: 'icon-twitter'
-												});
-											});
-										}
-									],
-									error: [
-										function(data, textStatus, jqXHR) {
-											var url = data.responseJSON.full_url;
-											me.shareInput.val(url);
-											me.shareUrlButton.attr({
-												'href': url
-											}).removeClass('disabled');
-											me.shareInput.select();
-											twttr.widgets.createShareButton(
-													url,
-													me.shareTwitterBtn[0],
-													function(element) {
-														// Any callbacks that may be needed
-													},
-													{
-														hashtags: 'USGS_CCH',
-														lang: 'en',
-														size: 'large',
-														text: 'Check out my CCH View!',
-														count: 'none'
-													});
+        $('#helpModal').on('hidden', removeCheck);
+        $('#helpModal').modal('toggle');
+    };
 
-											twttr.events.bind('tweet', function(event) {
-												$.pnotify({
-													text: 'Your view has been tweeted. Thank you.',
-													styling: 'bootstrap',
-													type: 'info',
-													nonblock: true,
-													sticker: false,
-													icon: 'icon-twitter'
-												});
-											});
-										}
-									]
-								}
-							});
-						}
-					],
-					error: [
-						function(data, textStatus, jqXHR) {
-							$('#shareModal').modal('hide');
-							$.pnotify({
-								text: 'We apologize, but we could not create a share url for this session!',
-								styling: 'bootstrap',
-								type: 'error',
-								nonblock: true,
-								sticker: false,
-								icon: 'icon-warning-sign'
-							});
-						}
-					]
-				}
-			});
-		},
-		displayLoadingError: function(args) {
-			var continueLink = $('<a />').attr({
-				'href': CCH.CONFIG.contextPath,
-				'role': 'button'
-			}).addClass('btn btn-large').html('<i class="icon-refresh"></i> Click to continue')
+    me.navbarClearItemClickHandler = function () {
+        $(window).trigger('cch.navbar.pinmenu.item.clear.click');
+    };
+    
+    me.removeOverlay = function () {
+        splashUpdate("Starting Application...");
 
-			var emailLink = $('<a />').attr({
-				'href': args.mailTo,
-				'role': 'button'
-			}).addClass('btn btn-large').html('<i class="icon-envelope"></i> Contact Us');
+        var applicationOverlay = $('#' + me.APPLICATION_OVERLAY_ID);
 
-			splashUpdate(args.splashMessage);
-			$('#splash-status-update').append(continueLink);
-			$('#splash-status-update').append(emailLink);
-			$('#splash-spinner').fadeOut(2000);
-		}
-	});
+        $(window).resize();
+        CCH.map.getMap().updateSize();
+        
+        // Get rid of the overlay and clean it up out of memory and DOM
+        applicationOverlay.fadeOut(2000, function () {
+            applicationOverlay.remove();
+            $(window).trigger('cch.ui.overlay.removed');
+        });
+    };
+    
+    
+    me.isSmall = function () {
+        // Bootstrap decides when to flip the application view based on 
+        // a specific width. 767px seems to be the point 
+        // https://github.com/twitter/bootstrap/blob/master/less/responsive-767px-max.less
+        return me.previousWidth <= me.magicResizeNumber;
+    };
+
+    me.displayLoadingError = function (args) {
+        var continueLink = $('<a />').attr({
+            'href': CCH.CONFIG.contextPath,
+            'role': 'button'
+        }).addClass('btn btn-large').html('<i class="fa fa-refresh"></i> Click to continue'),
+            emailLink = $('<a />').attr({
+                'href': args.mailTo,
+                'role': 'button'
+            }).addClass('btn btn-large').html('<i class="fa fa-envelope"></i> Contact Us');
+
+        splashUpdate(args.splashMessage);
+
+        $('#splash-status-update').append(continueLink);
+        $('#splash-status-update').append(emailLink);
+        $('#splash-spinner').fadeOut(2000);
+    };
+    
+    me.bucketSlide = new CCH.Objects.BucketSlide({
+        containerId : me.BUCKET_SLIDE_CONTAINER_ID,
+        mapdivId : me.MAP_DIV_ID,
+        isSmall : me.isSmall
+    });
+    me.searchSlide = new CCH.Objects.SearchSlide({
+        containerId : me.SEARCH_SLIDE_CONTAINER_ID,
+        isSmall : me.isSmall
+    });
+
+    me.init = (function () {
+        var navbarPinButton = $('#' + me.NAVBAR_PIN_BUTTON_ID),
+            navbarClearMenuItem = $('#' + me.NAVBAR_CLEAR_MENU_ITEM_ID),
+            shareModal = $('#' + me.SHARE_MODAL_ID),
+            helpModal = $('#' + me.HELP_MODAL_ID);
+
+        // This window name is used for the info window to launch into when 
+        // a user chooses to go back to the portal
+        window.name = "portal_main_window";
+
+        navbarPinButton.on('click', me.navbarMenuClickHandler);
+        navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
+        shareModal.on('show', me.sharemodalDisplayHandler);
+        helpModal.on('show', me.helpModalDisplayHandler);
+        $(window).on({
+            'resize': me.windowResizeHandler,
+            'cch.data.items.searched': me.itemsSearchedHandler,
+            'cch.navbar.pinmenu.item.clear.click': me.pinmenuItemClickHandler
+        });
+        $(me.bucket).on('app-navbar-button-clicked', function () {
+            me.bucketSlide.toggle();
+        });
+        $(me.combinedSearch).on('combined-searchbar-search-performed', function (evt, args) {
+            me.searchSlide.displaySearchResults(args);
+        });
+        $(me.combinedSearch).on('combined-searchbar-search-performing', function () {
+            me.searchSlide.close();
+            me.searchSlide.clear();
+        });
+
+        // Check for cookie to tell us if user has disabled the modal window 
+        // on start. If not, show it. The user has to opt-in to have it shown 
+        // next time
+        if (!$.cookie('cch_display_welcome') || $.cookie('cch_display_welcome') === 'true') {
+            $.cookie('cch_display_welcome', 'false', {path: '/'});
+            me.displayStartupModalWindow();
+        }
+
+        $(window).trigger('cch.ui.initialized');
+
+        CCH.LOG.debug('UI.js::constructor: UI class initialized.');
+    }());
+
+    return {
+        removeOverlay: me.removeOverlay,
+        isSmall: me.isSmall,
+        displayLoadingError: me.displayLoadingError,
+        bucketSlide: me.bucketSlide,
+        searchSlide: me.searchSlide,
+        bucket: me.bucket
+    };
 };
