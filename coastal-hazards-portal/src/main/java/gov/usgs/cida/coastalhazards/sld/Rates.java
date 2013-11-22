@@ -2,7 +2,7 @@ package gov.usgs.cida.coastalhazards.sld;
 
 import com.google.gson.Gson;
 import com.sun.jersey.api.view.Viewable;
-import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
+import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Item;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +56,7 @@ public final class Rates extends SLDGenerator {
             bins.add(binMap);
         }
         sldInfo.put("bins", bins);
-        String toJson = GsonSingleton.getInstance().toJson(sldInfo, HashMap.class);
+        String toJson = GsonUtil.getDefault().toJson(sldInfo, HashMap.class);
         return Response.ok(toJson).build();
     }
     

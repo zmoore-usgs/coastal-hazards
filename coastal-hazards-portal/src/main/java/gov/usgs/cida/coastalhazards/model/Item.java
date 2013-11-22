@@ -1,12 +1,13 @@
 package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
-import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
+import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
 import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.utilities.IdGenerator;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,6 +24,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Proxy;
 
 /**
  *
@@ -30,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
  */
 @Entity
 @Table(name = "item")
+@Proxy
 public class Item implements Serializable {
     
     public enum ItemType {
@@ -63,7 +68,7 @@ public class Item implements Serializable {
     private transient Rank rank;
 	private WFSService wfsService;
 	private WMSService wmsService;
-    private List<Item> children;
+    private transient List<Item> children;
     
     
     @Id
@@ -170,6 +175,7 @@ public class Item implements Serializable {
     }
     
     @ManyToMany(fetch = FetchType.LAZY)
+    @LazyCollection(LazyCollectionOption.EXTRA)
 	@JoinTable(
 			name = "aggregation_children",
 			joinColumns = {
@@ -178,6 +184,17 @@ public class Item implements Serializable {
 		@JoinColumn(name = "item_id", referencedColumnName = "id")})
     public List<Item> getChildren() {
         return children;
+    }
+    
+    public List<String> proxiedChildren() {
+        List<String> ids = new ArrayList<>();
+        List<Item> items = getChildren();
+        if (items != null) {
+            for (Item item : items) {
+                ids.add(item.getId());
+            }
+        }   
+        return ids;
     }
 
     /**
@@ -188,16 +205,21 @@ public class Item implements Serializable {
         this.children = (children == null || children.isEmpty()) ? null : children;
     }
 
-	public String toJSON() {
-		return GsonSingleton.getInstance()
-				.toJson(this);
+	public String toJSON(boolean subtree) {
+        Gson gson;
+        if (subtree) {
+            gson = GsonUtil.getSubtreeGson();
+        } else {
+            gson = GsonUtil.getIdOnlyGson();
+        }
+		return gson.toJson(this);
 	}
     
     public static Item fromJSON(String json) {
 
 		Item node;
-		Gson gson = GsonSingleton.getInstance();
-
+		Gson gson = GsonUtil.getDefault();
+		
 		node = gson.fromJson(json, Item.class);
 		if (node.getId() == null) {
 			node.setId(IdGenerator.generate());

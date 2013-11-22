@@ -2,7 +2,7 @@ package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
+import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.gson.adapter.BboxAdapter;
 import gov.usgs.cida.coastalhazards.gson.adapter.CenterAdapter;
 import gov.usgs.cida.coastalhazards.gson.adapter.DoubleSerializer;
@@ -42,7 +42,7 @@ public class Session implements Serializable {
 	}
 
 	public String toJSON() {
-		return GsonSingleton.getInstance()
+		return GsonUtil.getDefault()
 				.toJson(this);
 	}
 
@@ -50,7 +50,7 @@ public class Session implements Serializable {
 		String id = StringHelper.makeSHA1Hash(json);
 
 		Session session;
-		Gson gson = GsonSingleton.getInstance();
+		Gson gson = GsonUtil.getDefault();
 
 		session = gson.fromJson(json, Session.class);
 		session.setId(id);
