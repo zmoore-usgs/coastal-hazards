@@ -1,9 +1,7 @@
 package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
-import gov.usgs.cida.coastalhazards.gson.adapter.BboxAdapter;
 import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
 import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
@@ -24,6 +22,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -116,7 +115,7 @@ public class Item implements Serializable {
 	}
 
 	public void setMetadata(String metadata) {
-		this.metadata = metadata;
+		this.metadata = (StringUtils.isBlank(metadata)) ? null : metadata;
 	}
 
     @Embedded
@@ -159,7 +158,7 @@ public class Item implements Serializable {
 	}
 
 	public void setAttr(String attr) {
-		this.attr = attr;
+		this.attr = (StringUtils.isBlank(attr)) ? null : attr;
 	}
 
     /** @deprecated */
@@ -185,8 +184,12 @@ public class Item implements Serializable {
         return children;
     }
 
+    /**
+     * For Gson serialization, we want null rather than empty lists
+     * @param children 
+     */
     public void setChildren(List<Item> children) {
-        this.children = children;
+        this.children = (children == null || children.isEmpty()) ? null : children;
     }
 
 	public String toJSON() {
