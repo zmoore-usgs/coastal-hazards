@@ -392,7 +392,7 @@ CCH.Objects.UI = function (args) {
         // on start. If not, show it. The user has to opt-in to have it shown 
         // next time
         if (!$.cookie('cch_display_welcome') || $.cookie('cch_display_welcome') === 'true') {
-//            $.cookie('cch_display_welcome', 'false', {path: '/'});
+            $.cookie('cch_display_welcome', 'false', {path: '/'});
             me.displayStartupModalWindow();
         }
 
