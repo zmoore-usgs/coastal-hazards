@@ -90,6 +90,16 @@ CCH.Objects.SearchSlide = function (args) {
             windowWidth = $(window).outerWidth(),
             windowHeight = $(window).outerHeight();
 
+        if (me.isClosed) {
+            slideContainer.css({
+                display : 'none'
+            });
+        } else {
+            slideContainer.css({
+                'display' : ''
+            });
+        }
+
         if (me.isSmall()) {
             if (me.isClosed) {
                 slideContainer.offset({

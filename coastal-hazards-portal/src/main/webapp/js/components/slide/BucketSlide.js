@@ -41,7 +41,7 @@ CCH.Objects.BucketSlide = function (args) {
     };
 
     me.close = function () {
-        var container = $('#' + me.SLIDE_CONTAINER_ID)
+        var container = $('#' + me.SLIDE_CONTAINER_ID);
         container.animate({
             left: $(window).width()
         }, me.animationTime, function () {
@@ -66,6 +66,16 @@ CCH.Objects.BucketSlide = function (args) {
             slideContent = $('#' + me.SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth(),
             windowHeight = $(window).outerHeight();
+
+        if (me.isClosed) {
+            slideContainer.css({
+                display : 'none'
+            });
+        } else {
+            slideContainer.css({
+                'display' : ''
+            });
+        }
 
         if (me.isSmall()) {
             if (me.isClosed) {

@@ -81,6 +81,9 @@ CCH.Objects.UI = function (args) {
         contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
 
         if (isSmall) {
+            contentRow.css({
+                height : $(window).height()
+            });
             map.height($(window).height());
         } else {
             contentRow.height(contentRowHeight - 1);
@@ -89,8 +92,10 @@ CCH.Objects.UI = function (args) {
 
         // Check if the application was resized. If so, re-initialize the slideshow to easily
         // fit into the new layout
+        CCH.LOG.debug('Window width' + $(window).width() + 'isSmall: ' + isSmall);
         if ((me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) ||
                 (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber)) {
+            CCH.LOG.debug('CCH UI Redeminsioned. Window width: ' + $(window).width() + ' isSmall: ' + isSmall);
             $(window).trigger('cch.ui.redimensioned', isSmall);
         }
         $(window).trigger('cch.ui.resized', isSmall);
@@ -310,7 +315,7 @@ CCH.Objects.UI = function (args) {
         // Bootstrap decides when to flip the application view based on 
         // a specific width. 767px seems to be the point 
         // https://github.com/twitter/bootstrap/blob/master/less/responsive-767px-max.less
-        return me.previousWidth <= me.magicResizeNumber;
+        return $(window).width() <= me.magicResizeNumber;
     };
 
     me.displayLoadingError = function (args) {
@@ -363,8 +368,7 @@ CCH.Objects.UI = function (args) {
         helpModal.on('show', me.helpModalDisplayHandler);
         $(window).on({
             'resize': me.windowResizeHandler,
-            'cch.data.items.searched': me.itemsSearchedHandler,
-            'cch.navbar.pinmenu.item.clear.click': me.pinmenuItemClickHandler
+            'cch.data.items.searched': me.itemsSearchedHandler
         });
 
         $(me.bucket).on('app-navbar-button-clicked', function () {

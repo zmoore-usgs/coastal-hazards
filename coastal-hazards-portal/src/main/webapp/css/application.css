@@ -1,8 +1,16 @@
 /* ---------------------------------------------------------------------- UI */
+/* Bootstrap Fix */
+img { 
+    max-width: none !important; 
+}
 
-body {
+html, body {
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
+    min-width: 320px;
+    min-height: 600px;
+    height: 100%;
+    /*width: 100%;*/
 }
 
 /* 
@@ -28,131 +36,46 @@ img {
 }
 
 @media (min-width: 767px) {
-    
+
 }
 
 
 @media (max-width: 766px) {
     body {
         padding:  0px !important;
-        overflow: hidden;
     }
 
     #application-container {
         padding-left: 0px;
         padding-right:  0px;
     }
-    
+
     #header-row {
         display: none;
     }
-    
+
     #footer-row {
         display: none;
     }
-}
-.description-description-row {
-    min-height : 100px;
-    overflow : auto;
-}
 
-.description-title {
-    font-size : 1.2em;
-    font-weight: bold;
-    text-align: center;
-}
+    #info-row-control iframe{
+        margin-top: 5px;
+        margin-left: 5px;
+    }
 
-.description-container {
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: 20% top;
-}
+    #info-graph {
+        height: 100px;
+    }
 
-#slide-container-wrapper {
-    overflow: auto;
-    max-width: 100%;
-}
+    #cch-ui-legend-div {
+        max-height: none;
+    }
 
-.slider {
-    width: 100%;
-    height: 100%;
+    #banner-area,
+    .content {
+        display:none;
+    }
 }
-
-.slider-slide-active {
-    opacity: 1;
-    filter: alpha(opacity=100);
-}
-
-.slider-slide-inactive {
-    opacity: 0.4;
-    filter: alpha(opacity=40);
-    overflow : hidden;
-}
-
-.slider-slide-inactive .description-container-large .description-button-row { 
-    display: none;
-}
-
-.description-container-small btn {
-    height: auto;
-}
-
-.description-container-small i {
-    font-size: 2em;
-}
-
-
-.slide-menu-icon {
-    font-size: 2em;
-}
-
-.slide-menu-icon:hover {
-    cursor: pointer;
-}
-
-.slider-slide-active .description-container-storms {
-    background-image : url("../images/cards/StormsActive.svg");
-}
-.slider-slide-inactive .description-container-storms {
-    background-image : url("../images/cards/StormsInactive.svg");
-}
-.slider-slide-active .description-container-vulnerability {
-    background-image : url("../images/cards/VulnerabilityActive.svg");
-}
-.slider-slide-inactive .description-container-vulnerability {
-    background-image : url("../images/cards/VulnerabilityInactive.svg");
-}
-.slider-slide-active .description-container-historical {
-    background-image : url("../images/cards/HistoricalActive.svg");
-}
-.slider-slide-inactive .description-container-historical {
-    background-image : url("../images/cards/HistoricalInactive.svg");
-}
-
-.slider-card-pinned i {
-    color : #FF0000; 
-}
-
-#banner-area {
-    display: none;
-}
-
-#page-info {
-    display: none;
-}
-
-#gov-buttons {
-    display: none;
-}
-
-/* Bootstrap Fix */
-img { 
-    max-width: none !important; 
-}
-
-/*#map {
-    height: 400px;
-}*/
 
 .btn-error {
     font-size: 1em;
@@ -255,26 +178,6 @@ img {
 
     .olControlZoom {
         display: none;
-    }
-}
-
-@media (max-width: 766px) {
-    #info-row-control iframe{
-        margin-top: 5px;
-        margin-left: 5px;
-    }
-
-    #info-graph {
-        height: 100px;
-    }
-
-    #cch-ui-legend-div {
-        max-height: none;
-    }
-
-    #banner-area,
-    .content {
-        display:none;
     }
 }
 

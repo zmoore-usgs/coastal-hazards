@@ -47,11 +47,6 @@ $(document).ready(function() {
 		navPinControlDropdownButtonId: $('#app-navbar-pin-control-dropdown-button')
 	});
     
-	splashUpdate("Initializing Slideshow...");
-	CCH.slideshow = new CCH.Objects.Slideshow({
-		slideContainerId: 'slide-container-wrapper'
-	});
-    
     splashUpdate("Initializing Map...");
 	CCH.map = new CCH.Objects.Map({
 		mapDiv: 'map'
