@@ -16,12 +16,11 @@
         width: 100%;
     }
 
-
     #application-slide-items-content-container {
         height: 100%;
         width: 100%;
         background-color: #333333;
-        overflow: scroll;
+        overflow-y: auto;
         color: #FFFFFF;
     }
 }
@@ -40,7 +39,7 @@
     }
     
     #application-slide-items-content-container {
-        overflow: scroll;
+        overflow: auto;
         background-color: #F5F5F5;
         height: 100%;
         border-left: 2px solid #E3E3E3;
