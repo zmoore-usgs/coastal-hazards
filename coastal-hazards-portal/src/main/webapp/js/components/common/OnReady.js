@@ -22,8 +22,8 @@ $(document).ready(function() {
 		applicationOverlayId: 'application-overlay',
 		headerRowId: 'header-row',
 		footerRowId: 'footer-row',
+        contentRowId: 'content-row',
 		mapdivId: 'map',
-		slideContainerDivId: 'slide-container-wrapper',
 		navbarPinButtonId: 'app-navbar-pin-control-button',
 		navbarDropdownIconId: 'app-navbar-pin-control-icon',
 		navbarClearMenuItemId: 'app-navbar-pin-control-clear',
@@ -34,7 +34,10 @@ $(document).ready(function() {
 		shareTwitterBtnId: 'multi-card-twitter-button',
         helpModalId: 'helpModal',
         helpModalBodyId: 'help-modal-body',
-        slideBucketContainerId: 'application-slide-bucket-container'
+        slideContainerDivId: 'slide-container-wrapper',
+        slideItemsContainerId: 'application-slide-items-container',
+        slideBucketContainerId: 'application-slide-bucket-container',
+        slideSearchContainerId: 'application-slide-search-container'
 	});
     
 	splashUpdate("Initializing Card Subsystem...");

@@ -34,6 +34,7 @@ CCH.Objects.UI = function (args) {
     me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
     me.FOOTER_ROW_ID = args.footerRowId || 'footer-row';
+    me.CONTENT_ROW_ID = args.contentRowId || 'content-row';
     me.MAP_DIV_ID = args.mapdivId || 'map';
     me.SLIDE_CONTAINER_DIV_ID = args.slideContainerDivId || 'slide-container-wrapper';
     me.NAVBAR_PIN_BUTTON_ID = args.navbarPinButtonId || 'app-navbar-pin-control-button';
@@ -46,27 +47,16 @@ CCH.Objects.UI = function (args) {
     me.SHARE_TWITTER_BUTTON_ID = args.shareTwitterBtnId || 'multi-card-twitter-button';
     me.HELP_MODAL_ID = args.helpModalId || 'helpModal';
     me.HELP_MODAL_BODY_ID = args.helpModalBodyId || 'help-modal-body';
+    me.ITEMS_SLIDE_CONTAINER_ID = args.slideItemsContainerId || 'application-slide-items-container';
     me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId || 'application-slide-bucket-container';
     me.SEARCH_SLIDE_CONTAINER_ID = args.slideSearchContainerId || 'application-slide-search-container';
-    
+
     me.magicResizeNumber = 767;
     me.minimumHeight = args.minimumHeight || 480;
     me.previousWidth = $(window).width();
     me.bucket = new CCH.Objects.Bucket();
     me.combinedSearch = new CCH.Objects.CombinedSearch();
-    
-    // Triggers:
-    // window: 'cch.ui.resized'
-    // window: 'cch.ui.redimensioned'
-    // window: 'cch.navbar.pinmenu.button.pin.click'
-    // window: 'cch.navbar.pinmenu.item.clear.click'
-    // window: 'cch.ui.initialized'
-    // window: 'cch.ui.overlay.removed'
 
-    // Listeners:
-    // me.bucket : 'app-navbar-button-clicked'
-    // me.combinedSearch : 'combined-searchbar-search-performed'
-    
     me.itemsSearchedHandler = function (evt, count) {
         // Display a notification with item count
         $.pnotify({
@@ -84,24 +74,17 @@ CCH.Objects.UI = function (args) {
             isSmall = me.isSmall(),
             headerRow = $('#' + me.HEADER_ROW_ID),
             footerRow = $('#' + me.FOOTER_ROW_ID),
+            contentRow = $('#' + me.CONTENT_ROW_ID),
             map = $('#' + me.MAP_DIV_ID),
-            slideDiv = $('#' + me.SLIDE_CONTAINER_DIV_ID),
-            descriptionHeight,
             contentRowHeight = $(window).height() - headerRow.outerHeight(true) - footerRow.outerHeight(true);
 
         contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
 
         if (isSmall) {
-            // In a profile view, we care about the height of the description container
-            descriptionHeight = Math.round(contentRowHeight * 0.30);
-            if (descriptionHeight < 280) {
-                descriptionHeight = 280;
-            }
-            slideDiv.height(descriptionHeight);
-            map.height(contentRowHeight - descriptionHeight);
+            map.height($(window).height());
         } else {
+            contentRow.height(contentRowHeight - 1);
             map.height(contentRowHeight);
-            slideDiv.height(contentRowHeight);
         }
 
         // Check if the application was resized. If so, re-initialize the slideshow to easily
@@ -307,7 +290,7 @@ CCH.Objects.UI = function (args) {
     me.navbarClearItemClickHandler = function () {
         $(window).trigger('cch.navbar.pinmenu.item.clear.click');
     };
-    
+
     me.removeOverlay = function () {
         splashUpdate("Starting Application...");
 
@@ -315,15 +298,14 @@ CCH.Objects.UI = function (args) {
 
         $(window).resize();
         CCH.map.getMap().updateSize();
-        
+
         // Get rid of the overlay and clean it up out of memory and DOM
         applicationOverlay.fadeOut(2000, function () {
             applicationOverlay.remove();
             $(window).trigger('cch.ui.overlay.removed');
         });
     };
-    
-    
+
     me.isSmall = function () {
         // Bootstrap decides when to flip the application view based on 
         // a specific width. 767px seems to be the point 
@@ -347,7 +329,14 @@ CCH.Objects.UI = function (args) {
         $('#splash-status-update').append(emailLink);
         $('#splash-spinner').fadeOut(2000);
     };
-    
+
+    me.itemsSlide = new CCH.Objects.ItemsSlide({
+        containerId : me.ITEMS_SLIDE_CONTAINER_ID,
+        mapdivId : me.MAP_DIV_ID,
+        headerRowId : me.HEADER_ROW_ID,
+        footerRowId : me.FOOTER_ROW_ID,
+        isSmall : me.isSmall
+    });
     me.bucketSlide = new CCH.Objects.BucketSlide({
         containerId : me.BUCKET_SLIDE_CONTAINER_ID,
         mapdivId : me.MAP_DIV_ID,
@@ -377,6 +366,7 @@ CCH.Objects.UI = function (args) {
             'cch.data.items.searched': me.itemsSearchedHandler,
             'cch.navbar.pinmenu.item.clear.click': me.pinmenuItemClickHandler
         });
+
         $(me.bucket).on('app-navbar-button-clicked', function () {
             me.bucketSlide.toggle();
         });
@@ -405,6 +395,7 @@ CCH.Objects.UI = function (args) {
         removeOverlay: me.removeOverlay,
         isSmall: me.isSmall,
         displayLoadingError: me.displayLoadingError,
+        itemsSlide: me.itemsSlide,
         bucketSlide: me.bucketSlide,
         searchSlide: me.searchSlide,
         bucket: me.bucket

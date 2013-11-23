@@ -1,0 +1,82 @@
+@media (min-width: 767px) {
+    /* No tab shown on large display. Toggled via button in bar */
+    #application-slide-items-tab {
+        display: none;
+    }
+
+    #application-slide-items-container {
+        top: auto;
+        left: auto;
+        background-color: #F5F5F5;
+    }
+
+    #application-slide-items-content {
+        background-color: #888888;
+        height: 100%;
+        width: 100%;
+    }
+
+
+    #application-slide-items-content-container {
+        height: 100%;
+        width: 100%;
+        background-color: #333333;
+        overflow: scroll;
+        color: #FFFFFF;
+    }
+}
+
+@media (max-width: 766px) {
+
+    #application-slide-items-container {
+        position: absolute;
+        width: 100%;
+        z-index: 1006; /* 1005 is highest on map */
+    }
+    
+    #application-slide-items-content {
+        height: 100%;
+        float:right;
+    }
+    
+    #application-slide-items-content-container {
+        overflow: scroll;
+        background-color: #F5F5F5;
+        height: 100%;
+        border-left: 2px solid #E3E3E3;
+        border-top: 2px solid #E3E3E3;
+        border-bottom: 2px solid #E3E3E3;
+    }
+
+    #application-slide-items-tab {
+        height : fit-content;
+        width: fit-content;
+        display: inline-block;
+        background-color: #F5F5F5;
+        border-left: 2px solid #E3E3E3;
+        border-top: 2px solid #E3E3E3;
+        border-bottom: 2px solid #E3E3E3;
+        z-index: 2001;
+        border-top-left-radius: 40px 10px;
+        -webkit-border-top-left-radius: 40px 10px;
+        border-bottom-left-radius: 40px 10px;
+        -webkit-border-bottom-left-radius: 40px 10px;
+        float: left;
+        font-size: 1.4em;
+        padding-left: 5px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        color: #0033CC;
+        z-index: 1007;
+        top: 90%;
+    }
+    
+    #application-slide-items-tab:hover {
+        cursor: pointer;
+    }
+
+    #application-slide-items-content {
+        border-bottom-left-radius: 10px 10px;
+        -webkit-border-bottom-left-radius: 10px 10px;
+    }
+}

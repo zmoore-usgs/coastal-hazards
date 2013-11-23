@@ -1,7 +1,4 @@
 <div id="application-slide-bucket-container" class="application-slide-container">
-    <div id="application-slide-bucket-tab" class="application-slide-tab">
-        <i class=""></i>
-    </div>
     <div id="application-slide-bucket-content" class="application-slide-content">
         <div id="application-slide-bucket-content-container" class="container-fluid">
         </div>

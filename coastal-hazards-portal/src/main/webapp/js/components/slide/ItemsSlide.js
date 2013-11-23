@@ -3,34 +3,48 @@
 /*global $*/
 /*global CCH*/
 /*global splashUpdate*/
-CCH.Objects.BucketSlide = function (args) {
+
+/**
+ * Slider widget holding cards
+ * 
+ * Listens For: 
+ * window: 'cch.ui.resized'
+ * 
+ * @param {type} args
+ * @returns {CCH.Objects.ItemsSlide.Anonym$5}
+ */
+CCH.Objects.ItemsSlide = function (args) {
     "use strict";
     args = args || {};
 
     if (!args.containerId) {
-        throw 'containerId is required when initializing a bucket slide';
+        throw 'containerId is required when initializing a items slide';
     }
+    
+    CCH.LOG.info('ItemsSlide.js::constructor: ItemsSlide class is initializing.');
+    
     var me = (this === window) ? {} : this;
 
-    // Listeners 
-    // window: 'cch.ui.resized'
-
-    me.SLIDE_CONTAINER_ID = args.containerId;
+    me.SLIDE_ITEMS_CONTAINER_ID = args.containerId;
     me.MAP_DIV_ID = args.mapdivId || 'map';
-    me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
-    me.CARD_TEMPLATE_ID = 'application-slide-bucket-container-card-template';
-    me.SLIDE_CONTENT_CONTAINER = 'application-slide-bucket-content-container';
-
+    me.SLIDE_TAB_ID = $('#' + me.SLIDE_ITEMS_CONTAINER_ID + ' .application-slide-tab').attr('id');
+    me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_ITEMS_CONTAINER_ID + ' .application-slide-content').attr('id');
+    me.CARD_TEMPLATE_ID = 'application-slide-items-container-card-template';
+    me.SLIDE_CONTENT_CONTAINER = 'application-slide-items-content-container';
+    me.HEADER_ROW_ID = args.headerRowId || 'header-row';
+    me.FOOTER_ROW_ID = args.footerRowId || 'footer-row';
+    me.isSmall = args.isSmall;
     me.borderWidth = 2;
+    me.desktopSpanSize = 3;
     me.animationTime = 500;
     me.placement = 'right';
-    me.isSmall = args.isSmall;
-    me.startClosed = true;
+    me.displayTab = me.isSmall();
+    me.startClosed = me.isSmall() ? false : true;
     me.isInitialized = false;
     me.isClosed = me.startClosed;
 
     me.open = function () {
-        var container = $('#' + me.SLIDE_CONTAINER_ID),
+        var container = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
             extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large;
         container.animate({
@@ -41,9 +55,10 @@ CCH.Objects.BucketSlide = function (args) {
     };
 
     me.close = function () {
-        var container = $('#' + me.SLIDE_CONTAINER_ID)
+        var container = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
+            tab = $('#' + me.SLIDE_TAB_ID);
         container.animate({
-            left: $(window).width()
+            left: $(window).width() - tab.outerWidth()
         }, me.animationTime, function () {
             me.isClosed = true;
         });
@@ -62,35 +77,43 @@ CCH.Objects.BucketSlide = function (args) {
     me.resized = function () {
         var extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large,
-            slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
+            map = $('#' + me.MAP_DIV_ID),
+            contentRow = map.parent(),
+            isSmall = me.isSmall(),
+            slideContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
+            slideTab = $('#' + me.SLIDE_TAB_ID),
             slideContent = $('#' + me.SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth(),
-            windowHeight = $(window).outerHeight();
+            windowHeight = $(window).outerHeight(),
+            marginTop = 10,
+            borderSize = 4;
 
-        if (me.isSmall()) {
+        if (isSmall) {
+            slideContainer.removeClass('span' + me.desktopSpanSize);
             if (me.isClosed) {
                 slideContainer.offset({
-                    left: windowWidth,
+                    left: windowWidth  - slideTab.outerWidth(),
                     top: toExtent.top
                 });
             } else {
                 slideContainer.offset(toExtent);
             }
-            slideContainer.width(windowWidth - toExtent.left);
-            slideContainer.height(windowHeight - 10);
-            slideContent.width(slideContainer.outerWidth() - me.borderWidth);
+            slideContainer.height(windowHeight - marginTop - borderSize);
+            slideContent.width(slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth);
+            slideTab.offset({
+                left: slideContainer.offset().left + borderSize
+            });
         } else {
-            if (me.isClosed) {
-                slideContainer.offset({
-                    left: windowWidth,
-                    top: toExtent.top
-                });
-            } else {
-                slideContainer.offset(toExtent);
-            }
-            slideContainer.width(windowWidth - toExtent.left);
-            slideContainer.height($('#' + me.MAP_DIV_ID).outerHeight());
-            slideContent.width(slideContainer.outerWidth() - me.borderWidth);
+            slideContainer.addClass('span' + me.desktopSpanSize);
+            slideContainer.height(contentRow.height());
+            // reset styles from being set small. Revert back to stylesheet style
+            slideContainer.css({
+                'top' : '',
+                'left' : ''
+            });
+            slideContent.css({
+                width: ''
+            });
         }
     };
 
@@ -141,7 +164,9 @@ CCH.Objects.BucketSlide = function (args) {
         me.resized(args);
     });
 
-    CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');
+    $('#' + me.SLIDE_TAB_ID).on('click', me.toggle);
+    
+    CCH.LOG.info('CCH.Objects.ItemsSlide::constructor: ItemsSlide class initialized.');
     return {
         open: me.open,
         close: me.close,
