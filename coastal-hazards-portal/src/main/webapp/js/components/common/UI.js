@@ -356,12 +356,18 @@ CCH.Objects.UI = function (args) {
         var navbarPinButton = $('#' + me.NAVBAR_PIN_BUTTON_ID),
             navbarClearMenuItem = $('#' + me.NAVBAR_CLEAR_MENU_ITEM_ID),
             shareModal = $('#' + me.SHARE_MODAL_ID),
-            helpModal = $('#' + me.HELP_MODAL_ID);
+            helpModal = $('#' + me.HELP_MODAL_ID),
+            contentRow = $('#' + me.CONTENT_ROW_ID);
 
         // This window name is used for the info window to launch into when 
         // a user chooses to go back to the portal
         window.name = "portal_main_window";
 
+        // Move the help modal container to the content row. It originally is in
+        // the header row but because that's not always visible, we need to move
+        // it during application initialization.
+        helpModal.appendTo(contentRow);
+        
         navbarPinButton.on('click', me.navbarMenuClickHandler);
         navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
         shareModal.on('show', me.sharemodalDisplayHandler);
@@ -386,7 +392,7 @@ CCH.Objects.UI = function (args) {
         // on start. If not, show it. The user has to opt-in to have it shown 
         // next time
         if (!$.cookie('cch_display_welcome') || $.cookie('cch_display_welcome') === 'true') {
-            $.cookie('cch_display_welcome', 'false', {path: '/'});
+//            $.cookie('cch_display_welcome', 'false', {path: '/'});
             me.displayStartupModalWindow();
         }
 

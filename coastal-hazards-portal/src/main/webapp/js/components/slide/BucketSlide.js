@@ -30,22 +30,46 @@ CCH.Objects.BucketSlide = function (args) {
     me.isClosed = me.startClosed;
 
     me.open = function () {
-        var container = $('#' + me.SLIDE_CONTAINER_ID),
+        var slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large;
-        container.animate({
+        $('body').css({
+            overflow : 'hidden'
+        });
+        slideContainer.css({
+            display: ''
+        });
+        slideContainer.animate({
             left: toExtent.left
         }, me.animationTime, function () {
             me.isClosed = false;
+            
+            $('body').css({
+                overflow : ''
+            });
         });
     };
 
     me.close = function () {
-        var container = $('#' + me.SLIDE_CONTAINER_ID);
-        container.animate({
+        var slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
+        
+        $('body').css({
+            overflow : 'hidden'
+        });
+        
+        slideContainer.animate({
             left: $(window).width()
         }, me.animationTime, function () {
             me.isClosed = true;
+            
+            slideContainer.css({
+                display: 'none'
+            });
+            
+            $('body').css({
+               overflow : 'hidden'
+           });
+        
         });
     };
 
