@@ -12,15 +12,13 @@
  *  Events Emitted:
  *  window: 'cch.ui.resized'
  *  window: 'cch.ui.redimensioned'
- *  window: 'cch.navbar.pinmenu.button.pin.click'
- *  window: 'cch.navbar.pinmenu.item.clear.click'
  *  window: 'cch.ui.initialized'
  *  window: 'cch.ui.overlay.removed'
 
  *  Events Listened To:
  *  this.bucket : 'app-navbar-button-clicked'
- *  this.combinedSearch : 'combined-searchbar-search-performed'
  *  this.combinedSearch: 'combined-searchbar-search-performing'
+ *  this.combinedSearch : 'combined-searchbar-search-performed'
  *  
  * @param {type} args
  * @returns {CCH.Objects.UI.Anonym$22}
@@ -81,9 +79,7 @@ CCH.Objects.UI = function (args) {
         contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
 
         if (isSmall) {
-            contentRow.css({
-                height : $(window).height()
-            });
+            contentRow.height($(window).height());
             map.height($(window).height());
         } else {
             contentRow.height(contentRowHeight - 1);
@@ -100,46 +96,6 @@ CCH.Objects.UI = function (args) {
         }
         $(window).trigger('cch.ui.resized', isSmall);
         me.previousWidth = currWidth;
-    };
-
-    me.pinmenuItemClickHandler = function () {
-        $('#' + me.NAVBAR_PIN_BUTTON_ID).removeClass('slider-card-pinned');
-    };
-
-    me.navbarMenuClickHandler = function () {
-        // Check to see if any cards are pinned
-        var pinnedCardIds = CCH.session.getPinnedItemIds(),
-            pinControlIcon = $('#' + me.NAVBAR_PIN_CONTROL_ICON_ID),
-            items = null,
-            pcIdx,
-            id,
-            isResultMatched = function (result) {
-                return result.id === id;
-            };
-
-        if (pinnedCardIds.length) {
-            // Toggle how the button looks
-            pinControlIcon.toggleClass('muted');
-            $('#' + me.NAVBAR_PIN_BUTTON_ID).toggleClass('slider-card-pinned');
-
-            // Check if button is active
-            if (!pinControlIcon.hasClass('muted')) {
-                // If cards are pinned, show only pinned cards
-                // Otherwise, show all cards
-                // TODO- This functionality should probably be in Cards
-                items = [];
-                for (pcIdx = 0; pcIdx < pinnedCardIds.length; pcIdx++) {
-                    id = pinnedCardIds[pcIdx];
-                    items.push(CCH.session.getSession().items.find(isResultMatched));
-                }
-                CCH.map.zoomToActiveLayers();
-            }
-        }
-
-        // pinnedResults may or may not be an empty array. If it is, 
-        // the full deck will be seen. Otherwise, if pinnedResults is
-        // populated, only pinned cards will be seen
-        $(window).trigger('cch.navbar.pinmenu.button.pin.click', {items: items});
     };
 
     me.sharemodalDisplayHandler = function () {
@@ -290,10 +246,6 @@ CCH.Objects.UI = function (args) {
 
         $('#helpModal').on('hidden', removeCheck);
         $('#helpModal').modal('toggle');
-    };
-
-    me.navbarClearItemClickHandler = function () {
-        $(window).trigger('cch.navbar.pinmenu.item.clear.click');
     };
 
     me.removeOverlay = function () {

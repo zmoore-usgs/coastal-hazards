@@ -37,6 +37,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID = 'application-slide-search-product-results-content-container';
     me.SLIDE_SEARCH_CONTAINER_PARENT_ID = 'application-slide-search-content-container';
 
+    me.smallOffset = 10;
     me.borderWidth = 2;
     me.animationTime = 500;
     me.placement = 'right';
@@ -51,23 +52,47 @@ CCH.Objects.SearchSlide = function (args) {
     };
 
     me.open = function () {
-        var container = $('#' + me.SLIDE_CONTAINER_ID),
+        var slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large;
-        container.animate({
+    
+        $('body').css({
+            overflow : 'hidden'
+        });
+        
+        slideContainer.css({
+            display: ''
+        });
+        
+        slideContainer.animate({
             left: toExtent.left
         }, me.animationTime, function () {
             me.isClosed = false;
+            $('body').css({
+                overflow : ''
+            });
         });
     };
 
     me.close = function () {
-        var container = $('#' + me.SLIDE_CONTAINER_ID),
-            dropShadowWidth = 7;
-        container.animate({
-            left: $(window).width() + dropShadowWidth
+        var slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
+        
+        $('body').css({
+            overflow : 'hidden'
+        });
+        
+        slideContainer.animate({
+            left: $(window).width()
         }, me.animationTime, function () {
             me.isClosed = true;
+            
+            slideContainer.css({
+                display: 'none'
+            });
+            
+            $('body').css({
+               overflow : 'hidden'
+           });
         });
     };
 
@@ -102,7 +127,7 @@ CCH.Objects.SearchSlide = function (args) {
 
         if (me.isSmall()) {
             if (me.isClosed) {
-                slideContainer.offset({
+                slideContainer.css({
                     left: windowWidth,
                     top: toExtent.top
                 });
@@ -110,11 +135,10 @@ CCH.Objects.SearchSlide = function (args) {
                 slideContainer.offset(toExtent);
             }
             slideContainer.width(windowWidth - toExtent.left);
-            slideContainer.height(windowHeight - 10);
             slideContent.width(slideContainer.outerWidth() - me.borderWidth);
         } else {
             if (me.isClosed) {
-                slideContainer.offset({
+                slideContainer.css({
                     left: windowWidth,
                     top: toExtent.top
                 });
@@ -135,8 +159,8 @@ CCH.Objects.SearchSlide = function (args) {
                     left: appContainerId.offset().left + 150
                 },
                 small: {
-                    top: appContainerId.offset().top,
-                    left: appContainerId.offset().left
+                    top: appContainerId.offset().top + me.smallOffset,
+                    left: appContainerId.offset().left + me.smallOffset
                 }
             };
 

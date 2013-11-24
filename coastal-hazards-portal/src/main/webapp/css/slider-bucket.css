@@ -38,6 +38,11 @@ No tab shown on large display. Toggled via button in bar
     .application-slide-bucket-container-card-image {
         width: auto;
     }
+    
+    #application-slide-bucket-container {
+        top : 10px;
+        height: 97%;
+    }
 }
 
 #application-slide-bucket-content {

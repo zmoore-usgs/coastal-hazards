@@ -103,7 +103,7 @@ CCH.Objects.BucketSlide = function (args) {
 
         if (me.isSmall()) {
             if (me.isClosed) {
-                slideContainer.offset({
+                slideContainer.css({
                     left: windowWidth,
                     top: toExtent.top
                 });
@@ -111,11 +111,10 @@ CCH.Objects.BucketSlide = function (args) {
                 slideContainer.offset(toExtent);
             }
             slideContainer.width(windowWidth - toExtent.left);
-            slideContainer.height(windowHeight - 10);
             slideContent.width(slideContainer.outerWidth() - me.borderWidth);
         } else {
             if (me.isClosed) {
-                slideContainer.offset({
+                slideContainer.css({
                     left: windowWidth,
                     top: toExtent.top
                 });
