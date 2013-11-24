@@ -88,8 +88,7 @@ CCH.Objects.BucketSlide = function (args) {
             toExtent = me.isSmall() ? extents.small : extents.large,
             slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             slideContent = $('#' + me.SLIDE_CONTENT_ID),
-            windowWidth = $(window).outerWidth(),
-            windowHeight = $(window).outerHeight();
+            windowWidth = $(window).outerWidth();
 
         if (me.isClosed) {
             slideContainer.css({
@@ -104,8 +103,7 @@ CCH.Objects.BucketSlide = function (args) {
         if (me.isSmall()) {
             if (me.isClosed) {
                 slideContainer.css({
-                    left: windowWidth,
-                    top: toExtent.top
+                    left: windowWidth
                 });
             } else {
                 slideContainer.offset(toExtent);
@@ -134,7 +132,7 @@ CCH.Objects.BucketSlide = function (args) {
                     left: $('#' + me.MAP_DIV_ID).outerWidth() + $('#' + me.MAP_DIV_ID).offset().left
                 },
                 small: {
-                    top: 10,
+                    // top is handled by css
                     left: 10
                 }
             };

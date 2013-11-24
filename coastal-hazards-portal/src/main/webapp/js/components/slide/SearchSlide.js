@@ -128,8 +128,7 @@ CCH.Objects.SearchSlide = function (args) {
         if (me.isSmall()) {
             if (me.isClosed) {
                 slideContainer.css({
-                    left: windowWidth,
-                    top: toExtent.top
+                    left: windowWidth
                 });
             } else {
                 slideContainer.offset(toExtent);
@@ -159,7 +158,7 @@ CCH.Objects.SearchSlide = function (args) {
                     left: appContainerId.offset().left + 150
                 },
                 small: {
-                    top: appContainerId.offset().top + me.smallOffset,
+                    // top is handled by css file
                     left: appContainerId.offset().left + me.smallOffset
                 }
             };
