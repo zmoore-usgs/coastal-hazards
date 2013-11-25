@@ -83,6 +83,7 @@
             <delete tableName="tinygov" />
             <delete tableName="session_item" />
             <delete tableName="session_table" />
+            <delete tableName="aggregation_children" />
             <delete tableName="item" />
             <delete tableName="summary" />
             <delete tableName="full_publications" />
