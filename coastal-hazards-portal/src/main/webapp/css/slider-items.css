@@ -20,7 +20,10 @@
         width: 100%;
         background-color: #F5F5F5;
         overflow-y: auto;
-        color: #FFFFFF;
+    }
+    
+    .card-title-container-large {
+        display: none;
     }
 }
 
@@ -79,5 +82,9 @@
     #application-slide-items-content {
         border-bottom-left-radius: 10px 10px;
         -webkit-border-bottom-left-radius: 10px 10px;
+    }
+    
+    .card-title-container-medium {
+        display: none;
     }
 }

@@ -34,7 +34,7 @@ CCH.Objects.UI = function (args) {
     me.FOOTER_ROW_ID = args.footerRowId || 'footer-row';
     me.CONTENT_ROW_ID = args.contentRowId || 'content-row';
     me.MAP_DIV_ID = args.mapdivId || 'map';
-    me.SLIDE_CONTAINER_DIV_ID = args.slideContainerDivId || 'slide-container-wrapper';
+    me.SLIDE_CONTAINER_DIV_ID = args.slideContainerDivId || 'application-slide-items-content-container';
     me.NAVBAR_PIN_BUTTON_ID = args.navbarPinButtonId || 'app-navbar-pin-control-button';
     me.NAVBAR_PIN_CONTROL_ICON_ID = args.navbarDropdownIconId || 'app-navbar-pin-control-icon';
     me.NAVBAR_CLEAR_MENU_ITEM_ID = args.navbarClearMenuItemId || 'app-navbar-pin-control-clear';
@@ -54,17 +54,24 @@ CCH.Objects.UI = function (args) {
     me.previousWidth = $(window).width();
     me.bucket = new CCH.Objects.Bucket();
     me.combinedSearch = new CCH.Objects.CombinedSearch();
+    me.cards = CCH.cards;
+    me.slideShow = new CCH.Objects.Slideshow({
+        slideContainerId : me.SLIDE_CONTAINER_DIV_ID
+    });
 
-    me.itemsSearchedHandler = function (evt, count) {
+    me.itemsSearchedHandler = function (evt, data) {
         // Display a notification with item count
-        $.pnotify({
-            text: 'Found ' + count + ' item' + (count === 1 ? '.' : 's.'),
-            styling: 'bootstrap',
-            type: 'info',
-            nonblock: true,
-            sticker: false,
-            icon: 'icon-search'
-        });
+        if (data.items) {
+            var count = data.items.length;
+            $.pnotify({
+                text: 'Found ' + count + ' item' + (count === 1 ? '.' : 's.'),
+                styling: 'bootstrap',
+                type: 'info',
+                nonblock: true,
+                sticker: false,
+                icon: 'icon-search'
+            });
+        }
     };
 
     me.windowResizeHandler = function () {
@@ -88,10 +95,9 @@ CCH.Objects.UI = function (args) {
 
         // Check if the application was resized. If so, re-initialize the slideshow to easily
         // fit into the new layout
-        CCH.LOG.debug('Window width' + $(window).width() + 'isSmall: ' + isSmall);
         if ((me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) ||
                 (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber)) {
-            CCH.LOG.debug('CCH UI Redeminsioned. Window width: ' + $(window).width() + ' isSmall: ' + isSmall);
+            CCH.LOG.debug('CCH UI Redeminsioned to ' + isSmall ? 'small' : 'large');
             $(window).trigger('cch.ui.redimensioned', isSmall);
         }
         $(window).trigger('cch.ui.resized', isSmall);
@@ -263,6 +269,22 @@ CCH.Objects.UI = function (args) {
         });
     };
 
+    me.displayProduct = function (args) {
+        args = args || {};
+
+        var product = args.product,
+            card,
+            container;
+
+        card = me.cards.buildCard({
+            product : product
+        });
+        me.cards.addCard(card);
+        container = card.getContainer();
+        $('#' + me.SLIDE_CONTAINER_DIV_ID).append(container);
+        //TODO - Deal with the slideshow aspect of this here
+    };
+
     me.isSmall = function () {
         // Bootstrap decides when to flip the application view based on 
         // a specific width. 767px seems to be the point 
@@ -319,7 +341,7 @@ CCH.Objects.UI = function (args) {
         // the header row but because that's not always visible, we need to move
         // it during application initialization.
         helpModal.appendTo(contentRow);
-        
+
         navbarPinButton.on('click', me.navbarMenuClickHandler);
         navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
         shareModal.on('show', me.sharemodalDisplayHandler);
@@ -357,6 +379,7 @@ CCH.Objects.UI = function (args) {
         removeOverlay: me.removeOverlay,
         isSmall: me.isSmall,
         displayLoadingError: me.displayLoadingError,
+        displayProduct : me.displayProduct,
         itemsSlide: me.itemsSlide,
         bucketSlide: me.bucketSlide,
         searchSlide: me.searchSlide,

@@ -3,64 +3,45 @@
 /*global window*/
 /*global OpenLayers*/
 /*global CCH*/
+
+/**
+ * Represents a product as a card
+ * 
+ * @param {type} args
+ * @returns {CCH.Objects.Card.Anonym$2}
+ */
 CCH.Objects.Card = function (args) {
     "use strict";
     CCH.LOG.info('Card.js::constructor:Card class is initializing.');
 
     var me = (this === window) ? {} : this;
 
-    if (!args.item) {
-        throw 'An item was not passed into the card constructor';
+    if (!args.product) {
+        throw 'A product was not passed into the card constructor';
     }
-
-    me.item = args.item;
-    me.bbox = me.item.bbox;
-    me.type = me.item.type;
-    me.summary = me.item.summary;
-    me.name = me.item.name;
-    me.attr = me.item.attr;
-    me.service = me.item.service;
-    me.htmlEntity = null;
-    me.size = args.size;
-    me.pinned = false;
-    me.pinButton = null;
+    me.CARD_TEMPLATE_ID = args.cardTemplateId || 'application-slide-items-container-card-template';
+    me.AGGREGATION_CONTAINER_CARD = args.aggregationContainerId || 'application-slide-items-aggregation-container-card';
+    me.PRODUCT_CONTAINER_CARD = args.productContainerId || 'application-slide-items-product-container-card';
+    me.product = args.product;
+    me.bbox = me.product.bbox;
+    me.type = me.product.type;
+    me.itemType = me.product.itemType;
+    me.summary = me.product.summary;
+    me.name = me.product.name;
+    me.attr = me.product.attr;
+    me.service = me.product.service;
     me.layer = null;
-    me.sizeDescription = CCH.ui.isSmall() ? 'small' : 'large';
-
-    me.pinButton = $('<span />')
-            .append($('<i />')
-                    .addClass('slide-menu-icon icon-pushpin muted pull-left'))
-            .on({
-            'mouseover': function () {
-                $(this).find('i').removeClass('muted');
-            },
-            'mouseout': function () {
-                $(this).find('i').addClass('muted');
-            },
-            'click': function () {
-                $(me).trigger('card-button-pin-clicked', me);
-            }
-        });
-    me.titleRow = $('<div />').addClass('description-title-row row-fluid unselectable').
-                append(me.pinButton, $('<a />').addClass('description-title span11').attr({
-            'href': CCH.CONFIG.contextPath + '/ui/info/item/' + me.item.id,
-            'target': 'portal_view_window'
-        }).html(me.summary.medium.title));
-    me.descriptionRow = $('<div />').addClass('description-description-row row-fluid').
-            append($('<p />').addClass('slide-description').html(me.summary.medium.text));
-    me.container = $('<div />').addClass('description-container container-fluid').
-            addClass('description-container-' + me.sizeDescription + ' description-container-' + me.type).
-            append(me.titleRow, me.descriptionRow);
-
-    me.buildLayer = function () {
+    me.container = null;
+    me.descriptionContainer = null;
+    me.layer = (function () {
         var layer = new OpenLayers.Layer.WMS(
-                me.item.id,
-                me.item.wmsService.endpoint,
+                me.product.id,
+                me.product.wmsService.endpoint,
                 {
-                    layers: me.item.wmsService.layers,
+                    layers: me.product.wmsService.layers,
                     format: 'image/png',
                     transparent: true,
-                    sld: CCH.CONFIG.publicUrl + '/data/sld/' + me.item.id,
+                    sld: CCH.CONFIG.publicUrl + '/data/sld/' + me.product.id,
                     styles: 'cch'
                 },
                 {
@@ -73,27 +54,58 @@ CCH.Objects.Card = function (args) {
             );
 
         return layer;
+    }());
+    // 0 = open, 1 = closed
+    me.state = 0;
+    
+    me.aggregationClickHandler = function (evt) {
+        if (me.state === 0) {
+            me.open();
+        } else {
+            me.close();
+        }
     };
-
-    me.pin = function () {
-        me.pinButton.addClass('slider-card-pinned');
-        me.pinned = true;
-        $(me).trigger('card-pinned', me);
+    
+    me.open = function () {
+        
     };
-
-    me.unpin = function () {
-        me.pinButton.removeClass('slider-card-pinned');
-        me.pinned = false;
-        $(me).trigger('card-unpinned', me);
+    
+    me.createContainer = function () {
+        var templateParent = $('#' + me.CARD_TEMPLATE_ID).clone(true),
+            summary = me.summary,
+            fullSummary = summary.full,
+            mediumSummary = summary.medium,
+            container,
+            titleContainer,
+            largeTitle = fullSummary.title,
+            mediumTitle = mediumSummary.title,
+            largeTitleContainer,
+            mediumTitleContainer;
+        
+        if (me.itemType === 'aggregation') {
+            container = templateParent.find('.' + me.AGGREGATION_CONTAINER_CARD);
+            titleContainer = container.find('.card-title-container');
+            largeTitleContainer = titleContainer.find('.card-title-container-large');
+            mediumTitleContainer = titleContainer.find('.card-title-container-medium');
+            
+            largeTitleContainer.html(largeTitle);
+            mediumTitleContainer.html(mediumTitle);
+        } else {
+            container = templateParent.find('.' + me.PRODUCT_CONTAINER_CARD);
+        }
+        
+        container.on('click', me.aggregationClickHandler);
+        
+        return container;
     };
-
-    me.layer = me.buildLayer();
+    
+    me.createDescriptionContainer = function () {
+        
+    };
     
     CCH.LOG.info('Card.js::constructor:Card class is initialized.');
 
     return {
-        pin: me.pin,
-        unpin: me.unpin,
         getItemId: function () {
             return me.item.id;
         },
@@ -101,6 +113,9 @@ CCH.Objects.Card = function (args) {
             return me.bbox;
         },
         getContainer: function() {
+            if (me.container === null) {
+                me.container = me.createContainer();
+            }
             return me.container;
         }
     };

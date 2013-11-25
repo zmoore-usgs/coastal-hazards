@@ -26,6 +26,9 @@ $(document).ready(function () {
     splashUpdate("Initializing Session Subsystem...");
     CCH.session = new CCH.Objects.Session().init();
 
+    splashUpdate("Initializing Card Subsystem...");
+    CCH.cards = new CCH.Objects.Cards();
+
     splashUpdate("Initializing UI...");
     CCH.ui = CCH.Objects.UI({
         applicationOverlayId: 'application-overlay',
@@ -43,17 +46,10 @@ $(document).ready(function () {
         shareTwitterBtnId: 'multi-card-twitter-button',
         helpModalId: 'helpModal',
         helpModalBodyId: 'help-modal-body',
-        slideContainerDivId: 'slide-container-wrapper',
+        slideContainerDivId: 'application-slide-items-content-container',
         slideItemsContainerId: 'application-slide-items-container',
         slideBucketContainerId: 'application-slide-bucket-container',
         slideSearchContainerId: 'application-slide-search-container'
-    });
-
-    splashUpdate("Initializing Card Subsystem...");
-    CCH.cards = new CCH.Objects.Cards({
-        navPinControlCountId: $('#app-navbar-pin-control-pincount'),
-        navPinControlButtonId: $('#app-navbar-pin-control-button'),
-        navPinControlDropdownButtonId: $('#app-navbar-pin-control-dropdown-button')
     });
 
     splashUpdate("Initializing Map...");
@@ -188,9 +184,28 @@ $(document).ready(function () {
     } else {
         // A user is not coming in through the session or the view, so just load
         // the 10 most popular items and begin the slideshow when completed
+        
+        // This should run once when the items have loaded
+        var addToSlideShow = function(evt, args) {
+            $(window).off('cch.data.products.loaded', addToSlideShow);
+            
+            var products = args.products || [];
+            
+            if (products.length) {
+                products.each(function (product) {
+                    CCH.ui.displayProduct({
+                        product : product
+                    });
+                });
+            }
+        };
+
+        $(window).on('cch.data.products.loaded', addToSlideShow);
+        
         CCH.items.load({
             sortBy: 'popularity',
             count: '10',
+            displayNotification : false,
             callbacks: {
                 success: [
                     CCH.ui.removeOverlay
