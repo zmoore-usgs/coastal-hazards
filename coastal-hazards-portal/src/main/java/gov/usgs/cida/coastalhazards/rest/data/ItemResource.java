@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import com.google.gson.Gson;
-import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
+import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
@@ -64,17 +63,18 @@ public class ItemResource {
 	}
 
 	/**
-	 * Retrieves representation of an instance of
- gov.usgs.cida.coastalhazards.model.DataItem
+	 * Retrieves representation of an instance of gov.usgs.cida.coastalhazards.model.Item
 	 *
-	 * @param id
-	 * @return an instance of java.lang.String
+	 * @param id identifier of requested item
+     * @param subtree whether to return all items below this as a subtree
+	 * @return JSON representation of the item(s)
 	 */
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getCard(@PathParam("id") String id) {
-		String jsonResult = itemManager.load(id);
+	public Response getCard(@PathParam("id") String id, 
+            @DefaultValue("false") @QueryParam("subtree") boolean subtree) {
+		String jsonResult = itemManager.load(id, subtree);
 		Response response;
 		if (null == jsonResult) {
 			response = Response.status(Response.Status.NOT_FOUND).build();
@@ -82,6 +82,19 @@ public class ItemResource {
 			response = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;
+	}
+    
+    /**
+	 * Retrieves the "uber" item which acts as the root of the tree
+	 *
+     * @param subtree whether to return the entire subtree (may be very large)
+	 * @return JSON representation of items
+	 */
+	@GET
+	@Path("uber")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getUberCard(@DefaultValue("false") @QueryParam("subtree") boolean subtree) {
+        return getCard(Item.UBER_ID, subtree);
 	}
 
 	@GET
@@ -91,9 +104,10 @@ public class ItemResource {
             @DefaultValue("") @QueryParam("type") List<String> type,
 			@DefaultValue("popularity") @QueryParam("sortBy") String sortBy,
 			@DefaultValue("-1") @QueryParam("count") int count,
-			@DefaultValue("") @QueryParam("bbox") String bbox) {
+			@DefaultValue("") @QueryParam("bbox") String bbox,
+            @DefaultValue("false") @QueryParam("subtree") boolean subtree) {
 		// need to figure out how to search popularity and bbox yet
-		String jsonResult = itemManager.query(query, type, sortBy, count, bbox);
+		String jsonResult = itemManager.query(query, type, sortBy, count, bbox, subtree);
 		return Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).build();
 	}
 
@@ -126,7 +140,7 @@ public class ItemResource {
                             put("id", id);
                         }
                     };
-                    response = Response.ok(GsonSingleton.getInstance().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+                    response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
                 }
             } else {
                 response = Response.status(Response.Status.UNAUTHORIZED).build();
@@ -147,12 +161,12 @@ public class ItemResource {
         try {
             String jsonSummary = getSummaryFromWPS(item.getMetadata(), item.getAttr());
             // this is not actually summary json object, so we need to change that a bit
-            Summary summary = GsonSingleton.getInstance().fromJson(jsonSummary, Summary.class);
+            Summary summary = GsonUtil.getDefault().fromJson(jsonSummary, Summary.class);
             item.setSummary(summary);
         } catch (Exception ex) {
             Map<String,String> err = new HashMap<String, String>();
             err.put("message", ex.getMessage());
-            response = Response.serverError().entity(GsonSingleton.getInstance().toJson(err, HashMap.class)).build();
+            response = Response.serverError().entity(GsonUtil.getDefault().toJson(err, HashMap.class)).build();
         }
         if (item.getSummary() != null) {
             final String id = itemManager.savePreview(item);
@@ -167,7 +181,7 @@ public class ItemResource {
                         put("id", id);
                     }
                 };
-                response = Response.ok(GsonSingleton.getInstance().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+                response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
             }
         }
 		return response;

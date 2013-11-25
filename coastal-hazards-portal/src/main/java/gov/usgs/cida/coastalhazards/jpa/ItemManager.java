@@ -1,7 +1,7 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
 import com.google.gson.Gson;
-import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
+import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Item;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ItemManager {
 
-	public String load(String itemId) {
+	public String load(String itemId, boolean subtree) {
  		String jsonItem = null;
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         Item item = null;
@@ -41,20 +41,21 @@ public class ItemManager {
                     }
                 }
             } else {
-                jsonItem = item.toJSON();
+                jsonItem = item.toJSON(subtree);
             }
         } finally {
             JPAHelper.close(em);
         }
         if (item != null) {
-            jsonItem = item.toJSON();
+            jsonItem = item.toJSON(subtree);
         }
         
 		return jsonItem;
 	}
     
     public Item loadItem(String itemId) {
-        String jsonItem = load(itemId);
+        // Get json for item without subtree loaded
+        String jsonItem = load(itemId, false);
         Item item = Item.fromJSON(jsonItem);
         return item;
     }
@@ -84,7 +85,7 @@ public class ItemManager {
         String id = item.getId();
 		try {
 			File onDiskItem = new File(FileUtils.getTempDirectory(), id);
-			FileUtils.write(onDiskItem, item.toJSON());
+			FileUtils.write(onDiskItem, item.toJSON(false));
 			onDiskItem.deleteOnExit();
 		} catch (Exception ex) {
 			id = "ERR";
@@ -92,7 +93,18 @@ public class ItemManager {
 		return id;
 	}
 
-	public String query(List<String> queryText, List<String> types, String sortBy, int count, String bbox) {
+    /**
+     * Query the database for items and return it as a json string
+     * 
+     * @param queryText keywords to query on
+     * @param types item types to include in results
+     * @param sortBy sort the results according to this technique
+     * @param count max items to return (TODO paging)
+     * @param bbox search bounding box (TODO fix this)
+     * @param subtree whether to return entire subtree for aggregated items
+     * @return JSON result of items
+     */
+	public String query(List<String> queryText, List<String> types, String sortBy, int count, String bbox, boolean subtree) {
         StringBuilder builder = new StringBuilder();
         builder.append("select i from Item i");
         boolean hasQueryText = isEmpty(queryText);
@@ -141,10 +153,16 @@ public class ItemManager {
             if (count > 0) {
                 query.setMaxResults(count);
             }
+
             List<Item> resultList = query.getResultList();
-            Map<String, List<Item>> resultMap = new HashMap<>();
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("subtree", subtree);
             resultMap.put("items", resultList);
-            jsonResult = GsonSingleton.getInstance().toJson(resultMap, HashMap.class);
+            if (subtree) {
+                jsonResult = GsonUtil.getSubtreeGson().toJson(resultMap, HashMap.class);
+            } else {
+                jsonResult = GsonUtil.getIdOnlyGson().toJson(resultMap, HashMap.class);
+            }
         } finally {
             JPAHelper.close(em);
         }

@@ -1,7 +1,7 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.Gson;
-import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
+import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.TinyGovManager;
 import gov.usgs.cida.coastalhazards.model.TinyGov;
 import gov.usgs.cida.utilities.gov.usa.go.GoUsaGovUtils;
@@ -59,16 +59,16 @@ public class MinifyResource {
 			} else {
 				responseMap.put("message", "parameter 'url' may not be missing or blank");
 				response = Response.status(Response.Status.BAD_REQUEST)
-                        .entity(GsonSingleton.getInstance().toJson(responseMap, HashMap.class)).build();
+                        .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
 			}
 		} catch (URISyntaxException ex) {
 			responseMap.put("full_url", url);
 			responseMap.put("message", ex.getMessage());
-			response = Response.status(Response.Status.BAD_REQUEST).entity(GsonSingleton.getInstance().toJson(responseMap, HashMap.class)).build();
+			response = Response.status(Response.Status.BAD_REQUEST).entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
 		} catch (Exception ex) {
 			responseMap.put("full_url", url);
 			responseMap.put("message", ex.getMessage());
-			response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(GsonSingleton.getInstance().toJson(responseMap, HashMap.class)).build();
+			response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
 		}
 		return response;
 	}
@@ -86,16 +86,16 @@ public class MinifyResource {
 			} else {
 				responseMap.put("message", "parameter 'url' may not be missing or blank");
 				response = Response.status(Response.Status.BAD_REQUEST)
-                        .entity(GsonSingleton.getInstance().toJson(responseMap, HashMap.class)).build();
+                        .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
 			}
 		} catch (URISyntaxException ex) {
 			responseMap.put("message", ex.getMessage());
 			response = Response.status(Response.Status.BAD_REQUEST)
-                    .entity(GsonSingleton.getInstance().toJson(responseMap, HashMap.class)).build();
+                    .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
 		} catch (Exception ex) {
 			responseMap.put("message", ex.getMessage());
 			response = Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(GsonSingleton.getInstance().toJson(responseMap, HashMap.class)).build();
+                    .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
 		} finally {
 			return response;
 		}
@@ -114,16 +114,16 @@ public class MinifyResource {
 			} else {
 				responseMap.put("message", "parameter 'url' may not be missing or blank");
 				response = Response.status(Response.Status.BAD_REQUEST)
-                        .entity(GsonSingleton.getInstance().toJson(responseMap, HashMap.class)).build();
+                        .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
 			}
 		} catch (URISyntaxException ex) {
 			responseMap.put("message", ex.getMessage());
 			response = Response.status(Response.Status.BAD_REQUEST)
-                    .entity(GsonSingleton.getInstance().toJson(responseMap, HashMap.class)).build();
+                    .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
 		} catch (Exception ex) {
 			responseMap.put("message", ex.getMessage());
 			response = Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(GsonSingleton.getInstance().toJson(responseMap, HashMap.class)).build();
+                    .entity(GsonUtil.getDefault().toJson(responseMap, HashMap.class)).build();
 		} finally {
 			return response;
 		}

@@ -1,6 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
+import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.utilities.communication.FormUploadHandler;
 import gov.usgs.cida.utilities.string.StringHelper;
 import java.io.File;
@@ -88,7 +88,7 @@ public class MetadataResource {
 			responseContent.put("fid", fileName);
 		}
 		responseContent.put("success", "true");
-		return Response.ok(GsonSingleton.getInstance().toJson(responseContent, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+		return Response.ok(GsonUtil.getDefault().toJson(responseContent, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
 
 	}
 
