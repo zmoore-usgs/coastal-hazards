@@ -23,6 +23,7 @@ CCH.Objects.Card = function (args) {
     me.AGGREGATION_CONTAINER_CARD = args.aggregationContainerId || 'application-slide-items-aggregation-container-card';
     me.PRODUCT_CONTAINER_CARD = args.productContainerId || 'application-slide-items-product-container-card';
     me.product = args.product;
+    me.id = me.product.id;
     me.bbox = me.product.bbox;
     me.type = me.product.type;
     me.itemType = me.product.itemType;
@@ -30,6 +31,7 @@ CCH.Objects.Card = function (args) {
     me.name = me.product.name;
     me.attr = me.product.attr;
     me.service = me.product.service;
+    me.children = me.product.children || [];
     me.layer = null;
     me.container = null;
     me.descriptionContainer = null;
@@ -66,10 +68,6 @@ CCH.Objects.Card = function (args) {
         }
     };
     
-    me.open = function () {
-        
-    };
-    
     me.createContainer = function () {
         var templateParent = $('#' + me.CARD_TEMPLATE_ID).clone(true),
             summary = me.summary,
@@ -77,21 +75,72 @@ CCH.Objects.Card = function (args) {
             mediumSummary = summary.medium,
             container,
             titleContainer,
+            contentContainer,
             largeTitle = fullSummary.title,
             mediumTitle = mediumSummary.title,
+            largeContent = fullSummary.text,
+            mediumContent = mediumSummary.text,
             largeTitleContainer,
-            mediumTitleContainer;
+            mediumTitleContainer,
+            largeContentContainer,
+            mediumContentContainer;
         
-        if (me.itemType === 'aggregation') {
+        if (me.children.length > 0) {
+            // If I am an aggregation, I expect to be an accordion item with an
+            // accordion
             container = templateParent.find('.' + me.AGGREGATION_CONTAINER_CARD);
             titleContainer = container.find('.card-title-container');
+            contentContainer = container.find('.card-content-container');
             largeTitleContainer = titleContainer.find('.card-title-container-large');
             mediumTitleContainer = titleContainer.find('.card-title-container-medium');
+            largeContentContainer = contentContainer.find('.card-content-container-large');
+            mediumContentContainer = contentContainer.find('.card-content-container-medium');
             
             largeTitleContainer.html(largeTitle);
             mediumTitleContainer.html(mediumTitle);
+            largeContentContainer.html(largeContent);
+            mediumContentContainer.html(mediumContent);
+            
+            container.attr({
+                id : 'accordion-group' + me.id
+            });
+            
+            titleContainer.attr({
+                href : '#accordion-body-' + me.id
+            });
+            
+            contentContainer.attr({
+               id : 'accordion-body-' + me.id 
+            });
+            
         } else {
+            // If I am a regular card, I expect to not have an inner accordion
             container = templateParent.find('.' + me.PRODUCT_CONTAINER_CARD);
+            titleContainer = container.find('.card-title-container');
+            contentContainer = container.find('.card-content-container');
+            largeTitleContainer = titleContainer.find('.card-title-container-large');
+            mediumTitleContainer = titleContainer.find('.card-title-container-medium');
+            largeContentContainer = contentContainer.find('.card-content-container-large');
+            mediumContentContainer = contentContainer.find('.card-content-container-medium');
+            
+            
+            largeTitleContainer.html(largeTitle);
+            mediumTitleContainer.html(mediumTitle);
+            largeContentContainer.html(largeContent);
+            mediumContentContainer.html(mediumContent);
+            
+            container.attr({
+                id : 'accordion-group' + me.id
+            });
+            
+            titleContainer.attr({
+                href : '#accordion-body-' + me.id
+            });
+            
+            contentContainer.attr({
+               id : 'accordion-body-' + me.id 
+            });
+            
         }
         
         container.on('click', me.aggregationClickHandler);

@@ -142,8 +142,7 @@ CCH.Objects.ItemsSlide = function (args) {
             windowHeight = $(window).outerHeight(),
             marginTop = 10,
             borderSize = 4;
-
-            CCH.LOG.info(slideContainer.height() + $('body').height())
+    
         if (isSmall) {
             slideContainer.
                 removeClass('span' + me.desktopSpanSize).
