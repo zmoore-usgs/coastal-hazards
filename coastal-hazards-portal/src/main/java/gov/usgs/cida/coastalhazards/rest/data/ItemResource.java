@@ -65,9 +65,9 @@ public class ItemResource {
 	/**
 	 * Retrieves representation of an instance of gov.usgs.cida.coastalhazards.model.Item
 	 *
-	 * @param id
-     * @param subtree
-	 * @return an instance of java.lang.String
+	 * @param id identifier of requested item
+     * @param subtree whether to return all items below this as a subtree
+	 * @return JSON representation of the item(s)
 	 */
 	@GET
 	@Path("{id}")
@@ -85,11 +85,10 @@ public class ItemResource {
 	}
     
     /**
-	 * Retrieves representation of an instance of gov.usgs.cida.coastalhazards.model.Item
+	 * Retrieves the "uber" item which acts as the root of the tree
 	 *
-	 * @param id
-     * @param subtree
-	 * @return an instance of java.lang.String
+     * @param subtree whether to return the entire subtree (may be very large)
+	 * @return JSON representation of items
 	 */
 	@GET
 	@Path("uber")
