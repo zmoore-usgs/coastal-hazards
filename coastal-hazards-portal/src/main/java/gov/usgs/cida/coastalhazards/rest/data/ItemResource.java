@@ -1,6 +1,5 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
@@ -64,8 +63,7 @@ public class ItemResource {
 	}
 
 	/**
-	 * Retrieves representation of an instance of
- gov.usgs.cida.coastalhazards.model.DataItem
+	 * Retrieves representation of an instance of gov.usgs.cida.coastalhazards.model.Item
 	 *
 	 * @param id
      * @param subtree
@@ -84,6 +82,20 @@ public class ItemResource {
 			response = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;
+	}
+    
+    /**
+	 * Retrieves representation of an instance of gov.usgs.cida.coastalhazards.model.Item
+	 *
+	 * @param id
+     * @param subtree
+	 * @return an instance of java.lang.String
+	 */
+	@GET
+	@Path("uber")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getUberCard(@DefaultValue("false") @QueryParam("subtree") boolean subtree) {
+        return getCard(Item.UBER_ID, subtree);
 	}
 
 	@GET
