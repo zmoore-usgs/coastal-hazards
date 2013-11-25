@@ -57,16 +57,6 @@ CCH.Objects.Card = function (args) {
 
         return layer;
     }());
-    // 0 = open, 1 = closed
-    me.state = 0;
-    
-    me.aggregationClickHandler = function (evt) {
-        if (me.state === 0) {
-            me.open();
-        } else {
-            me.close();
-        }
-    };
     
     me.createContainer = function () {
         var templateParent = $('#' + me.CARD_TEMPLATE_ID).clone(true),
@@ -143,13 +133,7 @@ CCH.Objects.Card = function (args) {
             
         }
         
-        container.on('click', me.aggregationClickHandler);
-        
         return container;
-    };
-    
-    me.createDescriptionContainer = function () {
-        
     };
     
     CCH.LOG.info('Card.js::constructor:Card class is initialized.');

@@ -42,6 +42,9 @@
             <div class="accordion-inner">
                 <span class="card-content-container-large"></span>
                 <span class="card-content-container-medium"></span>
+                <span class="card-content-container-controls">
+                    
+                </span>
             </div>
         </div>
     </div>
