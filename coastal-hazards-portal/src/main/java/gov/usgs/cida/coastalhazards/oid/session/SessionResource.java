@@ -1,6 +1,6 @@
 package gov.usgs.cida.coastalhazards.oid.session;
 
-import gov.usgs.cida.coastalhazards.gson.GsonSingleton;
+import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +37,7 @@ public class SessionResource {
 			responseMap.put("country", oidInfoMap.get("oid-country"));
 			responseMap.put("language", oidInfoMap.get("oid-language"));
 			responseMap.put("email", oidInfoMap.get("oid-email"));
-			response = Response.ok(GsonSingleton.getInstance().toJson(responseMap),
+			response = Response.ok(GsonUtil.getDefault().toJson(responseMap),
                     MediaType.APPLICATION_JSON_TYPE).build();
 		}
 		return response;

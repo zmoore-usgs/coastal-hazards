@@ -58,7 +58,7 @@ public class ItemTest {
 		id = manager.save(itemJSON);
 		assertNotNull(id);
 		
-		String json = manager.load(id);
+		String json = manager.load(id, false);
 		assertNotNull(json);
     }
 
