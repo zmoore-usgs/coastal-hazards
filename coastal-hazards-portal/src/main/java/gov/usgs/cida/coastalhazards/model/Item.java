@@ -6,6 +6,7 @@ import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
 import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.utilities.IdGenerator;
+import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +38,12 @@ import org.hibernate.annotations.Proxy;
 @Proxy
 public class Item implements Serializable {
     
+    public static final String UBER_ID = JNDISingleton.getInstance().getProperty("coastal-hazards.item.uber.id", "uber");
+    
     public enum ItemType {
         aggregation,
-        data;
+        data,
+        uber;
     }
 
     //There's a translation from the back-end to the UI for these terms:
@@ -49,7 +53,8 @@ public class Item implements Serializable {
     public enum Type {
         storms, 
         vulnerability,
-        historical;
+        historical,
+        mixed;
     }
 
     private static final long serialVersionUID = 1L;
