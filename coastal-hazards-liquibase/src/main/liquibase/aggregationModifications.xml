@@ -58,4 +58,7 @@
         <addPrimaryKey columnNames="id" constraintName="center_pkey" tableName="center"/>
         <addForeignKeyConstraint baseTableName="session_table" baseColumnNames="center_id" constraintName="fk_session_center" referencedTableName="center" referencedColumnNames="id" />
     </changeSet>
+    <changeSet id="increase_metadata_column_width" author="jiwalker">
+        <modifyDataType tableName="item" columnName="metadata" newDataType="VARCHAR(1024)" />
+    </changeSet>
 </databaseChangeLog>
