@@ -202,14 +202,33 @@ $(document).ready(function () {
 
         $(window).on('cch.data.products.loaded', addToSlideShow);
         
-        CCH.items.load({
-            sortBy: 'popularity',
-            count: '10',
+        // "uber" is the top level item containing children which are at the top
+        // level. Typically these will be the top level aggregations
+        new CCH.Objects.Search().submitItemSearch({
+            items : ['uber'],
             displayNotification : false,
             callbacks: {
                 success: [
-                    CCH.ui.removeOverlay
-                ],
+                    function(data) {
+                    CCH.items.load({
+                        items: [data.children],
+                        displayNotification : false,
+                        callbacks: {
+                            success: [
+                                CCH.ui.removeOverlay
+                            ],
+                            error: [
+                                function (jqXHR, textStatus, errorThrown) {
+                                    CCH.ui.displayLoadingError({
+                                        errorThrown: errorThrown,
+                                        splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
+                                        mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
+                                    });
+                                }
+                            ]
+                        }
+                    });
+                }],
                 error: [
                     function (jqXHR, textStatus, errorThrown) {
                         CCH.ui.displayLoadingError({
@@ -221,5 +240,7 @@ $(document).ready(function () {
                 ]
             }
         });
+        
+
     }
 });

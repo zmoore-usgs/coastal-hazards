@@ -15,12 +15,8 @@
 CCH.Objects.Search = function (args) {
     "use strict";
     var me = (this === window) ? {} : this;
-
-    if (!args) {
-        throw 'arguments not found';
-    }
-
-    me.GEOCODE_SERVICE_ENDPOINT = args.geocodeServiceEndpoint;
+    args = args || {};
+    me.GEOCODE_SERVICE_ENDPOINT = args.geocodeServiceEndpoint || CCH.CONFIG.data.sources.geocoding.endpoint;
 
     me.submitLocationSearch = function (args) {
         if (!args) {
