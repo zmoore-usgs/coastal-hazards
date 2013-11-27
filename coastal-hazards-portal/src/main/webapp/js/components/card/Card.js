@@ -25,8 +25,6 @@ CCH.Objects.Card = function (args) {
     me.product = args.product;
     me.id = me.product.id;
     me.bbox = me.product.bbox;
-    me.parent = args.parent || null;
-    me.children = args.children || [];
     me.type = me.product.type;
     me.itemType = me.product.itemType;
     me.summary = me.product.summary;
@@ -44,6 +42,10 @@ CCH.Objects.Card = function (args) {
     // an accordion bellow but true when creating a card appendage since we will
     // want to have an effect to display it
     me.initHide = args.initHide === false ? false : true;
+    // If this card has no parent, it is a top level card - probably an
+    // accordion bellow
+    me.parent = args.parent;
+    me.child = args.child;
     me.layer = (function () {
         var layer = new OpenLayers.Layer.WMS(
                 me.id,
@@ -71,35 +73,44 @@ CCH.Objects.Card = function (args) {
         args = args || {};
 
         var duration = args.duration || 500,
-            effect = args.effect || 'blind',
+            effect = args.effect || 'slide',
             easing = args.easing || 'swing',
-            complete = args.complete || null,
-            queue = args.queue || true;
+            complete = args.complete || null;
 
         me.container.show({
             effect : effect,
             easing : easing,
             duration : duration,
             complete : complete,
-            queue : queue
+            direction : 'up'
         });
     };
 
-    me.hide = function () {
+    me.hide = function (args) {
         args = args || {};
-
+        
         var duration = args.duration || 500,
-            effect = args.effect || 'blind',
+            effect = args.effect || 'slide',
             easing = args.easing || 'swing',
-            complete = args.complete || null,
-            queue = args.queue || true;
-
+            complete = args.complete || null;
+    
         me.container.hide({
             effect : effect,
             easing : easing,
             duration : duration,
             complete : complete,
-            queue : queue
+            direction : 'up'
+        });
+    };
+    
+    me.removeSelf = function () {
+        if (me.child) {
+            me.child.removeSelf();
+        }
+        me.hide({
+            complete : function () {
+                me.container.remove();
+            }
         });
     };
 
@@ -208,16 +219,36 @@ CCH.Objects.Card = function (args) {
                 childrenSelectControl.on('change', function (evt) {
                     var control = $(evt.target),
                         selectedOption = control.val(),
-                        card;
+                        card,
+                        createCard = function () {
+                            // User selected a product. I will append that card to 
+                            // myself
+                            card = CCH.cards.buildCard({
+                                product : selectedOption,
+                                parent : me
+                            });
+
+                            // This is now my child card 
+                            me.child = card;
+
+                            // Append this new card to myself
+                            me.container.after(card.getContainer());
+
+                            // Show this new card to the user
+                            card.show();
+                        };
 
                     if (selectedOption) {
-                        // User selected a product. We will append that to 
-                        // this card
-                        card = CCH.cards.buildCard({
-                            product : selectedOption
-                        });
-                        me.container.after(card.getContainer());
-                        card.show();
+                        // Do I have a child? If I do, hide it and get rid of it.
+                        // The user wants a new card
+                        if (me.child) {
+                            me.child.hide({
+                                complete : createCard
+                            });
+                            me.child.removeSelf();
+                        } else {
+                            createCard();
+                        }
                     } else {
                         // User selected blank option. 
                     }
@@ -247,6 +278,8 @@ CCH.Objects.Card = function (args) {
         product: me.product,
         show : me.show,
         hide : me.hide,
+        child : me.child,
+        removeSelf : me.removeSelf,
         getBoundingBox: function () {
             return me.bbox;
         },
