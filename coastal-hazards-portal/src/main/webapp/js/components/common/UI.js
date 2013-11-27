@@ -268,22 +268,6 @@ CCH.Objects.UI = function (args) {
             $(window).trigger('cch.ui.overlay.removed');
         });
     };
-
-    me.displayProduct = function (args) {
-        args = args || {};
-
-        var product = args.product,
-            card,
-            container;
-
-        card = me.cards.buildCard({
-            product : product
-        });
-        me.cards.addCard(card);
-        container = card.getContainer();
-        $('#' + me.SLIDE_CONTAINER_DIV_ID).append(container);
-        //TODO - Deal with the slideshow aspect of this here
-    };
     
     me.addToAccordion = function (args) {
         args = args || {};
@@ -401,7 +385,6 @@ CCH.Objects.UI = function (args) {
         removeOverlay: me.removeOverlay,
         isSmall: me.isSmall,
         displayLoadingError: me.displayLoadingError,
-        displayProduct : me.displayProduct,
         itemsSlide: me.itemsSlide,
         bucketSlide: me.bucketSlide,
         searchSlide: me.searchSlide,
