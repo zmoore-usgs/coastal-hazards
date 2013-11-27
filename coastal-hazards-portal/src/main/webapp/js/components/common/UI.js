@@ -12,15 +12,13 @@
  *  Events Emitted:
  *  window: 'cch.ui.resized'
  *  window: 'cch.ui.redimensioned'
- *  window: 'cch.navbar.pinmenu.button.pin.click'
- *  window: 'cch.navbar.pinmenu.item.clear.click'
  *  window: 'cch.ui.initialized'
  *  window: 'cch.ui.overlay.removed'
 
  *  Events Listened To:
  *  this.bucket : 'app-navbar-button-clicked'
- *  this.combinedSearch : 'combined-searchbar-search-performed'
  *  this.combinedSearch: 'combined-searchbar-search-performing'
+ *  this.combinedSearch : 'combined-searchbar-search-performed'
  *  
  * @param {type} args
  * @returns {CCH.Objects.UI.Anonym$22}
@@ -34,8 +32,9 @@ CCH.Objects.UI = function (args) {
     me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
     me.FOOTER_ROW_ID = args.footerRowId || 'footer-row';
+    me.CONTENT_ROW_ID = args.contentRowId || 'content-row';
     me.MAP_DIV_ID = args.mapdivId || 'map';
-    me.SLIDE_CONTAINER_DIV_ID = args.slideContainerDivId || 'slide-container-wrapper';
+    me.SLIDE_CONTAINER_DIV_ID = args.slideContainerDivId || 'application-slide-items-content-container';
     me.NAVBAR_PIN_BUTTON_ID = args.navbarPinButtonId || 'app-navbar-pin-control-button';
     me.NAVBAR_PIN_CONTROL_ICON_ID = args.navbarDropdownIconId || 'app-navbar-pin-control-icon';
     me.NAVBAR_CLEAR_MENU_ITEM_ID = args.navbarClearMenuItemId || 'app-navbar-pin-control-clear';
@@ -46,37 +45,33 @@ CCH.Objects.UI = function (args) {
     me.SHARE_TWITTER_BUTTON_ID = args.shareTwitterBtnId || 'multi-card-twitter-button';
     me.HELP_MODAL_ID = args.helpModalId || 'helpModal';
     me.HELP_MODAL_BODY_ID = args.helpModalBodyId || 'help-modal-body';
+    me.ITEMS_SLIDE_CONTAINER_ID = args.slideItemsContainerId || 'application-slide-items-container';
     me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId || 'application-slide-bucket-container';
     me.SEARCH_SLIDE_CONTAINER_ID = args.slideSearchContainerId || 'application-slide-search-container';
-    
+
     me.magicResizeNumber = 767;
     me.minimumHeight = args.minimumHeight || 480;
     me.previousWidth = $(window).width();
     me.bucket = new CCH.Objects.Bucket();
     me.combinedSearch = new CCH.Objects.CombinedSearch();
-    
-    // Triggers:
-    // window: 'cch.ui.resized'
-    // window: 'cch.ui.redimensioned'
-    // window: 'cch.navbar.pinmenu.button.pin.click'
-    // window: 'cch.navbar.pinmenu.item.clear.click'
-    // window: 'cch.ui.initialized'
-    // window: 'cch.ui.overlay.removed'
+    me.cards = CCH.cards;
+    me.accordion = new CCH.Objects.Accordion({
+        containerId : me.SLIDE_CONTAINER_DIV_ID
+    });
 
-    // Listeners:
-    // me.bucket : 'app-navbar-button-clicked'
-    // me.combinedSearch : 'combined-searchbar-search-performed'
-    
-    me.itemsSearchedHandler = function (evt, count) {
+    me.itemsSearchedHandler = function (evt, data) {
         // Display a notification with item count
-        $.pnotify({
-            text: 'Found ' + count + ' item' + (count === 1 ? '.' : 's.'),
-            styling: 'bootstrap',
-            type: 'info',
-            nonblock: true,
-            sticker: false,
-            icon: 'icon-search'
-        });
+        if (data.items) {
+            var count = data.items.length;
+            $.pnotify({
+                text: 'Found ' + count + ' item' + (count === 1 ? '.' : 's.'),
+                styling: 'bootstrap',
+                type: 'info',
+                nonblock: true,
+                sticker: false,
+                icon: 'icon-search'
+            });
+        }
     };
 
     me.windowResizeHandler = function () {
@@ -84,74 +79,29 @@ CCH.Objects.UI = function (args) {
             isSmall = me.isSmall(),
             headerRow = $('#' + me.HEADER_ROW_ID),
             footerRow = $('#' + me.FOOTER_ROW_ID),
+            contentRow = $('#' + me.CONTENT_ROW_ID),
             map = $('#' + me.MAP_DIV_ID),
-            slideDiv = $('#' + me.SLIDE_CONTAINER_DIV_ID),
-            descriptionHeight,
             contentRowHeight = $(window).height() - headerRow.outerHeight(true) - footerRow.outerHeight(true);
 
         contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
 
         if (isSmall) {
-            // In a profile view, we care about the height of the description container
-            descriptionHeight = Math.round(contentRowHeight * 0.30);
-            if (descriptionHeight < 280) {
-                descriptionHeight = 280;
-            }
-            slideDiv.height(descriptionHeight);
-            map.height(contentRowHeight - descriptionHeight);
+            contentRow.height($(window).height());
+            map.height($(window).height());
         } else {
+            contentRow.height(contentRowHeight - 1);
             map.height(contentRowHeight);
-            slideDiv.height(contentRowHeight);
         }
 
         // Check if the application was resized. If so, re-initialize the slideshow to easily
         // fit into the new layout
         if ((me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) ||
                 (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber)) {
+            CCH.LOG.debug('CCH UI Redeminsioned to ' + isSmall ? 'small' : 'large');
             $(window).trigger('cch.ui.redimensioned', isSmall);
         }
         $(window).trigger('cch.ui.resized', isSmall);
         me.previousWidth = currWidth;
-    };
-
-    me.pinmenuItemClickHandler = function () {
-        $('#' + me.NAVBAR_PIN_BUTTON_ID).removeClass('slider-card-pinned');
-    };
-
-    me.navbarMenuClickHandler = function () {
-        // Check to see if any cards are pinned
-        var pinnedCardIds = CCH.session.getPinnedItemIds(),
-            pinControlIcon = $('#' + me.NAVBAR_PIN_CONTROL_ICON_ID),
-            items = null,
-            pcIdx,
-            id,
-            isResultMatched = function (result) {
-                return result.id === id;
-            };
-
-        if (pinnedCardIds.length) {
-            // Toggle how the button looks
-            pinControlIcon.toggleClass('muted');
-            $('#' + me.NAVBAR_PIN_BUTTON_ID).toggleClass('slider-card-pinned');
-
-            // Check if button is active
-            if (!pinControlIcon.hasClass('muted')) {
-                // If cards are pinned, show only pinned cards
-                // Otherwise, show all cards
-                // TODO- This functionality should probably be in Cards
-                items = [];
-                for (pcIdx = 0; pcIdx < pinnedCardIds.length; pcIdx++) {
-                    id = pinnedCardIds[pcIdx];
-                    items.push(CCH.session.getSession().items.find(isResultMatched));
-                }
-                CCH.map.zoomToActiveLayers();
-            }
-        }
-
-        // pinnedResults may or may not be an empty array. If it is, 
-        // the full deck will be seen. Otherwise, if pinnedResults is
-        // populated, only pinned cards will be seen
-        $(window).trigger('cch.navbar.pinmenu.button.pin.click', {items: items});
     };
 
     me.sharemodalDisplayHandler = function () {
@@ -304,10 +254,6 @@ CCH.Objects.UI = function (args) {
         $('#helpModal').modal('toggle');
     };
 
-    me.navbarClearItemClickHandler = function () {
-        $(window).trigger('cch.navbar.pinmenu.item.clear.click');
-    };
-    
     me.removeOverlay = function () {
         splashUpdate("Starting Application...");
 
@@ -315,20 +261,56 @@ CCH.Objects.UI = function (args) {
 
         $(window).resize();
         CCH.map.getMap().updateSize();
-        
+
         // Get rid of the overlay and clean it up out of memory and DOM
         applicationOverlay.fadeOut(2000, function () {
             applicationOverlay.remove();
             $(window).trigger('cch.ui.overlay.removed');
         });
     };
+
+    me.displayProduct = function (args) {
+        args = args || {};
+
+        var product = args.product,
+            card,
+            container;
+
+        card = me.cards.buildCard({
+            product : product
+        });
+        me.cards.addCard(card);
+        container = card.getContainer();
+        $('#' + me.SLIDE_CONTAINER_DIV_ID).append(container);
+        //TODO - Deal with the slideshow aspect of this here
+    };
     
+    me.addToAccordion = function (args) {
+        args = args || {};
+        
+        var card = args.card,
+            product = args.product;
+        
+        // If we are passed a product, that means we were not passed a card
+        if (product) {
+            card = me.cards.buildCard({
+                product : product
+            });
+        }
+        
+        // By now, we should have a card
+        if (card) {
+            me.accordion.add({
+                card : card
+            });
+        }
+    };
     
     me.isSmall = function () {
         // Bootstrap decides when to flip the application view based on 
         // a specific width. 767px seems to be the point 
         // https://github.com/twitter/bootstrap/blob/master/less/responsive-767px-max.less
-        return me.previousWidth <= me.magicResizeNumber;
+        return $(window).width() <= me.magicResizeNumber;
     };
 
     me.displayLoadingError = function (args) {
@@ -347,7 +329,14 @@ CCH.Objects.UI = function (args) {
         $('#splash-status-update').append(emailLink);
         $('#splash-spinner').fadeOut(2000);
     };
-    
+
+    me.itemsSlide = new CCH.Objects.ItemsSlide({
+        containerId : me.ITEMS_SLIDE_CONTAINER_ID,
+        mapdivId : me.MAP_DIV_ID,
+        headerRowId : me.HEADER_ROW_ID,
+        footerRowId : me.FOOTER_ROW_ID,
+        isSmall : me.isSmall
+    });
     me.bucketSlide = new CCH.Objects.BucketSlide({
         containerId : me.BUCKET_SLIDE_CONTAINER_ID,
         mapdivId : me.MAP_DIV_ID,
@@ -362,11 +351,17 @@ CCH.Objects.UI = function (args) {
         var navbarPinButton = $('#' + me.NAVBAR_PIN_BUTTON_ID),
             navbarClearMenuItem = $('#' + me.NAVBAR_CLEAR_MENU_ITEM_ID),
             shareModal = $('#' + me.SHARE_MODAL_ID),
-            helpModal = $('#' + me.HELP_MODAL_ID);
+            helpModal = $('#' + me.HELP_MODAL_ID),
+            contentRow = $('#' + me.CONTENT_ROW_ID);
 
         // This window name is used for the info window to launch into when 
         // a user chooses to go back to the portal
         window.name = "portal_main_window";
+
+        // Move the help modal container to the content row. It originally is in
+        // the header row but because that's not always visible, we need to move
+        // it during application initialization.
+        helpModal.appendTo(contentRow);
 
         navbarPinButton.on('click', me.navbarMenuClickHandler);
         navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
@@ -374,9 +369,9 @@ CCH.Objects.UI = function (args) {
         helpModal.on('show', me.helpModalDisplayHandler);
         $(window).on({
             'resize': me.windowResizeHandler,
-            'cch.data.items.searched': me.itemsSearchedHandler,
-            'cch.navbar.pinmenu.item.clear.click': me.pinmenuItemClickHandler
+            'cch.data.items.searched': me.itemsSearchedHandler
         });
+
         $(me.bucket).on('app-navbar-button-clicked', function () {
             me.bucketSlide.toggle();
         });
@@ -405,8 +400,11 @@ CCH.Objects.UI = function (args) {
         removeOverlay: me.removeOverlay,
         isSmall: me.isSmall,
         displayLoadingError: me.displayLoadingError,
+        displayProduct : me.displayProduct,
+        itemsSlide: me.itemsSlide,
         bucketSlide: me.bucketSlide,
         searchSlide: me.searchSlide,
-        bucket: me.bucket
+        bucket: me.bucket,
+        addToAccordion : me.addToAccordion
     };
 };

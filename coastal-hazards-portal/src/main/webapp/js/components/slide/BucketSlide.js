@@ -17,7 +17,6 @@ CCH.Objects.BucketSlide = function (args) {
 
     me.SLIDE_CONTAINER_ID = args.containerId;
     me.MAP_DIV_ID = args.mapdivId || 'map';
-    me.SLIDE_TAB_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-tab').attr('id');
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
     me.CARD_TEMPLATE_ID = 'application-slide-bucket-container-card-template';
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-bucket-content-container';
@@ -25,30 +24,52 @@ CCH.Objects.BucketSlide = function (args) {
     me.borderWidth = 2;
     me.animationTime = 500;
     me.placement = 'right';
-    me.displayTab = true;
     me.isSmall = args.isSmall;
-    me.startClosed = !me.isSmall();
+    me.startClosed = true;
     me.isInitialized = false;
     me.isClosed = me.startClosed;
 
     me.open = function () {
-        var container = $('#' + me.SLIDE_CONTAINER_ID),
+        var slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large;
-        container.animate({
+        $('body').css({
+            overflow : 'hidden'
+        });
+        slideContainer.css({
+            display: ''
+        });
+        slideContainer.animate({
             left: toExtent.left
         }, me.animationTime, function () {
             me.isClosed = false;
+            
+            $('body').css({
+                overflow : ''
+            });
         });
     };
 
     me.close = function () {
-        var container = $('#' + me.SLIDE_CONTAINER_ID),
-            tab = $('#' + me.SLIDE_TAB_ID);
-        container.animate({
-            left: $(window).width() - tab.outerWidth()
+        var slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
+        
+        $('body').css({
+            overflow : 'hidden'
+        });
+        
+        slideContainer.animate({
+            left: $(window).width()
         }, me.animationTime, function () {
             me.isClosed = true;
+            
+            slideContainer.css({
+                display: 'none'
+            });
+            
+            $('body').css({
+               overflow : 'hidden'
+           });
+        
         });
     };
 
@@ -66,29 +87,32 @@ CCH.Objects.BucketSlide = function (args) {
         var extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large,
             slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
-            slideTab = $('#' + me.SLIDE_TAB_ID),
             slideContent = $('#' + me.SLIDE_CONTENT_ID),
-            windowWidth = $(window).outerWidth(),
-            windowHeight = $(window).outerHeight();
+            windowWidth = $(window).outerWidth();
+
+        if (me.isClosed) {
+            slideContainer.css({
+                display : 'none'
+            });
+        } else {
+            slideContainer.css({
+                'display' : ''
+            });
+        }
 
         if (me.isSmall()) {
             if (me.isClosed) {
-                slideContainer.offset({
-                    left: windowWidth  - slideTab.outerWidth(),
-                    top: toExtent.top
+                slideContainer.css({
+                    left: windowWidth
                 });
             } else {
                 slideContainer.offset(toExtent);
             }
             slideContainer.width(windowWidth - toExtent.left);
-            slideContainer.height(windowHeight - 10);
-            slideContent.width(slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth);
-            slideTab.offset({
-                left: slideContainer.offset().left + 2
-            });
+            slideContent.width(slideContainer.outerWidth() - me.borderWidth);
         } else {
             if (me.isClosed) {
-                slideContainer.offset({
+                slideContainer.css({
                     left: windowWidth,
                     top: toExtent.top
                 });
@@ -97,7 +121,7 @@ CCH.Objects.BucketSlide = function (args) {
             }
             slideContainer.width(windowWidth - toExtent.left);
             slideContainer.height($('#' + me.MAP_DIV_ID).outerHeight());
-            slideContent.width(slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth);
+            slideContent.width(slideContainer.outerWidth() - me.borderWidth);
         }
     };
 
@@ -108,7 +132,7 @@ CCH.Objects.BucketSlide = function (args) {
                     left: $('#' + me.MAP_DIV_ID).outerWidth() + $('#' + me.MAP_DIV_ID).offset().left
                 },
                 small: {
-                    top: 10,
+                    // top is handled by css
                     left: 10
                 }
             };
@@ -148,7 +172,6 @@ CCH.Objects.BucketSlide = function (args) {
         me.resized(args);
     });
 
-    $('#' + me.SLIDE_TAB_ID).on('click', me.toggle);
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');
     return {
         open: me.open,

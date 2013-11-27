@@ -50,7 +50,7 @@
             <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
             <div id="content-row" class="row-fluid">
                 <div id="map" class="span9"></div>
-                <div id="slide-container-wrapper" class="span3"></div>
+                <jsp:include page="components/slider-items.jsp"></jsp:include>
             </div>	
             <div id="footer-row"  class="row-fluid">
                 <div class="container">
@@ -83,10 +83,11 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" />
 		</jsp:include>
 		<jsp:include page="js/jquery-cookie/jquery-cookie.jsp"></jsp:include>
+        <script type="text/javascript" src="js/components/slide/ItemsSlide.js"></script>
         <script type="text/javascript" src="js/components/slide/BucketSlide.js"></script>
         <script type="text/javascript" src="js/components/slide/SearchSlide.js"></script>
         <script type="text/javascript" src="js/components/util/Util.js"></script>
-        <script type="text/javascript" src="js/components/slideshow/Slideshow.js"></script>
+        <script type="text/javascript" src="js/components/accordion/Accordion.js"></script>
         <script type="text/javascript" src="js/components/search/Search.js"></script>
         <script type="text/javascript" src="js/components/session/Session.js"></script>
         <script type="text/javascript" src="js/components/map/Map.js"></script>

@@ -15,12 +15,8 @@
 CCH.Objects.Search = function (args) {
     "use strict";
     var me = (this === window) ? {} : this;
-
-    if (!args) {
-        throw 'arguments not found';
-    }
-
-    me.GEOCODE_SERVICE_ENDPOINT = args.geocodeServiceEndpoint;
+    args = args || {};
+    me.GEOCODE_SERVICE_ENDPOINT = args.geocodeServiceEndpoint || CCH.CONFIG.data.sources.geocoding.endpoint;
 
     me.submitLocationSearch = function (args) {
         if (!args) {
@@ -87,7 +83,8 @@ CCH.Objects.Search = function (args) {
                 query: criteria,
                 type: types
             },
-            url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.item.endpoint;
+            url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.item.endpoint,
+            displayNotification = args.displayNotification === false ? false : true;
 
         if (!item) {
             if (!count) {
@@ -116,6 +113,9 @@ CCH.Objects.Search = function (args) {
             context : scope,
             traditional: true,
             success: function (data, statusText, xhrResponse) {
+                if (displayNotification && data.items) {
+                    $(window).trigger('cch.data.items.searched', { items : data.items});
+                }
                 callbacks.success.each(function (cb) {
                     cb.apply(this, [data, statusText, xhrResponse]);
                 });

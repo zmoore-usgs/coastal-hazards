@@ -22,6 +22,7 @@ Resets bootstrap's max-width requirement for popovers'
 #app-navbar-search-input {
     height : 30px;
     font-size : 26px;
+    line-height: 26px;
     color: #777777;
 }
 
