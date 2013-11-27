@@ -25,6 +25,8 @@ CCH.Objects.Card = function (args) {
     me.product = args.product;
     me.id = me.product.id;
     me.bbox = me.product.bbox;
+    me.parent = args.parent || null;
+    me.children = args.children || [];
     me.type = me.product.type;
     me.itemType = me.product.itemType;
     me.summary = me.product.summary;
@@ -175,7 +177,7 @@ CCH.Objects.Card = function (args) {
                             // The item was not already loaded so we will have 
                             // to go out and grab it.
                             CCH.items.load({
-                                items: [child],
+                                item: child,
                                 displayNotification: false,
                                 callbacks: {
                                     success: [processOption],
