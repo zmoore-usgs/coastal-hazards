@@ -18,6 +18,14 @@ CCH.Objects.Cards = function(args) {
         buildCard: function(args) {
             args = args || {};
             var product = args.product,
+                card;
+                
+                if (typeof product === 'string') {
+                    product = CCH.items.getById({
+                        id : product
+                    });
+                }
+                
                 card = new CCH.Objects.Card({
                     product : product
                 });

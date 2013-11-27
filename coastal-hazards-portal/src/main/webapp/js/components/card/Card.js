@@ -31,19 +31,22 @@ CCH.Objects.Card = function (args) {
     me.name = me.product.name;
     me.attr = me.product.attr;
     me.service = me.product.service;
-    me.children = me.product.children || [];
+    me.children = me.product.children || [],
+    me.wmsService = me.product.wmsService || {},
+    me.wmsEndpoint = me.wmsService.endpoint || '',
+    me.wmsLayers = me.wmsService.layers || [],
     me.layer = null;
     me.container = null;
     me.descriptionContainer = null;
     me.layer = (function () {
         var layer = new OpenLayers.Layer.WMS(
-                me.product.id,
-                me.product.wmsService.endpoint,
+                me.id,
+                me.wmsEndpoint,
                 {
-                    layers: me.product.wmsService.layers,
+                    layers: me.wmsLayers,
                     format: 'image/png',
                     transparent: true,
-                    sld: CCH.CONFIG.publicUrl + '/data/sld/' + me.product.id,
+                    sld: CCH.CONFIG.publicUrl + '/data/sld/' + me.id,
                     styles: 'cch'
                 },
                 {
@@ -100,10 +103,12 @@ CCH.Objects.Card = function (args) {
                     append($('<option />').attr('value', '')).
                     addClass('hidden');
                 me.children.each(function (child) {
-                    var option = $('<option />');
+                    var option = $('<option />'),
+                        item;
                     
                     option.addClass('application-card-children-selection-control-option');
                     if (typeof child === 'string') {
+                        item = CCH.items.getById(child);
                         // The child is a string. This means that we don't know
                         // anything about this child beyond its ID. We still
                         // have to load this object from the back-end. We will
@@ -111,37 +116,66 @@ CCH.Objects.Card = function (args) {
                         // the back end for more information
                         childrenSelectControl.append(option);
                         option.attr('value', child);
-                        CCH.items.load({
-                            items: [child],
-                            displayNotification: false,
-                            callbacks: {
-                                success: [
-                                    function(item) {
-                                        var name = item.summary.full.title ||
-                                                item.summary.medium.title ||
-                                                item.summary.tiny.title || 
-                                                child;
-                                        option.html(name);
-                                    }
-                                ],
-                                error: [
-                                    function() {
-                                        errorResponseHandler(null, null, 'Search for children did not return a valid response');
-                                    }
-                                ]
-                            }
-                        });
+                        
+                        if (item) {
+                            var name = item.summary.full.title ||
+                                item.summary.medium.title ||
+                                item.summary.tiny.title ||
+                                child;
+                            
+                            option.html(name);
+                        } else {
+                            CCH.items.load({
+                                items: [child],
+                                displayNotification: false,
+                                callbacks: {
+                                    success: [
+                                        function(item) {
+                                            var name = item.summary.full.title ||
+                                                    item.summary.medium.title ||
+                                                    item.summary.tiny.title || 
+                                                    child;
+                                            option.html(name);
+                                        }
+                                    ],
+                                    error: [
+                                        function() {
+                                            errorResponseHandler(
+                                                null, 
+                                                null, 
+                                                'Search for children did not return a valid response');
+                                        }
+                                    ]
+                                }
+                            });
+                        }
                     }
                 });
                 
                 // Add buttons to the bottom
                 controlContainer.append(spaceAggButton, propertyAggButton);
                 propertyAggButton.on('click', function (evt) {
-                    var button = $(this);
+                    var button = $(evt.target);
                     button.button('toggle');
                     me.container.
                         find('.application-card-children-selection-control').
                         toggleClass('hidden');
+                });
+                childrenSelectControl.on('change', function (evt) {
+                    var control = $(evt.target),
+                        selectedOption = control.val(),
+                        card;
+                        
+                    if (selectedOption) {
+                        // User selected a product. We will append that to 
+                        // this card
+                        card = CCH.cards.buildCard({
+                            product : selectedOption
+                        });
+                        me.container.after(card.getContainer());
+                    } else {
+                        // User selected blank option. 
+                    }
                 });
             } else {
                 controlContainer.append(bucketButton);

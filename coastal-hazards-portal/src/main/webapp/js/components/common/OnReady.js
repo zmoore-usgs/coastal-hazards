@@ -85,7 +85,7 @@ $(document).ready(function () {
                 mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')'
             });
         };
-        
+
     if (type) {
         if (type === 'item') {
             splashUpdate('Loading Item ' + itemId);
@@ -199,39 +199,41 @@ $(document).ready(function () {
                 splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
                 mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
             });
-        }
+        };
 
         // "uber" is the top level item containing children which are at the top
         // level. Typically these will be the top level aggregations
-        new CCH.Objects.Search().submitItemSearch({
-            items: ['uber'],
-            displayNotification: false,
-            callbacks: {
-                success: [
-                    // Once the 'uber' item is loaded, look at its children.
-                    // The children will be the actual items to be displayed
-                    function (data, status, xhr) {
-                        if (status === 'success') {
-                            CCH.items.load({
-                                items: [data.children],
-                                displayNotification: false,
-                                callbacks: {
-                                    success: [
-                                        CCH.ui.removeOverlay
-                                    ],
-                                    error: [
-                                        function() {
-                                            errorResponseHandler(null, null, 'Search for children did not return a valid response');
-                                        }
-                                    ]
-                                }
-                            });
-                        } else {
-                            
-                        }
-                    }],
-                error: [errorResponseHandler]
-            }
-        });
+        (function () {
+            new CCH.Objects.Search().submitItemSearch({
+                items: ['uber'],
+                displayNotification: false,
+                callbacks: {
+                    success: [
+                        // Once the 'uber' item is loaded, look at its children.
+                        // The children will be the actual items to be displayed
+                        function (data, status) {
+                            if (status === 'success') {
+                                CCH.items.load({
+                                    items: [data.children],
+                                    displayNotification: false,
+                                    callbacks: {
+                                        success: [
+                                            CCH.ui.removeOverlay
+                                        ],
+                                        error: [
+                                            function () {
+                                                errorResponseHandler(null, null, 'Search for children did not return a valid response');
+                                            }
+                                        ]
+                                    }
+                                });
+                            } else {
+
+                            }
+                        }],
+                    error: [errorResponseHandler]
+                }
+            });
+        }());
     }
 });
