@@ -285,8 +285,7 @@ CCH.Objects.UI = function (args) {
         // By now, we should have a card
         if (card) {
             me.accordion.add({
-                card : card,
-                collapsed : true
+                card : card
             });
         }
     };
