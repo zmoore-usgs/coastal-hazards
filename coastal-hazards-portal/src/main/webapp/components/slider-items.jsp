@@ -17,28 +17,23 @@
             <span class="application-card-collapse-row-dottedline"></span>
         </div>
         <div class="row-fluid">
-            <div class="span2">
-                <img alt="Product Image" class="application-card-container-image" src="file:///Users/isuftin/Downloads/BigCross.svg" />
+            <%-- Title --%>
+            <div class="application-card-title-row row-fluid">
+                <span  class="application-card-title-container-large"></span>
+                <span  class="application-card-title-container-medium"></span>
+                <span  class="application-card-title-container-small"></span>
             </div>
-            <div class="span10">
-                <%-- Title --%>
-                <div class="application-card-title-row row-fluid">
-                    <span  class="application-card-title-container-large"></span>
-                    <span  class="application-card-title-container-medium"></span>
-                    <span  class="application-card-title-container-small"></span>
-                </div>
 
-                <%-- Content --%>
-                <div class="application-card-content-row row-fluid">
-                    <span  class="application-card-content-container-large"></span>
-                    <span  class="application-card-content-container-medium"></span>
-                    <span  class="application-card-content-container-small"></span>
-                </div>
+            <%-- Content --%>
+            <div class="application-card-content-row row-fluid">
+                <span  class="application-card-content-container-large"></span>
+                <span  class="application-card-content-container-medium"></span>
+                <span  class="application-card-content-container-small"></span>
+            </div>
 
-                <%-- Children Selection Control --%>
-                <div class="application-card-children-selection-row row-fluid">
-                    <select class="application-card-children-selection-control"></select>
-                </div>
+            <%-- Children Selection Control --%>
+            <div class="application-card-children-selection-row row-fluid">
+                <select class="application-card-children-selection-control"></select>
             </div>
         </div>
         <%-- Control Row --%>
