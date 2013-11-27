@@ -54,7 +54,6 @@ CCH.Objects.UI = function (args) {
     me.previousWidth = $(window).width();
     me.bucket = new CCH.Objects.Bucket();
     me.combinedSearch = new CCH.Objects.CombinedSearch();
-    me.cards = CCH.cards;
     me.accordion = new CCH.Objects.Accordion({
         containerId : me.SLIDE_CONTAINER_DIV_ID
     });
@@ -268,22 +267,6 @@ CCH.Objects.UI = function (args) {
             $(window).trigger('cch.ui.overlay.removed');
         });
     };
-
-    me.displayProduct = function (args) {
-        args = args || {};
-
-        var product = args.product,
-            card,
-            container;
-
-        card = me.cards.buildCard({
-            product : product
-        });
-        me.cards.addCard(card);
-        container = card.getContainer();
-        $('#' + me.SLIDE_CONTAINER_DIV_ID).append(container);
-        //TODO - Deal with the slideshow aspect of this here
-    };
     
     me.addToAccordion = function (args) {
         args = args || {};
@@ -293,15 +276,17 @@ CCH.Objects.UI = function (args) {
         
         // If we are passed a product, that means we were not passed a card
         if (product) {
-            card = me.cards.buildCard({
-                product : product
+            card = CCH.cards.buildCard({
+                product : product,
+                initHide : false
             });
         }
         
         // By now, we should have a card
         if (card) {
             me.accordion.add({
-                card : card
+                card : card,
+                collapsed : true
             });
         }
     };
@@ -400,7 +385,6 @@ CCH.Objects.UI = function (args) {
         removeOverlay: me.removeOverlay,
         isSmall: me.isSmall,
         displayLoadingError: me.displayLoadingError,
-        displayProduct : me.displayProduct,
         itemsSlide: me.itemsSlide,
         bucketSlide: me.bucketSlide,
         searchSlide: me.searchSlide,
