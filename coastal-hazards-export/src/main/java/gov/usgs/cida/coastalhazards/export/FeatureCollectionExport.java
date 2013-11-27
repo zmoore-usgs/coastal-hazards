@@ -73,7 +73,7 @@ public class FeatureCollectionExport {
         datastoreConfig.put("url", shpFile.toURI().toURL());
         ShapefileDataStore shpfileDataStore = (ShapefileDataStore)factory.createNewDataStore(datastoreConfig);
         shpfileDataStore.createSchema(type);
-        shpfileDataStore.forceSchemaCRS(type.getCoordinateReferenceSystem());
+        shpfileDataStore.forceSchemaCRS(this.crs);
         
         FeatureWriter<SimpleFeatureType, SimpleFeature> featureWriter = shpfileDataStore.getFeatureWriter(namePrefix, Transaction.AUTO_COMMIT);
         try {
@@ -95,7 +95,6 @@ public class FeatureCollectionExport {
     private SimpleFeatureType buildFeatureType() {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName(namePrefix);
-        builder.setCRS(crs);
         builder.add(getGeometryDescriptor());
         for (String name : attributes) {
             AttributeDescriptor descriptor = getDescriptorFromPrototype(name);

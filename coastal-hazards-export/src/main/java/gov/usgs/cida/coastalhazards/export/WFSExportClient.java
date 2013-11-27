@@ -56,23 +56,4 @@ public class WFSExportClient {
         String[] typeNames = wfs.getTypeNames();
         return typeNames;
     }
-    
-    /**
-     * This can be used to see whether two feature collections should be retrieved, or merged into one
-     * @param urlA
-     * @param typeNameA
-     * @param urlB
-     * @param typeNameB
-     * @return 
-     */
-    public static boolean testEquality(String urlA, String typeNameA, String urlB, String typeNameB) throws MalformedURLException {
-        URL a = new URL(urlA);
-        URL b = new URL(urlB);
-        // I'm not assuming case insensitivity, so case does matter
-        boolean equality = a.getHost().equals(b.getHost()) &&
-                a.getPort() == b.getPort() &&
-                a.getPath().equals(b.getPath()) &&
-                typeNameA.equals(typeNameB);
-        return equality;
-    }
 }

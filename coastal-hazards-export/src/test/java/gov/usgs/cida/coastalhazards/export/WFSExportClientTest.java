@@ -26,19 +26,6 @@ import static org.junit.Assert.assertThat;
 public class WFSExportClientTest {
     
     @Test
-    public void testTestEquality() throws MalformedURLException {
-        String urlA = "http://test.gov/wfs";
-        String urlB = "http://test.gov/wfs?request=GetCapabilities";
-        String urlC = "http://differentUrl.gov";
-        
-        assertThat(WFSExportClient.testEquality(urlA, "test", urlA, "test"), is(true));
-        assertThat(WFSExportClient.testEquality(urlA, "test", urlC, "test"), is(false));
-        assertThat(WFSExportClient.testEquality(urlA, "test", urlB, "test2"), is(false));
-        assertThat(WFSExportClient.testEquality(urlA, "test", urlB, "test"), is(true));
-        assertThat(WFSExportClient.testEquality(urlA, "test", urlA, "test2"), is(false));
-    }
-    
-    @Test
     public void testWFSExport() throws IOException {
         String getCaps = "http://coastalmap.marine.usgs.gov/cmgp/National/cvi_WFS/MapServer/WFSServer?service=WFS&request=GetCapabilities&version=1.0.0";
         WFSExportClient client = new WFSExportClient();

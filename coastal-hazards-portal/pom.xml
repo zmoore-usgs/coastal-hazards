@@ -20,6 +20,11 @@
             <type>jar</type>
         </dependency>
         <dependency>
+            <groupId>gov.usgs.cida.coastalhazards</groupId>
+            <artifactId>coastal-hazards-export</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
