@@ -55,8 +55,8 @@ CCH.Objects.UI = function (args) {
     me.bucket = new CCH.Objects.Bucket();
     me.combinedSearch = new CCH.Objects.CombinedSearch();
     me.cards = CCH.cards;
-    me.slideShow = new CCH.Objects.Slideshow({
-        slideContainerId : me.SLIDE_CONTAINER_DIV_ID
+    me.accordion = new CCH.Objects.Accordion({
+        containerId : me.SLIDE_CONTAINER_DIV_ID
     });
 
     me.itemsSearchedHandler = function (evt, data) {
@@ -284,7 +284,28 @@ CCH.Objects.UI = function (args) {
         $('#' + me.SLIDE_CONTAINER_DIV_ID).append(container);
         //TODO - Deal with the slideshow aspect of this here
     };
-
+    
+    me.addToAccordion = function (args) {
+        args = args || {};
+        
+        var card = args.card,
+            product = args.product;
+        
+        // If we are passed a product, that means we were not passed a card
+        if (product) {
+            card = me.cards.buildCard({
+                product : product
+            });
+        }
+        
+        // By now, we should have a card
+        if (card) {
+            me.accordion.add({
+                card : card
+            });
+        }
+    };
+    
     me.isSmall = function () {
         // Bootstrap decides when to flip the application view based on 
         // a specific width. 767px seems to be the point 
@@ -383,6 +404,7 @@ CCH.Objects.UI = function (args) {
         itemsSlide: me.itemsSlide,
         bucketSlide: me.bucketSlide,
         searchSlide: me.searchSlide,
-        bucket: me.bucket
+        bucket: me.bucket,
+        addToAccordion : me.addToAccordion
     };
 };

@@ -8,44 +8,42 @@
 </div>
 
 <%-- This element is used as a template for creating new items cards --%>
-<div id="application-slide-items-container-card-template" class="hidden">
-    <div class="application-slide-items-aggregation-container-card accordion-group well well-small">
-
-        <%-- Title --%>
-        <div class="accordion-heading">
-            <a class="accordion-toggle card-title-container" data-toggle="collapse" data-parent="#application-slide-items-content-container">
-                <span class="card-title-container-large"></span>
-                <span class="card-title-container-medium"></span>
-            </a>
+<div id="application-card-template" class="hidden">
+    <div class="application-card-container container-fluid">
+        <%-- Collapse Control --%>
+        <div class="application-card-collapse-row row-fluid">
+            <span class="application-card-collapse-row-closed"><i class="fa fa-plus-square-o"></i></span>
+            <span class="application-card-collapse-row-open"><i class="fa fa-minus-square-o"></i></span>
+            <span class="application-card-collapse-row-dottedline"></span>
         </div>
+        <div class="row-fluid">
+            <div class="span2">
+                <img alt="Product Image" class="application-card-container-image" src="file:///Users/isuftin/Downloads/BigCross.svg" />
+            </div>
+            <div class="span10">
+                <%-- Title --%>
+                <div class="application-card-title-row row-fluid">
+                    <span  class="application-card-title-container-large"></span>
+                    <span  class="application-card-title-container-medium"></span>
+                    <span  class="application-card-title-container-small"></span>
+                </div>
 
-        <%-- Content --%>
-        <div class="accordion-body collapse card-content-container">
-            <div class="accordion-inner">
-                <span class="card-content-container-large"></span>
-                <span class="card-content-container-medium"></span>
+                <%-- Content --%>
+                <div class="application-card-content-row row-fluid">
+                    <span  class="application-card-content-container-large"></span>
+                    <span  class="application-card-content-container-medium"></span>
+                    <span  class="application-card-content-container-small"></span>
+                </div>
+
+                <%-- Children Selection Control --%>
+                <div class="application-card-children-selection-row row-fluid">
+                    <select class="application-card-children-selection-control"></select>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="application-slide-items-product-container-card accordion-group well well-small">
-
-        <%-- Title --%>
-        <div class="accordion-heading">
-            <a class="accordion-toggle card-title-container" data-toggle="collapse" data-parent="#application-slide-items-content-container">
-                <span class="card-title-container-large"></span>
-                <span class="card-title-container-medium"></span>
-            </a>
-        </div>
-
-        <%-- Content --%>
-        <div class="accordion-body collapse card-content-container">
-            <div class="accordion-inner">
-                <span class="card-content-container-large"></span>
-                <span class="card-content-container-medium"></span>
-                <span class="card-content-container-controls">
-                    
-                </span>
-            </div>
+        <%-- Control Row --%>
+        <div class="application-card-control-row row-fluid">
+            <span  class="application-card-control-container"></span>
         </div>
     </div>
 </div>

@@ -87,7 +87,7 @@
         <script type="text/javascript" src="js/components/slide/BucketSlide.js"></script>
         <script type="text/javascript" src="js/components/slide/SearchSlide.js"></script>
         <script type="text/javascript" src="js/components/util/Util.js"></script>
-        <script type="text/javascript" src="js/components/slideshow/Slideshow.js"></script>
+        <script type="text/javascript" src="js/components/accordion/Accordion.js"></script>
         <script type="text/javascript" src="js/components/search/Search.js"></script>
         <script type="text/javascript" src="js/components/session/Session.js"></script>
         <script type="text/javascript" src="js/components/map/Map.js"></script>

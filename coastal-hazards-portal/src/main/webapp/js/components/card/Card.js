@@ -19,7 +19,7 @@ CCH.Objects.Card = function (args) {
     if (!args.product) {
         throw 'A product was not passed into the card constructor';
     }
-    me.CARD_TEMPLATE_ID = args.cardTemplateId || 'application-slide-items-container-card-template';
+    me.CARD_TEMPLATE_ID = args.cardTemplateId || 'application-card-template';
     me.AGGREGATION_CONTAINER_CARD = args.aggregationContainerId || 'application-slide-items-aggregation-container-card';
     me.PRODUCT_CONTAINER_CARD = args.productContainerId || 'application-slide-items-product-container-card';
     me.product = args.product;
@@ -59,98 +59,107 @@ CCH.Objects.Card = function (args) {
     }());
     
     me.createContainer = function () {
-        var templateParent = $('#' + me.CARD_TEMPLATE_ID).clone(true),
-            summary = me.summary,
-            fullSummary = summary.full,
-            mediumSummary = summary.medium,
-            container,
-            titleContainer,
-            contentContainer,
-            largeTitle = fullSummary.title,
-            mediumTitle = mediumSummary.title,
-            largeContent = fullSummary.text,
-            mediumContent = mediumSummary.text,
-            largeTitleContainer,
-            mediumTitleContainer,
-            largeContentContainer,
-            mediumContentContainer;
+        if (!me.container) {
+            var container = $('#' + me.CARD_TEMPLATE_ID).clone(true).children(),
+                summary = me.summary,
+                fullSummary = summary.full,
+                mediumSummary = summary.medium,
+                tinySummary = summary.tiny,
+                largeTitle = fullSummary.title || '',
+                mediumTitle = mediumSummary.title || largeTitle,
+                smallTitle = tinySummary.title || mediumTitle,
+                largeContent = fullSummary.text || '',
+                mediumContent = mediumSummary.text || largeContent,
+                smallContent = tinySummary.text || mediumContent,
+                largeTitleContainer = container.find('.application-card-title-container-large'),
+                mediumTitleContainer = container.find('.application-card-title-container-medium'),
+                smallTitleContainer = container.find('.application-card-title-container-small'),
+                largeContentContainer = container.find('.application-card-content-container-large'),
+                mediumContentContainer = container.find('.application-card-content-container-medium'),
+                smallContentContainer = container.find('.application-card-content-container-small'),
+                childrenSelectControl = container.find('.application-card-children-selection-control'),
+                controlContainer = container.find('.application-card-control-container'),
+                spaceAggButton = $('<button />').addClass('btn disabled').html('Space Aggregation'),
+                propertyAggButton = $('<button />').addClass('btn').html('Property Aggregation'),
+                bucketButton = $('<button />').addClass('btn').html('Add To Bucket');
         
-        if (me.children.length > 0) {
-            // If I am an aggregation, I expect to be an accordion item with an
-            // accordion
-            container = templateParent.find('.' + me.AGGREGATION_CONTAINER_CARD);
-            titleContainer = container.find('.card-title-container');
-            contentContainer = container.find('.card-content-container');
-            largeTitleContainer = titleContainer.find('.card-title-container-large');
-            mediumTitleContainer = titleContainer.find('.card-title-container-medium');
-            largeContentContainer = contentContainer.find('.card-content-container-large');
-            mediumContentContainer = contentContainer.find('.card-content-container-medium');
-            
+            // Create Title
             largeTitleContainer.html(largeTitle);
             mediumTitleContainer.html(mediumTitle);
+            smallTitleContainer.html(smallTitle);
+            
+            // Create Content
             largeContentContainer.html(largeContent);
             mediumContentContainer.html(mediumContent);
+            smallContentContainer.html(smallContent);
             
-            container.attr({
-                id : 'accordion-group' + me.id
-            });
-            
-            titleContainer.attr({
-                href : '#accordion-body-' + me.id
-            });
-            
-            contentContainer.attr({
-               id : 'accordion-body-' + me.id 
-            });
-            
-        } else {
-            // If I am a regular card, I expect to not have an inner accordion
-            container = templateParent.find('.' + me.PRODUCT_CONTAINER_CARD);
-            titleContainer = container.find('.card-title-container');
-            contentContainer = container.find('.card-content-container');
-            largeTitleContainer = titleContainer.find('.card-title-container-large');
-            mediumTitleContainer = titleContainer.find('.card-title-container-medium');
-            largeContentContainer = contentContainer.find('.card-content-container-large');
-            mediumContentContainer = contentContainer.find('.card-content-container-medium');
-            
-            
-            largeTitleContainer.html(largeTitle);
-            mediumTitleContainer.html(mediumTitle);
-            largeContentContainer.html(largeContent);
-            mediumContentContainer.html(mediumContent);
-            
-            container.attr({
-                id : 'accordion-group' + me.id
-            });
-            
-            titleContainer.attr({
-                href : '#accordion-body-' + me.id
-            });
-            
-            contentContainer.attr({
-               id : 'accordion-body-' + me.id 
-            });
-            
+            // This item has either aggregations or leaf nodes as children.
+            // This item is not itself a child
+            if (me.children.length) {
+                childrenSelectControl.
+                    append($('<option />').attr('value', '')).
+                    addClass('hidden');
+                me.children.each(function (child) {
+                    var option = $('<option />');
+                    
+                    option.addClass('application-card-children-selection-control-option');
+                    if (typeof child === 'string') {
+                        // The child is a string. This means that we don't know
+                        // anything about this child beyond its ID. We still
+                        // have to load this object from the back-end. We will
+                        // create the option element and fire off a request to
+                        // the back end for more information
+                        childrenSelectControl.append(option);
+                        option.attr('value', child);
+                        CCH.items.load({
+                            items: [child],
+                            displayNotification: false,
+                            callbacks: {
+                                success: [
+                                    function(item) {
+                                        var name = item.summary.full.title ||
+                                                item.summary.medium.title ||
+                                                item.summary.tiny.title || 
+                                                child;
+                                        option.html(name);
+                                    }
+                                ],
+                                error: [
+                                    function() {
+                                        errorResponseHandler(null, null, 'Search for children did not return a valid response');
+                                    }
+                                ]
+                            }
+                        });
+                    }
+                });
+                
+                // Add buttons to the bottom
+                controlContainer.append(spaceAggButton, propertyAggButton);
+                propertyAggButton.on('click', function (evt) {
+                    var button = $(this);
+                    button.button('toggle');
+                    me.container.
+                        find('.application-card-children-selection-control').
+                        toggleClass('hidden');
+                });
+            } else {
+                controlContainer.append(bucketButton);
+            }
+            me.container = container;
         }
-        
-        return container;
+        return me.container;
     };
     
     CCH.LOG.info('Card.js::constructor:Card class is initialized.');
 
     return {
-        getItemId: function () {
-            return me.item.id;
-        },
+        id: me.id,
+        product: me.product,
         getBoundingBox: function() {
             return me.bbox;
         },
-        getContainer: function() {
-            if (me.container === null) {
-                me.container = me.createContainer();
-            }
-            return me.container;
-        }
+        getContainer: me.createContainer
     };
 
 };

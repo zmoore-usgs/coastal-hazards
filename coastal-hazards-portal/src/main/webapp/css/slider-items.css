@@ -21,10 +21,6 @@
         background-color: #F5F5F5;
         overflow-y: auto;
     }
-    
-    .card-title-container-large {
-        display: none;
-    }
 }
 
 @media (max-width: 766px) {
@@ -82,9 +78,5 @@
     #application-slide-items-content {
         border-bottom-left-radius: 10px 10px;
         -webkit-border-bottom-left-radius: 10px 10px;
-    }
-    
-    .card-title-container-medium {
-        display: none;
     }
 }
