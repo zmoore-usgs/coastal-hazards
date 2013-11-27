@@ -4,7 +4,6 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
@@ -26,7 +25,6 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.SortByImpl;
-import org.geotools.filter.function.FilterFunction_offset;
 import org.geotools.geometry.jts.Geometries;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.ProcessException;
@@ -61,6 +59,8 @@ public class RibboningProcess implements GeoServerProcess {
 	public SimpleFeatureCollection execute(
 			@DescribeParameter(name = "features", min = 1, max = 1) SimpleFeatureCollection features,
 			@DescribeParameter(name = "bbox", min = 0, max = 1) ReferencedEnvelope bbox,
+			@DescribeParameter(name = "width", min = 1, max = 1) Integer width,
+			@DescribeParameter(name = "height", min = 1, max = 1) Integer height,
 			@DescribeParameter(name = "invert-side", min = 0, max = 1) Boolean invertSide,
 			@DescribeParameter(name = "ribbon-count", min = 0, max = 1) Integer ribbonCount,
 			@DescribeParameter(name = "offset", min = 0, max = 1) Integer offset,
@@ -79,10 +79,11 @@ public class RibboningProcess implements GeoServerProcess {
 		if (null == sortAttribute) {
 			sortAttribute = "OBJECTID";
 		}
-		
 		SimpleFeatureCollection sortedFeatures = sortFeatures(sortAttribute, features);
 		
-		return new Process(sortedFeatures, bbox, invertSide, ribbonCount, offset).execute();
+		double[] xyOffset = getXYOffset(bbox, width, height, offset);
+		
+		return new Process(sortedFeatures, invertSide, ribbonCount, xyOffset).execute();
 
 	}
 	
@@ -106,27 +107,40 @@ public class RibboningProcess implements GeoServerProcess {
 		result.setProperties(Query.ALL_PROPERTIES);
 		return result;
 	}
+
+	private double[] getXYOffset(ReferencedEnvelope bbox, Integer width, Integer height, Integer offset) {
+		double[] result = new double[] {offset, offset};
+		
+		double bbwidth = bbox.getWidth();
+		double bbheight = bbox.getHeight();
+		double pxwidth = width.doubleValue();
+		double pxheight = height.doubleValue();
+		
+		result = new double[] {
+			(bbwidth / pxwidth) * offset,
+			(bbheight / pxheight) * offset
+		};
+		
+		return result;
+	}
 	
 	private class Process {
 
 		private final SimpleFeatureCollection featureCollection;
-		private final ReferencedEnvelope coverageEnvelope;
 		private final boolean invert;
 		private final int ribbonCount;
-		private final double offset;
+		private final double[] xyOffset;
 
 		Map<Integer, LinkedList<SimpleFeature>> baselineFeaturesMap;
 
 		private Process(SimpleFeatureCollection featureCollection,
-				ReferencedEnvelope coverageEnvelope,
 				boolean invert,
 				int ribbonCount,
-				double offset) {
+				double[] offset) {
 			this.featureCollection = featureCollection;
-			this.coverageEnvelope = coverageEnvelope;
 			this.invert = invert;
 			this.ribbonCount = ribbonCount;
-			this.offset = offset;
+			this.xyOffset = offset;
 		}
 
 		private SimpleFeatureCollection execute() throws Exception {
@@ -140,12 +154,14 @@ public class RibboningProcess implements GeoServerProcess {
 			SimpleFeatureType schema = sftb.buildFeatureType();
 			
 			result = new ListFeatureCollection(schema);
-			LOGGER.log(Level.FINE, "Offset {0}", "" + offset);
 			LineString prevLine = null;
 			double[] prevLineOffset = null;
 			SimpleFeatureIterator features = this.featureCollection.features();
 			while (features.hasNext()) {
 				SimpleFeature feature = features.next();
+				
+				Object objectId = feature.getAttribute("OBJECTID");
+				LOGGER.log(Level.FINEST, "ObjectId : {0} START", objectId);
 				
 				MultiLineString lines = getMultiLineString(feature);
 				if (null != lines) {
@@ -158,18 +174,14 @@ public class RibboningProcess implements GeoServerProcess {
 					for (int geomNum = 0; geomNum < lines.getNumGeometries(); geomNum++) {
 						LineString line = (LineString) lines.getGeometryN(geomNum);
 						
-						double[] lineOffset = computeXYOffset(prevLine, line);
+						double[] lineOffset = computeXYOffset(prevLine, prevLineOffset, line);
 						
-						if (null != lineOffset && null != prevLineOffset) {
+						if (null != lineOffset) {
 							for (int ribbonNum = 0; ribbonNum < ribbonCount; ribbonNum++) {
-								double prevOffsetX = prevLineOffset[0] * ribbonNum;
-								double prevOffsetY = prevLineOffset[1] * ribbonNum;
-								double offsetX = lineOffset[0] * ribbonNum;
-								double offsetY = lineOffset[1] * ribbonNum;
-								ribbonLines.get(ribbonNum).getGeometryN(geomNum).apply(new skewTingFilter(prevOffsetX, prevOffsetY, offsetX, offsetY));
+								ribbonLines.get(ribbonNum).getGeometryN(geomNum).apply(new RibboningFilter(lineOffset, ribbonNum));
 							}
 						} else {
-							LOGGER.log(Level.FINE, "This is where I'd deal with the first line, Not yet implemented");
+							LOGGER.log(Level.WARNING, "This is where I'd deal with the first line, Not yet implemented");
 						}
 						
 						prevLine = line;
@@ -187,58 +199,117 @@ public class RibboningProcess implements GeoServerProcess {
 					}
 
 					result.addAll(ribbonedFeature);
+				} else {
+					LOGGER.log(Level.WARNING, "feature is not a line?");
 				}
+				LOGGER.log(Level.FINEST, "ObjectId : {0} END", objectId);
 			}
 			
 			{
-				LOGGER.log(Level.FINE, "This is where I'd flush the last line, Not yet implemented");
+				LOGGER.log(Level.WARNING, "This is where I'd flush the last line, Not yet implemented");
 			}
 
 			return result;
 		}
 		
-		private double[] computeXYOffset(LineString prevLine, LineString currLine) {
+		private double[] computeXYOffset(LineString prevLine, double[] prevLineOffset, LineString currLine) {
 			double[] result = null;
 			
-			if (null != prevLine && null != currLine) {
-				Point prevStart = prevLine.getStartPoint();
-				Point prevEnd = prevLine.getEndPoint();
-				Point currStart = currLine.getStartPoint();
-				Point currEnd = currLine.getEndPoint();
-				
-				if (null != prevStart && null != prevEnd
-						&& null != currStart && null != currEnd) {
-					double xOffset = 10000.0;
-					double yOffset = -10000.0;
-					if (prevEnd.isWithinDistance(currStart, 1000.0)) {
-						//sequential order
-						Double angle = getAngle(prevStart, currStart, currEnd);
-						if (null != angle) {
-							xOffset = getXOffset(angle, Math.sqrt(offset) * 5);
-							yOffset = getYOffset(angle, Math.sqrt(offset) * 5);
-						} else {
-							LOGGER.log(Level.FINE, "How the hell did we get here");
-						}
-						
-						result = new double[] {xOffset, yOffset};
-					} else {
-						//broken order
-						LOGGER.log(Level.FINE, "Broken order");
-					}
+			Point prevStart = null;
+			Point prevEnd = null;
+			if (null != prevLine) {
+				prevStart = prevLine.getStartPoint();
+				prevEnd = prevLine.getEndPoint();
+			}
+			
+			Point currStart = null;
+			Point currEnd = null;
+			if (null != currLine) {
+				currStart = currLine.getStartPoint();
+				currEnd = currLine.getEndPoint();
+			}
+			
+			boolean isSequential = false;
+			
+			Double angle = null;
+			if ((null != prevStart && null != prevEnd)
+					&& (null != currStart && null != currEnd)) {
+				isSequential = prevEnd.isWithinDistance(currStart, 1000.0);
+				if (isSequential) {
+					LOGGER.log(Level.FINEST, "Sequential order");
+//					angle = getAngle(prevStart, currStart, currEnd); //do we want to do fancy angling? seems like not worth it?
+					angle = getAngle(currStart, currEnd);
+				} else {
+					LOGGER.log(Level.FINEST, "Broken order");
+					angle = getAngle(currStart, currEnd);
+				}
+			} else if ((null != currStart && null != currEnd)) {
+				LOGGER.log(Level.FINEST, "just curr");
+				angle = getAngle(currStart, currEnd);
+			} else if ((null != prevStart && null != prevEnd)) {
+				LOGGER.log(Level.WARNING, "A prev, but no curr?");
+			} else {
+				LOGGER.log(Level.WARNING, "Everything is null?");
+			}
+			
+			double[] lineOffset = null;
+			if (null != angle) {
+				double xOffset = 0.0;
+				double yOffset = 0.0;
+
+				xOffset = getXOffset(angle, xyOffset[0]);
+				yOffset = getYOffset(angle, xyOffset[1]);
+
+				lineOffset = new double[] {xOffset, yOffset};
+				LOGGER.log(Level.FINEST, "Angle : {0}, X : {1}, Y : {2}", new Object[] {angle, xOffset, yOffset});
+			} else {
+				LOGGER.log(Level.WARNING, "No angle computed");
+			}
+			
+			if (null != lineOffset) {
+				if (isSequential 
+						&& null != prevLineOffset
+						&& 1 < prevLineOffset.length
+						&& 0 == (prevLineOffset.length % 2)) {
+					result = new double[] {
+						prevLineOffset[prevLineOffset.length - 2],
+						prevLineOffset[prevLineOffset.length - 1],
+						lineOffset[0],
+						lineOffset[1]
+					};
+				} else {
+					result = lineOffset;
 				}
 			}
 			
 			return result;
 		}
 		
-		private double getXOffset(double angle, double radians) {
-			double result = radians * Math.cos(angle);
+		private double getXOffset(double angle, double offset) {
+			double result = offset * Math.cos(angle);
 			
 			return result;
 		}
 		
-		private double getYOffset(double angle, double radians) {
-			double result = radians * Math.sin(angle);
+		private double getYOffset(double angle, double offset) {
+			double result = offset * Math.sin(angle);
+			
+			return result;
+		}
+		
+		private Double getAngle(Point a, Point b) {
+			Double result = null;
+			double TWO_PI = 2 * Math.PI;
+			
+			if (null != a && null != b) {
+				double thetaLine = (Math.atan2(b.getY() - a.getY(), b.getX() - a.getX()) + TWO_PI) % TWO_PI;
+				
+				double theta = ((thetaLine - (TWO_PI / 4)) + TWO_PI) % TWO_PI;
+				
+				result = theta;
+			} else {
+				LOGGER.log(Level.WARNING, "Missing a point");
+			}
 			
 			return result;
 		}
@@ -291,27 +362,42 @@ public class RibboningProcess implements GeoServerProcess {
 		}
 	}
 	
-	public static class skewTingFilter implements CoordinateSequenceFilter {
-		final double prevOffsetX;
-		final double prevOffsetY;
-        final double offsetX;
-        final double offsetY;
+	public static class RibboningFilter implements CoordinateSequenceFilter {
+		private final double[][] pointOffsets;
+		private final int ribbonNum;
 
-        public skewTingFilter(double prevOffsetX, double prevOffsetY, double offsetX, double offsetY) {
-			this.prevOffsetX = prevOffsetX;
-			this.prevOffsetY = prevOffsetY;
-            this.offsetX = offsetX;
-            this.offsetY = offsetY;
+        public RibboningFilter(double[] lineOffset, int ribbonNum) {
+			double[][] result = null;
+			if (null != lineOffset && 0 < lineOffset.length) {
+				result = new double[lineOffset.length / 2][];
+				for (int i = 0; i < lineOffset.length; i++) {
+					if (0 == (i % 2) && (i+1) < lineOffset.length) {
+						result[i/2] = new double[] {0.0, 0.0};
+						result[i/2][0] = lineOffset[i];
+					} else if (1 == (i % 2)) {
+						result[i/2][1] = lineOffset[i];
+					}
+				}
+			}
+			
+			this.pointOffsets = result;
+			this.ribbonNum = ribbonNum;
         }
 
         public void filter(CoordinateSequence seq, int i) {
-			if (0 == i) { //TODO, this is stupid
-				seq.setOrdinate(i, 0, seq.getOrdinate(i, 0) + prevOffsetX);
-				seq.setOrdinate(i, 1, seq.getOrdinate(i, 1) + prevOffsetY);
+			double offsetX = 0.0;
+			double offsetY = 0.0;
+			
+			if (i < pointOffsets.length) {
+				offsetX = pointOffsets[i][0] * ribbonNum;
+				offsetY = pointOffsets[i][1] * ribbonNum;
 			} else {
-				seq.setOrdinate(i, 0, seq.getOrdinate(i, 0) + offsetX);
-				seq.setOrdinate(i, 1, seq.getOrdinate(i, 1) + offsetY);
+				offsetX = pointOffsets[pointOffsets.length - 1][0] * ribbonNum;
+				offsetY = pointOffsets[pointOffsets.length - 1][1] * ribbonNum;
 			}
+			
+			seq.setOrdinate(i, 0, seq.getOrdinate(i, 0) + offsetX);
+			seq.setOrdinate(i, 1, seq.getOrdinate(i, 1) + offsetY);
         }
 
         public boolean isDone() {

@@ -18,14 +18,24 @@
               </ogc:Function>
             </ogc:Function>
             <ogc:Function name="parameter">
+              <ogc:Literal>width</ogc:Literal>
+              <ogc:Function name="env">
+                <ogc:Literal>wms_width</ogc:Literal>
+              </ogc:Function>
+            </ogc:Function>
+            <ogc:Function name="parameter">
+              <ogc:Literal>height</ogc:Literal>
+              <ogc:Function name="env">
+                <ogc:Literal>wms_height</ogc:Literal>
+              </ogc:Function>
+			</ogc:Function>
+            <ogc:Function name="parameter">
               <ogc:Literal>ribbon-count</ogc:Literal>
               <ogc:Literal>3</ogc:Literal>
             </ogc:Function>
             <ogc:Function name="parameter">
               <ogc:Literal>offset</ogc:Literal>
-              <ogc:Function name="env">
-                <ogc:Literal>wms_scale_denominator</ogc:Literal>
-              </ogc:Function>
+              <ogc:Literal>10</ogc:Literal>
             </ogc:Function>
           </ogc:Function>
         </Transformation>
