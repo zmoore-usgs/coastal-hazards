@@ -31,10 +31,10 @@ CCH.Objects.Card = function (args) {
     me.name = me.product.name;
     me.attr = me.product.attr;
     me.service = me.product.service;
-    me.children = me.product.children || [],
-    me.wmsService = me.product.wmsService || {},
-    me.wmsEndpoint = me.wmsService.endpoint || '',
-    me.wmsLayers = me.wmsService.layers || [],
+    me.children = me.product.children || [];
+    me.wmsService = me.product.wmsService || {};
+    me.wmsEndpoint = me.wmsService.endpoint || '';
+    me.wmsLayers = me.wmsService.layers || [];
     me.layer = null;
     me.container = null;
     me.descriptionContainer = null;
@@ -64,16 +64,16 @@ CCH.Objects.Card = function (args) {
 
         return layer;
     }());
-    
+
     me.show = function (args) {
         args = args || {};
-        
+
         var duration = args.duration || 500,
             effect = args.effect || 'blind',
             easing = args.easing || 'swing',
             complete = args.complete || null,
             queue = args.queue || true;
-            
+
         me.container.show({
             effect : effect,
             easing : easing,
@@ -82,16 +82,16 @@ CCH.Objects.Card = function (args) {
             queue : queue
         });
     };
-    
-    me.hide = function() {
+
+    me.hide = function () {
         args = args || {};
-        
+
         var duration = args.duration || 500,
             effect = args.effect || 'blind',
             easing = args.easing || 'swing',
             complete = args.complete || null,
             queue = args.queue || true;
-            
+
         me.container.hide({
             effect : effect,
             easing : easing,
@@ -100,7 +100,7 @@ CCH.Objects.Card = function (args) {
             queue : queue
         });
     };
-    
+
     me.createContainer = function () {
         if (!me.container) {
             var container = $('#' + me.CARD_TEMPLATE_ID).clone(true).children(),
@@ -125,22 +125,21 @@ CCH.Objects.Card = function (args) {
                 spaceAggButton = $('<button />').addClass('btn disabled').html('Space'),
                 propertyAggButton = $('<button />').addClass('btn').html('Property'),
                 bucketButton = $('<button />').addClass('btn').html('Bucket');
-        
+
             // Create Title
             largeTitleContainer.html(largeTitle);
             mediumTitleContainer.html(mediumTitle);
             smallTitleContainer.html(smallTitle);
-            
+
             // Create Content
             largeContentContainer.html(largeContent);
             mediumContentContainer.html(mediumContent);
             smallContentContainer.html(smallContent);
-            
+
             // This item has either aggregations or leaf nodes as children.
             // This item is not itself a child
             if (me.children.length) {
-                childrenSelectControl.
-                    append($('<option />').
+                childrenSelectControl.append($('<option />').
                     attr('value', '')).
                     addClass('hidden');
                 me.children.each(function (child) {
@@ -151,12 +150,12 @@ CCH.Objects.Card = function (args) {
                                 item.summary.medium.title ||
                                 item.summary.tiny.title ||
                                 child;
-                            
+
                             option.html(name);
-                            
+
                             return option;
                         };
-                    
+
                     option.addClass('application-card-children-selection-control-option');
                     if (typeof child === 'string') {
                         item = CCH.items.getById(child);
@@ -167,7 +166,7 @@ CCH.Objects.Card = function (args) {
                         // the back end for more information
                         childrenSelectControl.append(option);
                         option.attr('value', child);
-                        
+
                         if (item) {
                             // The item is already loaded in the items object
                             // so we don't have to go out and get it
@@ -181,11 +180,12 @@ CCH.Objects.Card = function (args) {
                                 callbacks: {
                                     success: [processOption],
                                     error: [
-                                        function() {
-                                            errorResponseHandler(
-                                                null, 
-                                                null, 
-                                                'Search for children did not return a valid response');
+                                        function (jqXHR, textStatus, errorThrown) {
+                                            CCH.ui.displayLoadingError({
+                                                errorThrown: errorThrown,
+                                                splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
+                                                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
+                                            });
                                         }
                                     ]
                                 }
@@ -193,7 +193,7 @@ CCH.Objects.Card = function (args) {
                         }
                     }
                 });
-                
+
                 // Add buttons to the bottom
                 controlContainer.append(spaceAggButton, propertyAggButton, bucketButton);
                 propertyAggButton.on('click', function (evt) {
@@ -207,7 +207,7 @@ CCH.Objects.Card = function (args) {
                     var control = $(evt.target),
                         selectedOption = control.val(),
                         card;
-                        
+
                     if (selectedOption) {
                         // User selected a product. We will append that to 
                         // this card
@@ -224,7 +224,7 @@ CCH.Objects.Card = function (args) {
                 childrenSelectControl.remove();
                 controlContainer.append(bucketButton);
             }
-            
+
             // We start with the container hidden and an upstream process will
             // decide when to show it
             if (me.initHide) {
@@ -232,12 +232,12 @@ CCH.Objects.Card = function (args) {
                     display : 'none'
                 });
             }
-            
+
             me.container = container;
         }
         return me.container;
     };
-    
+
     CCH.LOG.info('Card.js::constructor:Card class is initialized.');
 
     return {
@@ -245,7 +245,7 @@ CCH.Objects.Card = function (args) {
         product: me.product,
         show : me.show,
         hide : me.hide,
-        getBoundingBox: function() {
+        getBoundingBox: function () {
             return me.bbox;
         },
         getContainer: me.createContainer

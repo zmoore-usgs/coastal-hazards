@@ -54,7 +54,6 @@ CCH.Objects.UI = function (args) {
     me.previousWidth = $(window).width();
     me.bucket = new CCH.Objects.Bucket();
     me.combinedSearch = new CCH.Objects.CombinedSearch();
-    me.cards = CCH.cards;
     me.accordion = new CCH.Objects.Accordion({
         containerId : me.SLIDE_CONTAINER_DIV_ID
     });
@@ -277,7 +276,7 @@ CCH.Objects.UI = function (args) {
         
         // If we are passed a product, that means we were not passed a card
         if (product) {
-            card = me.cards.buildCard({
+            card = CCH.cards.buildCard({
                 product : product,
                 initHide : false
             });
