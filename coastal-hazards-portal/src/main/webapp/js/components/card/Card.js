@@ -149,8 +149,8 @@ CCH.Objects.Card = function (args) {
             mediumContentContainer.html(mediumContent);
             smallContentContainer.html(smallContent);
 
-            // This item has either aggregations or leaf nodes as children.
-            // This item is not itself a child
+            // I have either aggregations or leaf nodes as children.
+            // I am not myself a child
             if (me.children.length) {
                 childrenSelectControl.append($('<option />').
                     attr('value', '')).
@@ -217,6 +217,7 @@ CCH.Objects.Card = function (args) {
                         toggleClass('hidden');
                 });
                 childrenSelectControl.on('change', function (evt) {
+                    // My dropdown list has changed
                     var control = $(evt.target),
                         selectedOption = control.val(),
                         card,
@@ -242,15 +243,25 @@ CCH.Objects.Card = function (args) {
                         // Do I have a child? If I do, hide it and get rid of it.
                         // The user wants a new card
                         if (me.child) {
+                            // I am going to hide my child first, then remove it
                             me.child.hide({
-                                complete : createCard
+                                complete : function () {
+                                    // Remove my child after it's hidden
+                                    me.child.removeSelf();
+                                    // Now that my child is gone, I'm going to 
+                                    // replace it with a new card
+                                    createCard();
+                                }
                             });
-                            me.child.removeSelf();
                         } else {
+                            // I have no children so I am free to go ahead and 
+                            // just create a new child card
                             createCard();
                         }
                     } else {
-                        // User selected blank option. 
+                        // User selected blank option which means user wants my 
+                        // gone so I will go ahead and remove it
+                        me.child.removeSelf();
                     }
                 });
             } else {
@@ -258,8 +269,8 @@ CCH.Objects.Card = function (args) {
                 controlContainer.append(bucketButton);
             }
 
-            // We start with the container hidden and an upstream process will
-            // decide when to show it
+            // I start with my container hidden and an upstream process will
+            // decide when to show me
             if (me.initHide) {
                 container.css({
                     display : 'none'
