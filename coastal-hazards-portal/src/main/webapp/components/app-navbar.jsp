@@ -59,7 +59,10 @@
 </div>
 
 <%-- This modal window appears when a user first comes into the application or when
-    a user clicks the info icon in the upper right of the application --%>
+    a user clicks the info icon in the upper right of the application. This modal
+    window will dynamically be appended to #application-container on init because the
+    app-navbar lives in the application-header and application-header is not visible
+    on mobile devices--%>
 <div id="helpModal" class="modal fade"  role="dialog" aria-labelledby="modal-label" aria-hidden="true">
     <div class="modal-header">
         <button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>

@@ -88,7 +88,7 @@ CCH.Objects.Map = function(args) {
 			markerDiv.addClass('marker-active').data({
 				'slideOrder': slideOrder,
 				'bounds': layerBounds,
-				'cardId': card.getItemId()
+				'cardId': card.id
 			}).on({
 				'mouseover': function() {
 					$(this).addClass('marker-hover');
