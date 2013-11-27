@@ -26,20 +26,29 @@ CCH.Objects.Accordion = function (args) {
         return me.addCard(args);
     };
 
+    /**
+     * Uses a card to create a bellow out of
+     */
     me.addCard = function (args) {
         args = args || {};
 
         var card = args.card,
             index = args.index,
+            collapsed = args.collapsed,
             cardContainer = card.getContainer(),
             bellow = me.createBellow({
                 container : cardContainer,
                 card : card,
                 index : index
             });
+            
 
         me.getAccordion().append(bellow);
-
+        
+        if (collapsed) {
+            bellow.find('.collapse').collapse();
+        }
+        
         return bellow;
     };
 
