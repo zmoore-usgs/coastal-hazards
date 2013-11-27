@@ -4,17 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.FileAlreadyExistsException;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.geotools.data.DataStore;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.FileDataStoreFactorySpi;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.Transaction;
+import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -69,9 +69,12 @@ public class FeatureCollectionExport {
         SimpleFeatureType type = buildFeatureType();
         FileDataStoreFactorySpi factory = FileDataStoreFinder.getDataStoreFactory("shp");
         File shpFile = checkAndCreateFile();
-        Map datastoreConfig = Collections.singletonMap("url", shpFile.toURI().toURL());
-        DataStore shpfileDataStore = factory.createNewDataStore(datastoreConfig);
+        Map datastoreConfig = new HashMap<>();
+        datastoreConfig.put("url", shpFile.toURI().toURL());
+        ShapefileDataStore shpfileDataStore = (ShapefileDataStore)factory.createNewDataStore(datastoreConfig);
         shpfileDataStore.createSchema(type);
+        shpfileDataStore.forceSchemaCRS(type.getCoordinateReferenceSystem());
+        
         FeatureWriter<SimpleFeatureType, SimpleFeature> featureWriter = shpfileDataStore.getFeatureWriter(namePrefix, Transaction.AUTO_COMMIT);
         try {
             while (features.hasNext()) {
@@ -92,7 +95,7 @@ public class FeatureCollectionExport {
     private SimpleFeatureType buildFeatureType() {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName(namePrefix);
-        builder.crs(crs);
+        builder.setCRS(crs);
         builder.add(getGeometryDescriptor());
         for (String name : attributes) {
             AttributeDescriptor descriptor = getDescriptorFromPrototype(name);

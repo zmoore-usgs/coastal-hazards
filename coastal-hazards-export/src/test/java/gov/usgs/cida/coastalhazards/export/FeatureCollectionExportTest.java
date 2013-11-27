@@ -32,6 +32,7 @@ public class FeatureCollectionExportTest {
         
         FeatureCollectionExport featureCollectionExport = new FeatureCollectionExport(featureSource.getFeatures(), new File("/tmp/shpfile"), "test");
         featureCollectionExport.addAttribute("CVI");
+        featureCollectionExport.addAttribute("SLRISK");
         featureCollectionExport.writeToShapefile();
     }
     
