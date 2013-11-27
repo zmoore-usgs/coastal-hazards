@@ -82,9 +82,9 @@ CCH.Objects.Card = function (args) {
                 smallContentContainer = container.find('.application-card-content-container-small'),
                 childrenSelectControl = container.find('.application-card-children-selection-control'),
                 controlContainer = container.find('.application-card-control-container'),
-                spaceAggButton = $('<button />').addClass('btn disabled').html('Space Aggregation'),
-                propertyAggButton = $('<button />').addClass('btn').html('Property Aggregation'),
-                bucketButton = $('<button />').addClass('btn').html('Add To Bucket');
+                spaceAggButton = $('<button />').addClass('btn disabled').html('Space'),
+                propertyAggButton = $('<button />').addClass('btn').html('Property'),
+                bucketButton = $('<button />').addClass('btn').html('Bucket');
         
             // Create Title
             largeTitleContainer.html(largeTitle);
@@ -100,7 +100,8 @@ CCH.Objects.Card = function (args) {
             // This item is not itself a child
             if (me.children.length) {
                 childrenSelectControl.
-                    append($('<option />').attr('value', '')).
+                    append($('<option />').
+                    attr('value', '')).
                     addClass('hidden');
                 me.children.each(function (child) {
                     var option = $('<option />'),
@@ -153,7 +154,7 @@ CCH.Objects.Card = function (args) {
                 });
                 
                 // Add buttons to the bottom
-                controlContainer.append(spaceAggButton, propertyAggButton);
+                controlContainer.append(spaceAggButton, propertyAggButton, bucketButton);
                 propertyAggButton.on('click', function (evt) {
                     var button = $(evt.target);
                     button.button('toggle');
@@ -178,6 +179,7 @@ CCH.Objects.Card = function (args) {
                     }
                 });
             } else {
+                childrenSelectControl.remove();
                 controlContainer.append(bucketButton);
             }
             me.container = container;
