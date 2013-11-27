@@ -105,7 +105,17 @@ CCH.Objects.Card = function (args) {
                     addClass('hidden');
                 me.children.each(function (child) {
                     var option = $('<option />'),
-                        item;
+                        item,
+                        processOption = function (item) {
+                            var name = item.summary.full.title ||
+                                item.summary.medium.title ||
+                                item.summary.tiny.title ||
+                                child;
+                            
+                            option.html(name);
+                            
+                            return option;
+                        };
                     
                     option.addClass('application-card-children-selection-control-option');
                     if (typeof child === 'string') {
@@ -119,26 +129,17 @@ CCH.Objects.Card = function (args) {
                         option.attr('value', child);
                         
                         if (item) {
-                            var name = item.summary.full.title ||
-                                item.summary.medium.title ||
-                                item.summary.tiny.title ||
-                                child;
-                            
-                            option.html(name);
+                            // The item is already loaded in the items object
+                            // so we don't have to go out and get it
+                            processOption(item);
                         } else {
+                            // The item was not already loaded so we will have 
+                            // to go out and grab it.
                             CCH.items.load({
                                 items: [child],
                                 displayNotification: false,
                                 callbacks: {
-                                    success: [
-                                        function(item) {
-                                            var name = item.summary.full.title ||
-                                                    item.summary.medium.title ||
-                                                    item.summary.tiny.title || 
-                                                    child;
-                                            option.html(name);
-                                        }
-                                    ],
+                                    success: [processOption],
                                     error: [
                                         function() {
                                             errorResponseHandler(
