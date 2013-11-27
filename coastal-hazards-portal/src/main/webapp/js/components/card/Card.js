@@ -38,6 +38,10 @@ CCH.Objects.Card = function (args) {
     me.layer = null;
     me.container = null;
     me.descriptionContainer = null;
+    // Is the card hidden by default? We probably want it to be false when creating
+    // an accordion bellow but true when creating a card appendage since we will
+    // want to have an effect to display it
+    me.initHide = args.initHide === false ? false : true;
     me.layer = (function () {
         var layer = new OpenLayers.Layer.WMS(
                 me.id,
@@ -60,6 +64,42 @@ CCH.Objects.Card = function (args) {
 
         return layer;
     }());
+    
+    me.show = function (args) {
+        args = args || {};
+        
+        var duration = args.duration || 500,
+            effect = args.effect || 'blind',
+            easing = args.easing || 'swing',
+            complete = args.complete || null,
+            queue = args.queue || true;
+            
+        me.container.show({
+            effect : effect,
+            easing : easing,
+            duration : duration,
+            complete : complete,
+            queue : queue
+        });
+    };
+    
+    me.hide = function() {
+        args = args || {};
+        
+        var duration = args.duration || 500,
+            effect = args.effect || 'blind',
+            easing = args.easing || 'swing',
+            complete = args.complete || null,
+            queue = args.queue || true;
+            
+        me.container.hide({
+            effect : effect,
+            easing : easing,
+            duration : duration,
+            complete : complete,
+            queue : queue
+        });
+    };
     
     me.createContainer = function () {
         if (!me.container) {
@@ -175,6 +215,7 @@ CCH.Objects.Card = function (args) {
                             product : selectedOption
                         });
                         me.container.after(card.getContainer());
+                        card.show();
                     } else {
                         // User selected blank option. 
                     }
@@ -183,6 +224,15 @@ CCH.Objects.Card = function (args) {
                 childrenSelectControl.remove();
                 controlContainer.append(bucketButton);
             }
+            
+            // We start with the container hidden and an upstream process will
+            // decide when to show it
+            if (me.initHide) {
+                container.css({
+                    display : 'none'
+                });
+            }
+            
             me.container = container;
         }
         return me.container;
@@ -193,6 +243,8 @@ CCH.Objects.Card = function (args) {
     return {
         id: me.id,
         product: me.product,
+        show : me.show,
+        hide : me.hide,
         getBoundingBox: function() {
             return me.bbox;
         },

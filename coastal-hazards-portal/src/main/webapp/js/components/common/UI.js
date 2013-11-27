@@ -278,7 +278,8 @@ CCH.Objects.UI = function (args) {
         // If we are passed a product, that means we were not passed a card
         if (product) {
             card = me.cards.buildCard({
-                product : product
+                product : product,
+                initHide : false
             });
         }
         
