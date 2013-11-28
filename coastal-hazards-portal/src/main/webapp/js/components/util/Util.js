@@ -79,7 +79,7 @@ CCH.Util = {
 							'cch-year': years[yInd],
 							'type': 'button'
 						}).
-								addClass('btn btn-small pull-right cch-ui-legend-table-body-div-year-toggle').
+								addClass('btn btn-sm pull-right cch-ui-legend-table-body-div-year-toggle').
 								append($('<i />').addClass('glyphicon glyphicon-eye-open')).
 								on({
 							'click': function(evt) {

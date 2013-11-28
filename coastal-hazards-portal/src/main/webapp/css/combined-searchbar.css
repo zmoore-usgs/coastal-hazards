@@ -30,7 +30,7 @@ Resets bootstrap's max-width requirement for popovers'
     margin-top: 5px;
 }
 
-#app-navbar-search-control .btn-large {
+#app-navbar-search-control .btn-lg {
     padding: 9px 19px !important;
 }
 

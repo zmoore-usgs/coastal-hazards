@@ -313,11 +313,11 @@ CCH.Objects.UI = function (args) {
         var continueLink = $('<a />').attr({
             'href': CCH.CONFIG.contextPath,
             'role': 'button'
-        }).addClass('btn btn-large').html('<i class="fa fa-refresh"></i> Click to continue'),
+        }).addClass('btn btn-lg').html('<i class="fa fa-refresh"></i> Click to continue'),
             emailLink = $('<a />').attr({
                 'href': args.mailTo,
                 'role': 'button'
-            }).addClass('btn btn-large').html('<i class="fa fa-envelope"></i> Contact Us');
+            }).addClass('btn btn-lg').html('<i class="fa fa-envelope"></i> Contact Us');
 
         splashUpdate(args.splashMessage);
 

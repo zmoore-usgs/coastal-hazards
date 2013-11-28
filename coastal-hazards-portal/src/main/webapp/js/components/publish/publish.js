@@ -292,7 +292,7 @@ var serviceTypesDropdownChangeHandler = function(evt) {
 								// Using the attribute, match it to a type
 								CCH.config.type = deriveTypeFromAttribute(nameTlc);
 							}
-							var previewButton = $('<button />').addClass('publish-preview-button btn disabled').attr('id', 'btn-preview-' + name).attr('name', name).html('Preview');
+							var previewButton = $('<button />').addClass('publish-preview-button btn btn-default disabled').attr('id', 'btn-preview-' + name).attr('name', name).html('Preview');
 							var controls = $('<span />').addClass('publish-container-actions').append(previewButton);
 							li.append(cb, nameSpan, controls);
 							$('#attribute-checkbox-list').append(li);

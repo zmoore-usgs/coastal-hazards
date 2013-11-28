@@ -25,10 +25,10 @@
         </div>
         <div class="row text-center">
             <div class="btn-group">
-                <button class="application-slide-search-location-card-button-search btn btn-mini application-slide-search-location-card-template-button" type="button"><i class="fa fa-star"></i></button>
-                <button class="application-slide-search-location-card-button-remove btn btn-mini application-slide-search-location-card-template-button" type="button"><i class="fa fa-times-circle-o"></i></button>
-                <button class="application-slide-search-location-card-button-info btn btn-mini application-slide-search-location-card-template-button" type="button"><i class="fa fa-info-circle"></i></button>
-                <button class="application-slide-search-location-card-button-ok btn btn-mini application-slide-search-location-card-template-button" type="button"><i class="fa fa-check"></i></button>
+                <button class="application-slide-search-location-card-button-search btn btn-xs application-slide-search-location-card-template-button" type="button"><i class="fa fa-star"></i></button>
+                <button class="application-slide-search-location-card-button-remove btn btn-xs application-slide-search-location-card-template-button" type="button"><i class="fa fa-times-circle-o"></i></button>
+                <button class="application-slide-search-location-card-button-info btn btn-xs application-slide-search-location-card-template-button" type="button"><i class="fa fa-info-circle"></i></button>
+                <button class="application-slide-search-location-card-button-ok btn btn-xs application-slide-search-location-card-template-button" type="button"><i class="fa fa-check"></i></button>
             </div>
         </div>
     </div>
@@ -46,10 +46,10 @@
         </div>
         <div class="row text-center">
             <div class="btn-group">
-                <button class="application-slide-search-product-card-button-search btn btn-mini application-slide-search-product-card-template-button" type="button"><i class="fa fa-star"></i></button>
-                <button class="application-slide-search-product-card-button-remove btn btn-mini application-slide-search-product-card-template-button" type="button"><i class="fa fa-times-circle-o"></i></button>
-                <button class="application-slide-search-product-card-button-info btn btn-mini application-slide-search-product-card-template-button" type="button"><i class="fa fa-info-circle"></i></button>
-                <button class="application-slide-search-product-card-button-ok btn btn-mini application-slide-search-product-card-template-button" type="button"><i class="fa fa-check"></i></button>
+                <button class="application-slide-search-product-card-button-search btn btn-xs application-slide-search-product-card-template-button" type="button"><i class="fa fa-star"></i></button>
+                <button class="application-slide-search-product-card-button-remove btn btn-xs application-slide-search-product-card-template-button" type="button"><i class="fa fa-times-circle-o"></i></button>
+                <button class="application-slide-search-product-card-button-info btn btn-xs application-slide-search-product-card-template-button" type="button"><i class="fa fa-info-circle"></i></button>
+                <button class="application-slide-search-product-card-button-ok btn btn-xs application-slide-search-product-card-template-button" type="button"><i class="fa fa-check"></i></button>
             </div>
         </div>
     </div>

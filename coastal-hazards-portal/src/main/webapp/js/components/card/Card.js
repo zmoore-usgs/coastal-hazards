@@ -274,9 +274,9 @@ CCH.Objects.Card = function (args) {
                 childrenSelectControl = container.find('.' + me.SELECTION_CONTROL_CLASS),
                 minMaxButtons = container.find('.application-card-collapse-icon-container'),
                 controlContainer = container.find('.application-card-control-container'),
-                spaceAggButton = $('<button />').addClass('btn disabled').html('Space'),
-                propertyAggButton = $('<button />').addClass('btn').html('Property'),
-                bucketButton = $('<button />').addClass('btn').html('Bucket');
+                spaceAggButton = $('<button />').addClass('btn btn-default disabled').html('Space'),
+                propertyAggButton = $('<button />').addClass('btn btn-default').html('Property'),
+                bucketButton = $('<button />').addClass('btn btn-default').html('Bucket');
 
             // My container starts out open so I immediately add that class to it
             container.addClass('open');

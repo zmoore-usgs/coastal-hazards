@@ -36,14 +36,14 @@
                 <div id="modal-share-summary-url-inputbox-div">
                     <input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." />
                 </div>
-                <a id="modal-share-summary-url-button" class="btn" target="portal_view_window" role="button">View In Portal</a>
+                <a id="modal-share-summary-url-button" class="btn btn-default" target="portal_view_window" role="button">View In Portal</a>
 
             </div>
             <span class="pull-right" id='multi-card-twitter-button'></span>
         </div>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn"  data-dismiss="modal" aria-hidden="true">Close</a>
+        <a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
     </div>
 </div>
 
@@ -88,6 +88,6 @@
 
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn"  data-dismiss="modal" aria-hidden="true">Close</a>
+        <a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
     </div>
 </div>

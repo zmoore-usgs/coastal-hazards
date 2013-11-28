@@ -145,7 +145,7 @@
 						<div class="well well-small col-md-6">
 							<div class="well well-small">
 								<div class="row">
-									<button id="publish-publish-button" class="btn btn-primary disabled pull-right">Publish</button>
+									<button id="publish-publish-button" class="btn btn-default btn-primary disabled pull-right">Publish</button>
 								</div>
 								<div id="attribute-checkbox-list-div" class="row">
 									<label>Attributes</label>
