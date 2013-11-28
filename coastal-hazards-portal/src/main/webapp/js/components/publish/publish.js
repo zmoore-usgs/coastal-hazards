@@ -37,7 +37,7 @@ $(document).ready(function() {
 		},
 		classes: {
 			success: 'alert alert-success',
-			fail: 'alert alert-error'
+			fail: 'alert alert-danger'
 		},
 		callbacks: {
 			onComplete: function(id, fileName, responseJSON) {
