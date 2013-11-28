@@ -80,7 +80,7 @@ CCH.Util = {
 							'type': 'button'
 						}).
 								addClass('btn btn-small pull-right cch-ui-legend-table-body-div-year-toggle').
-								append($('<i />').addClass('icon-eye-open')).
+								append($('<i />').addClass('glyphicon glyphicon-eye-open')).
 								on({
 							'click': function(evt) {
 								// Bootstrap radio toggle buttons don't let you un-toggle 

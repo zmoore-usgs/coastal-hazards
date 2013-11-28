@@ -19,17 +19,6 @@
                 <div id='app-navbar-help-container' class='app-navbar-item-container'>
                     <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="fa fa-info-circle"></i></a>
                 </div>
-
-                <!--
-                
-                            <div id="app-navbar-pin-control" class="btn-group app-navbar-item-container">
-                                <button id='app-navbar-pin-control-button' class="btn btn-mini disabled"><i id='app-navbar-pin-control-icon' class="icon-pushpin muted"></i>&nbsp;<span id='app-navbar-pin-control-pincount'>0</span></button>
-                                <button id='app-navbar-pin-control-dropdown-button' class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown"><span id='app-navbar-pin-control-caret' class="icon-caret-down"></span></button>
-                                <ul class="dropdown-menu">
-                                    <li id='app-navbar-pin-control-clear-li'><a id='app-navbar-pin-control-clear' href="#">Clear View</a></li>
-                                    <li id='app-navbar-pin-control-share-li'><a tabindex="-1" data-toggle="modal" role="button" href="#shareModal">Share View</a></li>
-                                </ul>
-                            </div>-->
             </div>
         </div>
     </div>
