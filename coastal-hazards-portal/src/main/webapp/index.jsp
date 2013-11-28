@@ -62,12 +62,6 @@
 
         <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="webjars/jquery-ui/1.10.3/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
-        <jsp:include page="js/iosslider/iosslider.jsp"> 
-            <jsp:param name="debug-qualifier" value="<%= development%>" /> 
-        </jsp:include>
-        <jsp:include page="js/iosslider-vertical/iosslider-vertical.jsp"> 
-            <jsp:param name="debug-qualifier" value="true" /> 
-        </jsp:include>
         <script type="text/javascript" src="webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="webjars/bootstrap/2.3.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <jsp:include page="components/config.jsp">
