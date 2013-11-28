@@ -19,6 +19,7 @@
  *  this.bucket : 'app-navbar-button-clicked'
  *  this.combinedSearch: 'combined-searchbar-search-performing'
  *  this.combinedSearch : 'combined-searchbar-search-performed'
+ *  window : 'button-click-bucket-add'
  *  
  * @param {type} args
  * @returns {CCH.Objects.UI.Anonym$22}
@@ -56,6 +57,17 @@ CCH.Objects.UI = function (args) {
     me.combinedSearch = new CCH.Objects.CombinedSearch();
     me.accordion = new CCH.Objects.Accordion({
         containerId : me.SLIDE_CONTAINER_DIV_ID
+    });
+
+    $(window).on('item-button-click-bucket-add', function (evt, args) {
+        args = args || {};
+        var item = args.item;
+        
+        if (item) {
+            me.bucket.add({
+                item : item
+            });
+        }
     });
 
     me.itemsSearchedHandler = function (evt, data) {
@@ -353,7 +365,27 @@ CCH.Objects.UI = function (args) {
         helpModal.on('show', me.helpModalDisplayHandler);
         $(window).on({
             'resize': me.windowResizeHandler,
-            'cch.data.items.searched': me.itemsSearchedHandler
+            'cch.data.items.searched': me.itemsSearchedHandler,
+            'item-button-click-bucket-add': function(evt, args) {
+                args = args || {};
+                var item = args.item;
+
+                if (item) {
+                    me.bucket.add({
+                        item: item
+                    });
+                }
+            },
+            'item-button-click-bucket-remove': function(evt, args) {
+                args = args || {};
+                var item = args.item;
+
+                if (item) {
+                    me.bucket.remove({
+                        item: item
+                    });
+                }
+            }
         });
 
         $(me.bucket).on('app-navbar-button-clicked', function () {

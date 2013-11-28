@@ -14,7 +14,7 @@ CCH.Objects.Accordion = function (args) {
 
     me.CONTAINER_ID = args.containerId || 'application-slide-items-content-container';
     me.isStopped = true;
-
+    
     container = $('#' + me.CONTAINER_ID);
 
     // Make sure that our container is of the accordion type
@@ -23,7 +23,8 @@ CCH.Objects.Accordion = function (args) {
     }
 
     me.add = function (args) {
-        return me.addCard(args);
+        var bellow = me.addCard(args);
+        return bellow;
     };
 
     /**
@@ -82,7 +83,7 @@ CCH.Objects.Accordion = function (args) {
         group.append(heading, accordionBody);
         heading.append(toggleTarget);
         accordionBody.append(bodyInner);
-
+        
         return group;
     };
 
