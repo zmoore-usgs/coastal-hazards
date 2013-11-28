@@ -149,7 +149,7 @@ CCH.Objects.ItemsSlide = function (args) {
         if (isSmall) {
             // When I am switched to small mode, I want to remove the slideContainer's 
             // span class because it's no longer a span.
-            slideContainer.removeClass('span' + me.desktopSpanSize);
+            slideContainer.removeClass('col-md-' + me.desktopSpanSize);
             
             // Then there's special sizing depending on if I'm closed or not. 
             if (me.isClosed) {
@@ -183,7 +183,7 @@ CCH.Objects.ItemsSlide = function (args) {
             });
         } else {
             slideContainer.
-                addClass('span' + me.desktopSpanSize).
+                addClass('col-md-' + me.desktopSpanSize).
                 css({
                     'height' : contentRow.height(),
                     'position' : '',

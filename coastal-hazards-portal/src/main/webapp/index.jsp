@@ -49,7 +49,7 @@
             </div>
             <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
             <div id="content-row" class="row">
-                <div id="map" class="span9"></div>
+                <div id="map" class="col-md-9"></div>
                 <jsp:include page="components/slider-items.jsp"></jsp:include>
             </div>	
             <div id="footer-row"  class="row">

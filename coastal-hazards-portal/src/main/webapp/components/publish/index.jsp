@@ -97,7 +97,7 @@
 			<c:otherwise>
 				<div class="container">
 					<div class="row">
-						<div class="well well-small span6">
+						<div class="well well-small col-md-6">
 							<div id="publish-user-container-row">
 								<div class="well well-small">
 									User: 
@@ -142,7 +142,7 @@
 							</div>
 						</div>
 
-						<div class="well well-small span6">
+						<div class="well well-small col-md-6">
 							<div class="well well-small">
 								<div class="row">
 									<button id="publish-publish-button" class="btn btn-primary disabled pull-right">Publish</button>

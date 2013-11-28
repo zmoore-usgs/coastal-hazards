@@ -1,4 +1,4 @@
-<div id="app-navbar-container" class="span12 navbar">
+<div id="app-navbar-container" class="col-md-12 navbar">
     <div id="app-navbar-inner" class="navbar-inner">
         <div class="container">
             <a href="." id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
@@ -86,13 +86,13 @@
         </div>
 
         <div id="canned-views-row" class="row">
-            <div class="well well-small span4">
+            <div class="well well-small col-md-4">
                 <a href="http://go.usa.gov/DmUw" target="_self"><img src="images/views/canned/historical.png" /><br /><b>Shoreline Change</b><br />Historical positions and rates of change</a>
             </div>
-            <div class="well well-small span4">
+            <div class="well well-small col-md-4">
                 <a href="http://go.usa.gov/DmUe" target="_self"><img src="images/views/canned/vulnerability.png" /><br /><b>Sea-Level Rise</b>Vulnerability</a>
             </div>
-            <div class="well well-small span4">
+            <div class="well well-small col-md-4">
                 <a href="http://go.usa.gov/DmPx" target="_self"><img src="images/views/canned/storms.png" /><br /><b>Extreme Storms</b>Coastal erosion hazards</a>
             </div>
         </div>

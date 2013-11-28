@@ -39,7 +39,7 @@
 				<input type="text" id="item-search-keyword-input" />
 			</div>
 			<div id='item-search-row-theme' class="row">
-				<span id='item-search-theme' class='span6'>
+				<span id='item-search-theme' class='col-md-6'>
 					<label for='item-search-theme-input'>Search by theme: </label>
 					<select id='item-search-theme-input' multiple="multiple">
 						<option value="historical">Historical</option>
@@ -47,7 +47,7 @@
 						<option value="vulnerability">Vulnerability</option>
 					</select>
 				</span>
-				<span id='item-search-row-popularity' class='span6'>
+				<span id='item-search-row-popularity' class='col-md-6'>
 					<label id="popularity-sort-label" for='popularity-sort'>Sort by popularity?</label><input id="popularity-sort-checkbox" type="checkbox" checked="checked" name="popularity-sort"/>
 				</span>
 			</div>

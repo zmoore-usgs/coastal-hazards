@@ -92,8 +92,8 @@
     <body>
 		<div class="container">
 			<div id="error-title-error-row" class="row">
-				<div id="error-code-container" class="span2"></div>
-				<div id="error-title-container" class="span10">USGS Coastal Change Hazards Portal</div>
+				<div id="error-code-container" class="col-md-2"></div>
+				<div id="error-title-container" class="col-md-10">USGS Coastal Change Hazards Portal</div>
 			</div>
 
 			<div class="row">

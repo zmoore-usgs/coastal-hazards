@@ -9,8 +9,8 @@
 <div id="application-slide-bucket-container-card-template" class="hidden">
     <div class="application-slide-bucket-container-card well well-small">
         <div class="row">
-            <div class="span2"><img class="application-slide-bucket-container-card-image" /></div>
-            <div class="application-slide-bucket-container-card-title-description-container span10">
+            <div class="col-md-2"><img class="application-slide-bucket-container-card-image" /></div>
+            <div class="application-slide-bucket-container-card-title-description-container col-md-10">
                 <div class="row">
                     <div class="application-slide-bucket-container-card-title"><p class="center"></p></div>
                     <div class="application-slide-bucket-container-card-description"></div>

@@ -170,7 +170,7 @@ $(document).ready(function() {
 
 	var removeLegendContainer = function() {
 		$('#info-legend').remove();
-		$('#info-graph').removeClass('span4').addClass('span6');
+		$('#info-graph').removeClass('col-md-4').addClass('col-md-6');
 	};
 
 	var createShareButton = function(url) {

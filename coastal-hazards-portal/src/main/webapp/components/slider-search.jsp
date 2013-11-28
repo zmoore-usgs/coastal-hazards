@@ -11,8 +11,8 @@
 <div id="application-slide-search-location-card-template" class="hidden">
     <div class="application-slide-search-location-card well well-small">
         <div class="row">
-            <div class="span2"><i class="application-slide-search-location-card-icon fa fa-compass"></i></div>
-            <div class="application-slide-search-location-card-title-description-container span10">
+            <div class="col-md-2"><i class="application-slide-search-location-card-icon fa fa-compass"></i></div>
+            <div class="application-slide-search-location-card-title-description-container col-md-10">
                 <div class="row">
                     <div class="application-slide-search-location-card-title"><p class="center"></p></div>
                     <div class="application-slide-search-location-card-description"></div>
@@ -36,8 +36,8 @@
 <div id="application-slide-search-product-card-template" class="hidden">
     <div class="application-slide-search-product-card well well-small">
         <div class="row">
-            <div class="span2"><i class="application-slide-search-product-card-icon fa fa-compass"></i></div>
-            <div class="application-slide-search-product-card-title-description-container span10">
+            <div class="col-md-2"><i class="application-slide-search-product-card-icon fa fa-compass"></i></div>
+            <div class="application-slide-search-product-card-title-description-container col-md-10">
                 <div class="row">
                     <div class="application-slide-search-product-card-title"><p class="center"></p></div>
                     <div class="application-slide-search-product-card-description"></div>

@@ -102,11 +102,11 @@
 
 			<%-- Title --%>
 			<div id="info-row-title" class="info-title row">
-				<div id="info-title" class='span10 offset1'></div>
+				<div id="info-title" class='col-md-10 offset1'></div>
 			</div> 
 			<div class="row">
 				<%-- Left side --%>
-				<div class="span6">
+				<div class="col-md-6">
 					<div id="info-row-map-and-summary">
 						<%-- Map --%>
 						<div id="map"></div>
@@ -120,8 +120,8 @@
 							</div>
 						</div>
 						<div class="row">
-							<div id="info-legend" class="well-small well span6"></div>
-							<div id="info-graph" class='well well-small span6'>
+							<div id="info-legend" class="well-small well col-md-6"></div>
+							<div id="info-graph" class='well well-small col-md-6'>
 								<img src=""></img>
 							</div>
 						</div>
@@ -131,7 +131,7 @@
 				</div>
 
 				<%-- Right Side --%>
-				<div class="span6">
+				<div class="col-md-6">
 					<div id='info-summary-and-links-container'>
 						<%-- Summary Information --%>
 						<div id="info-summary"  class="well"></div>
