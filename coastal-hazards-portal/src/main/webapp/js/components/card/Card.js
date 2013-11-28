@@ -217,7 +217,6 @@ CCH.Objects.Card = function (args) {
                     item : me
                 });
             }
-            
         });
     };
     
@@ -235,6 +234,21 @@ CCH.Objects.Card = function (args) {
                 me.child.removeSelf();
                 control.val('');
             };
+        });
+    };
+    
+    me.bindMinMaxButtons = function (control) {
+        control.on('click', function (evt) {
+            // A user has clicked on my min/max button. 
+            // FInd out which one by querying an ancestor that has the 
+            // closed/open class on it
+            var isOpen = me.container.hasClass('open');
+
+            if (isOpen) {
+                me.close();
+            } else {
+                me.open();
+            }
         });
     };
     
@@ -339,24 +353,13 @@ CCH.Objects.Card = function (args) {
                 controlContainer.append(spaceAggButton, propertyAggButton, bucketButton);
                 me.bindPropertyAggButton(propertyAggButton);
                 me.bindSelectControl(childrenSelectControl);
-                me.bindBucketControl(bucketButton);
             } else {
                 childrenSelectControl.remove();
                 controlContainer.append(bucketButton);
             }
 
-            minMaxButtons.on('click', function (evt) {
-                // A user has clicked on my min/max button. 
-                // FInd out which one by querying an ancestor that has the 
-                // closed/open class on it
-                var isOpen = me.container.hasClass('open');
-
-                if (isOpen) {
-                    me.close();
-                } else {
-                    me.open();
-                }
-            });
+            me.bindBucketControl(bucketButton);
+            me.bindMinMaxButtons(minMaxButtons);
 
             // I start with my container hidden and an upstream process will
             // decide when to show me
@@ -365,7 +368,7 @@ CCH.Objects.Card = function (args) {
                     display : 'none'
                 });
             }
-
+            
             me.container = container;
         }
         return me.container;
