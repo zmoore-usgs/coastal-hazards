@@ -53,7 +53,7 @@
                 <jsp:include page="components/slider-items.jsp"></jsp:include>
             </div>	
             <div id="footer-row"  class="row">
-                <div class="container">
+                <div class="footer-col col-md-12">
                     &nbsp;
                 </div>
             </div>

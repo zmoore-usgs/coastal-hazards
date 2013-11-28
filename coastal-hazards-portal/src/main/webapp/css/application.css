@@ -2,24 +2,34 @@
 html, body {
     overflow-y: auto;
     overflow-x: auto;
+    /* 
+    320 pixels is the minimum width and 600px is
+    the minimum height that this application will support.
+    Anything smaller, scroll the app
+    */
     min-width: 320px;
     min-height: 600px;
     height: 100%;
-    /*width: 100%;*/
 }
 
-/* 
-    320 pixels is the minimum width that this application will support.
-    Anything smaller, scroll the app
+/*
+    This resets bootstrap's row margins of -15px on each side
 */
-#application-container {
-    min-width : 320px !important;
+#footer-row.row {
+    margin-left: auto;
+    margin-right: auto;
 }
 
-#footer-row {
+#footer-row .footer-col {
     background-color: #345280 !important;
     height: 20px;
     margin-top: 5px;
+}
+
+@media (min-width: 1200px) {
+    #application-container {
+        width: 100%;
+    }
 }
 
 @media (min-width: 992px) {
