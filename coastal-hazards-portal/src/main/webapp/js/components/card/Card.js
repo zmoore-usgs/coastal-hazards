@@ -118,7 +118,7 @@ CCH.Objects.Card = function (args) {
             } else {
                 // My parent is an accordion bellow, so we just need to cllck on
                 // it to close me
-                me.container.parent().parent().parent().find('.accordion-heading a').trigger('click');
+                me.container.parent().parent().parent().find('.panel-heading a').trigger('click');
             }
     };
     
