@@ -12,9 +12,9 @@
     <div class="application-card-container container-fluid">
         <%-- Collapse Control --%>
         <div class="application-card-collapse-row row-fluid">
-            <span class="application-card-collapse-row-closed"><i class="fa fa-plus-square-o"></i></span>
-            <span class="application-card-collapse-row-open"><i class="fa fa-minus-square-o"></i></span>
-            <span class="application-card-collapse-row-dottedline"></span>
+            <div class="application-card-collapse-icon-row application-card-collapse-row-closed"><i class="fa fa-plus-square-o"></i></div>
+            <div class="application-card-collapse-icon-row application-card-collapse-row-open"><i class="fa fa-minus-square-o"></i></div>
+            <div class="application-card-collapse-row-dottedline"><hr /></div>
         </div>
         <div class="row-fluid">
             <%-- Title --%>

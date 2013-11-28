@@ -1,3 +1,21 @@
+#application-slide-items-content-container .accordion-heading {
+    background-color: #F5F5F5;
+}
+
+.application-card-collapse-icon-row {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.application-card-collapse-row-dottedline {
+    display: table-cell;
+    width: 100%;
+}
+
+.application-card-collapse-row-dottedline hr {
+    border-top:1px dashed #000;
+}
+
 @media (min-width: 767px) {
     /* No tab shown on large display. Toggled via button in bar */
     #application-slide-items-tab {
@@ -7,7 +25,7 @@
     #application-slide-items-container {
         top: auto;
         left: auto;
-        background-color: #F5F5F5;
+        /*background-color: #F5F5F5;*/
     }
 
     #application-slide-items-content {
@@ -18,7 +36,7 @@
     #application-slide-items-content-container {
         height: 100%;
         width: 100%;
-        background-color: #F5F5F5;
+        /*background-color: #F5F5F5;*/
         overflow-y: auto;
     }
 }

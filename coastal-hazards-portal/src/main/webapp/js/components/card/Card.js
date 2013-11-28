@@ -210,11 +210,18 @@ CCH.Objects.Card = function (args) {
                 // Add buttons to the bottom
                 controlContainer.append(spaceAggButton, propertyAggButton, bucketButton);
                 propertyAggButton.on('click', function (evt) {
-                    var button = $(evt.target);
+                    var button = $(evt.target),
+                        control = me.container.find('.application-card-children-selection-control');
+                        
                     button.button('toggle');
-                    me.container.
-                        find('.application-card-children-selection-control').
-                        toggleClass('hidden');
+                    control.toggleClass('hidden');
+                    
+                    // If my dropdown listbox is hidden, I am going to hide my 
+                    // child
+                    if (control.hasClass('hidden') && me.child) {
+                        me.child.removeSelf();
+                        control.val('');
+                    };
                 });
                 childrenSelectControl.on('change', function (evt) {
                     // My dropdown list has changed
