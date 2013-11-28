@@ -12,33 +12,35 @@
     <div class="application-card-container container-fluid">
         <%-- Collapse Control --%>
         <div class="application-card-collapse-row row-fluid">
-            <span class="application-card-collapse-row-closed"><i class="fa fa-plus-square-o"></i></span>
-            <span class="application-card-collapse-row-open"><i class="fa fa-minus-square-o"></i></span>
-            <span class="application-card-collapse-row-dottedline"></span>
+            <div class="application-card-collapse-icon-container application-card-collapse-row-closed"><i class="fa fa-plus-square-o"></i></div>
+            <div class="application-card-collapse-icon-container application-card-collapse-row-open"><i class="fa fa-minus-square-o"></i></div>
+            <div class="application-card-collapse-row-dottedline"><hr /></div>
         </div>
-        <div class="row-fluid">
-            <%-- Title --%>
-            <div class="application-card-title-row row-fluid">
-                <span  class="application-card-title-container-large"></span>
-                <span  class="application-card-title-container-medium"></span>
-                <span  class="application-card-title-container-small"></span>
-            </div>
+        <div class="application-card-body-container">
+            <div class="row-fluid">
+                <%-- Title --%>
+                <div class="application-card-title-row row-fluid">
+                    <span  class="application-card-title-container-large"></span>
+                    <span  class="application-card-title-container-medium"></span>
+                    <span  class="application-card-title-container-small"></span>
+                </div>
 
-            <%-- Content --%>
-            <div class="application-card-content-row row-fluid">
-                <span  class="application-card-content-container-large"></span>
-                <span  class="application-card-content-container-medium"></span>
-                <span  class="application-card-content-container-small"></span>
-            </div>
+                <%-- Content --%>
+                <div class="application-card-content-row row-fluid">
+                    <span  class="application-card-content-container-large"></span>
+                    <span  class="application-card-content-container-medium"></span>
+                    <span  class="application-card-content-container-small"></span>
+                </div>
 
-            <%-- Children Selection Control --%>
-            <div class="application-card-children-selection-row row-fluid">
-                <select class="application-card-children-selection-control"></select>
+                <%-- Children Selection Control --%>
+                <div class="application-card-children-selection-row row-fluid">
+                    <select class="application-card-children-selection-control"></select>
+                </div>
             </div>
-        </div>
-        <%-- Control Row --%>
-        <div class="application-card-control-row row-fluid">
-            <span  class="application-card-control-container"></span>
+            <%-- Control Row --%>
+            <div class="application-card-control-row row-fluid">
+                <span  class="application-card-control-container"></span>
+            </div>
         </div>
     </div>
 </div>

@@ -27,6 +27,7 @@
 		</script>
         <title>USGS Coastal Change Hazards Portal</title>
         <jsp:include page="components/head.jsp"></jsp:include>
+        <link type="text/css" rel="stylesheet" href="webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery.ui<%= development ? ".all" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/2.3.2/css/bootstrap-responsive<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
@@ -60,6 +61,7 @@
         </div>
 
         <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="webjars/jquery-ui/1.10.3/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
         <jsp:include page="js/iosslider/iosslider.jsp"> 
             <jsp:param name="debug-qualifier" value="<%= development%>" /> 
         </jsp:include>

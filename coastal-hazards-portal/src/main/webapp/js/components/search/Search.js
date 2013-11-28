@@ -67,9 +67,7 @@ CCH.Objects.Search = function (args) {
             count = args.count || '',
             bbox = args.bbox || null,
             sortBy = args.sortBy || null,
-            items = args.items || [],
-            itemId = items.pop() || '',
-            item = itemId ? '/' + itemId : '',
+            item = args.item ? '/' + args.item : '',
             types = args.types || [],
             callbacks = args.callbacks || {
                 success : [],

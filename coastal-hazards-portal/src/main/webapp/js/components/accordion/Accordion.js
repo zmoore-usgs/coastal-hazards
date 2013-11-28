@@ -34,7 +34,6 @@ CCH.Objects.Accordion = function (args) {
 
         var card = args.card,
             index = args.index,
-            collapsed = args.collapsed,
             cardContainer = card.getContainer(),
             bellow = me.createBellow({
                 container : cardContainer,
@@ -44,10 +43,6 @@ CCH.Objects.Accordion = function (args) {
             
 
         me.getAccordion().append(bellow);
-        
-        if (collapsed) {
-            bellow.find('.collapse').collapse();
-        }
         
         return bellow;
     };
@@ -64,7 +59,7 @@ CCH.Objects.Accordion = function (args) {
             group = $('<div />').addClass('accordion-group'),
             heading = $('<div />').addClass('accordion-heading'),
             toggleTarget = $('<a />').addClass('accordion-toggle'),
-            accordionBody = $('<div />').addClass('accordion-body collapse in'),
+            accordionBody = $('<div />').addClass('accordion-body collapse open'),
             bodyInner = $('<div />').addClass('accordion-inner'),
             accordionBodyId = 'accordion-body-' + id;
 

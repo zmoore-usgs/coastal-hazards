@@ -187,7 +187,7 @@ $(document).ready(function () {
         // level. Typically these will be the top level aggregations
         (function () {
             new CCH.Objects.Search().submitItemSearch({
-                items: ['uber'],
+                item: 'uber',
                 displayNotification: false,
                 callbacks: {
                     success: [
@@ -206,7 +206,7 @@ $(document).ready(function () {
                                 // into the UI as accordion bellows
                                 children.each(function (child) {
                                     CCH.items.load({
-                                        items: [child],
+                                        item: child,
                                         displayNotification: false,
                                         callbacks: {
                                             success: [
