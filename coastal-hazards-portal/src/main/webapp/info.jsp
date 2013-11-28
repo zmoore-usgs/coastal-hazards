@@ -102,7 +102,7 @@
 
 			<%-- Title --%>
 			<div id="info-row-title" class="info-title row">
-				<div id="info-title" class='col-md-10 offset1'></div>
+				<div id="info-title" class='col-md-10 col-md-offset-1'></div>
 			</div> 
 			<div class="row">
 				<%-- Left side --%>
