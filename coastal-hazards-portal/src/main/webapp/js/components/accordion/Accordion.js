@@ -57,7 +57,7 @@ CCH.Objects.Accordion = function (args) {
             titleLarge = titleRow.find('.application-card-title-container-large').html(),
             titleMedium = titleRow.find('.application-card-title-container-medium').html(),
             titleSmall = titleRow.find('.application-card-title-container-small').html(),
-            group = $('<div />').addClass('accordion-group'),
+            group = $('<div />').addClass('panel panel-default'),
             heading = $('<div />').addClass('accordion-heading'),
             toggleTarget = $('<a />').addClass('accordion-toggle'),
             accordionBody = $('<div />').addClass('accordion-body collapse'),
@@ -92,7 +92,7 @@ CCH.Objects.Accordion = function (args) {
     };
 
     me.getBellows = function () {
-        return $('#' + me.CONTAINER_ID + ' .accordion-group');
+        return $('#' + me.CONTAINER_ID + ' .panel');
     };
 
     $(window).on({
