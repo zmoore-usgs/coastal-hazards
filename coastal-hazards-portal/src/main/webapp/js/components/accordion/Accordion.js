@@ -18,8 +18,8 @@ CCH.Objects.Accordion = function (args) {
     container = $('#' + me.CONTAINER_ID);
 
     // Make sure that our container is of the accordion type
-    if (!container.hasClass('accordion')) {
-        container.addClass('accordion');
+    if (!container.hasClass('panel-group')) {
+        container.addClass('panel-group');
     }
 
     me.add = function (args) {

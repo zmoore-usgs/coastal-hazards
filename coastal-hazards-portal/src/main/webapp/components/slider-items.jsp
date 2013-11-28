@@ -3,7 +3,7 @@
         <i class="fa fa-bars"></i>
     </div>
     <div id="application-slide-items-content" class="application-slide-content">
-        <div id="application-slide-items-content-container" class="accordion"></div>
+        <div id="application-slide-items-content-container" class="panel-group"></div>
     </div>
 </div>
 

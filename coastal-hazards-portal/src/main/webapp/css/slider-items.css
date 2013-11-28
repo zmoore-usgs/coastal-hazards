@@ -68,7 +68,7 @@
         This fixes a bootstrap issue that causes the accordion to go beyond screen 
         height, causing scroll bars when the items slide is open
     */
-    #application-slide-items-container .accordion {
+    #application-slide-items-container .panel-group {
         margin-bottom: 0px;
     }
     
