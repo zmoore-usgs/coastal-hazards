@@ -7,13 +7,17 @@
     vertical-align: middle;
 }
 
+.application-card-collapse-row {
+    color: #BBBBBB;
+}
+
 .application-card-collapse-row-dottedline {
     display: table-cell;
     width: 100%;
 }
 
 .application-card-collapse-row-dottedline hr {
-    border-top:1px dashed #000;
+    border-top:1px dashed #BBBBBB; 
 }
 
 .application-card-container.open .application-card-collapse-row-closed {
@@ -26,6 +30,7 @@
 
 .application-card-collapse-icon-container {
     padding-right: 5px;
+    vertical-align: top;
 }
 
 .application-card-collapse-icon-container:hover {

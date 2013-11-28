@@ -22,6 +22,7 @@ CCH.Objects.Card = function (args) {
     me.CARD_TEMPLATE_ID = args.cardTemplateId || 'application-card-template';
     me.AGGREGATION_CONTAINER_CARD = args.aggregationContainerId || 'application-slide-items-aggregation-container-card';
     me.PRODUCT_CONTAINER_CARD = args.productContainerId || 'application-slide-items-product-container-card';
+    me.SELECTION_CONTROL_CLASS = 'application-card-children-selection-control';
     me.product = args.product;
     me.id = me.product.id;
     me.bbox = me.product.bbox;
@@ -103,25 +104,29 @@ CCH.Objects.Card = function (args) {
         });
     };
     
-    me.open = function () {
-        me.container.removeClass('closed').addClass('open');
-        if (me.child) {
-            me.child.show();
-        }
-        me.container.find('.application-card-body-container').show('slide', { 
-            direction : 'up'
-        },500);
-    };
-
     me.close = function () {
-        me.container.removeClass('open').addClass('closed');
+        // I'd like to send this close command all the way down the chain to my
+        // children so they close from the bottom up
         if (me.child) {
-            me.child.hide();
-        } 
-        me.container.find('.application-card-body-container').hide('slide', { 
-            direction : 'up'
-        },500);
+            me.child.close();
+        }
+            // If I have a parent, I am not an accordion item, so I will let my 
+            // parent close me
+            if (me.parent) {
+                // I have a parent, so I am not an accordion item. 
+                me.parent.closeChild();
+            } else {
+                // My parent is an accordion bellow, so we just need to cllck on
+                // it to close me
+                me.container.parent().parent().parent().find('.accordion-heading a').trigger('click');
+            }
     };
+    
+    me.closeChild = function () {
+        var control = me.container.find('.' + me.SELECTION_CONTROL_CLASS);
+            me.child.removeSelf();
+            control.val('');
+    }
     
     me.removeSelf = function () {
         if (me.child) {
@@ -153,7 +158,7 @@ CCH.Objects.Card = function (args) {
                 largeContentContainer = container.find('.application-card-content-container-large'),
                 mediumContentContainer = container.find('.application-card-content-container-medium'),
                 smallContentContainer = container.find('.application-card-content-container-small'),
-                childrenSelectControl = container.find('.application-card-children-selection-control'),
+                childrenSelectControl = container.find('.' + me.SELECTION_CONTROL_CLASS),
                 minMaxButtons = container.find('.application-card-collapse-icon-container'),
                 controlContainer = container.find('.application-card-control-container'),
                 spaceAggButton = $('<button />').addClass('btn disabled').html('Space'),
@@ -235,7 +240,7 @@ CCH.Objects.Card = function (args) {
                 controlContainer.append(spaceAggButton, propertyAggButton, bucketButton);
                 propertyAggButton.on('click', function (evt) {
                     var button = $(evt.target),
-                        control = me.container.find('.application-card-children-selection-control');
+                        control = me.container.find('.' + me.SELECTION_CONTROL_CLASS);
                         
                     button.button('toggle');
                     control.toggleClass('hidden');
@@ -334,9 +339,9 @@ CCH.Objects.Card = function (args) {
         product: me.product,
         show : me.show,
         hide : me.hide,
-        open : me.open,
         close : me.close,
         child : me.child,
+        closeChild : me.closeChild,
         removeSelf : me.removeSelf,
         getBoundingBox: function () {
             return me.bbox;
