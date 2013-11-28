@@ -36,7 +36,7 @@
 /*
 No tab shown on large display. Toggled via button in bar
 */
-@media (min-width: 767px) {
+@media (min-width: 992px) {
     #application-slide-search-content {
         border-top-left-radius: 10px 10px;
         -webkit-border-top-left-radius: 10px 10px;
@@ -45,7 +45,7 @@ No tab shown on large display. Toggled via button in bar
     }
 }
 
-@media (max-width: 766px) {
+@media (max-width: 991px) {
     #application-slide-search-tab {
         height : 60px;
         width: 40px;

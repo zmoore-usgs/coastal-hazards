@@ -38,7 +38,7 @@
     font-size-adjust: 0.7;
 }
 
-@media (min-width: 767px) {
+@media (min-width: 992px) {
     /* No tab shown on large display. Toggled via button in bar */
     #application-slide-items-tab {
         display: none;
@@ -63,7 +63,7 @@
     }
 }
 
-@media (max-width: 766px) {
+@media (max-width: 991px) {
     /* 
         This fixes a bootstrap issue that causes the accordion to go beyond screen 
         height, causing scroll bars when the items slide is open

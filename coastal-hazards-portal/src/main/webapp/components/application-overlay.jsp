@@ -74,7 +74,7 @@
 	}
 
 	/* This is when bootstrap switches to portrait */
-	@media (max-width: 767px) {
+	@media (max-width: 991px) {
 		#application-overlay-title {
 			font-size: 2em; 
 		}

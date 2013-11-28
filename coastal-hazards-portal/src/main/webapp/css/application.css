@@ -35,12 +35,12 @@ img {
     margin-top: 5px;
 }
 
-@media (min-width: 767px) {
+@media (min-width: 992px) {
 
 }
 
 
-@media (max-width: 766px) {
+@media (max-width: 991px) {
     body {
         padding:  0px !important;
     }

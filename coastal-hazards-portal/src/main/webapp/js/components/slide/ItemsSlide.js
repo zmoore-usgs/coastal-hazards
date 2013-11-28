@@ -142,8 +142,8 @@ CCH.Objects.ItemsSlide = function (args) {
             borderSize = 4;
     
         // I've got to know what my form factor is. Bootstrap uses a special number,
-        // 766px at which to resize and I do some special stuff when bootstrap resizes.
-        // - When switching to small, my item slide container goes from being a column
+        // 992px at which to resize and I do some special stuff when bootstrap resizes.
+        // - When switching to small (<=991px), my item slide container goes from being a column
         //   to a free-floating column and needs quite a bit of help in resizing when
         //   that happens
         if (isSmall) {
