@@ -44,15 +44,15 @@
         <jsp:include page="components/slider-search.jsp"></jsp:include>
 		<div id="application-container" class="container">
             
-			<div id="header-row" class="row-fluid">
+			<div id="header-row" class="row">
 				<jsp:include page="components/app-navbar.jsp"></jsp:include>
             </div>
             <script type="text/javascript">splashUpdate("Loading Geospatial Framework...");</script>
-            <div id="content-row" class="row-fluid">
+            <div id="content-row" class="row">
                 <div id="map" class="span9"></div>
                 <jsp:include page="components/slider-items.jsp"></jsp:include>
             </div>	
-            <div id="footer-row"  class="row-fluid">
+            <div id="footer-row"  class="row">
                 <div class="container">
                     &nbsp;
                 </div>

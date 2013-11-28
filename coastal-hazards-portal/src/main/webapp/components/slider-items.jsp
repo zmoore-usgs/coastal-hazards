@@ -13,34 +13,34 @@
         
         <%-- Collapse Control --%>
         <%-- The job of this control is to close all child objects, then this container --%>
-        <div class="application-card-collapse-row row-fluid">
+        <div class="application-card-collapse-row row">
             <div class="application-card-collapse-icon-container application-card-collapse-row-open"><i class="fa fa-chevron-up"></i></div>
             <div class="application-card-collapse-row-dottedline"><hr /></div>
         </div>
         
         <div class="application-card-body-container">
-            <div class="row-fluid">
+            <div class="row">
                 <%-- Title --%>
-                <div class="application-card-title-row row-fluid">
+                <div class="application-card-title-row row">
                     <span  class="application-card-title-container-large"></span>
                     <span  class="application-card-title-container-medium"></span>
                     <span  class="application-card-title-container-small"></span>
                 </div>
 
                 <%-- Content --%>
-                <div class="application-card-content-row row-fluid">
+                <div class="application-card-content-row row">
                     <span  class="application-card-content-container-large"></span>
                     <span  class="application-card-content-container-medium"></span>
                     <span  class="application-card-content-container-small"></span>
                 </div>
 
                 <%-- Children Selection Control --%>
-                <div class="application-card-children-selection-row row-fluid">
+                <div class="application-card-children-selection-row row">
                     <select class="application-card-children-selection-control"></select>
                 </div>
             </div>
             <%-- Control Row --%>
-            <div class="application-card-control-row row-fluid">
+            <div class="application-card-control-row row">
                 <span  class="application-card-control-container"></span>
             </div>
         </div>

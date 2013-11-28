@@ -6,11 +6,11 @@
 	<div id='item-search-modal-body' class='modal-body'>
 		<div id='item-search-container' class='container'>
 
-			<div id='item-search-row-map' class="row-fluid">
+			<div id='item-search-row-map' class="row">
 				<label for="item-search-map">Search by extent:</label>
 				<div id='item-search-map'></div>
 			</div>
-			<div id='item-search-input-table-row' class='row-fluid'>
+			<div id='item-search-input-table-row' class='row'>
 				<center>
 					<table id='item-search-input-table'>
 						<tr>
@@ -34,11 +34,11 @@
 					</table>
 				</center>
 			</div>
-			<div id='item-search-row-keyword' class="row-fluid">
+			<div id='item-search-row-keyword' class="row">
 				<label for='item-search-keyword-input-label'>Search by keywords (comma separated): </label>
 				<input type="text" id="item-search-keyword-input" />
 			</div>
-			<div id='item-search-row-theme' class="row-fluid">
+			<div id='item-search-row-theme' class="row">
 				<span id='item-search-theme' class='span6'>
 					<label for='item-search-theme-input'>Search by theme: </label>
 					<select id='item-search-theme-input' multiple="multiple">

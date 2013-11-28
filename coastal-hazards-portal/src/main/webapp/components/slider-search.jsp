@@ -10,10 +10,10 @@
 <%-- This element is used as a template for creating new search cards --%>
 <div id="application-slide-search-location-card-template" class="hidden">
     <div class="application-slide-search-location-card well well-small">
-        <div class="row-fluid">
+        <div class="row">
             <div class="span2"><i class="application-slide-search-location-card-icon fa fa-compass"></i></div>
             <div class="application-slide-search-location-card-title-description-container span10">
-                <div class="row-fluid">
+                <div class="row">
                     <div class="application-slide-search-location-card-title"><p class="center"></p></div>
                     <div class="application-slide-search-location-card-description"></div>
                     <div class="application-slide-search-location-card-table-container">
@@ -23,7 +23,7 @@
                 </div>
             </div>
         </div>
-        <div class="row-fluid text-center">
+        <div class="row text-center">
             <div class="btn-group">
                 <button class="application-slide-search-location-card-button-search btn btn-mini application-slide-search-location-card-template-button" type="button"><i class="fa fa-star"></i></button>
                 <button class="application-slide-search-location-card-button-remove btn btn-mini application-slide-search-location-card-template-button" type="button"><i class="fa fa-times-circle-o"></i></button>
@@ -35,16 +35,16 @@
 </div>
 <div id="application-slide-search-product-card-template" class="hidden">
     <div class="application-slide-search-product-card well well-small">
-        <div class="row-fluid">
+        <div class="row">
             <div class="span2"><i class="application-slide-search-product-card-icon fa fa-compass"></i></div>
             <div class="application-slide-search-product-card-title-description-container span10">
-                <div class="row-fluid">
+                <div class="row">
                     <div class="application-slide-search-product-card-title"><p class="center"></p></div>
                     <div class="application-slide-search-product-card-description"></div>
                 </div>
             </div>
         </div>
-        <div class="row-fluid text-center">
+        <div class="row text-center">
             <div class="btn-group">
                 <button class="application-slide-search-product-card-button-search btn btn-mini application-slide-search-product-card-template-button" type="button"><i class="fa fa-star"></i></button>
                 <button class="application-slide-search-product-card-button-remove btn btn-mini application-slide-search-product-card-template-button" type="button"><i class="fa fa-times-circle-o"></i></button>

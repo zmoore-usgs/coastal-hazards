@@ -91,19 +91,19 @@
 
     <body>
 		<div class="container">
-			<div id="error-title-error-row" class="row-fluid">
+			<div id="error-title-error-row" class="row">
 				<div id="error-code-container" class="span2"></div>
 				<div id="error-title-container" class="span10">USGS Coastal Change Hazards Portal</div>
 			</div>
 
-			<div class="row-fluid">
+			<div class="row">
 				<div id="error-title-error-description-container" class="well well-large">
-					<div id="error-title-error-path" class="row-fluid"></div>
-					<div id="error-title-error-description" class="row-fluid"></div>
+					<div id="error-title-error-path" class="row"></div>
+					<div id="error-title-error-description" class="row"></div>
 				</div>
 			</div>
 
-			<div class="row-fluid">
+			<div class="row">
 				<div class="well well-large">
 					<a id="error-button-email" class="btn btn-large" role="button"><i class="fa fa-envelope"></i> Contact Us</a>
 					<a class="btn btn-large" role="button" href="<%=baseUrl%>"><i class="fa fa-refresh"></i> Go To Portal</a>

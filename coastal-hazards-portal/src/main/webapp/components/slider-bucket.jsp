@@ -8,16 +8,16 @@
 <%-- This element is used as a template for creating new bucket cards --%>
 <div id="application-slide-bucket-container-card-template" class="hidden">
     <div class="application-slide-bucket-container-card well well-small">
-        <div class="row-fluid">
+        <div class="row">
             <div class="span2"><img class="application-slide-bucket-container-card-image" /></div>
             <div class="application-slide-bucket-container-card-title-description-container span10">
-                <div class="row-fluid">
+                <div class="row">
                     <div class="application-slide-bucket-container-card-title"><p class="center"></p></div>
                     <div class="application-slide-bucket-container-card-description"></div>
                 </div>
             </div>
         </div>
-        <div class="row-fluid text-center">
+        <div class="row text-center">
             <div class="btn-group">
                 <button class="application-slide-bucket-container-card-button-bucket btn btn-mini application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-star"></i></button>
                 <button class="application-slide-bucket-container-card-button-remove btn btn-mini application-slide-bucket-container-card-template-button" type="button"><i class="icon-remove"></i></button>

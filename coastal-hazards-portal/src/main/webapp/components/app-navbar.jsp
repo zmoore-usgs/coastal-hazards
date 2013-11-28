@@ -42,7 +42,7 @@
         <h4 id="modal-label">Share Your Coastal Change Hazards Portal View With Others</h4>
     </div>
     <div class="modal-body">
-        <div class="row-fluid">
+        <div class="row">
             <div class="well well-small">
                 <div id="modal-share-summary-url-inputbox-div">
                     <input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." />
@@ -69,7 +69,7 @@
         <h4 id="modal-help-label">About The Coastal Change Hazards Portal</h4>
     </div>
     <div id="help-modal-body" class="modal-body">
-        <div class="row-fluid">
+        <div class="row">
             <div id='modal-help-summary-container' class='well well-small'>
                 With more than half of the American people living along our Nation's coasts, 
                 extreme beach and cliff erosion can dramatically alter coastal ecosystems, 
@@ -85,7 +85,7 @@
             </div>
         </div>
 
-        <div id="canned-views-row" class="row-fluid">
+        <div id="canned-views-row" class="row">
             <div class="well well-small span4">
                 <a href="http://go.usa.gov/DmUw" target="_self"><img src="images/views/canned/historical.png" /><br /><b>Shoreline Change</b><br />Historical positions and rates of change</a>
             </div>

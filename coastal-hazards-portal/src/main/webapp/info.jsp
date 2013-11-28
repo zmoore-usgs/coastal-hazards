@@ -92,7 +92,7 @@
 		</jsp:include>
 		<%-- Content Here --%>
 		<div id="info-content" class="container">
-			<div id="header-row" class="row-fluid">
+			<div id="header-row" class="row">
 				<jsp:include page="template/USGSHeader.jsp">
 					<jsp:param name="relPath" value="" />
 					<jsp:param name="header-class" value="" />
@@ -101,10 +101,10 @@
 			</div>
 
 			<%-- Title --%>
-			<div id="info-row-title" class="info-title row-fluid">
+			<div id="info-row-title" class="info-title row">
 				<div id="info-title" class='span10 offset1'></div>
 			</div> 
-			<div class="row-fluid">
+			<div class="row">
 				<%-- Left side --%>
 				<div class="span6">
 					<div id="info-row-map-and-summary">
@@ -119,7 +119,7 @@
 								<span id="social-link"></span>
 							</div>
 						</div>
-						<div class="row-fluid">
+						<div class="row">
 							<div id="info-legend" class="well-small well span6"></div>
 							<div id="info-graph" class='well well-small span6'>
 								<img src=""></img>
@@ -142,7 +142,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="row-fluid">
+			<div class="row">
 				<div class="well well-small"> <!-- view metadata" "download zip (full)" and "download zip (item)" -->
 					<%-- Metadata Link --%>
 					<span id="metadata-link"></span>
