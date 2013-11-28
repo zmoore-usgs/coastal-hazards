@@ -16,11 +16,11 @@
     border-top:1px dashed #000;
 }
 
-.accordion-body.open .application-card-collapse-row-closed {
+.application-card-container.open .application-card-collapse-row-closed {
     display: none;
 }
 
-.accordion-body:not(.open) .application-card-collapse-row-open {
+.application-card-container:not(.open) .application-card-collapse-row-open {
     display: none;
 }
 

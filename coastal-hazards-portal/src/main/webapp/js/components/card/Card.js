@@ -104,7 +104,7 @@ CCH.Objects.Card = function (args) {
     };
     
     me.open = function () {
-        me.container.parents('.accordion-body').removeClass('closed').addClass('open');
+        me.container.removeClass('closed').addClass('open');
         if (me.child) {
             me.child.show();
         }
@@ -114,7 +114,7 @@ CCH.Objects.Card = function (args) {
     };
 
     me.close = function () {
-        me.container.parents('.accordion-body').removeClass('open').addClass('closed');
+        me.container.removeClass('open').addClass('closed');
         if (me.child) {
             me.child.hide();
         } 
@@ -160,6 +160,9 @@ CCH.Objects.Card = function (args) {
                 propertyAggButton = $('<button />').addClass('btn').html('Property'),
                 bucketButton = $('<button />').addClass('btn').html('Bucket');
 
+            // My container starts out open so I immediately add that class to it
+            container.addClass('open');
+
             // Create Title
             largeTitleContainer.html(largeTitle);
             mediumTitleContainer.html(mediumTitle);
@@ -171,7 +174,7 @@ CCH.Objects.Card = function (args) {
             smallContentContainer.html(smallContent);
 
             // I have either aggregations or leaf nodes as children.
-            // I am not myself a child
+            // I am not myself a child.
             if (me.children.length) {
                 childrenSelectControl.append($('<option />').
                     attr('value', '')).
@@ -302,7 +305,7 @@ CCH.Objects.Card = function (args) {
                 // A user has clicked on my min/max button. 
                 // FInd out which one by querying an ancestor that has the 
                 // closed/open class on it
-                var isOpen = $(this).parents('.accordion-body').hasClass('open');
+                var isOpen = me.container.hasClass('open');
 
                 if (isOpen) {
                     me.close();
