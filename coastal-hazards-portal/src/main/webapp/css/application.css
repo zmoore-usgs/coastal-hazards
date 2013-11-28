@@ -15,6 +15,7 @@ html, body {
 /*
     This resets bootstrap's row margins of -15px on each side
 */
+/*#content-row.row,*/
 #footer-row.row {
     margin-left: auto;
     margin-right: auto;
