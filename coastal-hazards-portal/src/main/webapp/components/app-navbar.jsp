@@ -9,7 +9,7 @@
             <div id="app-navbar-site-title-container" class="app-navbar-item-container">
                 <h3 class="app-navbar-title visible-desktop hidden-tablet hidden-phone">USGS Coastal Change Hazards Portal</h3>
                 <h3 class="app-navbar-title hidden-desktop visible-tablet hidden-phone">Coastal Change Hazards Portal</h3>
-                <h3 class="app-navbar-title hidden-desktop hidden-tablet visible-phone">CCH</h3>
+                <h3 class="app-navbar-title hidden-desktop hidden-tablet visible-xs">CCH</h3>
             </div>
 
             <jsp:include page="combined-searchbar.jsp"></jsp:include>
