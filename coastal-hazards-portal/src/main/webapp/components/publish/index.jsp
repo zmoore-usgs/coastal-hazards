@@ -54,7 +54,7 @@
             <jsp:param name="relPath" value="../../" />
 		</jsp:include>
 		<style type="text/css">
-			.container-fluid {
+			.container {
 				margin-top: 10px;
 				font-size: 1.25em;
 			}
@@ -95,7 +95,7 @@
 				<a href="">Go to Coastal Change Hazards Portal</a>
 			</c:when>
 			<c:otherwise>
-				<div class="container-fluid">
+				<div class="container">
 					<div class="row-fluid">
 						<div class="well well-small span6">
 							<div id="publish-user-container-row">
