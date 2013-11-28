@@ -59,7 +59,7 @@ CCH.Objects.Accordion = function (args) {
             group = $('<div />').addClass('accordion-group'),
             heading = $('<div />').addClass('accordion-heading'),
             toggleTarget = $('<a />').addClass('accordion-toggle'),
-            accordionBody = $('<div />').addClass('accordion-body collapse'),
+            accordionBody = $('<div />').addClass('accordion-body collapse open'),
             bodyInner = $('<div />').addClass('accordion-inner'),
             accordionBodyId = 'accordion-body-' + id;
 

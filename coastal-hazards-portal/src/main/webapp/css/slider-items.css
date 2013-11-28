@@ -2,7 +2,7 @@
     background-color: #F5F5F5;
 }
 
-.application-card-collapse-icon-row {
+.application-card-collapse-icon-container {
     display: table-cell;
     vertical-align: middle;
 }
@@ -14,6 +14,23 @@
 
 .application-card-collapse-row-dottedline hr {
     border-top:1px dashed #000;
+}
+
+.accordion-body.open .application-card-collapse-row-closed {
+    display: none;
+}
+
+.accordion-body:not(.open) .application-card-collapse-row-open {
+    display: none;
+}
+
+.application-card-collapse-icon-container {
+    padding-right: 5px;
+}
+
+.application-card-collapse-icon-container:hover {
+    cursor: pointer;
+    font-size-adjust: 0.7;
 }
 
 @media (min-width: 767px) {

@@ -103,6 +103,26 @@ CCH.Objects.Card = function (args) {
         });
     };
     
+    me.open = function () {
+        me.container.parents('.accordion-body').removeClass('closed').addClass('open');
+        if (me.child) {
+            me.child.show();
+        }
+        me.container.find('.application-card-body-container').show('slide', { 
+            direction : 'up'
+        },500);
+    };
+
+    me.close = function () {
+        me.container.parents('.accordion-body').removeClass('open').addClass('closed');
+        if (me.child) {
+            me.child.hide();
+        } 
+        me.container.find('.application-card-body-container').hide('slide', { 
+            direction : 'up'
+        },500);
+    };
+    
     me.removeSelf = function () {
         if (me.child) {
             me.child.removeSelf();
@@ -134,6 +154,7 @@ CCH.Objects.Card = function (args) {
                 mediumContentContainer = container.find('.application-card-content-container-medium'),
                 smallContentContainer = container.find('.application-card-content-container-small'),
                 childrenSelectControl = container.find('.application-card-children-selection-control'),
+                minMaxButtons = container.find('.application-card-collapse-icon-container'),
                 controlContainer = container.find('.application-card-control-container'),
                 spaceAggButton = $('<button />').addClass('btn disabled').html('Space'),
                 propertyAggButton = $('<button />').addClass('btn').html('Property'),
@@ -223,6 +244,7 @@ CCH.Objects.Card = function (args) {
                         control.val('');
                     };
                 });
+                
                 childrenSelectControl.on('change', function (evt) {
                     // My dropdown list has changed
                     var control = $(evt.target),
@@ -276,6 +298,19 @@ CCH.Objects.Card = function (args) {
                 controlContainer.append(bucketButton);
             }
 
+            minMaxButtons.on('click', function (evt) {
+                // A user has clicked on my min/max button. 
+                // FInd out which one by querying an ancestor that has the 
+                // closed/open class on it
+                var isOpen = $(this).parents('.accordion-body').hasClass('open');
+
+                if (isOpen) {
+                    me.close();
+                } else {
+                    me.open();
+                }
+            });
+
             // I start with my container hidden and an upstream process will
             // decide when to show me
             if (me.initHide) {
@@ -296,6 +331,8 @@ CCH.Objects.Card = function (args) {
         product: me.product,
         show : me.show,
         hide : me.hide,
+        open : me.open,
+        close : me.close,
         child : me.child,
         removeSelf : me.removeSelf,
         getBoundingBox: function () {
