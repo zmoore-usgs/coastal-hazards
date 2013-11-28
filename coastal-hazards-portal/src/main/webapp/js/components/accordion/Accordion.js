@@ -61,7 +61,7 @@ CCH.Objects.Accordion = function (args) {
             heading = $('<div />').addClass('panel-heading'),
             toggleTarget = $('<a />').addClass('accordion-toggle'),
             accordionBody = $('<div />').addClass('accordion-body collapse'),
-            bodyInner = $('<div />').addClass('accordion-inner'),
+            bodyInner = $('<div />').addClass('panel-body'),
             accordionBodyId = 'accordion-body-' + id;
 
         toggleTarget.append(

@@ -188,7 +188,7 @@ img {
     font-size: 400%;
 }
 
-#nav .accordion-body .accordion-group-item{
+#nav .panel-collapse .accordion-group-item{
     padding-bottom: 1em;
 }
 
