@@ -1,6 +1,6 @@
 <%-- The combined search container - gets added to the header bar --%>
 <div id="app-navbar-search-container" class="app-navbar-item-container">
-    <div id="app-navbar-search-control" class="input-prepend input-append">
+    <div id="app-navbar-search-control" class="input-group">
         <div class="btn-group">
             <a id='app-navbar-search-dropdown-toggle' class="btn btn-lg dropdown-toggle" data-toggle="dropdown" href="#">
                 <span id="app-navbar-search-container-select-button-text">All</span>
