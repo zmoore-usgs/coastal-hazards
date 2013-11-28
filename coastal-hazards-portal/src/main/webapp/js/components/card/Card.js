@@ -22,6 +22,7 @@ CCH.Objects.Card = function (args) {
     me.CARD_TEMPLATE_ID = args.cardTemplateId || 'application-card-template';
     me.AGGREGATION_CONTAINER_CARD = args.aggregationContainerId || 'application-slide-items-aggregation-container-card';
     me.PRODUCT_CONTAINER_CARD = args.productContainerId || 'application-slide-items-product-container-card';
+    me.SELECTION_CONTROL_CLASS = 'application-card-children-selection-control';
     me.product = args.product;
     me.id = me.product.id;
     me.bbox = me.product.bbox;
@@ -103,24 +104,28 @@ CCH.Objects.Card = function (args) {
         });
     };
     
-    me.open = function () {
-        me.container.parents('.accordion-body').removeClass('closed').addClass('open');
-        if (me.child) {
-            me.child.show();
-        }
-        me.container.find('.application-card-body-container').show('slide', { 
-            direction : 'up'
-        },500);
-    };
-
     me.close = function () {
-        me.container.parents('.accordion-body').removeClass('open').addClass('closed');
+        // I'd like to send this close command all the way down the chain to my
+        // children so they close from the bottom up
         if (me.child) {
-            me.child.hide();
-        } 
-        me.container.find('.application-card-body-container').hide('slide', { 
-            direction : 'up'
-        },500);
+            me.child.close();
+        }
+            // If I have a parent, I am not an accordion item, so I will let my 
+            // parent close me
+            if (me.parent) {
+                // I have a parent, so I am not an accordion item. 
+                me.parent.closeChild();
+            } else {
+                // My parent is an accordion bellow, so we just need to cllck on
+                // it to close me
+                me.container.parent().parent().parent().find('.accordion-heading a').trigger('click');
+            }
+    };
+    
+    me.closeChild = function () {
+        var control = me.container.find('.' + me.SELECTION_CONTROL_CLASS);
+            me.child.removeSelf();
+            control.val('');
     };
     
     me.removeSelf = function () {
@@ -134,6 +139,119 @@ CCH.Objects.Card = function (args) {
         });
     };
 
+    me.bindSelectControl = function(control) {
+        if (!control) {
+            throw "control not passed to CCH.Objects.Card.bindSelectControl()";
+        }
+        
+        control.on('change', function(evt) {
+            // My dropdown list has changed
+            var control = $(evt.target),
+                    selectedOption = control.val(),
+                    card,
+                    createCard = function() {
+                        // User selected a product. I will append that card to 
+                        // myself
+                        card = CCH.cards.buildCard({
+                            product: selectedOption,
+                            parent: me
+                        });
+
+                        // This is now my child card 
+                        me.child = card;
+
+                        // Append this new card to myself
+                        me.container.after(card.getContainer());
+
+                        // Show this new card to the user
+                        card.show();
+                    };
+
+            if (selectedOption) {
+                // Do I have a child? If I do, hide it and get rid of it.
+                // The user wants a new card
+                if (me.child) {
+                    // I am going to hide my child first, then remove it
+                    me.child.hide({
+                        complete: function() {
+                            // Remove my child after it's hidden
+                            me.child.removeSelf();
+                            // Now that my child is gone, I'm going to 
+                            // replace it with a new card
+                            createCard();
+                        }
+                    });
+                } else {
+                    // I have no children so I am free to go ahead and 
+                    // just create a new child card
+                    createCard();
+                }
+            } else {
+                // User selected blank option which means user wants my 
+                // gone so I will go ahead and remove it
+                me.child.removeSelf();
+            }
+        });
+        
+        return control;
+    };
+    
+    me.bindBucketControl = function (control) {
+        if (!control) {
+            throw "control not passed to CCH.Objects.Card.bindBucketControl()";
+        }
+        
+        control.on('click', function (evt) {
+            var button = $(evt.target);
+            button.button('toggle');
+            
+            if (button.hasClass('active')) {
+                // User pressed bucket button in and wants to add me to a bucket
+                $(window).trigger('item-button-click-bucket-add', {
+                    item : me
+                });
+            } else {
+                // User toggled the bucket button off - I should be removed from 
+                // bucket
+                $(window).trigger('item-button-click-bucket-remove', {
+                    item : me
+                });
+            }
+        });
+    };
+    
+    me.bindPropertyAggButton = function (control) {
+        control.on('click', function (evt) {
+            var button = $(evt.target),
+                control = me.container.find('.' + me.SELECTION_CONTROL_CLASS);
+
+            button.button('toggle');
+            control.toggleClass('hidden');
+
+            // If my dropdown listbox is hidden, I am going to hide my 
+            // child
+            if (control.hasClass('hidden') && me.child) {
+                me.child.removeSelf();
+                control.val('');
+            };
+        });
+    };
+    
+    me.bindMinMaxButtons = function (control) {
+        control.on('click', function (evt) {
+            // A user has clicked on my min/max button. 
+            // FInd out which one by querying an ancestor that has the 
+            // closed/open class on it
+            var isOpen = me.container.hasClass('open');
+
+            if (isOpen) {
+                me.close();
+            } else {
+                me.open();
+            }
+        });
+    };
+    
     me.createContainer = function () {
         if (!me.container) {
             var container = $('#' + me.CARD_TEMPLATE_ID).clone(true).children(),
@@ -153,12 +271,15 @@ CCH.Objects.Card = function (args) {
                 largeContentContainer = container.find('.application-card-content-container-large'),
                 mediumContentContainer = container.find('.application-card-content-container-medium'),
                 smallContentContainer = container.find('.application-card-content-container-small'),
-                childrenSelectControl = container.find('.application-card-children-selection-control'),
+                childrenSelectControl = container.find('.' + me.SELECTION_CONTROL_CLASS),
                 minMaxButtons = container.find('.application-card-collapse-icon-container'),
                 controlContainer = container.find('.application-card-control-container'),
                 spaceAggButton = $('<button />').addClass('btn disabled').html('Space'),
                 propertyAggButton = $('<button />').addClass('btn').html('Property'),
                 bucketButton = $('<button />').addClass('btn').html('Bucket');
+
+            // My container starts out open so I immediately add that class to it
+            container.addClass('open');
 
             // Create Title
             largeTitleContainer.html(largeTitle);
@@ -171,7 +292,7 @@ CCH.Objects.Card = function (args) {
             smallContentContainer.html(smallContent);
 
             // I have either aggregations or leaf nodes as children.
-            // I am not myself a child
+            // I am not myself a child.
             if (me.children.length) {
                 childrenSelectControl.append($('<option />').
                     attr('value', '')).
@@ -230,86 +351,15 @@ CCH.Objects.Card = function (args) {
 
                 // Add buttons to the bottom
                 controlContainer.append(spaceAggButton, propertyAggButton, bucketButton);
-                propertyAggButton.on('click', function (evt) {
-                    var button = $(evt.target),
-                        control = me.container.find('.application-card-children-selection-control');
-                        
-                    button.button('toggle');
-                    control.toggleClass('hidden');
-                    
-                    // If my dropdown listbox is hidden, I am going to hide my 
-                    // child
-                    if (control.hasClass('hidden') && me.child) {
-                        me.child.removeSelf();
-                        control.val('');
-                    };
-                });
-                
-                childrenSelectControl.on('change', function (evt) {
-                    // My dropdown list has changed
-                    var control = $(evt.target),
-                        selectedOption = control.val(),
-                        card,
-                        createCard = function () {
-                            // User selected a product. I will append that card to 
-                            // myself
-                            card = CCH.cards.buildCard({
-                                product : selectedOption,
-                                parent : me
-                            });
-
-                            // This is now my child card 
-                            me.child = card;
-
-                            // Append this new card to myself
-                            me.container.after(card.getContainer());
-
-                            // Show this new card to the user
-                            card.show();
-                        };
-
-                    if (selectedOption) {
-                        // Do I have a child? If I do, hide it and get rid of it.
-                        // The user wants a new card
-                        if (me.child) {
-                            // I am going to hide my child first, then remove it
-                            me.child.hide({
-                                complete : function () {
-                                    // Remove my child after it's hidden
-                                    me.child.removeSelf();
-                                    // Now that my child is gone, I'm going to 
-                                    // replace it with a new card
-                                    createCard();
-                                }
-                            });
-                        } else {
-                            // I have no children so I am free to go ahead and 
-                            // just create a new child card
-                            createCard();
-                        }
-                    } else {
-                        // User selected blank option which means user wants my 
-                        // gone so I will go ahead and remove it
-                        me.child.removeSelf();
-                    }
-                });
+                me.bindPropertyAggButton(propertyAggButton);
+                me.bindSelectControl(childrenSelectControl);
             } else {
                 childrenSelectControl.remove();
                 controlContainer.append(bucketButton);
             }
 
-            minMaxButtons.on('click', function (evt) {
-                // A user has clicked on my min/max button. 
-                // FInd out which one by querying an ancestor that has the 
-                // closed/open class on it
-                var isOpen = $(this).parents('.accordion-body').hasClass('open');
-
-                if (isOpen) {
-                    me.close();
-                } else {
-                    me.open();
-                }
-            });
+            me.bindBucketControl(bucketButton);
+            me.bindMinMaxButtons(minMaxButtons);
 
             // I start with my container hidden and an upstream process will
             // decide when to show me
@@ -318,7 +368,7 @@ CCH.Objects.Card = function (args) {
                     display : 'none'
                 });
             }
-
+            
             me.container = container;
         }
         return me.container;
@@ -331,9 +381,9 @@ CCH.Objects.Card = function (args) {
         product: me.product,
         show : me.show,
         hide : me.hide,
-        open : me.open,
         close : me.close,
         child : me.child,
+        closeChild : me.closeChild,
         removeSelf : me.removeSelf,
         getBoundingBox: function () {
             return me.bbox;

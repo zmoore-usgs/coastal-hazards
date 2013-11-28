@@ -10,12 +10,14 @@
 <%-- This element is used as a template for creating new items cards --%>
 <div id="application-card-template" class="hidden">
     <div class="application-card-container container-fluid">
+        
         <%-- Collapse Control --%>
+        <%-- The job of this control is to close all child objects, then this container --%>
         <div class="application-card-collapse-row row-fluid">
-            <div class="application-card-collapse-icon-container application-card-collapse-row-closed"><i class="fa fa-plus-square-o"></i></div>
-            <div class="application-card-collapse-icon-container application-card-collapse-row-open"><i class="fa fa-minus-square-o"></i></div>
+            <div class="application-card-collapse-icon-container application-card-collapse-row-open"><i class="fa fa-chevron-up"></i></div>
             <div class="application-card-collapse-row-dottedline"><hr /></div>
         </div>
+        
         <div class="application-card-body-container">
             <div class="row-fluid">
                 <%-- Title --%>

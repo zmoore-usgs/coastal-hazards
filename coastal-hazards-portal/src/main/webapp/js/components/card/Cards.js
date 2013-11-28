@@ -17,6 +17,7 @@ CCH.Objects.Cards = function(args) {
             args = args || {};
             var product = args.product,
                 initHide = args.initHide,
+                parent = args.parent,
                 card;
 
                 if (typeof product === 'string') {
@@ -27,7 +28,8 @@ CCH.Objects.Cards = function(args) {
                 
                 card = new CCH.Objects.Card({
                     product : product,
-                    initHide : initHide
+                    initHide : initHide,
+                    parent : parent
                 });
             return card;
         }

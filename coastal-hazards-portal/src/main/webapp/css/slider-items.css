@@ -7,25 +7,30 @@
     vertical-align: middle;
 }
 
+.application-card-collapse-row {
+    color: #BBBBBB;
+}
+
 .application-card-collapse-row-dottedline {
     display: table-cell;
     width: 100%;
 }
 
 .application-card-collapse-row-dottedline hr {
-    border-top:1px dashed #000;
+    border-top:1px dashed #BBBBBB; 
 }
 
-.accordion-body.open .application-card-collapse-row-closed {
+.application-card-container.open .application-card-collapse-row-closed {
     display: none;
 }
 
-.accordion-body:not(.open) .application-card-collapse-row-open {
+.application-card-container:not(.open) .application-card-collapse-row-open {
     display: none;
 }
 
 .application-card-collapse-icon-container {
     padding-right: 5px;
+    vertical-align: top;
 }
 
 .application-card-collapse-icon-container:hover {
@@ -59,10 +64,18 @@
 }
 
 @media (max-width: 766px) {
-
+    /* 
+        This fixes a bootstrap issue that causes the accordion to go beyond screen 
+        height, causing scroll bars when the items slide is open
+    */
+    #application-slide-items-container .accordion {
+        margin-bottom: 0px;
+    }
+    
     #application-slide-items-container {
         position: absolute;
         z-index: 1006; /* 1005 is highest on map */
+        height: 98%;
     }
     
     #application-slide-items-content {

@@ -19,6 +19,7 @@ CCH.Objects.Bucket = function (args) {
     me.FONT_SIZE_STRING = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('font-size');
     me.FONT_SIZE = parseInt(me.FONT_SIZE_STRING.substring(0, me.FONT_SIZE_STRING.indexOf('px')), 10);
     me.MARGIN_WIDTH = me.FONT_SIZE / 2.5;
+    me.bucket = [];
 
     me.countChanged = function () {
         CCH.LOG.debug('CCH.Objects.Bucket::countChanged: Bucket count changed.');
@@ -72,6 +73,63 @@ CCH.Objects.Bucket = function (args) {
     CCH.LOG.debug('CCH.Objects.Bucket::constructor: Bucket class initialized.');
 
     return $.extend(me, {
+        add : function (args) {
+            args = args || {};
+            
+            // Make sure I get what I need to remove
+            if (!args.item) {
+                throw "item not passed to CCH.Objects.Bucket";
+            }
+            
+            var item = args.item,
+                id = item.id;
+            if (!me.getItemById(id)) {
+                me.bucket.push(item);
+                me.increaseCount();
+            }
+            return me.bucket;
+        },
+        remove : function (args) {
+            args = args || {};
+            
+            if (!args.item && !args.id) {
+                throw "item not passed to CCH.Objects.Bucket";
+            }
+            
+            var id = args.id,
+                item = args.item;
+        
+            if (id) {
+                item = me.getItemById(id);
+            } 
+            
+            if (item) {
+                id = item.id;
+                me.bucket.remove(function (item) {
+                    return item.id === id;
+                });
+                me.decreaseCount();
+            }
+        },
+        removeAll : function (args) {
+            me.bucket.each(function (item) {
+                me.remove({
+                    item : item
+                });
+            });
+        },
+        getItems : function () {
+            return me.bucket;
+        },
+        getItemById : function (id) {
+            var item = null;
+            if (id) {
+                item = me.bucket.find(function (item) {
+                    return item.id === id;
+                });
+            }
+            return item;
+        },
         getCount: function () {
             var bucketContainer = $('#' + me.BUCKET_COUNT_CONTAINER_ID),
                 countString = bucketContainer.html(),
