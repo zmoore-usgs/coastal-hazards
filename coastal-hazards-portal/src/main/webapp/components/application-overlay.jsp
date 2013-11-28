@@ -142,7 +142,7 @@
 
         <div>
             <div id="splash-status-update"></div>
-            <img id="splash-spinner" src="images/spinner/spinner3.gif" />
+            <img id="splash-spinner" src="images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
         </div>
     </div>
 </div>

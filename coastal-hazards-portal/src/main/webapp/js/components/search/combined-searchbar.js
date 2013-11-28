@@ -252,10 +252,10 @@ CCH.Objects.CombinedSearch = function (args) {
     me.displaySpinner = function () {
         var spinnerImage = $('<img />').attr({
                 src : me.DD_TOGGLE_SPINNER_IMG_LOCATION,
-                alt : '',
+                alt : 'Spinner Image',
                 id : 'app-navbar-search-spinner-image'
             });
-
+        spinnerImage.addClass("img-responsive");
         $('#' + me.SUBMIT_BUTTON_ID).empty();
         $('#' + me.SUBMIT_BUTTON_ID).append(spinnerImage);
     };

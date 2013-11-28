@@ -2,7 +2,7 @@
     <div id="app-navbar-inner" class="navbar-inner">
         <div class="container">
             <a href="." id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
-                <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
+                <img id="app-navbar-coop-logo-img" class="img-responsive" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
             </a>
             <%-- Playing with bootstrap here to show different text for the 
                  application title as the screen narrows --%>
@@ -76,13 +76,13 @@
 
         <div id="canned-views-row" class="row">
             <div class="well well-small col-md-4">
-                <a href="http://go.usa.gov/DmUw" target="_self"><img src="images/views/canned/historical.png" /><br /><b>Shoreline Change</b><br />Historical positions and rates of change</a>
+                <a href="http://go.usa.gov/DmUw" target="_self"><img src="images/views/canned/historical.png" class="img-responsive" alt="Historical Icon" /><br /><b>Shoreline Change</b><br />Historical positions and rates of change</a>
             </div>
             <div class="well well-small col-md-4">
-                <a href="http://go.usa.gov/DmUe" target="_self"><img src="images/views/canned/vulnerability.png" /><br /><b>Sea-Level Rise</b>Vulnerability</a>
+                <a href="http://go.usa.gov/DmUe" target="_self"><img src="images/views/canned/vulnerability.png" class="img-responsive" alt="Vulnerability Icon" /><br /><b>Sea-Level Rise</b>Vulnerability</a>
             </div>
             <div class="well well-small col-md-4">
-                <a href="http://go.usa.gov/DmPx" target="_self"><img src="images/views/canned/storms.png" /><br /><b>Extreme Storms</b>Coastal erosion hazards</a>
+                <a href="http://go.usa.gov/DmPx" target="_self"><img src="images/views/canned/storms.png" class="img-responsive" alt="Storms Icon" /><br /><b>Extreme Storms</b>Coastal erosion hazards</a>
             </div>
         </div>
 

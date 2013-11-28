@@ -122,7 +122,7 @@
 						<div class="row">
 							<div id="info-legend" class="well-small well col-md-6"></div>
 							<div id="info-graph" class='well well-small col-md-6'>
-								<img src=""></img>
+								<img class="img-responsive" alt="Graph Image" src="" />
 							</div>
 						</div>
 

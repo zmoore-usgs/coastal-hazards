@@ -1,9 +1,4 @@
 /* ---------------------------------------------------------------------- UI */
-/* Bootstrap Fix */
-img { 
-    max-width: none !important; 
-}
-
 html, body {
     overflow-y: auto;
     overflow-x: auto;
