@@ -4,7 +4,7 @@
 		<h3 id='item-search-modal-label'>Items Search</h3>
 	</div>
 	<div id='item-search-modal-body' class='modal-body'>
-		<div id='item-search-container' class='container-fluid'>
+		<div id='item-search-container' class='container'>
 
 			<div id='item-search-row-map' class="row-fluid">
 				<label for="item-search-map">Search by extent:</label>

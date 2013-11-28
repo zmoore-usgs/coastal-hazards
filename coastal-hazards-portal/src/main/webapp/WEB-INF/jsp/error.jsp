@@ -47,7 +47,7 @@
 			body {
 				min-width: 320px;
 			}
-			.container-fluid {
+			.container {
 				margin-top: 10px;
 			}
 
@@ -90,7 +90,7 @@
     </head>
 
     <body>
-		<div class="container-fluid">
+		<div class="container">
 			<div id="error-title-error-row" class="row-fluid">
 				<div id="error-code-container" class="span2"></div>
 				<div id="error-title-container" class="span10">USGS Coastal Change Hazards Portal</div>

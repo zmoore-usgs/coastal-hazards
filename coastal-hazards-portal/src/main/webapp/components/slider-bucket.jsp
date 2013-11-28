@@ -1,6 +1,6 @@
 <div id="application-slide-bucket-container" class="application-slide-container">
     <div id="application-slide-bucket-content" class="application-slide-content">
-        <div id="application-slide-bucket-content-container" class="container-fluid">
+        <div id="application-slide-bucket-content-container" class="container">
         </div>
     </div>
 </div>

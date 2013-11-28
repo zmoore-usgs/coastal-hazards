@@ -91,7 +91,7 @@
 			<jsp:param name="application-overlay-background-image" value="images/splash/splash_info.png" />
 		</jsp:include>
 		<%-- Content Here --%>
-		<div id="info-content" class="container-fluid">
+		<div id="info-content" class="container">
 			<div id="header-row" class="row-fluid">
 				<jsp:include page="template/USGSHeader.jsp">
 					<jsp:param name="relPath" value="" />

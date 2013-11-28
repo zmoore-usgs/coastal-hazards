@@ -9,7 +9,7 @@
 
 <%-- This element is used as a template for creating new items cards --%>
 <div id="application-card-template" class="hidden">
-    <div class="application-card-container container-fluid">
+    <div class="application-card-container container">
         
         <%-- Collapse Control --%>
         <%-- The job of this control is to close all child objects, then this container --%>

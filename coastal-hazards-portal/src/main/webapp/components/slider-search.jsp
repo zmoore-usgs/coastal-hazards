@@ -1,8 +1,8 @@
 <div id="application-slide-search-container" class="application-search-container">
     <div id="application-slide-search-content" class="application-slide-content">
-        <div id="application-slide-search-content-container" class="container-fluid">
-            <div id="application-slide-search-location-results-content-container" class="container-fluid"></div>
-            <div id="application-slide-search-product-results-content-container" class="container-fluid"></div>
+        <div id="application-slide-search-content-container" class="container">
+            <div id="application-slide-search-location-results-content-container" class="container"></div>
+            <div id="application-slide-search-product-results-content-container" class="container"></div>
         </div>
     </div>
 </div>

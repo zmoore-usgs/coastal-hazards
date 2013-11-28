@@ -233,7 +233,7 @@ CCH.Objects.Map = function(args) {
 			var marker = new OpenLayers.Marker(new OpenLayers.LonLat(x, y), icon);
 
 			// Build HTML
-			var container = $('<div />').addClass('container-fluid').attr('id', 'location-container');
+			var container = $('<div />').addClass('container').attr('id', 'location-container');
 			var table = $('<table />').addClass('table table-hover table-condensed');
 			table.append(
 					$('<thead>').append(
