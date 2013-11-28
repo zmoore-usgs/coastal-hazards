@@ -1,7 +1,4 @@
 /* Bootstrap Fix */
-img { 
-    max-width: none !important; 
-}
 
 #map {
 	height: 400px;

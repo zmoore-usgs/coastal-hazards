@@ -9,14 +9,6 @@ html, body {
 }
 
 /* 
-    Because of a conflict between twitter bootstrap and openlayers
-    See: https://github.com/openlayers/openlayers/pull/755
-*/
-img { 
-    max-width: none !important; 
-}
-
-/* 
     320 pixels is the minimum width that this application will support.
     Anything smaller, scroll the app
 */
