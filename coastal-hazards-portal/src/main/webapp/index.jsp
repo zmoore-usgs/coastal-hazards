@@ -44,7 +44,6 @@
         <jsp:include page="components/slider-bucket.jsp"></jsp:include>
         <jsp:include page="components/slider-search.jsp"></jsp:include>
             <div id="application-container" class="container">
-
                 <div id="header-row" class="row">
                 <jsp:include page="components/app-navbar.jsp"></jsp:include>
                 </div>

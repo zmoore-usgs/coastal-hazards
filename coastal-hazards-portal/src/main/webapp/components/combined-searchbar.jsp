@@ -1,21 +1,27 @@
 <%-- The combined search container - gets added to the header bar --%>
 <div id="app-navbar-search-container" class="app-navbar-item-container">
-    <div id="app-navbar-search-control" class="input-group">
-        <div class="btn-group">
-            <a id='app-navbar-search-dropdown-toggle' class="btn btn-lg dropdown-toggle" data-toggle="dropdown" href="#">
-                <span id="app-navbar-search-container-select-button-text">All</span>
+    <div class="input-group">
+        <div class="input-group-btn">
+            <button id='app-navbar-search-dropdown-toggle' type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                All
                 <span class="caret"></span>
-            </a>
+            </button>
             <ul id="app-navbar-search-dropdown-menu" class="dropdown-menu">
-                <li class="disabled app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-all" title="All" tabindex="-1" href="#">All</a></li>
-                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-location" title="Location" tabindex="-1" href="#">Location</a></li>
-                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products" title="Products" tabindex="-1" href="#">Products</a></li>
-                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-extreme-storms" title="Extreme Storms" tabindex="-1" href="#">Products - Extreme Storms</a></li>
-                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-shoreline-vulnerability" title="Shoreline Change" tabindex="-1" href="#">Products - Shoreline Change</a></li>
-                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-sealevel-historical" title="Sea-level Rise" tabindex="-1" href="#">Products - Sea-level Rise</a></li>
+                <li class="disabled app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-all" title="All" href="#">All</a></li>
+                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-location" title="Location" href="#">Location</a></li>
+                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products" title="Products" href="#">Products</a></li>
+                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-extreme-storms" title="Extreme Storms" href="#">Products - Extreme Storms</a></li>
+                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-shoreline-vulnerability" title="Shoreline Change" href="#">Products - Shoreline Change</a></li>
+                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-sealevel-historical" title="Sea-level Rise" href="#">Products - Sea-level Rise</a></li>
             </ul>
+        </div> 
+        
+        <%-- Input --%>
+        <input id="app-navbar-search-input" type="text"  class="form-control" placeholder="Search...">
+
+        <%-- Go Button --%>
+        <div class="input-group-btn">
+            <button id="app-navbar-search-submit-button" class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
         </div>
-        <input id="app-navbar-search-input" type="text" placeholder="Search..." />
-        <button id="app-navbar-search-submit-button" class="btn btn-lg" type="button"><i class="fa fa-search"></i></button>
     </div>
 </div>

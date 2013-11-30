@@ -45,15 +45,15 @@ CCH.Objects.CombinedSearch = function (args) {
     });
 
     me.resizeContainer = function () {
-        var parentContainerWidth = $('#' + me.CONTAINER_ID).parent()[0].clientWidth,
-            parentContainerVisibleItems = $('#' + me.CONTAINER_ID).parent().children(':not(.hide)'),
-            childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
-                return $(el).outerWidth(true);
-            }),
-            currentInputWidth = $('#' + me.INPUT_ID).width(),
-            idealInputWidth = parentContainerWidth - (childrenCombinedWidth - currentInputWidth) - 10;
-
-        $('#' + me.INPUT_ID).width(idealInputWidth);
+//        var parentContainerWidth = $('#' + me.CONTAINER_ID).parent()[0].clientWidth,
+//            parentContainerVisibleItems = $('#' + me.CONTAINER_ID).parent().children(':not(.hide)'),
+//            childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
+//                return $(el).outerWidth(true);
+//            }),
+//            currentInputWidth = $('#' + me.INPUT_ID).width(),
+//            idealInputWidth = parentContainerWidth - (childrenCombinedWidth - currentInputWidth) - 10;
+//
+//        $('#' + me.INPUT_ID).width(idealInputWidth);
     };
 
     me.submitButtonClicked = function (evt, args) {

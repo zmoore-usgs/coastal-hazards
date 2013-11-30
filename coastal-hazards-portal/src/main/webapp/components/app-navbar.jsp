@@ -1,27 +1,27 @@
-<div id="app-navbar-container" class="col-md-12 navbar">
-    <div id="app-navbar-inner" class="navbar-inner">
-        <div class="container">
-            <a href="." id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
-                <img id="app-navbar-coop-logo-img" class="img-responsive" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
-            </a>
-            <%-- Playing with bootstrap here to show different text for the 
-                 application title as the screen narrows --%>
-            <div id="app-navbar-site-title-container" class="app-navbar-item-container">
-                <h3 class="app-navbar-title visible-md hidden-sm hidden-xs">USGS Coastal Change Hazards Portal</h3>
-                <h3 class="app-navbar-title hidden-md visible-sm hidden-xs">Coastal Change Hazards Portal</h3>
-                <h3 class="app-navbar-title hidden-md hidden-sm visible-xs">CCH</h3>
-            </div>
+<%-- Logo --%>
+<a href="." id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+    <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
+</a>
 
-            <jsp:include page="combined-searchbar.jsp"></jsp:include>
+<%-- Application Title --%>
+<div id="app-navbar-site-title-container" class="app-navbar-item-container">
+    <div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">USGS Coastal Change Hazards Portal</div>
+    <div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">Coastal Change Hazards Portal</div>
+    <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">CCH</div>
+</div>
 
-            <jsp:include page="navbar-bucket.jsp"></jsp:include>
+<%-- Combination Search Bar --%>
+<jsp:include page="combined-searchbar.jsp"></jsp:include>
 
-                <div id='app-navbar-help-container' class='app-navbar-item-container'>
-                    <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="fa fa-info-circle"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
+<%-- Bucket Control --%>
+<jsp:include page="navbar-bucket.jsp"></jsp:include>
+
+<%-- Help Button --%>
+<div class='app-navbar-item-container'>
+    <span id='app-navbar-help-container'>
+        <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="fa fa-info-circle"></i></a>
+    </span>
+</div>
 
 <%-- This modal window appears when a user selects to share their session. It includes the 
     url for their current view (calculated on the fly) and a tweet button --%>

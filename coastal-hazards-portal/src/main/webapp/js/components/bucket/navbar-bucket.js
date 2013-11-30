@@ -16,9 +16,9 @@ CCH.Objects.Bucket = function (args) {
     me.BUCKET_POPULATED_CLASS = 'app-navbar-bucket-button-container-populated';
     me.BUCKET_UNPOPULATED_CLASS = 'app-navbar-bucket-button-container-unpopulated';
     me.INITIAL_BUCKET_COUNT_MARGIN_LEFT = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left');
-    me.FONT_SIZE_STRING = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('font-size');
-    me.FONT_SIZE = parseInt(me.FONT_SIZE_STRING.substring(0, me.FONT_SIZE_STRING.indexOf('px')), 10);
-    me.MARGIN_WIDTH = me.FONT_SIZE / 2.5;
+//    me.FONT_SIZE_STRING = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('font-size');
+//    me.FONT_SIZE = parseInt(me.FONT_SIZE_STRING.substring(0, me.FONT_SIZE_STRING.indexOf('px')), 10);
+    me.MARGIN_WIDTH = 0;//me.FONT_SIZE / 2.5;
     me.bucket = [];
 
     me.countChanged = function () {

@@ -2,103 +2,71 @@
     Deals with the navigation bar at the top of the application 
 */
 
-#app-navbar-container {
+/* Header container ***********************************************************/
+#header-row {
     z-index: 1005;
-    /* override bootstrap default behavior */
-    margin-bottom: 4px; 
+    margin-bottom: 4px;
+    background-color: red;
+    height: 55px;
+}
+/******************************************************************************/
+
+/* Every item in the nav bar is contained within this class */
+#header-row .app-navbar-item-container {
+    float: left;
+    max-height: 55px;
 }
 
-/* 
-    Every item in the nav bar is contained within this class
-*/
-.app-navbar-item-container {
-    height: 50px;
-    display: inline;
-
+/* Logo ***********************************************************************/
+#header-row > .app-navbar-item-container:first-child {
+    margin-right: 15px;
+    height: 55px;
+    width: 126px;
 }
+#header-row > .app-navbar-item-container:first-child > img {
+    height: 56px;
+}
+/******************************************************************************/
 
-.app-navbar-title {
-    color: #FFFFFF;
+
+/* Title **********************************************************************/
+#header-row > .app-navbar-item-container:nth-child(2) {
+    vertical-align: middle;
+    margin-top: 5px;
     padding-right: 15px;
 }
 
-#app-navbar-help-container {
+#header-row > .app-navbar-item-container:nth-child(2) div {
+    color: #FFFFFF;
+    font-size: 2em;
+}
+/******************************************************************************/
+
+
+/* Help Icon ******************************************************************/
+#header-row > .app-navbar-item-container:nth-child(5) > span {
     font-size: 32px;
     height: 50px;
     position: relative;
     top: 8px;
 }
 
-#app-navbar-help-container a:hover {
+#header-row > .app-navbar-item-container:nth-child(5) > span > a:hover {
     background-color: #345280;
 }
 
-#app-navbar-help-container i {
+#header-row > .app-navbar-item-container:nth-child(5) > span > a > i {
     display: inherit;
     color: #FFFFFF;
     text-decoration: none;
 }
 
-#app-navbar-help-container i:hover {
+#header-row > .app-navbar-item-container:nth-child(5) > span > a > i:hover {
     cursor: pointer;
     color: #D6DCE6;
 }
-
+/******************************************************************************/
 
 @media (max-width: 440px) {
-    #app-navbar-help-search-container {
-        margin-right: -10px;
-    }
 
-}
-
-#app-navbar-site-title-container {
-    float: left;
-    height: 45px;
-    margin-top: 5px;
-}
-
-#app-navbar-site-title-container h3 {
-    margin-top: 0px;
-    margin-bottom: 0px;
-    line-height: none;
-}
-
-#app-navbar-coop-logo-img {
-    height: 100%;
-}
-
-#app-navbar-coop-logo-img-container {
-    margin-right: 15px;
-    height: 51px;
-    width: 126px;
-    margin-right: 15px;
-    float: left;
-}
-
-#app-navbar-inner {
-    -webkit-border-radius: 0;
-    -moz-border-radius: 0;
-    border-radius: 0;
-    background-color: #345280 !important;
-    background-image: none; 
-    background-repeat: no-repeat;
-    border: none;
-    box-shadow: none;
-    padding-left: 0px;
-    filter: none; /* Fixes an IE issue that bootstrap adds */
-    height: 50px;
-    padding-right: 0px;
-}
-
-#app-navbar-pin-control-icon {
-    font-size: 2em;
-}
-
-#app-navbar-pin-control-caret {
-    font-size: 2em;
-}
-
-#results-popover-geolocation-results-container {
-    position : relative;
 }

@@ -1,10 +1,12 @@
 #app-navbar-search-container {
     margin-right: 5px; 
+    margin-top: 10px;
+    width: 20%; // This will change in js
 }
 
-/*
-Make sure this appears above map elements
-*/
+
+/* Make sure this appears above map elements */
+
 #app-navbar-search-container .dropdown-menu {
     z-index: 1110;
 }
@@ -12,9 +14,14 @@ Make sure this appears above map elements
     z-index: 1110;
 }
 
+/* Input Box */
+#app-navbar-search-container>.input-group>input {
+}
 /*
+
+
 Resets bootstrap's max-width requirement for popovers'
-*/
+
 #app-navbar-search-context-popover.popover {
     max-width: none !important;
 }
@@ -41,4 +48,4 @@ Resets bootstrap's max-width requirement for popovers'
 #app-navbar-search-input-context-menu-items-well {
     display: flex;
     justify-content: space-between;
-}
+}*/
