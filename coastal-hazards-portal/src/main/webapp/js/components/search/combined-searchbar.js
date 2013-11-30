@@ -29,6 +29,7 @@ CCH.Objects.CombinedSearch = function (args) {
     // Application Navbar id/class string constants
     me.CONTAINER_ID = args.containerId || 'app-navbar-search-container';
     me.DD_TOGGLE_ID = args.toggleId || 'app-navbar-search-dropdown-toggle';
+    me.DD_TOGGLE_BUTTON_SELECTOR = '#' + me.CONTAINER_ID + '> div > div:first-child > button';
     me.DD_TOGGLE_MENU_ITEMS_CLASS = args.toggleMenuItemClass || 'app-navbar-search-dropdown-item';
     me.DD_TOGGLE_TEXT_CONTAINER_ID = args.toggleTextContainerId || 'app-navbar-search-container-select-button-text';
     me.DD_TOGGLE_MENU_ID = args.toggleMenuId || 'app-navbar-search-dropdown-menu';
@@ -50,10 +51,12 @@ CCH.Objects.CombinedSearch = function (args) {
             parentContainerWidth = parentContainer.width(),
             // Get all visible, non-modal children of the parent that are also not my container
             parentContainerVisibleItems = parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
+            // Get the width of child containers
             childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
                 return $(el).outerWidth(true);
             }),
-            idealInputWidth = parentContainerWidth - childrenCombinedWidth - 15;
+            containerMarginRight = 15,
+            idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
 
         container.css({width : idealInputWidth});
     };
@@ -76,11 +79,14 @@ CCH.Objects.CombinedSearch = function (args) {
     me.criteriaChanged = function (args) {
         args = args || {};
 
-        var toggleTextContainer = $('#' + me.DD_TOGGLE_TEXT_CONTAINER_ID),
+        var toggleTextContainer = $(me.DD_TOGGLE_BUTTON_SELECTOR),
             criteria = args.criteria;
 
         // Put the text for the selected item in the menu
         toggleTextContainer.html(criteria);
+        toggleTextContainer.append(
+                $('<span />').append(
+                $('<i />').addClass('fa fa-caret-down')));
     };
 
     me.performSpatialSearch = function (args) {
@@ -278,28 +284,33 @@ CCH.Objects.CombinedSearch = function (args) {
         me.submitButtonClicked(evt);
     });
 
-    // Any link that is enabled and clicked, register that as a change
-    $('#' + me.DD_TOGGLE_MENU_ID + ' li a[tabindex="-1"]').on('click', function (evt) {
+    // Any link that is clicked, register that as a change
+    $('#' + me.CONTAINER_ID + '> div > div > ul li > a').on('click', function (evt) {
         var target = evt.currentTarget,
             criteria = target.title,
             parentListEl = target.parentElement,
             allItems = $('.' + me.DD_TOGGLE_MENU_ITEMS_CLASS),
             // The id has the type as the last word
-            type = evt.target.id.split('-').last();
+            type = evt.target.id.split('-').last(),
+            isDisabled = $(target).parent().hasClass('disabled');
 
-        // First, remove the disabled class from all list elements
-        allItems.removeClass('disabled');
+        if (!isDisabled) {
+            // First, remove the disabled class from all list elements
+            allItems.removeClass('disabled');
 
-        // Add the disabled class to the selected item
-        $(parentListEl).addClass('disabled');
+            // Add the disabled class to the selected item
+            $(parentListEl).addClass('disabled');
 
-        me.selectedOption = type;
+            me.selectedOption = type;
 
-        me.criteriaChanged({
-            criteria : criteria
-        });
+            me.criteriaChanged({
+                criteria : criteria
+            });
 
-        me.resizeContainer();
+//            me.resizeContainer();
+        } else {
+            evt.stopImmediatePropagation();
+        }
     });
 
     $(window).on('resize', me.resizeContainer);

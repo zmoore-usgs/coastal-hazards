@@ -3,8 +3,7 @@
     <div class="input-group">
         <div class="input-group-btn">
             <button id='app-navbar-search-dropdown-toggle' type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                All
-                <span class="caret"></span>
+                All<span><i class="fa fa-caret-down"></i></span>
             </button>
             <ul id="app-navbar-search-dropdown-menu" class="dropdown-menu">
                 <li class="disabled app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-all" title="All" href="#">All</a></li>
