@@ -13,16 +13,23 @@ html, body {
 }
 
 /*
-    This resets bootstrap's row margins of -15px on each side
+    This resets bootstrap's row margins of -15px on each side - This is useful 
+    if we'd like to see the top and bottom rows extend all the way to the edge 
+    of the container - If we want to see that, remove this rule'
 */
-/*#content-row.row,*/
 #header-row.row,
 #footer-row.row {
     margin-left: auto;
     margin-right: auto;
 }
 
-#footer-row .footer-col {
+#header-row {
+    background-color: #345280 !important;
+    z-index: 1005;
+    margin-bottom: 4px;
+    height: 55px;
+}
+#footer-row > div {
     background-color: #345280 !important;
     height: 20px;
     margin-top: 5px;
@@ -35,7 +42,9 @@ html, body {
 }
 
 @media (min-width: 992px) {
-
+    #application-container {
+        width: 100%;
+    }
 }
 
 

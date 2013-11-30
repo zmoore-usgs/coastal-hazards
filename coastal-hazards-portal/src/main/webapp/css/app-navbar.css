@@ -2,15 +2,6 @@
     Deals with the navigation bar at the top of the application 
 */
 
-/* Header container ***********************************************************/
-#header-row {
-    z-index: 1005;
-    margin-bottom: 4px;
-    background-color: red;
-    height: 55px;
-}
-/******************************************************************************/
-
 /* Every item in the nav bar is contained within this class */
 #header-row .app-navbar-item-container {
     float: left;
