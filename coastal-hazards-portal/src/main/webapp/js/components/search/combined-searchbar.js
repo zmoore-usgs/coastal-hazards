@@ -34,7 +34,7 @@ CCH.Objects.CombinedSearch = function (args) {
     me.DD_TOGGLE_MENU_ID = args.toggleMenuId || 'app-navbar-search-dropdown-menu';
     me.DD_TOGGLE_MENU_ITEMS_CHOICE_SUBMENU_ID = 'app-navbar-search-dropdown-toggle-choice-items-all';
     me.DD_TOGGLE_MENU_ITEMS_CHOICE_ALL_ID = 'app-navbar-search-dropdown-toggle-choice-item-all';
-    me.INPUT_ID = args.inputId || 'app-navbar-search-input';
+    me.INPUTBOX_SELECTOR = '#' + me.CONTAINER_ID + ' div > input';
     me.SUBMIT_BUTTON_ID = args.submitButtonId || 'app-navbar-search-submit-button';
     me.DD_TOGGLE_SPINNER_IMG_LOCATION = 'images/spinner/ajax-loader.gif';
     me.selectedOption = 'all';
@@ -45,21 +45,24 @@ CCH.Objects.CombinedSearch = function (args) {
     });
 
     me.resizeContainer = function () {
-//        var parentContainerWidth = $('#' + me.CONTAINER_ID).parent()[0].clientWidth,
-//            parentContainerVisibleItems = $('#' + me.CONTAINER_ID).parent().children(':not(.hide)'),
-//            childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
-//                return $(el).outerWidth(true);
-//            }),
-//            currentInputWidth = $('#' + me.INPUT_ID).width(),
-//            idealInputWidth = parentContainerWidth - (childrenCombinedWidth - currentInputWidth) - 10;
-//
-//        $('#' + me.INPUT_ID).width(idealInputWidth);
+        var container = $('#' + me.CONTAINER_ID),
+            parentContainer = container.parents().first(),
+            parentContainerWidth = parentContainer.width(),
+            // Get all visible, non-modal children of the parent that are also not my container
+            parentContainerVisibleItems = parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
+            childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
+                return $(el).outerWidth(true);
+            }),
+            idealInputWidth = parentContainerWidth - childrenCombinedWidth - 15;
+
+        container.css({width : idealInputWidth});
     };
 
     me.submitButtonClicked = function (evt, args) {
         args = args || {};
 
-        var criteria = $('#' + me.INPUT_ID).val(),
+        var inputBox = $(me.INPUTBOX_SELECTOR),
+            criteria = inputBox.val(),
             type = me.selectedOption;
 
         if (criteria) {
@@ -302,7 +305,7 @@ CCH.Objects.CombinedSearch = function (args) {
     $(window).on('resize', me.resizeContainer);
 
     // Clicking enter in the input box should submit the search
-    $('#' + me.INPUT_ID).on('keyup', function (evt) {
+    $(me.INPUTBOX_SELECTOR).on('keyup', function (evt) {
         var keyCode = evt.keyCode,
             enterKeyCode = 13;
 

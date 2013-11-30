@@ -15,6 +15,7 @@
 #header-row .app-navbar-item-container {
     float: left;
     max-height: 55px;
+    display: table;
 }
 
 /* Logo ***********************************************************************/
