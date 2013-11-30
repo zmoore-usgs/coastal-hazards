@@ -59,8 +59,9 @@ CCH.Objects.Accordion = function (args) {
             titleSmall = titleRow.find('.application-card-title-container-small').html(),
             group = $('<div />').addClass('panel panel-default'),
             heading = $('<div />').addClass('panel-heading'),
+            titleContainer = $('<h4 />').addClass('panel-title'),
             toggleTarget = $('<a />').addClass('accordion-toggle'),
-            accordionBody = $('<div />').addClass('accordion-body collapse'),
+            accordionBody = $('<div />').addClass('panel-collapse collapse'),
             bodyInner = $('<div />').addClass('panel-body'),
             accordionBodyId = 'accordion-body-' + id;
 
@@ -81,7 +82,8 @@ CCH.Objects.Accordion = function (args) {
         titleRow.remove();
 
         group.append(heading, accordionBody);
-        heading.append(toggleTarget);
+        titleContainer.append(toggleTarget);
+        heading.append(titleContainer);
         accordionBody.append(bodyInner);
         
         return group;
