@@ -17,8 +17,8 @@
 <html lang="en"> 
     <head>
         <jsp:include page="components/meta-tags.jsp"></jsp:include>
-            <title>USGS Coastal Change Hazards Portal</title>
-            <link type="text/css" rel="stylesheet" href="webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery.ui<%= development ? ".all" : ".min"%>.css" />
+        <title>USGS Coastal Change Hazards Portal</title>
+        <link type="text/css" rel="stylesheet" href="webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery.ui<%= development ? ".all" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="css/index/custom.css" />
@@ -49,8 +49,8 @@
                 </div>
             </div>
 
-        <jsp:include page="components/slider/slider-bucket.jsp"></jsp:include>
-        <jsp:include page="components/slider/slider-search.jsp"></jsp:include>
+        <jsp:include page="components/slides/slider-bucket.jsp"></jsp:include>
+        <jsp:include page="components/slides/slider-search.jsp"></jsp:include>
         <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="webjars/jquery-ui/1.10.3/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
