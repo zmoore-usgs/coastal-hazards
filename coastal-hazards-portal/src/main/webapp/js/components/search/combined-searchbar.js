@@ -307,13 +307,13 @@ CCH.Objects.CombinedSearch = function (args) {
                 criteria : criteria
             });
 
-//            me.resizeContainer();
+            me.resizeContainer();
         } else {
             evt.stopImmediatePropagation();
         }
     });
 
-    $(window).on('resize', me.resizeContainer);
+    $(window).on('cch.ui.resized', me.resizeContainer);
 
     // Clicking enter in the input box should submit the search
     $(me.INPUTBOX_SELECTOR).on('keyup', function (evt) {

@@ -134,6 +134,7 @@ CCH.Objects.ItemsSlide = function (args) {
             contentRow = map.parent(),
             isSmall = me.isSmall(),
             slideContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
+            slideContainerClasses = slideContainer.attr('class').split(' '),
             slideTab = $('#' + me.SLIDE_TAB_ID),
             slideContent = $('#' + me.SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth(),
@@ -149,7 +150,7 @@ CCH.Objects.ItemsSlide = function (args) {
         if (isSmall) {
             // When I am switched to small mode, I want to remove the slideContainer's 
             // span class because it's no longer a span.
-            slideContainer.removeClass('col-md-' + me.desktopSpanSize);
+            slideContainer.removeClass('col-lg-3 col-md-4');
             
             // Then there's special sizing depending on if I'm closed or not. 
             if (me.isClosed) {
@@ -182,8 +183,11 @@ CCH.Objects.ItemsSlide = function (args) {
                 left: slideContainer.offset().left + borderSize
             });
         } else {
+            slideContent.css({
+                width: '',
+                display : ''
+            });
             slideContainer.
-                addClass('col-md-' + me.desktopSpanSize).
                 css({
                     'height' : contentRow.height(),
                     'position' : '',
@@ -191,10 +195,10 @@ CCH.Objects.ItemsSlide = function (args) {
                     'left' : '',
                     'width' : ''
                 });
-            slideContent.css({
-                width: '',
-                display : ''
-            });
+                    
+            if (slideContainerClasses.length === 1) {
+                slideContainer.addClass('col-lg-3 col-md-4');
+            }
         }
     };
 
