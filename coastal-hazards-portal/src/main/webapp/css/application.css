@@ -71,7 +71,7 @@ html, body {
 }
 
 @media (min-width: 768px) {
-    .container {
+    #application-container {
         width: 100%;
     }
 }
