@@ -1,120 +1,177 @@
-/* Bootstrap Fix */
-img { 
-    max-width: none !important; 
-}
-
-#map {
-	height: 400px;
-}
-
-body {
-	padding-left: 10px !important;
-	padding-right:  10px !important;
-}
-
-#cch-ui-legend-div {
-	max-height: 300px;
-	overflow-y: auto;
-}
-
-
-.cch-ui-legend-table-body-div-color {
-	height: 10px;
-	border: #000000;
-	border-style: solid;
-	border-width: 1px;
-	border-radius: 10px;
-	-moz-border-radius: 10px;
-	-webkit-botder-radius: 10px;
-}
-
-#cch-ui-legend-table-caption {
-	font-size: 1.2em;
-}
-
-#cch-ui-legend-table {
-	table-layout: fixed;
-}
-
-#cch-ui-legend-table tbody td {
-	padding : 2px;
-	vertical-align: middle;
-}
-
-#cch-ui-legend-table tbody td:nth-child(3) {
-	border-left: none;
-}
-
-#info-row-control iframe{
-	vertical-align: middle;
-	margin-left: 10px;
-}
-
-#info-summary {
-	font-size:1.3em;
-	line-height: 1.5em;
-}
-
-.info-title {
-	text-align: center;
-	font-size: 1.7em;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	font-weight: 600;
-	letter-spacing: 3px;
-	color: #666;
-	line-height: 1em;
-}
-
-#metadata-link .btn {
-	margin-left : 5px;
-	margin-right : 5px;
+/* ---------------------------------------------------------------------- UI */
+html, body {
+    /* While I designed the app to work with both overflows set to auto,
+       for some reason, IE9 still gives me scroll bars which messes everything
+       up :( so these need to be set to hidden */
+    overflow-y: auto;
+    overflow-x: auto;
+    /* 
+    320 pixels is the minimum width and 600px is
+    the minimum height that this application will support.
+    Anything smaller, scroll the app
+    */
+    min-width: 320px;
+    min-height: 600px;
+    padding-left: 10px !important;
+    padding-right:  10px !important;
+    height: 100%;
 }
 
 /* Fixes pink tile issue in OpenLayers map */
 .olImageLoadError {
-	display : none !important;
+    display : none !important;
 }
 
-#info-graph img {
-	height: 100%;
-	width: 100%;
+/* Container holding the main view */
+.container {
+    width: 100%;
 }
 
-#info-graph {
-	text-align: center;
-	height: 300px;
+
+/* Header Row */
+.container > div.row:first-child {
+    background-color: #345280 !important;
+    z-index: 1005;
+    margin-bottom: 4px;
+    height: 55px;
 }
+
+/* Item Title Row */
+.container > div.row:nth-child(2) {
+    text-align: center;
+    font-size: 1.7em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: #666;
+    line-height: 1em;
+}
+
+/* Every item in the header */
+.container > div.row:first-child > .app-navbar-item-container {
+    float: left;
+    max-height: 55px;
+    display: table;
+}
+/* Logo */
+.container > div.row:first-child > .app-navbar-item-container:first-child {
+    margin-right: 15px;
+    height: 55px;
+    width: 126px;
+}
+.container > div.row:first-child > .app-navbar-item-container:first-child > img {
+    height: 56px;
+}
+/* Title */
+.container > div.row:first-child > .app-navbar-item-container:nth-child(2) {
+    vertical-align: middle;
+    margin-top: 5px;
+    padding-right: 15px;
+}
+.container > div.row:first-child > .app-navbar-item-container:nth-child(2) div {
+    color: #FFFFFF;
+    font-size: 2em;
+}
+
+/* Map */
+.container > div.row:nth-child(3) > div:first-child > div > div.olMap {
+    height: 400px;
+}
+
+/* Legend div */
+.container > div.row:nth-child(3) > div:first-child > div > :nth-child(3) > :first-child > div {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/*  Legend Table */
+.container > div.row:nth-child(3) > div:first-child > div:nth-child(2) table {
+    table-layout: fixed;
+}
+/* Legend Table cells for the left column */
+.container > div.row:nth-child(3) > div:first-child > div:nth-child(2) table > tbody >tr > td:nth-of-type(odd) > div {
+    height: 10px;
+    border: #000000;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-botder-radius: 10px;
+}
+/* Legend Table Caption */
+.container > div.row:nth-child(3) > div:first-child > div:nth-child(2) table > caption {
+    font-size: 1.2em;
+}
+/* Every Table Cell */
+.container > div.row:nth-child(3) > div:first-child > div:nth-child(2) table > tbody > tr > td {
+    padding : 2px;
+    vertical-align: middle;
+}
+
+/* Social Media Icon */
+.container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+/* Info Graph */
+.container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
+    text-align: center;
+    height: 300px;
+}
+.container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) img {
+    height: 100%;
+    width: 100%;
+}
+
+/* Summary container */
+.container > div.row:nth-child(3) > div:nth-child(2) > div > div {
+    font-size:1.3em;
+    line-height: 1.5em;
+}
+
 
 @media (max-width: 440px) {
-	#info-title {
-		font-size: 0.65em;
-	}
-	
-	#info-row-control iframe{
-		margin-left: 5px;
-	}
+    /* Item Title Row*/
+    .container > div.row:nth-child(2) {
+        font-size: 0.65em;
+    }
 
-	#map {
-		height : 300px;
-	}
-	
-	.olControlZoom {
-		display: none;
-	}
+    /* Social Media Icon */
+    .container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
+        margin-left: 5px;
+    }
+
+    .container > div.row:nth-child(3) > div:first-child > div > div.olMap {
+        height : 300px;
+    }
+
+    .container > div.row:nth-child(3) > div:first-child > div div.olMap .olControlZoom {
+        display: none;
+    }
 }
 
-@media (max-width: 766px) {
-	#info-row-control iframe{
-		margin-top: 5px;
-		margin-left: 5px;
-	}
-	
-	#info-graph {
-		height: 100px;
-	}
+@media (min-width: 992px) {
+    .container > div.row:nth-child(3) > div:nth-child(2) div.row {
+        margin-left: 15px;
+    }
+}
 
-	#cch-ui-legend-div {
-		max-height: none;
-	}
+@media (max-width: 991px) {
+    /* Social Media Icon */
+    .container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
+        margin-top: 5px;
+        margin-left: 5px;
+    }
+
+    /* Info Graph */
+    .container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
+        height: 100px;
+    }
+
+    /* Legend div */
+    .container > div.row:nth-child(3) > div:first-child > div:nth-child(2) > div:first-child > div {
+        max-height: none;
+    }
 }

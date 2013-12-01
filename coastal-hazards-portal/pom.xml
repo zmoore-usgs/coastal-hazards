@@ -42,17 +42,13 @@
             <groupId>gov.usgs.cida</groupId>
         </dependency>
         <dependency>
-            <groupId>gov.usgs.cida.jslibs</groupId>
-            <artifactId>usgs-template</artifactId>
-            <type>war</type>
-        </dependency>
-        <dependency>
             <groupId>gov.usgs.cida</groupId>
             <artifactId>dynamicProperties</artifactId>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
+            <version>3.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>

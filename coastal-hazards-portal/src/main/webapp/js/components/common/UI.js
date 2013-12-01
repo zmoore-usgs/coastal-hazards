@@ -50,7 +50,7 @@ CCH.Objects.UI = function (args) {
     me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId || 'application-slide-bucket-container';
     me.SEARCH_SLIDE_CONTAINER_ID = args.slideSearchContainerId || 'application-slide-search-container';
 
-    me.magicResizeNumber = 767;
+    me.magicResizeNumber = 992;
     me.minimumHeight = args.minimumHeight || 480;
     me.previousWidth = $(window).width();
     me.bucket = new CCH.Objects.Bucket();
@@ -313,11 +313,11 @@ CCH.Objects.UI = function (args) {
         var continueLink = $('<a />').attr({
             'href': CCH.CONFIG.contextPath,
             'role': 'button'
-        }).addClass('btn btn-large').html('<i class="fa fa-refresh"></i> Click to continue'),
+        }).addClass('btn btn-lg').html('<i class="fa fa-refresh"></i> Click to continue'),
             emailLink = $('<a />').attr({
                 'href': args.mailTo,
                 'role': 'button'
-            }).addClass('btn btn-large').html('<i class="fa fa-envelope"></i> Contact Us');
+            }).addClass('btn btn-lg').html('<i class="fa fa-envelope"></i> Contact Us');
 
         splashUpdate(args.splashMessage);
 

@@ -1,38 +1,27 @@
-<div id="app-navbar-container" class="span12 navbar">
-    <div id="app-navbar-inner" class="navbar-inner">
-        <div class="container">
-            <a href="." id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
-                <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
-            </a>
-            <%-- Playing with bootstrap here to show different text for the 
-                 application title as the screen narrows --%>
-            <div id="app-navbar-site-title-container" class="app-navbar-item-container">
-                <h3 class="app-navbar-title visible-desktop hidden-tablet hidden-phone">USGS Coastal Change Hazards Portal</h3>
-                <h3 class="app-navbar-title hidden-desktop visible-tablet hidden-phone">Coastal Change Hazards Portal</h3>
-                <h3 class="app-navbar-title hidden-desktop hidden-tablet visible-phone">CCH</h3>
-            </div>
+<%-- Logo --%>
+<a href="." id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+    <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
+</a>
 
-            <jsp:include page="combined-searchbar.jsp"></jsp:include>
+<%-- Application Title --%>
+<div id="app-navbar-site-title-container" class="app-navbar-item-container">
+    <div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">USGS Coastal Change Hazards Portal</div>
+    <div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">Coastal Change Hazards Portal</div>
+    <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">CCH</div>
+</div>
 
-            <jsp:include page="navbar-bucket.jsp"></jsp:include>
+<%-- Combination Search Bar --%>
+<jsp:include page="combined-searchbar.jsp"></jsp:include>
 
-                <div id='app-navbar-help-container' class='app-navbar-item-container'>
-                    <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="fa fa-info-circle"></i></a>
-                </div>
+<%-- Bucket Control --%>
+<jsp:include page="navbar-bucket.jsp"></jsp:include>
 
-                <!--
-                
-                            <div id="app-navbar-pin-control" class="btn-group app-navbar-item-container">
-                                <button id='app-navbar-pin-control-button' class="btn btn-mini disabled"><i id='app-navbar-pin-control-icon' class="icon-pushpin muted"></i>&nbsp;<span id='app-navbar-pin-control-pincount'>0</span></button>
-                                <button id='app-navbar-pin-control-dropdown-button' class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown"><span id='app-navbar-pin-control-caret' class="icon-caret-down"></span></button>
-                                <ul class="dropdown-menu">
-                                    <li id='app-navbar-pin-control-clear-li'><a id='app-navbar-pin-control-clear' href="#">Clear View</a></li>
-                                    <li id='app-navbar-pin-control-share-li'><a tabindex="-1" data-toggle="modal" role="button" href="#shareModal">Share View</a></li>
-                                </ul>
-                            </div>-->
-            </div>
-        </div>
-    </div>
+<%-- Help Button --%>
+<div class='app-navbar-item-container'>
+    <span id='app-navbar-help-container'>
+        <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="fa fa-info-circle"></i></a>
+    </span>
+</div>
 
 <%-- This modal window appears when a user selects to share their session. It includes the 
     url for their current view (calculated on the fly) and a tweet button --%>
@@ -42,19 +31,19 @@
         <h4 id="modal-label">Share Your Coastal Change Hazards Portal View With Others</h4>
     </div>
     <div class="modal-body">
-        <div class="row-fluid">
+        <div class="row">
             <div class="well well-small">
                 <div id="modal-share-summary-url-inputbox-div">
                     <input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." />
                 </div>
-                <a id="modal-share-summary-url-button" class="btn" target="portal_view_window" role="button">View In Portal</a>
+                <a id="modal-share-summary-url-button" class="btn btn-default" target="portal_view_window" role="button">View In Portal</a>
 
             </div>
             <span class="pull-right" id='multi-card-twitter-button'></span>
         </div>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn"  data-dismiss="modal" aria-hidden="true">Close</a>
+        <a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
     </div>
 </div>
 
@@ -69,7 +58,7 @@
         <h4 id="modal-help-label">About The Coastal Change Hazards Portal</h4>
     </div>
     <div id="help-modal-body" class="modal-body">
-        <div class="row-fluid">
+        <div class="row">
             <div id='modal-help-summary-container' class='well well-small'>
                 With more than half of the American people living along our Nation's coasts, 
                 extreme beach and cliff erosion can dramatically alter coastal ecosystems, 
@@ -85,20 +74,20 @@
             </div>
         </div>
 
-        <div id="canned-views-row" class="row-fluid">
-            <div class="well well-small span4">
-                <a href="http://go.usa.gov/DmUw" target="_self"><img src="images/views/canned/historical.png" /><br /><b>Shoreline Change</b><br />Historical positions and rates of change</a>
+        <div id="canned-views-row" class="row">
+            <div class="well well-small col-md-4">
+                <a href="http://go.usa.gov/DmUw" target="_self"><img src="images/views/canned/historical.png" class="img-responsive" alt="Historical Icon" /><br /><b>Shoreline Change</b><br />Historical positions and rates of change</a>
             </div>
-            <div class="well well-small span4">
-                <a href="http://go.usa.gov/DmUe" target="_self"><img src="images/views/canned/vulnerability.png" /><br /><b>Sea-Level Rise</b>Vulnerability</a>
+            <div class="well well-small col-md-4">
+                <a href="http://go.usa.gov/DmUe" target="_self"><img src="images/views/canned/vulnerability.png" class="img-responsive" alt="Vulnerability Icon" /><br /><b>Sea-Level Rise</b>Vulnerability</a>
             </div>
-            <div class="well well-small span4">
-                <a href="http://go.usa.gov/DmPx" target="_self"><img src="images/views/canned/storms.png" /><br /><b>Extreme Storms</b>Coastal erosion hazards</a>
+            <div class="well well-small col-md-4">
+                <a href="http://go.usa.gov/DmPx" target="_self"><img src="images/views/canned/storms.png" class="img-responsive" alt="Storms Icon" /><br /><b>Extreme Storms</b>Coastal erosion hazards</a>
             </div>
         </div>
 
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn"  data-dismiss="modal" aria-hidden="true">Close</a>
+        <a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
     </div>
 </div>

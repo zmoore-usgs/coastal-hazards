@@ -54,7 +54,7 @@
             <jsp:param name="relPath" value="../../" />
 		</jsp:include>
 		<style type="text/css">
-			.container-fluid {
+			.container {
 				margin-top: 10px;
 				font-size: 1.25em;
 			}
@@ -95,9 +95,9 @@
 				<a href="">Go to Coastal Change Hazards Portal</a>
 			</c:when>
 			<c:otherwise>
-				<div class="container-fluid">
-					<div class="row-fluid">
-						<div class="well well-small span6">
+				<div class="container">
+					<div class="row">
+						<div class="well well-small col-md-6">
 							<div id="publish-user-container-row">
 								<div class="well well-small">
 									User: 
@@ -106,22 +106,22 @@
 									( <span class="publish-user-container" id="publish-user-name-email">${pageContext.session.getAttribute("oid-info").get("oid-email")}</span> )
 								</div>
 							</div>
-							<div id="publish-type-container-row" class="row-fluid">
-								<div class="publish-metadata-container-row row-fluid">
+							<div id="publish-type-container-row" class="row">
+								<div class="publish-metadata-container-row row">
 									<div class="well well-small">
 										<span class="publish-container-metadata">
 											Metadata&nbsp;&nbsp;<span id="publish-metadata-upload-button">Upload Metadata</span><span id="publish-metadata-validate"></span>
 										</span>
 									</div>
 								</div>
-								<div class="publish-name-container-row row-fluid">
+								<div class="publish-name-container-row row">
 									<div class="well well-small">
 										<span id="publish-container-name">
 											Name: <input type="text" id="publish-name-input" />
 										</span>
 									</div>
 								</div>
-								<div class="publish-services-container-row row-fluid">
+								<div class="publish-services-container-row row">
 									<div class="well well-small">
 										<span id="publish-container-services-wfs">
 											WFS: <input type="text" id="publish-services-wfs"class="publish-services-input"/><span id="publish-services-wfs-validate"></span>
@@ -142,12 +142,12 @@
 							</div>
 						</div>
 
-						<div class="well well-small span6">
+						<div class="well well-small col-md-6">
 							<div class="well well-small">
-								<div class="row-fluid">
-									<button id="publish-publish-button" class="btn btn-primary disabled pull-right">Publish</button>
+								<div class="row">
+									<button id="publish-publish-button" class="btn btn-default btn-primary disabled pull-right">Publish</button>
 								</div>
-								<div id="attribute-checkbox-list-div" class="row-fluid">
+								<div id="attribute-checkbox-list-div" class="row">
 									<label>Attributes</label>
 									<ul id="attribute-checkbox-list"></ul>
 								</div>
