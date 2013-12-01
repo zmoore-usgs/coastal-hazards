@@ -3,7 +3,6 @@
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
-
     {
         try {
             props = props.addJNDIContexts(new String[0]);
