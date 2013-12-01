@@ -3,153 +3,140 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
-	{
-		try {
-			props = props.addJNDIContexts(new String[0]);
-		} catch (Exception e) {
-			System.out.println("Could not find JNDI - Application will probably not function correctly");
-		}
-	}
+    {
+        try {
+            props = props.addJNDIContexts(new String[0]);
+        } catch (Exception e) {
+            System.out.println("Could not find JNDI - Application will probably not function correctly");
+        }
+    }
 %>
 <%
-	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
-	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
+    boolean development = Boolean.parseBoolean(props.getProperty("development"));
+    String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+    String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
 %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
-		<script type="text/javascript">
-			/* This application does not support <IE9 - Stop early if <IE9*/
-			if (navigator.appName == 'Microsoft Internet Explorer') {
-				if (new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) !== null) {
-					if (parseFloat(RegExp.$1) < 9) {
-						alert("We apologize, but this application does not support Internet Explorer versions lower than 9.0.\n\nOther supported browsers are Firefox, Chrome and Safari.");
-						window.location = 'http://windows.microsoft.com/en-us/internet-explorer/downloads/ie-9/worldwide-languages';
-					}
-				}
-			}
-		</script>
-		<META HTTP-EQUIV="X-UA-Compatible" CONTENT="IE=Edge"/>
-        <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" />
-        <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE" />
-        <META HTTP-EQUIV="EXPIRES" CONTENT="0" />
-        <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-8" />
-        <META NAME="viewport" CONTENT="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-        <link rel="icon" href="favicon.ico" type="image/x-icon" />
-        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-        <!--[if lt IE 9]>
-        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-        <jsp:include page="template/USGSHead.jsp">
-            <jsp:param name="relPath" value="../../../" />
-            <jsp:param name="shortName" value="USGS Coastal Change Hazards Portal" />
-            <jsp:param name="title" value="USGS Coastal Change Hazards" />
-            <jsp:param name="description" value="" />
-            <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Jordan Read, Carl Schroedl" />
-            <jsp:param name="keywords" value="" />
-            <jsp:param name="publisher" value="" />
-            <jsp:param name="revisedDate" value="" />
-            <jsp:param name="nextReview" value="" />
-            <jsp:param name="expires" value="never" />
-            <jsp:param name="development" value="false" />
-        </jsp:include>
-
+        <jsp:include page="components/head.jsp"></jsp:include>
+        <script type="text/javascript">
+            /* This application does not support <IE9 - Stop early if <IE9*/
+            if (navigator.appName === 'Microsoft Internet Explorer') {
+                var ua = navigator.userAgent;
+                if (ua.toLowerCase().indexOf('msie 6') !== -1 || ua.toLowerCase().indexOf('msie 7') !== -1 || ua.toLowerCase().indexOf('msie 8') !== -1) {
+                    alert("We apologize, but this application does not support Internet Explorer versions lower than 9.0.\n\nOther supported browsers are Firefox, Chrome and Safari.");
+                    window.location = 'http://windows.microsoft.com/en-us/internet-explorer/downloads/ie-9/worldwide-languages';
+                }
+            }
+        </script>
+        <title>USGS Coastal Change Hazards Portal</title>
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/2.3.2/css/bootstrap.min.css" />
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/2.3.2/css/bootstrap-responsive.min.css" />
+        <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
+        <script type="text/javascript" src="webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full.min.js"></script>
+        <jsp:include page="js/jsuri/jsuri.jsp"></jsp:include>
+            <script type="text/javascript">
+            var CCH = {
+                CONFIG: {
+                    itemId: '${it.id}',
+                    contextPath: '<%=baseUrl%>',
+                    map: null,
+                    projection: "EPSG:3857",
+                    initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
+                    item: null,
+                    emailLink: 'CCH_Help@usgs.gov',
+                    publicUrl: '<%=publicUrl%>'
+                }
+            };
+        </script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/components/util/Util.js"></script>
+        <script type="text/javascript" src='<%=baseUrl%>/js/components/info/info.js'></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/infopage.css" />
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/2.3.2/js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers.js"></script>
-		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full.min.js"></script>
-
-		<jsp:include page="js/jsuri/jsuri.jsp"></jsp:include>
-			<script type="text/javascript">
-				var CCH = {
-					CONFIG: {
-						itemId: '${it.id}',
-						contextPath: '<%=baseUrl%>',
-						map: null,
-						projection: "EPSG:3857",
-						initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
-						item: null,
-						emailLink: 'CCH_Help@usgs.gov',
-						publicUrl: '<%=publicUrl%>'
-					}
-				};
-			</script>
-
-			<script type="text/javascript" src="<%=baseUrl%>/js/components/util/Util.js"></script>
-		<script type="text/javascript" src='<%=baseUrl%>/js/components/info/info.js'></script>
     </head>
     <body>
-		<jsp:include page="components/application-overlay.jsp">
-			<jsp:param name="application-overlay-description" value="USGS coastal change hazards research produces data, 
-					   knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
-					   here. They can be used to increase awareness and provide a basis for decision making." />
-			<jsp:param name="application-overlay-background-image" value="images/splash/splash_info.png" />
-		</jsp:include>
-		<%-- Content Here --%>
-		<div id="info-content" class="container">
-			<div id="header-row" class="row">
-				<jsp:include page="template/USGSHeader.jsp">
-					<jsp:param name="relPath" value="" />
-					<jsp:param name="header-class" value="" />
-					<jsp:param name="site-title" value="USGS Coastal Change Hazards Portal" />
-				</jsp:include>
-			</div>
+        <jsp:include page="components/application-overlay.jsp">
+            <jsp:param name="application-overlay-description" value="USGS coastal change hazards research produces data, 
+                       knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
+                       here. They can be used to increase awareness and provide a basis for decision making." />
+            <jsp:param name="application-overlay-background-image" value="images/splash/splash_info.png" />
+        </jsp:include>
+        <%-- Content Here --%>
+        <div id="info-content" class="container">
+            <div id="header-row" class="row">
+                <%-- Logo --%>
+                <a href="." id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+                    <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
+                </a>
+                <%-- Application Title --%>
+                <div id="app-navbar-site-title-container" class="app-navbar-item-container">
+                    <div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">USGS Coastal Change Hazards Portal</div>
+                    <div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">Coastal Change Hazards Portal</div>
+                    <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">CCH</div>
+                </div>
+                <%-- Help Button --%>
+                <div class='app-navbar-item-container'>
+                    <span id='app-navbar-help-container'>
+                        <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="fa fa-info-circle"></i></a>
+                    </span>
+                </div>
+            </div>
 
-			<%-- Title --%>
-			<div id="info-row-title" class="info-title row">
-				<div id="info-title" class='col-md-10 col-md-offset-1'></div>
-			</div> 
-			<div class="row">
-				<%-- Left side --%>
-				<div class="col-md-6">
-					<div id="info-row-map-and-summary">
-						<%-- Map --%>
-						<div id="map"></div>
-						<div id="info-row-control">
-							<div class='well well-small'>
+            <%-- Title --%>
+            <div id="info-row-title" class="info-title row">
+                <div id="info-title" class='col-md-10 col-md-offset-1'></div>
+            </div> 
+            <div class="row">
+                <%-- Left side --%>
+                <div class="col-md-6">
 
-								<%-- Application Link --%>
-								<span id="application-link"></span>
+                    <div class="row">
+                        <%-- Map --%>
+                        <div id="map"></div>
+                        <div id="info-row-control">
+                            <div class='well well-small'>
 
-								<span id="social-link"></span>
-							</div>
-						</div>
-						<div class="row">
-							<div id="info-legend" class="well-small well col-md-6"></div>
-							<div id="info-graph" class='well well-small col-md-6'>
-								<img class="img-responsive" alt="Graph Image" src="" />
-							</div>
-						</div>
+                                <%-- Application Link --%>
+                                <span id="application-link"></span>
 
-					</div>
+                                <span id="social-link"></span>
+                            </div>
+                        </div>
+                    </div>
 
-				</div>
+                    <div class="row">
+                        <div id="info-legend" class="well-small well col-md-6"></div>
+                        <div id="info-graph" class='well well-small col-md-6'>
+                            <img class="img-responsive" alt="Graph Image" src="" />
+                        </div>
+                    </div>
 
-				<%-- Right Side --%>
-				<div class="col-md-6">
-					<div id='info-summary-and-links-container'>
-						<%-- Summary Information --%>
-						<div id="info-summary"  class="well"></div>
-					</div>
-					<div class="well" id='info-container-publications'>
-						<span id='info-container-publications-label'>Publications: </span>
-						<span id='info-container-publications-list-span'></span>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="well well-small"> <!-- view metadata" "download zip (full)" and "download zip (item)" -->
-					<%-- Metadata Link --%>
-					<span id="metadata-link"></span>
-					<span id="download-full-link"></span>
-					<span id="download-item-link"></span>
-				</div>
-			</div>
-		</div>
-	</body>
+                </div>
+
+                <%-- Right Side --%>
+                <div class="col-md-6">
+                    <div class="row">
+                        <%-- Summary Information --%>
+                        <div id="info-summary"  class="well"></div>
+                    </div>
+                    <div class="row" id='info-container-publications'>
+                        <div class="well">
+                            <span id='info-container-publications-label'>Publications: </span>
+                            <span id='info-container-publications-list-span'></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="well well-small"> <!-- view metadata" "download zip (full)" and "download zip (item)" -->
+                    <%-- Metadata Link --%>
+                    <span id="metadata-link"></span>
+                    <span id="download-full-link"></span>
+                    <span id="download-item-link"></span>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
