@@ -264,7 +264,6 @@ CCH.Objects.CombinedSearch = function (args) {
                 alt : 'Spinner Image',
                 id : 'app-navbar-search-spinner-image'
             });
-        spinnerImage.addClass("img-responsive");
         $('#' + me.SUBMIT_BUTTON_ID).empty();
         $('#' + me.SUBMIT_BUTTON_ID).append(spinnerImage);
     };
