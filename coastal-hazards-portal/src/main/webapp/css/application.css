@@ -33,6 +33,7 @@ html, body {
     height: 55px;
 }
 
+/* Gets the right edge of the accordion to line up with the header and footer edge */
 #application-container > div.row:nth-child(2) > div:first-child > div:nth-child(2) {
     padding-right: 0px;
 }
@@ -41,17 +42,6 @@ html, body {
     background-color: #345280 !important;
     height: 20px;
     margin-top: 5px;
-}
-
-.info-title {
-    text-align: center;
-    font-size: 1.7em;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    color: #666;
-    line-height: 1em;
 }
 
 #metadata-link .btn-default {
