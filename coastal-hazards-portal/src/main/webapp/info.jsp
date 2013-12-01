@@ -19,17 +19,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <jsp:include page="components/head.jsp"></jsp:include>
-        <script type="text/javascript">
-            /* This application does not support <IE9 - Stop early if <IE9*/
-            if (navigator.appName === 'Microsoft Internet Explorer') {
-                var ua = navigator.userAgent;
-                if (ua.toLowerCase().indexOf('msie 6') !== -1 || ua.toLowerCase().indexOf('msie 7') !== -1 || ua.toLowerCase().indexOf('msie 8') !== -1) {
-                    alert("We apologize, but this application does not support Internet Explorer versions lower than 9.0.\n\nOther supported browsers are Firefox, Chrome and Safari.");
-                    window.location = 'http://windows.microsoft.com/en-us/internet-explorer/downloads/ie-9/worldwide-languages';
-                }
-            }
-        </script>
+        <jsp:include page="components/meta-tags.jsp"></jsp:include>
         <title>USGS Coastal Change Hazards Portal</title>
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
         <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
@@ -54,7 +44,7 @@
         </script>
         <script type="text/javascript" src="<%=baseUrl%>/js/components/util/Util.js"></script>
         <script type="text/javascript" src='<%=baseUrl%>/js/components/info/info.js'></script>
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/infopage.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
     </head>
     <body>
         <jsp:include page="components/application-overlay.jsp">
