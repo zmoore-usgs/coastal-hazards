@@ -175,24 +175,6 @@ $(document).ready(function () {
     } else {
         // A user is not coming in through the session or the view, so just load
         // the 10 most popular items and begin the slideshow when completed
-
-        // This should run once when the items have finished loading
-        oneTimeItemsLoadResponseHandler = function (evt, args) {
-            $(window).off('cch.data.products.loaded', oneTimeItemsLoadResponseHandler);
-
-            var products = args.products || [];
-
-            if (products.length) {
-                products.each(function (product) {
-                    CCH.ui.addToAccordion({
-                        product : product
-                    });
-                });
-            }
-        };
-
-        $(window).on('cch.data.products.loaded', oneTimeItemsLoadResponseHandler);
-
         errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
             CCH.ui.displayLoadingError({
                 errorThrown: errorThrown,
@@ -205,7 +187,7 @@ $(document).ready(function () {
         // level. Typically these will be the top level aggregations
         (function () {
             new CCH.Objects.Search().submitItemSearch({
-                items: ['uber'],
+                item: 'uber',
                 displayNotification: false,
                 callbacks: {
                     success: [
@@ -213,22 +195,41 @@ $(document).ready(function () {
                         // The children will be the actual items to be displayed
                         function (data, status) {
                             if (status === 'success') {
-                                CCH.items.load({
-                                    items: [data.children],
-                                    displayNotification: false,
-                                    callbacks: {
-                                        success: [
-                                            CCH.ui.removeOverlay
-                                        ],
-                                        error: [
-                                            function () {
-                                                errorResponseHandler(null, null, 'Search for children did not return a valid response');
-                                            }
-                                        ]
-                                    }
+                                var children = data.children;
+                                
+                                if (typeof children === 'string') {
+                                    children = [children];
+                                }
+                                
+                                // We typically will have multiple children coming 
+                                // from the uper item, so process each and load them
+                                // into the UI as accordion bellows
+                                children.each(function (child) {
+                                    CCH.items.load({
+                                        item: child,
+                                        displayNotification: false,
+                                        callbacks: {
+                                            success: [
+                                                function (product, status, responseText) {
+                                                    if (status === 'success') {
+                                                        CCH.ui.addToAccordion({
+                                                            product : product
+                                                        });
+                                                    }
+                                                },
+                                                CCH.ui.removeOverlay
+                                            ],
+                                            error: [errorResponseHandler]
+                                        }
+                                    });
                                 });
+ 
                             } else {
-
+                                 CCH.ui.displayLoadingError({
+                                    errorThrown: '',
+                                    splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
+                                    mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
+                                });
                             }
                         }],
                     error: [errorResponseHandler]

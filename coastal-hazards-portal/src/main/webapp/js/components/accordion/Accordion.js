@@ -14,18 +14,22 @@ CCH.Objects.Accordion = function (args) {
 
     me.CONTAINER_ID = args.containerId || 'application-slide-items-content-container';
     me.isStopped = true;
-
+    
     container = $('#' + me.CONTAINER_ID);
 
     // Make sure that our container is of the accordion type
-    if (!container.hasClass('accordion')) {
-        container.addClass('accordion');
+    if (!container.hasClass('panel-group')) {
+        container.addClass('panel-group');
     }
 
     me.add = function (args) {
-        return me.addCard(args);
+        var bellow = me.addCard(args);
+        return bellow;
     };
 
+    /**
+     * Uses a card to create a bellow out of
+     */
     me.addCard = function (args) {
         args = args || {};
 
@@ -37,9 +41,10 @@ CCH.Objects.Accordion = function (args) {
                 card : card,
                 index : index
             });
+            
 
         me.getAccordion().append(bellow);
-
+        
         return bellow;
     };
 
@@ -52,11 +57,12 @@ CCH.Objects.Accordion = function (args) {
             titleLarge = titleRow.find('.application-card-title-container-large').html(),
             titleMedium = titleRow.find('.application-card-title-container-medium').html(),
             titleSmall = titleRow.find('.application-card-title-container-small').html(),
-            group = $('<div />').addClass('accordion-group'),
-            heading = $('<div />').addClass('accordion-heading'),
+            group = $('<div />').addClass('panel panel-default'),
+            heading = $('<div />').addClass('panel-heading'),
+            titleContainer = $('<h4 />').addClass('panel-title'),
             toggleTarget = $('<a />').addClass('accordion-toggle'),
-            accordionBody = $('<div />').addClass('accordion-body collapse in'),
-            bodyInner = $('<div />').addClass('accordion-inner'),
+            accordionBody = $('<div />').addClass('panel-collapse collapse'),
+            bodyInner = $('<div />').addClass('panel-body'),
             accordionBodyId = 'accordion-body-' + id;
 
         toggleTarget.append(
@@ -76,9 +82,10 @@ CCH.Objects.Accordion = function (args) {
         titleRow.remove();
 
         group.append(heading, accordionBody);
-        heading.append(toggleTarget);
+        titleContainer.append(toggleTarget);
+        heading.append(titleContainer);
         accordionBody.append(bodyInner);
-
+        
         return group;
     };
 
@@ -87,7 +94,7 @@ CCH.Objects.Accordion = function (args) {
     };
 
     me.getBellows = function () {
-        return $('#' + me.CONTAINER_ID + ' .accordion-group');
+        return $('#' + me.CONTAINER_ID + ' .panel');
     };
 
     $(window).on({

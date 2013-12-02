@@ -100,25 +100,25 @@ $(document).ready(function() {
 				'href': CCH.CONFIG.item.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
 				'target': 'portal_metadata_window',
 				'role': 'button'
-			}).addClass('btn').html('<i class="fa fa-download"></i> View Metadata');
+			}).addClass('btn btn-default').html('<i class="fa fa-download"></i> View Metadata');
 			
 			// These two download buttons have no function at this time so we
 			// will hide them for the time being
 			// Create a "Download Full" button
 			var downloadFull = $('<a />').attr({
 				'role': 'button'
-			}).addClass('btn hidden').html('<i class="fa fa-download"></i> Download Full Data');
+			}).addClass('btn btn-default hidden').html('<i class="fa fa-download"></i> Download Full Data');
 			// Create a "Download Item" button
 			var downloadItem = $('<a />').attr({
 				'role': 'button'
-			}).addClass('btn hidden').html('<i class="fa fa-download"></i> Download Item Data');
+			}).addClass('btn btn-default hidden').html('<i class="fa fa-download"></i> Download Item Data');
 
 			// Create a "View in Portal" link to let the user view this in the portal
 			var applicationLink = $('<a />').attr({
 				'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId,
 				'target': 'portal_main_window',
 				'role': 'button'
-			}).addClass('btn').html('<i class="fa fa-eye"></i> View In Portal');
+			}).addClass('btn btn-default').html('<i class="fa fa-eye"></i> View In Portal');
 
 			// Build the publications list for the item
 			var publist = 'None Found';
@@ -150,12 +150,12 @@ $(document).ready(function() {
 			var continueLink = $('<a />').attr({
 				'href': CCH.CONFIG.contextPath,
 				'role': 'button'
-			}).addClass('btn btn-large').html('<i class="fa fa-refresh"></i> Click to continue')
+			}).addClass('btn btn-lg').html('<i class="fa fa-refresh"></i> Click to continue')
 
 			var emailLink = $('<a />').attr({
 				'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')',
 				'role': 'button'
-			}).addClass('btn btn-large').html('<i class="fa fa-envelope"></i> Contact Us');
+			}).addClass('btn btn-lg').html('<i class="fa fa-envelope"></i> Contact Us');
 
 			if (404 === jqXHR.status) {
 				splashUpdate("<b>Item Not Found</b><br /><br />We couldn't find the item you are looking for<br /><br />");
@@ -170,7 +170,7 @@ $(document).ready(function() {
 
 	var removeLegendContainer = function() {
 		$('#info-legend').remove();
-		$('#info-graph').removeClass('span4').addClass('span6');
+		$('#info-graph').removeClass('col-md-4').addClass('col-md-6');
 	};
 
 	var createShareButton = function(url) {

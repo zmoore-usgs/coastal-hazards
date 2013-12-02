@@ -233,7 +233,7 @@ CCH.Objects.Map = function(args) {
 			var marker = new OpenLayers.Marker(new OpenLayers.LonLat(x, y), icon);
 
 			// Build HTML
-			var container = $('<div />').addClass('container-fluid').attr('id', 'location-container');
+			var container = $('<div />').addClass('container').attr('id', 'location-container');
 			var table = $('<table />').addClass('table table-hover table-condensed');
 			table.append(
 					$('<thead>').append(
@@ -250,7 +250,7 @@ CCH.Objects.Map = function(args) {
 				tbody.append('<tr><td>Source</td><td>' + locAttr.Loc_name + '</td></tr>');
 			}
 			table.append(tbody);
-			container.append($('<div />').addClass('row-fluid span12').append(table));
+			container.append($('<div />').addClass('row col-md-12').append(table));
 
 			select.append($('<option />').attr('value', '-1').html(''));
 
@@ -267,7 +267,7 @@ CCH.Objects.Map = function(args) {
 			}
 
 			if (locations.length > 1) {
-				container.append($('<div />').addClass('row-fluid span12').html("Did you mean... ")).append($('<div />').addClass('fluid-row span12').append(select));
+				container.append($('<div />').addClass('row col-md-12').html("Did you mean... ")).append($('<div />').addClass('fluid-row col-md-12').append(select));
 			}
 
 			markerLayer.addMarker(marker);

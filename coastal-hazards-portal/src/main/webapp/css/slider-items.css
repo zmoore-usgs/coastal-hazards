@@ -1,4 +1,44 @@
-@media (min-width: 767px) {
+#application-slide-items-content-container .panel-heading {
+    background-color: #F5F5F5;
+}
+
+.application-card-collapse-icon-container {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.application-card-collapse-row {
+    color: #BBBBBB;
+}
+
+.application-card-collapse-row-dottedline {
+    display: table-cell;
+    width: 100%;
+}
+
+.application-card-collapse-row-dottedline hr {
+    border-top:1px dashed #BBBBBB; 
+}
+
+.application-card-container.open .application-card-collapse-row-closed {
+    display: none;
+}
+
+.application-card-container:not(.open) .application-card-collapse-row-open {
+    display: none;
+}
+
+.application-card-collapse-icon-container {
+    padding-right: 5px;
+    vertical-align: top;
+}
+
+.application-card-collapse-icon-container:hover {
+    cursor: pointer;
+    font-size-adjust: 0.7;
+}
+
+@media (min-width: 992px) {
     /* No tab shown on large display. Toggled via button in bar */
     #application-slide-items-tab {
         display: none;
@@ -7,7 +47,7 @@
     #application-slide-items-container {
         top: auto;
         left: auto;
-        background-color: #F5F5F5;
+        /*background-color: #F5F5F5;*/
     }
 
     #application-slide-items-content {
@@ -18,16 +58,28 @@
     #application-slide-items-content-container {
         height: 100%;
         width: 100%;
-        background-color: #F5F5F5;
+        /*background-color: #F5F5F5;*/
         overflow-y: auto;
+    }
+    
+    #content-column {
+        height: 100%;
     }
 }
 
-@media (max-width: 766px) {
-
+@media (max-width: 991px) {
+    /* 
+        This fixes a bootstrap issue that causes the accordion to go beyond screen 
+        height, causing scroll bars when the items slide is open
+    */
+    #application-slide-items-container .panel-group {
+        margin-bottom: 0px;
+    }
+    
     #application-slide-items-container {
         position: absolute;
         z-index: 1006; /* 1005 is highest on map */
+        height: 98%;
     }
     
     #application-slide-items-content {

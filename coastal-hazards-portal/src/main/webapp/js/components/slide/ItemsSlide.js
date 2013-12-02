@@ -127,8 +127,6 @@ CCH.Objects.ItemsSlide = function (args) {
         }
     };
 
-    // These functions should be implemented in the function that builds these
-    // objects
     me.resized = function () {
         var extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large,
@@ -136,6 +134,7 @@ CCH.Objects.ItemsSlide = function (args) {
             contentRow = map.parent(),
             isSmall = me.isSmall(),
             slideContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
+            slideContainerClasses = slideContainer.attr('class').split(' '),
             slideTab = $('#' + me.SLIDE_TAB_ID),
             slideContent = $('#' + me.SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth(),
@@ -143,30 +142,52 @@ CCH.Objects.ItemsSlide = function (args) {
             marginTop = 10,
             borderSize = 4;
     
+        // I've got to know what my form factor is. Bootstrap uses a special number,
+        // 992px at which to resize and I do some special stuff when bootstrap resizes.
+        // - When switching to small (<=991px), my item slide container goes from being a column
+        //   to a free-floating column and needs quite a bit of help in resizing when
+        //   that happens
         if (isSmall) {
-            slideContainer.
-                removeClass('span' + me.desktopSpanSize).
-                css({
-                    position : 'absolute'
-                });
+            // When I am switched to small mode, I want to remove the slideContainer's 
+            // span class because it's no longer a span.
+            slideContainer.removeClass('col-lg-3 col-md-4');
+            
+            // Then there's special sizing depending on if I'm closed or not. 
             if (me.isClosed) {
+                // If I'm closed, my container, which holds my tab and content, 
+                // should be off screen to the right except for the width of the tab
+                // and its border so that just the tab is peeking out of the 
+                // right side of the screen
                 slideContainer.offset({
                     left: windowWidth  - slideTab.outerWidth() - (me.borderWidth * 2),
                     top: toExtent.top
                 });
+                // I hide the content dom since it's off screen and I don't want 
+                // to show it
+                slideContent.css({
+                    display : 'none'
+                })
             } else {
+                // If I'm open...
                 slideContainer.
                     offset(toExtent).
-                    width(windowWidth - toExtent.left)
-                slideContent.width(slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth);
+                    width(windowWidth - toExtent.left);
+                
+                slideContent.css({
+                    display : '',
+                    width : slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth
+                });
             }
             slideContainer.height(windowHeight - marginTop - borderSize);
             slideTab.offset({
                 left: slideContainer.offset().left + borderSize
             });
         } else {
+            slideContent.css({
+                width: '',
+                display : ''
+            });
             slideContainer.
-                addClass('span' + me.desktopSpanSize).
                 css({
                     'height' : contentRow.height(),
                     'position' : '',
@@ -174,9 +195,10 @@ CCH.Objects.ItemsSlide = function (args) {
                     'left' : '',
                     'width' : ''
                 });
-            slideContent.css({
-                width: ''
-            });
+                    
+            if (slideContainerClasses.length === 1) {
+                slideContainer.addClass('col-lg-3 col-md-4');
+            }
         }
     };
 

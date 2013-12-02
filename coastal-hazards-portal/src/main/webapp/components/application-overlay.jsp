@@ -65,7 +65,7 @@
 		font-weight: bold;
 	}
 
-	#splash-status-update .btn {
+	#splash-status-update .btn-default{
 		margin-top: 10px;
 		margin-bottom: 10px;
 		margin-left : 5px;
@@ -74,7 +74,7 @@
 	}
 
 	/* This is when bootstrap switches to portrait */
-	@media (max-width: 767px) {
+	@media (max-width: 991px) {
 		#application-overlay-title {
 			font-size: 2em; 
 		}
@@ -96,7 +96,7 @@
 			line-height: 1.2em;
 		}
 
-		#splash-status-update .btn {
+		#splash-status-update .btn-default {
 			margin-top: 5px;
 			margin-bottom: 5px;
 			margin-left : 3px;
@@ -116,7 +116,7 @@
 			display: none;
 		}
 
-		#splash-status-update .btn {
+		#splash-status-update .btn-default {
 			margin-top: 3px;
 			margin-bottom: 3px;
 			margin-left : 2px;
@@ -142,7 +142,7 @@
 
         <div>
             <div id="splash-status-update"></div>
-            <img id="splash-spinner" src="images/spinner/spinner3.gif" />
+            <img id="splash-spinner" src="images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
         </div>
     </div>
 </div>

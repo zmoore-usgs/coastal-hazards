@@ -29,7 +29,7 @@ CCH.Objects.Items = function (args) {
     me.load = function (args) {
         args = args || {};
 
-        var items = args.items || [],
+        var item = args.item || '',
             callbacks = args.callbacks || {},
             bbox = args.left ? [args.left, args.bottom, args.right, args.top].toString() : '',
             query = args.keywords || '',
@@ -101,7 +101,7 @@ CCH.Objects.Items = function (args) {
             type: type,
             sortBy: sortBy,
             displayNotification : displayNotification,
-            items : items,
+            item : item,
             callbacks: {
                 success: callbacks.success,
                 error: callbacks.error

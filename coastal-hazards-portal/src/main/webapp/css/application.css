@@ -1,149 +1,50 @@
 /* ---------------------------------------------------------------------- UI */
-/* Bootstrap Fix */
-img { 
-    max-width: none !important; 
-}
-
 html, body {
+    /* While I designed the app to work with both overflows set to auto,
+       for some reason, IE9 still gives me scroll bars which messes everything
+       up :( so these need to be set to hidden */
     overflow-y: auto;
     overflow-x: auto;
+    /* 
+    320 pixels is the minimum width and 600px is
+    the minimum height that this application will support.
+    Anything smaller, scroll the app
+    */
     min-width: 320px;
     min-height: 600px;
     height: 100%;
-    /*width: 100%;*/
 }
 
-/* 
-    Because of a conflict between twitter bootstrap and openlayers
-    See: https://github.com/openlayers/openlayers/pull/755
+/*
+    This resets bootstrap's row margins of -15px on each side - This is useful 
+    if we'd like to see the top and bottom rows extend all the way to the edge 
+    of the container - If we want to see that, remove this rule'
 */
-img { 
-    max-width: none !important; 
+#application-container > div.row:nth-child(1),
+#application-container > div.row:nth-child(3) {
+    margin-left: auto;
+    margin-right: auto;
 }
 
-/* 
-    320 pixels is the minimum width that this application will support.
-    Anything smaller, scroll the app
-*/
-#application-container {
-    min-width : 320px !important;
+#application-container > div.row:nth-child(1) {
+    background-color: #345280 !important;
+    z-index: 1005;
+    margin-bottom: 4px;
+    height: 55px;
 }
 
-#footer-row {
+/* Gets the right edge of the accordion to line up with the header and footer edge */
+#application-container > div.row:nth-child(2) > div:first-child > div:nth-child(2) {
+    padding-right: 0px;
+}
+
+#application-container > div.row:nth-child(3) > div {
     background-color: #345280 !important;
     height: 20px;
     margin-top: 5px;
 }
 
-@media (min-width: 767px) {
-
-}
-
-
-@media (max-width: 766px) {
-    body {
-        padding:  0px !important;
-    }
-
-    #application-container {
-        padding-left: 0px;
-        padding-right:  0px;
-    }
-
-    #header-row {
-        display: none;
-    }
-
-    #footer-row {
-        display: none;
-    }
-
-    #info-row-control iframe{
-        margin-top: 5px;
-        margin-left: 5px;
-    }
-
-    #info-graph {
-        height: 100px;
-    }
-
-    #cch-ui-legend-div {
-        max-height: none;
-    }
-
-    #banner-area,
-    .content {
-        display:none;
-    }
-}
-
-.btn-error {
-    font-size: 1em;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-#cch-ui-legend-div {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-
-.cch-ui-legend-table-body-div-color {
-    height: 10px;
-    border: #000000;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 10px;
-    -moz-border-radius: 10px;
-    -webkit-botder-radius: 10px;
-}
-
-#cch-ui-legend-table-caption {
-    font-size: 1.2em;
-}
-
-#cch-ui-legend-table {
-    table-layout: fixed;
-}
-
-#cch-ui-legend-table tbody td {
-    padding : 2px;
-    vertical-align: middle;
-}
-
-#cch-ui-legend-table tbody td:nth-child(3) {
-    border-left: none;
-}
-
-#info-row-control iframe{
-    vertical-align: middle;
-    margin-left: 10px;
-}
-
-#info-summary {
-    font-size:1.3em;
-    line-height: 1.5em;
-}
-
-.info-title {
-    text-align: center;
-    font-size: 1.7em;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    color: #666;
-    line-height: 1em;
-}
-
-#site-title {
-    line-height: 20px;
-}
-
-#metadata-link .btn {
+#metadata-link .btn-default {
     margin-left : 5px;
     margin-right : 5px;
 }
@@ -153,14 +54,58 @@ img {
     display : none !important;
 }
 
-#info-graph img {
-    height: 100%;
-    width: 100%;
+#map {
+    min-height : 150px;
 }
 
-#info-graph {
-    text-align: center;
-    height: 300px;
+@media (min-width: 1200px) {
+    #application-container {
+        width: 100%;
+    }
+}
+
+@media (min-width: 992px) {
+    #application-container {
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    #application-container {
+        width: 100%;
+    }
+}
+
+@media (max-width: 991px) {
+    body {
+        padding:  0px !important;
+    }
+
+    #application-container {
+        padding-left: 0px;
+        padding-right:  0px;
+    }
+
+    #application-container > div.row:nth-child(1) {
+        display: none;
+    }
+
+    #application-container > div.row:nth-child(3) {
+        display: none;
+    }
+
+    /* Set the content row to not have any margins, overriding bootstrap's
+       15px margins on left/right */
+    #application-container > div:nth-child(2) {
+        margin-left: 0px !important;
+        margin-right:  0px !important;
+    }
+    /* Set the content column to not have any padding, overriding bootstrap's
+       15px margins on left/right */
+    #application-container > div:nth-child(2) > div.col-md-12 {
+        padding-left: 0px !important;
+        padding-right:  0px !important;
+    }
 }
 
 @media (max-width: 440px) {
@@ -181,41 +126,6 @@ img {
     }
 }
 
-#item-search-modal[aria-hidden="false"] {
-    position: absolute;
-}
-
-#item-search-modal[aria-hidden="true"] {
-    z-index: -1;
-    position: fixed;
-}
-
-#item-search-map {
-    height : 200px;
-}
-
-#item-search-modal-body {
-    max-height: 100% !important;
-    height: auto;
-}
-
-
-#item-search-input-table-row{
-    text-align: center;
-}
-
-.item-search-row-map-input {
-    background-color: #EEEEEE;
-}
-
-#item-search-keyword-input {
-    width: 100%;
-}
-
-#map {
-    min-height : 150px;
-}
-
 .marker-active {
     border-color: #00CCFF !important;
     background-color: rgba(0,102,255, 0.5);
@@ -231,50 +141,6 @@ img {
     background-color: rgba(0,102,255, 0.5);
     opacity : 1.0 !important;
 }
-
-/* Fixes pink tile issue in OpenLayers map */
-.olImageLoadError {
-    display : none !important;
-}
-
-@media (max-width: 440px) {
-    .olControlZoom {
-        display: none;
-    }
-}
-
-.nav-stacked li.active a img {
-    height: 3.5em;
-    width: 4.5em;
-}
-.nav-stacked li a img {
-    height: 2.5em;
-    width: 3.5em;
-}
-.nav-pills.nav-stacked > li > a {
-    text-align: center;
-}
-
-#nav {
-    text-align: center;
-}
-
-#nav a:hover {
-    text-decoration: none;
-}
-
-#nav .accordion-toggle {
-    color : #333333;
-}
-
-#nav .accordion-toggle i{
-    font-size: 400%;
-}
-
-#nav .accordion-body .accordion-group-item{
-    padding-bottom: 1em;
-}
-
 
 /* Setting this zIndex manually fixes
  an issue seen on mobile browsers with
@@ -292,15 +158,12 @@ img {
 #modal-help-summary-container {
     font-size: 1.2em;
     font-family: Verdana,Arial,Helvetica,sans-serif;
-
 }
 
 #canned-views-row img {
     width: 100%;
     height: 100%;
 }
-
-
 
 #modal-share-summary-url-inputbox{
     width: 97%;
@@ -312,9 +175,8 @@ img {
 #modal-share-summary-text-label {
     font-size : 1.5em;
 }
+
 #modal-share-summary-twitter-label{
     font-size: 1.5em;
     line-height: 1.5em;
 }
-
-

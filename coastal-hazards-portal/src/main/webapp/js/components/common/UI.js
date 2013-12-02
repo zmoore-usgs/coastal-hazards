@@ -19,6 +19,7 @@
  *  this.bucket : 'app-navbar-button-clicked'
  *  this.combinedSearch: 'combined-searchbar-search-performing'
  *  this.combinedSearch : 'combined-searchbar-search-performed'
+ *  window : 'button-click-bucket-add'
  *  
  * @param {type} args
  * @returns {CCH.Objects.UI.Anonym$22}
@@ -49,14 +50,24 @@ CCH.Objects.UI = function (args) {
     me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId || 'application-slide-bucket-container';
     me.SEARCH_SLIDE_CONTAINER_ID = args.slideSearchContainerId || 'application-slide-search-container';
 
-    me.magicResizeNumber = 767;
+    me.magicResizeNumber = 992;
     me.minimumHeight = args.minimumHeight || 480;
     me.previousWidth = $(window).width();
     me.bucket = new CCH.Objects.Bucket();
     me.combinedSearch = new CCH.Objects.CombinedSearch();
-    me.cards = CCH.cards;
     me.accordion = new CCH.Objects.Accordion({
         containerId : me.SLIDE_CONTAINER_DIV_ID
+    });
+
+    $(window).on('item-button-click-bucket-add', function (evt, args) {
+        args = args || {};
+        var item = args.item;
+        
+        if (item) {
+            me.bucket.add({
+                item : item
+            });
+        }
     });
 
     me.itemsSearchedHandler = function (evt, data) {
@@ -268,22 +279,6 @@ CCH.Objects.UI = function (args) {
             $(window).trigger('cch.ui.overlay.removed');
         });
     };
-
-    me.displayProduct = function (args) {
-        args = args || {};
-
-        var product = args.product,
-            card,
-            container;
-
-        card = me.cards.buildCard({
-            product : product
-        });
-        me.cards.addCard(card);
-        container = card.getContainer();
-        $('#' + me.SLIDE_CONTAINER_DIV_ID).append(container);
-        //TODO - Deal with the slideshow aspect of this here
-    };
     
     me.addToAccordion = function (args) {
         args = args || {};
@@ -293,8 +288,9 @@ CCH.Objects.UI = function (args) {
         
         // If we are passed a product, that means we were not passed a card
         if (product) {
-            card = me.cards.buildCard({
-                product : product
+            card = CCH.cards.buildCard({
+                product : product,
+                initHide : false
             });
         }
         
@@ -317,11 +313,11 @@ CCH.Objects.UI = function (args) {
         var continueLink = $('<a />').attr({
             'href': CCH.CONFIG.contextPath,
             'role': 'button'
-        }).addClass('btn btn-large').html('<i class="fa fa-refresh"></i> Click to continue'),
+        }).addClass('btn btn-lg').html('<i class="fa fa-refresh"></i> Click to continue'),
             emailLink = $('<a />').attr({
                 'href': args.mailTo,
                 'role': 'button'
-            }).addClass('btn btn-large').html('<i class="fa fa-envelope"></i> Contact Us');
+            }).addClass('btn btn-lg').html('<i class="fa fa-envelope"></i> Contact Us');
 
         splashUpdate(args.splashMessage);
 
@@ -369,7 +365,27 @@ CCH.Objects.UI = function (args) {
         helpModal.on('show', me.helpModalDisplayHandler);
         $(window).on({
             'resize': me.windowResizeHandler,
-            'cch.data.items.searched': me.itemsSearchedHandler
+            'cch.data.items.searched': me.itemsSearchedHandler,
+            'item-button-click-bucket-add': function(evt, args) {
+                args = args || {};
+                var item = args.item;
+
+                if (item) {
+                    me.bucket.add({
+                        item: item
+                    });
+                }
+            },
+            'item-button-click-bucket-remove': function(evt, args) {
+                args = args || {};
+                var item = args.item;
+
+                if (item) {
+                    me.bucket.remove({
+                        item: item
+                    });
+                }
+            }
         });
 
         $(me.bucket).on('app-navbar-button-clicked', function () {
@@ -400,7 +416,6 @@ CCH.Objects.UI = function (args) {
         removeOverlay: me.removeOverlay,
         isSmall: me.isSmall,
         displayLoadingError: me.displayLoadingError,
-        displayProduct : me.displayProduct,
         itemsSlide: me.itemsSlide,
         bucketSlide: me.bucketSlide,
         searchSlide: me.searchSlide,

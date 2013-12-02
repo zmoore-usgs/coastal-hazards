@@ -1,10 +1,12 @@
 #app-navbar-search-container {
     margin-right: 5px; 
+    margin-top: 10px;
+    width: 20%; // This will change in js
 }
 
-/*
-Make sure this appears above map elements
-*/
+
+/* Make sure this appears above map elements */
+
 #app-navbar-search-container .dropdown-menu {
     z-index: 1110;
 }
@@ -12,33 +14,7 @@ Make sure this appears above map elements
     z-index: 1110;
 }
 
-/*
-Resets bootstrap's max-width requirement for popovers'
-*/
-#app-navbar-search-context-popover.popover {
-    max-width: none !important;
-}
-
-#app-navbar-search-input {
-    height : 30px;
-    font-size : 26px;
-    line-height: 26px;
-    color: #777777;
-}
-
-#app-navbar-search-control {
-    margin-top: 5px;
-}
-
-#app-navbar-search-control .btn-large {
-    padding: 9px 19px !important;
-}
-
-#app-navbar-search-spinner-image {
-    width: 16px;
-}
-
-#app-navbar-search-input-context-menu-items-well {
-    display: flex;
-    justify-content: space-between;
+/* Setting the toggle button's down carat to have a slight margin on left' */
+#app-navbar-search-container > div > div:first-child > button > span {
+    margin-left: 5px;
 }
