@@ -123,7 +123,6 @@ CCH.Objects.UI = function (args) {
         // fit into the new layout
         if ((me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) ||
                 (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber)) {
-            CCH.LOG.debug('CCH UI Redeminsioned to ' + isSmall ? 'small' : 'large');
             $(window).trigger('cch.ui.redimensioned', isSmall);
         }
         $(window).trigger('cch.ui.resized', isSmall);

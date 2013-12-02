@@ -1,8 +1,13 @@
 <div id="application-slide-search-container" class="application-search-container">
     <div id="application-slide-search-content" class="application-slide-content">
         <div id="application-slide-search-content-container" class="container">
-            <div id="application-slide-search-location-results-content-container" class="container"></div>
-            <div id="application-slide-search-product-results-content-container" class="container"></div>
+            <div id="application-slide-search-controlset" class="row">
+                <div class="col-md-12">
+                    <div class="pull-right"><i class="fa fa-minus-square-o"></i></div>
+                </div>
+            </div>
+            <div id="application-slide-search-location-results-content-container"></div>
+            <div id="application-slide-search-product-results-content-container"></div>
         </div>
     </div>
 </div>
