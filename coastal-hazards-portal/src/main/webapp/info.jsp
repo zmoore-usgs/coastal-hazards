@@ -27,8 +27,7 @@
         <script type="text/javascript" src="webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full.min.js"></script>
-        <jsp:include page="js/jsuri/jsuri.jsp"></jsp:include>
-            <script type="text/javascript">
+        <script type="text/javascript">
             var CCH = {
                 CONFIG: {
                     itemId: '${it.id}',
