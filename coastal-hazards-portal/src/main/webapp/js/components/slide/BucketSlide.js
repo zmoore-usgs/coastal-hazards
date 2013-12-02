@@ -52,7 +52,7 @@ CCH.Objects.BucketSlide = function (args) {
             left: toExtent.left
         }, me.animationTime, function () {
             me.isClosed = false;
-            
+
             $('body').css({
                 overflow : ''
             });

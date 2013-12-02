@@ -219,7 +219,8 @@ CCH.Objects.SearchSlide = function (args) {
                 imageContainer = newItem.find('.' + imageContainerClass),
                 titleContainer = newItem.find('.' + titleContainerClass),
                 titleContainerPNode = newItem.find('.' + titleContainerClass + ' p'),
-                descriptionContainer = newItem.find('.' + descriptionContainerClass);
+                descriptionContainer = newItem.find('.' + descriptionContainerClass),
+                bucketButton = newItem.find('>div:nth-child(2)>div>button:first-child');
 
             newItem.attr('id', 'application-slide-search-product-card-' + id);
             imageContainer.attr({
@@ -229,7 +230,11 @@ CCH.Objects.SearchSlide = function (args) {
             titleContainer.attr('id', titleContainerClass + '-' + id);
             titleContainerPNode.html(title);
             descriptionContainer.attr('id', descriptionContainerClass + '-' + id).html(description);
-            
+            bucketButton.on('click', function (evt) {
+                $(window).trigger('bucket-add', {
+                    item : product
+                });
+            });
             return newItem;
         }
     };

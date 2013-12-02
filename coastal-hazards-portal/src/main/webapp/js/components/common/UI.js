@@ -93,7 +93,9 @@ CCH.Objects.UI = function (args) {
                 type: 'info',
                 nonblock: true,
                 sticker: false,
-                icon: 'icon-search'
+                icon: 'icon-search',
+                closer: true,
+                delay: 3000
             });
         }
     };
