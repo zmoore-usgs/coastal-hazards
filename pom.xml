@@ -16,12 +16,13 @@
 		<module>coastal-hazards-geoserver</module>
 		<module>coastal-hazards-portal</module>
         <module>coastal-hazards-liquibase</module>
-	</modules>
+        <module>coastal-hazards-export</module>
+    </modules>
   
 	<issueManagement>
 		<system>JIRA</system>
 		<!-- This needs to be corrected -->
-		<url />
+		<url/>
 	</issueManagement>
 	
 	<url>http://cida.usgs.gov/</url>
