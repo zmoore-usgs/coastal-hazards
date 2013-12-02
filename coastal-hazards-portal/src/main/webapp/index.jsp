@@ -31,24 +31,24 @@
                        here. They can be used to increase awareness and provide a basis for decision making." />
             <jsp:param name="application-overlay-background-image" value="images/splash/splash.svg" />
         </jsp:include>
-
+        
         <div id="application-container" class="container">
             <div id="header-row" class="row">
-                <jsp:include page="components/app-navbar.jsp"></jsp:include>
+                <jsp:include page="components/navigation-bar.jsp"></jsp:include>
+            </div>
+            <div id="content-row" class="row">
+                <div id="content-column" class="col-md-12">
+                    <div id="map" class="col-md-8 col-lg-9"></div>
+                <jsp:include page="components/slides/slider-items.jsp"></jsp:include>
                 </div>
-                <div id="content-row" class="row">
-                    <div id="content-column" class="col-md-12">
-                        <div id="map" class="col-md-8 col-lg-9"></div>
-                    <jsp:include page="components/slides/slider-items.jsp"></jsp:include>
-                    </div>
-                </div>	
-                <div id="footer-row"  class="row">
-                    <div class="footer-col col-md-12">
-                        &nbsp;
-                    </div>
+            </div>	
+            <div id="footer-row"  class="row">
+                <div class="footer-col col-md-12">
+                    &nbsp;
                 </div>
             </div>
-
+        </div>
+        
         <jsp:include page="components/slides/slider-bucket.jsp"></jsp:include>
         <jsp:include page="components/slides/slider-search.jsp"></jsp:include>
         <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
