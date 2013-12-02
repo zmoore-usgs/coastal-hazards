@@ -69,7 +69,7 @@ public class WFSService implements Serializable {
         return hash;
     }
     
-    public boolean isValid() {
+    public boolean checkValidity() {
         return !(StringUtils.isBlank(this.getEndpoint()) || StringUtils.isBlank(this.getTypeName()));
     }
 }

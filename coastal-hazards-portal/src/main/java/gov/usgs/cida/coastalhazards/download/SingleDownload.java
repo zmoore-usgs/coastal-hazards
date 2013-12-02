@@ -130,7 +130,7 @@ public class SingleDownload {
     }
 
     public boolean isValid() {
-        return (wfs != null && wfs.isValid() && StringUtils.isNotBlank(name) && !attrs.isEmpty());
+        return (wfs != null && wfs.checkValidity() && StringUtils.isNotBlank(name) && !attrs.isEmpty());
     }
 
 }
