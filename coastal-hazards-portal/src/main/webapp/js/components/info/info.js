@@ -106,8 +106,9 @@ $(document).ready(function() {
 			// will hide them for the time being
 			// Create a "Download Full" button
 			var downloadFull = $('<a />').attr({
-				'role': 'button'
-			}).addClass('btn btn-default hidden').html('<i class="fa fa-download"></i> Download Full Data');
+				'role': 'button',
+                'href' : window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + CCH.CONFIG.itemId 
+			}).addClass('btn btn-default').html('<i class="fa fa-download"></i> Download Full Data');
 			// Create a "Download Item" button
 			var downloadItem = $('<a />').attr({
 				'role': 'button'

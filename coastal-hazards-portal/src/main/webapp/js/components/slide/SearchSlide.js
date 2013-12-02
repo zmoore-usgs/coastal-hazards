@@ -238,9 +238,9 @@ CCH.Objects.SearchSlide = function (args) {
                 });
             });
             searchButton.attr({
-                        'target' : 'portal_info_window',
-                        'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
-            })
+                'target' : 'portal_info_window',
+                'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
+            });
             return newItem;
         }
     };
