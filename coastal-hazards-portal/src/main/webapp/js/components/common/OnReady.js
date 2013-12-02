@@ -28,7 +28,7 @@ $(document).ready(function () {
 
     splashUpdate("Initializing Card Subsystem...");
     CCH.cards = new CCH.Objects.Cards();
-    
+
     splashUpdate("Initializing UI...");
     CCH.ui = CCH.Objects.UI({
         applicationOverlayId: 'application-overlay',
@@ -69,9 +69,7 @@ $(document).ready(function () {
     // 'VIEW' = Load a session which can have zero, one or more items
     // '' = Load the application normally through the uber item
     var type = (CCH.CONFIG.params.type + String()).toLowerCase(),
-        itemId = CCH.CONFIG.id,
-        ssListener,
-        oneTimeItemsLoadResponseHandler,
+        itemId = CCH.CONFIG.params.id,
         removeMarkers = function () {
             CCH.map.clearBoundingBoxMarkers();
             $(window).off('cch-map-bbox-marker-added', removeMarkers);
@@ -79,49 +77,83 @@ $(document).ready(function () {
         errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
             CCH.ui.displayLoadingError({
                 errorThrown: errorThrown,
+                textStatus: textStatus,
                 splashMessage: 404 === jqXHR.status ?
                         '<b>Item Not Found</b><br /><br />The item you are attempting to view no longer exists<br /><br />' :
                         '<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br /><br />',
                 mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')'
             });
-        };
-
-    if (type) {
-        if (type === 'item') {
-            splashUpdate('Loading Item ' + itemId);
-
-            ssListener = function () {
-                CCH.ui.removeOverlay();
-                CCH.slideshow.stop();
-                // Pin the single item loaded when it gets loaded
-                $(CCH.cards.getCards()[0].pinButton).trigger('click');
-                // This is a one-time only listener, so unhook it here
-                $(window).off('cch-slideshow-slider-loaded', ssListener);
+        },
+        loadItem = function (item) {
+            item = item || 'uber';
+            
+            // A user is not coming in through the session or the view, so just load
+            // the 10 most popular items and begin the slideshow when completed
+            var errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
+                CCH.ui.displayLoadingError({
+                    errorThrown: errorThrown,
+                    splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
+                    mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
+                });
             };
-
-            $(window).on('cch-slideshow-slider-loaded', ssListener);
-            $(window).on('cch-map-bbox-marker-added', removeMarkers);
-
-            // Only add an error handler. The success handler will be the vanilla
-            // handler done by CCH.items.load()
-            CCH.items.load({
-                items: [itemId],
+            
+            new CCH.Objects.Search().submitItemSearch({
+                item: item,
+                displayNotification: false,
                 callbacks: {
+                    success: [
+                        // Once the 'uber' item is loaded, look at its children.
+                        // The children will be the actual items to be displayed
+                        function (data, status) {
+                            if (status === 'success') {
+                                var children = data.children,
+                                    loadItem = function (item) {
+                                        CCH.items.load({
+                                            item: item,
+                                            displayNotification: false,
+                                            callbacks: {
+                                                success: [
+                                                    function (product, status, responseText) {
+                                                        if (status === 'success') {
+                                                            CCH.ui.addToAccordion({
+                                                                product : product
+                                                            });
+                                                        }
+                                                    },
+                                                    CCH.ui.removeOverlay
+                                                ],
+                                                error: [errorResponseHandler]
+                                            }
+                                        });
+                                    };
+
+                                if (typeof children === 'string') {
+                                    children = [children];
+                                }
+
+                                // I check to see if this item has any children
+                                if (children.length) {
+                                    children.each(loadItem);
+                                } else {
+                                    loadItem(data.id);
+                                }
+                            } else {
+                                CCH.ui.displayLoadingError({
+                                    errorThrown: '',
+                                    splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
+                                    mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
+                                });
+                            }
+                        }],
                     error: [errorResponseHandler]
                 }
             });
-        } else if (type === 'view') {
+        };
+
+    if (type) {
+        if (type === 'view') {
             splashUpdate("Loading View " + CCH.CONFIG.id);
-
-            ssListener = function () {
-                CCH.ui.removeOverlay();
-                CCH.slideshow.stop();
-                $(window).off('cch-slideshow-slider-loaded', ssListener);
-            };
-
-            $(window).on('cch-slideshow-slider-loaded', ssListener);
-            $(window).on('cch-map-bbox-marker-added', removeMarkers);
-
+            
             // Begin by trying to load the session from the incoming url
             CCH.session.load({
                 sid: CCH.CONFIG.id,
@@ -171,70 +203,12 @@ $(document).ready(function () {
                     error: [errorResponseHandler]
                 }
             });
+        } else if (type === 'item') {
+            splashUpdate('Loading Item ' + itemId);
+            loadItem(itemId);
         }
     } else {
-        // A user is not coming in through the session or the view, so just load
-        // the 10 most popular items and begin the slideshow when completed
-        errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
-            CCH.ui.displayLoadingError({
-                errorThrown: errorThrown,
-                splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
-                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
-            });
-        };
-
-        // "uber" is the top level item containing children which are at the top
-        // level. Typically these will be the top level aggregations
-        (function () {
-            new CCH.Objects.Search().submitItemSearch({
-                item: 'uber',
-                displayNotification: false,
-                callbacks: {
-                    success: [
-                        // Once the 'uber' item is loaded, look at its children.
-                        // The children will be the actual items to be displayed
-                        function (data, status) {
-                            if (status === 'success') {
-                                var children = data.children;
-                                
-                                if (typeof children === 'string') {
-                                    children = [children];
-                                }
-                                
-                                // We typically will have multiple children coming 
-                                // from the uper item, so process each and load them
-                                // into the UI as accordion bellows
-                                children.each(function (child) {
-                                    CCH.items.load({
-                                        item: child,
-                                        displayNotification: false,
-                                        callbacks: {
-                                            success: [
-                                                function (product, status, responseText) {
-                                                    if (status === 'success') {
-                                                        CCH.ui.addToAccordion({
-                                                            product : product
-                                                        });
-                                                    }
-                                                },
-                                                CCH.ui.removeOverlay
-                                            ],
-                                            error: [errorResponseHandler]
-                                        }
-                                    });
-                                });
- 
-                            } else {
-                                 CCH.ui.displayLoadingError({
-                                    errorThrown: '',
-                                    splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
-                                    mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
-                                });
-                            }
-                        }],
-                    error: [errorResponseHandler]
-                }
-            });
-        }());
+        splashUpdate('Loading Items');
+        loadItem('uber');
     }
 });
