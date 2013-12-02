@@ -10,6 +10,13 @@
     width: 100%;
 }
 
+/* Close button */
+#application-slide-bucket-container > div:first-child >  div:first-child >  div:first-child >  div:first-child >  div:first-child:hover {
+    font-size-adjust: 1.1;
+    font-weight: bold;
+    cursor: pointer;
+}
+
 .application-slide-bucket-container-card-image {
     width: 100%;
 }
