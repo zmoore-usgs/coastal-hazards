@@ -3,6 +3,14 @@
     z-index: 2000;
 }
 
+#application-slide-search-container > div:first-child > div:first-child {
+    height: 97%;
+    margin-top: 10px;
+    overflow: scroll;
+    margin-right: 3px;
+    margin-left: 3px;
+}
+
 /* Close button */
 #application-slide-search-container > div:first-child >  div:first-child >  div:first-child >  div:first-child >  div:first-child:hover {
     font-size-adjust: 1.1;
@@ -19,12 +27,6 @@
     float: right;
     display: inline-block;
     z-index: 2000;
-}
-
-#application-slide-search-content-container {
-    height: 97%;
-    margin-top: 10px;
-    overflow: scroll;
 }
 
 .application-slide-search-location-card-image {
@@ -74,7 +76,7 @@ No tab shown on large display. Toggled via button in bar
         border-bottom-left-radius: 10px 10px;
         -webkit-border-bottom-left-radius: 10px 10px;
     }
-    
+
     #application-slide-search-container {
         top : 10px;
         height: 97%;
