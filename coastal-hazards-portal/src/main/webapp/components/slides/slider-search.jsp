@@ -52,7 +52,7 @@
             <div class="btn-group">
                 <button class="application-slide-search-product-card-button-search btn btn-default btn-xs application-slide-search-product-card-template-button" type="button"><i class="fa fa-plus"></i></button>
                 <button class="application-slide-search-product-card-button-remove btn btn-default btn-xs application-slide-search-product-card-template-button" type="button"><i class="fa fa-times-circle-o"></i></button>
-                <button class="application-slide-search-product-card-button-info btn btn-default btn-xs application-slide-search-product-card-template-button" type="button"><i class="fa fa-info-circle"></i></button>
+                <a class="application-slide-search-product-card-button-info btn btn-default btn-xs application-slide-search-product-card-template-button" role="button"><i class="fa fa-eye"></i></a>
                 <button class="application-slide-search-product-card-button-ok btn btn-default btn-xs application-slide-search-product-card-template-button" type="button"><i class="fa fa-check"></i></button>
             </div>
         </div>

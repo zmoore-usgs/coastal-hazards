@@ -221,7 +221,8 @@ CCH.Objects.SearchSlide = function (args) {
                 titleContainer = newItem.find('.' + titleContainerClass),
                 titleContainerPNode = newItem.find('.' + titleContainerClass + ' p'),
                 descriptionContainer = newItem.find('.' + descriptionContainerClass),
-                bucketButton = newItem.find('>div:nth-child(2)>div>button:first-child');
+                bucketButton = newItem.find('>div:nth-child(2)>div>*:first-child'),
+                searchButton = newItem.find('>div:nth-child(2)>div>*:nth-child(3)');
 
             newItem.attr('id', 'application-slide-search-product-card-' + id);
             imageContainer.attr({
@@ -236,6 +237,10 @@ CCH.Objects.SearchSlide = function (args) {
                     item : product
                 });
             });
+            searchButton.attr({
+                        'target' : 'portal_info_window',
+                        'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
+            })
             return newItem;
         }
     };
