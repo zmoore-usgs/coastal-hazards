@@ -55,45 +55,27 @@ CCH.Objects.SearchSlide = function (args) {
         var slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large;
-    
-        $('body').css({
-            overflow : 'hidden'
-        });
-        
-        slideContainer.css({
-            display: ''
-        });
-        
-        slideContainer.animate({
-            left: toExtent.left
-        }, me.animationTime, function () {
-            me.isClosed = false;
-            $('body').css({
-                overflow : ''
+        if (me.isClosed) {
+            slideContainer.removeClass('hidden');
+
+            slideContainer.animate({
+                left: toExtent.left
+            }, me.animationTime, function () {
+                me.isClosed = false;
             });
-        });
+        }
     };
 
     me.close = function () {
-        var slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
-        
-        $('body').css({
-            overflow : 'hidden'
-        });
-        
-        slideContainer.animate({
-            left: $(window).width()
-        }, me.animationTime, function () {
-            me.isClosed = true;
-            
-            slideContainer.css({
-                display: 'none'
+        if (!me.isClosed) {
+            var slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
+            slideContainer.animate({
+                left: $(window).width()
+            }, me.animationTime, function () {
+                me.isClosed = true;
+                slideContainer.addClass('hidden');
             });
-            
-            $('body').css({
-               overflow : 'hidden'
-           });
-        });
+        }
     };
 
     me.toggle = function () {
@@ -112,17 +94,12 @@ CCH.Objects.SearchSlide = function (args) {
             slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             slideContent = $('#' + me.SLIDE_CONTENT_ID),
             appContainerId = $('#' + me.APP_CONTAINER_ID),
-            windowWidth = $(window).outerWidth(),
-            windowHeight = $(window).outerHeight();
+            windowWidth = $(window).outerWidth();
 
         if (me.isClosed) {
-            slideContainer.css({
-                display : 'none'
-            });
+            slideContainer.addClass('hidden');
         } else {
-            slideContainer.css({
-                'display' : ''
-            });
+            slideContainer.removeClass('hidden');
         }
 
         if (me.isSmall()) {

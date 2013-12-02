@@ -18,3 +18,13 @@
 <meta name="review" content="${param.review}" />
 <meta name="expires" content="never" />
 <link rel="icon" href="favicon.ico" type="image/x-icon" />
+<script type="text/javascript">
+    /* This application does not support <IE9 - Stop early if <IE9*/
+    if (navigator.appName === 'Microsoft Internet Explorer') {
+        var ua = navigator.userAgent;
+        if (ua.toLowerCase().indexOf('msie 6') !== -1 || ua.toLowerCase().indexOf('msie 7') !== -1 || ua.toLowerCase().indexOf('msie 8') !== -1) {
+            alert("We apologize, but this application does not support Internet Explorer versions lower than 9.0.\n\nOther supported browsers are Firefox, Chrome and Safari.");
+            window.location = 'http://windows.microsoft.com/en-us/internet-explorer/downloads/ie-9/worldwide-languages';
+        }
+    }
+</script>
