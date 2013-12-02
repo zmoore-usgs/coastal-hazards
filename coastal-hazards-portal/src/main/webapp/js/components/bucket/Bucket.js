@@ -28,9 +28,11 @@ CCH.Objects.Bucket = function (args) {
             currentMargin = parseInt(currentMarginString.substring(0, currentMarginString.indexOf('px')), 10),
             originalMargin = parseInt(me.INITIAL_BUCKET_COUNT_MARGIN_LEFT.substring(0, me.INITIAL_BUCKET_COUNT_MARGIN_LEFT.indexOf('px')), 10);
 
-        if (count > 0 && !bucketContainer.hasClass(me.BUCKET_POPULATED_CLASS)) {
-            bucketContainer.removeClass(me.BUCKET_UNPOPULATED_CLASS);
-            bucketContainer.addClass(me.BUCKET_POPULATED_CLASS);
+        if (count > 0) {
+            if (!bucketContainer.hasClass(me.BUCKET_POPULATED_CLASS)) {
+                bucketContainer.removeClass(me.BUCKET_UNPOPULATED_CLASS);
+                bucketContainer.addClass(me.BUCKET_POPULATED_CLASS);
+            }
         } else {
             bucketContainer.removeClass(me.BUCKET_POPULATED_CLASS);
             bucketContainer.addClass(me.BUCKET_UNPOPULATED_CLASS);

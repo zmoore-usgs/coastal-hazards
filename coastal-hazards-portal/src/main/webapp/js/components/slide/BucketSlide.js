@@ -6,7 +6,7 @@
 
 /**
  * Emits: 
- * 
+ * window: 'bucket-remove'
  * 
  * Listeners:
  * window: 'cch.ui.resized'
@@ -197,10 +197,13 @@ CCH.Objects.BucketSlide = function (args) {
             card;
 
         if (id) {
-            me.EMPTY_TEXT_CONTAINER.removeClass('hidden');
             card = me.getCard({ id : id });
             me.cards.removeAt(me.getCardIndex(id));
             card.remove();
+            
+            if (!me.cards.length) {
+                me.EMPTY_TEXT_CONTAINER.removeClass('hidden');
+            }
         }
 
         return card;
