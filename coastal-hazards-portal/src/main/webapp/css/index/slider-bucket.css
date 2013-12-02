@@ -56,3 +56,8 @@ No tab shown on large display. Toggled via button in bar
     display: inline-block;
     z-index: 2000;
 }
+
+#application-slide-bucket-container > div > div > #application-slide-bucket-content-empty {
+    text-align: center;
+    font-size: 1.4em;
+}

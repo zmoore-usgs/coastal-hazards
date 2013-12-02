@@ -28,7 +28,7 @@ CCH.Objects.BucketSlide = function (args) {
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
     me.CARD_TEMPLATE_ID = 'application-slide-bucket-container-card-template';
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-bucket-content-container';
-
+    me.EMPTY_TEXT_CONTAINER = $('#' + me.SLIDE_CONTAINER_ID ).find('> div > div > #application-slide-bucket-content-empty');
     me.borderWidth = 2;
     me.animationTime = 500;
     me.placement = 'right';
@@ -179,6 +179,7 @@ CCH.Objects.BucketSlide = function (args) {
             card;
 
         if (item && !me.getCard({ id : item.id })) {
+            me.EMPTY_TEXT_CONTAINER.addClass('hidden');
             card = me.createCard({
                 item : item
             });
@@ -196,6 +197,7 @@ CCH.Objects.BucketSlide = function (args) {
             card;
 
         if (id) {
+            me.EMPTY_TEXT_CONTAINER.removeClass('hidden');
             card = me.getCard({ id : id });
             me.cards.removeAt(me.getCardIndex(id));
             card.remove();

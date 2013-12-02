@@ -1,6 +1,7 @@
 <div id="application-slide-bucket-container" class="application-slide-container">
     <div id="application-slide-bucket-content" class="application-slide-content">
         <div id="application-slide-bucket-content-container" class="container">
+            <div id="application-slide-bucket-content-empty">Your Bucket Does Not Have Anything In It</div>
         </div>
     </div>
 </div>
