@@ -83,7 +83,7 @@
         <script type="text/javascript" src="js/components/items/Items.js"></script>
         <script type="text/javascript" src="js/components/popularity/Popularity.js"></script>
         <script type="text/javascript" src="js/components/common/OWS.js"></script>
-        <script type="text/javascript" src="js/components/bucket/navbar-bucket.js"></script>
+        <script type="text/javascript" src="js/components/bucket/Bucket.js"></script>
         <script type="text/javascript" src="js/components/search/combined-searchbar.js"></script>
         <script type="text/javascript" src="js/components/common/UI.js"></script>
         <script type="text/javascript" src="js/components/common/OnReady.js"></script>

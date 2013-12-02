@@ -3,6 +3,17 @@
 /*global $*/
 /*global CCH*/
 /*global splashUpdate*/
+
+/**
+ * Emits: 
+ * 
+ * 
+ * Listeners:
+ * window: 'cch.ui.resized'
+ * 
+ * @param {type} args
+ * @returns {CCH.Objects.BucketSlide.Anonym$12}
+ */
 CCH.Objects.BucketSlide = function (args) {
     "use strict";
     args = args || {};
@@ -11,9 +22,6 @@ CCH.Objects.BucketSlide = function (args) {
         throw 'containerId is required when initializing a bucket slide';
     }
     var me = (this === window) ? {} : this;
-
-    // Listeners 
-    // window: 'cch.ui.resized'
 
     me.SLIDE_CONTAINER_ID = args.containerId;
     me.MAP_DIV_ID = args.mapdivId || 'map';
@@ -28,6 +36,7 @@ CCH.Objects.BucketSlide = function (args) {
     me.startClosed = true;
     me.isInitialized = false;
     me.isClosed = me.startClosed;
+    me.cards = [];
 
     me.open = function () {
         var slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
@@ -52,24 +61,24 @@ CCH.Objects.BucketSlide = function (args) {
 
     me.close = function () {
         var slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
-        
+
         $('body').css({
             overflow : 'hidden'
         });
-        
+
         slideContainer.animate({
             left: $(window).width()
         }, me.animationTime, function () {
             me.isClosed = true;
-            
+
             slideContainer.css({
                 display: 'none'
             });
-            
+
             $('body').css({
-               overflow : 'hidden'
-           });
-        
+                overflow : 'hidden'
+            });
+
         });
     };
 
@@ -140,31 +149,91 @@ CCH.Objects.BucketSlide = function (args) {
         return extents;
     };
 
-    me.addCard = function (args) {
+    me.getCard = function (args) {
         args = args || {};
 
-        if (args.card) {
-            $('#' + me.SLIDE_CONTENT_CONTAINER).append(args.card);
+        var id = args.id,
+            existingIndex,
+            card;
+
+        if (id) {
+            existingIndex = me.getCardIndex(id);
+
+            if (existingIndex !== -1) {
+                card = me.cards[existingIndex];
+            }
         }
+
+        return card;
+    };
+
+    me.getCardIndex = function (id) {
+        return me.cards.findIndex(function (i) {
+            return i.data('id') === id;
+        });
+    };
+
+    me.add = function (args) {
+        args = args || {};
+        var item = args.item,
+            card;
+
+        if (item && !me.getCard({ id : item.id })) {
+            card = me.createCard({
+                item : item
+            });
+            me.cards.push(card);
+            $('#' + me.SLIDE_CONTENT_CONTAINER).append(card);
+        }
+
+        return card;
+    };
+
+    me.remove = function (args) {
+        args = args || {};
+
+        var id = args.id,
+            card;
+
+        if (id) {
+            card = me.getCard({ id : id });
+            me.cards.removeAt(me.getCardIndex(id));
+            card.remove();
+        }
+
+        return card;
     };
 
     me.createCard = function (args) {
         args = args || {};
-        var id = args.id || new Date().getMilliseconds(),
-            title = args.title || 'Title Not Provided',
-            content = args.content || 'Description Not Provided',
+        var item = args.item,
+            id = item.id || new Date().getMilliseconds(),
+            title = item.summary.tiny.text || 'Title Not Provided',
+            content = item.summary.medium.text || 'Description Not Provided',
             titleContainerClass = 'application-slide-bucket-container-card-title',
             descriptionContainerClass = 'application-slide-bucket-container-card-description',
             newItem = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
             titleContainer = newItem.find('.' + titleContainerClass),
             titleContainerPNode = newItem.find('.' + titleContainerClass + ' p'),
-            descriptionContainer = newItem.find('.' + descriptionContainerClass);
+            descriptionContainer = newItem.find('.' + descriptionContainerClass),
+            removeButton = newItem.find('>div:nth-child(2)>div.btn-group>button:nth-child(2)'),
+            imageContainer = newItem.find('img');
 
         newItem.attr('id', 'application-slide-bucket-container-card-' + id);
+        imageContainer.attr('src', 'http://www.tshirtdesignsnprint.com/img/not-found.png');
         titleContainer.attr('id', titleContainerClass + '-' + id);
         titleContainerPNode.html(title);
         descriptionContainer.attr('id', descriptionContainerClass + '-' + id).html(content);
-        
+        newItem.data('id', id);
+
+        removeButton.on('click', function (evt) {
+            // I emit this to the top so that bucket can catch it, decrement itself
+            // and then pass on the remove back down here to my remove method
+            $(window).trigger('bucket-remove', {
+                id : id
+            });
+        });
+
         return newItem;
     };
 
@@ -177,7 +246,9 @@ CCH.Objects.BucketSlide = function (args) {
         open: me.open,
         close: me.close,
         toggle : me.toggle,
-        addCard : me.addCard,
+        add : me.add,
+        remove : me.remove,
+        getCard : me.getCard,
         createCard : me.createCard,
         isClosed : me.isClosed
     };

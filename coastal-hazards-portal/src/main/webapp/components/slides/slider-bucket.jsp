@@ -9,7 +9,7 @@
 <div id="application-slide-bucket-container-card-template" class="hidden">
     <div class="application-slide-bucket-container-card well well-small">
         <div class="row">
-            <div class="col-md-2"><img class="application-slide-bucket-container-card-image" class="img-responsive" alt="Bucket Card Image" /></div>
+            <div class="col-md-2"><img class="application-slide-bucket-container-card-image img-responsive" alt="Bucket Card Image" /></div>
             <div class="application-slide-bucket-container-card-title-description-container col-md-10">
                 <div class="row">
                     <div class="application-slide-bucket-container-card-title"><p class="center"></p></div>
@@ -19,10 +19,10 @@
         </div>
         <div class="row text-center">
             <div class="btn-group">
-                <button class="application-slide-bucket-container-card-button-bucket btn btn-xs application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-star"></i></button>
-                <button class="application-slide-bucket-container-card-button-remove btn btn-xs application-slide-bucket-container-card-template-button" type="button"><i class=".glyphicon .glyphicon-remove"></i></button>
-                <button class="application-slide-bucket-container-card-button-info btn btn-xs application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-info-circle"></i></button>
-                <button class="application-slide-bucket-container-card-button-ok btn btn-xs application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-check"></i></button>
+                <button class="application-slide-bucket-container-card-button-bucket btn btn-default btn-xs application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-star"></i></button>
+                <button class="application-slide-bucket-container-card-button-remove btn btn-default btn-xs application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-ban"></i></button>
+                <button class="application-slide-bucket-container-card-button-info btn btn-default btn-xs application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-info-circle"></i></button>
+                <button class="application-slide-bucket-container-card-button-ok btn btn-default btn-xs application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-check"></i></button>
             </div>
         </div>
     </div>

@@ -7,8 +7,7 @@ CCH.Objects.Bucket = function (args) {
 
     var me = (this === window) ? {} : this;
 
-    $.extend(me, args);
-
+    me.slide = args.slide;
     me.BUCKET_COUNT_CONTAINER_ID = 'app-navbar-bucket-button-count';
     me.BUCKET_CONTAINER_ID = 'app-navbar-bucket-button-container';
     me.IMAGE_LOCATION_BUCKET_WITH_SAND = 'images/banner/bucket/bucket.svg';
@@ -60,9 +59,34 @@ CCH.Objects.Bucket = function (args) {
 
         return count;
     };
-    
+
     $('#' + me.BUCKET_CONTAINER_ID).on('click', function () {
         $(me).trigger('app-navbar-button-clicked');
+        me.slide.toggle();
+    });
+
+    $(window).on({
+        'bucket-add': function (evt, args) {
+            args = args || {};
+            var item = args.item;
+
+            if (item) {
+                me.add({
+                    item: item
+                });
+            }
+        },
+        'bucket-remove': function (evt, args) {
+            args = args || {};
+            var id = args.id,
+                item = id ? CCH.items.getById({ id : id }) : args.item;
+        
+            if (item) {
+                me.remove({
+                    item: item
+                });
+            }
+        }
     });
     
     // Preload required images
@@ -75,43 +99,47 @@ CCH.Objects.Bucket = function (args) {
     return $.extend(me, {
         add : function (args) {
             args = args || {};
-            
+
             // Make sure I get what I need to remove
             if (!args.item) {
                 throw "item not passed to CCH.Objects.Bucket";
             }
-            
+
             var item = args.item,
                 id = item.id;
             if (!me.getItemById(id)) {
                 me.bucket.push(item);
+                me.slide.add({
+                    item : item
+                });
                 me.increaseCount();
             }
             return me.bucket;
         },
         remove : function (args) {
             args = args || {};
-            
+
             if (!args.item && !args.id) {
                 throw "item not passed to CCH.Objects.Bucket";
             }
-            
+
             var id = args.id,
                 item = args.item;
-        
+
             if (id) {
                 item = me.getItemById(id);
-            } 
-            
+            }
+
             if (item) {
                 id = item.id;
                 me.bucket.remove(function (item) {
                     return item.id === id;
                 });
+                me.slide.remove(item);
                 me.decreaseCount();
             }
         },
-        removeAll : function (args) {
+        removeAll : function () {
             me.bucket.each(function (item) {
                 me.remove({
                     item : item

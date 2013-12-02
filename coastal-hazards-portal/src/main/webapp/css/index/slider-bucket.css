@@ -3,10 +3,11 @@
     z-index: 1008;
 }
 
-#application-slide-bucket-content-container {
+#application-slide-bucket-container > div:first-child > div:first-child {
     height: 97%;
     margin-top: 10px;
     overflow: scroll;
+    width: 100%;
 }
 
 .application-slide-bucket-container-card-image {
