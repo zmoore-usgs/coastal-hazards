@@ -281,7 +281,15 @@ CCH.Objects.Card = function (args) {
                 controlContainer = container.find('.application-card-control-container'),
                 spaceAggButton = $('<button />').addClass('btn btn-default disabled').html('Space'),
                 propertyAggButton = $('<button />').addClass('btn btn-default').html('Property'),
-                bucketButton = $('<button />').addClass('btn btn-default').html('Bucket');
+                bucketButton = $('<button />').addClass('btn btn-default').html('Bucket'),
+                infoButton = $('<a />').
+                    addClass('btn btn-default').
+                    html('Info').
+                    attr({
+                        'role': 'button',
+                        'target' : 'portal_info_window',
+                        'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
+                    });
 
             // My container starts out open so I immediately add that class to it
             container.addClass('open');
@@ -360,7 +368,7 @@ CCH.Objects.Card = function (args) {
                 me.bindSelectControl(childrenSelectControl);
             } else {
                 childrenSelectControl.remove();
-                controlContainer.append(bucketButton);
+                controlContainer.append(bucketButton, infoButton);
             }
 
             me.bindBucketControl(bucketButton);

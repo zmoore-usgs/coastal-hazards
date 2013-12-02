@@ -26,6 +26,7 @@ CCH.Objects.BucketSlide = function (args) {
     me.SLIDE_CONTAINER_ID = args.containerId;
     me.MAP_DIV_ID = args.mapdivId || 'map';
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
+    me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div:first-child >  div:first-child >  div:first-child >  div:first-child >  div:first-child';
     me.CARD_TEMPLATE_ID = 'application-slide-bucket-container-card-template';
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-bucket-content-container';
     me.EMPTY_TEXT_CONTAINER = $('#' + me.SLIDE_CONTAINER_ID ).find('> div > div > #application-slide-bucket-content-empty');
@@ -52,7 +53,7 @@ CCH.Objects.BucketSlide = function (args) {
             left: toExtent.left
         }, me.animationTime, function () {
             me.isClosed = false;
-            
+
             $('body').css({
                 overflow : ''
             });
@@ -244,6 +245,10 @@ CCH.Objects.BucketSlide = function (args) {
 
     $(window).on('cch.ui.resized', function (args) {
         me.resized(args);
+    });
+    
+    $(me.CLOSE_BUTTON_SELECTOR).on('click', function (evt) {
+        me.toggle();
     });
 
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');

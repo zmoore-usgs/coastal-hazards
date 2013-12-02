@@ -30,6 +30,7 @@ CCH.Objects.SearchSlide = function (args) {
 
     me.SLIDE_CONTAINER_ID = args.containerId;
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
+    me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div:first-child >  div:first-child >  div:first-child >  div:first-child >  div:first-child';
     me.APP_CONTAINER_ID = 'content-row';
     me.LOCATION_CARD_TEMPLATE_ID = 'application-slide-search-location-card-template';
     me.LOCATION_SLIDE_SEARCH_CONTAINER_ID = 'application-slide-search-location-results-content-container';
@@ -219,7 +220,9 @@ CCH.Objects.SearchSlide = function (args) {
                 imageContainer = newItem.find('.' + imageContainerClass),
                 titleContainer = newItem.find('.' + titleContainerClass),
                 titleContainerPNode = newItem.find('.' + titleContainerClass + ' p'),
-                descriptionContainer = newItem.find('.' + descriptionContainerClass);
+                descriptionContainer = newItem.find('.' + descriptionContainerClass),
+                bucketButton = newItem.find('>div:nth-child(2)>div>*:first-child'),
+                searchButton = newItem.find('>div:nth-child(2)>div>*:nth-child(3)');
 
             newItem.attr('id', 'application-slide-search-product-card-' + id);
             imageContainer.attr({
@@ -229,7 +232,15 @@ CCH.Objects.SearchSlide = function (args) {
             titleContainer.attr('id', titleContainerClass + '-' + id);
             titleContainerPNode.html(title);
             descriptionContainer.attr('id', descriptionContainerClass + '-' + id).html(description);
-            
+            bucketButton.on('click', function (evt) {
+                $(window).trigger('bucket-add', {
+                    item : product
+                });
+            });
+            searchButton.attr({
+                'target' : 'portal_info_window',
+                'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
+            });
             return newItem;
         }
     };
@@ -287,6 +298,10 @@ CCH.Objects.SearchSlide = function (args) {
 
         return newItem;
     };
+    
+    $(me.CLOSE_BUTTON_SELECTOR).on('click', function (evt) {
+        me.toggle();
+    });
 
     $(window).on('cch.ui.resized', function (args) {
         me.resized(args);
