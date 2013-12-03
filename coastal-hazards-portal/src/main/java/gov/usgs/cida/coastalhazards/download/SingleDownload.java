@@ -5,6 +5,7 @@ import gov.usgs.cida.coastalhazards.export.WFSExportClient;
 import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +24,7 @@ public class SingleDownload {
     private WFSService wfs;
     private List<String> attrs;
     private String name;
+    private URL metadata;
 
     private static final Pattern incrementPattern = Pattern.compile("(.*)(\\d+)$");
 
@@ -30,6 +32,7 @@ public class SingleDownload {
         wfs = null;
         attrs = new LinkedList<>();
         name = null;
+        metadata = null;
     }
 
     /**
@@ -52,8 +55,11 @@ public class SingleDownload {
         for (String attr : attrs) {
             export.addAttribute(attr);
         }
-        
+        String metadataName = name + "_metadata.xml";
+        MetadataDownload metaExport = new MetadataDownload(metadata, new File(stagingDir, metadataName));
+                
         export.writeToShapefile();
+        metaExport.stage();
     }
 
     public WFSService getWfs() {
@@ -78,6 +84,14 @@ public class SingleDownload {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public URL getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(URL metadata) {
+        this.metadata = metadata;
     }
 
     /**
@@ -105,6 +119,7 @@ public class SingleDownload {
         hash = 47 * hash + Objects.hashCode(this.wfs);
         hash = 47 * hash + Objects.hashCode(this.attrs);
         hash = 47 * hash + Objects.hashCode(this.name);
+        hash = 47 * hash + Objects.hashCode(this.metadata);
         return hash;
     }
 
@@ -124,6 +139,9 @@ public class SingleDownload {
             return false;
         }
         if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (!Objects.equals(this.metadata, other.metadata)) {
             return false;
         }
         return true;
