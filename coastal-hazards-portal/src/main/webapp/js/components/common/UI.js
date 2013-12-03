@@ -53,21 +53,34 @@ CCH.Objects.UI = function (args) {
     me.magicResizeNumber = 992;
     me.minimumHeight = args.minimumHeight || 480;
     me.previousWidth = $(window).width();
-    me.bucket = new CCH.Objects.Bucket();
+    me.isSmall = function () {
+        // Bootstrap decides when to flip the application view based on 
+        // a specific width. 767px seems to be the point 
+        // https://github.com/twitter/bootstrap/blob/master/less/responsive-767px-max.less
+        return $(window).width() <= me.magicResizeNumber;
+    };
+    me.itemsSlide = new CCH.Objects.ItemsSlide({
+        containerId : me.ITEMS_SLIDE_CONTAINER_ID,
+        mapdivId : me.MAP_DIV_ID,
+        headerRowId : me.HEADER_ROW_ID,
+        footerRowId : me.FOOTER_ROW_ID,
+        isSmall : me.isSmall
+    });
+    me.bucketSlide = new CCH.Objects.BucketSlide({
+        containerId : me.BUCKET_SLIDE_CONTAINER_ID,
+        mapdivId : me.MAP_DIV_ID,
+        isSmall : me.isSmall
+    });
+    me.searchSlide = new CCH.Objects.SearchSlide({
+        containerId : me.SEARCH_SLIDE_CONTAINER_ID,
+        isSmall : me.isSmall
+    });
+    me.bucket = new CCH.Objects.Bucket({
+        slide : me.bucketSlide
+    });
     me.combinedSearch = new CCH.Objects.CombinedSearch();
     me.accordion = new CCH.Objects.Accordion({
         containerId : me.SLIDE_CONTAINER_DIV_ID
-    });
-
-    $(window).on('item-button-click-bucket-add', function (evt, args) {
-        args = args || {};
-        var item = args.item;
-        
-        if (item) {
-            me.bucket.add({
-                item : item
-            });
-        }
     });
 
     me.itemsSearchedHandler = function (evt, data) {
@@ -80,7 +93,9 @@ CCH.Objects.UI = function (args) {
                 type: 'info',
                 nonblock: true,
                 sticker: false,
-                icon: 'icon-search'
+                icon: 'icon-search',
+                closer: true,
+                delay: 3000
             });
         }
     };
@@ -108,7 +123,6 @@ CCH.Objects.UI = function (args) {
         // fit into the new layout
         if ((me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) ||
                 (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber)) {
-            CCH.LOG.debug('CCH UI Redeminsioned to ' + isSmall ? 'small' : 'large');
             $(window).trigger('cch.ui.redimensioned', isSmall);
         }
         $(window).trigger('cch.ui.resized', isSmall);
@@ -301,13 +315,6 @@ CCH.Objects.UI = function (args) {
             });
         }
     };
-    
-    me.isSmall = function () {
-        // Bootstrap decides when to flip the application view based on 
-        // a specific width. 767px seems to be the point 
-        // https://github.com/twitter/bootstrap/blob/master/less/responsive-767px-max.less
-        return $(window).width() <= me.magicResizeNumber;
-    };
 
     me.displayLoadingError = function (args) {
         var continueLink = $('<a />').attr({
@@ -325,23 +332,6 @@ CCH.Objects.UI = function (args) {
         $('#splash-status-update').append(emailLink);
         $('#splash-spinner').fadeOut(2000);
     };
-
-    me.itemsSlide = new CCH.Objects.ItemsSlide({
-        containerId : me.ITEMS_SLIDE_CONTAINER_ID,
-        mapdivId : me.MAP_DIV_ID,
-        headerRowId : me.HEADER_ROW_ID,
-        footerRowId : me.FOOTER_ROW_ID,
-        isSmall : me.isSmall
-    });
-    me.bucketSlide = new CCH.Objects.BucketSlide({
-        containerId : me.BUCKET_SLIDE_CONTAINER_ID,
-        mapdivId : me.MAP_DIV_ID,
-        isSmall : me.isSmall
-    });
-    me.searchSlide = new CCH.Objects.SearchSlide({
-        containerId : me.SEARCH_SLIDE_CONTAINER_ID,
-        isSmall : me.isSmall
-    });
 
     me.init = (function () {
         var navbarPinButton = $('#' + me.NAVBAR_PIN_BUTTON_ID),
@@ -366,31 +356,14 @@ CCH.Objects.UI = function (args) {
         $(window).on({
             'resize': me.windowResizeHandler,
             'cch.data.items.searched': me.itemsSearchedHandler,
-            'item-button-click-bucket-add': function(evt, args) {
-                args = args || {};
-                var item = args.item;
-
-                if (item) {
-                    me.bucket.add({
-                        item: item
-                    });
-                }
+            'bucket-add': function(evt, args) {
+                
             },
-            'item-button-click-bucket-remove': function(evt, args) {
-                args = args || {};
-                var item = args.item;
-
-                if (item) {
-                    me.bucket.remove({
-                        item: item
-                    });
-                }
+            'bucket-remove': function(evt, args) {
+                
             }
         });
 
-        $(me.bucket).on('app-navbar-button-clicked', function () {
-            me.bucketSlide.toggle();
-        });
         $(me.combinedSearch).on('combined-searchbar-search-performed', function (evt, args) {
             me.searchSlide.displaySearchResults(args);
         });

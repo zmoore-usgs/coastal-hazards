@@ -3,10 +3,19 @@
     z-index: 1008;
 }
 
-#application-slide-bucket-content-container {
+#application-slide-bucket-container > div:first-child > div:first-child {
     height: 97%;
     margin-top: 10px;
     overflow: scroll;
+    margin-right: 3px;
+    margin-left: 3px;
+}
+
+/* Close button */
+#application-slide-bucket-container > div:first-child >  div:first-child >  div:first-child >  div:first-child >  div:first-child:hover {
+    font-size-adjust: 1.1;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .application-slide-bucket-container-card-image {
@@ -54,4 +63,9 @@ No tab shown on large display. Toggled via button in bar
     float: right;
     display: inline-block;
     z-index: 2000;
+}
+
+#application-slide-bucket-container > div > div > #application-slide-bucket-content-empty {
+    text-align: center;
+    font-size: 1.4em;
 }

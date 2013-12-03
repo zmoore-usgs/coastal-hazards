@@ -7,6 +7,10 @@
 /**
  * Represents a product as a card
  * 
+ * Emits: 
+ * window: "item-button-click-bucket-add"
+ * window: "item-button-click-bucket-remove"
+ * 
  * @param {type} args
  * @returns {CCH.Objects.Card.Anonym$2}
  */
@@ -23,6 +27,7 @@ CCH.Objects.Card = function (args) {
     me.AGGREGATION_CONTAINER_CARD = args.aggregationContainerId || 'application-slide-items-aggregation-container-card';
     me.PRODUCT_CONTAINER_CARD = args.productContainerId || 'application-slide-items-product-container-card';
     me.SELECTION_CONTROL_CLASS = 'application-card-children-selection-control';
+    me.BUCKET_BUTTON_SELECTOR = '>div:nth-child(2)>div:nth-child(2)>div>span>button:nth-child(3)';
     me.product = args.product;
     me.id = me.product.id;
     me.bbox = me.product.bbox;
@@ -207,14 +212,14 @@ CCH.Objects.Card = function (args) {
             
             if (button.hasClass('active')) {
                 // User pressed bucket button in and wants to add me to a bucket
-                $(window).trigger('item-button-click-bucket-add', {
-                    item : me
+                $(window).trigger('bucket-add', {
+                    item : me.product
                 });
             } else {
                 // User toggled the bucket button off - I should be removed from 
                 // bucket
-                $(window).trigger('item-button-click-bucket-remove', {
-                    item : me
+                $(window).trigger('bucket-remove', {
+                    item : me.product
                 });
             }
         });
@@ -276,7 +281,15 @@ CCH.Objects.Card = function (args) {
                 controlContainer = container.find('.application-card-control-container'),
                 spaceAggButton = $('<button />').addClass('btn btn-default disabled').html('Space'),
                 propertyAggButton = $('<button />').addClass('btn btn-default').html('Property'),
-                bucketButton = $('<button />').addClass('btn btn-default').html('Bucket');
+                bucketButton = $('<button />').addClass('btn btn-default').html('Bucket'),
+                infoButton = $('<a />').
+                    addClass('btn btn-default').
+                    html('Info').
+                    attr({
+                        'role': 'button',
+                        'target' : 'portal_info_window',
+                        'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
+                    });
 
             // My container starts out open so I immediately add that class to it
             container.addClass('open');
@@ -355,7 +368,7 @@ CCH.Objects.Card = function (args) {
                 me.bindSelectControl(childrenSelectControl);
             } else {
                 childrenSelectControl.remove();
-                controlContainer.append(bucketButton);
+                controlContainer.append(bucketButton, infoButton);
             }
 
             me.bindBucketControl(bucketButton);
@@ -373,6 +386,19 @@ CCH.Objects.Card = function (args) {
         }
         return me.container;
     };
+    
+    $(window).on({
+        'bucket-add': function (evt, args) {},
+        'bucket-remove': function (evt, args) {
+            args = args || {};
+            var id = args.id,
+                bucketButton = me.container.find(me.BUCKET_BUTTON_SELECTOR);
+        
+            if (id && me.id === id && bucketButton.hasClass('active')) {
+                bucketButton.button('toggle');
+            }
+        }
+    });
 
     CCH.LOG.info('Card.js::constructor:Card class is initialized.');
 
