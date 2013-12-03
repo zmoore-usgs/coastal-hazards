@@ -17,6 +17,8 @@ import org.geotools.data.wfs.protocol.wfs.Version;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class WFSExportClient {
+    
+    private static final int TIMEOUT = 5000;
 
     private WFSDataStoreFactory datastore;
     private WFSDataStore wfs;
@@ -30,6 +32,7 @@ public class WFSExportClient {
 
         Map params = new HashMap<>();
         params.put(WFSDataStoreFactory.URL.key, getCapsUrl);
+        params.put(WFSDataStoreFactory.TIMEOUT.key, TIMEOUT);
         wfs = datastore.createDataStore(params);
     }
     
@@ -38,6 +41,7 @@ public class WFSExportClient {
 
         Map params = new HashMap<>();
         params.put(WFSDataStoreFactory.URL.key, getCapsUrl);
+        params.put(WFSDataStoreFactory.TIMEOUT.key, TIMEOUT);
         wfs = datastore.createDataStore(params);
     }
     
