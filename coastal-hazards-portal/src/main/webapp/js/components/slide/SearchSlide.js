@@ -30,7 +30,7 @@ CCH.Objects.SearchSlide = function (args) {
 
     me.SLIDE_CONTAINER_ID = args.containerId;
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
-    me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div:first-child >  div:first-child >  div:first-child >  div:first-child >  div:first-child';
+    me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div.application-slide-controlset';
     me.APP_CONTAINER_ID = 'content-row';
     me.LOCATION_CARD_TEMPLATE_ID = 'application-slide-search-location-card-template';
     me.LOCATION_SLIDE_SEARCH_CONTAINER_ID = 'application-slide-search-location-results-content-container';
@@ -153,6 +153,7 @@ CCH.Objects.SearchSlide = function (args) {
             product,
             locationSize = locations.length,
             productsSize = products.length,
+            $slideContainer,
             type = args.type,
             items = [],
             itemsIdx,
@@ -162,23 +163,88 @@ CCH.Objects.SearchSlide = function (args) {
             switch (type) {
             case 'location':
                 if (locationSize > 0) {
+                    var revealCount = locationSize < 5 ? locationSize : 5, 
+                        $moreToggle = $('<div />').
+                            addClass('application-slide-search-location-card-toggle').
+                            html('Show ' + revealCount + ' more'),
+                        $card;
+                
+                    $slideContainer = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID);
+                
                     for (locationIdx = 0; locationIdx < locationSize; locationIdx++) {
-                        items.push(me.buildLocationSearchResultItem({
+                        // I want to build a card for every search result item
+                        $card = me.buildLocationSearchResultItem({
                             location: locations[locationIdx],
                             spatialReference: data.spatialReference
-                        }));
-                    }
-                    if (items.length) {
-                        $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID).append(items);
-                        if (me.isClosed) {
-                            me.open();
+                        });
+                        
+                        // I want to add t
+                        items.push($card);
+                        
+                        $slideContainer.append($card);
+                        
+                        if (locationSize > 1) {
+                            if (locationIdx === 0) {
+                                $slideContainer.append($moreToggle);
+                            } else {
+                                $card.addClass('hidden');
+                            }
                         }
                     }
+                    
+                    $moreToggle.on('click', function ($evt) {
+                        // The user has clicked on "Show More"
+                        var $target = $($evt.target),
+                            downstreamSiblings = $($evt.target).nextAll(),
+                            rIdx = 0,
+                            revealCount = 5,
+                            showTxt,
+                            $sibling;
+                            
+                            // Stop propagation of the event because the slide
+                            // listens to body events and it might catch a click
+                            // and toggle the slide.
+                            $evt.stopImmediatePropagation();
+                            
+                            // Check how many siblings I pulled in. If fewer siblings
+                            // are available than I default to show, only show
+                            // those siblings by reducing the revealCount to 
+                            // the sibling count
+                            if (downstreamSiblings.length < revealCount) {
+                                revealCount = downstreamSiblings.length;
+                            }
+                        
+                            // Show the sublings 
+                            for (rIdx; rIdx < revealCount; rIdx++) {
+                                $sibling = $(downstreamSiblings[rIdx]);
+                                $sibling.removeClass('hidden');
+                            }
+                            
+                            // If there are still more siblings to show, put the
+                            // reveal control after the last one I just showed.
+                            // Otherwise, just remove the control
+                            if (downstreamSiblings.length >= revealCount + 1) {
+                                // Build the "show more" text
+                                showTxt = downstreamSiblings.length  - revealCount < revealCount ? downstreamSiblings.length - revealCount : revealCount;
+                                showTxt = 'Show ' + showTxt + ' more';
+                                $target.
+                                    html(showTxt).
+                                    insertAfter($sibling);
+                            } else {
+                                $target.remove();
+                            }
+                    });
+                    
+                    if (me.isClosed) {
+                        me.open();
+                    }
+                    
                 }
                 break;
 
             case 'item':
                 if (productsSize > 0) {
+                    $slideContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID);
                     for (itemsIdx = 0; itemsIdx < productsSize; itemsIdx++) {
                         product = products[itemsIdx];
                         items.push(me.buildProductSearchResultItem({
@@ -186,7 +252,7 @@ CCH.Objects.SearchSlide = function (args) {
                         }));
                     }
                     if (items.length) {
-                        $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).append(items);
+                        $slideContainer.append(items);
                         if (me.isClosed) {
                             me.open();
                         }
@@ -202,7 +268,7 @@ CCH.Objects.SearchSlide = function (args) {
 
         if (args.product) {
             var product = args.product,
-                image = args.image || 'https://2.gravatar.com/avatar/15fcf61ab6fb824d11f355d7a99a1bbf?d=https%3A%2F%2Fidenticons.github.com%2Fd55c695700043438ce4162cbe589e072.png',
+                image = args.image,
                 attr = product.attr,
                 type = product.type,
                 productType = product.itemType,
@@ -222,7 +288,7 @@ CCH.Objects.SearchSlide = function (args) {
                 titleContainerPNode = newItem.find('.' + titleContainerClass + ' p'),
                 descriptionContainer = newItem.find('.' + descriptionContainerClass),
                 bucketButton = newItem.find('>div:nth-child(2)>div>*:first-child'),
-                searchButton = newItem.find('>div:nth-child(2)>div>*:nth-child(3)');
+                infoButton = newItem.find('>div:nth-child(2)>div>*:nth-child(3)');
 
             newItem.attr('id', 'application-slide-search-product-card-' + id);
             imageContainer.attr({
@@ -237,7 +303,7 @@ CCH.Objects.SearchSlide = function (args) {
                     item : product
                 });
             });
-            searchButton.attr({
+            infoButton.attr({
                 'target' : 'portal_info_window',
                 'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
             });
@@ -248,7 +314,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.buildLocationSearchResultItem = function (args) {
         args = args || {};
         var id = args.id || new Date().getMilliseconds(),
-            image = args.image || 'https://2.gravatar.com/avatar/15fcf61ab6fb824d11f355d7a99a1bbf?d=https%3A%2F%2Fidenticons.github.com%2Fd55c695700043438ce4162cbe589e072.png',
+            image = args.image,
             location = args.location,
             attributes = location.feature.attributes,
             name = location.name,

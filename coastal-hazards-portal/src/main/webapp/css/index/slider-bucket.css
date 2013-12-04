@@ -3,58 +3,7 @@
     z-index: 1008;
 }
 
-#application-slide-bucket-container > div:first-child > div:first-child {
-    height: 97%;
-    margin-top: 10px;
-    overflow: scroll;
-    margin-right: 3px;
-    margin-left: 3px;
-}
-
-/* Close button */
-#application-slide-bucket-container > div:first-child >  div:first-child >  div:first-child >  div:first-child >  div:first-child:hover {
-    font-size-adjust: 1.1;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.application-slide-bucket-container-card-image {
-    width: 100%;
-}
-
-/*
-No tab shown on large display. Toggled via button in bar
-*/
-@media (min-width: 992px) {
-    #application-slide-bucket-content {
-        border-top-left-radius: 10px 10px;
-        -webkit-border-top-left-radius: 10px 10px;
-        border-bottom-left-radius: 10px 10px;
-        -webkit-border-bottom-left-radius: 10px 10px;
-    }
-}
-
-@media (max-width: 991px) {
-    #application-slide-bucket-content {
-        border-bottom-left-radius: 10px 10px;
-        -webkit-border-bottom-left-radius: 10px 10px;
-        border-top-left-radius: 10px 10px;
-        -webkit-border-top-left-radius: 10px 10px;
-        border-bottom-left-radius: 10px 10px;
-        -webkit-border-bottom-left-radius: 10px 10px;
-    }
-
-    .application-slide-bucket-container-card-image {
-        width: auto;
-    }
-    
-    #application-slide-bucket-container {
-        top : 10px;
-        height: 97%;
-    }
-}
-
-#application-slide-bucket-content {
+#application-slide-bucket-container > div {
     background-color: #F5F5F5;
     border-bottom: 2px solid #E3E3E3;
     border-top: 2px solid #E3E3E3;
@@ -68,4 +17,59 @@ No tab shown on large display. Toggled via button in bar
 #application-slide-bucket-container > div > div > #application-slide-bucket-content-empty {
     text-align: center;
     font-size: 1.4em;
+}
+
+/* Close button */
+#application-slide-bucket-container > div > div.application-slide-controlset {
+    margin-left: 5px;
+    width: 90%;
+}
+#application-slide-bucket-container > div > div.application-slide-controlset:hover {
+    font-size-adjust: 1.1;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#application-slide-bucket-container > div > div.application-slide-content-container {
+    height: 97%;
+    margin-top: 10px;
+    overflow: scroll;
+    margin-right: 3px;
+    margin-left: 3px;
+}
+
+#application-slide-bucket-container .application-slide-bucket-container-card-image {
+    width: 100%;
+}
+
+/*
+No tab shown on large display. Toggled via button in bar
+*/
+@media (min-width: 992px) {
+    #application-slide-bucket-container > div {
+        border-top-left-radius: 10px 10px;
+        -webkit-border-top-left-radius: 10px 10px;
+        border-bottom-left-radius: 10px 10px;
+        -webkit-border-bottom-left-radius: 10px 10px;
+    }
+}
+
+@media (max-width: 991px) {
+    #application-slide-bucket-container {
+        top : 10px;
+        height: 97%;
+    }
+    
+    #application-slide-bucket-container > div {
+        border-bottom-left-radius: 10px 10px;
+        -webkit-border-bottom-left-radius: 10px 10px;
+        border-top-left-radius: 10px 10px;
+        -webkit-border-top-left-radius: 10px 10px;
+        border-bottom-left-radius: 10px 10px;
+        -webkit-border-bottom-left-radius: 10px 10px;
+    }
+
+    #application-slide-bucket-container .application-slide-bucket-container-card-image {
+        width: auto;
+    }
 }

@@ -26,18 +26,14 @@
                     <%-- Title --%>
                     <div class="application-card-title-row row">
                         <div class="col-md-12">
-                            <span  class="application-card-title-container-large"></span>
                             <span  class="application-card-title-container-medium"></span>
-                            <span  class="application-card-title-container-small"></span>
                         </div>
                     </div>
 
                     <%-- Content --%>
                     <div class="application-card-content-row row">
                         <div class="col-md-12">
-                            <span  class="application-card-content-container-large"></span>
                             <span  class="application-card-content-container-medium"></span>
-                            <span  class="application-card-content-container-small"></span>
                         </div>
                     </div>
 

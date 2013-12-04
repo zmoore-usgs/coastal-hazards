@@ -54,9 +54,7 @@ CCH.Objects.Accordion = function (args) {
         var id = args.card.id,
             cardContainer = args.container,
             titleRow = cardContainer.find('.application-card-title-row'),
-            titleLarge = titleRow.find('.application-card-title-container-large').html(),
             titleMedium = titleRow.find('.application-card-title-container-medium').html(),
-            titleSmall = titleRow.find('.application-card-title-container-small').html(),
             group = $('<div />').addClass('panel panel-default'),
             heading = $('<div />').addClass('panel-heading'),
             titleContainer = $('<h4 />').addClass('panel-title'),
@@ -66,9 +64,7 @@ CCH.Objects.Accordion = function (args) {
             accordionBodyId = 'accordion-body-' + id;
 
         toggleTarget.append(
-            $('<span />').addClass('accordion-toggle-title-large').html(titleLarge),
-            $('<span />').addClass('accordion-toggle-title-medium').html(titleMedium),
-            $('<span />').addClass('accordion-toggle-title-small').html(titleSmall)
+            $('<span />').addClass('accordion-toggle-title-medium').html(titleMedium)
         ).attr({
             'data-parent' : '#' + me.CONTAINER_ID,
             'href' : '#' + accordionBodyId,
@@ -85,6 +81,10 @@ CCH.Objects.Accordion = function (args) {
         titleContainer.append(toggleTarget);
         heading.append(titleContainer);
         accordionBody.append(bodyInner);
+        
+        group.on('click', function () {
+            accordionBody.collapse('toggle');
+        });
         
         return group;
     };
@@ -106,6 +106,7 @@ CCH.Objects.Accordion = function (args) {
         },
         start: function () {
         },
+        CLASS_NAME : ''
     });
 
 };

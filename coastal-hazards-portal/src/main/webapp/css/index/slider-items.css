@@ -1,5 +1,20 @@
-#application-slide-items-content-container .panel-heading {
-    background-color: #F5F5F5;
+/* Slide item container */
+#content-column > div.application-slide-container > div.application-slide-content > div > div.panel-default:hover {
+    cursor: pointer;
+}
+
+#content-column > div.application-slide-container > div.application-slide-content > div > div.panel-default div.panel-body {
+    background-color: #FFFFFF;
+}
+
+#content-column > div.application-slide-container div.application-card-container > div.application-card-body-container .application-card-title-row {
+    font-size: 1.3em;
+    margin-bottom: 10px;
+}
+
+.application-card-children-selection-control {
+    width: 100%;
+    text-overflow: ellipsis; 
 }
 
 .application-card-collapse-icon-container {
