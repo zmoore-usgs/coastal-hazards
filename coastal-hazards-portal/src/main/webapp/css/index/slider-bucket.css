@@ -22,6 +22,7 @@
 /* Close button */
 #application-slide-bucket-container > div > div.application-slide-controlset {
     margin-left: 5px;
+    width: 90%;
 }
 #application-slide-bucket-container > div > div.application-slide-controlset:hover {
     font-size-adjust: 1.1;
