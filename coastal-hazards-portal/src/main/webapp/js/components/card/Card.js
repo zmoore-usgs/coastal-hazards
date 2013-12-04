@@ -270,12 +270,8 @@ CCH.Objects.Card = function (args) {
                 largeContent = fullSummary.text || '',
                 mediumContent = mediumSummary.text || largeContent,
                 smallContent = tinySummary.text || mediumContent,
-                largeTitleContainer = container.find('.application-card-title-container-large'),
                 mediumTitleContainer = container.find('.application-card-title-container-medium'),
-                smallTitleContainer = container.find('.application-card-title-container-small'),
-                largeContentContainer = container.find('.application-card-content-container-large'),
                 mediumContentContainer = container.find('.application-card-content-container-medium'),
-                smallContentContainer = container.find('.application-card-content-container-small'),
                 childrenSelectControl = container.find('.' + me.SELECTION_CONTROL_CLASS),
                 minMaxButtons = container.find('.application-card-collapse-icon-container'),
                 controlContainer = container.find('.application-card-control-container'),
@@ -295,14 +291,10 @@ CCH.Objects.Card = function (args) {
             container.addClass('open');
 
             // Create Title
-            largeTitleContainer.html(largeTitle);
             mediumTitleContainer.html(mediumTitle);
-            smallTitleContainer.html(smallTitle);
 
             // Create Content
-            largeContentContainer.html(largeContent);
             mediumContentContainer.html(mediumContent);
-            smallContentContainer.html(smallContent);
 
             // I have either aggregations or leaf nodes as children.
             // I am not myself a child.
