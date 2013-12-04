@@ -1,13 +1,16 @@
 /* Slide item container */
-#content-column > div:nth-child(2) > div:nth-child(2) > div:first-child > div.panel > div.panel-heading {
-    background-color: #F5F5F5;
+#content-column > div.application-slide-container > div.application-slide-content > div > div.panel-default:hover {
+    cursor: pointer;
 }
 
-#content-column > div:nth-child(2) div.application-card-container > div.application-card-body-container .application-card-title-row {
+#content-column > div.application-slide-container > div.application-slide-content > div > div.panel-default div.panel-body {
+    background-color: #FFFFFF;
+}
+
+#content-column > div.application-slide-container div.application-card-container > div.application-card-body-container .application-card-title-row {
     font-size: 1.3em;
     margin-bottom: 10px;
 }
-
 
 .application-card-children-selection-control {
     width: 100%;

@@ -82,6 +82,10 @@ CCH.Objects.Accordion = function (args) {
         heading.append(titleContainer);
         accordionBody.append(bodyInner);
         
+        group.on('click', function () {
+            accordionBody.collapse('toggle');
+        });
+        
         return group;
     };
 
@@ -102,6 +106,7 @@ CCH.Objects.Accordion = function (args) {
         },
         start: function () {
         },
+        CLASS_NAME : ''
     });
 
 };
