@@ -355,6 +355,7 @@ CCH.Objects.Map = function(args) {
 		changelayerCallback: function() {
 			me.updateSession();
 			me.floatBoxLayer();
-		}
+		},
+        CLASS_NAME : 'CCH.Objects.Map'
 	});
 };

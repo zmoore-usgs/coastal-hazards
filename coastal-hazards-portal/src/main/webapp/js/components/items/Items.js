@@ -56,7 +56,7 @@ CCH.Objects.Items = function (args) {
                 incomingItemsObject = (function (i) {
                     var returnObj = {};
                     i.each(function (item) {
-                        returnObj[item.id] = item;
+                        returnObj[item.id] = new CCH.Objects.Item(item);
                     });
                     return returnObj;
                 }(incomingItems));
@@ -118,6 +118,7 @@ CCH.Objects.Items = function (args) {
         getById: function (args) {
             var id = args.id;
             return me.items[id];
-        }
+        },
+       CLASS_NAME : 'CCH.Objects.Items'
     };
 };
