@@ -153,7 +153,7 @@ CCH.Objects.SearchSlide = function (args) {
             product,
             locationSize = locations.length,
             productsSize = products.length,
-            $slideContainer = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
+            $slideContainer,
             type = args.type,
             items = [],
             itemsIdx,
@@ -168,6 +168,8 @@ CCH.Objects.SearchSlide = function (args) {
                             addClass('application-slide-search-location-card-toggle').
                             html('Show ' + revealCount + ' more'),
                         $card;
+                
+                    $slideContainer = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID);
                 
                     for (locationIdx = 0; locationIdx < locationSize; locationIdx++) {
                         // I want to build a card for every search result item
@@ -242,6 +244,7 @@ CCH.Objects.SearchSlide = function (args) {
 
             case 'item':
                 if (productsSize > 0) {
+                    $slideContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID);
                     for (itemsIdx = 0; itemsIdx < productsSize; itemsIdx++) {
                         product = products[itemsIdx];
                         items.push(me.buildProductSearchResultItem({
