@@ -1,11 +1,11 @@
 <div id="application-slide-bucket-container" class="application-slide-container">
     <div id="application-slide-bucket-content" class="application-slide-content">
-        <div id="application-slide-bucket-content-container">
-            <div id="application-slide-search-controlset" class="row">
-                <div class="col-md-12">
-                    <div class="pull-right"><i class="fa fa-minus-square-o"></i></div>
-                </div>
+        <div id="application-slide-search-controlset"  class="application-slide-controlset row">
+            <div class="col-md-12">
+                <div class="pull-left"><i class="fa fa-minus-square-o"></i></div>
             </div>
+        </div>
+        <div id="application-slide-bucket-content-container" class="application-slide-content-container">
             <div id="application-slide-bucket-content-empty">Your Bucket Does Not Have Anything In It</div>
         </div>
     </div>

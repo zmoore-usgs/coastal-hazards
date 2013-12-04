@@ -30,7 +30,7 @@ CCH.Objects.SearchSlide = function (args) {
 
     me.SLIDE_CONTAINER_ID = args.containerId;
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
-    me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div:first-child >  div:first-child >  div:first-child >  div:first-child >  div:first-child';
+    me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div.application-slide-controlset';
     me.APP_CONTAINER_ID = 'content-row';
     me.LOCATION_CARD_TEMPLATE_ID = 'application-slide-search-location-card-template';
     me.LOCATION_SLIDE_SEARCH_CONTAINER_ID = 'application-slide-search-location-results-content-container';
