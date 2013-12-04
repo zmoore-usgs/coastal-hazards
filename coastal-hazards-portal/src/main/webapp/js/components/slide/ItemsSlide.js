@@ -166,7 +166,7 @@ CCH.Objects.ItemsSlide = function (args) {
                 // to show it
                 slideContent.css({
                     display : 'none'
-                })
+                });
             } else {
                 // If I'm open...
                 slideContainer.

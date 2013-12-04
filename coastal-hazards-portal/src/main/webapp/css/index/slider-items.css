@@ -8,6 +8,12 @@
     margin-bottom: 10px;
 }
 
+
+.application-card-children-selection-control {
+    width: 100%;
+    text-overflow: ellipsis; 
+}
+
 .application-card-collapse-icon-container {
     display: table-cell;
     vertical-align: middle;
