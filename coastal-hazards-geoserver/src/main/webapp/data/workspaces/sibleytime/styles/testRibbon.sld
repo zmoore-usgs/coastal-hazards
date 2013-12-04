@@ -28,14 +28,14 @@
               <ogc:Function name="env">
                 <ogc:Literal>wms_height</ogc:Literal>
               </ogc:Function>
-			</ogc:Function>
+      </ogc:Function>
             <ogc:Function name="parameter">
               <ogc:Literal>ribbon-count</ogc:Literal>
               <ogc:Literal>3</ogc:Literal>
             </ogc:Function>
             <ogc:Function name="parameter">
               <ogc:Literal>offset</ogc:Literal>
-              <ogc:Literal>10</ogc:Literal>
+              <ogc:Literal>5</ogc:Literal>
             </ogc:Function>
           </ogc:Function>
         </Transformation>
@@ -61,16 +61,22 @@
             </Geometry>
             <Stroke>
               <CssParameter name="stroke">
-                <ogc:Function name="Interpolate">
-                  <ogc:PropertyName>PIND3</ogc:PropertyName>
+                <ogc:Function name="Categorize">
+                  <ogc:PropertyName>PCOL3</ogc:PropertyName>
                   
-                  <ogc:Literal>0</ogc:Literal>
                   <ogc:Literal>#FFFFFE</ogc:Literal>
-                  
-                  <ogc:Literal>100</ogc:Literal>
+                  <ogc:Literal>10.0</ogc:Literal>
+                  <ogc:Literal>#FFE6E6</ogc:Literal>
+                  <ogc:Literal>25.0</ogc:Literal>
+                  <ogc:Literal>#FFCCCD</ogc:Literal>
+                  <ogc:Literal>50.0</ogc:Literal>
+                  <ogc:Literal>#FF9C95</ogc:Literal>
+                  <ogc:Literal>75.0</ogc:Literal>
+                  <ogc:Literal>#FF574A</ogc:Literal>
+                  <ogc:Literal>90.0</ogc:Literal>
                   <ogc:Literal>#FF0000</ogc:Literal>
                   
-                  <ogc:Literal>color</ogc:Literal>
+                  <ogc:Literal>succeeding</ogc:Literal>
                 </ogc:Function>
               </CssParameter>
               <CssParameter name="stroke-width">3</CssParameter>
@@ -91,16 +97,22 @@
             </Geometry>
             <Stroke>
               <CssParameter name="stroke">
-                <ogc:Function name="Interpolate">
+                <ogc:Function name="Categorize">
                   <ogc:PropertyName>POVW3</ogc:PropertyName>
                   
-                  <ogc:Literal>0</ogc:Literal>
-                  <ogc:Literal>#FEFFFF</ogc:Literal>
+                  <ogc:Literal>#FFFFFE</ogc:Literal>
+                  <ogc:Literal>10.0</ogc:Literal>
+                  <ogc:Literal>#FFE6E6</ogc:Literal>
+                  <ogc:Literal>25.0</ogc:Literal>
+                  <ogc:Literal>#FFCCCD</ogc:Literal>
+                  <ogc:Literal>50.0</ogc:Literal>
+                  <ogc:Literal>#FF9C95</ogc:Literal>
+                  <ogc:Literal>75.0</ogc:Literal>
+                  <ogc:Literal>#FF574A</ogc:Literal>
+                  <ogc:Literal>90.0</ogc:Literal>
+                  <ogc:Literal>#FF0000</ogc:Literal>
                   
-                  <ogc:Literal>100</ogc:Literal>
-                  <ogc:Literal>#00FF00</ogc:Literal>
-                  
-                  <ogc:Literal>color</ogc:Literal>
+                  <ogc:Literal>succeeding</ogc:Literal>
                 </ogc:Function>
               </CssParameter>
               <CssParameter name="stroke-width">3</CssParameter>
@@ -121,16 +133,22 @@
             </Geometry>
             <Stroke>
               <CssParameter name="stroke">
-                <ogc:Function name="Interpolate">
-                  <ogc:PropertyName>PCOL3</ogc:PropertyName>
+                <ogc:Function name="Categorize">
+                  <ogc:PropertyName>PIND3</ogc:PropertyName>
                   
-                  <ogc:Literal>0</ogc:Literal>
-                  <ogc:Literal>#FFFEFF</ogc:Literal>
+                  <ogc:Literal>#FFFFFE</ogc:Literal>
+                  <ogc:Literal>10.0</ogc:Literal>
+                  <ogc:Literal>#FFE6E6</ogc:Literal>
+                  <ogc:Literal>25.0</ogc:Literal>
+                  <ogc:Literal>#FFCCCD</ogc:Literal>
+                  <ogc:Literal>50.0</ogc:Literal>
+                  <ogc:Literal>#FF9C95</ogc:Literal>
+                  <ogc:Literal>75.0</ogc:Literal>
+                  <ogc:Literal>#FF574A</ogc:Literal>
+                  <ogc:Literal>90.0</ogc:Literal>
+                  <ogc:Literal>#FF0000</ogc:Literal>
                   
-                  <ogc:Literal>100</ogc:Literal>
-                  <ogc:Literal>#0000FF</ogc:Literal>
-                  
-                  <ogc:Literal>color</ogc:Literal>
+                  <ogc:Literal>succeeding</ogc:Literal>
                 </ogc:Function>
               </CssParameter>
               <CssParameter name="stroke-width">3</CssParameter>

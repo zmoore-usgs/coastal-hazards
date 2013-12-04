@@ -191,8 +191,6 @@ public class RibboningProcess implements GeoServerProcess {
 								for (int ribbonNum = 0; ribbonNum < ribbonCount; ribbonNum++) {
 									ribbonLines.get(ribbonNum).getGeometryN(geomNum).apply(new RibboningFilter(lineOffset, ribbonNum));
 								}
-							} else {
-								LOGGER.log(Level.WARNING, "This is where I'd deal with the first line, Not yet implemented");
 							}
 
 							prevLine = line;
@@ -218,10 +216,6 @@ public class RibboningProcess implements GeoServerProcess {
 				if (null != features) {
 					features.close();
 				}
-			}
-			
-			{
-				LOGGER.log(Level.WARNING, "This is where I'd flush the last line, Not yet implemented");
 			}
 
 			return result;
@@ -271,17 +265,17 @@ public class RibboningProcess implements GeoServerProcess {
 				if (isSequential) {
 					LOGGER.log(Level.FINEST, "Sequential order");
 					if (null != this.sortAttribute && this.calcAngles) {
-						angle = getAngle(prevStart, currStart, currEnd);
+						angle = invertIfNecessary(getAngle(prevStart, currStart, currEnd), this.invert);
 					} else {
-						angle = getAngle(currStart, currEnd);
+						angle = invertIfNecessary(getAngle(currStart, currEnd), this.invert);
 					}
 				} else {
 					LOGGER.log(Level.FINEST, "Broken order");
-					angle = getAngle(currStart, currEnd);
+					angle = invertIfNecessary(getAngle(currStart, currEnd), this.invert);
 				}
 			} else if ((null != currStart && null != currEnd)) {
 				LOGGER.log(Level.FINEST, "just curr");
-				angle = getAngle(currStart, currEnd);
+				angle = invertIfNecessary(getAngle(currStart, currEnd), this.invert);
 			} else if ((null != prevStart && null != prevEnd)) {
 				LOGGER.log(Level.WARNING, "A prev, but no curr?");
 			} else {
@@ -340,6 +334,20 @@ public class RibboningProcess implements GeoServerProcess {
 		
 		private double getYOffset(double angle, double offset) {
 			double result = offset * Math.sin(angle);
+			
+			return result;
+		}
+		
+		private Double invertIfNecessary(Double angle, boolean toInvert) {
+			Double result = angle;
+			
+			if (null != angle) {
+				double offset = 0.0d;
+				if (toInvert) {
+					offset = Math.PI;
+				}
+				result = new Double((angle.doubleValue() + offset) % (2 * Math.PI));
+			}
 			
 			return result;
 		}
