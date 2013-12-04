@@ -1,22 +1,23 @@
 package gov.usgs.cida.coastalhazards.download;
 
-import gov.usgs.cida.utilities.ShutdownListener;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.http.HttpResponse;
@@ -38,6 +39,16 @@ import org.xml.sax.SAXException;
 public class MetadataDownload {
 
     private static final Logger LOG = LoggerFactory.getLogger(MetadataDownload.class);
+    private static final String xslt = "<xsl:stylesheet version=\"1.0\"" +
+        " xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:xalan=\"http://xml.apache.org/xslt\">" +
+        "    <xsl:output method=\"xml\" indent=\"yes\" xalan:indent-amount=\"2\"/>" +
+        "    <xsl:template match=\"@* | node()\">" +
+        "        <xsl:copy>" +
+        "            <xsl:apply-templates select=\"@* | node()\"/>" +
+        "        </xsl:copy>" +
+        "    </xsl:template>" +
+        "    <xsl:strip-space elements=\"*\"/>" +
+        "</xsl:stylesheet>";
     
     private final URL metadata;
     private final File filename;
@@ -50,10 +61,8 @@ public class MetadataDownload {
     public void stage() {
         FileOutputStream fos = null;
         try {
-            TransformerFactory transFactory = TransformerFactory.newInstance();
-            transFactory.setAttribute("indent-number", 2);
-            Transformer transformer = transFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            Transformer transformer = SAXTransformerFactory.newInstance()
+                    .newTransformer(new StreamSource(new StringReader(xslt)));
 
             HttpUriRequest req = new HttpGet(metadata.toURI());
             HttpClient client = new DefaultHttpClient();
@@ -74,11 +83,16 @@ public class MetadataDownload {
             JXPathContext ctx = JXPathContext.newContext(doc.getDocumentElement());
 
             Node metadataNode = (Node) ctx.selectSingleNode("metadata");
-
-            DOMSource source = new DOMSource(metadataNode);
-            fos = new FileOutputStream(filename);
-            StreamResult result = new StreamResult(fos);
-            transformer.transform(source, result);
+            if (metadataNode != null) {
+                // Append processing steps here
+                Source source = new DOMSource(metadataNode);
+                fos = new FileOutputStream(filename);
+                StreamResult result = new StreamResult(fos);
+                transformer.transform(source, result);
+            } else {
+                LOG.error("Metadata improperly formatted or not accessible");
+                throw new RuntimeException("Metadata improperly formatted or not accessible");
+            }
         } catch(IOException | TransformerFactoryConfigurationError | URISyntaxException |
                 TransformerException | SAXException | ParserConfigurationException ex) {
             LOG.error("Unable to perform metadata export", ex);

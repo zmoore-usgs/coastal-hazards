@@ -83,7 +83,8 @@ public class SingleDownload {
     }
 
     public void setName(String name) {
-        this.name = name;
+        String spacesRemoved = name.replaceAll(" ", "_");
+        this.name = spacesRemoved;
     }
 
     public URL getMetadata() {
