@@ -3,22 +3,7 @@
     z-index: 2000;
 }
 
-#application-slide-search-container > div:first-child > div:first-child {
-    height: 97%;
-    margin-top: 10px;
-    overflow: scroll;
-    margin-right: 3px;
-    margin-left: 3px;
-}
-
-/* Close button */
-#application-slide-search-container > div:first-child >  div:first-child >  div:first-child >  div:first-child >  div:first-child:hover {
-    font-size-adjust: 1.1;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-#application-slide-search-content {
+#application-slide-search-container > div {
     background-color: #F5F5F5;
     border-bottom: 2px solid #E3E3E3;
     border-top: 2px solid #E3E3E3;
@@ -29,24 +14,52 @@
     z-index: 2000;
 }
 
-.application-slide-search-location-card-image {
+/* Close button */
+#application-slide-search-container > div > div.application-slide-controlset {
+    margin-left: 5px;
+    width: 90%;
+}
+#application-slide-search-container > div > div.application-slide-controlset:hover {
+    font-size-adjust: 1.1;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Content container */
+#application-slide-search-container > div > div.application-slide-content-container {
+    height: 97%;
+    margin-top: 10px;
+    overflow: scroll;
+    margin-right: 3px;
+    margin-left: 3px;
+}
+
+#application-slide-search-container div.application-slide-content-container > div > div.application-slide-search-location-card-toggle {
+    text-align: center;
+    font-size: 2em;
+    border: 1px solid #E3E3E3;
+    color: #999999;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+#application-slide-search-container div.application-slide-content-container > div > div.application-slide-search-location-card-toggle:hover {
+    cursor: pointer;
+}
+
+#application-slide-search-container .application-slide-search-location-card-image {
     width: auto;
     height: auto;
 }
 
-.application-slide-search-location-card-icon {
+#application-slide-search-container .application-slide-search-location-card-icon {
     font-size: 7em;
 }
 
-.application-card-children-selection-control {
-    width: 100%;
-}
-
-/*
-No tab shown on large display. Toggled via button in bar
-*/
 @media (min-width: 992px) {
-    #application-slide-search-content {
+    #application-slide-search-container > div  {
         border-top-left-radius: 10px 10px;
         -webkit-border-top-left-radius: 10px 10px;
         border-bottom-left-radius: 10px 10px;
@@ -55,30 +68,13 @@ No tab shown on large display. Toggled via button in bar
 }
 
 @media (max-width: 991px) {
-    #application-slide-search-tab {
-        height : 60px;
-        width: 40px;
-        background-color: #00CCFF;
-        display: inline-block;
-        background-color: #F5F5F5;
-        border-left: 2px solid #E3E3E3;
-        border-top: 2px solid #E3E3E3;
-        border-bottom: 2px solid #E3E3E3;
-        z-index: 2001;
-        border-top-left-radius: 40px 10px;
-        -webkit-border-top-left-radius: 40px 10px;
-        border-bottom-left-radius: 40px 10px;
-        -webkit-border-bottom-left-radius: 40px 10px;
-        float: left;
-    }
-
-    #application-slide-search-content {
-        border-bottom-left-radius: 10px 10px;
-        -webkit-border-bottom-left-radius: 10px 10px;
-    }
-
     #application-slide-search-container {
         top : 10px;
         height: 97%;
+    }
+
+    #application-slide-search-container > div {
+        border-bottom-left-radius: 10px 10px;
+        -webkit-border-bottom-left-radius: 10px 10px;
     }
 }

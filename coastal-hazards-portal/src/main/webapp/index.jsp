@@ -70,6 +70,7 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
         <jsp:include page="js/jquery-cookie/jquery-cookie.jsp"></jsp:include>
+        <script type="text/javascript" src="js/components/items/Item.js"></script>
         <script type="text/javascript" src="js/components/slide/ItemsSlide.js"></script>
         <script type="text/javascript" src="js/components/slide/BucketSlide.js"></script>
         <script type="text/javascript" src="js/components/slide/SearchSlide.js"></script>

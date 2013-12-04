@@ -166,7 +166,7 @@ CCH.Objects.ItemsSlide = function (args) {
                 // to show it
                 slideContent.css({
                     display : 'none'
-                })
+                });
             } else {
                 // If I'm open...
                 slideContainer.
@@ -180,7 +180,8 @@ CCH.Objects.ItemsSlide = function (args) {
             }
             slideContainer.height(windowHeight - marginTop - borderSize);
             slideTab.offset({
-                left: slideContainer.offset().left + borderSize
+                left: slideContainer.offset().left + borderSize,
+                top: slideContainer.height() - slideTab.outerHeight() - 20
             });
         } else {
             slideContent.css({
