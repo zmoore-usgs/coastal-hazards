@@ -33,6 +33,20 @@
     margin-left: 3px;
 }
 
+#application-slide-search-container div.application-slide-content-container > div > div.application-slide-search-location-card-toggle {
+    text-align: center;
+    font-size: 2em;
+    border: 1px solid #E3E3E3;
+    color: #999999;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+#application-slide-search-container div.application-slide-content-container > div > div.application-slide-search-location-card-toggle:hover {
+    cursor: pointer;
+}
 
 #application-slide-search-container .application-slide-search-location-card-image {
     width: auto;

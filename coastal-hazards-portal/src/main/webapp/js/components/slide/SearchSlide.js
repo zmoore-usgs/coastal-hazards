@@ -153,6 +153,7 @@ CCH.Objects.SearchSlide = function (args) {
             product,
             locationSize = locations.length,
             productsSize = products.length,
+            $slideContainer = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
             type = args.type,
             items = [],
             itemsIdx,
@@ -162,18 +163,80 @@ CCH.Objects.SearchSlide = function (args) {
             switch (type) {
             case 'location':
                 if (locationSize > 0) {
+                    var revealCount = locationSize < 5 ? locationSize : 5, 
+                        $moreToggle = $('<div />').
+                            addClass('application-slide-search-location-card-toggle').
+                            html('Show ' + revealCount + ' more'),
+                        $card;
+                
                     for (locationIdx = 0; locationIdx < locationSize; locationIdx++) {
-                        items.push(me.buildLocationSearchResultItem({
+                        // I want to build a card for every search result item
+                        $card = me.buildLocationSearchResultItem({
                             location: locations[locationIdx],
                             spatialReference: data.spatialReference
-                        }));
-                    }
-                    if (items.length) {
-                        $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID).append(items);
-                        if (me.isClosed) {
-                            me.open();
+                        });
+                        
+                        // I want to add t
+                        items.push($card);
+                        
+                        $slideContainer.append($card);
+                        
+                        if (locationSize > 1) {
+                            if (locationIdx === 0) {
+                                $slideContainer.append($moreToggle);
+                            } else {
+                                $card.addClass('hidden');
+                            }
                         }
                     }
+                    
+                    $moreToggle.on('click', function ($evt) {
+                        // The user has clicked on "Show More"
+                        var $target = $($evt.target),
+                            downstreamSiblings = $($evt.target).nextAll(),
+                            rIdx = 0,
+                            revealCount = 5,
+                            showTxt,
+                            $sibling;
+                            
+                            // Stop propagation of the event because the slide
+                            // listens to body events and it might catch a click
+                            // and toggle the slide.
+                            $evt.stopImmediatePropagation();
+                            
+                            // Check how many siblings I pulled in. If fewer siblings
+                            // are available than I default to show, only show
+                            // those siblings by reducing the revealCount to 
+                            // the sibling count
+                            if (downstreamSiblings.length < revealCount) {
+                                revealCount = downstreamSiblings.length;
+                            }
+                        
+                            // Show the sublings 
+                            for (rIdx; rIdx < revealCount; rIdx++) {
+                                $sibling = $(downstreamSiblings[rIdx]);
+                                $sibling.removeClass('hidden');
+                            }
+                            
+                            // If there are still more siblings to show, put the
+                            // reveal control after the last one I just showed.
+                            // Otherwise, just remove the control
+                            if (downstreamSiblings.length >= revealCount + 1) {
+                                // Build the "show more" text
+                                showTxt = downstreamSiblings.length  - revealCount < revealCount ? downstreamSiblings.length - revealCount : revealCount;
+                                showTxt = 'Show ' + showTxt + ' more';
+                                $target.
+                                    html(showTxt).
+                                    insertAfter($sibling);
+                            } else {
+                                $target.remove();
+                            }
+                    });
+                    
+                    if (me.isClosed) {
+                        me.open();
+                    }
+                    
                 }
                 break;
 
@@ -186,7 +249,7 @@ CCH.Objects.SearchSlide = function (args) {
                         }));
                     }
                     if (items.length) {
-                        $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).append(items);
+                        $slideContainer.append(items);
                         if (me.isClosed) {
                             me.open();
                         }
@@ -202,7 +265,7 @@ CCH.Objects.SearchSlide = function (args) {
 
         if (args.product) {
             var product = args.product,
-                image = args.image || 'https://2.gravatar.com/avatar/15fcf61ab6fb824d11f355d7a99a1bbf?d=https%3A%2F%2Fidenticons.github.com%2Fd55c695700043438ce4162cbe589e072.png',
+                image = args.image,
                 attr = product.attr,
                 type = product.type,
                 productType = product.itemType,
