@@ -17,6 +17,7 @@
 /* Close button */
 #application-slide-search-container > div > div.application-slide-controlset {
     margin-left: 5px;
+    width: 90%;
 }
 #application-slide-search-container > div > div.application-slide-controlset:hover {
     font-size-adjust: 1.1;
