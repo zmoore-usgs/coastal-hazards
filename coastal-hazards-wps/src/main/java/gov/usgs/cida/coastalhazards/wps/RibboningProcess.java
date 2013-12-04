@@ -62,6 +62,7 @@ public class RibboningProcess implements GeoServerProcess {
 			@DescribeParameter(name = "width", min = 1, max = 1) Integer width,
 			@DescribeParameter(name = "height", min = 1, max = 1) Integer height,
 			@DescribeParameter(name = "invert-side", min = 0, max = 1) Boolean invertSide,
+			@DescribeParameter(name = "calcAngles", min = 0, max = 1) Boolean calcAngles,
 			@DescribeParameter(name = "ribbon-count", min = 0, max = 1) Integer ribbonCount,
 			@DescribeParameter(name = "offset", min = 0, max = 1) Integer offset,
 			@DescribeParameter(name = "sort-attribute", min = 0, max = 1) String sortAttribute) throws Exception {
@@ -70,20 +71,24 @@ public class RibboningProcess implements GeoServerProcess {
 		if (null == invertSide) {
 			invertSide = Boolean.FALSE;
 		}
+		if (null == calcAngles) {
+			calcAngles = Boolean.FALSE;
+		}
 		if (null == ribbonCount) {
 			ribbonCount = 1;
 		}
 		if (null == offset) {
 			offset = 5;
 		}
-		if (null == sortAttribute) {
-			sortAttribute = "OBJECTID";
+		SimpleFeatureCollection featuresToProcess = features;
+		
+		if (null != sortAttribute) {
+			featuresToProcess = sortFeatures(sortAttribute, features);
 		}
-		SimpleFeatureCollection sortedFeatures = sortFeatures(sortAttribute, features);
 		
 		double[] xyOffset = getXYOffset(bbox, width, height, offset);
 		
-		return new Process(sortedFeatures, invertSide, ribbonCount, xyOffset).execute();
+		return new Process(featuresToProcess, invertSide, sortAttribute, calcAngles, ribbonCount, xyOffset).execute();
 
 	}
 	
@@ -125,9 +130,13 @@ public class RibboningProcess implements GeoServerProcess {
 	}
 	
 	private class Process {
-
+		
+		private final double SEQUENTIAL_DISTANCE = 10.0;
+		
 		private final SimpleFeatureCollection featureCollection;
 		private final boolean invert;
+		private final String sortAttribute;
+		private final boolean calcAngles;
 		private final int ribbonCount;
 		private final double[] xyOffset;
 
@@ -135,10 +144,14 @@ public class RibboningProcess implements GeoServerProcess {
 
 		private Process(SimpleFeatureCollection featureCollection,
 				boolean invert,
+				String sortAttribute,
+				boolean calcAngles,
 				int ribbonCount,
 				double[] offset) {
 			this.featureCollection = featureCollection;
 			this.invert = invert;
+			this.sortAttribute = sortAttribute;
+			this.calcAngles = calcAngles;
 			this.ribbonCount = ribbonCount;
 			this.xyOffset = offset;
 		}
@@ -156,53 +169,55 @@ public class RibboningProcess implements GeoServerProcess {
 			result = new ListFeatureCollection(schema);
 			LineString prevLine = null;
 			double[] prevLineOffset = null;
-			SimpleFeatureIterator features = this.featureCollection.features();
-			while (features.hasNext()) {
-				SimpleFeature feature = features.next();
-				
-				Object objectId = feature.getAttribute("OBJECTID");
-				LOGGER.log(Level.FINEST, "ObjectId : {0} START", objectId);
-				
-				MultiLineString lines = getMultiLineString(feature);
-				if (null != lines) {
-					
-					List<MultiLineString> ribbonLines = new ArrayList<MultiLineString>();
-					for (int ribbonNum = 0; ribbonNum < ribbonCount; ribbonNum++) {
-						ribbonLines.add((MultiLineString) lines.clone());
-					}
-					
-					for (int geomNum = 0; geomNum < lines.getNumGeometries(); geomNum++) {
-						LineString line = (LineString) lines.getGeometryN(geomNum);
-						
-						double[] lineOffset = computeXYOffset(prevLine, prevLineOffset, line);
-						
-						if (null != lineOffset) {
-							for (int ribbonNum = 0; ribbonNum < ribbonCount; ribbonNum++) {
-								ribbonLines.get(ribbonNum).getGeometryN(geomNum).apply(new RibboningFilter(lineOffset, ribbonNum));
-							}
-						} else {
-							LOGGER.log(Level.WARNING, "This is where I'd deal with the first line, Not yet implemented");
+			SimpleFeatureIterator features = null;
+			try {
+				features = this.featureCollection.features();
+				while (features.hasNext()) {
+					SimpleFeature feature = features.next();
+
+					MultiLineString lines = getMultiLineString(feature);
+					if (null != lines) {
+						List<MultiLineString> ribbonLines = new ArrayList<MultiLineString>();
+						for (int ribbonNum = 0; ribbonNum < ribbonCount; ribbonNum++) {
+							ribbonLines.add((MultiLineString) lines.clone());
 						}
-						
-						prevLine = line;
-						prevLineOffset = lineOffset;
+
+						for (int geomNum = 0; geomNum < lines.getNumGeometries(); geomNum++) {
+							LineString line = (LineString) lines.getGeometryN(geomNum);
+
+							double[] lineOffset = computeXYOffset(prevLine, prevLineOffset, line);
+
+							if (null != lineOffset) {
+								for (int ribbonNum = 0; ribbonNum < ribbonCount; ribbonNum++) {
+									ribbonLines.get(ribbonNum).getGeometryN(geomNum).apply(new RibboningFilter(lineOffset, ribbonNum));
+								}
+							} else {
+								LOGGER.log(Level.WARNING, "This is where I'd deal with the first line, Not yet implemented");
+							}
+
+							prevLine = line;
+							prevLineOffset = lineOffset;
+						}
+
+						List<SimpleFeature> ribbonedFeature = new ArrayList<SimpleFeature>();
+
+						for (int ribbonNum = 0; ribbonNum < ribbonCount; ribbonNum++) {
+							SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
+							fb.addAll(feature.getAttributes());
+							fb.set(ribbonAttr, new Integer(ribbonNum + 1));
+							fb.set(feature.getDefaultGeometryProperty().getName(), ribbonLines.get(ribbonNum));
+							ribbonedFeature.add(fb.buildFeature(null));
+						}
+
+						result.addAll(ribbonedFeature);
+					} else {
+						LOGGER.log(Level.WARNING, "feature is not a line?");
 					}
-
-					List<SimpleFeature> ribbonedFeature = new ArrayList<SimpleFeature>();
-
-					for (int ribbonNum = 0; ribbonNum < ribbonCount; ribbonNum++) {
-						SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
-						fb.addAll(feature.getAttributes());
-						fb.set(ribbonAttr, new Integer(ribbonNum + 1));
-						fb.set(feature.getDefaultGeometryProperty().getName(), ribbonLines.get(ribbonNum));
-						ribbonedFeature.add(fb.buildFeature(null));
-					}
-
-					result.addAll(ribbonedFeature);
-				} else {
-					LOGGER.log(Level.WARNING, "feature is not a line?");
 				}
-				LOGGER.log(Level.FINEST, "ObjectId : {0} END", objectId);
+			} finally {
+				if (null != features) {
+					features.close();
+				}
 			}
 			
 			{
@@ -229,16 +244,37 @@ public class RibboningProcess implements GeoServerProcess {
 				currEnd = currLine.getEndPoint();
 			}
 			
+			boolean isSequential = isSequential(prevEnd, currStart);
+			Double angle = computeAngle(prevStart, prevEnd, currStart, currEnd, isSequential);
+			
+			double[] lineOffset = computeLineOffset(angle);
+			result = computeOffsetForPoints(lineOffset, prevLineOffset, isSequential);
+			
+			return result;
+		}
+		
+		private boolean isSequential(Point prevEnd, Point currStart) {
 			boolean isSequential = false;
 			
+			if (null != prevEnd && null != currStart) {
+				isSequential = prevEnd.isWithinDistance(currStart, SEQUENTIAL_DISTANCE);
+			}
+			
+			return isSequential;
+		}
+		
+		private Double computeAngle(Point prevStart, Point prevEnd, Point currStart, Point currEnd, boolean isSequential) {
 			Double angle = null;
+			
 			if ((null != prevStart && null != prevEnd)
 					&& (null != currStart && null != currEnd)) {
-				isSequential = prevEnd.isWithinDistance(currStart, 1000.0);
 				if (isSequential) {
 					LOGGER.log(Level.FINEST, "Sequential order");
-//					angle = getAngle(prevStart, currStart, currEnd); //do we want to do fancy angling? seems like not worth it?
-					angle = getAngle(currStart, currEnd);
+					if (null != this.sortAttribute && this.calcAngles) {
+						angle = getAngle(prevStart, currStart, currEnd);
+					} else {
+						angle = getAngle(currStart, currEnd);
+					}
 				} else {
 					LOGGER.log(Level.FINEST, "Broken order");
 					angle = getAngle(currStart, currEnd);
@@ -252,7 +288,12 @@ public class RibboningProcess implements GeoServerProcess {
 				LOGGER.log(Level.WARNING, "Everything is null?");
 			}
 			
-			double[] lineOffset = null;
+			return angle;
+		}
+		
+		private double[] computeLineOffset(Double angle) {
+			double[] result = null;
+			
 			if (null != angle) {
 				double xOffset = 0.0;
 				double yOffset = 0.0;
@@ -260,14 +301,20 @@ public class RibboningProcess implements GeoServerProcess {
 				xOffset = getXOffset(angle, xyOffset[0]);
 				yOffset = getYOffset(angle, xyOffset[1]);
 
-				lineOffset = new double[] {xOffset, yOffset};
+				result = new double[] {xOffset, yOffset};
 				LOGGER.log(Level.FINEST, "Angle : {0}, X : {1}, Y : {2}", new Object[] {angle, xOffset, yOffset});
 			} else {
 				LOGGER.log(Level.WARNING, "No angle computed");
 			}
 			
+			return result;
+		}
+		
+		private double[] computeOffsetForPoints(double[] lineOffset, double[] prevLineOffset, boolean isSequential) {
+			double[] result = null;
+			
 			if (null != lineOffset) {
-				if (isSequential 
+				if (null != this.sortAttribute && isSequential 
 						&& null != prevLineOffset
 						&& 1 < prevLineOffset.length
 						&& 0 == (prevLineOffset.length % 2)) {

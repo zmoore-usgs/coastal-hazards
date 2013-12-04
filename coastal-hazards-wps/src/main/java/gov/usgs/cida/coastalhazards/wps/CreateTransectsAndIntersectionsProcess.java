@@ -192,30 +192,38 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
 
         protected Transect[] getEvenlySpacedOrthoVectorsAlongBaseline(SimpleFeatureCollection baseline, MultiLineString shorelines, double spacing) {
             List<Transect> vectList = new LinkedList<Transect>();
-            SimpleFeatureIterator features = baseline.features();
             
             BaselineDistanceAccumulator accumulator = new BaselineDistanceAccumulator();
             AttributeGetter attGet = new AttributeGetter(baseline.getSchema());
-            while (features.hasNext()) {
-                SimpleFeature feature = features.next();
-                String orientVal = (String)attGet.getValue(BASELINE_ORIENTATION_ATTR, feature);
-                Orientation orientation = Orientation.fromAttr(orientVal);
-                if (orientation == Orientation.UNKNOWN) {
-                    // default to seaward
-                    orientation = Orientation.SEAWARD;
-                }
-                String baselineId = feature.getID();
-                
-                MultiLineString lines = CRSUtils.getLinesFromFeature(feature);
-                for (int i=0; i<lines.getNumGeometries(); i++) { // probably only one Linestring
-                    LineString line = (LineString)lines.getGeometryN(i);
-                    int direction = shorelineDirection(line, shorelines);
-                    
-                    double baseDist = accumulator.accumulate(line);
+			
+            SimpleFeatureIterator features = null;
+			try {
+				features = baseline.features();
+				while (features.hasNext()) {
+					SimpleFeature feature = features.next();
+					String orientVal = (String)attGet.getValue(BASELINE_ORIENTATION_ATTR, feature);
+					Orientation orientation = Orientation.fromAttr(orientVal);
+					if (orientation == Orientation.UNKNOWN) {
+						// default to seaward
+						orientation = Orientation.SEAWARD;
+					}
+					String baselineId = feature.getID();
 
-                    vectList.addAll(handleLineString(line, spacing, orientation, direction, baselineId, baseDist)); // rather than SEAWARD, get from baseline feature
-                }
-            }
+					MultiLineString lines = CRSUtils.getLinesFromFeature(feature);
+					for (int i=0; i<lines.getNumGeometries(); i++) { // probably only one Linestring
+						LineString line = (LineString)lines.getGeometryN(i);
+						int direction = shorelineDirection(line, shorelines);
+
+						double baseDist = accumulator.accumulate(line);
+
+						vectList.addAll(handleLineString(line, spacing, orientation, direction, baselineId, baseDist)); // rather than SEAWARD, get from baseline feature
+					}
+				}
+			} finally {
+				if (null != features) {
+					features.close();
+				}
+			}
             Transect[] vectArr = new Transect[vectList.size()];
             return vectList.toArray(vectArr);
         }
