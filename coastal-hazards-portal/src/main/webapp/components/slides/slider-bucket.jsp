@@ -27,7 +27,7 @@
             <div class="btn-group">
                 <button class="application-slide-bucket-container-card-button-bucket btn btn-default btn-xs application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-star"></i></button>
                 <button class="application-slide-bucket-container-card-button-remove btn btn-default btn-xs application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-ban"></i></button>
-                <button class="application-slide-bucket-container-card-button-info btn btn-default btn-xs application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-info-circle"></i></button>
+                <a class="application-slide-bucket-container-card-button-info btn btn-default btn-xs application-slide-bucket-container-card-template-button" role="button"><i class="fa fa-info-circle"></i></a>
                 <button class="application-slide-bucket-container-card-button-ok btn btn-default btn-xs application-slide-bucket-container-card-template-button" type="button"><i class="fa fa-check"></i></button>
             </div>
         </div>

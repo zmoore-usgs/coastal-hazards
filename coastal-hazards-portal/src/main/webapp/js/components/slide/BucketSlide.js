@@ -223,6 +223,7 @@ CCH.Objects.BucketSlide = function (args) {
             titleContainerPNode = newItem.find('.' + titleContainerClass + ' p'),
             descriptionContainer = newItem.find('.' + descriptionContainerClass),
             removeButton = newItem.find('>div:nth-child(2)>div.btn-group>button:nth-child(2)'),
+            infoButton = newItem.find('>div:nth-child(2)>div.btn-group>a'),
             imageContainer = newItem.find('img');
 
         newItem.attr('id', 'application-slide-bucket-container-card-' + id);
@@ -238,6 +239,11 @@ CCH.Objects.BucketSlide = function (args) {
             $(window).trigger('bucket-remove', {
                 id : id
             });
+        });
+        
+        infoButton.attr({
+            'target' : 'portal_info_window',
+            'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
         });
 
         return newItem;

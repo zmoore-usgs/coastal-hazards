@@ -288,7 +288,7 @@ CCH.Objects.SearchSlide = function (args) {
                 titleContainerPNode = newItem.find('.' + titleContainerClass + ' p'),
                 descriptionContainer = newItem.find('.' + descriptionContainerClass),
                 bucketButton = newItem.find('>div:nth-child(2)>div>*:first-child'),
-                searchButton = newItem.find('>div:nth-child(2)>div>*:nth-child(3)');
+                infoButton = newItem.find('>div:nth-child(2)>div>*:nth-child(3)');
 
             newItem.attr('id', 'application-slide-search-product-card-' + id);
             imageContainer.attr({
@@ -303,7 +303,7 @@ CCH.Objects.SearchSlide = function (args) {
                     item : product
                 });
             });
-            searchButton.attr({
+            infoButton.attr({
                 'target' : 'portal_info_window',
                 'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
             });
@@ -314,7 +314,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.buildLocationSearchResultItem = function (args) {
         args = args || {};
         var id = args.id || new Date().getMilliseconds(),
-            image = args.image || 'https://2.gravatar.com/avatar/15fcf61ab6fb824d11f355d7a99a1bbf?d=https%3A%2F%2Fidenticons.github.com%2Fd55c695700043438ce4162cbe589e072.png',
+            image = args.image,
             location = args.location,
             attributes = location.feature.attributes,
             name = location.name,
