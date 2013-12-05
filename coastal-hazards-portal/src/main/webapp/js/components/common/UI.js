@@ -411,6 +411,7 @@ CCH.Objects.UI = function (args) {
         bucketSlide: me.bucketSlide,
         searchSlide: me.searchSlide,
         bucket: me.bucket,
-        addToAccordion : me.addToAccordion
+        addToAccordion : me.addToAccordion,
+        CLASS_NAME : CCH.Objects.UI
     };
 };

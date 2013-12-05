@@ -37,6 +37,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.PRODUCT_CARD_TEMPLATE_ID = 'application-slide-search-product-card-template';
     me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID = 'application-slide-search-product-results-content-container';
     me.SLIDE_SEARCH_CONTAINER_PARENT_ID = 'application-slide-search-content-container';
+    me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER = 'application-slide-search-product-results-paging-container';
 
     me.smallOffset = 10;
     me.borderWidth = 2;
@@ -50,6 +51,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.clear = function () {
         $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID).empty();
         $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).empty();
+        $('#' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER).find('>ul').empty();
     };
 
     me.open = function () {
@@ -95,6 +97,7 @@ CCH.Objects.SearchSlide = function (args) {
             slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             slideContent = $('#' + me.SLIDE_CONTENT_ID),
             appContainerId = $('#' + me.APP_CONTAINER_ID),
+            slideSearchContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID),
             windowWidth = $(window).outerWidth();
 
         if (me.isClosed) {
@@ -154,10 +157,17 @@ CCH.Objects.SearchSlide = function (args) {
             locationSize = locations.length,
             productsSize = products.length,
             $slideContainer,
+            $pagingContainer,
+            $pageButton,
+            $pagingButtonGroup,
+            $li,
+            slidesPerPage = 2,
+            itemPageCount,
             type = args.type,
             items = [],
             itemsIdx,
-            locationIdx;
+            locationIdx,
+            pIdx;
 
         if (data) {
             switch (type) {
@@ -245,12 +255,62 @@ CCH.Objects.SearchSlide = function (args) {
             case 'item':
                 if (productsSize > 0) {
                     $slideContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID);
+                    $pagingContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER);
+                    $pagingButtonGroup = $pagingContainer.find('>ul.pagination');
+                    itemPageCount = Math.ceil(productsSize / slidesPerPage);
+
+                    // I want to make a paging system if I have enough items to 
+                    // support such a thing
+                    if (itemPageCount > 0) {
+                        // Add a previous page button
+                        $pageButton = $('<a />').
+                            attr('href', '#').
+                            html('&laquo;');
+                        // This will be the first page so I'm going to disable 
+                        // the back button
+                        $li = $('<li />').
+                                addClass('disabled page-move').
+                                append($pageButton);
+                        $pagingButtonGroup.append($li);
+                        for (pIdx = 0; pIdx < itemPageCount; pIdx++) {
+                            $pageButton = $('<a />').
+                                attr('href', '#').
+                                html(pIdx + 1);
+                            $li = $('<li />').
+                                append($pageButton);
+
+                            if (pIdx === 0) {
+                                // If this is the first page, also disable the
+                                // page 1 button
+                                $li.addClass('disabled');
+                            }
+
+                            $pagingButtonGroup.append($li);
+                        }
+
+                        // Tack on a "Next Page" button
+                        $pageButton = $('<a />').
+                            attr('href', '#').
+                            html('&raquo;');
+                        $li = $('<li />').
+                                addClass('page-move').
+                                append($pageButton);
+                        $pagingButtonGroup.append($li);
+
+                        $('#' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER).
+                            find('>ul>li').
+                            on('click', me.pagingButtonClicked);
+                    } else {
+                        $pagingContainer.remove();
+                    }
+
                     for (itemsIdx = 0; itemsIdx < productsSize; itemsIdx++) {
                         product = products[itemsIdx];
                         items.push(me.buildProductSearchResultItem({
                             product : product
                         }));
                     }
+
                     if (items.length) {
                         $slideContainer.append(items);
                         if (me.isClosed) {
@@ -259,6 +319,54 @@ CCH.Objects.SearchSlide = function (args) {
                     }
                 }
                 break;
+            }
+        }
+    };
+
+    me.getCurrentlyDisabledPageButton = function () {
+        var $pagingContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER),
+            $pagingButtonGroup = $pagingContainer.find('>ul.pagination'),
+            numString = $pagingButtonGroup.find('> li.disabled:not(.page-move) > a').html(),
+            num = parseInt(numString, 10);
+
+        return num;
+    };
+
+    me.displayItemsPage = function (num) {
+        var $listItems = $('#' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER).find('>ul>li'),
+            $incomingListItem =  $($listItems.get(num));
+        $listItems.removeClass('disabled');
+
+        if (num === 1) {
+            $listItems.first().addClass('disabled');
+        } else if (num === $listItems.length - 2) {
+            $listItems.last().addClass('disabled');
+        }
+
+        $incomingListItem.addClass('disabled');
+    };
+
+    me.pagingButtonClicked = function ($evt) {
+        $evt.stopImmediatePropagation();
+
+        var $li = $($evt.target).parent(),
+            $link = $li.find('>a'),
+            linkString = $link.html(),
+            toPage = parseInt(linkString, 10),
+            isDisabled = $li.hasClass('disabled'),
+            currentPage = me.getCurrentlyDisabledPageButton();
+
+        if (!isDisabled) {
+            if (isNaN(toPage)) {
+                // User clicked a back or forward button
+                // 171 is the back button string char code
+                if (171 === $link.html().charCodeAt(0)) {
+                    me.displayItemsPage(currentPage - 1);
+                } else {
+                    me.displayItemsPage(currentPage + 1);
+                }
+            } else {
+                me.displayItemsPage(toPage);
             }
         }
     };
@@ -364,7 +472,7 @@ CCH.Objects.SearchSlide = function (args) {
 
         return newItem;
     };
-    
+
     $(me.CLOSE_BUTTON_SELECTOR).on('click', function (evt) {
         me.toggle();
     });
@@ -394,6 +502,7 @@ CCH.Objects.SearchSlide = function (args) {
         toggle : me.toggle,
         clear : me.clear,
         isClosed : me.isClosed,
-        displaySearchResults : me.displaySearchResults
+        displaySearchResults : me.displaySearchResults,
+        CLASS_NAME : CCH.Objects.SearchSlide
     };
 };
