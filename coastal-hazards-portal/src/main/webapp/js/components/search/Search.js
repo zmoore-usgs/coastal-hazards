@@ -29,7 +29,8 @@ CCH.Objects.Search = function (args) {
                 success : [],
                 error : []
             },
-            scope = args.scope || this;
+            scope = args.scope || this,
+            displayNotification = args.displayNotification === false ? false : true;;
 
         $.ajax({
             type: 'GET',
@@ -46,6 +47,9 @@ CCH.Objects.Search = function (args) {
             contentType: 'application/json',
             dataType: 'jsonp',
             success: function (data, statusText, xhrResponse) {
+                if (displayNotification && data.locations.length) {
+                    $(window).trigger('cch.data.locations.searched', { items : data.locations});
+                }
                 callbacks.success.each(function (cb) {
                     cb.apply(this, [data, statusText, xhrResponse]);
                 });

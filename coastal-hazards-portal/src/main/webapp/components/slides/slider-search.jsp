@@ -9,6 +9,9 @@
             <div id="application-slide-search-location-results-content-container"></div>
             <div id="application-slide-search-product-results-content-container"></div>
         </div>
+        <div id="application-slide-search-product-results-paging-container">
+            <ul class="pagination"></ul>
+        </div>
     </div>
 </div>
 
