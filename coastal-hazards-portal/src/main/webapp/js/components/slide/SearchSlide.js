@@ -161,11 +161,12 @@ CCH.Objects.SearchSlide = function (args) {
             $pageButton,
             $pagingButtonGroup,
             $li,
-            slidesPerPage = 2,
+            slidesPerPage = 3,
             itemPageCount,
             type = args.type,
             items = [],
             itemsIdx,
+            item,
             locationIdx,
             pIdx;
 
@@ -306,9 +307,11 @@ CCH.Objects.SearchSlide = function (args) {
 
                     for (itemsIdx = 0; itemsIdx < productsSize; itemsIdx++) {
                         product = products[itemsIdx];
-                        items.push(me.buildProductSearchResultItem({
+                        item = me.buildProductSearchResultItem({
                             product : product
-                        }));
+                        });
+                        item.addClass('search-result-item-page-' + Math.ceil((itemsIdx + 1) / slidesPerPage));
+                        items.push(item);
                     }
 
                     if (items.length) {
@@ -317,6 +320,8 @@ CCH.Objects.SearchSlide = function (args) {
                             me.open();
                         }
                     }
+                    
+                    $slideContainer.find('>div:not(.search-result-item-page-1)').addClass('hidden');
                 }
                 break;
             }
@@ -334,6 +339,7 @@ CCH.Objects.SearchSlide = function (args) {
 
     me.displayItemsPage = function (num) {
         var $listItems = $('#' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER).find('>ul>li'),
+            $slideContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID),
             $incomingListItem =  $($listItems.get(num));
         $listItems.removeClass('disabled');
 
@@ -344,6 +350,9 @@ CCH.Objects.SearchSlide = function (args) {
         }
 
         $incomingListItem.addClass('disabled');
+        
+        $slideContainer.find('>div.search-result-item-page-' + num).removeClass('hidden');
+        $slideContainer.find('>div:not(.search-result-item-page-' + num + ')').addClass('hidden');
     };
 
     me.pagingButtonClicked = function ($evt) {
