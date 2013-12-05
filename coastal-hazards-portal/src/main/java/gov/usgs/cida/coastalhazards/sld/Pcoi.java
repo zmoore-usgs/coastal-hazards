@@ -41,9 +41,12 @@ public final class Pcoi extends SLDGenerator {
     private static final int STROKE_OPACITY = 1;
     private static final float[] thresholds = {0.0f, 10.0f, 25.0f, 50.0f, 75.0f, 90.0f};
     private static final String[] colors = {"#FFFFFE", "#FFE6E6", "#FFCCCD", "#FF9C95", "#FF574A", "#FF0000"};
-    
-    public Pcoi(Item item) {
+	
+	protected final Integer ribbon;
+	
+    public Pcoi(Item item, Integer ribbon) {
         super(item);
+		this.ribbon = ribbon;
     }
     
     @Override
@@ -96,6 +99,10 @@ public final class Pcoi extends SLDGenerator {
     public int getBinCount() {
         return colors.length;
     }
+	
+	public Integer getRibbon() {
+		return this.ribbon;
+	}
     
     @Override
     public String getStyle() {

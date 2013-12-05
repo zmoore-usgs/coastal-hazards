@@ -13,11 +13,11 @@ public abstract class SLDGenerator {
     protected Item item;
     protected static final String style = "cch";
     
-    public static SLDGenerator getGenerator(Item item) {
+    public static SLDGenerator getGenerator(Item item, Integer ribbon) {
         SLDGenerator generator = null;
         switch(item.getType()) {
             case storms:
-                Pcoi pcoi = new Pcoi(item);
+                Pcoi pcoi = new Pcoi(item, ribbon);
                 Extreme extreme = new Extreme(item);
                 DuneHeight dune = new DuneHeight(item);
                 MeanWaterLevel mean = new MeanWaterLevel(item);
