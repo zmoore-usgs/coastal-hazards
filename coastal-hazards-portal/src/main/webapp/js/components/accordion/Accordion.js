@@ -82,7 +82,7 @@ CCH.Objects.Accordion = function (args) {
         heading.append(titleContainer);
         accordionBody.append(bodyInner);
         
-        group.on('click', function () {
+        heading.on('click', function () {
             accordionBody.collapse('toggle');
         });
         

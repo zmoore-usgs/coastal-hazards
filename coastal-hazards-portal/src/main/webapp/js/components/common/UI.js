@@ -99,6 +99,23 @@ CCH.Objects.UI = function (args) {
             });
         }
     };
+    
+        me.locationsSearchedHandler = function (evt, data) {
+        // Display a notification with item count
+        if (data.items) {
+            var count = data.items.length;
+            $.pnotify({
+                text: 'Found ' + count + ' locations' + (count === 1 ? '.' : 's.'),
+                styling: 'bootstrap',
+                type: 'info',
+                nonblock: true,
+                sticker: false,
+                icon: 'icon-search',
+                closer: true,
+                delay: 3000
+            });
+        }
+    };
 
     me.windowResizeHandler = function () {
         var currWidth = $(window).width(),
@@ -356,6 +373,7 @@ CCH.Objects.UI = function (args) {
         $(window).on({
             'resize': me.windowResizeHandler,
             'cch.data.items.searched': me.itemsSearchedHandler,
+            'cch.data.locations.searched': me.locationsSearchedHandler,
             'bucket-add': function(evt, args) {
                 
             },
@@ -393,6 +411,7 @@ CCH.Objects.UI = function (args) {
         bucketSlide: me.bucketSlide,
         searchSlide: me.searchSlide,
         bucket: me.bucket,
-        addToAccordion : me.addToAccordion
+        addToAccordion : me.addToAccordion,
+        CLASS_NAME : CCH.Objects.UI
     };
 };

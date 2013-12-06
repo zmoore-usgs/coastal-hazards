@@ -99,7 +99,8 @@ CCH.Objects.CombinedSearch = function (args) {
         me.search.submitLocationSearch({
             criteria : criteria,
             scope : scope,
-            callbacks : callbacks
+            callbacks : callbacks,
+            displayNotification: true
         });
     };
 
