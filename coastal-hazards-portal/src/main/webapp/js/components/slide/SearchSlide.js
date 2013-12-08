@@ -51,7 +51,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.clear = function () {
         $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID).empty();
         $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).empty();
-        $('#' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER).find('>ul').empty();
+        $('.' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER).find('>ul').empty();
     };
 
     me.open = function () {
@@ -65,6 +65,7 @@ CCH.Objects.SearchSlide = function (args) {
                 left: toExtent.left
             }, me.animationTime, function () {
                 me.isClosed = false;
+                me.resize();
             });
         }
     };
@@ -91,43 +92,46 @@ CCH.Objects.SearchSlide = function (args) {
 
     // These functions should be implemented in the function that builds these
     // objects
-    me.resized = function () {
+    me.resize = function () {
         var extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large,
-            slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
-            slideContent = $('#' + me.SLIDE_CONTENT_ID),
-            appContainerId = $('#' + me.APP_CONTAINER_ID),
-            slideSearchContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID),
+            $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
+            $slideContent = $('#' + me.SLIDE_CONTENT_ID),
+            $appContainerId = $('#' + me.APP_CONTAINER_ID),
+            $cardContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).parent(),
             windowWidth = $(window).outerWidth();
 
         if (me.isClosed) {
-            slideContainer.addClass('hidden');
+            $slideContainer.addClass('hidden');
         } else {
-            slideContainer.removeClass('hidden');
+            $slideContainer.removeClass('hidden');
         }
 
         if (me.isSmall()) {
             if (me.isClosed) {
-                slideContainer.css({
+                $slideContainer.css({
                     left: windowWidth
                 });
             } else {
-                slideContainer.offset(toExtent);
+                $slideContainer.offset(toExtent);
             }
-            slideContainer.width(windowWidth - toExtent.left);
-            slideContent.width(slideContainer.outerWidth() - me.borderWidth);
+            $slideContainer.width(windowWidth - toExtent.left);
+            $slideContent.width($slideContainer.outerWidth() - me.borderWidth);
         } else {
             if (me.isClosed) {
-                slideContainer.css({
+                $slideContainer.css({
                     left: windowWidth,
                     top: toExtent.top
                 });
             } else {
-                slideContainer.offset(toExtent);
+                $slideContainer.offset(toExtent);
             }
-            slideContainer.width(windowWidth - toExtent.left);
-            slideContainer.height(appContainerId.outerHeight());
-            slideContent.width(slideContainer.outerWidth() - me.borderWidth);
+            $slideContainer.width(windowWidth - toExtent.left);
+            $slideContainer.height($appContainerId.outerHeight());
+            $slideContent.width($slideContainer.width() - me.borderWidth);
+            $cardContainer.height($slideContainer.height() - $cardContainer.siblings().toArray().sum(function(x) { 
+                return $(x).outerHeight();
+            }));
         }
     };
 
@@ -246,17 +250,22 @@ CCH.Objects.SearchSlide = function (args) {
                             }
                     });
                     
+                    // If I am closed, open me up. Resizing happens after I 
+                    // am open because otherwise some of my elements don't have 
+                    // a height. Otherwise, just resize me because I may have had 
+                    // items added to me
                     if (me.isClosed) {
                         me.open();
+                    } else {
+                        me.resize();
                     }
-                    
                 }
                 break;
 
             case 'item':
                 if (productsSize > 0) {
                     $slideContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID);
-                    $pagingContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER);
+                    $pagingContainer = $('.' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER);
                     $pagingButtonGroup = $pagingContainer.find('>ul.pagination');
                     itemPageCount = Math.ceil(productsSize / slidesPerPage);
 
@@ -298,7 +307,7 @@ CCH.Objects.SearchSlide = function (args) {
                                 append($pageButton);
                         $pagingButtonGroup.append($li);
 
-                        $('#' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER).
+                        $('.' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER).
                             find('>ul>li').
                             on('click', me.pagingButtonClicked);
                     } else {
@@ -318,6 +327,8 @@ CCH.Objects.SearchSlide = function (args) {
                         $slideContainer.append(items);
                         if (me.isClosed) {
                             me.open();
+                        } else {
+                            me.resize();
                         }
                     }
                     
@@ -329,7 +340,7 @@ CCH.Objects.SearchSlide = function (args) {
     };
 
     me.getCurrentlyDisabledPageButton = function () {
-        var $pagingContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER),
+        var $pagingContainer = $('.' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER),
             $pagingButtonGroup = $pagingContainer.find('>ul.pagination'),
             numString = $pagingButtonGroup.find('> li.disabled:not(.page-move) > a').html(),
             num = parseInt(numString, 10);
@@ -338,7 +349,7 @@ CCH.Objects.SearchSlide = function (args) {
     };
 
     me.displayItemsPage = function (num) {
-        var $listItems = $('#' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER).find('>ul>li'),
+        var $listItems = $('.' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER).find('>ul>li'),
             $slideContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID),
             $incomingListItem =  $($listItems.get(num));
         $listItems.removeClass('disabled');
@@ -353,6 +364,10 @@ CCH.Objects.SearchSlide = function (args) {
         
         $slideContainer.find('>div.search-result-item-page-' + num).removeClass('hidden');
         $slideContainer.find('>div:not(.search-result-item-page-' + num + ')').addClass('hidden');
+        
+        // The height and count of my items may have changed to I should be 
+        // resized to make sure the paging row stays near the bottom
+        me.resize();
     };
 
     me.pagingButtonClicked = function ($evt) {
@@ -487,7 +502,7 @@ CCH.Objects.SearchSlide = function (args) {
     });
 
     $(window).on('cch.ui.resized', function (args) {
-        me.resized(args);
+        me.resize(args);
     });
 
     $('body').on('click', function (evt) {

@@ -45,20 +45,20 @@ CCH.Objects.CombinedSearch = function (args) {
         geocodeServiceEndpoint: CCH.CONFIG.data.sources.geocoding.endpoint
     });
 
-    me.resizeContainer = function () {
-        var container = $('#' + me.CONTAINER_ID),
-            parentContainer = container.parents().first(),
+    me.resizeContainer = function (evt) {
+            var container = $('#' + me.CONTAINER_ID),
+                parentContainer = container.parents().first(),
             parentContainerWidth = parentContainer.width(),
-            // Get all visible, non-modal children of the parent that are also not my container
-            parentContainerVisibleItems = parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
-            // Get the width of child containers
-            childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
-                return $(el).outerWidth(true);
-            }),
-            containerMarginRight = 15,
+                // Get all visible, non-modal children of the parent that are also not my container
+                parentContainerVisibleItems = parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
+                // Get the width of child containers
+                childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
+                    return $(el).outerWidth(true);
+                }),
+                containerMarginRight = 15,
             idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
 
-        container.css({width : idealInputWidth});
+            container.css({width : idealInputWidth});
     };
 
     me.submitButtonClicked = function (evt, args) {
@@ -306,8 +306,9 @@ CCH.Objects.CombinedSearch = function (args) {
             me.criteriaChanged({
                 criteria : criteria
             });
-
-            me.resizeContainer();
+            
+            me.resize();
+            
         } else {
             evt.stopImmediatePropagation();
         }

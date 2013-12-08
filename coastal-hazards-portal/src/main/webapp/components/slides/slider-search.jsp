@@ -5,11 +5,11 @@
                 <div class="pull-left"><i class="fa fa-minus-square-o"></i></div>
             </div>
         </div>
-        <div id="application-slide-search-content-container" class="application-slide-content-container">
+        <div id="application-slide-search-content-container" class="application-slide-content-container row">
             <div id="application-slide-search-location-results-content-container"></div>
             <div id="application-slide-search-product-results-content-container"></div>
         </div>
-        <div id="application-slide-search-product-results-paging-container">
+        <div class="application-slide-search-product-results-paging-container row">
             <ul class="pagination"></ul>
         </div>
     </div>
