@@ -4,7 +4,7 @@ html, body {
        for some reason, IE9 still gives me scroll bars which messes everything
        up :( so these need to be set to hidden */
     overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
     /* 
     320 pixels is the minimum width and 600px is
     the minimum height that this application will support.
@@ -13,6 +13,8 @@ html, body {
     min-width: 320px;
     min-height: 600px;
     height: 100%;
+    border: 0px;
+    padding: 0px;
 }
 
 /*
@@ -124,6 +126,11 @@ html, body {
     .olControlZoom {
         display: none;
     }
+}
+
+
+@media (max-width: 320px) {
+    overflow-x: auto;
 }
 
 .marker-active {

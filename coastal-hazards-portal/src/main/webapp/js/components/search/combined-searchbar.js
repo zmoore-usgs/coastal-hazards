@@ -47,15 +47,15 @@ CCH.Objects.CombinedSearch = function (args) {
 
     me.resizeContainer = function (evt) {
             var container = $('#' + me.CONTAINER_ID),
-                parentContainer = container.parents().first(),
-            parentContainerWidth = parentContainer.width(),
+                parentContainer = container.parent(),
+                parentContainerWidth = parentContainer.width(),
                 // Get all visible, non-modal children of the parent that are also not my container
                 parentContainerVisibleItems = parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
                 // Get the width of child containers
                 childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
                     return $(el).outerWidth(true);
                 }),
-                containerMarginRight = 15,
+                containerMarginRight = 30,
             idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
 
             container.css({width : idealInputWidth});
@@ -307,7 +307,10 @@ CCH.Objects.CombinedSearch = function (args) {
                 criteria : criteria
             });
             
-            me.resize();
+            setTimeout(function() {
+                me.resizeContainer();
+            }, 200)
+            
             
         } else {
             evt.stopImmediatePropagation();
