@@ -68,6 +68,8 @@ public class DownloadManager {
     public static void stageItemDownload(Item stageThis, File stagingDir) throws IOException, ConcurrentModificationException {
         
         lock(stagingDir);
+        
+        List<String> missing = new LinkedList<>();
 
         try {
             List<SingleDownload> downloadList = new LinkedList<>();
@@ -88,7 +90,7 @@ public class DownloadManager {
                     download = new SingleDownload();
                     download.setWfs(wfs);
                     download.setName(currentItem.getName());
-                    //download.setMetadata(new URL(currentItem.getMetadata()));
+                    download.setMetadata(new URL(currentItem.getMetadata()));
                 }
 
                 String attr = currentItem.getAttr();
@@ -117,7 +119,7 @@ public class DownloadManager {
                 try {
                     stagedDownload.stage(stagingDir);
                 } catch (Exception ex) {
-                    LOG.error("unable to stage %s for download", stagedDownload.getName());
+                    LOG.error("unable to stage {} for download", stagedDownload.getName());
                 }
             }
         } finally {

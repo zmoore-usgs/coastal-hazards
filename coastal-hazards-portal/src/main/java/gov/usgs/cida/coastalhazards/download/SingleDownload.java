@@ -55,7 +55,7 @@ public class SingleDownload {
         for (String attr : attrs) {
             export.addAttribute(attr);
         }
-        String metadataName = name + "_metadata.xml";
+        String metadataName = name + ".shp.xml";
         MetadataDownload metaExport = new MetadataDownload(metadata, new File(stagingDir, metadataName));
                 
         export.writeToShapefile();

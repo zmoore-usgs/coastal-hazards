@@ -39,7 +39,7 @@ import org.xml.sax.SAXException;
 public class MetadataDownload {
 
     private static final Logger LOG = LoggerFactory.getLogger(MetadataDownload.class);
-    private static final String xslt = "<xsl:stylesheet version=\"1.0\"" +
+    private static final String XSLT = "<xsl:stylesheet version=\"1.0\"" +
         " xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:xalan=\"http://xml.apache.org/xslt\">" +
         "    <xsl:output method=\"xml\" indent=\"yes\" xalan:indent-amount=\"2\"/>" +
         "    <xsl:template match=\"@* | node()\">" +
@@ -62,7 +62,7 @@ public class MetadataDownload {
         FileOutputStream fos = null;
         try {
             Transformer transformer = SAXTransformerFactory.newInstance()
-                    .newTransformer(new StreamSource(new StringReader(xslt)));
+                    .newTransformer(new StreamSource(new StringReader(XSLT)));
 
             HttpUriRequest req = new HttpGet(metadata.toURI());
             HttpClient client = new DefaultHttpClient();
