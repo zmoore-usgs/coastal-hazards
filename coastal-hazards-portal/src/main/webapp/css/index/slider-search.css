@@ -32,11 +32,19 @@
 
 /* Content container */
 #application-slide-search-container > div > div.application-slide-content-container {
-    height: 92%;
-    margin-top: 10px;
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
     margin-right: 3px;
     margin-left: 3px;
+}
+
+#application-slide-search-container > div > div:nth-child(2) > div  div.application-slide-search-product-card {
+    width: 95%;
+}
+
+#application-slide-search-container > div > div.application-slide-search-product-results-paging-container  {
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 #application-slide-search-container div.application-slide-content-container > div > div.application-slide-search-location-card-toggle {
