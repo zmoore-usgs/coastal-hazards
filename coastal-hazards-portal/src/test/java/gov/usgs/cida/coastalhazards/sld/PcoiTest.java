@@ -38,7 +38,7 @@ public class PcoiTest {
         summary.setTiny(tiny);
         item.setSummary(summary);
         
-        Pcoi pcoi = new Pcoi(item, null);
+        SLDGenerator pcoi = new SLDGenerator(item, null, Pcoi.pcoi);
         Response response = pcoi.generateSLDInfo();
         String json = (String)response.getEntity();
         Map<String, Object> sldInfo = new Gson().fromJson(json, HashMap.class);
@@ -65,7 +65,7 @@ public class PcoiTest {
         summary.setTiny(tiny);
         item.setSummary(summary);
         
-        Pcoi pcoi = new Pcoi(item, null);
+        SLDGenerator pcoi = new SLDGenerator(item, null, Pcoi.pcoi);
         Response response = pcoi.generateSLD();
         Viewable sld = (Viewable)response.getEntity(); //TODO?
     }

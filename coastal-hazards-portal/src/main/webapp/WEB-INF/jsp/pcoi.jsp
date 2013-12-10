@@ -45,7 +45,7 @@
 						</ogc:Function>
 						<ogc:Function name="parameter">
 							<ogc:Literal>offset</ogc:Literal>
-							<ogc:Literal>${it.STROKE_WIDTH + ((it.STROKE_WIDTH / 2) + 1)}</ogc:Literal>
+							<ogc:Literal>${it.strokeWidth + ((it.strokeWidth / 2) + 1)}</ogc:Literal>
 						</ogc:Function>
 					</ogc:Function>
 				</sld:Transformation>
@@ -87,8 +87,8 @@
 					<sld:LineSymbolizer>
 						<sld:Stroke>
 							<sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
-							<sld:CssParameter name="stroke-width">${it.STROKE_WIDTH}</sld:CssParameter>
-							<sld:CssParameter name="stroke-opacity">${it.STROKE_OPACITY}</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">${it.strokeWidth}</sld:CssParameter>
+							<sld:CssParameter name="stroke-opacity">${it.strokeOpacity}</sld:CssParameter>
 						</sld:Stroke>
 					</sld:LineSymbolizer>
 				</sld:Rule>
