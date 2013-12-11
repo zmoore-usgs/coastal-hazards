@@ -24,11 +24,6 @@
 			<url>http://cida.usgs.gov/maven/cida-public/</url>
 		</repository>
         <repository>
-            <id>nexus</id>
-            <name>CIDA Nexus</name>
-            <url>http://internal.cida.usgs.gov/maven/content/groups/public/</url>
-        </repository>
-        <repository>
             <id>opengeo</id>
             <url>http://repo.opengeo.org/</url>
         </repository>
