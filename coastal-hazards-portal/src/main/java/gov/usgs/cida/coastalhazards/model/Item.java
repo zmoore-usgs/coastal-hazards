@@ -227,7 +227,7 @@ public class Item implements Serializable {
     public static Item fromJSON(String json) {
 
 		Item node;
-		Gson gson = GsonUtil.getDefault();
+		Gson gson = GsonUtil.getSubtreeGson();
 		
 		node = gson.fromJson(json, Item.class);
 		if (node.getId() == null) {
