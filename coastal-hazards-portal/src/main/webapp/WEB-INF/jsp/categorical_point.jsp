@@ -29,10 +29,10 @@
                                 <sld:WellKnownName>circle</sld:WellKnownName>
                                 <sld:Fill>
                                     <sld:CssParameter name="fill">${it.colors[i]}</sld:CssParameter>
-                                    <sld:CssParameter name="fill-opacity">${it.STROKE_OPACITY}</sld:CssParameter>
+                                    <sld:CssParameter name="fill-opacity">${it.strokeOpacity}</sld:CssParameter>
                                 </sld:Fill>
                             </sld:Mark>
-                                <sld:Size>${it.STROKE_WIDTH}</sld:Size>
+                                <sld:Size>${it.strokeWidth}</sld:Size>
                         </sld:Graphic>
                     </sld:PointSymbolizer>
                 </sld:Rule>

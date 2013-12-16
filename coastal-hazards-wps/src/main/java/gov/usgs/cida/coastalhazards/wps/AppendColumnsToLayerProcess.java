@@ -69,7 +69,6 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
         DataAccess<? extends FeatureType, ? extends Feature> dataAccess = gsUtils.getDataAccess(ds, null);
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource = gsUtils.getFeatureSource(dataAccess, layer);
         FeatureCollection<? extends FeatureType, ? extends Feature> featureCollection = gsUtils.getFeatureCollection(featureSource);
-        FeatureIterator<? extends Feature> features = featureCollection.features();
         
         Map<String, String[]> newColumns = new HashMap<String, String[]>();
         for (String column : columns) {
@@ -195,17 +194,25 @@ public class AppendColumnsToLayerProcess implements GeoServerProcess {
         SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(newFeatureType);
         List<SimpleFeature> sfList = new ArrayList<SimpleFeature>();
         
-        while (features.hasNext()) {
-            SimpleFeature feature = (SimpleFeature) features.next();
-            SimpleFeature newFeature = SimpleFeatureBuilder.retype(feature, sfb);
-            for (String columnKey : colKeys) {
-                String name = columnKey;
-                if (newFeature.getAttribute(new NameImpl(name)) == null) {
-                    newFeature.setAttribute(name, newFeature.getFeatureType().getDescriptor(name).getDefaultValue());
-                }
-            }
-            sfList.add(newFeature);
-        }
+        FeatureIterator<? extends Feature> features = null;
+		try {
+			features = featureCollection.features();
+			while (features.hasNext()) {
+				SimpleFeature feature = (SimpleFeature) features.next();
+				SimpleFeature newFeature = SimpleFeatureBuilder.retype(feature, sfb);
+				for (String columnKey : colKeys) {
+					String name = columnKey;
+					if (newFeature.getAttribute(new NameImpl(name)) == null) {
+						newFeature.setAttribute(name, newFeature.getFeatureType().getDescriptor(name).getDefaultValue());
+					}
+				}
+				sfList.add(newFeature);
+			}
+		} finally {
+			if (null != features) {
+				features.close();
+			}
+		}
 
         SimpleFeatureCollection collection = DataUtilities.collection(sfList);
         

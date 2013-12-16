@@ -71,29 +71,37 @@ public class ShorelineSTRTreeBuilder {
     private boolean built;
     
     public ShorelineSTRTreeBuilder(SimpleFeatureCollection shorelines) {
-        SimpleFeatureIterator features = shorelines.features();
         this.strTree = new STRtree(shorelines.size());
-        while (features.hasNext()) {
-            SimpleFeature feature = features.next();
-            Geometry geom = (Geometry)feature.getDefaultGeometry();
-            Geometries geoms = Geometries.get(geom);
-            switch (geoms) {
-                case MULTIPOLYGON:
-                case POLYGON:
-                case MULTIPOINT:
-                case POINT:
-                case LINESTRING:
-                    throw new UnsupportedFeatureTypeException("Only MultiLineString supported here");
-                case MULTILINESTRING:
-                    MultiLineString mls = (MultiLineString)geom;
-                    this.factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
-                    this.built = false;
-                    this.fillTree(mls, feature);
-                    break;
-                default:
-                    throw new UnsupportedFeatureTypeException("Unknown feature not supported");
-            }
-        }
+		
+        SimpleFeatureIterator features = null;
+		try {
+			features = shorelines.features();
+			while (features.hasNext()) {
+				SimpleFeature feature = features.next();
+				Geometry geom = (Geometry)feature.getDefaultGeometry();
+				Geometries geoms = Geometries.get(geom);
+				switch (geoms) {
+					case MULTIPOLYGON:
+					case POLYGON:
+					case MULTIPOINT:
+					case POINT:
+					case LINESTRING:
+						throw new UnsupportedFeatureTypeException("Only MultiLineString supported here");
+					case MULTILINESTRING:
+						MultiLineString mls = (MultiLineString)geom;
+						this.factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
+						this.built = false;
+						this.fillTree(mls, feature);
+						break;
+					default:
+						throw new UnsupportedFeatureTypeException("Unknown feature not supported");
+				}
+			}
+		} finally {
+			if (null != features) {
+				features.close();
+			}
+		}
     }
         
     /* May also want to take FeatureCollection */

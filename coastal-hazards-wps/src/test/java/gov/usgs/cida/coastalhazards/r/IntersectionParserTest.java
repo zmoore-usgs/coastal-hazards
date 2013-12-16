@@ -119,22 +119,29 @@ public class IntersectionParserTest {
         
         
         
-        FeatureIterator<SimpleFeature> features = fc.features();
-        while (features.hasNext()) {
-            SimpleFeature feature = features.next();
-            int transectId = (Integer)feature.getAttribute("TransectID");
+        FeatureIterator<SimpleFeature> features = null;
+		try {
+			features = fc.features();
+			while (features.hasNext()) {
+				SimpleFeature feature = features.next();
+				int transectId = (Integer)feature.getAttribute("TransectID");
 
-            Intersection intersection = new Intersection(feature, new AttributeGetter(feature.getType()));
+				Intersection intersection = new Intersection(feature, new AttributeGetter(feature.getType()));
 
-            if (map.containsKey(transectId)) {
-                map.get(transectId).add(intersection);
-            }
-            else {
-                List<Intersection> pointList = new LinkedList<Intersection>();
-                pointList.add(intersection);
-                map.put(transectId, pointList);
-            }
-        }
+				if (map.containsKey(transectId)) {
+					map.get(transectId).add(intersection);
+				}
+				else {
+					List<Intersection> pointList = new LinkedList<Intersection>();
+					pointList.add(intersection);
+					map.put(transectId, pointList);
+				}
+			}
+		} finally {
+			if (null != features) {
+				features.close();
+			}
+		}
         
         for (int key : map.keySet()) {
             List<Intersection> points = map.get(key);

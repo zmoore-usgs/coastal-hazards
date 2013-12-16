@@ -67,7 +67,6 @@ public class RenameLayerColumnsProcess implements GeoServerProcess {
         List<AttributeDescriptor> attributeList = new ArrayList(featureType.getDescriptors());
         List<SimpleFeature> sfList = new ArrayList<SimpleFeature>();
         FeatureCollection<? extends FeatureType, ? extends Feature> featureCollection = gsUtils.getFeatureCollection(featureSource);
-        FeatureIterator<? extends Feature> features = featureCollection.features();
         
         Map<String, String> columnNameMap = new HashMap<String, String>();
         for (String column : columns) {
@@ -102,25 +101,34 @@ public class RenameLayerColumnsProcess implements GeoServerProcess {
                 featureType.getDescription());
         
         SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(newFeatureType);
-        while (features.hasNext()) {
-            SimpleFeature feature = (SimpleFeature) features.next();
-            SimpleFeature newFeature = SimpleFeatureBuilder.retype(feature, sfb);
-            List<Object> oldAttributes = feature.getAttributes();
-            List<Object> newAttributes = newFeature.getAttributes();
-            // If the feature type contains attributes in which the original 
-            // feature does not have a value for, 
-            // the value in the resulting feature is set to null.
-            // Need to copy it back from the original feature
-            for (int aInd = 0;aInd < newAttributes.size();aInd++) {
-                Object oldAttribute = oldAttributes.get(aInd);
-                Object newAttribute = newAttributes.get(aInd);
-                
-                if (newAttribute == null && oldAttribute != null) {
-                    newFeature.setAttribute(aInd, oldAttribute);
-                }
-            }
-            sfList.add(newFeature);
-        }
+		
+        FeatureIterator<? extends Feature> features = null;
+		try {
+			features = featureCollection.features();
+			while (features.hasNext()) {
+				SimpleFeature feature = (SimpleFeature) features.next();
+				SimpleFeature newFeature = SimpleFeatureBuilder.retype(feature, sfb);
+				List<Object> oldAttributes = feature.getAttributes();
+				List<Object> newAttributes = newFeature.getAttributes();
+				// If the feature type contains attributes in which the original 
+				// feature does not have a value for, 
+				// the value in the resulting feature is set to null.
+				// Need to copy it back from the original feature
+				for (int aInd = 0;aInd < newAttributes.size();aInd++) {
+					Object oldAttribute = oldAttributes.get(aInd);
+					Object newAttribute = newAttributes.get(aInd);
+
+					if (newAttribute == null && oldAttribute != null) {
+						newFeature.setAttribute(aInd, oldAttribute);
+					}
+				}
+				sfList.add(newFeature);
+			}
+		} finally {
+			if (null != features) {
+				features.close();
+			}
+		}
 
         SimpleFeatureCollection collection = DataUtilities.collection(sfList);
         
