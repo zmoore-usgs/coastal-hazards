@@ -389,7 +389,7 @@ CCH.Objects.Card = function (args) {
 
     return {
         id: me.id,
-        product: me.item,
+        item: me.item,
         show : me.show,
         hide : me.hide,
         close : me.close,

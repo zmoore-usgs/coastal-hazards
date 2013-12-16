@@ -335,8 +335,8 @@ CCH.Objects.UI = function (args) {
                 CCH.LOG.debug('CCH.Objects.UI:: Item ' + args.id + ' was ' + (args.display ? 'shown' : 'hidden'));
                 var id = args.id,
                     display = args.display,
-                    product = args.card.product,
-                    type = product.itemType,
+                    item = args.card.item,
+                    type = item.itemType,
                     childItem;
                     
                 if (args.display) {
@@ -348,7 +348,11 @@ CCH.Objects.UI = function (args) {
                         // This aggregation should have children, so for each 
                         // child, I want to grab the child's layer and display it
                         // on the map
-                        product.children.each(function (childItemId) {
+                        CCH.map.zoomToBoundingBox({
+                           bbox : item.bbox,
+                           fromProjection : new OpenLayers.Projection('EPSG:4326')
+                        });
+                        item.children.each(function (childItemId) {
                             childItem = CCH.items.getById({ id : childItemId });
                             CCH.map.displayData({
                                 item : childItem

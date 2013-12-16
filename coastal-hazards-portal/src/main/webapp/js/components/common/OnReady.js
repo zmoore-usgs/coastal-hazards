@@ -113,10 +113,10 @@ $(document).ready(function () {
                                             displayNotification: false,
                                             callbacks: {
                                                 success: [
-                                                    function (product, status, responseText) {
+                                                    function (item, status, responseText) {
                                                         if (status === 'success') {
                                                             CCH.ui.addToAccordion({
-                                                                item : CCH.items.getById({id : product.id})
+                                                                item : CCH.items.getById({id : item.id})
                                                             });
                                                         }
                                                     },
