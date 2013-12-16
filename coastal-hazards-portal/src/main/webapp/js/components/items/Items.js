@@ -63,7 +63,7 @@ CCH.Objects.Items = function (args) {
 
                 // Extend the in-memory items with the incoming items
                 $.extend(true, me.items, incomingItemsObject);
-
+                
                 // We are also currently filtering geospatial
                 // using the front-end due to hibernate being 
                 // a little b :/ Also removing duplicate entries

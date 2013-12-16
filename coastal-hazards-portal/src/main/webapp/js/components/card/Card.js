@@ -41,7 +41,6 @@ CCH.Objects.Card = function (args) {
     me.wmsService = me.product.wmsService || {};
     me.wmsEndpoint = me.wmsService.endpoint || '';
     me.wmsLayers = me.wmsService.layers || [];
-    me.layer = null;
     me.container = null;
     me.descriptionContainer = null;
     // Is the card hidden by default? We probably want it to be false when creating
@@ -52,28 +51,7 @@ CCH.Objects.Card = function (args) {
     // accordion bellow
     me.parent = args.parent;
     me.child = args.child;
-    me.layer = (function () {
-        var layer = new OpenLayers.Layer.WMS(
-                me.id,
-                me.wmsEndpoint,
-                {
-                    layers: me.wmsLayers,
-                    format: 'image/png',
-                    transparent: true,
-                    sld: CCH.CONFIG.publicUrl + '/data/sld/' + me.id,
-                    styles: 'cch'
-                },
-                {
-                    projection: 'EPSG:3857',
-                    isBaseLayer: false,
-                    displayInLayerSwitcher: false,
-                    isItemLayer: true, // CCH specific setting
-                    bbox: me.bbox
-                }
-            );
-
-        return layer;
-    }());
+    me.layer = me.wmsLayer;
 
     me.show = function (args) {
         args = args || {};
@@ -87,9 +65,15 @@ CCH.Objects.Card = function (args) {
             effect : effect,
             easing : easing,
             duration : duration,
-            complete : complete,
-            direction : 'up'
+            direction : 'up', 
+            complete : complete
         });
+        
+        CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was shown');
+        $(me).trigger('card-display-toggle', {
+            'display' : true
+        });
+        
     };
 
     me.hide = function (args) {
@@ -104,8 +88,13 @@ CCH.Objects.Card = function (args) {
             effect : effect,
             easing : easing,
             duration : duration,
-            complete : complete,
-            direction : 'up'
+            direction : 'up',
+            complete : complete
+        });
+        
+        CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was hidden');
+        $(me).trigger('card-display-toggle', {
+            'display' : false
         });
     };
     
@@ -407,6 +396,7 @@ CCH.Objects.Card = function (args) {
         child : me.child,
         closeChild : me.closeChild,
         removeSelf : me.removeSelf,
+        layer : me.layer,
         getBoundingBox: function () {
             return me.bbox;
         },

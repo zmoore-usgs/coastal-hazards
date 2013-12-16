@@ -1,5 +1,4 @@
 /*jslint browser: true*/
-/*jslint plusplus: true */
 /*global $*/
 /*global CCH*/
 
@@ -14,7 +13,7 @@ CCH.Objects.Accordion = function (args) {
 
     me.CONTAINER_ID = args.containerId || 'application-slide-items-content-container';
     me.isStopped = true;
-    
+
     container = $('#' + me.CONTAINER_ID);
 
     // Make sure that our container is of the accordion type
@@ -41,17 +40,17 @@ CCH.Objects.Accordion = function (args) {
                 card : card,
                 index : index
             });
-            
 
         me.getAccordion().append(bellow);
-        
+
         return bellow;
     };
 
     me.createBellow = function (args) {
         args = args || {};
 
-        var id = args.card.id,
+        var card = args.card,
+            id = card.id,
             cardContainer = args.container,
             titleRow = cardContainer.find('.application-card-title-row'),
             titleMedium = titleRow.find('.application-card-title-container-medium').html(),
@@ -72,7 +71,8 @@ CCH.Objects.Accordion = function (args) {
         });
 
         accordionBody.attr('id', accordionBodyId);
-
+        accordionBody.data('id', id);
+        
         bodyInner.append(cardContainer);
 
         titleRow.remove();
@@ -81,12 +81,35 @@ CCH.Objects.Accordion = function (args) {
         titleContainer.append(toggleTarget);
         heading.append(titleContainer);
         accordionBody.append(bodyInner);
-        
+
         //TODO- BS3 does not toggle other containers closed when this one toggles
         //opening so have to orchestrate this when I have a bit more time
 //        heading.on('click', function () {
 //            accordionBody.collapse('toggle');
 //        });
+
+        accordionBody.on({
+            'shown.bs.collapse' : function (evt) {
+                var $this = $(this),
+                    id = $this.data('id');
+                
+                $this.trigger('bellow-display-toggle', {
+                    'id' : id,
+                    'display' : true,
+                    'card' : card
+                });
+            },
+            'hidden.bs.collapse' : function (evt) {
+                var $this = $(this),
+                    id = $this.data('id');
+                
+                $this.trigger('bellow-display-toggle', {
+                    'id' : id,
+                    'display' : false,
+                    'card' : card
+                });
+            }
+        });
         
         return group;
     };
@@ -99,16 +122,9 @@ CCH.Objects.Accordion = function (args) {
         return $('#' + me.CONTAINER_ID + ' .panel');
     };
 
-    $(window).on({
-    });
-
     return $.extend(me, {
         add: me.add,
-        stop: function () {
-        },
-        start: function () {
-        },
-        CLASS_NAME : ''
+        CLASS_NAME : 'CCH.Objects.Accordion'
     });
 
 };

@@ -322,12 +322,22 @@ CCH.Objects.Map = function(args) {
 			});
 		},
 		displayData: function(args) {
-			var card = args.card;
-			if (me.map.getLayersByName(card.item.id).length === 0) {
+			var card = args.card,
+                item = args.item,
+                layer;
+            
+			if (me.card && me.map.getLayersByName(card.item.id).length === 0) {
 				var layer = card.layer;
 				me.map.addLayer(layer);
 				layer.redraw(true);
-			}
+			} 
+//            else if (item && item.getWmsLayer) {
+//                layer = item.getWmsLayer();
+//                if (me.map.getLayersByName(layer.name).length === 0) {
+//                    me.map.addLayer(layer);
+//                    layer.redraw(true);
+//                }
+//            }
 		},
 		updateSession: function() {
 			var map = me.map;

@@ -20,7 +20,33 @@ CCH.Objects.Item = function (item) {
     
     me.bbox = me.bbox || UNITED_STATES_BBOX;
     me.children = me.children || [];
-    
+    me.createWmsLayer = function () {
+        var id = me.id, 
+            service = me.wmsService,
+            endpoint = service.endpoint,
+            layers = service.layers || [],
+            bbox = me.bbox,
+            layer = me.itemType === 'aggregation' ? null : new OpenLayers.Layer.WMS(
+                id,
+                endpoint,
+                {
+                    layers: layers,
+                    format: 'image/png',
+                    transparent: true,
+                    sld: CCH.CONFIG.publicUrl + '/data/sld/' + id,
+                    styles: 'cch'
+                },
+                {
+                    projection: 'EPSG:3857',
+                    isBaseLayer: false,
+                    displayInLayerSwitcher: false,
+                    isItemLayer: true, // CCH specific setting
+                    bbox: bbox
+                }
+            );
+
+        return layer;
+    }();
     
     CCH.LOG.info('Item.js::init():Item class finished initializing.');
     
@@ -34,6 +60,7 @@ CCH.Objects.Item = function (item) {
        type : me.type,
        wfsService : me.wfsService,
        wmsService : me.wmsService,
+//       getWmsLayer : me.createWmsLayer,
        CLASS_NAME : 'CCH.Objects.Item'
     };
 };
