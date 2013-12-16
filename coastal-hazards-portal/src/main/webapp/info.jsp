@@ -40,6 +40,12 @@
                     publicUrl: '<%=publicUrl%>'
                 }
             };
+            
+            // Internet Explorer Fix
+            // http://tosbourn.com/2013/08/javascript/a-fix-for-window-location-origin-in-internet-explorer/
+            if (!window.location.origin) {
+              window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+            }
         </script>
         <script type="text/javascript" src="<%=baseUrl%>/js/components/util/Util.js"></script>
         <script type="text/javascript" src='<%=baseUrl%>/js/components/info/info.js'></script>
