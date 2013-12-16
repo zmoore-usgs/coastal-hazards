@@ -55,7 +55,7 @@ CCH.Objects.CombinedSearch = function (args) {
                 childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
                     return $(el).outerWidth(true);
                 }),
-                containerMarginRight = 30,
+                containerMarginRight = 15, // TODO- This is problematic between IE9 and others
             idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
 
             container.css({width : idealInputWidth});
