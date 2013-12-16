@@ -6,9 +6,10 @@ import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,8 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,7 +34,12 @@ import org.apache.commons.lang.StringUtils;
  */
 public class DownloadManager {
     
-    public static Set<File> locks = Collections.synchronizedSet(new HashSet<File>());
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DownloadManager.class);
+    
+    private static final String MISSING_FILE = "MISSING";
+    
+    private static Set<File> locks = Collections.synchronizedSet(new HashSet<File>());
     
     public synchronized static void lock(File file) throws ConcurrentModificationException {
         if (locks.contains(file)) {
@@ -65,7 +73,9 @@ public class DownloadManager {
     public static void stageItemDownload(Item stageThis, File stagingDir) throws IOException, ConcurrentModificationException {
         
         lock(stagingDir);
-
+        
+        List<String> missing = new LinkedList<>();
+        
         try {
             List<SingleDownload> downloadList = new LinkedList<>();
             SingleDownload download = new SingleDownload();
@@ -85,6 +95,7 @@ public class DownloadManager {
                     download = new SingleDownload();
                     download.setWfs(wfs);
                     download.setName(currentItem.getName());
+                    download.setMetadata(new URL(currentItem.getMetadata()));
                 }
 
                 String attr = currentItem.getAttr();
@@ -110,9 +121,21 @@ public class DownloadManager {
                 namesUsed.add(stagedDownload.getName());
 
                 // TODO try/catch this to isolate/retry problem downloads
-                stagedDownload.stage(stagingDir);
+                try {
+                    stagedDownload.stage(stagingDir, missing);
+                } catch (Exception ex) {
+                    LOG.error("unable to stage {} for download", stagedDownload.getName());
+                }
             }
         } finally {
+            if (!missing.isEmpty()) {
+                FileWriter missingFileWriter = new FileWriter(FileUtils.getFile(stagingDir, MISSING_FILE));
+                for (String file : missing) {
+                    missingFileWriter.write(file + System.lineSeparator());
+                }
+                IOUtils.closeQuietly(missingFileWriter);
+            }
+            
             unlock(stagingDir);
         }
     }
