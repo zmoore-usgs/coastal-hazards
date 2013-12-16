@@ -72,34 +72,51 @@ public class CRSUtils {
         } catch (FactoryException ex) {
             return null; // do something better than this
         }
-        FeatureIterator<SimpleFeature> features = featureCollection.features();
-        SimpleFeature feature = null;
-        while (features.hasNext()) {
-            feature = features.next();
-            Geometry geometry = (Geometry) feature.getDefaultGeometry();
+		
+        FeatureIterator<SimpleFeature> features = null;
+		try {
+			features = featureCollection.features();
+			SimpleFeature feature = null;
+			while (features.hasNext()) {
+				feature = features.next();
+				Geometry geometry = (Geometry) feature.getDefaultGeometry();
 
-            Geometry utmGeometry = null;
-            try {
-                utmGeometry = JTS.transform(geometry, transform);
-            } catch (TransformException ex) {
-                // TODO handle exceptions
-            }
-            feature.setDefaultGeometry(utmGeometry);
-            sfList.add(feature);
-        }
+				Geometry utmGeometry = null;
+				try {
+					utmGeometry = JTS.transform(geometry, transform);
+				} catch (TransformException ex) {
+					// TODO handle exceptions
+				}
+				feature.setDefaultGeometry(utmGeometry);
+				sfList.add(feature);
+			}
+		} finally {
+			if (null != features) {
+				features.close();
+			}
+		}
 
         return DataUtilities.collection(sfList);
     }
 
     public static MultiLineString getLinesFromFeatureCollection(SimpleFeatureCollection collection) {
         List<LineString> lines = new LinkedList<LineString>();
-        FeatureIterator<SimpleFeature> features = collection.features();
-        SimpleFeature feature = null;
-        while (features.hasNext()) {
-            feature = features.next();
-            List<LineString> geomList = getListFromFeature(feature);
-            lines.addAll(geomList);
-        }
+		
+        FeatureIterator<SimpleFeature> features = null;
+		try {
+			features = collection.features();
+			SimpleFeature feature = null;
+			while (features.hasNext()) {
+				feature = features.next();
+				List<LineString> geomList = getListFromFeature(feature);
+				lines.addAll(geomList);
+			}
+		} finally {
+			if (null != features) {
+				features.close();
+			}
+		}
+        
         LineString[] linesArr = new LineString[lines.size()];
         lines.toArray(linesArr);
         return geometryFactory.createMultiLineString(linesArr);

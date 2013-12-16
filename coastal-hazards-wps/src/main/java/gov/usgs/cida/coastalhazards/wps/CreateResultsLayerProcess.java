@@ -286,26 +286,34 @@ public class CreateResultsLayerProcess implements GeoServerProcess {
     
     private Map<Integer, List<Point>> generateTransectToIntersectMap(FeatureCollection<?, SimpleFeature> intersects) {
         Map<Integer, List<Point>> transectToIntersectionMap = new HashMap<Integer, List<Point>>();
-        FeatureIterator<SimpleFeature> intersectsIterator = intersects.features();
-        while (intersectsIterator.hasNext()) {
-            SimpleFeature feature = intersectsIterator.next();
-            Object transectIdAsObject = feature.getAttribute(Constants.TRANSECT_ID_ATTR);
-            if (transectIdAsObject instanceof Integer) {
-                List<Point> pointList = transectToIntersectionMap.get((Integer)transectIdAsObject);
-                if (pointList == null) {
-                    pointList = new ArrayList<Point>();
-                    transectToIntersectionMap.put((Integer)transectIdAsObject, pointList);
-                }
-                Object geometryAsObject = feature.getDefaultGeometry();
-                if (geometryAsObject instanceof Point) {
-                    pointList.add((Point)geometryAsObject);
-                } else {
-                    System.err.println("wtf?  null point");
-                }    
-            } else {
-                System.err.println("wtf? ");
-            }
-        }
+        FeatureIterator<SimpleFeature> intersectsIterator = null;
+		try {
+			intersectsIterator = intersects.features();
+			while (intersectsIterator.hasNext()) {
+				SimpleFeature feature = intersectsIterator.next();
+				Object transectIdAsObject = feature.getAttribute(Constants.TRANSECT_ID_ATTR);
+				if (transectIdAsObject instanceof Integer) {
+					List<Point> pointList = transectToIntersectionMap.get((Integer)transectIdAsObject);
+					if (pointList == null) {
+						pointList = new ArrayList<Point>();
+						transectToIntersectionMap.put((Integer)transectIdAsObject, pointList);
+					}
+					Object geometryAsObject = feature.getDefaultGeometry();
+					if (geometryAsObject instanceof Point) {
+						pointList.add((Point)geometryAsObject);
+					} else {
+						System.err.println("wtf?  null point");
+					}    
+				} else {
+					System.err.println("wtf? ");
+				}
+			}
+		} finally {
+			if (null != intersectsIterator) {
+				intersectsIterator.close();
+			}
+		}
+        
         return transectToIntersectionMap;
     }
     

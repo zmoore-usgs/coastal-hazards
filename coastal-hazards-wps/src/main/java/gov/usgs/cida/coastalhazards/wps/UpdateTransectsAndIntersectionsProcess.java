@@ -151,17 +151,26 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
                 }
                                        
                 SimpleFeatureCollection transectFeatures = (SimpleFeatureCollection)transectStore.getFeatures(transectFilter);
-                SimpleFeatureIterator transectIterator = transectFeatures.features();
                 SimpleFeature transect = null;
-                while (transectIterator.hasNext()) {
-                    if (null == transect) {
-                        // I want the transformed transect, I'm really only using the iterator to get the ID
-                        transect = transectIterator.next();
-                    }
-                    else {
-                        throw new IllegalStateException("There shouldn't be more than one transect with the same id");
-                    }
-                }
+				
+                SimpleFeatureIterator transectIterator = null;
+				try {
+					transectIterator = transectFeatures.features();
+					while (transectIterator.hasNext()) {
+						if (null == transect) {
+							// I want the transformed transect, I'm really only using the iterator to get the ID
+							transect = transectIterator.next();
+						}
+						else {
+							throw new IllegalStateException("There shouldn't be more than one transect with the same id");
+						}
+					}
+				} finally {
+					if (null != transectIterator) {
+						transectIterator.close();
+					}
+				}
+                
 
                 if (null != transect) {
                     Transect transectObj = Transect.fromFeature(transect);
@@ -198,23 +207,38 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
         }
         
         private Transect updateTransectBaseDist(Transect transect, SimpleFeatureCollection baseline) throws IOException {
+			Transect result = null;
+			
             BaselineDistanceAccumulator accumulator = new BaselineDistanceAccumulator();
-            SimpleFeatureIterator iterator = baseline.features();
-            while (iterator.hasNext()) {
-                SimpleFeature feature = iterator.next();
-                MultiLineString lines = CRSUtils.getLinesFromFeature(feature);
-                for (int i=0; i<lines.getNumGeometries(); i++) {
-                    LineString line = (LineString)lines.getGeometryN(i);
-                    Point origin = transect.getOriginPoint();
-                    if (line.isWithinDistance(origin, BaselineDistanceAccumulator.EPS)) { // within a meter
-                        double accumulated = accumulator.accumulateToPoint(line, origin);
-                        transect.setBaselineDistance(accumulated);
-                        return transect;
-                    }
-                    accumulator.accumulate(line);
-                }
-            }
-            throw new PoorlyDefinedBaselineException("Transect does not fall on baseline");
+            SimpleFeatureIterator iterator = null;
+			try {
+				iterator = baseline.features();
+				while (null == result && iterator.hasNext()) {
+					SimpleFeature feature = iterator.next();
+					MultiLineString lines = CRSUtils.getLinesFromFeature(feature);
+					for (int i=0; null == result && i<lines.getNumGeometries(); i++) {
+						LineString line = (LineString)lines.getGeometryN(i);
+						Point origin = transect.getOriginPoint();
+						if (line.isWithinDistance(origin, BaselineDistanceAccumulator.EPS)) { // within a meter
+							double accumulated = accumulator.accumulateToPoint(line, origin);
+							transect.setBaselineDistance(accumulated);
+							result = transect;
+						} else {
+							accumulator.accumulate(line);
+						}
+					}
+				}
+			} finally {
+				if (null != iterator) {
+					iterator.close();
+				}
+			}
+			
+            if (null == result) {
+				throw new PoorlyDefinedBaselineException("Transect does not fall on baseline");
+			}
+			
+			return result;
         }
     }
 }
