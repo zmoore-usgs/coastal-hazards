@@ -7,12 +7,6 @@ CCH.Objects.Map = function(args) {
 		init: function() {
 			CCH.LOG.info('Map.js::init():Map class is initializing.');
 
-			// Bind application event handlers
-			$(window).on('cch.data.session.loaded.true', function() {
-				// A session has been loaded. The map will be rebuilt from the session
-				me.updateFromSession();
-			});
-
 			CCH.LOG.debug('Map.js::init():Building map object');
 			me.map = new OpenLayers.Map(me.mapDivId, {
 				projection: CCH.CONFIG.map.projection,
@@ -47,6 +41,17 @@ CCH.Objects.Map = function(args) {
 			$('#OpenLayers_Control_MaximizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-maximize.png');
 			$('#OpenLayers_Control_MinimizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-minimize.png');
 
+            // Bind application event handlers
+			$(window).on({
+                'cch.data.session.loaded.true' : function () {
+                    // A session has been loaded. The map will be rebuilt from the session
+                    me.updateFromSession();
+                },
+                'cch.ui.resized' : function () {
+                    me.map.updateSize();
+                }
+            });
+            
 			return me;
 		},
 		getMap: function() {
