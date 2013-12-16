@@ -356,13 +356,17 @@ CCH.Objects.Card = function (args) {
 
                 // Add buttons to the bottom
                 controlContainer.append(spaceAggButton, propertyAggButton, bucketButton);
+                // Do bindings
                 me.bindPropertyAggButton(propertyAggButton);
                 me.bindSelectControl(childrenSelectControl);
             } else {
+                // This is a leaf node so no reason to have a dropdown listbox
                 childrenSelectControl.remove();
-                controlContainer.append(bucketButton, infoButton);
             }
-
+            
+            // Both types of cards (parent & child) get an info button
+            controlContainer.append(bucketButton, infoButton);
+            // Do bindings
             me.bindBucketControl(bucketButton);
             me.bindMinMaxButtons(minMaxButtons);
 
