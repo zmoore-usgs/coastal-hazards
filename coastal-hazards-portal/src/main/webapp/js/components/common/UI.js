@@ -315,7 +315,8 @@ CCH.Objects.UI = function (args) {
         args = args || {};
         
         var card = args.card,
-            product = args.product;
+            product = args.product,
+            bellow;
         
         // If we are passed a product, that means we were not passed a card
         if (product) {
@@ -327,8 +328,35 @@ CCH.Objects.UI = function (args) {
         
         // By now, we should have a card
         if (card) {
-            me.accordion.add({
+            bellow = me.accordion.add({
                 card : card
+            });
+            bellow.on('bellow-display-toggle', function (evt, args) {
+                CCH.LOG.debug('CCH.Objects.UI:: Item ' + args.id + ' was ' + (args.display ? 'shown' : 'hidden'));
+                var id = args.id,
+                    display = args.display,
+                    product = args.card.product,
+                    type = product.itemType,
+                    childItem;
+                    
+                if (args.display) {
+                    // A bellow was opened, so I need to show some layers
+                    
+                    // Check to see if this is an aggregation. If it is, I need
+                    // to pull the layers from all of its children
+                    if (type === 'aggregation') {
+                        // This aggregation should have children, so for each 
+                        // child, I want to grab the child's layer and display it
+                        // on the map
+                        product.children.each(function (childItemId) {
+                            childItem = CCH.items.getById({ id : childItemId });
+                            CCH.map.displayData({
+                                item : childItem
+                            })
+                        });
+                    }
+                }
+                
             });
         }
     };
