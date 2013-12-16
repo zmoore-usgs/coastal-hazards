@@ -4,6 +4,7 @@ import gov.usgs.cida.coastalhazards.export.FeatureCollectionExport;
 import gov.usgs.cida.coastalhazards.export.WFSExportClient;
 import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
@@ -14,6 +15,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,7 +30,8 @@ public class SingleDownload {
     private URL metadata;
 
     private static final Pattern incrementPattern = Pattern.compile("(.*)(\\d+)$");
-
+    private static final Logger LOG = LoggerFactory.getLogger(SingleDownload.class);
+    
     public SingleDownload() {
         wfs = null;
         attrs = new LinkedList<>();
@@ -39,27 +43,38 @@ public class SingleDownload {
      * Write shapefile for this download to the staging directory
      * Currently only supports WGS84 output
      * @param stagingDir temporary staging directory
+     * @param missing handle to MISSING file writer
      * @throws IOException usually means cannot contact server
      */
-    public void stage(File stagingDir) throws IOException {
+    public void stage(File stagingDir, List<String> missing) throws IOException {
         WFSExportClient wfsClient = new WFSExportClient();
         wfsClient.setupDatastoreFromEndpoint(wfs.getEndpoint());
         String[] typeNames = wfsClient.getTypeNames();
         if (!ArrayUtils.contains(typeNames, wfs.getTypeName())) {
-            // make this a new typed exception
-            // also, while I wrote this I forgot that logging exists ...
-            throw new RuntimeException("typeName not supported for specified service");
+            missing.add(name);
+        } else {
+            SimpleFeatureCollection featureCollection = wfsClient.getFeatureCollection(wfs.getTypeName());
+            FeatureCollectionExport export = new FeatureCollectionExport(featureCollection, stagingDir, name);
+            for (String attr : attrs) {
+                export.addAttribute(attr);
+            }
+
+            try {
+                export.writeToShapefile();
+            } catch (Exception ex) {
+                LOG.error("Unable to write shapefile {}", name);
+                missing.add(name);
+            }
+            
+            String metadataName = name + ".shp.xml";
+            try {
+                MetadataDownload metaExport = new MetadataDownload(metadata, new File(stagingDir, metadataName));
+                metaExport.stage();
+            } catch (Exception ex) {
+                LOG.error("Unable to add metadata named {} from {}", metadataName, metadata);
+                missing.add(metadataName);
+            }
         }
-        SimpleFeatureCollection featureCollection = wfsClient.getFeatureCollection(wfs.getTypeName());
-        FeatureCollectionExport export = new FeatureCollectionExport(featureCollection, stagingDir, name);
-        for (String attr : attrs) {
-            export.addAttribute(attr);
-        }
-        String metadataName = name + ".shp.xml";
-        MetadataDownload metaExport = new MetadataDownload(metadata, new File(stagingDir, metadataName));
-                
-        export.writeToShapefile();
-        metaExport.stage();
     }
 
     public WFSService getWfs() {

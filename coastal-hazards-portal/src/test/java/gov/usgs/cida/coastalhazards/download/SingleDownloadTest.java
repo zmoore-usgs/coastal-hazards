@@ -2,6 +2,8 @@ package gov.usgs.cida.coastalhazards.download;
 
 import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -18,6 +20,7 @@ public class SingleDownloadTest {
     @Test
     @Ignore
     public void quickStagingTest() throws IOException {
+        List<String> missing = new LinkedList<>();
         SingleDownload singleDownload = new SingleDownload();
         singleDownload.setName("test");
         WFSService wfs = new WFSService();
@@ -26,7 +29,7 @@ public class SingleDownloadTest {
         singleDownload.setWfs(wfs);
         singleDownload.addAttr("CVI");
         singleDownload.addAttr("SLRISK");
-        singleDownload.stage(DownloadManager.createDownloadStagingArea());
+        singleDownload.stage(DownloadManager.createDownloadStagingArea(), missing);
     } 
     
 }
