@@ -46,7 +46,7 @@ public class ItemManager {
         } finally {
             JPAHelper.close(em);
         }
-        if (item != null) {
+        if (item != null && StringUtils.isNotBlank(jsonItem)) {
             jsonItem = item.toJSON(subtree);
         }
         
@@ -54,8 +54,12 @@ public class ItemManager {
 	}
     
     public Item loadItem(String itemId) {
-        // Get json for item without subtree loaded
-        String jsonItem = load(itemId, false);
+        // retain default of not loading subtree
+        return loadItem(itemId, false);
+    }
+    
+    public Item loadItem(String itemId, boolean subtree) {
+        String jsonItem = load(itemId, subtree);
         Item item = Item.fromJSON(jsonItem);
         return item;
     }
