@@ -82,11 +82,9 @@ CCH.Objects.Accordion = function (args) {
         heading.append(titleContainer);
         accordionBody.append(bodyInner);
         
-        // Commenting this out for now - have to figure out how to best to
-        // toggle this specific container and also close others. BS3 does not 
-        // toggle other containers with this one toggles
-//        heading.on('click', function (evt) {
-//        });
+        heading.on('click', function () {
+            accordionBody.collapse('toggle');
+        });
         
         return group;
     };
