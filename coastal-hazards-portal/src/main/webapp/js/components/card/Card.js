@@ -20,7 +20,7 @@ CCH.Objects.Card = function (args) {
 
     var me = (this === window) ? {} : this;
 
-    if (!args.product) {
+    if (!args.item) {
         throw 'A product was not passed into the card constructor';
     }
     me.CARD_TEMPLATE_ID = args.cardTemplateId || 'application-card-template';
@@ -28,17 +28,17 @@ CCH.Objects.Card = function (args) {
     me.PRODUCT_CONTAINER_CARD = args.productContainerId || 'application-slide-items-product-container-card';
     me.SELECTION_CONTROL_CLASS = 'application-card-children-selection-control';
     me.BUCKET_BUTTON_SELECTOR = '>div:nth-child(2)>div:nth-child(2)>div>span>button:nth-child(3)';
-    me.product = args.product;
-    me.id = me.product.id;
-    me.bbox = me.product.bbox;
-    me.type = me.product.type;
-    me.itemType = me.product.itemType;
-    me.summary = me.product.summary;
-    me.name = me.product.name;
-    me.attr = me.product.attr;
-    me.service = me.product.service;
-    me.children = me.product.children || [];
-    me.wmsService = me.product.wmsService || {};
+    me.item = args.item;
+    me.id = me.item.id;
+    me.bbox = me.item.bbox;
+    me.type = me.item.type;
+    me.itemType = me.item.itemType;
+    me.summary = me.item.summary;
+    me.name = me.item.name;
+    me.attr = me.item.attr;
+    me.service = me.item.service;
+    me.children = me.item.children || [];
+    me.wmsService = me.item.wmsService || {};
     me.wmsEndpoint = me.wmsService.endpoint || '';
     me.wmsLayers = me.wmsService.layers || [];
     me.container = null;
@@ -51,7 +51,7 @@ CCH.Objects.Card = function (args) {
     // accordion bellow
     me.parent = args.parent;
     me.child = args.child;
-    me.layer = me.wmsLayer;
+    me.layer = me.item.getWmsLayer();
 
     me.show = function (args) {
         args = args || {};
@@ -202,13 +202,13 @@ CCH.Objects.Card = function (args) {
             if (button.hasClass('active')) {
                 // User pressed bucket button in and wants to add me to a bucket
                 $(window).trigger('bucket-add', {
-                    item : me.product
+                    item : me.item
                 });
             } else {
                 // User toggled the bucket button off - I should be removed from 
                 // bucket
                 $(window).trigger('bucket-remove', {
-                    item : me.product
+                    item : me.item
                 });
             }
         });
@@ -389,7 +389,7 @@ CCH.Objects.Card = function (args) {
 
     return {
         id: me.id,
-        product: me.product,
+        product: me.item,
         show : me.show,
         hide : me.hide,
         close : me.close,

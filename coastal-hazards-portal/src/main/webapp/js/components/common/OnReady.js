@@ -116,7 +116,7 @@ $(document).ready(function () {
                                                     function (product, status, responseText) {
                                                         if (status === 'success') {
                                                             CCH.ui.addToAccordion({
-                                                                product : product
+                                                                item : CCH.items.getById({id : product.id})
                                                             });
                                                         }
                                                     },

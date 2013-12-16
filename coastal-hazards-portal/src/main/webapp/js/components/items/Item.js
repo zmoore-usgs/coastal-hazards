@@ -46,7 +46,7 @@ CCH.Objects.Item = function (item) {
             );
 
         return layer;
-    }();
+    };
     
     CCH.LOG.info('Item.js::init():Item class finished initializing.');
     
@@ -60,7 +60,7 @@ CCH.Objects.Item = function (item) {
        type : me.type,
        wfsService : me.wfsService,
        wmsService : me.wmsService,
-//       getWmsLayer : me.createWmsLayer,
+       getWmsLayer : me.createWmsLayer,
        CLASS_NAME : 'CCH.Objects.Item'
     };
 };

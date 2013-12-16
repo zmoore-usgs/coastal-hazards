@@ -315,13 +315,13 @@ CCH.Objects.UI = function (args) {
         args = args || {};
         
         var card = args.card,
-            product = args.product,
+            item = args.item,
             bellow;
         
         // If we are passed a product, that means we were not passed a card
-        if (product) {
+        if (item) {
             card = CCH.cards.buildCard({
-                product : product,
+                item : item,
                 initHide : false
             });
         }

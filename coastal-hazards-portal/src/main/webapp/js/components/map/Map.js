@@ -330,14 +330,13 @@ CCH.Objects.Map = function(args) {
 				var layer = card.layer;
 				me.map.addLayer(layer);
 				layer.redraw(true);
-			} 
-//            else if (item && item.getWmsLayer) {
-//                layer = item.getWmsLayer();
-//                if (me.map.getLayersByName(layer.name).length === 0) {
-//                    me.map.addLayer(layer);
-//                    layer.redraw(true);
-//                }
-//            }
+			} else if (item && 'function' === typeof item.getWmsLayer) {
+                layer = item.getWmsLayer();
+                if (me.map.getLayersByName(layer.name).length === 0) {
+                    me.map.addLayer(layer);
+                    layer.redraw(true);
+                }
+            }
 		},
 		updateSession: function() {
 			var map = me.map;
