@@ -37,7 +37,7 @@ public class DownloadManager {
     
     private static final Logger LOG = LoggerFactory.getLogger(DownloadManager.class);
     
-    private static final String MISSING_FILE = "MISSING";
+    private static final String MISSING_FILE = "MISSING.txt";
     
     private static Set<File> locks = Collections.synchronizedSet(new HashSet<File>());
     
