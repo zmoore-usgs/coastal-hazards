@@ -339,25 +339,31 @@ CCH.Objects.UI = function (args) {
                     type = item.itemType,
                     childItem;
                     
-                if (args.display) {
+                // Check if I am opening a bellow 
+                if (display) {
                     // A bellow was opened, so I need to show some layers
                     
+                    // I want to zoom to a bounding box 
+                    CCH.map.zoomToBoundingBox({
+                        bbox : item.bbox,
+                        fromProjection : new OpenLayers.Projection('EPSG:4326')
+                     });
+                     
                     // Check to see if this is an aggregation. If it is, I need
                     // to pull the layers from all of its children
                     if (type === 'aggregation') {
                         // This aggregation should have children, so for each 
                         // child, I want to grab the child's layer and display it
                         // on the map
-                        CCH.map.zoomToBoundingBox({
-                           bbox : item.bbox,
-                           fromProjection : new OpenLayers.Projection('EPSG:4326')
-                        });
                         item.children.each(function (childItemId) {
                             childItem = CCH.items.getById({ id : childItemId });
                             CCH.map.displayData({
                                 item : childItem
                             })
                         });
+                    } else {
+                        // What do I do if it's not an aggregation? Will an item
+                        // in a bellow ever not be an aggregation?
                     }
                 }
                 
