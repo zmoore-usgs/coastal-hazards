@@ -78,7 +78,7 @@ CCH.Objects.Items = function (args) {
 
                 // Trigger that the call has completed
                 $(window).trigger('cch.data.products.loaded', {
-                    products: incomingItems
+                    products: incomingItemsObject
                 });
             }
         });

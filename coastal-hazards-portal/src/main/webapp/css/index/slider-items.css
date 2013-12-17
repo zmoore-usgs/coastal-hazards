@@ -26,6 +26,26 @@
     color: #BBBBBB;
 }
 
+.application-card-control-row {
+    text-align: center;
+}
+
+.application-card-control-row .application-card-control-container {
+    width: 100%;
+}
+
+.application-card-title-row .application-card-title-container-medium {
+    font-size: 1.4em;
+}
+
+.application-card-content-row .application-card-content-container-medium {
+    font-size: 1.3em;
+}
+
+.application-card-content-row .application-card-content-container-medium more-info-badge {
+    font-size: 1em;
+}
+
 .application-card-collapse-row-dottedline {
     display: table-cell;
     width: 100%;
@@ -33,6 +53,19 @@
 
 .application-card-collapse-row-dottedline hr {
     border-top:1px dashed #BBBBBB; 
+}
+
+.application-card-container .item-control-button img {
+    height: 45px;
+}
+
+.application-card-container .more-info-badge {
+    background-color: #345280;
+    margin-left: 5px;
+}
+
+.application-card-container .more-info-badge a {
+    color: #FFFFFF;
 }
 
 .application-card-container.open .application-card-collapse-row-closed {
@@ -51,6 +84,13 @@
 .application-card-collapse-icon-container:hover {
     cursor: pointer;
     font-size-adjust: 0.7;
+}
+#application-slide-items-content-container .panel-heading {
+    text-align: center;
+}
+
+#application-slide-items-content-container .panel-title {
+    font-size: 1.9em;
 }
 
 @media (min-width: 992px) {

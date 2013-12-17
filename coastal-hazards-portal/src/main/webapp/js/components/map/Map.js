@@ -144,9 +144,10 @@ CCH.Objects.Map = function(args) {
 		},
 		zoomToBoundingBox: function(args) {
 			args = args || {};
-			var bbox = args.bbox;
-			var fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913");
-			var layerBounds = OpenLayers.Bounds.fromArray(bbox);
+			var bbox = args.bbox,
+                fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913"),
+                layerBounds = OpenLayers.Bounds.fromArray(bbox);
+        
 			if (fromProjection) {
 				layerBounds.transform(new OpenLayers.Projection(fromProjection), new OpenLayers.Projection("EPSG:900913"));
 			}
@@ -330,14 +331,13 @@ CCH.Objects.Map = function(args) {
 				var layer = card.layer;
 				me.map.addLayer(layer);
 				layer.redraw(true);
-			} 
-//            else if (item && item.getWmsLayer) {
-//                layer = item.getWmsLayer();
-//                if (me.map.getLayersByName(layer.name).length === 0) {
-//                    me.map.addLayer(layer);
-//                    layer.redraw(true);
-//                }
-//            }
+			} else if (item && 'function' === typeof item.getWmsLayer) {
+                layer = item.getWmsLayer();
+                if (me.map.getLayersByName(layer.name).length === 0) {
+                    me.map.addLayer(layer);
+                    layer.redraw(true);
+                }
+            }
 		},
 		updateSession: function() {
 			var map = me.map;
