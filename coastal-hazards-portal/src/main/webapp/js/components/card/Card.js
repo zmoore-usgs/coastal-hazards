@@ -147,7 +147,7 @@ CCH.Objects.Card = function (args) {
                         // User selected a product. I will append that card to 
                         // myself
                         card = CCH.cards.buildCard({
-                            product: selectedOption,
+                            item: selectedOption,
                             parent: me
                         });
 
@@ -264,17 +264,17 @@ CCH.Objects.Card = function (args) {
                 childrenSelectControl = container.find('.' + me.SELECTION_CONTROL_CLASS),
                 minMaxButtons = container.find('.application-card-collapse-icon-container'),
                 controlContainer = container.find('.application-card-control-container'),
-                spaceAggButton = $('<button />').addClass('btn btn-default disabled').html('Space'),
-                propertyAggButton = $('<button />').addClass('btn btn-default').html('Property'),
-                bucketButton = $('<button />').addClass('btn btn-default').html('Bucket'),
-                infoButton = $('<a />').
-                    addClass('btn btn-default').
-                    html('Info').
-                    attr({
-                        'role': 'button',
-                        'target' : 'portal_info_window',
-                        'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
-                    });
+                spaceAggButton = $('<button />').addClass('btn btn-link disabled item-control-button'),
+                propertyAggButton = $('<button />').addClass('btn btn-link item-control-button'),
+                bucketButton = $('<button />').addClass('btn btn-link item-control-button'),
+                moreInfoBadge = $('<span />').
+                    addClass('badge more-info-badge').
+                    append($('<a />').
+                        html('More Info').
+                        attr({
+                            'target' : 'portal_info_window',
+                            'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
+                        }));
 
             // My container starts out open so I immediately add that class to it
             container.addClass('open');
@@ -284,6 +284,7 @@ CCH.Objects.Card = function (args) {
 
             // Create Content
             mediumContentContainer.html(mediumContent);
+            mediumContentContainer.append(moreInfoBadge);
 
             // I have either aggregations or leaf nodes as children.
             // I am not myself a child.
@@ -343,6 +344,17 @@ CCH.Objects.Card = function (args) {
                     }
                 });
 
+                // Add images to buttons
+                spaceAggButton.append($('<img />').attr({
+                    'src' : 'images/cards/item-space.svg'
+                }));
+                propertyAggButton.append($('<img />').attr({
+                    'src' : 'images/cards/item-branch.svg'
+                }));
+                bucketButton.append($('<img />').attr({
+                    'src' : 'images/cards/item-bucket-add.svg'
+                }));
+                
                 // Add buttons to the bottom
                 controlContainer.append(spaceAggButton, propertyAggButton, bucketButton);
                 // Do bindings
@@ -353,8 +365,6 @@ CCH.Objects.Card = function (args) {
                 childrenSelectControl.remove();
             }
             
-            // Both types of cards (parent & child) get an info button
-            controlContainer.append(bucketButton, infoButton);
             // Do bindings
             me.bindBucketControl(bucketButton);
             me.bindMinMaxButtons(minMaxButtons);
