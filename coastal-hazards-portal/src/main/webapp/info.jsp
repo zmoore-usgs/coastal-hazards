@@ -22,9 +22,9 @@
         <jsp:include page="components/meta-tags.jsp"></jsp:include>
         <title>USGS Coastal Change Hazards Portal</title>
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
-        <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
-        <script type="text/javascript" src="webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full.min.js"></script>
         <script type="text/javascript">
@@ -67,12 +67,13 @@
                        knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
                        here. They can be used to increase awareness and provide a basis for decision making." />
             <jsp:param name="application-overlay-background-image" value="images/splash/splash_info.png" />
+            <jsp:param name="base-url" value="<%=baseUrl%>" />
         </jsp:include>
         <%-- Content Here --%>
         <div id="info-content" class="container">
             <div id="header-row" class="row">
                 <%-- Logo --%>
-                <a href="." id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+                <a href="<%=baseUrl%>/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container"  target="portal_main_window">
                     <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
                 </a>
                 <%-- Application Title --%>
