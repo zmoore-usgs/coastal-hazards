@@ -436,14 +436,22 @@ CCH.Objects.UI = function (args) {
             }
         });
 
-        $(me.combinedSearch).on('combined-searchbar-search-performed', function (evt, args) {
-            me.searchSlide.displaySearchResults(args);
+        $(me.combinedSearch).on({
+            'combined-searchbar-search-performed' : function (evt, args) {
+                me.searchSlide.displaySearchResults(args);
+            },
+            'combined-searchbar-search-performing' : function () {
+                me.searchSlide.close({
+                    clearOnClose : true
+                });
+            }
         });
-        $(me.combinedSearch).on('combined-searchbar-search-performing', function () {
-            me.searchSlide.close();
-            me.searchSlide.clear();
+        
+        $(CCH.map).on('map-click', function () {
+            me.searchSlide.close({
+                clearOnClose : true
+            });
         });
-
         // Check for cookie to tell us if user has disabled the modal window 
         // on start. If not, show it. The user has to opt-in to have it shown 
         // next time

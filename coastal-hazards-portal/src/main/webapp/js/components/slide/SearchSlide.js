@@ -70,7 +70,7 @@ CCH.Objects.SearchSlide = function (args) {
         }
     };
 
-    me.close = function () {
+    me.close = function (args) {
         if (!me.isClosed) {
             var slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
             slideContainer.animate({
@@ -78,6 +78,9 @@ CCH.Objects.SearchSlide = function (args) {
             }, me.animationTime, function () {
                 me.isClosed = true;
                 slideContainer.addClass('hidden');
+                if (args && args.clearOnClose) {
+                    me.clear();
+                }
             });
         }
     };
