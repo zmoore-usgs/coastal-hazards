@@ -3,25 +3,58 @@
 /*global $*/
 /*global LOG*/
 /*global CCH*/
+/*global OpenLayers*/
 
-CCH.Objects.Item = function (item) {
+CCH.Objects.Item = function (args) {
     "use strict";
+    args = args || {};
 
-    CCH.LOG.info('Item.js::init():Item class is initializing.');
+    CCH.LOG.debug('Item.js::init():Item class is initializing.');
 
-    if (!item) {
-        throw 'Item can not initialize without an item being passed to it';
+    if (!args.id) {
+        throw 'Item can not initialize without an id being passed to it';
     }
 
-    var me = this === window ? {} : this,
-        UNITED_STATES_BBOX = [24.956,-124.731,49.372,-66.97];
-    
-    $.extend(true, me, item);
-    
-    me.bbox = me.bbox || UNITED_STATES_BBOX;
-    me.children = me.children || [];
+    var me = this === window ? {} : this;
+
+    me.UNITED_STATES_BBOX = [24.956, -124.731, 49.372, -66.97];
+    me.id = args.id;
+
+    me.load = function (args) {
+        var callbacks = args.callbacks || {
+            success : [],
+            error : []
+        },
+        me = this,
+        context = args.context || me;
+
+        callbacks.success.unshift(function (data) {
+            me.children = data.children || [];
+            me.bbox = data.bbox || me.UNITED_STATES_BBOX;
+            me.itemType = data.itemType;
+            me.name = data.name;
+            me.summary = data.summary;
+            me.type = data.type;
+            me.wfsService = data.wfsService;
+            me.wmsService = data.wmsService;
+            CCH.items.add({ item : me });
+            CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
+        });
+
+        CCH.items.search({
+            item : me.id,
+            displayNotification : false,
+            context : context,
+            callbacks: {
+                success: args.callbacks.success,
+                error: args.callbacks.error
+            }
+        });
+    };
+
     me.createWmsLayer = function () {
-        var id = me.id, 
+        var me = this,
+            id = me.id,
             service = me.wmsService,
             endpoint = service.endpoint,
             layers = service.layers || [],
@@ -47,20 +80,21 @@ CCH.Objects.Item = function (item) {
 
         return layer;
     };
-    
-    CCH.LOG.info('Item.js::init():Item class finished initializing.');
-    
+
+    CCH.LOG.debug('Item.js::init():Item class finished initializing.');
+
     return {
-       id : me.id,
-       bbox : me.bbox,
-       children : me.children,
-       itemType : me.itemType,
-       name : me.name,
-       summary : me.summary,
-       type : me.type,
-       wfsService : me.wfsService,
-       wmsService : me.wmsService,
-       getWmsLayer : me.createWmsLayer,
-       CLASS_NAME : 'CCH.Objects.Item'
+        id : me.id,
+        bbox : me.bbox,
+        children : me.children,
+        itemType : me.itemType,
+        name : me.name,
+        summary : me.summary,
+        type : me.type,
+        wfsService : me.wfsService,
+        wmsService : me.wmsService,
+        getWmsLayer : me.createWmsLayer,
+        load : me.load,
+        CLASS_NAME : 'CCH.Objects.Item'
     };
 };
