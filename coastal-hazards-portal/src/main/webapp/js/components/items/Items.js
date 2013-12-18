@@ -109,7 +109,24 @@ CCH.Objects.Items = function (args) {
         });
     };
 
+    me.addItem = function (args) {
+        args = args || {};
+        
+        var item = args.item;
+        
+        // I want to add an item to my items but I also want to make sure it
+        // is an actual item so check it's CLASS_NAME to make sure
+        if (item && 
+                'object' === typeof item &&
+                item.CLASS_NAME === 'CCH.Objects.Item' &&
+                item.id &&
+                !me.items[item.id]) {
+            me.items[item.id] = item;
+        }
+    };
+
     return {
+        add : me.addItem,
         load: me.load,
         search: me.search.submitItemSearch,
         getItems: function () {
