@@ -84,36 +84,14 @@ CCH.Objects.UI = function (args) {
     });
 
     me.itemsSearchedHandler = function (evt, data) {
-        // Display a notification with item count
         if (data.items) {
-            var count = data.items.length;
-            $.pnotify({
-                text: 'Found ' + count + ' item' + (count === 1 ? '.' : 's.'),
-                styling: 'bootstrap',
-                type: 'info',
-                nonblock: true,
-                sticker: false,
-                icon: 'icon-search',
-                closer: true,
-                delay: 3000
-            });
+            CCH.LOG.info('UI:: Items found: ' + data.items.length);
         }
     };
     
-        me.locationsSearchedHandler = function (evt, data) {
-        // Display a notification with item count
+    me.locationsSearchedHandler = function (evt, data) {
         if (data.items) {
-            var count = data.items.length;
-            $.pnotify({
-                text: 'Found ' + count + ' locations' + (count === 1 ? '.' : 's.'),
-                styling: 'bootstrap',
-                type: 'info',
-                nonblock: true,
-                sticker: false,
-                icon: 'icon-search',
-                closer: true,
-                delay: 3000
-            });
+            CCH.LOG.info('UI:: Locations found: ' + data.items.length);
         }
     };
 
