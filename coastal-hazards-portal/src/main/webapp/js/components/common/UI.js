@@ -475,6 +475,6 @@ CCH.Objects.UI = function (args) {
         bucket: me.bucket,
         addToAccordion : me.addToAccordion,
         loadInitialItem : me.loadInitialItem,
-        CLASS_NAME : CCH.Objects.UI
+        CLASS_NAME : 'CCH.Objects.UI'
     };
 };

@@ -46,20 +46,31 @@ CCH.Objects.CombinedSearch = function (args) {
     });
 
     me.resizeContainer = function (evt) {
-            var container = $('#' + me.CONTAINER_ID),
-                parentContainer = container.parent(),
-                parentContainerWidth = parentContainer.width(),
-                // Get all visible, non-modal children of the parent that are also not my container
-                parentContainerVisibleItems = parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
-                // Get the width of child containers
-                childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
-                    return $(el).outerWidth(true);
-                }),
-                containerMarginRight = 15, // TODO- This is problematic between IE9 and others
+        var container = $('#' + me.CONTAINER_ID),
+            parentContainer = container.parent(),
+            parentContainerWidth = parentContainer.width(),
+            // Get all visible, non-modal children of the parent that are also not my container
+            parentContainerVisibleItems = parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
+            // Get the width of child containers
+            childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
+                return $(el).outerWidth(true);
+            }),
+            containerMarginRight = 15, // TODO- This is problematic between IE9 and others
             idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
 
-            container.css({width : idealInputWidth});
+        container.css({width : idealInputWidth});
     };
+
+    me.setCriteria = function (args) {
+        me.criteriaChanged({
+            criteria : args.criteria
+        });
+        me.resizeContainer();
+    };
+    
+    me.getCriteria = function (args) {
+        return me.selectedOption;
+    }
 
     me.submitButtonClicked = function (evt, args) {
         args = args || {};
@@ -85,8 +96,10 @@ CCH.Objects.CombinedSearch = function (args) {
         // Put the text for the selected item in the menu
         toggleTextContainer.html(criteria);
         toggleTextContainer.append(
-                $('<span />').append(
-                $('<i />').addClass('fa fa-caret-down')));
+            $('<span />').append(
+                $('<i />').addClass('fa fa-caret-down')
+            )
+        );
     };
 
     me.performSpatialSearch = function (args) {
@@ -148,7 +161,8 @@ CCH.Objects.CombinedSearch = function (args) {
                                     CCH.LOG.info('CCH.Objects.CombinedSearch:: Location search has completed successfully');
                                     $(me).trigger('combined-searchbar-search-performed', {
                                         'type' : 'location',
-                                        'data' : data
+                                        'data' : data,
+                                        'criteria' : me.getCriteria()
                                     });
                                 }
                             }
@@ -175,7 +189,8 @@ CCH.Objects.CombinedSearch = function (args) {
                                     CCH.LOG.info('CCH.Objects.CombinedSearch:: Item search has completed successfully');
                                     $(me).trigger('combined-searchbar-search-performed', {
                                         'type' : 'item',
-                                        'data' : data
+                                        'data' : data,
+                                        'criteria' : me.getCriteria()
                                     });
                                 } else {
                                     CCH.LOG.warn('CCH.Objects.CombinedSearch:: Item search could not complete items search');
@@ -203,7 +218,8 @@ CCH.Objects.CombinedSearch = function (args) {
                                     CCH.LOG.info('CCH.Objects.CombinedSearch:: Location search has completed successfully');
                                     $(me).trigger('combined-searchbar-search-performed', {
                                         'type' : 'location',
-                                        'data' : data
+                                        'data' : data,
+                                        'criteria' : me.getCriteria()
                                     });
                                 }
                             }
@@ -236,7 +252,8 @@ CCH.Objects.CombinedSearch = function (args) {
                                     CCH.LOG.info('CCH.Objects.CombinedSearch:: Item search has completed successfully');
                                     $(me).trigger('combined-searchbar-search-performed', {
                                         'type' : 'item',
-                                        'data' : data
+                                        'data' : data,
+                                        'criteria' : me.getCriteria()
                                     });
                                 } else {
                                     CCH.LOG.warn('CCH.Objects.CombinedSearch:: Item search could not complete items search');
@@ -306,18 +323,37 @@ CCH.Objects.CombinedSearch = function (args) {
             me.criteriaChanged({
                 criteria : criteria
             });
-            
-            setTimeout(function() {
+
+            setTimeout(function () {
                 me.resizeContainer();
-            }, 200)
-            
-            
+            }, 200);
         } else {
             evt.stopImmediatePropagation();
         }
     });
 
-    $(window).on('cch.ui.resized', me.resizeContainer);
+    $(window).on({
+        'cch.ui.resized' : me.resizeContainer,
+        'slide-search-button-click' : function (evt, args) {
+            // When a user searches for "all" and has mixed content come back,
+            // the user is presented with the choice to "Show All x Locations". 
+            // When this happens, I want to change the criteria button on the left
+            // of the combined search bar to "Location" as though the user has 
+            // searched for locations
+            if (args.button === 'show-all-location') {
+                var allItems = $('.' + me.DD_TOGGLE_MENU_ITEMS_CLASS);
+                allItems.removeClass('disabled');
+                allItems.find('>a:contains("Location")').parent().addClass('disabled');
+                me.setCriteria({
+                    criteria : 'Location'
+                });
+                me.selectedOption = 'location';
+            }
+        },
+        'slide-search-opened' : function (evt) {
+            $(me.INPUTBOX_SELECTOR)[0].blur();
+        }
+    });
 
     // Clicking enter in the input box should submit the search
     $(me.INPUTBOX_SELECTOR).on('keyup', function (evt) {
