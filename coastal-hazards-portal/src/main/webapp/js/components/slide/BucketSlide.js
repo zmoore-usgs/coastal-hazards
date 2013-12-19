@@ -27,9 +27,13 @@ CCH.Objects.BucketSlide = function (args) {
     me.MAP_DIV_ID = args.mapdivId || 'map';
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
     me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div.application-slide-controlset';
+    me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div:first-child() > div:first-child() > div:nth-child(2)';
+    me.TOP_LEVEL_BUTTON_CLEAR_SELECTOR = me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR + '> button:nth-child(1)';
+    me.TOP_LEVEL_BUTTON_SHARE_SELECTOR = me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR + '> button:nth-child(2)';
+    me.TOP_LEVEL_BUTTON_DOWNLOAD_SELECTOR = me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR + '> button:nth-child(3)';
     me.CARD_TEMPLATE_ID = 'application-slide-bucket-container-card-template';
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-bucket-content-container';
-    me.EMPTY_TEXT_CONTAINER = $('#' + me.SLIDE_CONTAINER_ID ).find('> div > div > #application-slide-bucket-content-empty');
+    me.EMPTY_TEXT_CONTAINER = $('#' + me.SLIDE_CONTAINER_ID).find('> div > div > #application-slide-bucket-content-empty');
     me.borderWidth = 2;
     me.animationTime = 500;
     me.placement = 'right';
@@ -181,6 +185,7 @@ CCH.Objects.BucketSlide = function (args) {
 
         if (item && !me.getCard({ id : item.id })) {
             me.EMPTY_TEXT_CONTAINER.addClass('hidden');
+            $(me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR).removeClass('hidden');
             card = me.createCard({
                 item : item
             });
@@ -203,8 +208,21 @@ CCH.Objects.BucketSlide = function (args) {
             card.remove();
             
             if (!me.cards.length) {
+                $(me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR).addClass('hidden');
                 me.EMPTY_TEXT_CONTAINER.removeClass('hidden');
             }
+        } else {
+            // I find the best way of doing this so it affects two parts of the 
+            // application is to bubble this event up to the window level and
+            // have Bucket class catch it, remove the item from itself and then 
+            // the bucket class will actually call this function with a proper
+            // id. It's a long way around removing the item but it does hit 
+            // multiple components
+            me.cards.each(function ($card, index, cards) {
+                $(window).trigger('bucket-remove', {
+                    id : $card.data('id')
+                });
+            });
         }
 
         return card;
@@ -240,7 +258,7 @@ CCH.Objects.BucketSlide = function (args) {
                 id : id
             });
         });
-        
+
         infoButton.attr({
             'target' : 'portal_info_window',
             'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
@@ -252,9 +270,17 @@ CCH.Objects.BucketSlide = function (args) {
     $(window).on('cch.ui.resized', function (args) {
         me.resized(args);
     });
-    
+
     $(me.CLOSE_BUTTON_SELECTOR).on('click', function (evt) {
         me.toggle();
+    });
+    
+    $(me.TOP_LEVEL_BUTTON_CLEAR_SELECTOR).on('click', function (evt) {
+        me.remove();
+    });
+    $(me.TOP_LEVEL_BUTTON_SHARE_SELECTOR).on('click', function (evt) {
+    });
+    $(me.TOP_LEVEL_BUTTON_DOWNLOAD_SELECTOR).on('click', function (evt) {
     });
 
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');

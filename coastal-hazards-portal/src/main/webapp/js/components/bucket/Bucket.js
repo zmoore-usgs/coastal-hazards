@@ -15,9 +15,7 @@ CCH.Objects.Bucket = function (args) {
     me.BUCKET_POPULATED_CLASS = 'app-navbar-bucket-button-container-populated';
     me.BUCKET_UNPOPULATED_CLASS = 'app-navbar-bucket-button-container-unpopulated';
     me.INITIAL_BUCKET_COUNT_MARGIN_LEFT = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left');
-//    me.FONT_SIZE_STRING = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('font-size');
-//    me.FONT_SIZE = parseInt(me.FONT_SIZE_STRING.substring(0, me.FONT_SIZE_STRING.indexOf('px')), 10);
-    me.MARGIN_WIDTH = 0;//me.FONT_SIZE / 2.5;
+    me.MARGIN_WIDTH = 0;
     me.bucket = [];
 
     me.countChanged = function () {
@@ -58,7 +56,6 @@ CCH.Objects.Bucket = function (args) {
 
         // TODO: Not sure what we're doing after 999
         // TODO: Make 0-99 text larger
-
         return count;
     };
 
@@ -82,7 +79,7 @@ CCH.Objects.Bucket = function (args) {
             args = args || {};
             var id = args.id,
                 item = id ? CCH.items.getById({ id : id }) : args.item;
-        
+
             if (item) {
                 me.remove({
                     item: item
@@ -90,7 +87,7 @@ CCH.Objects.Bucket = function (args) {
             }
         }
     });
-    
+
     // Preload required images
     CCH.LOG.trace('CCH.Objects.Bucket::constructor: Pre-loading images.');
     $.get(me.IMAGE_LOCATION_BUCKET_WITH_SAND);

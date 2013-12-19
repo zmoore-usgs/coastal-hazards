@@ -3,6 +3,11 @@
         <div id="application-slide-search-controlset"  class="application-slide-controlset row">
             <div class="col-md-12">
                 <div class="pull-left"><i class="fa fa-minus-square-o"></i></div>
+                <div class="pull-right hidden">
+                    <button type="button" class="btn btn-default">Clear</button>
+                    <button type="button" class="btn btn-default">Share</button>
+                    <button type="button" class="btn btn-default">Download</button>
+                </div>
             </div>
         </div>
         <div id="application-slide-bucket-content-container" class="application-slide-content-container">
