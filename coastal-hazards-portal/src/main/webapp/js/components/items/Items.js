@@ -91,7 +91,7 @@ CCH.Objects.Items = function (args) {
                     type: 'error',
                     nonblock: true
                 });
-                LOG.info('An error occurred during search: ' + error);
+                CCH.LOG.warn('An error occurred during search: ' + error);
             }
         ]);
 

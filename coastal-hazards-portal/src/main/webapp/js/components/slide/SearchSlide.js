@@ -34,24 +34,29 @@ CCH.Objects.SearchSlide = function (args) {
     me.APP_CONTAINER_ID = 'content-row';
     me.LOCATION_CARD_TEMPLATE_ID = 'application-slide-search-location-card-template';
     me.LOCATION_SLIDE_SEARCH_CONTAINER_ID = 'application-slide-search-location-results-content-container';
-    me.PRODUCT_CARD_TEMPLATE_ID = 'application-slide-search-product-card-template';
     me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID = 'application-slide-search-product-results-content-container';
+    me.PRODUCT_CARD_TEMPLATE_ID = 'application-slide-search-product-card-template';
     me.SLIDE_SEARCH_CONTAINER_PARENT_ID = 'application-slide-search-content-container';
     me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER = 'application-slide-search-product-results-paging-container';
 
-    me.smallOffset = 10;
-    me.borderWidth = 2;
-    me.animationTime = 500;
-    me.placement = 'right';
+    me.SMALL_OFFSET = 10;
+    me.PAGE_ITEM_COUNT = 5;
+    me.BORDER_WIDTH = 2;
+    me.ANIMATION_TIME = 500;
+    me.PLACEMENT = 'right';
     me.isSmall = args.isSmall;
-    me.startClosed = true;
+    me.START_CLOSED = true;
     me.isInitialized = false;
-    me.isClosed = me.startClosed;
+    me.isClosed = me.START_CLOSED;
 
     me.clear = function () {
-        $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID).empty();
-        $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).empty();
-        $('.' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER).find('>ul').empty();
+        var $locationSlide = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
+            $productSlide = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID);
+        
+        [$locationSlide, $productSlide].each(function ($slide) {
+            $slide.find('>div:first-child()').empty();
+            $slide.find('>div:nth-child(2)>ul').empty();
+        });
     };
 
     me.open = function () {
@@ -63,30 +68,35 @@ CCH.Objects.SearchSlide = function (args) {
 
             slideContainer.animate({
                 left: toExtent.left
-            }, me.animationTime, function () {
+            }, me.ANIMATION_TIME, function () {
+                $(window).trigger('slide-search-opened');
                 me.isClosed = false;
                 me.resize();
             });
         }
     };
 
-    me.close = function () {
+    me.close = function (args) {
         if (!me.isClosed) {
             var slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
             slideContainer.animate({
                 left: $(window).width()
-            }, me.animationTime, function () {
+            }, me.ANIMATION_TIME, function () {
+                $(window).trigger('slide-search-closed');
                 me.isClosed = true;
                 slideContainer.addClass('hidden');
+                if (args && args.clearOnClose) {
+                    me.clear();
+                }
             });
         }
     };
 
-    me.toggle = function () {
+    me.toggle = function (args) {
         if (me.isClosed) {
-            me.open();
+            me.open(args);
         } else {
-            me.close();
+            me.close(args);
         }
     };
 
@@ -116,7 +126,7 @@ CCH.Objects.SearchSlide = function (args) {
                 $slideContainer.offset(toExtent);
             }
             $slideContainer.width(windowWidth - toExtent.left);
-            $slideContent.width($slideContainer.outerWidth() - me.borderWidth);
+            $slideContent.width($slideContainer.outerWidth() - me.BORDER_WIDTH);
         } else {
             if (me.isClosed) {
                 $slideContainer.css({
@@ -128,8 +138,8 @@ CCH.Objects.SearchSlide = function (args) {
             }
             $slideContainer.width(windowWidth - toExtent.left);
             $slideContainer.height($appContainerId.outerHeight());
-            $slideContent.width($slideContainer.width() - me.borderWidth);
-            $cardContainer.height($slideContainer.height() - $cardContainer.siblings().toArray().sum(function(x) { 
+            $slideContent.width($slideContainer.width() - me.BORDER_WIDTH);
+            $cardContainer.height($slideContainer.height() - $cardContainer.siblings().toArray().sum(function (x) {
                 return $(x).outerHeight();
             }));
         }
@@ -144,7 +154,7 @@ CCH.Objects.SearchSlide = function (args) {
                 },
                 small: {
                     // top is handled by css file
-                    left: appContainerId.offset().left + me.smallOffset
+                    left: appContainerId.offset().left + me.SMALL_OFFSET
                 }
             };
 
@@ -157,186 +167,223 @@ CCH.Objects.SearchSlide = function (args) {
         var data = args.data || {},
             locations = data.locations || [],
             products = data.items || [],
+            criteria = args.criteria,
             product,
-            locationSize = locations.length,
-            productsSize = products.length,
+            locationSize = locations.length || 0,
+            productsSize = products.length || 0,
             $slideContainer,
             $pagingContainer,
-            $pageButton,
-            $pagingButtonGroup,
-            $li,
-            slidesPerPage = 3,
-            itemPageCount,
+            $locationContentContainer = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
+            $productContentContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID),
+            $contentContainer,
+            $card,
+            $showAllButton,
+            slidesPerPage = args.slidesPerPage || me.PAGE_ITEM_COUNT,
+            pageCount,
             type = args.type,
-            items = [],
             itemsIdx,
-            item,
-            locationIdx,
-            pIdx;
-
+            cards = [],
+            locationIdx;
+        
         if (data) {
+            // The data type can either be location or item
             switch (type) {
             case 'location':
+                // I want to show locations if we have locations to show
                 if (locationSize > 0) {
-                    var revealCount = locationSize < 5 ? locationSize : 5, 
-                        $moreToggle = $('<div />').
+                    //TODO- Make this a button
+                    $showAllButton = $('<div />').
                             addClass('application-slide-search-location-card-toggle').
-                            html('Show ' + revealCount + ' more'),
-                        $card;
-                
-                    $slideContainer = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID);
-                
+                            html('Show All ' + locationSize + ' Locations');
+                    $contentContainer = $locationContentContainer;
+                    $slideContainer = $contentContainer.find('>div:nth-child(1)');
+                    $pagingContainer = $contentContainer.find('>div:nth-child(2)');
+                    pageCount = Math.ceil(locationSize / slidesPerPage);
+                    
+                    // Start with a clean slate 
+                    $slideContainer.empty();
+                    $pagingContainer.find('>ul').empty();
+                    
+                    // I want to build a card for every search result item
                     for (locationIdx = 0; locationIdx < locationSize; locationIdx++) {
-                        // I want to build a card for every search result item
                         $card = me.buildLocationSearchResultItem({
                             location: locations[locationIdx],
                             spatialReference: data.spatialReference
                         });
-                        
-                        // I want to add t
-                        items.push($card);
-                        
-                        $slideContainer.append($card);
-                        
-                        if (locationSize > 1) {
-                            if (locationIdx === 0) {
-                                $slideContainer.append($moreToggle);
-                            } else {
-                                $card.addClass('hidden');
-                            }
-                        }
+
+                        $card.addClass('search-result-item-page-' + Math.ceil((locationIdx + 1) / slidesPerPage));
+
+                        // I want to add the card to the items and append it to 
+                        // the slide container
+                        cards.push($card);
                     }
+
+                    $slideContainer.append(cards);
                     
-                    $moreToggle.on('click', function ($evt) {
-                        // The user has clicked on "Show More"
-                        var $target = $($evt.target),
-                            downstreamSiblings = $($evt.target).nextAll(),
-                            rIdx = 0,
-                            revealCount = 5,
-                            showTxt,
-                            $sibling;
-                            
+                    // If I have more than one page worth of stuff, I want to create a
+                    // paging system to deal with that
+                    me.createPaging({
+                        container : $contentContainer,
+                        pageCount : pageCount
+                    });
+
+                    if (criteria.indexOf('location') === -1) {
+                        $pagingContainer.addClass('hidden');
+                    }
+
+                    // I only want to show the first location. If I have more 
+                    // than one, I want to leave a toggle at the bottom that 
+                    // will display all the items
+                    if ($slideContainer.find('>div').length > 1 && criteria.indexOf('location') === -1) {
+                        $slideContainer.find('>div:first-child()').nextAll().addClass('hidden');
+                        $slideContainer.append($showAllButton);
+
+                        // When the user clicks on my toggle, I want to display all
+                        // of the locations, change the search criteria to 'Locations'
+                        // and have paging for locations (if need be)
+                        $showAllButton.on('click', function ($evt) {
                             // Stop propagation of the event because the slide
                             // listens to body events and it might catch a click
                             // and toggle the slide.
                             $evt.stopImmediatePropagation();
-                            
-                            // Check how many siblings I pulled in. If fewer siblings
-                            // are available than I default to show, only show
-                            // those siblings by reducing the revealCount to 
-                            // the sibling count
-                            if (downstreamSiblings.length < revealCount) {
-                                revealCount = downstreamSiblings.length;
-                            }
-                        
-                            // Show the sublings 
-                            for (rIdx; rIdx < revealCount; rIdx++) {
-                                $sibling = $(downstreamSiblings[rIdx]);
-                                $sibling.removeClass('hidden');
-                            }
-                            
-                            // If there are still more siblings to show, put the
-                            // reveal control after the last one I just showed.
-                            // Otherwise, just remove the control
-                            if (downstreamSiblings.length >= revealCount + 1) {
-                                // Build the "show more" text
-                                showTxt = downstreamSiblings.length  - revealCount < revealCount ? downstreamSiblings.length - revealCount : revealCount;
-                                showTxt = 'Show ' + showTxt + ' more';
-                                $target.
-                                    html(showTxt).
-                                    insertAfter($sibling);
+
+                            // I want to emit this event because it's listened to
+                            // by the combined search bar 
+                            $(window).trigger('slide-search-button-click', {
+                                button : 'show-all-location'
+                            });
+
+                            // Check to see if I am paging by finding if I have a 
+                            // page 2 button
+                            if ($pagingContainer.find('>ul.pagination>li>a:contains("2")').length > 0) {
+                                // If I'm paging, just show the first page
+                                $pagingContainer.removeClass('hidden');
+                                me.displayPage({
+                                    num : 1,
+                                    container : $contentContainer
+                                });
                             } else {
-                                $target.remove();
+                                // I'm not paging so hide the toggle button
+                                $slideContainer.find('>div:last-child').remove();
+                                // Show all the cards
+                                $slideContainer.find('>div').removeClass('hidden');
                             }
-                    });
-                    
-                    // If I am closed, open me up. Resizing happens after I 
-                    // am open because otherwise some of my elements don't have 
-                    // a height. Otherwise, just resize me because I may have had 
-                    // items added to me
-                    if (me.isClosed) {
-                        me.open();
-                    } else {
-                        me.resize();
+
+                            // Remove all of the product cards and product paging
+                            $productContentContainer.find('>div:first-child()').empty();
+                            $productContentContainer.find('>div>ul').empty();
+                        });
                     }
                 }
                 break;
 
             case 'item':
                 if (productsSize > 0) {
-                    $slideContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID);
-                    $pagingContainer = $('.' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER);
-                    $pagingButtonGroup = $pagingContainer.find('>ul.pagination');
-                    itemPageCount = Math.ceil(productsSize / slidesPerPage);
+                    $contentContainer = $productContentContainer;
+                    $slideContainer = $contentContainer.find('>div:nth-child(1)');
+                    $pagingContainer = $contentContainer.find('>div:nth-child(2)');
+                    pageCount = Math.ceil(productsSize / slidesPerPage);
 
-                    // I want to make a paging system if I have enough items to 
-                    // support such a thing
-                    if (itemPageCount > 0) {
-                        // Add a previous page button
-                        $pageButton = $('<a />').
-                            attr('href', '#').
-                            html('&laquo;');
-                        // This will be the first page so I'm going to disable 
-                        // the back button
-                        $li = $('<li />').
-                                addClass('disabled page-move').
-                                append($pageButton);
-                        $pagingButtonGroup.append($li);
-                        for (pIdx = 0; pIdx < itemPageCount; pIdx++) {
-                            $pageButton = $('<a />').
-                                attr('href', '#').
-                                html(pIdx + 1);
-                            $li = $('<li />').
-                                append($pageButton);
-
-                            if (pIdx === 0) {
-                                // If this is the first page, also disable the
-                                // page 1 button
-                                $li.addClass('disabled');
-                            }
-
-                            $pagingButtonGroup.append($li);
-                        }
-
-                        // Tack on a "Next Page" button
-                        $pageButton = $('<a />').
-                            attr('href', '#').
-                            html('&raquo;');
-                        $li = $('<li />').
-                                addClass('page-move').
-                                append($pageButton);
-                        $pagingButtonGroup.append($li);
-
-                        $('.' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER).
-                            find('>ul>li').
-                            on('click', me.pagingButtonClicked);
-                    } else {
-                        $pagingContainer.remove();
-                    }
+                    // Start with a clean slate 
+                    $slideContainer.empty();
+                    $pagingContainer.find('>ul').empty();
 
                     for (itemsIdx = 0; itemsIdx < productsSize; itemsIdx++) {
                         product = products[itemsIdx];
-                        item = me.buildProductSearchResultItem({
+                        $card = me.buildProductSearchResultItem({
                             product : product
                         });
-                        item.addClass('search-result-item-page-' + Math.ceil((itemsIdx + 1) / slidesPerPage));
-                        items.push(item);
+                        $card.addClass('search-result-item-page-' + Math.ceil((itemsIdx + 1) / slidesPerPage));
+                        cards.push($card);
                     }
 
-                    if (items.length) {
-                        $slideContainer.append(items);
-                        if (me.isClosed) {
-                            me.open();
-                        } else {
-                            me.resize();
-                        }
-                    }
+                    $slideContainer.append(cards);
                     
                     $slideContainer.find('>div:not(.search-result-item-page-1)').addClass('hidden');
+                    
+                    me.createPaging({
+                        container : $contentContainer,
+                        pageCount : pageCount
+                    });
                 }
                 break;
             }
+            
+            if (pageCount <= 1) {
+                // I have no need of paging, so just hide the 
+                // paging container row
+                $pagingContainer.addClass('hidden');
+            }
+
+            // Check if I have more than one product or location to display
+            if (locationSize + productsSize > 0) {
+                // If I am closed, open me up. Resizing happens after I 
+                // am open because otherwise some of my elements don't have 
+                // a height. Otherwise, just resize me because I may have had 
+                // items added to me
+                if (me.isClosed) {
+                    me.open();
+                } else {
+                    me.resize();
+                }
+            }
         }
+    };
+
+    me.createPaging = function (args) {
+        var $productContentContainer = args.container, //$('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID),
+            $pagingContainer = $productContentContainer.find('>div:nth-child(2)'),
+            $pagingButtonGroup = $pagingContainer.find('>ul.pagination'),
+            $pageButton,
+            $li,
+            pIdx,
+            pageCount = args.pageCount;
+         // Start out by removing all buttons from the paging bar
+        $pagingButtonGroup.empty();
+
+        // Add a previous page button
+        $pageButton = $('<a />').
+            attr('href', '#').
+            html('&laquo;');
+        // This will be the first page so I'm going to disable 
+        // the back button
+        $li = $('<li />').
+                addClass('disabled page-move').
+                append($pageButton);
+        $pagingButtonGroup.append($li);
+        for (pIdx = 0; pIdx < pageCount; pIdx++) {
+            $pageButton = $('<a />').
+                attr('href', '#').
+                html(pIdx + 1);
+            $li = $('<li />').
+                append($pageButton);
+
+            if (pIdx === 0) {
+                // If this is the first page, also disable the
+                // page 1 button
+                $li.addClass('disabled');
+            }
+
+            $pagingButtonGroup.append($li);
+        }
+
+        // Tack on a "Next Page" button
+        $pageButton = $('<a />').
+            attr('href', '#').
+            html('&raquo;');
+        $li = $('<li />').
+            addClass('page-move').
+            append($pageButton);
+        $pagingButtonGroup.append($li);
+
+        // Bind the click event for each of these buttons
+        $pagingContainer.
+            find('>ul>li').
+            on('click', me.pageButtonClickHandler);
+
+        // The paging container row might be hidden, so remove
+        // the hidden class to display the container
+        $pagingContainer.removeClass('hidden');
     };
 
     me.getCurrentlyDisabledPageButton = function () {
@@ -348,10 +395,63 @@ CCH.Objects.SearchSlide = function (args) {
         return num;
     };
 
-    me.displayItemsPage = function (num) {
-        var $listItems = $('.' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER).find('>ul>li'),
-            $slideContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID),
+    me.pageButtonClickHandler = function ($evt) {
+        // If this bubbles up, it may close the slider due to an on-click binding
+        // in the UI class
+        $evt.stopImmediatePropagation();
+
+        var $li = $($evt.target).parent(),
+            $link = $li.find('>a'),
+            linkString = $link.html(),
+            toPage = parseInt(linkString, 10),
+            isDisabled = $li.hasClass('disabled'),
+            currentPage = me.getCurrentlyDisabledPageButton(),
+            $productContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID),
+            $locationContainer = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
+            $container;
+
+        // Find out if I am a button in the product paging set or in the location
+        // paging set
+        if ($li.parent().parent().attr('id').indexOf('product') !== -1) {
+            // I am a product
+            $container = $productContainer;
+        } else {
+            // I am a location
+            $container = $locationContainer;
+        }
+
+        if (!isDisabled) {
+            if (isNaN(toPage)) {
+                // User clicked a back or forward button
+                // 171 is the back button string char code
+                if (171 === $link.html().charCodeAt(0)) {
+                    me.displayPage({
+                        container : $container,
+                        num : currentPage - 1
+                    });
+                } else {
+                    me.displayPage({
+                        container : $container,
+                        num : currentPage + 1
+                    });
+                }
+            } else {
+                me.displayPage({
+                    container : $container,
+                    num : toPage
+                });
+            }
+        }
+    };
+
+    me.displayPage = function (args) {
+        var num = args.num,
+            $productContentContainer = args.container,
+            $slideContainer = $productContentContainer.find('>div:nth-child(1)'),
+            $pagingContainer = $productContentContainer.find('>div:nth-child(2)'),
+            $listItems = $pagingContainer.find('>ul>li'),
             $incomingListItem =  $($listItems.get(num));
+
         $listItems.removeClass('disabled');
 
         if (num === 1) {
@@ -361,40 +461,14 @@ CCH.Objects.SearchSlide = function (args) {
         }
 
         $incomingListItem.addClass('disabled');
-        
+
         $slideContainer.find('>div.search-result-item-page-' + num).removeClass('hidden');
         $slideContainer.find('>div:not(.search-result-item-page-' + num + ')').addClass('hidden');
-        
-        // The height and count of my items may have changed to I should be 
+
+        // The height and count of my items may have changed so I should be 
         // resized to make sure the paging row stays near the bottom
         me.resize();
     };
-
-    me.pagingButtonClicked = function ($evt) {
-        $evt.stopImmediatePropagation();
-
-        var $li = $($evt.target).parent(),
-            $link = $li.find('>a'),
-            linkString = $link.html(),
-            toPage = parseInt(linkString, 10),
-            isDisabled = $li.hasClass('disabled'),
-            currentPage = me.getCurrentlyDisabledPageButton();
-
-        if (!isDisabled) {
-            if (isNaN(toPage)) {
-                // User clicked a back or forward button
-                // 171 is the back button string char code
-                if (171 === $link.html().charCodeAt(0)) {
-                    me.displayItemsPage(currentPage - 1);
-                } else {
-                    me.displayItemsPage(currentPage + 1);
-                }
-            } else {
-                me.displayItemsPage(toPage);
-            }
-        }
-    };
-
     me.buildProductSearchResultItem = function (args) {
         args = args || {};
 
@@ -450,7 +524,6 @@ CCH.Objects.SearchSlide = function (args) {
             location = args.location,
             attributes = location.feature.attributes,
             name = location.name,
-            spatialReference = args.spatialReference,
             newItem = $('#' + me.LOCATION_CARD_TEMPLATE_ID).children().clone(true),
             imageContainerClass = 'application-slide-search-location-card-image',
             titleContainerClass = 'application-slide-search-location-card-title',
@@ -498,7 +571,9 @@ CCH.Objects.SearchSlide = function (args) {
     };
 
     $(me.CLOSE_BUTTON_SELECTOR).on('click', function (evt) {
-        me.toggle();
+        me.toggle({
+            clearOnClose : true
+        });
     });
 
     $(window).on('cch.ui.resized', function (args) {
@@ -515,7 +590,9 @@ CCH.Objects.SearchSlide = function (args) {
 
             if (clickOutsideContainer) {
                 // The click came from outside the container
-                me.toggle();
+                me.toggle({
+                    clearOnClose : true
+                });
             }
         }
     });
@@ -527,6 +604,6 @@ CCH.Objects.SearchSlide = function (args) {
         clear : me.clear,
         isClosed : me.isClosed,
         displaySearchResults : me.displaySearchResults,
-        CLASS_NAME : CCH.Objects.SearchSlide
+        CLASS_NAME : 'CCH.Objects.SearchSlide'
     };
 };

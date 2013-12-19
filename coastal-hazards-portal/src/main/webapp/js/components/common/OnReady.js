@@ -29,6 +29,11 @@ $(document).ready(function () {
     splashUpdate("Initializing Card Subsystem...");
     CCH.cards = new CCH.Objects.Cards();
 
+    splashUpdate("Initializing Map...");
+    CCH.map = new CCH.Objects.Map({
+        mapDiv: 'map'
+    }).init();
+
     splashUpdate("Initializing UI...");
     CCH.ui = CCH.Objects.UI({
         applicationOverlayId: 'application-overlay',
@@ -51,11 +56,6 @@ $(document).ready(function () {
         slideBucketContainerId: 'application-slide-bucket-container',
         slideSearchContainerId: 'application-slide-search-container'
     });
-
-    splashUpdate("Initializing Map...");
-    CCH.map = new CCH.Objects.Map({
-        mapDiv: 'map'
-    }).init();
 
     splashUpdate("Initializing OWS Services");
     CCH.ows = new CCH.Objects.OWS().init();

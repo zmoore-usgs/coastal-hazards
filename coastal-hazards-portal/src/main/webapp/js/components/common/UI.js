@@ -84,36 +84,14 @@ CCH.Objects.UI = function (args) {
     });
 
     me.itemsSearchedHandler = function (evt, data) {
-        // Display a notification with item count
         if (data.items) {
-            var count = data.items.length;
-            $.pnotify({
-                text: 'Found ' + count + ' item' + (count === 1 ? '.' : 's.'),
-                styling: 'bootstrap',
-                type: 'info',
-                nonblock: true,
-                sticker: false,
-                icon: 'icon-search',
-                closer: true,
-                delay: 3000
-            });
+            CCH.LOG.info('UI:: Items found: ' + data.items.length);
         }
     };
     
-        me.locationsSearchedHandler = function (evt, data) {
-        // Display a notification with item count
+    me.locationsSearchedHandler = function (evt, data) {
         if (data.items) {
-            var count = data.items.length;
-            $.pnotify({
-                text: 'Found ' + count + ' locations' + (count === 1 ? '.' : 's.'),
-                styling: 'bootstrap',
-                type: 'info',
-                nonblock: true,
-                sticker: false,
-                icon: 'icon-search',
-                closer: true,
-                delay: 3000
-            });
+            CCH.LOG.info('UI:: Locations found: ' + data.items.length);
         }
     };
 
@@ -458,14 +436,22 @@ CCH.Objects.UI = function (args) {
             }
         });
 
-        $(me.combinedSearch).on('combined-searchbar-search-performed', function (evt, args) {
-            me.searchSlide.displaySearchResults(args);
+        $(me.combinedSearch).on({
+            'combined-searchbar-search-performed' : function (evt, args) {
+                me.searchSlide.displaySearchResults(args);
+            },
+            'combined-searchbar-search-performing' : function () {
+                me.searchSlide.close({
+                    clearOnClose : true
+                });
+            }
         });
-        $(me.combinedSearch).on('combined-searchbar-search-performing', function () {
-            me.searchSlide.close();
-            me.searchSlide.clear();
+        
+        $(CCH.map).on('map-click', function () {
+            me.searchSlide.close({
+                clearOnClose : true
+            });
         });
-
         // Check for cookie to tell us if user has disabled the modal window 
         // on start. If not, show it. The user has to opt-in to have it shown 
         // next time
@@ -489,6 +475,6 @@ CCH.Objects.UI = function (args) {
         bucket: me.bucket,
         addToAccordion : me.addToAccordion,
         loadInitialItem : me.loadInitialItem,
-        CLASS_NAME : CCH.Objects.UI
+        CLASS_NAME : 'CCH.Objects.UI'
     };
 };

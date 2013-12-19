@@ -3,6 +3,7 @@
     z-index: 2000;
 }
 
+/* Inner container for the slide search container - Contains everything else */
 #application-slide-search-container > div {
     background-color: #F5F5F5;
     border-bottom: 2px solid #E3E3E3;
@@ -12,54 +13,51 @@
     float: right;
     display: inline-block;
     z-index: 2000;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
-#application-slide-search-container > div > div:nth-child(3) {
-    text-align: center;
-    margin-bottom: 5px;
-}
-
-/* Close button */
+/* Close button row*/
 #application-slide-search-container > div > div.application-slide-controlset {
     margin-left: 5px;
-    width: 90%;
+    width: 100%;
 }
 #application-slide-search-container > div > div.application-slide-controlset:hover {
-    font-size-adjust: 1.1;
-    font-weight: bold;
     cursor: pointer;
 }
 
 /* Content container */
-#application-slide-search-container > div > div.application-slide-content-container {
+#application-slide-search-container > div > div:nth-child(2) {
     overflow-y: scroll;
     overflow-x: hidden;
     margin-right: 3px;
     margin-left: 3px;
 }
-
-#application-slide-search-container > div > div:nth-child(2) > div  div.application-slide-search-product-card {
-    width: 95%;
+/* Location and Product Container */
+#application-slide-search-container > div > div:nth-child(2) > div {
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
-#application-slide-search-container > div > div.application-slide-search-product-results-paging-container  {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-
-#application-slide-search-container div.application-slide-content-container > div > div.application-slide-search-location-card-toggle {
+/* Paging containers */
+#application-slide-search-container > div > div:nth-child(2) > div > div:nth-child(2) {
     text-align: center;
-    font-size: 2em;
-    border: 1px solid #E3E3E3;
-    color: #999999;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
 }
 
-#application-slide-search-container div.application-slide-content-container > div > div.application-slide-search-location-card-toggle:hover {
-    cursor: pointer;
+/* Location Container *********************************************************/
+#application-slide-search-container > div > div:nth-child(2) > div:nth-child(1) {
+    margin-bottom: 20px;
+} 
+
+/* Each row within the location container */
+#application-slide-search-container > div > div:nth-child(2) > div:nth-child(1) > div {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+/* The control set row within the location container */
+#application-slide-search-container > div > div:nth-child(2) > div:nth-child(1) > div > div.application-slide-search-location-card-toggle {
+    text-align: center;
 }
 
 #application-slide-search-container .application-slide-search-location-card-image {
@@ -68,7 +66,18 @@
 }
 
 #application-slide-search-container .application-slide-search-location-card-icon {
-    font-size: 7em;
+    font-size: 2em;
+}
+/******************************************************************************/
+
+/* Product Container **********************************************************/
+#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) {
+    margin-bottom: 10px;
+}
+/* Each row within the product container */
+#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div {
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 @media (min-width: 992px) {
