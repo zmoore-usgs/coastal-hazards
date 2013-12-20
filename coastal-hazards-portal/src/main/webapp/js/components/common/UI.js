@@ -4,6 +4,7 @@
 /*global CCH*/
 /*global twttr*/
 /*global splashUpdate*/
+/*global ga*/
 
 /**
  *  Central control object for the user interface
@@ -353,6 +354,11 @@ CCH.Objects.UI = function (args) {
     };
 
     me.displayLoadingError = function (args) {
+		ga('send', 'event', {
+			'eventCategory': 'loadingError',   // Required.
+			'eventAction': 'error',      // Required.
+			'eventLabel': args.errorThrown
+		});
         var continueLink = $('<a />').attr({
             'href': CCH.CONFIG.contextPath,
             'role': 'button'

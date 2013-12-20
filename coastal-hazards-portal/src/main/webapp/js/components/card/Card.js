@@ -3,6 +3,7 @@
 /*global window*/
 /*global OpenLayers*/
 /*global CCH*/
+/*global ga*/
 
 /**
  * Represents a product as a card
@@ -69,6 +70,11 @@ CCH.Objects.Card = function (args) {
             complete : complete
         });
         
+		ga('send', 'event', {
+			'eventCategory': 'card',   // Required.
+			'eventAction': 'show',      // Required.
+			'eventLabel': me.id
+		  });
         CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was shown');
         $(me).trigger('card-display-toggle', {
             'display' : true
@@ -92,6 +98,11 @@ CCH.Objects.Card = function (args) {
             complete : complete
         });
         
+		ga('send', 'event', {
+			'eventCategory': 'card',   // Required.
+			'eventAction': 'hide',      // Required.
+			'eventLabel': me.id
+		  });
         CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was hidden');
         $(me).trigger('card-display-toggle', {
             'display' : false
