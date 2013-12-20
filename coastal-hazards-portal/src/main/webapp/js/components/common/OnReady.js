@@ -29,6 +29,11 @@ $(document).ready(function () {
     splashUpdate("Initializing Card Subsystem...");
     CCH.cards = new CCH.Objects.Cards();
 
+    splashUpdate("Initializing Map...");
+    CCH.map = new CCH.Objects.Map({
+        mapDiv: 'map'
+    }).init();
+
     splashUpdate("Initializing UI...");
     CCH.ui = CCH.Objects.UI({
         applicationOverlayId: 'application-overlay',
@@ -51,11 +56,6 @@ $(document).ready(function () {
         slideBucketContainerId: 'application-slide-bucket-container',
         slideSearchContainerId: 'application-slide-search-container'
     });
-
-    splashUpdate("Initializing Map...");
-    CCH.map = new CCH.Objects.Map({
-        mapDiv: 'map'
-    }).init();
 
     splashUpdate("Initializing OWS Services");
     CCH.ows = new CCH.Objects.OWS().init();
@@ -83,74 +83,12 @@ $(document).ready(function () {
                         '<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br /><br />',
                 mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')'
             });
-        },
-        loadItem = function (item) {
-            item = item || 'uber';
-            
-            // A user is not coming in through the session or the view, so just load
-            // the 10 most popular items and begin the slideshow when completed
-            var errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
-                CCH.ui.displayLoadingError({
-                    errorThrown: errorThrown,
-                    splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
-                    mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
-                });
-            };
-            
-            new CCH.Objects.Search().submitItemSearch({
-                item: item,
-                displayNotification: false,
-                callbacks: {
-                    success: [
-                        // Once the 'uber' item is loaded, look at its children.
-                        // The children will be the actual items to be displayed
-                        function (data, status) {
-                            if (status === 'success') {
-                                var children = data.children,
-                                    loadItem = function (item) {
-                                        CCH.items.load({
-                                            item: item,
-                                            displayNotification: false,
-                                            callbacks: {
-                                                success: [
-                                                    function (item, status, responseText) {
-                                                        if (status === 'success') {
-                                                            CCH.ui.addToAccordion({
-                                                                item : CCH.items.getById({id : item.id})
-                                                            });
-                                                        }
-                                                    },
-                                                    CCH.ui.removeOverlay
-                                                ],
-                                                error: [errorResponseHandler]
-                                            }
-                                        });
-                                    };
-
-                                if (typeof children === 'string') {
-                                    children = [children];
-                                }
-
-                                // I check to see if this item has any children
-                                if (children.length) {
-                                    children.each(loadItem);
-                                } else {
-                                    loadItem(data.id);
-                                }
-                            } else {
-                                CCH.ui.displayLoadingError({
-                                    errorThrown: '',
-                                    splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
-                                    mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
-                                });
-                            }
-                        }],
-                    error: [errorResponseHandler]
-                }
-            });
         };
 
+    // Most of the application is now initialized, so I'm going to try and load
+    // either one item, a view or all top level items. First I check if idType exists
     if (type) {
+        // User is coming in with either an item or a view, check which
         if (type === 'view') {
             splashUpdate("Loading View " + CCH.CONFIG.id);
             
@@ -187,13 +125,7 @@ $(document).ready(function () {
                                         // item not found. TODO: Should we not break here
                                         // and keep going?
                                         function (jqXHR, textStatus, errorThrown) {
-                                            CCH.ui.displayLoadingError({
-                                                errorThrown: errorThrown,
-                                                splashMessage: 404 === jqXHR.status ?
-                                                        '<b>Item Not Found</b><br /><br />We couldn\'t find the view you are looking for<br /><br />' :
-                                                        '<b>There was an error attempting to load the view.</b><br />Either try to reload the application or contact the system administrator.<br /><br />',
-                                                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')'
-                                            });
+                                            CCH.LOG.error('OnReady:: Item not loaded - ' + errorThrown);
                                         }
                                     ]
                                 }
@@ -204,11 +136,44 @@ $(document).ready(function () {
                 }
             });
         } else if (type === 'item') {
+            // User is coming in with an item, so load that item
             splashUpdate('Loading Item ' + itemId);
-            loadItem(itemId);
+            CCH.ui.loadInitialItem(itemId);
         }
     } else {
         splashUpdate('Loading Items');
-        loadItem('uber');
+        
+        // I don't want to load the uber item, but I do want to find out what's 
+        // in it so I can load those items as top-level accordion bellows
+        new CCH.Objects.Search().submitItemSearch({
+            'item' : 'uber',
+            'callbacks' : {
+                'success' : [
+                    function (data) {
+                        CCH.map.zoomToBoundingBox({
+                            bbox : data.bbox,
+                            fromProjection : new OpenLayers.Projection('EPSG:4326')
+                        });
+                        data.children.each(function (child) {
+                            CCH.ui.loadInitialItem(child);
+                        });
+                    }
+                ],
+                'error' : [
+                    function (jqXHR, textStatus, errorThrown) {
+                        CCH.ui.displayLoadingError({
+                            errorThrown: errorThrown,
+                            splashMessage: 404 === jqXHR.status ?
+                                    '<b>Item Not Found</b><br /><br />There was a problem loading information.<br /><br />' + 
+                                    'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
+                                    'Either try to reload the application or contact the system administrator.<br /><br />' :
+                                    'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
+                                    'Either try to reload the application or contact the system administrator.<br /><br />',
+                            mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')'
+                        });
+                    }
+                ]
+            }
+        });
     }
 });

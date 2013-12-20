@@ -84,36 +84,14 @@ CCH.Objects.UI = function (args) {
     });
 
     me.itemsSearchedHandler = function (evt, data) {
-        // Display a notification with item count
         if (data.items) {
-            var count = data.items.length;
-            $.pnotify({
-                text: 'Found ' + count + ' item' + (count === 1 ? '.' : 's.'),
-                styling: 'bootstrap',
-                type: 'info',
-                nonblock: true,
-                sticker: false,
-                icon: 'icon-search',
-                closer: true,
-                delay: 3000
-            });
+            CCH.LOG.info('UI:: Items found: ' + data.items.length);
         }
     };
     
-        me.locationsSearchedHandler = function (evt, data) {
-        // Display a notification with item count
+    me.locationsSearchedHandler = function (evt, data) {
         if (data.items) {
-            var count = data.items.length;
-            $.pnotify({
-                text: 'Found ' + count + ' locations' + (count === 1 ? '.' : 's.'),
-                styling: 'bootstrap',
-                type: 'info',
-                nonblock: true,
-                sticker: false,
-                icon: 'icon-search',
-                closer: true,
-                delay: 3000
-            });
+            CCH.LOG.info('UI:: Locations found: ' + data.items.length);
         }
     };
 
@@ -328,45 +306,48 @@ CCH.Objects.UI = function (args) {
         
         // By now, we should have a card
         if (card) {
+            // I want to first create a bellow with this new card.
             bellow = me.accordion.add({
                 card : card
             });
+
+            // Then add an event handler for when it opens/closes
             bellow.on('bellow-display-toggle', function (evt, args) {
                 CCH.LOG.debug('CCH.Objects.UI:: Item ' + args.id + ' was ' + (args.display ? 'shown' : 'hidden'));
                 var id = args.id,
                     display = args.display,
-                    item = args.card.item,
-                    type = item.itemType,
+                    cardItem = args.card.item,
+                    type = cardItem.itemType,
                     childItem;
-                    
+
                 // Check if I am opening a bellow 
                 if (display) {
                     // A bellow was opened, so I need to show some layers
-                    
+
                     // I want to zoom to a bounding box 
                     CCH.map.zoomToBoundingBox({
-                        bbox : item.bbox,
+                        bbox : cardItem.bbox,
                         fromProjection : new OpenLayers.Projection('EPSG:4326')
-                     });
-                     
+                    });
+
                     // Check to see if this is an aggregation. If it is, I need
                     // to pull the layers from all of its children
                     if (type === 'aggregation') {
                         // This aggregation should have children, so for each 
                         // child, I want to grab the child's layer and display it
                         // on the map
-                        item.children.each(function (childItemId) {
+                        cardItem.children.each(function (childItemId) {
                             childItem = CCH.items.getById({ id : childItemId });
                             CCH.map.displayData({
                                 item : childItem
-                            })
+                            });
                         });
                     } else {
                         // What do I do if it's not an aggregation? Will an item
                         // in a bellow ever not be an aggregation?
                     }
                 }
-                
+
             });
         }
     };
@@ -387,6 +368,41 @@ CCH.Objects.UI = function (args) {
         $('#splash-status-update').append(emailLink);
         $('#splash-spinner').fadeOut(2000);
     };
+    
+    me.loadInitialItem = function (id) {
+            var errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
+                CCH.ui.displayLoadingError({
+                    errorThrown: errorThrown,
+                    splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
+                    mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
+                });
+            },
+                item = new CCH.Objects.Item({ id : id });
+            
+            item.load({
+                callbacks : {
+                    success : [
+                        function (data, status) {
+                            if (status === 'success') {
+                                CCH.ui.addToAccordion({
+                                    item : CCH.items.getById({ id : id })
+                                });
+                            } else {
+                                CCH.ui.displayLoadingError({
+                                    errorThrown: '',
+                                    splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
+                                    mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
+                                });
+                            }
+                        },
+                        function () {
+                            CCH.ui.removeOverlay();
+                        }
+                    ],
+                    error : [errorResponseHandler]
+                }
+            });
+        };
 
     me.init = (function () {
         var navbarPinButton = $('#' + me.NAVBAR_PIN_BUTTON_ID),
@@ -420,14 +436,22 @@ CCH.Objects.UI = function (args) {
             }
         });
 
-        $(me.combinedSearch).on('combined-searchbar-search-performed', function (evt, args) {
-            me.searchSlide.displaySearchResults(args);
+        $(me.combinedSearch).on({
+            'combined-searchbar-search-performed' : function (evt, args) {
+                me.searchSlide.displaySearchResults(args);
+            },
+            'combined-searchbar-search-performing' : function () {
+                me.searchSlide.close({
+                    clearOnClose : true
+                });
+            }
         });
-        $(me.combinedSearch).on('combined-searchbar-search-performing', function () {
-            me.searchSlide.close();
-            me.searchSlide.clear();
+        
+        $(CCH.map).on('map-click', function () {
+            me.searchSlide.close({
+                clearOnClose : true
+            });
         });
-
         // Check for cookie to tell us if user has disabled the modal window 
         // on start. If not, show it. The user has to opt-in to have it shown 
         // next time
@@ -450,6 +474,7 @@ CCH.Objects.UI = function (args) {
         searchSlide: me.searchSlide,
         bucket: me.bucket,
         addToAccordion : me.addToAccordion,
-        CLASS_NAME : CCH.Objects.UI
+        loadInitialItem : me.loadInitialItem,
+        CLASS_NAME : 'CCH.Objects.UI'
     };
 };

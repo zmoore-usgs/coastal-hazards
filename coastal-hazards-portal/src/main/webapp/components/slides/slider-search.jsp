@@ -6,12 +6,24 @@
             </div>
         </div>
         <div id="application-slide-search-content-container" class="application-slide-content-container row">
-            <div id="application-slide-search-location-results-content-container"></div>
-            <div id="application-slide-search-product-results-content-container"></div>
+            <%-- Location Container --%>
+            <div id="application-slide-search-location-results-content-container">
+                <div id="application-slide-search-location-results-card-container" class="row"></div>
+                <div id="application-slide-search-location-results-paging-container" class="application-slide-search-paging-container row">
+                    <ul class="pagination"></ul>
+                </div>
+            </div>
+
+            <%-- Product container --%>
+            <div id="application-slide-search-product-results-content-container">
+                <div id="application-slide-search-product-results-card-container" class="row"></div>
+                <div id="application-slide-search-product-results-paging-container" class="application-slide-search-paging-container row">
+                    <ul class="pagination"></ul>
+                </div>
+            </div>
         </div>
-        <div class="application-slide-search-product-results-paging-container row">
-            <ul class="pagination"></ul>
-        </div>
+
+
     </div>
 </div>
 

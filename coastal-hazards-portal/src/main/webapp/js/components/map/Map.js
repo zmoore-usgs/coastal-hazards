@@ -52,6 +52,10 @@ CCH.Objects.Map = function(args) {
                 }
             });
             
+            me.map.events.register("click", me.map , function(e){
+                $(me).trigger('map-click', e);
+            });
+            
 			return me;
 		},
 		getMap: function() {

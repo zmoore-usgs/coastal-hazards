@@ -141,25 +141,25 @@ CCH.Objects.Card = function (args) {
         control.on('change', function(evt) {
             // My dropdown list has changed
             var control = $(evt.target),
-                    selectedOption = control.val(),
-                    card,
-                    createCard = function() {
-                        // User selected a product. I will append that card to 
-                        // myself
-                        card = CCH.cards.buildCard({
-                            item: selectedOption,
-                            parent: me
-                        });
+                selectedOption = control.val(),
+                card,
+                createCard = function() {
+                    // User selected a product. I will append that card to 
+                    // myself
+                    card = CCH.cards.buildCard({
+                        item: selectedOption,
+                        parent: me
+                    });
 
-                        // This is now my child card 
-                        me.child = card;
+                    // This is now my child card 
+                    me.child = card;
 
-                        // Append this new card to myself
-                        me.container.after(card.getContainer());
+                    // Append this new card to myself
+                    me.container.after(card.getContainer());
 
-                        // Show this new card to the user
-                        card.show();
-                    };
+                    // Show this new card to the user
+                    card.show();
+                };
 
             if (selectedOption) {
                 // Do I have a child? If I do, hide it and get rid of it.
@@ -295,6 +295,7 @@ CCH.Objects.Card = function (args) {
                 me.children.each(function (child) {
                     var option = $('<option />'),
                         item,
+                        newItem,
                         processOption = function (item) {
                             var name = item.summary.full.title ||
                                 item.summary.medium.title ||
@@ -324,9 +325,8 @@ CCH.Objects.Card = function (args) {
                         } else {
                             // The item was not already loaded so we will have 
                             // to go out and grab it.
-                            CCH.items.load({
-                                item: child,
-                                displayNotification: false,
+                            newItem = new CCH.Objects.Item({ 'id' : child });
+                            newItem.load({
                                 callbacks: {
                                     success: [processOption],
                                     error: [
