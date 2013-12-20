@@ -25,8 +25,8 @@ CCH.Objects.Item = function (args) {
             success : [],
             error : []
         },
-        me = this,
-        context = args.context || me;
+            me = this,
+            context = args.context || me;
 
         callbacks.success.unshift(function (data) {
             me.children = data.children || [];
@@ -81,6 +81,32 @@ CCH.Objects.Item = function (args) {
         return layer;
     };
 
+    me.toMap = function () {
+        var me = this;
+        // I want to zoom to a bounding box 
+        CCH.map.zoomToBoundingBox({
+            bbox : me.bbox,
+            fromProjection : new OpenLayers.Projection('EPSG:4326')
+        });
+
+        // Check to see if this is an aggregation. If it is, I need
+        // to pull the layers from all of its children
+        if (me.itemType === 'aggregation') {
+            // This aggregation should have children, so for each 
+            // child, I want to grab the child's layer and display it
+            // on the map
+            me.children.each(function (childItemId) {
+                var childItem = CCH.items.getById({ id : childItemId });
+                CCH.map.displayData({
+                    item : childItem
+                });
+            });
+        } else {
+            // What do I do if it's not an aggregation? Will an item
+            // in a bellow ever not be an aggregation?
+        }
+    };
+
     CCH.LOG.debug('Item.js::init():Item class finished initializing.');
 
     return {
@@ -95,6 +121,7 @@ CCH.Objects.Item = function (args) {
         wmsService : me.wmsService,
         getWmsLayer : me.createWmsLayer,
         load : me.load,
+        toMap : me.toMap,
         CLASS_NAME : 'CCH.Objects.Item'
     };
 };

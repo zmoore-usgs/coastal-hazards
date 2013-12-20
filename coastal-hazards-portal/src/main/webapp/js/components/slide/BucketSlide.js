@@ -16,6 +16,7 @@
  */
 CCH.Objects.BucketSlide = function (args) {
     "use strict";
+    CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class is initializing.');
     args = args || {};
 
     if (!args.containerId) {
@@ -210,7 +211,7 @@ CCH.Objects.BucketSlide = function (args) {
             card = me.getCard({ id : id });
             me.cards.removeAt(me.getCardIndex(id));
             card.remove();
-            
+
             if (!me.cards.length) {
                 $(me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR).addClass('hidden');
                 me.EMPTY_TEXT_CONTAINER.removeClass('hidden');
@@ -271,16 +272,20 @@ CCH.Objects.BucketSlide = function (args) {
             append(moreInfoBadge);
         newItem.data('id', id);
 
-        removeButton.on('click', function (evt) {
+        removeButton.on('click', function () {
             // I emit this to the top so that bucket can catch it, decrement itself
             // and then pass on the remove back down here to my remove method
             $(window).trigger('bucket-remove', {
                 id : id
             });
         });
-        
-        downloadButton.on('click', function (evt) {
+
+        downloadButton.on('click', function () {
             window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + id;
+        });
+
+        viewButton.on('click', function () {
+            item.toMap();
         });
 
         infoButton.attr({
@@ -298,7 +303,7 @@ CCH.Objects.BucketSlide = function (args) {
     $(me.CLOSE_BUTTON_SELECTOR).on('click', function (evt) {
         me.toggle();
     });
-    
+
     $(me.TOP_LEVEL_BUTTON_CLEAR_SELECTOR).on('click', function (evt) {
         me.remove();
     });
@@ -316,6 +321,7 @@ CCH.Objects.BucketSlide = function (args) {
         remove : me.remove,
         getCard : me.getCard,
         createCard : me.createCard,
-        isClosed : me.isClosed
+        isClosed : me.isClosed,
+        CLASS_NAME : 'CCH.Objects.BucketSlide'
     };
 };

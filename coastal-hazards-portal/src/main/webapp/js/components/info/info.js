@@ -55,7 +55,7 @@ $(document).ready(function () {
                                             });
                                             $('#info-legend').append(legend);
                                         },
-                                        error: function(data, textStatus, jqXHR) {
+                                        error: function (data, textStatus, jqXHR) {
                                             removeLegendContainer();
                                         }
                                     });
@@ -79,7 +79,7 @@ $(document).ready(function () {
                         }
                     ],
                     error: [
-                        function(jqXHR, textStatus, errorThrown) {
+                        function (jqXHR, textStatus, errorThrown) {
                             removeLegendContainer();
                         }
                     ]

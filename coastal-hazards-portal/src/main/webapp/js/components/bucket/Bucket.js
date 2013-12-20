@@ -3,7 +3,7 @@
 /*global CCH*/
 CCH.Objects.Bucket = function (args) {
     "use strict";
-    CCH.LOG.info('CCH.Objects.Bucket::constructor: Bucket class is initializing.');
+    CCH.LOG.debug('CCH.Objects.Bucket::constructor: Bucket class is initializing.');
 
     var me = (this === window) ? {} : this;
 
@@ -209,8 +209,8 @@ CCH.Objects.Bucket = function (args) {
             me.setCount({
                 count : count
             });
-        }
-
+        },
+        CLASS_NAME: 'CCH.Objects.Bucket'
     });
 
 };
