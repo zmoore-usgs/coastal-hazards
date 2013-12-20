@@ -196,6 +196,10 @@ CCH.Objects.BucketSlide = function (args) {
         return card;
     };
 
+    /**
+     * Removes a card from the slider. Passing in no args will clear everything
+     * from the slider
+     */
     me.remove = function (args) {
         args = args || {};
 
@@ -240,15 +244,31 @@ CCH.Objects.BucketSlide = function (args) {
             titleContainer = newItem.find('.' + titleContainerClass),
             titleContainerPNode = newItem.find('.' + titleContainerClass + ' p'),
             descriptionContainer = newItem.find('.' + descriptionContainerClass),
-            removeButton = newItem.find('>div:nth-child(2)>div.btn-group>button:nth-child(2)'),
+            removeButton = newItem.find('>div>div:nth-child(3)>button:nth-child(1)'),
+            upButton = newItem.find('>div>div:nth-child(3)>button:nth-child(2)'),
+            downButton = newItem.find('>div>div:nth-child(3)>button:nth-child(2)'),
+            viewButton = newItem.find('>div:nth-child(2)>div>button:nth-child(1)'),
+            shareButton = newItem.find('>div:nth-child(2)>div>button:nth-child(2)'),
+            downloadButton = newItem.find('>div:nth-child(2)>div>button:nth-child(3)'),
             infoButton = newItem.find('>div:nth-child(2)>div.btn-group>a'),
-            imageContainer = newItem.find('img');
+            imageContainer = newItem.find('img'),
+            moreInfoBadge = $('<span />').
+                    addClass('badge more-info-badge').
+                    append($('<a />').
+                        html('More Info').
+                        attr({
+                            'target' : 'portal_info_window',
+                            'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
+                        }));;
 
         newItem.attr('id', 'application-slide-bucket-container-card-' + id);
         imageContainer.attr('src', 'http://www.tshirtdesignsnprint.com/img/not-found.png');
         titleContainer.attr('id', titleContainerClass + '-' + id);
         titleContainerPNode.html(title);
-        descriptionContainer.attr('id', descriptionContainerClass + '-' + id).html(content);
+        descriptionContainer.
+            attr('id', descriptionContainerClass + '-' + id).
+            html(content).
+            append(moreInfoBadge);
         newItem.data('id', id);
 
         removeButton.on('click', function (evt) {

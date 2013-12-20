@@ -19,13 +19,12 @@ CCH.Objects.Bucket = function (args) {
     me.bucket = [];
 
     me.countChanged = function () {
-        CCH.LOG.debug('CCH.Objects.Bucket::countChanged: Bucket count changed.');
         var count = me.getCount(),
             bucketContainer = $('#' + me.BUCKET_CONTAINER_ID),
             currentMarginString = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left'),
             currentMargin = parseInt(currentMarginString.substring(0, currentMarginString.indexOf('px')), 10),
             originalMargin = parseInt(me.INITIAL_BUCKET_COUNT_MARGIN_LEFT.substring(0, me.INITIAL_BUCKET_COUNT_MARGIN_LEFT.indexOf('px')), 10);
-
+        
         if (count > 0) {
             if (!bucketContainer.hasClass(me.BUCKET_POPULATED_CLASS)) {
                 bucketContainer.removeClass(me.BUCKET_UNPOPULATED_CLASS);
@@ -53,7 +52,7 @@ CCH.Objects.Bucket = function (args) {
                 'marginLeft' : (originalMargin - me.MARGIN_WIDTH * 2) + 'px'
             });
         }
-
+        CCH.LOG.debug('CCH.Objects.Bucket::countChanged: Bucket count changed. Current count: ' + count);
         // TODO: Not sure what we're doing after 999
         // TODO: Make 0-99 text larger
         return count;
@@ -112,7 +111,11 @@ CCH.Objects.Bucket = function (args) {
                     item : item
                 });
                 me.increaseCount();
+                $(window).trigger('bucket-added', {
+                    id : id
+                });
             }
+            
             return me.bucket;
         },
         remove : function (args) {
@@ -136,6 +139,10 @@ CCH.Objects.Bucket = function (args) {
                 });
                 me.slide.remove(item);
                 me.decreaseCount();
+                
+                $(window).trigger('bucket-removed', {
+                    id : id
+                });
             }
         },
         removeAll : function () {

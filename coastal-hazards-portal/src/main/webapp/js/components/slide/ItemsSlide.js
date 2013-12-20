@@ -33,6 +33,7 @@ CCH.Objects.ItemsSlide = function (args) {
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-items-content-container';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
     me.FOOTER_ROW_ID = args.footerRowId || 'footer-row';
+    me.bucket = args.bucket;
     me.isSmall = args.isSmall;
     me.borderWidth = 2;
     me.desktopSpanSize = 3;
@@ -249,7 +250,7 @@ CCH.Objects.ItemsSlide = function (args) {
     $(window).on('cch.ui.resized', function (args) {
         me.resized(args);
     });
-
+    
     $('#' + me.SLIDE_TAB_ID).on('click', me.toggle);
     
     CCH.LOG.info('CCH.Objects.ItemsSlide::constructor: ItemsSlide class initialized.');

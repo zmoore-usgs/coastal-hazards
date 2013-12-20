@@ -42,10 +42,6 @@
     font-size: 1.3em;
 }
 
-.application-card-content-row .application-card-content-container-medium more-info-badge {
-    font-size: 1em;
-}
-
 .application-card-collapse-row-dottedline {
     display: table-cell;
     width: 100%;

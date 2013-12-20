@@ -59,25 +59,28 @@ CCH.Objects.UI = function (args) {
         // https://github.com/twitter/bootstrap/blob/master/less/responsive-767px-max.less
         return $(window).width() <= me.magicResizeNumber;
     };
-    me.itemsSlide = new CCH.Objects.ItemsSlide({
-        containerId : me.ITEMS_SLIDE_CONTAINER_ID,
-        mapdivId : me.MAP_DIV_ID,
-        headerRowId : me.HEADER_ROW_ID,
-        footerRowId : me.FOOTER_ROW_ID,
-        isSmall : me.isSmall
-    });
     me.bucketSlide = new CCH.Objects.BucketSlide({
         containerId : me.BUCKET_SLIDE_CONTAINER_ID,
         mapdivId : me.MAP_DIV_ID,
         isSmall : me.isSmall
     });
+    me.bucket = new CCH.Objects.Bucket({
+        slide : me.bucketSlide
+    });
+    me.itemsSlide = new CCH.Objects.ItemsSlide({
+        containerId : me.ITEMS_SLIDE_CONTAINER_ID,
+        mapdivId : me.MAP_DIV_ID,
+        headerRowId : me.HEADER_ROW_ID,
+        footerRowId : me.FOOTER_ROW_ID,
+        isSmall : me.isSmall,
+        bucket : me.bucket
+    });
+    
     me.searchSlide = new CCH.Objects.SearchSlide({
         containerId : me.SEARCH_SLIDE_CONTAINER_ID,
         isSmall : me.isSmall
     });
-    me.bucket = new CCH.Objects.Bucket({
-        slide : me.bucketSlide
-    });
+    
     me.combinedSearch = new CCH.Objects.CombinedSearch();
     me.accordion = new CCH.Objects.Accordion({
         containerId : me.SLIDE_CONTAINER_DIV_ID
@@ -298,7 +301,7 @@ CCH.Objects.UI = function (args) {
         
         // If we are passed a product, that means we were not passed a card
         if (item) {
-            card = CCH.cards.buildCard({
+            card = new CCH.Objects.Card({
                 item : item,
                 initHide : false
             });
@@ -384,11 +387,11 @@ CCH.Objects.UI = function (args) {
                     success : [
                         function (data, status) {
                             if (status === 'success') {
-                                CCH.ui.addToAccordion({
+                                me.addToAccordion({
                                     item : CCH.items.getById({ id : id })
                                 });
                             } else {
-                                CCH.ui.displayLoadingError({
+                                me.displayLoadingError({
                                     errorThrown: '',
                                     splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
                                     mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
@@ -396,7 +399,7 @@ CCH.Objects.UI = function (args) {
                             }
                         },
                         function () {
-                            CCH.ui.removeOverlay();
+                            me.removeOverlay();
                         }
                     ],
                     error : [errorResponseHandler]
@@ -435,7 +438,7 @@ CCH.Objects.UI = function (args) {
                 
             }
         });
-
+        
         $(me.combinedSearch).on({
             'combined-searchbar-search-performed' : function (evt, args) {
                 me.searchSlide.displaySearchResults(args);
