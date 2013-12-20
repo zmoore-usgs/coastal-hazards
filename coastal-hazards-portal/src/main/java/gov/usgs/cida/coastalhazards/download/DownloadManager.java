@@ -35,14 +35,14 @@ import org.slf4j.LoggerFactory;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class DownloadManager {
-    
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(DownloadManager.class);
-    
+
     private static final String MISSING_FILE = "MISSING.txt";
-    
+    private static final String WINDOWS_NEWLINE = "\r\n";
+
     private static Set<File> locks = Collections.synchronizedSet(new HashSet<File>());
-    
+
     public synchronized static void lock(File file) throws ConcurrentModificationException {
         if (locks.contains(file)) {
             throw new ConcurrentModificationException("May not lock file already being worked on");
@@ -76,9 +76,9 @@ public class DownloadManager {
     public static void stageItemDownload(Item stageThis, File stagingDir) throws IOException, ConcurrentModificationException {
 
         lock(stagingDir);
-        
+
         List<String> missing = new LinkedList<>();
-        
+
         try {
             Map<WFSService, SingleDownload> downloadMap = new HashMap<>();
             populateDownloadMap(downloadMap, stageThis);
@@ -93,19 +93,14 @@ public class DownloadManager {
                 // TODO try/catch this to isolate/retry problem downloads
                 try {
                     stagedDownload.stage(stagingDir, missing);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex) {
                     LOG.error("unable to stage {} for download", stagedDownload.getName());
                 }
             }
-        } finally {
-            if (!missing.isEmpty()) {
-                FileWriter missingFileWriter = new FileWriter(FileUtils.getFile(stagingDir, MISSING_FILE));
-                for (String file : missing) {
-                    missingFileWriter.write(file + System.lineSeparator());
-                }
-                IOUtils.closeQuietly(missingFileWriter);
-            }
-            
+        }
+        finally {
+            writeMissingFile(stagingDir, missing);
             unlock(stagingDir);
         }
     }
@@ -119,12 +114,12 @@ public class DownloadManager {
     public static void stageSessionDownload(Session stageThis, File stagingDir) throws IOException, ConcurrentModificationException {
         lock(stagingDir);
 
+        List<String> missing = new LinkedList<>();
+
         try {
             Map<WFSService, SingleDownload> downloadMap = new HashMap<>();
             for (Item item : stageThis.getItems()) {
-
                 populateDownloadMap(downloadMap, item);
-
             }
             List<String> namesUsed = new ArrayList<>();
 
@@ -135,10 +130,11 @@ public class DownloadManager {
                 namesUsed.add(stagedDownload.getName());
 
                 // TODO try/catch this to isolate/retry problem downloads
-                stagedDownload.stage(stagingDir);
+                stagedDownload.stage(stagingDir, missing);
             }
         }
         finally {
+            writeMissingFile(stagingDir, missing);
             unlock(stagingDir);
         }
     }
@@ -210,6 +206,22 @@ public class DownloadManager {
             List<Item> children = currentItem.getChildren();
             if (children != null) {
                 itemQueue.addAll(children);
+            }
+        }
+    }
+
+    private static void writeMissingFile(File stagingDir, List<String> missingFiles) {
+        if (!missingFiles.isEmpty()) {
+            FileWriter missingFileWriter = null;
+            try {
+                missingFileWriter = new FileWriter(FileUtils.getFile(stagingDir, MISSING_FILE));
+                for (String file : missingFiles) {
+                    missingFileWriter.write(file + WINDOWS_NEWLINE);
+                }
+            } catch (IOException ex) {
+                LOG.error("Unable to write MISSING file", ex);
+            } finally {
+                IOUtils.closeQuietly(missingFileWriter);
             }
         }
     }
