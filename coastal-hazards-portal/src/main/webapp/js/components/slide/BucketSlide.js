@@ -278,6 +278,10 @@ CCH.Objects.BucketSlide = function (args) {
                 id : id
             });
         });
+        
+        downloadButton.on('click', function (evt) {
+            window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + id;
+        });
 
         infoButton.attr({
             'target' : 'portal_info_window',
