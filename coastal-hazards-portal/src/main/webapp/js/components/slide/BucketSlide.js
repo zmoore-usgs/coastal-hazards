@@ -160,17 +160,17 @@ CCH.Objects.BucketSlide = function (args) {
 
         var id = args.id,
             existingIndex,
-            card;
+            $card;
 
         if (id) {
             existingIndex = me.getCardIndex(id);
 
             if (existingIndex !== -1) {
-                card = me.cards[existingIndex];
+                $card = me.cards[existingIndex];
             }
         }
 
-        return card;
+        return $card;
     };
 
     me.getCardIndex = function (id) {
@@ -182,19 +182,19 @@ CCH.Objects.BucketSlide = function (args) {
     me.add = function (args) {
         args = args || {};
         var item = args.item,
-            card;
+            $card;
 
         if (item && !me.getCard({ id : item.id })) {
             me.EMPTY_TEXT_CONTAINER.addClass('hidden');
             $(me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR).removeClass('hidden');
-            card = me.createCard({
+            $card = me.createCard({
                 item : item
             });
-            me.cards.push(card);
-            $('#' + me.SLIDE_CONTENT_CONTAINER).append(card);
+            me.cards.push($card);
+            $('#' + me.SLIDE_CONTENT_CONTAINER).append($card.clone(true));
         }
 
-        return card;
+        return $card;
     };
 
     /**
@@ -233,6 +233,39 @@ CCH.Objects.BucketSlide = function (args) {
         return card;
     };
 
+    me.rebuild = function (args) {
+        var $container = $('#' + me.SLIDE_CONTENT_CONTAINER);
+        
+        $container.empty();
+        me.cards.each(function ($card) {
+            $container.append($card.clone(true));
+        });
+        
+        return $container;
+    };
+
+    /**
+     * Moves a card both in the internal cards array as well as in the view
+     */
+    me.moveCard = function (args) {
+        var id = args.id,
+            direction = args.direction,
+            cardIndex = me.getCardIndex(id),
+            card;
+
+        // Make sure I find the card in my cards array
+        if (cardIndex !== -1) {
+            card = me.cards[cardIndex];
+            // Make sure I'm not trying to move out of bounds
+            if ((direction === -1 && cardIndex !== 0) ||
+                    (direction === 1 && cardIndex !== me.cards.length - 1)) {
+                me.cards.removeAt(cardIndex).splice(cardIndex + direction, 0, card);
+            }
+        }
+        me.rebuild();
+        return me.cards;
+    };
+
     me.createCard = function (args) {
         args = args || {};
         var item = args.item,
@@ -241,28 +274,28 @@ CCH.Objects.BucketSlide = function (args) {
             content = item.summary.medium.text || 'Description Not Provided',
             titleContainerClass = 'application-slide-bucket-container-card-title',
             descriptionContainerClass = 'application-slide-bucket-container-card-description',
-            newItem = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
-            titleContainer = newItem.find('.' + titleContainerClass),
-            titleContainerPNode = newItem.find('.' + titleContainerClass + ' p'),
-            descriptionContainer = newItem.find('.' + descriptionContainerClass),
-            removeButton = newItem.find('>div>div:nth-child(3)>button:nth-child(1)'),
-            upButton = newItem.find('>div>div:nth-child(3)>button:nth-child(2)'),
-            downButton = newItem.find('>div>div:nth-child(3)>button:nth-child(2)'),
-            viewButton = newItem.find('>div:nth-child(2)>div>button:nth-child(1)'),
-            shareButton = newItem.find('>div:nth-child(2)>div>button:nth-child(2)'),
-            downloadButton = newItem.find('>div:nth-child(2)>div>button:nth-child(3)'),
-            infoButton = newItem.find('>div:nth-child(2)>div.btn-group>a'),
-            imageContainer = newItem.find('img'),
+            card = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
+            titleContainer = card.find('.' + titleContainerClass),
+            titleContainerPNode = card.find('.' + titleContainerClass + ' p'),
+            descriptionContainer = card.find('.' + descriptionContainerClass),
+            removeButton = card.find('>div>div:nth-child(3)>button:nth-child(1)'),
+            upButton = card.find('>div>div:nth-child(3)>button:nth-child(2)'),
+            downButton = card.find('>div>div:nth-child(3)>button:nth-child(3)'),
+            viewButton = card.find('>div:nth-child(2)>div>button:nth-child(1)'),
+            shareButton = card.find('>div:nth-child(2)>div>button:nth-child(2)'),
+            downloadButton = card.find('>div:nth-child(2)>div>button:nth-child(3)'),
+            infoButton = card.find('>div:nth-child(2)>div.btn-group>a'),
+            imageContainer = card.find('img'),
             moreInfoBadge = $('<span />').
                     addClass('badge more-info-badge').
                     append($('<a />').
                         html('More Info').
                         attr({
-                            'target' : 'portal_info_window',
-                            'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
-                        }));;
+                        'target' : 'portal_info_window',
+                        'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
+                    }));
 
-        newItem.attr('id', 'application-slide-bucket-container-card-' + id);
+        card.attr('id', 'application-slide-bucket-container-card-' + id);
         imageContainer.attr('src', 'http://www.tshirtdesignsnprint.com/img/not-found.png');
         titleContainer.attr('id', titleContainerClass + '-' + id);
         titleContainerPNode.html(title);
@@ -270,7 +303,7 @@ CCH.Objects.BucketSlide = function (args) {
             attr('id', descriptionContainerClass + '-' + id).
             html(content).
             append(moreInfoBadge);
-        newItem.data('id', id);
+        card.data('id', id);
 
         removeButton.on('click', function () {
             // I emit this to the top so that bucket can catch it, decrement itself
@@ -288,12 +321,26 @@ CCH.Objects.BucketSlide = function (args) {
             item.toMap();
         });
 
+        upButton.on('click', function () {
+            me.moveCard({
+                id : id,
+                direction : -1
+            });
+        });
+
+        downButton.on('click', function() {
+            me.moveCard({
+                id : id,
+                direction : 1
+            });
+        });
+
         infoButton.attr({
             'target' : 'portal_info_window',
             'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
         });
 
-        return newItem;
+        return card;
     };
 
     $(window).on('cch.ui.resized', function (args) {
@@ -321,7 +368,9 @@ CCH.Objects.BucketSlide = function (args) {
         remove : me.remove,
         getCard : me.getCard,
         createCard : me.createCard,
+        moveCard : me.moveCard,
         isClosed : me.isClosed,
+        cards : me.cards,
         CLASS_NAME : 'CCH.Objects.BucketSlide'
     };
 };
