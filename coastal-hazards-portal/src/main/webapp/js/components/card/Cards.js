@@ -15,22 +15,23 @@ CCH.Objects.Cards = function(args) {
          */
         buildCard: function (args) {
             args = args || {};
-            var product = args.product,
+            var item = args.item,
                 initHide = args.initHide,
                 parent = args.parent,
                 card;
 
-                if (typeof product === 'string') {
-                    product = CCH.items.getById({
-                        id : product
+                if (typeof item === 'string') {
+                    item = CCH.items.getById({
+                        id : item
                     });
                 }
                 
                 card = new CCH.Objects.Card({
-                    product : product,
+                    item : item,
                     initHide : initHide,
                     parent : parent
                 });
+                
             return card;
         }
     };

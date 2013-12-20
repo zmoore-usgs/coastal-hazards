@@ -1,4 +1,4 @@
-<link type="text/css" rel="stylesheet" href="css/application-overlay/application-overlay.css" />
+<link type="text/css" rel="stylesheet" href="<%=request.getParameter("base-url")%>/css/application-overlay/application-overlay.css" />
 <style type="text/css">
     #application-overlay {
         background-image: url("<%=request.getParameter("application-overlay-background-image")%>");

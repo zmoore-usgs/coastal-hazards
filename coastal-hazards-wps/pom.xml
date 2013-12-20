@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>gov.usgs.cida.coastalhazards</groupId>
 		<artifactId>coastal-hazards</artifactId>
-		<version>1.1.1-SNAPSHOT</version>
+		<version>1.1.2-SNAPSHOT</version>
 	</parent>
     
 	<artifactId>coastal-hazards-wps</artifactId>
@@ -13,8 +13,8 @@
 	<name>Coastal Hazards WPS Processes</name>
 
 	<properties>
-		<gs.version>2.3.2</gs.version>
-		<gt.version>9.2</gt.version>
+		<gs.version>2.4.1</gs.version>
+		<gt.version>10.1</gt.version>
 	</properties>
 
 	<repositories>

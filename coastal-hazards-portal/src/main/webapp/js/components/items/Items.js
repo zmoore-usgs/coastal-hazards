@@ -56,14 +56,14 @@ CCH.Objects.Items = function (args) {
                 incomingItemsObject = (function (i) {
                     var returnObj = {};
                     i.each(function (item) {
-                        returnObj[item.id] = item;
+                        returnObj[item.id] = new CCH.Objects.Item(item);
                     });
                     return returnObj;
                 }(incomingItems));
 
                 // Extend the in-memory items with the incoming items
                 $.extend(true, me.items, incomingItemsObject);
-
+                
                 // We are also currently filtering geospatial
                 // using the front-end due to hibernate being 
                 // a little b :/ Also removing duplicate entries
@@ -78,7 +78,7 @@ CCH.Objects.Items = function (args) {
 
                 // Trigger that the call has completed
                 $(window).trigger('cch.data.products.loaded', {
-                    products: incomingItems
+                    products: incomingItemsObject
                 });
             }
         });
@@ -91,7 +91,7 @@ CCH.Objects.Items = function (args) {
                     type: 'error',
                     nonblock: true
                 });
-                LOG.info('An error occurred during search: ' + error);
+                CCH.LOG.warn('An error occurred during search: ' + error);
             }
         ]);
 
@@ -109,7 +109,24 @@ CCH.Objects.Items = function (args) {
         });
     };
 
+    me.addItem = function (args) {
+        args = args || {};
+        
+        var item = args.item;
+        
+        // I want to add an item to my items but I also want to make sure it
+        // is an actual item so check it's CLASS_NAME to make sure
+        if (item && 
+                'object' === typeof item &&
+                item.CLASS_NAME === 'CCH.Objects.Item' &&
+                item.id &&
+                !me.items[item.id]) {
+            me.items[item.id] = item;
+        }
+    };
+
     return {
+        add : me.addItem,
         load: me.load,
         search: me.search.submitItemSearch,
         getItems: function () {
@@ -118,6 +135,7 @@ CCH.Objects.Items = function (args) {
         getById: function (args) {
             var id = args.id;
             return me.items[id];
-        }
+        },
+       CLASS_NAME : 'CCH.Objects.Items'
     };
 };

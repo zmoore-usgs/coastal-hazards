@@ -1,7 +1,7 @@
 /*jslint browser: true*/
-/*jslint plusplus: true */
 /*global $*/
 /*global CCH*/
+/*global ga*/
 
 CCH.Objects.Accordion = function (args) {
     "use strict";
@@ -14,7 +14,7 @@ CCH.Objects.Accordion = function (args) {
 
     me.CONTAINER_ID = args.containerId || 'application-slide-items-content-container';
     me.isStopped = true;
-    
+
     container = $('#' + me.CONTAINER_ID);
 
     // Make sure that our container is of the accordion type
@@ -41,34 +41,30 @@ CCH.Objects.Accordion = function (args) {
                 card : card,
                 index : index
             });
-            
 
         me.getAccordion().append(bellow);
-        
+
         return bellow;
     };
 
     me.createBellow = function (args) {
         args = args || {};
 
-        var id = args.card.id,
+        var card = args.card,
+            id = card.id,
             cardContainer = args.container,
             titleRow = cardContainer.find('.application-card-title-row'),
-            titleLarge = titleRow.find('.application-card-title-container-large').html(),
             titleMedium = titleRow.find('.application-card-title-container-medium').html(),
-            titleSmall = titleRow.find('.application-card-title-container-small').html(),
             group = $('<div />').addClass('panel panel-default'),
             heading = $('<div />').addClass('panel-heading'),
-            titleContainer = $('<h4 />').addClass('panel-title'),
+            titleContainer = $('<span />').addClass('panel-title'),
             toggleTarget = $('<a />').addClass('accordion-toggle'),
             accordionBody = $('<div />').addClass('panel-collapse collapse'),
             bodyInner = $('<div />').addClass('panel-body'),
             accordionBodyId = 'accordion-body-' + id;
 
         toggleTarget.append(
-            $('<span />').addClass('accordion-toggle-title-large').html(titleLarge),
-            $('<span />').addClass('accordion-toggle-title-medium').html(titleMedium),
-            $('<span />').addClass('accordion-toggle-title-small').html(titleSmall)
+            $('<span />').addClass('accordion-toggle-title-medium').html(titleMedium)
         ).attr({
             'data-parent' : '#' + me.CONTAINER_ID,
             'href' : '#' + accordionBodyId,
@@ -76,7 +72,8 @@ CCH.Objects.Accordion = function (args) {
         });
 
         accordionBody.attr('id', accordionBodyId);
-
+        accordionBody.data('id', id);
+        
         bodyInner.append(cardContainer);
 
         titleRow.remove();
@@ -85,6 +82,45 @@ CCH.Objects.Accordion = function (args) {
         titleContainer.append(toggleTarget);
         heading.append(titleContainer);
         accordionBody.append(bodyInner);
+
+        //TODO- BS3 does not toggle other containers closed when this one toggles
+        //opening so have to orchestrate this when I have a bit more time
+//        heading.on('click', function () {
+//            accordionBody.collapse('toggle');
+//        });
+
+        accordionBody.on({
+            'shown.bs.collapse' : function (evt) {
+                var $this = $(this),
+                    abId = $this.data('id');
+
+                ga('send', 'event', {
+                    'eventCategory': 'accordion',   // Required.
+                    'eventAction': 'show',      // Required.
+                    'eventLabel': abId
+                });
+                $this.trigger('bellow-display-toggle', {
+                    'id' : abId,
+                    'display' : true,
+                    'card' : card
+                });
+            },
+            'hidden.bs.collapse' : function (evt) {
+                var $this = $(this),
+                    abId = $this.data('id');
+
+                ga('send', 'event', {
+                    'eventCategory': 'accordion',   // Required.
+                    'eventAction': 'hide',      // Required.
+                    'eventLabel': abId,
+                });
+                $this.trigger('bellow-display-toggle', {
+                    'id' : abId,
+                    'display' : false,
+                    'card' : card
+                });
+            }
+        });
         
         return group;
     };
@@ -97,15 +133,9 @@ CCH.Objects.Accordion = function (args) {
         return $('#' + me.CONTAINER_ID + ' .panel');
     };
 
-    $(window).on({
-    });
-
     return $.extend(me, {
         add: me.add,
-        stop: function () {
-        },
-        start: function () {
-        },
+        CLASS_NAME : 'CCH.Objects.Accordion'
     });
 
 };

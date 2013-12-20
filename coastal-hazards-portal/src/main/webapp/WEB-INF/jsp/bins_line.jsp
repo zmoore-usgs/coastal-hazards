@@ -15,9 +15,55 @@
             <sld:Name>${it.style}</sld:Name>
             <sld:Title>Coastal Change Hazards Style</sld:Title>
             <sld:FeatureTypeStyle>
+				<c:if test="${null != it.ribbon}">
+				<sld:Transformation>
+					<ogc:Function name="gs:Ribboning">
+						<ogc:Function name="parameter">
+							<ogc:Literal>features</ogc:Literal>
+						</ogc:Function>
+						<ogc:Function name="parameter">
+							<ogc:Literal>bbox</ogc:Literal>
+							<ogc:Function name="env">
+								<ogc:Literal>wms_bbox</ogc:Literal>
+							</ogc:Function>
+						</ogc:Function>
+						<ogc:Function name="parameter">
+							<ogc:Literal>width</ogc:Literal>
+							<ogc:Function name="env">
+								<ogc:Literal>wms_width</ogc:Literal>
+							</ogc:Function>
+						</ogc:Function>
+						<ogc:Function name="parameter">
+							<ogc:Literal>height</ogc:Literal>
+							<ogc:Function name="env">
+								<ogc:Literal>wms_height</ogc:Literal>
+							</ogc:Function>
+						</ogc:Function>
+						<ogc:Function name="parameter">
+							<ogc:Literal>ribbon-count</ogc:Literal>
+							<ogc:Literal>${it.ribbon}</ogc:Literal>
+						</ogc:Function>
+						<ogc:Function name="parameter">
+							<ogc:Literal>offset</ogc:Literal>
+							<ogc:Literal>${it.strokeWidth + ((it.strokeWidth / 2) + 1)}</ogc:Literal>
+						</ogc:Function>
+					</ogc:Function>
+				</sld:Transformation>
+				</c:if>
+				<c:if test="${null != it.ribbon}">
+				<%-- Add in an empty rule to stop the wfs store from trying to filter by RIBBONID --%>
+				<sld:Rule><sld:LineSymbolizer></sld:LineSymbolizer></sld:Rule>
+				</c:if>
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
                 <sld:Rule>
                     <ogc:Filter>
+						<c:if test="${null != it.ribbon}">
+						<ogc:And>
+							<ogc:PropertyIsEqualTo>
+								<ogc:PropertyName>RIBBONID</ogc:PropertyName>
+								<ogc:Literal>${it.ribbon}</ogc:Literal>
+							</ogc:PropertyIsEqualTo>
+						</c:if>
                         <c:if test="${it.binCount-1 > i && i > 0}">
                         <ogc:And>
                         </c:if>
@@ -36,12 +82,15 @@
                         <c:if test="${it.binCount-1 > i && i > 0}">
                         </ogc:And>
                         </c:if>
+						<c:if test="${null != it.ribbon}">
+						</ogc:And>
+						</c:if>
                     </ogc:Filter>
                     <sld:LineSymbolizer>
                         <sld:Stroke>
                             <sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
-                            <sld:CssParameter name="stroke-width">${it.STROKE_WIDTH}</sld:CssParameter>
-                            <sld:CssParameter name="stroke-opacity">${it.STROKE_OPACITY}</sld:CssParameter>
+                            <sld:CssParameter name="stroke-width">${it.strokeWidth}</sld:CssParameter>
+                            <sld:CssParameter name="stroke-opacity">${it.strokeOpacity}</sld:CssParameter>
                         </sld:Stroke>
                     </sld:LineSymbolizer>
                 </sld:Rule>

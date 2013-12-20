@@ -7,7 +7,9 @@ import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,15 +27,22 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class DownloadManager {
-
-    public static Set<File> locks = Collections.synchronizedSet(new HashSet<File>());
-
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DownloadManager.class);
+    
+    private static final String MISSING_FILE = "MISSING.txt";
+    
+    private static Set<File> locks = Collections.synchronizedSet(new HashSet<File>());
+    
     public synchronized static void lock(File file) throws ConcurrentModificationException {
         if (locks.contains(file)) {
             throw new ConcurrentModificationException("May not lock file already being worked on");
@@ -67,7 +76,9 @@ public class DownloadManager {
     public static void stageItemDownload(Item stageThis, File stagingDir) throws IOException, ConcurrentModificationException {
 
         lock(stagingDir);
-
+        
+        List<String> missing = new LinkedList<>();
+        
         try {
             Map<WFSService, SingleDownload> downloadMap = new HashMap<>();
             populateDownloadMap(downloadMap, stageThis);
@@ -80,10 +91,21 @@ public class DownloadManager {
                 namesUsed.add(stagedDownload.getName());
 
                 // TODO try/catch this to isolate/retry problem downloads
-                stagedDownload.stage(stagingDir);
+                try {
+                    stagedDownload.stage(stagingDir, missing);
+                } catch (Exception ex) {
+                    LOG.error("unable to stage {} for download", stagedDownload.getName());
+                }
             }
-        }
-        finally {
+        } finally {
+            if (!missing.isEmpty()) {
+                FileWriter missingFileWriter = new FileWriter(FileUtils.getFile(stagingDir, MISSING_FILE));
+                for (String file : missing) {
+                    missingFileWriter.write(file + System.lineSeparator());
+                }
+                IOUtils.closeQuietly(missingFileWriter);
+            }
+            
             unlock(stagingDir);
         }
     }

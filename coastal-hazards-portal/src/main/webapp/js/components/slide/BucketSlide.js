@@ -26,7 +26,7 @@ CCH.Objects.BucketSlide = function (args) {
     me.SLIDE_CONTAINER_ID = args.containerId;
     me.MAP_DIV_ID = args.mapdivId || 'map';
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
-    me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div:first-child >  div:first-child >  div:first-child >  div:first-child >  div:first-child';
+    me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div.application-slide-controlset';
     me.CARD_TEMPLATE_ID = 'application-slide-bucket-container-card-template';
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-bucket-content-container';
     me.EMPTY_TEXT_CONTAINER = $('#' + me.SLIDE_CONTAINER_ID ).find('> div > div > #application-slide-bucket-content-empty');
@@ -223,6 +223,7 @@ CCH.Objects.BucketSlide = function (args) {
             titleContainerPNode = newItem.find('.' + titleContainerClass + ' p'),
             descriptionContainer = newItem.find('.' + descriptionContainerClass),
             removeButton = newItem.find('>div:nth-child(2)>div.btn-group>button:nth-child(2)'),
+            infoButton = newItem.find('>div:nth-child(2)>div.btn-group>a'),
             imageContainer = newItem.find('img');
 
         newItem.attr('id', 'application-slide-bucket-container-card-' + id);
@@ -238,6 +239,11 @@ CCH.Objects.BucketSlide = function (args) {
             $(window).trigger('bucket-remove', {
                 id : id
             });
+        });
+        
+        infoButton.attr({
+            'target' : 'portal_info_window',
+            'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
         });
 
         return newItem;

@@ -3,6 +3,7 @@
 /*global window*/
 /*global OpenLayers*/
 /*global CCH*/
+/*global ga*/
 
 /**
  * Represents a product as a card
@@ -20,7 +21,7 @@ CCH.Objects.Card = function (args) {
 
     var me = (this === window) ? {} : this;
 
-    if (!args.product) {
+    if (!args.item) {
         throw 'A product was not passed into the card constructor';
     }
     me.CARD_TEMPLATE_ID = args.cardTemplateId || 'application-card-template';
@@ -28,20 +29,19 @@ CCH.Objects.Card = function (args) {
     me.PRODUCT_CONTAINER_CARD = args.productContainerId || 'application-slide-items-product-container-card';
     me.SELECTION_CONTROL_CLASS = 'application-card-children-selection-control';
     me.BUCKET_BUTTON_SELECTOR = '>div:nth-child(2)>div:nth-child(2)>div>span>button:nth-child(3)';
-    me.product = args.product;
-    me.id = me.product.id;
-    me.bbox = me.product.bbox;
-    me.type = me.product.type;
-    me.itemType = me.product.itemType;
-    me.summary = me.product.summary;
-    me.name = me.product.name;
-    me.attr = me.product.attr;
-    me.service = me.product.service;
-    me.children = me.product.children || [];
-    me.wmsService = me.product.wmsService || {};
+    me.item = args.item;
+    me.id = me.item.id;
+    me.bbox = me.item.bbox;
+    me.type = me.item.type;
+    me.itemType = me.item.itemType;
+    me.summary = me.item.summary;
+    me.name = me.item.name;
+    me.attr = me.item.attr;
+    me.service = me.item.service;
+    me.children = me.item.children || [];
+    me.wmsService = me.item.wmsService || {};
     me.wmsEndpoint = me.wmsService.endpoint || '';
     me.wmsLayers = me.wmsService.layers || [];
-    me.layer = null;
     me.container = null;
     me.descriptionContainer = null;
     // Is the card hidden by default? We probably want it to be false when creating
@@ -52,28 +52,7 @@ CCH.Objects.Card = function (args) {
     // accordion bellow
     me.parent = args.parent;
     me.child = args.child;
-    me.layer = (function () {
-        var layer = new OpenLayers.Layer.WMS(
-                me.id,
-                me.wmsEndpoint,
-                {
-                    layers: me.wmsLayers,
-                    format: 'image/png',
-                    transparent: true,
-                    sld: CCH.CONFIG.publicUrl + '/data/sld/' + me.id,
-                    styles: 'cch'
-                },
-                {
-                    projection: 'EPSG:3857',
-                    isBaseLayer: false,
-                    displayInLayerSwitcher: false,
-                    isItemLayer: true, // CCH specific setting
-                    bbox: me.bbox
-                }
-            );
-
-        return layer;
-    }());
+    me.layer = me.item.getWmsLayer();
 
     me.show = function (args) {
         args = args || {};
@@ -87,9 +66,20 @@ CCH.Objects.Card = function (args) {
             effect : effect,
             easing : easing,
             duration : duration,
-            complete : complete,
-            direction : 'up'
+            direction : 'up', 
+            complete : complete
         });
+        
+		ga('send', 'event', {
+			'eventCategory': 'card',   // Required.
+			'eventAction': 'show',      // Required.
+			'eventLabel': me.id
+		  });
+        CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was shown');
+        $(me).trigger('card-display-toggle', {
+            'display' : true
+        });
+        
     };
 
     me.hide = function (args) {
@@ -104,8 +94,18 @@ CCH.Objects.Card = function (args) {
             effect : effect,
             easing : easing,
             duration : duration,
-            complete : complete,
-            direction : 'up'
+            direction : 'up',
+            complete : complete
+        });
+        
+		ga('send', 'event', {
+			'eventCategory': 'card',   // Required.
+			'eventAction': 'hide',      // Required.
+			'eventLabel': me.id
+		  });
+        CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was hidden');
+        $(me).trigger('card-display-toggle', {
+            'display' : false
         });
     };
     
@@ -152,25 +152,25 @@ CCH.Objects.Card = function (args) {
         control.on('change', function(evt) {
             // My dropdown list has changed
             var control = $(evt.target),
-                    selectedOption = control.val(),
-                    card,
-                    createCard = function() {
-                        // User selected a product. I will append that card to 
-                        // myself
-                        card = CCH.cards.buildCard({
-                            product: selectedOption,
-                            parent: me
-                        });
+                selectedOption = control.val(),
+                card,
+                createCard = function() {
+                    // User selected a product. I will append that card to 
+                    // myself
+                    card = CCH.cards.buildCard({
+                        item: selectedOption,
+                        parent: me
+                    });
 
-                        // This is now my child card 
-                        me.child = card;
+                    // This is now my child card 
+                    me.child = card;
 
-                        // Append this new card to myself
-                        me.container.after(card.getContainer());
+                    // Append this new card to myself
+                    me.container.after(card.getContainer());
 
-                        // Show this new card to the user
-                        card.show();
-                    };
+                    // Show this new card to the user
+                    card.show();
+                };
 
             if (selectedOption) {
                 // Do I have a child? If I do, hide it and get rid of it.
@@ -213,13 +213,13 @@ CCH.Objects.Card = function (args) {
             if (button.hasClass('active')) {
                 // User pressed bucket button in and wants to add me to a bucket
                 $(window).trigger('bucket-add', {
-                    item : me.product
+                    item : me.item
                 });
             } else {
                 // User toggled the bucket button off - I should be removed from 
                 // bucket
                 $(window).trigger('bucket-remove', {
-                    item : me.product
+                    item : me.item
                 });
             }
         });
@@ -270,39 +270,32 @@ CCH.Objects.Card = function (args) {
                 largeContent = fullSummary.text || '',
                 mediumContent = mediumSummary.text || largeContent,
                 smallContent = tinySummary.text || mediumContent,
-                largeTitleContainer = container.find('.application-card-title-container-large'),
                 mediumTitleContainer = container.find('.application-card-title-container-medium'),
-                smallTitleContainer = container.find('.application-card-title-container-small'),
-                largeContentContainer = container.find('.application-card-content-container-large'),
                 mediumContentContainer = container.find('.application-card-content-container-medium'),
-                smallContentContainer = container.find('.application-card-content-container-small'),
                 childrenSelectControl = container.find('.' + me.SELECTION_CONTROL_CLASS),
                 minMaxButtons = container.find('.application-card-collapse-icon-container'),
                 controlContainer = container.find('.application-card-control-container'),
-                spaceAggButton = $('<button />').addClass('btn btn-default disabled').html('Space'),
-                propertyAggButton = $('<button />').addClass('btn btn-default').html('Property'),
-                bucketButton = $('<button />').addClass('btn btn-default').html('Bucket'),
-                infoButton = $('<a />').
-                    addClass('btn btn-default').
-                    html('Info').
-                    attr({
-                        'role': 'button',
-                        'target' : 'portal_info_window',
-                        'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
-                    });
+                spaceAggButton = $('<button />').addClass('btn btn-link disabled item-control-button'),
+                propertyAggButton = $('<button />').addClass('btn btn-link item-control-button'),
+                bucketButton = $('<button />').addClass('btn btn-link item-control-button'),
+                moreInfoBadge = $('<span />').
+                    addClass('badge more-info-badge').
+                    append($('<a />').
+                        html('More Info').
+                        attr({
+                            'target' : 'portal_info_window',
+                            'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
+                        }));
 
             // My container starts out open so I immediately add that class to it
             container.addClass('open');
 
             // Create Title
-            largeTitleContainer.html(largeTitle);
             mediumTitleContainer.html(mediumTitle);
-            smallTitleContainer.html(smallTitle);
 
             // Create Content
-            largeContentContainer.html(largeContent);
             mediumContentContainer.html(mediumContent);
-            smallContentContainer.html(smallContent);
+            mediumContentContainer.append(moreInfoBadge);
 
             // I have either aggregations or leaf nodes as children.
             // I am not myself a child.
@@ -313,6 +306,7 @@ CCH.Objects.Card = function (args) {
                 me.children.each(function (child) {
                     var option = $('<option />'),
                         item,
+                        newItem,
                         processOption = function (item) {
                             var name = item.summary.full.title ||
                                 item.summary.medium.title ||
@@ -342,9 +336,8 @@ CCH.Objects.Card = function (args) {
                         } else {
                             // The item was not already loaded so we will have 
                             // to go out and grab it.
-                            CCH.items.load({
-                                item: child,
-                                displayNotification: false,
+                            newItem = new CCH.Objects.Item({ 'id' : child });
+                            newItem.load({
                                 callbacks: {
                                     success: [processOption],
                                     error: [
@@ -362,15 +355,28 @@ CCH.Objects.Card = function (args) {
                     }
                 });
 
+                // Add images to buttons
+                spaceAggButton.append($('<img />').attr({
+                    'src' : 'images/cards/item-space.svg'
+                }));
+                propertyAggButton.append($('<img />').attr({
+                    'src' : 'images/cards/item-branch.svg'
+                }));
+                bucketButton.append($('<img />').attr({
+                    'src' : 'images/cards/item-bucket-add.svg'
+                }));
+                
                 // Add buttons to the bottom
                 controlContainer.append(spaceAggButton, propertyAggButton, bucketButton);
+                // Do bindings
                 me.bindPropertyAggButton(propertyAggButton);
                 me.bindSelectControl(childrenSelectControl);
             } else {
+                // This is a leaf node so no reason to have a dropdown listbox
                 childrenSelectControl.remove();
-                controlContainer.append(bucketButton, infoButton);
             }
-
+            
+            // Do bindings
             me.bindBucketControl(bucketButton);
             me.bindMinMaxButtons(minMaxButtons);
 
@@ -404,13 +410,14 @@ CCH.Objects.Card = function (args) {
 
     return {
         id: me.id,
-        product: me.product,
+        item: me.item,
         show : me.show,
         hide : me.hide,
         close : me.close,
         child : me.child,
         closeChild : me.closeChild,
         removeSelf : me.removeSelf,
+        layer : me.layer,
         getBoundingBox: function () {
             return me.bbox;
         },

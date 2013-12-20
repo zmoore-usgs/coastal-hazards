@@ -22,9 +22,9 @@
         <jsp:include page="components/meta-tags.jsp"></jsp:include>
         <title>USGS Coastal Change Hazards Portal</title>
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
-        <script type="text/javascript" src="webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
-        <script type="text/javascript" src="webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full.min.js"></script>
         <script type="text/javascript">
@@ -40,10 +40,26 @@
                     publicUrl: '<%=publicUrl%>'
                 }
             };
+            
+            // Internet Explorer Fix
+            // http://tosbourn.com/2013/08/javascript/a-fix-for-window-location-origin-in-internet-explorer/
+            if (!window.location.origin) {
+              window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+            }
         </script>
         <script type="text/javascript" src="<%=baseUrl%>/js/components/util/Util.js"></script>
         <script type="text/javascript" src='<%=baseUrl%>/js/components/info/info.js'></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
+		<script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+			ga('create', 'UA-46378632-1', 'usgs.gov');
+			ga('set', 'anonymizeIp', true);
+			ga('send', 'pageview');
+		</script>
     </head>
     <body>
         <jsp:include page="components/application-overlay.jsp">
@@ -51,12 +67,13 @@
                        knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
                        here. They can be used to increase awareness and provide a basis for decision making." />
             <jsp:param name="application-overlay-background-image" value="images/splash/splash_info.png" />
+            <jsp:param name="base-url" value="<%=baseUrl%>" />
         </jsp:include>
         <%-- Content Here --%>
         <div id="info-content" class="container">
             <div id="header-row" class="row">
                 <%-- Logo --%>
-                <a href="." id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+                <a href="<%=baseUrl%>/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container"  target="portal_main_window">
                     <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
                 </a>
                 <%-- Application Title --%>

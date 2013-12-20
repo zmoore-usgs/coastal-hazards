@@ -36,7 +36,7 @@ public class DownloadResource {
 	@Path("item/{id}")
     @Produces("application/zip")
 	public Response getCard(@PathParam("id") String id) throws IOException {
-        Item item = itemManager.loadItem(id);
+        Item item = itemManager.loadItem(id, true);
         
         File stagingDir = DownloadManager.createDownloadStagingArea();
         DownloadManager.stageItemDownload(item, stagingDir);

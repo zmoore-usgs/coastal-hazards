@@ -3,22 +3,8 @@
     z-index: 2000;
 }
 
-#application-slide-search-container > div:first-child > div:first-child {
-    height: 97%;
-    margin-top: 10px;
-    overflow: scroll;
-    margin-right: 3px;
-    margin-left: 3px;
-}
-
-/* Close button */
-#application-slide-search-container > div:first-child >  div:first-child >  div:first-child >  div:first-child >  div:first-child:hover {
-    font-size-adjust: 1.1;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-#application-slide-search-content {
+/* Inner container for the slide search container - Contains everything else */
+#application-slide-search-container > div {
     background-color: #F5F5F5;
     border-bottom: 2px solid #E3E3E3;
     border-top: 2px solid #E3E3E3;
@@ -27,26 +13,75 @@
     float: right;
     display: inline-block;
     z-index: 2000;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
-.application-slide-search-location-card-image {
+/* Close button row*/
+#application-slide-search-container > div > div.application-slide-controlset {
+    margin-left: 5px;
+    width: 100%;
+}
+#application-slide-search-container > div > div.application-slide-controlset:hover {
+    cursor: pointer;
+}
+
+/* Content container */
+#application-slide-search-container > div > div:nth-child(2) {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-right: 3px;
+    margin-left: 3px;
+}
+/* Location and Product Container */
+#application-slide-search-container > div > div:nth-child(2) > div {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+/* Paging containers */
+#application-slide-search-container > div > div:nth-child(2) > div > div:nth-child(2) {
+    text-align: center;
+}
+
+/* Location Container *********************************************************/
+#application-slide-search-container > div > div:nth-child(2) > div:nth-child(1) {
+    margin-bottom: 20px;
+} 
+
+/* Each row within the location container */
+#application-slide-search-container > div > div:nth-child(2) > div:nth-child(1) > div {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+/* The control set row within the location container */
+#application-slide-search-container > div > div:nth-child(2) > div:nth-child(1) > div > div.application-slide-search-location-card-toggle {
+    text-align: center;
+}
+
+#application-slide-search-container .application-slide-search-location-card-image {
     width: auto;
     height: auto;
 }
 
-.application-slide-search-location-card-icon {
-    font-size: 7em;
+#application-slide-search-container .application-slide-search-location-card-icon {
+    font-size: 2em;
+}
+/******************************************************************************/
+
+/* Product Container **********************************************************/
+#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) {
+    margin-bottom: 10px;
+}
+/* Each row within the product container */
+#application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div {
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
-.application-card-children-selection-control {
-    width: 100%;
-}
-
-/*
-No tab shown on large display. Toggled via button in bar
-*/
 @media (min-width: 992px) {
-    #application-slide-search-content {
+    #application-slide-search-container > div  {
         border-top-left-radius: 10px 10px;
         -webkit-border-top-left-radius: 10px 10px;
         border-bottom-left-radius: 10px 10px;
@@ -55,30 +90,13 @@ No tab shown on large display. Toggled via button in bar
 }
 
 @media (max-width: 991px) {
-    #application-slide-search-tab {
-        height : 60px;
-        width: 40px;
-        background-color: #00CCFF;
-        display: inline-block;
-        background-color: #F5F5F5;
-        border-left: 2px solid #E3E3E3;
-        border-top: 2px solid #E3E3E3;
-        border-bottom: 2px solid #E3E3E3;
-        z-index: 2001;
-        border-top-left-radius: 40px 10px;
-        -webkit-border-top-left-radius: 40px 10px;
-        border-bottom-left-radius: 40px 10px;
-        -webkit-border-bottom-left-radius: 40px 10px;
-        float: left;
-    }
-
-    #application-slide-search-content {
-        border-bottom-left-radius: 10px 10px;
-        -webkit-border-bottom-left-radius: 10px 10px;
-    }
-
     #application-slide-search-container {
         top : 10px;
         height: 97%;
+    }
+
+    #application-slide-search-container > div {
+        border-bottom-left-radius: 10px 10px;
+        -webkit-border-bottom-left-radius: 10px 10px;
     }
 }
