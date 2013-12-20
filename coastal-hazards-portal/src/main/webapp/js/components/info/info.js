@@ -279,5 +279,13 @@ $(document).ready(function() {
 		
 		CCH.CONFIG.map.addLayer(layer);
 		CCH.CONFIG.map.zoomToExtent(new OpenLayers.Bounds(CCH.CONFIG.item.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')));
+        
+        $('a').click(function(event) {
+            ga('send', 'event', {
+                'eventCategory': 'link',   // Required.
+                'eventAction': 'clicked',      // Required.
+                'eventLabel': event.target.href
+            });
+        });
 	};
 });

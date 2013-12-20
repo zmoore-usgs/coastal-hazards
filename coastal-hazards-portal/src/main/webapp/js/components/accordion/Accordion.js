@@ -1,6 +1,7 @@
 /*jslint browser: true*/
 /*global $*/
 /*global CCH*/
+/*global ga*/
 
 CCH.Objects.Accordion = function (args) {
     "use strict";
@@ -91,20 +92,30 @@ CCH.Objects.Accordion = function (args) {
         accordionBody.on({
             'shown.bs.collapse' : function (evt) {
                 var $this = $(this),
-                    id = $this.data('id');
-                
+                    abId = $this.data('id');
+
+                ga('send', 'event', {
+                    'eventCategory': 'accordion',   // Required.
+                    'eventAction': 'show',      // Required.
+                    'eventLabel': abId
+                });
                 $this.trigger('bellow-display-toggle', {
-                    'id' : id,
+                    'id' : abId,
                     'display' : true,
                     'card' : card
                 });
             },
             'hidden.bs.collapse' : function (evt) {
                 var $this = $(this),
-                    id = $this.data('id');
-                
+                    abId = $this.data('id');
+
+                ga('send', 'event', {
+                    'eventCategory': 'accordion',   // Required.
+                    'eventAction': 'hide',      // Required.
+                    'eventLabel': abId,
+                });
                 $this.trigger('bellow-display-toggle', {
-                    'id' : id,
+                    'id' : abId,
                     'display' : false,
                     'card' : card
                 });
