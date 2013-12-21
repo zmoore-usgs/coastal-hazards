@@ -55,11 +55,18 @@
     height: 45px;
 }
 
+.application-card-container .zoom-to-badge {
+    background-color: #345280;
+    margin-left: 5px;
+}
+.application-card-container .zoom-to-badge:hover {
+    cursor: pointer;
+}
+
 .application-card-container .more-info-badge {
     background-color: #345280;
     margin-left: 5px;
 }
-
 .application-card-container .more-info-badge a {
     color: #FFFFFF;
 }

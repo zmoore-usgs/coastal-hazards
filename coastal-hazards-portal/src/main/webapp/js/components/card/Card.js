@@ -289,9 +289,9 @@ CCH.Objects.Card = function (args) {
                             'target' : 'portal_info_window',
                             'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
                         })),
-                zoomToBboxButton = $('<img />').
-                    addClass('zoom-to-button-image').
-                    attr('src', 'images/cards/expand.svg');
+                zoomToBadge = $('<span />').
+                    addClass('badge zoom-to-badge').
+                    html('Zoom To');
 
             // My container starts out open so I immediately add that class to it
             container.addClass('open');
@@ -301,7 +301,7 @@ CCH.Objects.Card = function (args) {
 
             // Create Content
             mediumContentContainer.html(mediumContent);
-            mediumContentContainer.append(moreInfoBadge, zoomToBboxButton);
+            mediumContentContainer.append(moreInfoBadge, zoomToBadge);
 
             // I have either aggregations or leaf nodes as children.
             // I am not myself a child.
@@ -377,6 +377,12 @@ CCH.Objects.Card = function (args) {
                 // Do bindings
                 me.bindPropertyAggButton(propertyAggButton);
                 me.bindSelectControl(childrenSelectControl);
+                zoomToBadge.on('click', function () {
+                    CCH.map.zoomToBoundingBox({
+                        bbox : me.bbox,
+                        fromProjection : new OpenLayers.Projection('EPSG:4326')
+                    });
+                });
             } else {
                 // This is a leaf node so no reason to have a dropdown listbox
                 childrenSelectControl.remove();
