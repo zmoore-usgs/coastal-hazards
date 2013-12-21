@@ -42,6 +42,15 @@
     width: 100%;
 }
 
+#application-slide-bucket-container .more-info-badge {
+    background-color: #345280;
+    margin-left: 5px;
+}
+
+#application-slide-bucket-container .more-info-badge a {
+    color: #FFFFFF;
+}
+
 /*
 No tab shown on large display. Toggled via button in bar
 */

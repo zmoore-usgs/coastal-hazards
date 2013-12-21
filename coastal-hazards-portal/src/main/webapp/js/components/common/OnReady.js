@@ -26,9 +26,6 @@ $(document).ready(function () {
     splashUpdate("Initializing Session Subsystem...");
     CCH.session = new CCH.Objects.Session().init();
 
-    splashUpdate("Initializing Card Subsystem...");
-    CCH.cards = new CCH.Objects.Cards();
-
     splashUpdate("Initializing Map...");
     CCH.map = new CCH.Objects.Map({
         mapDiv: 'map'

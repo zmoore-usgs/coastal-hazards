@@ -66,7 +66,7 @@ CCH.Objects.Card = function (args) {
             effect : effect,
             easing : easing,
             duration : duration,
-            direction : 'up', 
+            direction : 'up',
             complete : complete
         });
         
@@ -79,17 +79,17 @@ CCH.Objects.Card = function (args) {
         $(me).trigger('card-display-toggle', {
             'display' : true
         });
-        
+
     };
 
     me.hide = function (args) {
         args = args || {};
-        
+
         var duration = args.duration || 500,
             effect = args.effect || 'slide',
             easing = args.easing || 'swing',
             complete = args.complete || null;
-    
+
         me.container.hide({
             effect : effect,
             easing : easing,
@@ -108,31 +108,31 @@ CCH.Objects.Card = function (args) {
             'display' : false
         });
     };
-    
+
     me.close = function () {
         // I'd like to send this close command all the way down the chain to my
         // children so they close from the bottom up
         if (me.child) {
             me.child.close();
         }
-            // If I have a parent, I am not an accordion item, so I will let my 
-            // parent close me
-            if (me.parent) {
-                // I have a parent, so I am not an accordion item. 
-                me.parent.closeChild();
-            } else {
-                // My parent is an accordion bellow, so we just need to cllck on
-                // it to close me
-                me.container.parent().parent().parent().find('.panel-heading a').trigger('click');
-            }
+        // If I have a parent, I am not an accordion item, so I will let my 
+        // parent close me
+        if (me.parent) {
+            // I have a parent, so I am not an accordion item. 
+            me.parent.closeChild();
+        } else {
+            // My parent is an accordion bellow, so we just need to cllck on
+            // it to close me
+            me.container.parent().parent().parent().find('.panel-heading a').trigger('click');
+        }
     };
-    
+
     me.closeChild = function () {
         var control = me.container.find('.' + me.SELECTION_CONTROL_CLASS);
-            me.child.removeSelf();
-            control.val('');
+        me.child.removeSelf();
+        control.val('');
     };
-    
+
     me.removeSelf = function () {
         if (me.child) {
             me.child.removeSelf();
@@ -144,22 +144,23 @@ CCH.Objects.Card = function (args) {
         });
     };
 
-    me.bindSelectControl = function(control) {
+    me.bindSelectControl = function (control) {
         if (!control) {
             throw "control not passed to CCH.Objects.Card.bindSelectControl()";
         }
-        
-        control.on('change', function(evt) {
+
+        control.on('change', function (evt) {
             // My dropdown list has changed
-            var control = $(evt.target),
-                selectedOption = control.val(),
+            var selectedOption = control.val(),
                 card,
-                createCard = function() {
-                    // User selected a product. I will append that card to 
-                    // myself
-                    card = CCH.cards.buildCard({
-                        item: selectedOption,
-                        parent: me
+                createCard = function () {
+                    // User selected a product. I will append that card to myself
+                    card = new CCH.Objects.Card({
+                        item : CCH.items.getById({
+                            id : selectedOption
+                        }),
+                        initHide : true,
+                        parent : me
                     });
 
                     // This is now my child card 
@@ -178,7 +179,7 @@ CCH.Objects.Card = function (args) {
                 if (me.child) {
                     // I am going to hide my child first, then remove it
                     me.child.hide({
-                        complete: function() {
+                        complete: function () {
                             // Remove my child after it's hidden
                             me.child.removeSelf();
                             // Now that my child is gone, I'm going to 
@@ -197,51 +198,52 @@ CCH.Objects.Card = function (args) {
                 me.child.removeSelf();
             }
         });
-        
+
         return control;
     };
-    
-    me.bindBucketControl = function (control) {
-        if (!control) {
-            throw "control not passed to CCH.Objects.Card.bindBucketControl()";
-        }
-        
-        control.on('click', function (evt) {
-            var button = $(evt.target);
-            button.button('toggle');
-            
-            if (button.hasClass('active')) {
+
+    me.bindBucketControl = function (args) {
+        var $button = args.button,
+            nextAction = args.nextAction,
+            add = function () {
                 // User pressed bucket button in and wants to add me to a bucket
                 $(window).trigger('bucket-add', {
                     item : me.item
                 });
-            } else {
+            },
+            remove = function () {
                 // User toggled the bucket button off - I should be removed from 
                 // bucket
                 $(window).trigger('bucket-remove', {
                     item : me.item
                 });
-            }
-        });
+            };
+
+        $button.off();
+        if (nextAction === 'add') {
+           $button.on('click', add);
+        } else {
+           $button.on('click', remove); 
+        }
     };
-    
+
     me.bindPropertyAggButton = function (control) {
         control.on('click', function (evt) {
             var button = $(evt.target),
-                control = me.container.find('.' + me.SELECTION_CONTROL_CLASS);
+                selectControl = me.container.find('.' + me.SELECTION_CONTROL_CLASS);
 
             button.button('toggle');
-            control.toggleClass('hidden');
+            selectControl.toggleClass('hidden');
 
             // If my dropdown listbox is hidden, I am going to hide my 
             // child
-            if (control.hasClass('hidden') && me.child) {
+            if (selectControl.hasClass('hidden') && me.child) {
                 me.child.removeSelf();
-                control.val('');
-            };
+                selectControl.val('');
+            }
         });
     };
-    
+
     me.bindMinMaxButtons = function (control) {
         control.on('click', function (evt) {
             // A user has clicked on my min/max button. 
@@ -256,7 +258,7 @@ CCH.Objects.Card = function (args) {
             }
         });
     };
-    
+
     me.createContainer = function () {
         if (!me.container) {
             var container = $('#' + me.CARD_TEMPLATE_ID).clone(true).children(),
@@ -277,7 +279,8 @@ CCH.Objects.Card = function (args) {
                 controlContainer = container.find('.application-card-control-container'),
                 spaceAggButton = $('<button />').addClass('btn btn-link disabled item-control-button'),
                 propertyAggButton = $('<button />').addClass('btn btn-link item-control-button'),
-                bucketButton = $('<button />').addClass('btn btn-link item-control-button'),
+                bucketButton = $('<button />').
+                    addClass('btn btn-link item-control-button'),
                 moreInfoBadge = $('<span />').
                     addClass('badge more-info-badge').
                     append($('<a />').
@@ -363,9 +366,9 @@ CCH.Objects.Card = function (args) {
                     'src' : 'images/cards/item-branch.svg'
                 }));
                 bucketButton.append($('<img />').attr({
-                    'src' : 'images/cards/item-bucket-add.svg'
+                    'src' : 'images/cards/add-bucket.svg'
                 }));
-                
+
                 // Add buttons to the bottom
                 controlContainer.append(spaceAggButton, propertyAggButton, bucketButton);
                 // Do bindings
@@ -375,9 +378,12 @@ CCH.Objects.Card = function (args) {
                 // This is a leaf node so no reason to have a dropdown listbox
                 childrenSelectControl.remove();
             }
-            
+
             // Do bindings
-            me.bindBucketControl(bucketButton);
+            me.bindBucketControl({
+                button : bucketButton,
+                nextAction : 'add'
+            });
             me.bindMinMaxButtons(minMaxButtons);
 
             // I start with my container hidden and an upstream process will
@@ -387,21 +393,34 @@ CCH.Objects.Card = function (args) {
                     display : 'none'
                 });
             }
-            
+
             me.container = container;
         }
         return me.container;
     };
-    
+
     $(window).on({
-        'bucket-add': function (evt, args) {},
-        'bucket-remove': function (evt, args) {
-            args = args || {};
-            var id = args.id,
-                bucketButton = me.container.find(me.BUCKET_BUTTON_SELECTOR);
-        
-            if (id && me.id === id && bucketButton.hasClass('active')) {
-                bucketButton.button('toggle');
+        'bucket-added': function (evt, args) {
+            if (args.id === me.id) {
+                var $button = me.container.find(me.BUCKET_BUTTON_SELECTOR),
+                    $img = $button.find('>img');
+                $img.attr('src', 'images/cards/subtract-bucket.svg?' + new Date().getTime()).show();
+                me.bindBucketControl({
+                    button : $button,
+                    nextAction : 'remove'
+                });
+            }
+        },
+        'bucket-removed': function (evt, args) {
+            if (args.id === me.id) {
+                var $button = me.container.find(me.BUCKET_BUTTON_SELECTOR),
+                    $img = $button.find('>img');
+
+                $img.attr('src', 'images/cards/add-bucket.svg?' + new Date().getTime()).show();
+                me.bindBucketControl({
+                    button : $button,
+                    nextAction : 'add'
+                });
             }
         }
     });

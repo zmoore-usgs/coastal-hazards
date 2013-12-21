@@ -16,6 +16,7 @@
  */
 CCH.Objects.BucketSlide = function (args) {
     "use strict";
+    CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class is initializing.');
     args = args || {};
 
     if (!args.containerId) {
@@ -27,9 +28,13 @@ CCH.Objects.BucketSlide = function (args) {
     me.MAP_DIV_ID = args.mapdivId || 'map';
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
     me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div.application-slide-controlset';
+    me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div:first-child() > div:first-child() > div:nth-child(2)';
+    me.TOP_LEVEL_BUTTON_CLEAR_SELECTOR = me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR + '> button:nth-child(1)';
+    me.TOP_LEVEL_BUTTON_SHARE_SELECTOR = me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR + '> button:nth-child(2)';
+    me.TOP_LEVEL_BUTTON_DOWNLOAD_SELECTOR = me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR + '> button:nth-child(3)';
     me.CARD_TEMPLATE_ID = 'application-slide-bucket-container-card-template';
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-bucket-content-container';
-    me.EMPTY_TEXT_CONTAINER = $('#' + me.SLIDE_CONTAINER_ID ).find('> div > div > #application-slide-bucket-content-empty');
+    me.EMPTY_TEXT_CONTAINER = $('#' + me.SLIDE_CONTAINER_ID).find('> div > div > #application-slide-bucket-content-empty');
     me.borderWidth = 2;
     me.animationTime = 500;
     me.placement = 'right';
@@ -155,17 +160,17 @@ CCH.Objects.BucketSlide = function (args) {
 
         var id = args.id,
             existingIndex,
-            card;
+            $card;
 
         if (id) {
             existingIndex = me.getCardIndex(id);
 
             if (existingIndex !== -1) {
-                card = me.cards[existingIndex];
+                $card = me.cards[existingIndex];
             }
         }
 
-        return card;
+        return $card;
     };
 
     me.getCardIndex = function (id) {
@@ -177,37 +182,138 @@ CCH.Objects.BucketSlide = function (args) {
     me.add = function (args) {
         args = args || {};
         var item = args.item,
-            card;
+            $card;
 
         if (item && !me.getCard({ id : item.id })) {
             me.EMPTY_TEXT_CONTAINER.addClass('hidden');
-            card = me.createCard({
+            $(me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR).removeClass('hidden');
+            $card = me.createCard({
                 item : item
             });
-            me.cards.push(card);
-            $('#' + me.SLIDE_CONTENT_CONTAINER).append(card);
+            me.cards.push($card);
+            me.append($card);
+            me.redrawArrows();
         }
 
-        return card;
+        return $card;
     };
 
+    /**
+     * Removes a card from the slider. Passing in no args will clear everything
+     * from the slider
+     */
     me.remove = function (args) {
         args = args || {};
 
         var id = args.id,
-            card;
+            $card;
 
         if (id) {
-            card = me.getCard({ id : id });
+            $card = me.getCard({ id : id });
             me.cards.removeAt(me.getCardIndex(id));
-            card.remove();
+            
+            $('#' + me.SLIDE_CONTENT_CONTAINER).find('>div:not(:first-child())').each(function (idx, card) {
+                if ($(card).data('id') === id) {
+                    $(card).remove();
+                }
+            });
             
             if (!me.cards.length) {
+                $(me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR).addClass('hidden');
                 me.EMPTY_TEXT_CONTAINER.removeClass('hidden');
+            } else {
+                me.redrawArrows();
             }
+        } else {
+            // I find the best way of doing this so it affects two parts of the 
+            // application is to bubble this event up to the window level and
+            // have Bucket class catch it, remove the item from itself and then 
+            // the bucket class will actually call this function with a proper
+            // id. It's a long way around removing the item but it does hit 
+            // multiple components
+            me.cards.each(function ($card) {
+                $(window).trigger('bucket-remove', {
+                    id : $card.data('id')
+                });
+            });
         }
 
-        return card;
+        return $card;
+    };
+
+    me.rebuild = function (args) {
+        var $container = $('#' + me.SLIDE_CONTENT_CONTAINER);
+        
+        $container.empty();
+        me.cards.each(function ($card) {
+            me.append($card);
+        });
+        me.redrawArrows();
+        return $container;
+    };
+    
+    me.redrawArrows = function () {
+        var cardsLength = me.cards.length,
+            id,
+            index,
+            $card,
+            $cardUpArrow,
+            $cardDownArrow;
+    
+       $('#' + me.SLIDE_CONTENT_CONTAINER).find('>div:not(#application-slide-bucket-content-empty)').each(function (idx, card) {
+            id = $(card).data('id');
+            index = me.getCardIndex(id);
+            $card = me.getCard({id : id}).clone(true);
+            $cardUpArrow = $(card).find('>div>div:nth-child(3)>button:nth-child(2)');
+            $cardDownArrow = $(card).find('>div>div:nth-child(3)>button:nth-child(3)');
+
+            if (cardsLength === 1) {
+                // If I am the only card
+                $cardUpArrow.addClass('hidden');
+                $cardDownArrow.addClass('hidden');
+            } else {
+                if (index === 0) {
+                    // I am the first in the deck
+                    $cardUpArrow.addClass('hidden');
+                    $cardDownArrow.removeClass('hidden');
+                } else if (index === cardsLength - 1) {
+                    $cardUpArrow.removeClass('hidden');
+                    $cardDownArrow.addClass('hidden');
+                } else {
+                    $cardUpArrow.removeClass('hidden');
+                    $cardDownArrow.removeClass('hidden');
+                }
+            }
+        });
+    };
+
+    me.append = function ($card) {
+        var $container = $('#' + me.SLIDE_CONTENT_CONTAINER),
+            $card = $card.clone(true);
+    
+        $container.append($card);
+    };
+
+    /**
+     * Moves a card both in the internal cards array as well as in the view
+     */
+    me.moveCard = function (args) {
+        var id = args.id,
+            direction = args.direction,
+            cardIndex = me.getCardIndex(id),
+            card;
+
+        // Make sure I find the card in my cards array
+        if (cardIndex !== -1) {
+            card = me.cards[cardIndex];
+            // Make sure I'm not trying to move out of bounds
+            if ((direction === -1 && cardIndex !== 0) ||
+                    (direction === 1 && cardIndex !== me.cards.length - 1)) {
+                me.cards.removeAt(cardIndex).splice(cardIndex + direction, 0, card);
+            }
+        }
+        me.rebuild();
+        return me.cards;
     };
 
     me.createCard = function (args) {
@@ -218,43 +324,89 @@ CCH.Objects.BucketSlide = function (args) {
             content = item.summary.medium.text || 'Description Not Provided',
             titleContainerClass = 'application-slide-bucket-container-card-title',
             descriptionContainerClass = 'application-slide-bucket-container-card-description',
-            newItem = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
-            titleContainer = newItem.find('.' + titleContainerClass),
-            titleContainerPNode = newItem.find('.' + titleContainerClass + ' p'),
-            descriptionContainer = newItem.find('.' + descriptionContainerClass),
-            removeButton = newItem.find('>div:nth-child(2)>div.btn-group>button:nth-child(2)'),
-            infoButton = newItem.find('>div:nth-child(2)>div.btn-group>a'),
-            imageContainer = newItem.find('img');
+            card = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
+            titleContainer = card.find('.' + titleContainerClass),
+            titleContainerPNode = card.find('.' + titleContainerClass + ' p'),
+            descriptionContainer = card.find('.' + descriptionContainerClass),
+            removeButton = card.find('>div>div:nth-child(3)>button:nth-child(1)'),
+            upButton = card.find('>div>div:nth-child(3)>button:nth-child(2)'),
+            downButton = card.find('>div>div:nth-child(3)>button:nth-child(3)'),
+            viewButton = card.find('>div:nth-child(2)>div>button:nth-child(1)'),
+            shareButton = card.find('>div:nth-child(2)>div>button:nth-child(2)'),
+            downloadButton = card.find('>div:nth-child(2)>div>button:nth-child(3)'),
+            infoButton = card.find('>div:nth-child(2)>div.btn-group>a'),
+            imageContainer = card.find('img'),
+            moreInfoBadge = $('<span />').
+                    addClass('badge more-info-badge').
+                    append($('<a />').
+                        html('More Info').
+                        attr({
+                        'target' : 'portal_info_window',
+                        'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
+                    }));
 
-        newItem.attr('id', 'application-slide-bucket-container-card-' + id);
+        card.attr('id', 'application-slide-bucket-container-card-' + id);
         imageContainer.attr('src', 'http://www.tshirtdesignsnprint.com/img/not-found.png');
         titleContainer.attr('id', titleContainerClass + '-' + id);
         titleContainerPNode.html(title);
-        descriptionContainer.attr('id', descriptionContainerClass + '-' + id).html(content);
-        newItem.data('id', id);
+        descriptionContainer.
+            attr('id', descriptionContainerClass + '-' + id).
+            html(content).
+            append(moreInfoBadge);
+        card.data('id', id);
 
-        removeButton.on('click', function (evt) {
+        removeButton.on('click', function () {
             // I emit this to the top so that bucket can catch it, decrement itself
             // and then pass on the remove back down here to my remove method
             $(window).trigger('bucket-remove', {
                 id : id
             });
         });
-        
+
+        downloadButton.on('click', function () {
+            window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + id;
+        });
+
+        viewButton.on('click', function () {
+            item.toMap();
+        });
+
+        upButton.on('click', function () {
+            me.moveCard({
+                id : id,
+                direction : -1
+            });
+        });
+
+        downButton.on('click', function () {
+            me.moveCard({
+                id : id,
+                direction : 1
+            });
+        });
+
         infoButton.attr({
             'target' : 'portal_info_window',
             'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
         });
 
-        return newItem;
+        return card;
     };
 
     $(window).on('cch.ui.resized', function (args) {
         me.resized(args);
     });
-    
+
     $(me.CLOSE_BUTTON_SELECTOR).on('click', function (evt) {
         me.toggle();
+    });
+
+    $(me.TOP_LEVEL_BUTTON_CLEAR_SELECTOR).on('click', function (evt) {
+        me.remove();
+    });
+    $(me.TOP_LEVEL_BUTTON_SHARE_SELECTOR).on('click', function (evt) {
+    });
+    $(me.TOP_LEVEL_BUTTON_DOWNLOAD_SELECTOR).on('click', function (evt) {
     });
 
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');
@@ -266,6 +418,9 @@ CCH.Objects.BucketSlide = function (args) {
         remove : me.remove,
         getCard : me.getCard,
         createCard : me.createCard,
-        isClosed : me.isClosed
+        moveCard : me.moveCard,
+        isClosed : me.isClosed,
+        cards : me.cards,
+        CLASS_NAME : 'CCH.Objects.BucketSlide'
     };
 };

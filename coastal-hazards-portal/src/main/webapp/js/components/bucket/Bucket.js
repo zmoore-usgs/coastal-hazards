@@ -3,7 +3,7 @@
 /*global CCH*/
 CCH.Objects.Bucket = function (args) {
     "use strict";
-    CCH.LOG.info('CCH.Objects.Bucket::constructor: Bucket class is initializing.');
+    CCH.LOG.debug('CCH.Objects.Bucket::constructor: Bucket class is initializing.');
 
     var me = (this === window) ? {} : this;
 
@@ -15,19 +15,16 @@ CCH.Objects.Bucket = function (args) {
     me.BUCKET_POPULATED_CLASS = 'app-navbar-bucket-button-container-populated';
     me.BUCKET_UNPOPULATED_CLASS = 'app-navbar-bucket-button-container-unpopulated';
     me.INITIAL_BUCKET_COUNT_MARGIN_LEFT = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left');
-//    me.FONT_SIZE_STRING = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('font-size');
-//    me.FONT_SIZE = parseInt(me.FONT_SIZE_STRING.substring(0, me.FONT_SIZE_STRING.indexOf('px')), 10);
-    me.MARGIN_WIDTH = 0;//me.FONT_SIZE / 2.5;
+    me.MARGIN_WIDTH = 0;
     me.bucket = [];
 
     me.countChanged = function () {
-        CCH.LOG.debug('CCH.Objects.Bucket::countChanged: Bucket count changed.');
         var count = me.getCount(),
             bucketContainer = $('#' + me.BUCKET_CONTAINER_ID),
             currentMarginString = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left'),
             currentMargin = parseInt(currentMarginString.substring(0, currentMarginString.indexOf('px')), 10),
             originalMargin = parseInt(me.INITIAL_BUCKET_COUNT_MARGIN_LEFT.substring(0, me.INITIAL_BUCKET_COUNT_MARGIN_LEFT.indexOf('px')), 10);
-
+        
         if (count > 0) {
             if (!bucketContainer.hasClass(me.BUCKET_POPULATED_CLASS)) {
                 bucketContainer.removeClass(me.BUCKET_UNPOPULATED_CLASS);
@@ -55,10 +52,9 @@ CCH.Objects.Bucket = function (args) {
                 'marginLeft' : (originalMargin - me.MARGIN_WIDTH * 2) + 'px'
             });
         }
-
+        CCH.LOG.debug('CCH.Objects.Bucket::countChanged: Bucket count changed. Current count: ' + count);
         // TODO: Not sure what we're doing after 999
         // TODO: Make 0-99 text larger
-
         return count;
     };
 
@@ -82,7 +78,7 @@ CCH.Objects.Bucket = function (args) {
             args = args || {};
             var id = args.id,
                 item = id ? CCH.items.getById({ id : id }) : args.item;
-        
+
             if (item) {
                 me.remove({
                     item: item
@@ -90,7 +86,7 @@ CCH.Objects.Bucket = function (args) {
             }
         }
     });
-    
+
     // Preload required images
     CCH.LOG.trace('CCH.Objects.Bucket::constructor: Pre-loading images.');
     $.get(me.IMAGE_LOCATION_BUCKET_WITH_SAND);
@@ -115,7 +111,11 @@ CCH.Objects.Bucket = function (args) {
                     item : item
                 });
                 me.increaseCount();
+                $(window).trigger('bucket-added', {
+                    id : id
+                });
             }
+            
             return me.bucket;
         },
         remove : function (args) {
@@ -139,6 +139,10 @@ CCH.Objects.Bucket = function (args) {
                 });
                 me.slide.remove(item);
                 me.decreaseCount();
+                
+                $(window).trigger('bucket-removed', {
+                    id : id
+                });
             }
         },
         removeAll : function () {
@@ -205,8 +209,8 @@ CCH.Objects.Bucket = function (args) {
             me.setCount({
                 count : count
             });
-        }
-
+        },
+        CLASS_NAME: 'CCH.Objects.Bucket'
     });
 
 };

@@ -93,7 +93,6 @@
         <script type="text/javascript" src="js/components/session/Session.js"></script>
         <script type="text/javascript" src="js/components/map/Map.js"></script>
         <script type="text/javascript" src="js/components/card/Card.js"></script>
-        <script type="text/javascript" src="js/components/card/Cards.js"></script>
         <script type="text/javascript" src="js/components/items/Items.js"></script>
         <script type="text/javascript" src="js/components/popularity/Popularity.js"></script>
         <script type="text/javascript" src="js/components/common/OWS.js"></script>

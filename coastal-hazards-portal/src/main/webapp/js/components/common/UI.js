@@ -60,25 +60,28 @@ CCH.Objects.UI = function (args) {
         // https://github.com/twitter/bootstrap/blob/master/less/responsive-767px-max.less
         return $(window).width() <= me.magicResizeNumber;
     };
-    me.itemsSlide = new CCH.Objects.ItemsSlide({
-        containerId : me.ITEMS_SLIDE_CONTAINER_ID,
-        mapdivId : me.MAP_DIV_ID,
-        headerRowId : me.HEADER_ROW_ID,
-        footerRowId : me.FOOTER_ROW_ID,
-        isSmall : me.isSmall
-    });
     me.bucketSlide = new CCH.Objects.BucketSlide({
         containerId : me.BUCKET_SLIDE_CONTAINER_ID,
         mapdivId : me.MAP_DIV_ID,
         isSmall : me.isSmall
     });
+    me.bucket = new CCH.Objects.Bucket({
+        slide : me.bucketSlide
+    });
+    me.itemsSlide = new CCH.Objects.ItemsSlide({
+        containerId : me.ITEMS_SLIDE_CONTAINER_ID,
+        mapdivId : me.MAP_DIV_ID,
+        headerRowId : me.HEADER_ROW_ID,
+        footerRowId : me.FOOTER_ROW_ID,
+        isSmall : me.isSmall,
+        bucket : me.bucket
+    });
+    
     me.searchSlide = new CCH.Objects.SearchSlide({
         containerId : me.SEARCH_SLIDE_CONTAINER_ID,
         isSmall : me.isSmall
     });
-    me.bucket = new CCH.Objects.Bucket({
-        slide : me.bucketSlide
-    });
+    
     me.combinedSearch = new CCH.Objects.CombinedSearch();
     me.accordion = new CCH.Objects.Accordion({
         containerId : me.SLIDE_CONTAINER_DIV_ID
@@ -299,7 +302,7 @@ CCH.Objects.UI = function (args) {
         
         // If we are passed a product, that means we were not passed a card
         if (item) {
-            card = CCH.cards.buildCard({
+            card = new CCH.Objects.Card({
                 item : item,
                 initHide : false
             });
@@ -317,36 +320,12 @@ CCH.Objects.UI = function (args) {
                 CCH.LOG.debug('CCH.Objects.UI:: Item ' + args.id + ' was ' + (args.display ? 'shown' : 'hidden'));
                 var id = args.id,
                     display = args.display,
-                    cardItem = args.card.item,
-                    type = cardItem.itemType,
-                    childItem;
+                    cardItem = args.card.item;
 
                 // Check if I am opening a bellow 
                 if (display) {
                     // A bellow was opened, so I need to show some layers
-
-                    // I want to zoom to a bounding box 
-                    CCH.map.zoomToBoundingBox({
-                        bbox : cardItem.bbox,
-                        fromProjection : new OpenLayers.Projection('EPSG:4326')
-                    });
-
-                    // Check to see if this is an aggregation. If it is, I need
-                    // to pull the layers from all of its children
-                    if (type === 'aggregation') {
-                        // This aggregation should have children, so for each 
-                        // child, I want to grab the child's layer and display it
-                        // on the map
-                        cardItem.children.each(function (childItemId) {
-                            childItem = CCH.items.getById({ id : childItemId });
-                            CCH.map.displayData({
-                                item : childItem
-                            });
-                        });
-                    } else {
-                        // What do I do if it's not an aggregation? Will an item
-                        // in a bellow ever not be an aggregation?
-                    }
+                    cardItem.toMap();
                 }
 
             });
@@ -390,11 +369,11 @@ CCH.Objects.UI = function (args) {
                     success : [
                         function (data, status) {
                             if (status === 'success') {
-                                CCH.ui.addToAccordion({
+                                me.addToAccordion({
                                     item : CCH.items.getById({ id : id })
                                 });
                             } else {
-                                CCH.ui.displayLoadingError({
+                                me.displayLoadingError({
                                     errorThrown: '',
                                     splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
                                     mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
@@ -402,7 +381,7 @@ CCH.Objects.UI = function (args) {
                             }
                         },
                         function () {
-                            CCH.ui.removeOverlay();
+                            me.removeOverlay();
                         }
                     ],
                     error : [errorResponseHandler]
@@ -441,7 +420,7 @@ CCH.Objects.UI = function (args) {
                 
             }
         });
-
+        
         $(me.combinedSearch).on({
             'combined-searchbar-search-performed' : function (evt, args) {
                 me.searchSlide.displaySearchResults(args);
