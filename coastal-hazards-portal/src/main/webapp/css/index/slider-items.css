@@ -30,8 +30,9 @@
     text-align: center;
 }
 
-.application-card-control-row .application-card-control-container {
-    width: 100%;
+.application-card-control-row button {
+    padding-right: 5px;
+    padding-left: 5px;
 }
 
 .application-card-title-row .application-card-title-container-medium {

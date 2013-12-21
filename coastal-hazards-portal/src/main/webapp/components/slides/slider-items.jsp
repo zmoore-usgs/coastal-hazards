@@ -48,7 +48,15 @@
             <%-- Control Row --%>
             <div class="application-card-control-row row">
                 <div class="col-md-12">
-                    <span  class="application-card-control-container"></span>
+                    <button class="btn btn-link item-control-button">
+                        <img src="images/cards/item-space.svg" alt="Space Aggregation Image"/>
+                    </button>
+                    <button class="btn btn-link item-control-button">
+                        <img src="images/cards/item-branch.svg" alt="Aggregation Image"/>
+                    </button>
+                    <button class="btn btn-link item-control-button">
+                        <img src="images/cards/add-bucket.svg" alt="Bucket Image"/>
+                    </button>
                 </div>
             </div>
         </div>

@@ -28,7 +28,6 @@ CCH.Objects.Card = function (args) {
     me.AGGREGATION_CONTAINER_CARD = args.aggregationContainerId || 'application-slide-items-aggregation-container-card';
     me.PRODUCT_CONTAINER_CARD = args.productContainerId || 'application-slide-items-product-container-card';
     me.SELECTION_CONTROL_CLASS = 'application-card-children-selection-control';
-    me.BUCKET_BUTTON_SELECTOR = '>div:nth-child(2)>div:nth-child(2)>div>span>button:nth-child(3)';
     me.item = args.item;
     me.id = me.item.id;
     me.bbox = me.item.bbox;
@@ -274,11 +273,10 @@ CCH.Objects.Card = function (args) {
                 mediumContentContainer = container.find('.application-card-content-container-medium'),
                 childrenSelectControl = container.find('.' + me.SELECTION_CONTROL_CLASS),
                 minMaxButtons = container.find('.application-card-collapse-icon-container'),
-                controlContainer = container.find('.application-card-control-container'),
-                spaceAggButton = $('<button />').addClass('btn btn-link disabled item-control-button'),
-                propertyAggButton = $('<button />').addClass('btn btn-link item-control-button'),
-                bucketButton = $('<button />').
-                    addClass('btn btn-link item-control-button'),
+                $buttonRow = container.find('> div:nth-child(2) > div:nth-child(2)'),
+                $spaceAggButton = $buttonRow.find('> div button:nth-child(1)'),
+                $propertyAggButton = $buttonRow.find('> div button:nth-child(2)'),
+                $bucketButton = $buttonRow.find('> div button:nth-child(3)'),
                 moreInfoBadge = $('<span />').
                     addClass('badge more-info-badge').
                     append($('<a />').
@@ -358,22 +356,9 @@ CCH.Objects.Card = function (args) {
                         }
                     }
                 });
-
-                // Add images to buttons
-                spaceAggButton.append($('<img />').attr({
-                    'src' : 'images/cards/item-space.svg'
-                }));
-                propertyAggButton.append($('<img />').attr({
-                    'src' : 'images/cards/item-branch.svg'
-                }));
-                bucketButton.append($('<img />').attr({
-                    'src' : 'images/cards/add-bucket.svg'
-                }));
-
-                // Add buttons to the bottom
-                controlContainer.append(spaceAggButton, propertyAggButton, bucketButton);
+                
                 // Do bindings
-                me.bindPropertyAggButton(propertyAggButton);
+                me.bindPropertyAggButton($propertyAggButton);
                 me.bindSelectControl(childrenSelectControl);
                 zoomToBadge.on('click', function () {
                     CCH.map.zoomToBoundingBox({
@@ -388,7 +373,7 @@ CCH.Objects.Card = function (args) {
 
             // Do bindings
             me.bindBucketControl({
-                button : bucketButton,
+                button : $bucketButton,
                 nextAction : 'add'
             });
             me.bindMinMaxButtons(minMaxButtons);
@@ -409,9 +394,9 @@ CCH.Objects.Card = function (args) {
     $(window).on({
         'bucket-added': function (evt, args) {
             if (args.id === me.id) {
-                var $button = me.container.find(me.BUCKET_BUTTON_SELECTOR),
+                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:nth-child(3)'),
                     $img = $button.find('>img');
-                $img.attr('src', 'images/cards/subtract-bucket.svg?' + new Date().getTime()).show();
+                $img.attr('src', 'images/cards/subtract-bucket.svg');
                 me.bindBucketControl({
                     button : $button,
                     nextAction : 'remove'
@@ -420,10 +405,10 @@ CCH.Objects.Card = function (args) {
         },
         'bucket-removed': function (evt, args) {
             if (args.id === me.id) {
-                var $button = me.container.find(me.BUCKET_BUTTON_SELECTOR),
+                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:nth-child(3)'),
                     $img = $button.find('>img');
 
-                $img.attr('src', 'images/cards/add-bucket.svg?' + new Date().getTime()).show();
+                $img.attr('src', 'images/cards/add-bucket.svg');
                 me.bindBucketControl({
                     button : $button,
                     nextAction : 'add'
