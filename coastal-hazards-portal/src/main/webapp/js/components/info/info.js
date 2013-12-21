@@ -242,38 +242,36 @@ $(document).ready(function () {
                 }
         ));
 
-        CCH.CONFIG.map.addLayer(new OpenLayers.Layer.XYZ("Light Gray Reference",
-                "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/${z}/${y}/${x}",
-                {
-                    sphericalMercator: true,
-                    isBaseLayer: false,
-                    numZoomLevels: 17,
-                    wrapDateLine: true
-                }
-        ));
-
-        var layer = new OpenLayers.Layer.WMS(CCH.CONFIG.item.id,
-                CCH.CONFIG.item.wmsService.endpoint,
-                {
-                    layers: CCH.CONFIG.item.wmsService.layers,
-                    version: '1.3.0',
-                    crs: 'EPSG:3857',
-                    sld: CCH.CONFIG.publicUrl + '/data/sld/' + CCH.CONFIG.item.id,
-                    styles: 'cch',
-                    transparent: true
-                }, {
-            singleTile: false,
-            displayInLayerSwitcher: false,
-            transparent: true,
-            isBaseLayer: false,
-            projection: 'EPSG:3857',
-            type: 'cch-layer',
-            tileOptions: {
-                maxGetUrlLength: 2048
-            }
+		var layer = new OpenLayers.Layer.WMS(CCH.CONFIG.item.id,
+				CCH.CONFIG.item.wmsService.endpoint,
+				{
+					layers: CCH.CONFIG.item.wmsService.layers,
+					version: '1.3.0',
+					crs: 'EPSG:3857',
+					sld: CCH.CONFIG.publicUrl + '/data/sld/' + CCH.CONFIG.item.id,
+					styles: 'cch',
+					transparent: true
+				}, {
+			singleTile: false,
+			displayInLayerSwitcher: false,
+			transparent: true,
+			isBaseLayer: false,
+			projection: 'EPSG:3857',
+			type: 'cch-layer',
+			tileOptions: {
+				maxGetUrlLength: 2048
+			}
+		});
+		
+		CCH.CONFIG.map.addLayer(layer);
+		CCH.CONFIG.map.zoomToExtent(new OpenLayers.Bounds(CCH.CONFIG.item.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')));
+        
+        $('a').click(function(event) {
+            ga('send', 'event', {
+                'eventCategory': 'link',   // Required.
+                'eventAction': 'clicked',      // Required.
+                'eventLabel': event.target.href
+            });
         });
-
-        CCH.CONFIG.map.addLayer(layer);
-        CCH.CONFIG.map.zoomToExtent(new OpenLayers.Bounds(CCH.CONFIG.item.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')));
-    };
+	};
 });
