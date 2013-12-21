@@ -69,12 +69,12 @@ CCH.Objects.Card = function (args) {
             direction : 'up',
             complete : complete
         });
-        
-		ga('send', 'event', {
-			'eventCategory': 'card',   // Required.
-			'eventAction': 'show',      // Required.
-			'eventLabel': me.id
-		  });
+
+        ga('send', 'event', {
+            'eventCategory': 'card', // Required.
+            'eventAction': 'show', // Required.
+            'eventLabel': me.id
+        });
         CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was shown');
         $(me).trigger('card-display-toggle', {
             'display' : true
@@ -97,12 +97,12 @@ CCH.Objects.Card = function (args) {
             direction : 'up',
             complete : complete
         });
-        
-		ga('send', 'event', {
-			'eventCategory': 'card',   // Required.
-			'eventAction': 'hide',      // Required.
-			'eventLabel': me.id
-		  });
+
+        ga('send', 'event', {
+            'eventCategory': 'card', // Required.
+            'eventAction': 'hide', // Required.
+            'eventLabel': me.id
+        });
         CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was hidden');
         $(me).trigger('card-display-toggle', {
             'display' : false
@@ -221,9 +221,9 @@ CCH.Objects.Card = function (args) {
 
         $button.off();
         if (nextAction === 'add') {
-           $button.on('click', add);
+            $button.on('click', add);
         } else {
-           $button.on('click', remove); 
+            $button.on('click', remove); 
         }
     };
 
@@ -288,7 +288,10 @@ CCH.Objects.Card = function (args) {
                         attr({
                             'target' : 'portal_info_window',
                             'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
-                        }));
+                        })),
+                zoomToBboxButton = $('<img />').
+                    addClass('zoom-to-button-image').
+                    attr('src', 'images/cards/expand.svg');
 
             // My container starts out open so I immediately add that class to it
             container.addClass('open');
@@ -298,7 +301,7 @@ CCH.Objects.Card = function (args) {
 
             // Create Content
             mediumContentContainer.html(mediumContent);
-            mediumContentContainer.append(moreInfoBadge);
+            mediumContentContainer.append(moreInfoBadge, zoomToBboxButton);
 
             // I have either aggregations or leaf nodes as children.
             // I am not myself a child.
