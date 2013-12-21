@@ -90,7 +90,9 @@ public class SingleDownload {
     }
 
     public void addAttr(String attr) {
-        this.attrs.add(attr);
+        if (!this.attrs.contains(wfs)) {
+            this.attrs.add(attr);
+        }
     }
 
     public String getName() {
