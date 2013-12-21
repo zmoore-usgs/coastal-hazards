@@ -191,7 +191,8 @@ CCH.Objects.BucketSlide = function (args) {
                 item : item
             });
             me.cards.push($card);
-            $('#' + me.SLIDE_CONTENT_CONTAINER).append($card.clone(true));
+            me.append($card);
+            me.redrawArrows();
         }
 
         return $card;
@@ -205,16 +206,23 @@ CCH.Objects.BucketSlide = function (args) {
         args = args || {};
 
         var id = args.id,
-            card;
+            $card;
 
         if (id) {
-            card = me.getCard({ id : id });
+            $card = me.getCard({ id : id });
             me.cards.removeAt(me.getCardIndex(id));
-            card.remove();
-
+            
+            $('#' + me.SLIDE_CONTENT_CONTAINER).find('>div:not(:first-child())').each(function (idx, card) {
+                if ($(card).data('id') === id) {
+                    $(card).remove();
+                }
+            });
+            
             if (!me.cards.length) {
                 $(me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR).addClass('hidden');
                 me.EMPTY_TEXT_CONTAINER.removeClass('hidden');
+            } else {
+                me.redrawArrows();
             }
         } else {
             // I find the best way of doing this so it affects two parts of the 
@@ -223,14 +231,14 @@ CCH.Objects.BucketSlide = function (args) {
             // the bucket class will actually call this function with a proper
             // id. It's a long way around removing the item but it does hit 
             // multiple components
-            me.cards.each(function ($card, index, cards) {
+            me.cards.each(function ($card) {
                 $(window).trigger('bucket-remove', {
                     id : $card.data('id')
                 });
             });
         }
 
-        return card;
+        return $card;
     };
 
     me.rebuild = function (args) {
@@ -238,10 +246,52 @@ CCH.Objects.BucketSlide = function (args) {
         
         $container.empty();
         me.cards.each(function ($card) {
-            $container.append($card.clone(true));
+            me.append($card);
         });
-        
+        me.redrawArrows();
         return $container;
+    };
+    
+    me.redrawArrows = function () {
+        var cardsLength = me.cards.length,
+            id,
+            index,
+            $card,
+            $cardUpArrow,
+            $cardDownArrow;
+    
+       $('#' + me.SLIDE_CONTENT_CONTAINER).find('>div:not(#application-slide-bucket-content-empty)').each(function (idx, card) {
+            id = $(card).data('id');
+            index = me.getCardIndex(id);
+            $card = me.getCard({id : id}).clone(true);
+            $cardUpArrow = $(card).find('>div>div:nth-child(3)>button:nth-child(2)');
+            $cardDownArrow = $(card).find('>div>div:nth-child(3)>button:nth-child(3)');
+
+            if (cardsLength === 1) {
+                // If I am the only card
+                $cardUpArrow.addClass('hidden');
+                $cardDownArrow.addClass('hidden');
+            } else {
+                if (index === 0) {
+                    // I am the first in the deck
+                    $cardUpArrow.addClass('hidden');
+                    $cardDownArrow.removeClass('hidden');
+                } else if (index === cardsLength - 1) {
+                    $cardUpArrow.removeClass('hidden');
+                    $cardDownArrow.addClass('hidden');
+                } else {
+                    $cardUpArrow.removeClass('hidden');
+                    $cardDownArrow.removeClass('hidden');
+                }
+            }
+        });
+    };
+
+    me.append = function ($card) {
+        var $container = $('#' + me.SLIDE_CONTENT_CONTAINER),
+            $card = $card.clone(true);
+    
+        $container.append($card);
     };
 
     /**
@@ -328,7 +378,7 @@ CCH.Objects.BucketSlide = function (args) {
             });
         });
 
-        downButton.on('click', function() {
+        downButton.on('click', function () {
             me.moveCard({
                 id : id,
                 direction : 1
