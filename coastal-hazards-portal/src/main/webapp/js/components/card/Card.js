@@ -223,7 +223,7 @@ CCH.Objects.Card = function (args) {
         if (nextAction === 'add') {
             $button.on('click', add);
         } else {
-            $button.on('click', remove); 
+            $button.on('click', remove);
         }
     };
 
@@ -268,10 +268,8 @@ CCH.Objects.Card = function (args) {
                 tinySummary = summary.tiny,
                 largeTitle = fullSummary.title || '',
                 mediumTitle = mediumSummary.title || largeTitle,
-                smallTitle = tinySummary.title || mediumTitle,
                 largeContent = fullSummary.text || '',
                 mediumContent = mediumSummary.text || largeContent,
-                smallContent = tinySummary.text || mediumContent,
                 mediumTitleContainer = container.find('.application-card-title-container-medium'),
                 mediumContentContainer = container.find('.application-card-content-container-medium'),
                 childrenSelectControl = container.find('.' + me.SELECTION_CONTROL_CLASS),
