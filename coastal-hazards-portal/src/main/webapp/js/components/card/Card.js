@@ -409,16 +409,17 @@ CCH.Objects.Card = function (args) {
 
                 // Do bindings
                 me.bindPropertyAggButton($propertyAggButton);
-                zoomToBadge.on('click', function () {
-                    CCH.map.zoomToBoundingBox({
-                        bbox : me.bbox,
-                        fromProjection : new OpenLayers.Projection('EPSG:4326')
-                    });
-                });
             } else {
                 // This is a leaf node so don't add an aggregation button
                 $propertyAggButton.remove();
             }
+            
+            zoomToBadge.on('click', function () {
+                CCH.map.zoomToBoundingBox({
+                    bbox : me.bbox,
+                    fromProjection : new OpenLayers.Projection('EPSG:4326')
+                });
+            });
 
             // Do bindings
             me.bindBucketControl({

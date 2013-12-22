@@ -246,6 +246,33 @@ CCH.Util = {
 				}
 			}
 		});
-
-	}
-}
+	},
+    getGeolocation : function (args) {
+        args = args || {};
+        var callbacks = args.callbacks || {
+            success : function(pos) {
+                CCH.LOG.debug("Latitude: " + pos.coords.latitude + ", Longitude: " + pos.coords.longitude);
+            },
+            error : function(err) {
+                switch(err.code) {
+                    case err.PERMISSION_DENIED:
+                      CCH.LOG.warn("User denied the request for Geolocation.");
+                      break;
+                    case err.POSITION_UNAVAILABLE:
+                      CCH.LOG.warn("Location information is unavailable.");
+                      break;
+                    case err.TIMEOUT:
+                      CCH.LOG.warn("The request to get user location timed out.");
+                      break;
+                    case err.UNKNOWN_ERROR:
+                      CCH.LOG.warn("An unknown error occurred.");
+                      break;
+                }
+            }
+        };
+        
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(callbacks.success, callbacks.error);
+        }
+    } 
+};
