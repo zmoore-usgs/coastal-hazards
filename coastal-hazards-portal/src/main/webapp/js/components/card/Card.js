@@ -27,7 +27,6 @@ CCH.Objects.Card = function (args) {
     me.CARD_TEMPLATE_ID = args.cardTemplateId || 'application-card-template';
     me.AGGREGATION_CONTAINER_CARD = args.aggregationContainerId || 'application-slide-items-aggregation-container-card';
     me.PRODUCT_CONTAINER_CARD = args.productContainerId || 'application-slide-items-product-container-card';
-    me.SELECTION_CONTROL_CLASS = 'application-card-children-selection-control';
     me.item = args.item;
     me.id = me.item.id;
     me.bbox = me.item.bbox;
@@ -127,9 +126,7 @@ CCH.Objects.Card = function (args) {
     };
 
     me.closeChild = function () {
-        var control = me.container.find('.' + me.SELECTION_CONTROL_CLASS);
         me.child.removeSelf();
-        control.val('');
     };
 
     me.removeSelf = function () {
@@ -141,64 +138,6 @@ CCH.Objects.Card = function (args) {
                 me.container.remove();
             }
         });
-    };
-
-    me.bindSelectControl = function (control) {
-        if (!control) {
-            throw "control not passed to CCH.Objects.Card.bindSelectControl()";
-        }
-
-        control.on('change', function (evt) {
-            // My dropdown list has changed
-            var selectedOption = control.val(),
-                card,
-                createCard = function () {
-                    // User selected a product. I will append that card to myself
-                    card = new CCH.Objects.Card({
-                        item : CCH.items.getById({
-                            id : selectedOption
-                        }),
-                        initHide : true,
-                        parent : me
-                    });
-
-                    // This is now my child card 
-                    me.child = card;
-
-                    // Append this new card to myself
-                    me.container.after(card.getContainer());
-
-                    // Show this new card to the user
-                    card.show();
-                };
-
-            if (selectedOption) {
-                // Do I have a child? If I do, hide it and get rid of it.
-                // The user wants a new card
-                if (me.child) {
-                    // I am going to hide my child first, then remove it
-                    me.child.hide({
-                        complete: function () {
-                            // Remove my child after it's hidden
-                            me.child.removeSelf();
-                            // Now that my child is gone, I'm going to 
-                            // replace it with a new card
-                            createCard();
-                        }
-                    });
-                } else {
-                    // I have no children so I am free to go ahead and 
-                    // just create a new child card
-                    createCard();
-                }
-            } else {
-                // User selected blank option which means user wants my 
-                // gone so I will go ahead and remove it
-                me.child.removeSelf();
-            }
-        });
-
-        return control;
     };
 
     me.bindBucketControl = function (args) {
@@ -225,20 +164,146 @@ CCH.Objects.Card = function (args) {
             $button.on('click', remove);
         }
     };
+    
+    me.bindAggMenuToResize = function (args) {
+        $(window).on('resize', function() {
+            var $container = args.container,
+            $control = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:nth-child(2)'),
+            bodyWidth = $('body').outerWidth(),
+            containerWidth = $container.outerWidth(),
+            controlHeight = $control.outerHeight(),
+            controlTop = $control.offset().top,
+            controlLeft = $control.offset().left,
+            top = controlHeight + controlTop, 
+            left = controlLeft;
+            
+            if (controlLeft + containerWidth > bodyWidth) {
+                left = bodyWidth - containerWidth;
+            }
+            
+            $container.offset({
+                'top' : top,
+                'left' : left
+            });
+            
+            $container.css({
+                'max-width' : bodyWidth + 'px'
+            });
+        });
+    };
+    
+    me.bindPropertyAggButton = function ($control) {
+        $control.on('click', function ($evt) {
+            $evt.stopImmediatePropagation();
 
-    me.bindPropertyAggButton = function (control) {
-        control.on('click', function (evt) {
-            var button = $(evt.target),
-                selectControl = me.container.find('.' + me.SELECTION_CONTROL_CLASS);
+            var containerClass = 'aggregation-selection-container',
+                $currentContainer = $('body').find('.' + containerClass),
+                $container = $('<span />').
+                    addClass(containerClass),
+                item,
+                $list = $('<ul />'),
+                createCard = function (id) {
+                    // User selected a product. I will append that card to myself
+                    var card = new CCH.Objects.Card({
+                        item : CCH.items.getById({
+                            id : id
+                        }),
+                        initHide : true,
+                        parent : me
+                    });
 
-            button.button('toggle');
-            selectControl.toggleClass('hidden');
+                    // This is now my child card 
+                    me.child = card;
 
-            // If my dropdown listbox is hidden, I am going to hide my 
-            // child
-            if (selectControl.hasClass('hidden') && me.child) {
-                me.child.removeSelf();
-                selectControl.val('');
+                    // Append this new card to myself
+                    me.container.after(card.getContainer());
+
+                    // Show this new card to the user
+                    card.show();
+                },
+                processOption = function (item) {
+                    var name = item.summary.tiny.title || item.summary.medium.title,
+                        $listItem = $('<li />');
+
+                    $listItem.data('id', item.id);
+                    $listItem.html(name);
+                    $listItem.on('click', function (evt) {
+                        var id = $(evt.target).data('id');
+
+                        if (me.child) {
+                            // I am going to hide my child first, then remove it
+                            me.child.hide({
+                                complete: function () {
+                                    // Remove my child after it's hidden
+                                    me.child.removeSelf();
+                                    // Now that my child is gone, I'm going to 
+                                    // replace it with a new card
+                                    createCard(id);
+                                }
+                            });
+                        } else {
+                            // I have no children so I am free to go ahead and 
+                            // just create a new child card
+                            createCard(id);
+                        }
+                    });
+
+                    return $listItem;
+                };
+
+            if ($currentContainer.length) {
+                me.removeAggregationContainer();
+            } else {
+                $container.append($list);
+                $('body').append($container);
+                me.children.each(function (child) {
+                    if (typeof child === 'string') {
+                        item = CCH.items.getById({
+                            id : child
+                        });
+
+                        if (item) {
+                            // The item is already loaded in the items object
+                            // so I don't have to go out and get it
+                            $list.append(processOption(item));
+                        } else {
+                            // The item was not already loaded so I will have 
+                            // to go out and grab it, processing it once I 
+                            // have it.
+                            item = new CCH.Objects.Item({ 'id' : child });
+                            item.load({
+                                callbacks: {
+                                    success: [function (item) {
+                                        $list.append(processOption(item));
+                                    }],
+                                    error: [
+                                        function (jqXHR, textStatus, errorThrown) {
+                                            $.pnotify({
+                                                text: 'Could not load sub-item',
+                                                styling: 'bootstrap',
+                                                type: 'warn',
+                                                nonblock: true,
+                                                sticker: false,
+                                                icon: 'icon-twitter'
+                                            });
+                                            CCH.LOG.warn('Card:: Could not load ' +
+                                                'item. Status Code: ' + textStatus +
+                                                ', Error: ' + errorThrown);
+                                        }
+                                    ]
+                                }
+                            });
+                        }
+                    } else {
+                        $list.append(processOption(item));
+                    }
+                });
+                
+                me.bindAggMenuToResize({
+                    container : $container
+                });
+                
+                $(window).trigger('resize');
             }
         });
     };
@@ -257,7 +322,11 @@ CCH.Objects.Card = function (args) {
             }
         });
     };
-
+    
+    me.removeAggregationContainer = function() {
+        $('body').find('.aggregation-selection-container').remove();  
+    };
+    
     me.createContainer = function () {
         if (!me.container) {
             var container = $('#' + me.CARD_TEMPLATE_ID).clone(true).children(),
@@ -271,7 +340,6 @@ CCH.Objects.Card = function (args) {
                 mediumContent = mediumSummary.text || largeContent,
                 mediumTitleContainer = container.find('.application-card-title-container-medium'),
                 mediumContentContainer = container.find('.application-card-content-container-medium'),
-                childrenSelectControl = container.find('.' + me.SELECTION_CONTROL_CLASS),
                 minMaxButtons = container.find('.application-card-collapse-icon-container'),
                 $buttonRow = container.find('> div:nth-child(2) > div:nth-child(2)'),
                 $spaceAggButton = $buttonRow.find('> div button:nth-child(1)'),
@@ -297,58 +365,40 @@ CCH.Objects.Card = function (args) {
 
             // Create Content
             mediumContentContainer.html(mediumContent);
+
+            // Add badges to content
             mediumContentContainer.append(moreInfoBadge, zoomToBadge);
 
             // I have either aggregations or leaf nodes as children.
             // I am not myself a child.
             if (me.children.length) {
-                childrenSelectControl.append($('<option />').
-                    attr('value', '')).
-                    addClass('hidden');
                 me.children.each(function (child) {
                     var option = $('<option />'),
-                        item,
-                        newItem,
-                        processOption = function (item) {
-                            var name = item.summary.full.title ||
-                                item.summary.medium.title ||
-                                item.summary.tiny.title ||
-                                child;
+                        item;
 
-                            option.html(name);
-
-                            return option;
-                        };
-
-                    option.addClass('application-card-children-selection-control-option');
                     if (typeof child === 'string') {
                         item = CCH.items.getById(child);
-                        // The child is a string. This means that we don't know
-                        // anything about this child beyond its ID. We still
-                        // have to load this object from the back-end. We will
-                        // create the option element and fire off a request to
-                        // the back end for more information
-                        childrenSelectControl.append(option);
-                        option.attr('value', child);
 
-                        if (item) {
-                            // The item is already loaded in the items object
-                            // so we don't have to go out and get it
-                            processOption(item);
-                        } else {
-                            // The item was not already loaded so we will have 
-                            // to go out and grab it.
-                            newItem = new CCH.Objects.Item({ 'id' : child });
-                            newItem.load({
+                        if (!item) {
+                            // The item was not already loaded so I will have 
+                            // to go out and grab it, processing it once I 
+                            // have it.
+                            new CCH.Objects.Item({ 'id' : child }).load({
                                 callbacks: {
-                                    success: [processOption],
+                                    success : [],
                                     error: [
                                         function (jqXHR, textStatus, errorThrown) {
-                                            CCH.ui.displayLoadingError({
-                                                errorThrown: errorThrown,
-                                                splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
-                                                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
+                                            $.pnotify({
+                                                text: 'Could not load sub-item',
+                                                styling: 'bootstrap',
+                                                type: 'warn',
+                                                nonblock: true,
+                                                sticker: false,
+                                                icon: 'icon-twitter'
                                             });
+                                            CCH.LOG.warn('Card:: Could not load ' +
+                                                'item. Status Code: ' + textStatus +
+                                                ', Error: ' + errorThrown);
                                         }
                                     ]
                                 }
@@ -356,10 +406,9 @@ CCH.Objects.Card = function (args) {
                         }
                     }
                 });
-                
+
                 // Do bindings
                 me.bindPropertyAggButton($propertyAggButton);
-                me.bindSelectControl(childrenSelectControl);
                 zoomToBadge.on('click', function () {
                     CCH.map.zoomToBoundingBox({
                         bbox : me.bbox,
@@ -367,8 +416,8 @@ CCH.Objects.Card = function (args) {
                     });
                 });
             } else {
-                // This is a leaf node so no reason to have a dropdown listbox
-                childrenSelectControl.remove();
+                // This is a leaf node so don't add an aggregation button
+                $propertyAggButton.remove();
             }
 
             // Do bindings
@@ -390,12 +439,19 @@ CCH.Objects.Card = function (args) {
         }
         return me.container;
     };
-
+    
     $(window).on({
+        'click': function(evt) {
+            me.removeAggregationContainer(evt);
+        },
+        'cch.ui.redimensioned': function(evt) {
+            me.removeAggregationContainer(evt);
+        },
         'bucket-added': function (evt, args) {
             if (args.id === me.id) {
                 var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:nth-child(3)'),
                     $img = $button.find('>img');
+
                 $img.attr('src', 'images/cards/subtract-bucket.svg');
                 me.bindBucketControl({
                     button : $button,

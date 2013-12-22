@@ -37,12 +37,6 @@
                         </div>
                     </div>
 
-                    <%-- Children Selection Control --%>
-                    <div class="application-card-children-selection-row row">
-                        <div class="col-md-12">
-                            <select class="application-card-children-selection-control"></select>
-                        </div>
-                    </div>
                 </div>
             </div>
             <%-- Control Row --%>
