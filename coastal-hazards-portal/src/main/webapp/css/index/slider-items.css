@@ -12,11 +12,6 @@
     margin-bottom: 10px;
 }
 
-.application-card-children-selection-control {
-    width: 100%;
-    text-overflow: ellipsis; 
-}
-
 .application-card-collapse-icon-container {
     display: table-cell;
     vertical-align: middle;
@@ -30,8 +25,9 @@
     text-align: center;
 }
 
-.application-card-control-row .application-card-control-container {
-    width: 100%;
+.application-card-control-row button {
+    padding-right: 5px;
+    padding-left: 5px;
 }
 
 .application-card-title-row .application-card-title-container-medium {
@@ -55,11 +51,18 @@
     height: 45px;
 }
 
+.application-card-container .zoom-to-badge {
+    background-color: #345280;
+    margin-left: 5px;
+}
+.application-card-container .zoom-to-badge:hover {
+    cursor: pointer;
+}
+
 .application-card-container .more-info-badge {
     background-color: #345280;
     margin-left: 5px;
 }
-
 .application-card-container .more-info-badge a {
     color: #FFFFFF;
 }
@@ -89,6 +92,34 @@
     font-size: 1.9em;
 }
 
+.aggregation-selection-container {
+    display: inline-block;
+    position: absolute;
+    border: 1px #000000 solid;
+    min-width: 320px;
+    width: auto;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    z-index: 1007;
+}
+
+.aggregation-selection-container ul {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+.aggregation-selection-container ul li {
+    background-color: #AAAAAA;
+    padding: 5px;
+}
+
+.aggregation-selection-container ul li:hover {
+    cursor: pointer;
+    background-color: #CCCCCC;
+}
+
 @media (min-width: 992px) {
     /* No tab shown on large display. Toggled via button in bar */
     #application-slide-items-tab {
@@ -112,7 +143,7 @@
         /*background-color: #F5F5F5;*/
         overflow-y: auto;
     }
-    
+
     #content-column {
         height: 100%;
     }
@@ -126,18 +157,18 @@
     #application-slide-items-container .panel-group {
         margin-bottom: 0px;
     }
-    
+
     #application-slide-items-container {
         position: absolute;
         z-index: 1006; /* 1005 is highest on map */
         height: 98%;
     }
-    
+
     #application-slide-items-content {
         height: 100%;
         float:right;
     }
-    
+
     #application-slide-items-content-container {
         overflow: auto;
         background-color: #F5F5F5;
@@ -173,7 +204,7 @@
         z-index: 1007;
         top: 90%;
     }
-    
+
     #application-slide-items-tab:hover {
         cursor: pointer;
     }
