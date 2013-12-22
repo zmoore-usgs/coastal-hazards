@@ -99,15 +99,29 @@ CCH.Objects.UI = function (args) {
         }
     };
 
-    me.windowResizeHandler = function () {
+    me.windowResizeHandler = function ($evt) {
         var currWidth = $(window).width(),
             isSmall = me.isSmall(),
             headerRow = $('#' + me.HEADER_ROW_ID),
             footerRow = $('#' + me.FOOTER_ROW_ID),
             contentRow = $('#' + me.CONTENT_ROW_ID),
+            tHeight,
+            headerHeight = headerRow.outerHeight(true),
+            footerHeight = footerRow.outerHeight(true),
             map = $('#' + me.MAP_DIV_ID),
-            contentRowHeight = $(window).height() - headerRow.outerHeight(true) - footerRow.outerHeight(true);
-
+            contentRowHeight;
+    
+        contentRowHeight = $(window).height() - (headerHeight + footerHeight);
+        
+        // This is an issue that happens with IE9. I've still not figured out why
+        // but the height numbers seem to switch. It's probably an IE9 event
+        // handling timing issue
+        if (footerHeight > contentRowHeight) {
+            tHeight = contentRowHeight;
+            contentRowHeight = footerHeight;
+            footerHeight = tHeight;
+        }
+        
         contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
 
         if (isSmall) {
