@@ -134,11 +134,11 @@ $(document).ready(function () {
             });
         } else if (type === 'item') {
             // User is coming in with an item, so load that item
-            splashUpdate('Loading Item ' + itemId);
+            splashUpdate('Loading Application');
             CCH.ui.loadInitialItem(itemId);
         }
     } else {
-        splashUpdate('Loading Items');
+        splashUpdate('Loading Application');
         
         // I don't want to load the uber item, but I do want to find out what's 
         // in it so I can load those items as top-level accordion bellows

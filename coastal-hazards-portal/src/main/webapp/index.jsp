@@ -1,3 +1,4 @@
+<%@page import="java.io.File"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
@@ -6,12 +7,15 @@
 
     {
         try {
+            File propsFile = new File(getClass().getClassLoader().getResource("application.properties").toURI());
+            props = new DynamicReadOnlyProperties(propsFile);
             props = props.addJNDIContexts(new String[0]);
         } catch (Exception e) {
             System.out.println("Could not find JNDI - Application will probably not function correctly");
         }
     }
     boolean development = Boolean.parseBoolean(props.getProperty("development"));
+    String version = props.getProperty("application.version");
 %>
 <% String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");%>
 <html lang="en"> 
@@ -41,6 +45,7 @@
                        here. They can be used to increase awareness and provide a basis for decision making." />
             <jsp:param name="application-overlay-background-image" value="images/splash/splash.svg" />
             <jsp:param name="base-url" value="<%=baseUrl%>" />
+            <jsp:param name="version" value="<%=version%>" />
         </jsp:include>
         
         <div id="application-container" class="container">
