@@ -45,17 +45,7 @@
 			'published': 'published'
 		},
 		map: {
-			projection: "EPSG:900913",
-			initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
-			controls: [
-				new OpenLayers.Control.LayerSwitcher({
-					roundedCorner: true
-				})
-			],
 			layers: {
-				boxLayer: new OpenLayers.Layer.Boxes('map-boxlayer', {
-					displayInLayerSwitcher: false
-				}),
 				markerLayer: new OpenLayers.Layer.Markers('geocoding-marker-layer', {
 					displayInLayerSwitcher: false
 				}),
