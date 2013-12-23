@@ -1,23 +1,23 @@
 <link type="text/css" rel="stylesheet" href="<%=request.getParameter("base-url")%>/css/application-overlay/application-overlay.css" />
+<%-- 
 <style type="text/css">
     #application-overlay {
         background-image: url("<%=request.getParameter("application-overlay-background-image")%>");
     }
 </style>
+--%>
 <div id="application-overlay">
-    <div id="application-overlay-content">
-        <div id="application-overlay-title">
-            USGS Coastal Change Hazards Portal
-        </div>
-        <div id="application-overlay-description-container">
-            <p id="application-overlay-description"><%=request.getParameter("application-overlay-description")%></p>
-        </div>
-
         <div>
-            <div id="splash-status-update"></div>
-            <img id="splash-spinner" src="images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
+            <img src="<%=request.getParameter("base-url")%>/images/splash/usgs_logo.png" alt="USGS Logo"/>
         </div>
-    </div>
+        <div>
+            <img src="<%=request.getParameter("application-overlay-background-image")%>" alt="CCH Bucket Logo"/>
+            <div>Coastal Change Hazards Portal</div>
+            <div>Version <%=request.getParameter("version")%></div>
+            <div>
+                <img id="splash-spinner" src="images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/><span id="splash-status-update"></span>
+            </div>
+        </div>
 </div>
 <script type="text/javascript">
     var splashUpdate = function(message) {
