@@ -395,7 +395,7 @@ CCH.Objects.UI = function (args) {
                             }
                         },
                         function () {
-//                            me.removeOverlay();
+                            me.removeOverlay();
                         }
                     ],
                     error : [errorResponseHandler]
