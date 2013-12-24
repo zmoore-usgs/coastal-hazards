@@ -30,6 +30,8 @@ CCH.Objects.Item = function (args) {
 
         callbacks.success.unshift(function (data) {
             me.children = data.children || [];
+            me.attr = data.attr;
+            me.metadata = data.metadata;
             me.bbox = data.bbox || me.UNITED_STATES_BBOX;
             me.itemType = data.itemType;
             me.name = data.name;

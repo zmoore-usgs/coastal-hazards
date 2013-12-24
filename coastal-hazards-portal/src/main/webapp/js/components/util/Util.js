@@ -178,10 +178,12 @@ CCH.Util = {
 	getSLD: function(args) {
 		args = args || {};
 		args.callbacks = args.callbacks || {};
+        args.context = args.context;
 		args.callbacks.success = args.callbacks.success || [];
 		args.callbacks.error = args.callbacks.error || [];
 		$.ajax({
 			url: args.contextPath + '/data/sld/' + args.itemId,
+            context : args.context || arguments.callee.caller,
 			headers: {
 				'Accept': "application/json; charset=utf-8",
 				'Content-Type': "application/json; charset=utf-8"
@@ -189,12 +191,12 @@ CCH.Util = {
 			dataType: 'json',
 			success: function(data, status, jqXHR) {
 				args.callbacks.success.each(function(cb) {
-					cb.apply(this, [data, status, jqXHR]);
+					cb.apply(args.context, [data, status, jqXHR]);
 				});
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 				args.callbacks.error.each(function(cb) {
-					cb.apply(this, [jqXHR, textStatus, errorThrown]);
+					cb.apply(args.context, [jqXHR, textStatus, errorThrown]);
 				});
 			}
 		});
