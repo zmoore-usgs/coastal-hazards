@@ -58,7 +58,29 @@ html, body {
 
 #map {
     min-height : 150px;
+    height: 100%;
 }
+
+/* Deals with layer identification on-click */
+#feature-identification-popup_contentDiv table {
+    width: 100%;
+}
+#feature-identification-popup_contentDiv table tr {
+    font-size: 1.2em;
+    vertical-align: middle;
+    height: 50px;
+    margin-bottom: 5px;
+}
+#feature-identification-popup_contentDiv table tr > td:nth-child(2) > span {
+    height: 50%;
+    border: 1px #999999 solid;
+}
+#feature-identification-popup_contentDiv table tr > td:nth-child(3) {
+    padding-left: 10px;
+    text-align: right;
+}
+
+
 
 @media (min-width: 1200px) {
     #application-container {
