@@ -39,6 +39,8 @@ public class DownloadManager {
     private static final Logger LOG = LoggerFactory.getLogger(DownloadManager.class);
 
     private static final String MISSING_FILE = "MISSING.txt";
+    private static final String README_RESOURCE = "gov/usgs/cida/coastalhazards/download/README.txt";
+    private static final String README_FILE = "README.txt";
     private static final String WINDOWS_NEWLINE = "\r\n";
 
     private static Set<File> locks = Collections.synchronizedSet(new HashSet<File>());
@@ -101,6 +103,7 @@ public class DownloadManager {
         }
         finally {
             writeMissingFile(stagingDir, missing);
+            writeReadmeFile(stagingDir);
             unlock(stagingDir);
         }
     }
@@ -225,4 +228,16 @@ public class DownloadManager {
             }
         }
     }
+    
+    private static void writeReadmeFile(File stagingDir) {
+        try {
+            URL resource = DownloadManager.class.getClassLoader().getResource(README_RESOURCE);
+            File readmeIn = FileUtils.toFile(resource);
+            File readmeOut = FileUtils.getFile(stagingDir, README_FILE);
+            FileUtils.copyFile(readmeIn, readmeOut);
+        } catch (IOException ex) {
+            LOG.error("unable to write README file", ex);
+        }
+    }
+
 }
