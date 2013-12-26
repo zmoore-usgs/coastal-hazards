@@ -76,12 +76,12 @@ CCH.Objects.UI = function (args) {
         isSmall : me.isSmall,
         bucket : me.bucket
     });
-    
+
     me.searchSlide = new CCH.Objects.SearchSlide({
         containerId : me.SEARCH_SLIDE_CONTAINER_ID,
         isSmall : me.isSmall
     });
-    
+
     me.combinedSearch = new CCH.Objects.CombinedSearch();
     me.accordion = new CCH.Objects.Accordion({
         containerId : me.SLIDE_CONTAINER_DIV_ID
@@ -92,7 +92,7 @@ CCH.Objects.UI = function (args) {
             CCH.LOG.info('UI:: Items found: ' + data.items.length);
         }
     };
-    
+
     me.locationsSearchedHandler = function (evt, data) {
         if (data.items) {
             CCH.LOG.info('UI:: Locations found: ' + data.items.length);
@@ -110,9 +110,9 @@ CCH.Objects.UI = function (args) {
             footerHeight = footerRow.outerHeight(true),
             map = $('#' + me.MAP_DIV_ID),
             contentRowHeight;
-    
+
         contentRowHeight = $(window).height() - (headerHeight + footerHeight);
-        
+
         // This is an issue that happens with IE9. I've still not figured out why
         // but the height numbers seem to switch. It's probably an IE9 event
         // handling timing issue
@@ -121,7 +121,7 @@ CCH.Objects.UI = function (args) {
             contentRowHeight = footerHeight;
             footerHeight = tHeight;
         }
-        
+
         contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
 
         if (isSmall) {
@@ -306,14 +306,14 @@ CCH.Objects.UI = function (args) {
             $(window).trigger('cch.ui.overlay.removed');
         });
     };
-    
+
     me.addToAccordion = function (args) {
         args = args || {};
-        
+
         var card = args.card,
             item = args.item,
             bellow;
-        
+
         // If we are passed a product, that means we were not passed a card
         if (item) {
             card = new CCH.Objects.Card({
@@ -321,37 +321,22 @@ CCH.Objects.UI = function (args) {
                 initHide : false
             });
         }
-        
+
         // By now, we should have a card
         if (card) {
             // I want to first create a bellow with this new card.
             bellow = me.accordion.add({
                 card : card
             });
-
-            // Then add an event handler for when it opens/closes
-            bellow.on('bellow-display-toggle', function (evt, args) {
-                CCH.LOG.debug('CCH.Objects.UI:: Item ' + args.id + ' was ' + (args.display ? 'shown' : 'hidden'));
-                var id = args.id,
-                    display = args.display,
-                    cardItem = args.card.item;
-
-                // Check if I am opening a bellow 
-                if (display) {
-                    // A bellow was opened, so I need to show some layers
-                    cardItem.toMap();
-                }
-
-            });
         }
     };
 
     me.displayLoadingError = function (args) {
-		ga('send', 'event', {
-			'eventCategory': 'loadingError',   // Required.
-			'eventAction': 'error',      // Required.
-			'eventLabel': args.errorThrown
-		});
+        ga('send', 'event', {
+            'eventCategory': 'loadingError', // Required.
+            'eventAction': 'error', // Required.
+            'eventLabel': args.errorThrown
+        });
         var continueLink = $('<a />').attr({
             'href': CCH.CONFIG.contextPath,
             'role': 'button'
@@ -367,41 +352,41 @@ CCH.Objects.UI = function (args) {
         $('#splash-status-update').append(emailLink);
         $('#splash-spinner').fadeOut(2000);
     };
-    
+
     me.loadInitialItem = function (id) {
-            var errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
-                CCH.ui.displayLoadingError({
-                    errorThrown: errorThrown,
-                    splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
-                    mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
-                });
-            },
-                item = new CCH.Objects.Item({ id : id });
-            
-            item.load({
-                callbacks : {
-                    success : [
-                        function (data, status) {
-                            if (status === 'success') {
-                                me.addToAccordion({
-                                    item : CCH.items.getById({ id : id })
-                                });
-                            } else {
-                                me.displayLoadingError({
-                                    errorThrown: '',
-                                    splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
-                                    mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
-                                });
-                            }
-                        },
-                        function () {
-                            me.removeOverlay();
-                        }
-                    ],
-                    error : [errorResponseHandler]
-                }
+        var errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
+            CCH.ui.displayLoadingError({
+                errorThrown: errorThrown,
+                splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
+                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
             });
-        };
+        },
+            item = new CCH.Objects.Item({ id : id });
+
+        item.load({
+            callbacks : {
+                success : [
+                    function (data, status) {
+                        if (status === 'success') {
+                            me.addToAccordion({
+                                item : CCH.items.getById({ id : id })
+                            });
+                        } else {
+                            me.displayLoadingError({
+                                errorThrown: '',
+                                splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
+                                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
+                            });
+                        }
+                    },
+                    function () {
+                        me.removeOverlay();
+                    }
+                ],
+                error : [errorResponseHandler]
+            }
+        });
+    };
 
     me.init = (function () {
         var navbarPinButton = $('#' + me.NAVBAR_PIN_BUTTON_ID),
@@ -426,15 +411,9 @@ CCH.Objects.UI = function (args) {
         $(window).on({
             'resize': me.windowResizeHandler,
             'cch.data.items.searched': me.itemsSearchedHandler,
-            'cch.data.locations.searched': me.locationsSearchedHandler,
-            'bucket-add': function(evt, args) {
-                
-            },
-            'bucket-remove': function(evt, args) {
-                
-            }
+            'cch.data.locations.searched': me.locationsSearchedHandler
         });
-        
+
         $(me.combinedSearch).on({
             'combined-searchbar-search-performed' : function (evt, args) {
                 me.searchSlide.displaySearchResults(args);
@@ -445,7 +424,7 @@ CCH.Objects.UI = function (args) {
                 });
             }
         });
-        
+
         $(CCH.map).on('map-click', function () {
             me.searchSlide.close({
                 clearOnClose : true

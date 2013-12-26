@@ -28,6 +28,7 @@ CCH.Objects.Map = function (args) {
                 roundedCorner: true
             });
 
+            // This control is used as the on-click identifier for layers
             me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
 
             CCH.LOG.debug('Map.js::init():Adding base layers to map');
@@ -343,23 +344,24 @@ CCH.Objects.Map = function (args) {
          * than one layer with the same name exists in the map, removes
          * all layers with that name
          * 
-         * @param {type} featureName
+         * @param {type} name
          * @returns {undefined}
          */
-        removeLayersByName: function(featureName) {
-            CCH.LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + featureName);
-            var layers = me.map.getLayersByName(featureName) || [];
+        removeLayersByName: function(name) {
+            CCH.LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + name);
+            var layers = me.map.getLayersByName(name) || [];
             layers.each(function(layer) {
                 me.map.removeLayer(layer, false);
             });
         },
-        displayData: function(args) {
+        showLayer: function(args) {
             var card = args.card,
-                    item = args.item,
-                    layer;
+                item = args.item,
+                id = item.id,
+                layer;
 
-            if (me.card && me.map.getLayersByName(card.item.id).length === 0) {
-                var layer = card.layer;
+            if (card && me.map.getLayersByName(id).length === 0) {
+                layer = card.layer;
                 me.map.addLayer(layer);
                 layer.redraw(true);
             } else if (item && 'function' === typeof item.getWmsLayer) {

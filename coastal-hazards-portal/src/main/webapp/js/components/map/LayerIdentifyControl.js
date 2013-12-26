@@ -124,7 +124,8 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                             // Average them out
                                             attrAvg /= features.length;
 
-                                            // I've got 
+                                            // I've got enough information to build
+                                            // a legend
                                             buildLegend = function () {
                                                 for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
                                                     lb = bins[binIdx].lowerBound;
