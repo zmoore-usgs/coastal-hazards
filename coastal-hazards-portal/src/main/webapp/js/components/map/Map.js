@@ -202,6 +202,18 @@ CCH.Objects.Map = function (args) {
 
             me.map.zoomToExtent(bounds, false);
         },
+        updateSession: function() {
+            var map = me.map,
+                session = CCH.session.getSession();
+
+            session.baselayer = map.baseLayer.name;
+            session.center = [
+                map.center.lon,
+                map.center.lat
+            ];
+            session.scale = map.getScale();
+            session.bbox = map.getExtent().toArray();
+        },
         updateFromSession: function() {
             CCH.LOG.info('Map.js::updateFromSession():Map being recreated from session');
             var session = CCH.session.getSession();
@@ -369,18 +381,6 @@ CCH.Objects.Map = function (args) {
                     layer.redraw(true);
                 }
             }
-        },
-        updateSession: function() {
-            var map = me.map;
-            var session = CCH.session.getSession();
-
-            session.baselayer = map.baseLayer.name;
-            session.center = [
-                map.center.lon,
-                map.center.lat
-            ];
-            session.scale = map.getScale();
-            session.bbox = map.getExtent().toArray();
         },
         floatBoxLayer: function() {
             // The bounding box layer needs to sit on top of other layers in 

@@ -85,6 +85,7 @@
         <servlet-name>GeoServerServlet</servlet-name>
         <url-pattern>/geoserver/*</url-pattern>
          <url-pattern>/ui/item/geoserver/*</url-pattern>
+         <url-pattern>/ui/view/geoserver/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StPeteArcServerServlet</servlet-name>
