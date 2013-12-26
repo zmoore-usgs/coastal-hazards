@@ -8,8 +8,6 @@ CCH.Objects.Map = function (args) {
     "use strict";
     var me = (this === window) ? {} : this;
 
-    OpenLayers.ProxyHost = 'geoserver/';
-
     me.initialExtent = [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826];
     me.mapDivId = args.mapDiv;
     me.bboxFadeoutDuration = 2000;
@@ -153,16 +151,16 @@ CCH.Objects.Map = function (args) {
         addLayerToFeatureInfoControl : function (evt) {
             var control = me.getFeatureInfoControl,
                 layer = evt.layer;
-            
+
             layer.params.STYLES = '';
             layer.url = layer.url.substring(layer.url.indexOf('geoserver'));
             control.layers.push(layer);
             control.activate();
-            
         },
         clearBoundingBoxMarkers: function() {
-            var markerCt = me.boxLayer.markers.length;
-            for (var mInd = markerCt; mInd > 0; mInd--) {
+            var markerCt = me.boxLayer.markers.length,
+                mInd;
+            for (mInd = markerCt; mInd > 0; mInd--) {
                 me.clearBoundingBoxMarker(me.boxLayer.markers[mInd - 1]);
             }
             $(window).trigger('cch-map-bbox-markers-removed');

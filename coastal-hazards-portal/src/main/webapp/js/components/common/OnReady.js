@@ -138,6 +138,9 @@ $(document).ready(function () {
             CCH.ui.loadInitialItem(itemId);
         }
     } else {
+        // The user is initially loading the application. I do not have any items
+        // to load, nor do I have any session to load, so just start with the top
+        // level item
         splashUpdate('Loading Application');
         
         // I don't want to load the uber item, but I do want to find out what's 

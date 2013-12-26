@@ -25,6 +25,9 @@
 %>
 <script type="text/javascript">
 	splashUpdate("Setting configuration...");
+    
+    OpenLayers.ProxyHost = 'geoserver/';
+    
     var CCH = {'Objects': {}};
 	CCH.CONFIG = {
 		development: <%= development%>,
