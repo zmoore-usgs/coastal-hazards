@@ -6,6 +6,14 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
     drillDown: true,
     maxFeatures: 1000,
     infoFormat: 'application/vnd.ogc.gml',
+    initialize : function(options) {
+        options = options || {};
+        options.handlerOptions = options.handlerOptions || {};
+
+        OpenLayers.Control.WMSGetFeatureInfo.prototype.initialize.apply(this, [options]);
+        
+        this.events.register("getfeatureinfo", this, this.layerIdClickHandler);
+    },
     vendorParams: {
         radius: 3
     },

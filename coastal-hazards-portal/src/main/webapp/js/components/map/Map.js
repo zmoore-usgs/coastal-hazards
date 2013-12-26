@@ -29,7 +29,6 @@ CCH.Objects.Map = function (args) {
             });
 
             me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
-            me.getFeatureInfoControl.events.register("getfeatureinfo", this, me.getFeatureInfoControl.layerIdClickHandler);
 
             CCH.LOG.debug('Map.js::init():Adding base layers to map');
             me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
