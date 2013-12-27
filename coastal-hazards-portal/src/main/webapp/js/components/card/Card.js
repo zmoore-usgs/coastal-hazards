@@ -316,7 +316,7 @@ CCH.Objects.Card = function (args) {
                                     }],
                                     error: [
                                         function (jqXHR, textStatus, errorThrown) {
-                                            alertify.log('Could not load sub-item', 2000, 'error');
+                                            alertify.error('Could not load sub-item', 2000);
                                             CCH.LOG.warn('Card:: Could not load ' +
                                                 'item. Status Code: ' + textStatus +
                                                 ', Error: ' + errorThrown);

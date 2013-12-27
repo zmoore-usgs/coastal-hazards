@@ -85,7 +85,7 @@ CCH.Objects.Items = function (args) {
 
         args.callbacks.error.push([
             function (xhr, status, error) {
-                alertify.log('Could not perform search. Check logs for details.', 1000, 'error')
+                alertify.error('Could not perform search. Check logs for details.', 1000)
                 CCH.LOG.warn('An error occurred during search: ' + error);
             }
         ]);

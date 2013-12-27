@@ -330,8 +330,8 @@ CCH.Objects.BucketSlide = function (args) {
                 ],
                 error : [
                     function () {
-                        alertify.log('An error has occured. We were not able to ' + 
-                                    'create your download package.', 3000, 'error');
+                        alertify.error('An error has occured. We were not able to ' + 
+                                    'create your download package.', 3000);
                     }
                 ]
             }

@@ -231,7 +231,7 @@ CCH.Objects.UI = function (args) {
                 error: [
                     function () {
                         $('#shareModal').modal('hide');
-                        alertify.log('We apologize, but we could not create a share url for this session!', 2000, 'error');
+                        alertify.error('We apologize, but we could not create a share url for this session!', 2000);
                     }
                 ]
             }
@@ -469,7 +469,7 @@ CCH.Objects.UI = function (args) {
                                 callbacks : {
                                     success : [
                                     function () {
-                                            alertify.log('The Coastal Change Hazards Portal could not find your session.', 4000);
+                                            alertify.error('The Coastal Change Hazards Portal could not find your session.', 4000);
                                     }],
                                     error : []
                                 }
