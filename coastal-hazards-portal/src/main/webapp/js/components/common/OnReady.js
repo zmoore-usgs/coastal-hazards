@@ -48,7 +48,7 @@ $(document).ready(function () {
         navbarDropdownIconId: 'app-navbar-pin-control-icon',
         navbarClearMenuItemId: 'app-navbar-pin-control-clear',
         ccsAreaId: 'ccsa-area',
-        shareModalId: 'shareModal',
+        shareModalId: 'modal-content-share',
         shareUrlButtonId: 'modal-share-summary-url-button',
         shareInputId: 'modal-share-summary-url-inputbox',
         shareTwitterBtnId: 'multi-card-twitter-button',

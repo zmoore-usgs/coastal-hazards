@@ -180,7 +180,7 @@ html, body {
  but I was somewhat concerned of side
  effects from doing it application-wide */
 #helpModal[aria-hidden="true"],
-#shareModal[aria-hidden="true"] {
+#modal-content-share[aria-hidden="true"] {
     z-index: -1;
 }
 

@@ -25,25 +25,29 @@
 
 <%-- This modal window appears when a user selects to share their session. It includes the 
     url for their current view (calculated on the fly) and a tweet button --%>
-<div id="shareModal" class="modal fade"  role="dialog" aria-labelledby="modal-label" aria-hidden="true">
-    <div class="modal-header">
-        <button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
-        <h4 id="modal-label">Share Your Coastal Change Hazards Portal View With Others</h4>
-    </div>
-    <div class="modal-body">
-        <div class="row">
-            <div class="well well-small">
-                <div id="modal-share-summary-url-inputbox-div">
-                    <input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." />
-                </div>
-                <a id="modal-share-summary-url-button" class="btn btn-default" target="portal_view_window" role="button">View In Portal</a>
-
+<div id="modal-content-share" class="modal fade" tabindex ="-1" role="dialog" aria-labelledby="modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
+                <h4 id="modal-label">Share Your Coastal Change Hazards Portal View With Others</h4>
             </div>
-            <span class="pull-right" id='multi-card-twitter-button'></span>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="well well-small">
+                        <div id="modal-share-summary-url-inputbox-div">
+                            <input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." />
+                        </div>
+                        <a id="modal-share-summary-url-button" class="btn btn-default" target="portal_view_window" role="button">View In Portal</a>
+
+                    </div>
+                    <span class="pull-right" id='multi-card-twitter-button'></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
+            </div>
         </div>
-    </div>
-    <div class="modal-footer">
-        <a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
     </div>
 </div>
 

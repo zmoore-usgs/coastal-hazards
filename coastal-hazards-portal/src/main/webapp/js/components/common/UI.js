@@ -50,7 +50,7 @@ CCH.Objects.UI = function (args) {
     me.MAP_DIV_ID = args.mapdivId || 'map';
     me.SLIDE_CONTAINER_DIV_ID = args.slideContainerDivId || 'application-slide-items-content-container';
     me.CCSA_AREA_ID = args.ccsAreaId || 'ccsa-area';
-    me.SHARE_MODAL_ID = args.shareModalId || 'shareModal';
+    me.SHARE_MODAL_ID = args.shareModalId || 'modal-content-share';
     me.SHARE_URL_BUTTON_ID = args.shareUrlButtonId || 'modal-share-summary-url-button';
     me.SHARE_INPUT_ID = args.shareInputId || 'modal-share-summary-url-inputbox';
     me.SHARE_TWITTER_BUTTON_ID = args.shareTwitterBtnId || 'multi-card-twitter-button';
@@ -148,94 +148,123 @@ CCH.Objects.UI = function (args) {
         me.previousWidth = currWidth;
     };
 
-    me.sharemodalDisplayHandler = function () {
+    me.sharemodalDisplayHandler = function (evt, args) {
         $('#' + me.SHARE_URL_BUTTON_ID).addClass('disabled');
         $('#' + me.SHARE_INPUT_ID).val('');
         $('#' + me.SHARE_TWITTER_BUTTON_ID).empty();
-
-        // A user has clicked on the share menu item. A session needs to be 
-        // created and a token retrieved...
-        CCH.session.writeSession({
-            callbacks: {
+        
+        args =args || {};
+        
+        var type = args.type,
+            id = args.id,
+            session,
+            writeSessionCallbacks = {
                 success: [
                     function (json) {
                         var sid = json.sid,
-                            sessionUrl = CCH.CONFIG.publicUrl + '/ui/view/' + sid;
-                        CCH.Util.getMinifiedEndpoint({
-                            contextPath: CCH.CONFIG.contextPath,
-                            location: sessionUrl,
-                            callbacks: {
-                                success: [
-                                    function (json) {
-                                        var url = json.tinyUrl,
-                                            shareInput = $('#' + me.SHARE_INPUT_ID);
+                            shareUrl = CCH.CONFIG.publicUrl + '/ui/view/' + sid;
 
-                                        shareInput.val(url);
-                                        $('#' + me.SHARE_URL_BUTTON_ID).attr({
-                                            'href': url
-                                        }).removeClass('disabled');
-                                        shareInput.select();
-                                        twttr.widgets.createShareButton(
-                                            url,
-                                            $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
-                                            function (element) {
-                                                // Any callbacks that may be needed
-                                            },
-                                            {
-                                                hashtags: 'USGS_CCH',
-                                                lang: 'en',
-                                                size: 'large',
-                                                text: 'Check out my CCH View!',
-                                                count: 'none'
-                                            }
-                                        );
+                        displayShareModal(shareUrl);
 
-                                        twttr.events.bind('tweet', function () {
-                                            alertify.log('Your view has been tweeted. Thank you.');
-                                        });
-                                    }
-                                ],
-                                error: [
-                                    function (data) {
-                                        var url = data.responseJSON.full_url,
-                                            shareInput = $('#' + me.SHARE_INPUT_ID);
-                                        shareInput.val(url);
-                                        $('#' + me.SHARE_URL_BUTTON_ID).attr({
-                                            'href': url
-                                        }).removeClass('disabled');
-                                        shareInput.select();
-                                        twttr.widgets.createShareButton(
-                                            url,
-                                            $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
-                                            function (element) {
-                                                // Any callbacks that may be needed
-                                            },
-                                            {
-                                                hashtags: 'USGS_CCH',
-                                                lang: 'en',
-                                                size: 'large',
-                                                text: 'Check out my CCH View!',
-                                                count: 'none'
-                                            }
-                                        );
-
-                                        twttr.events.bind('tweet', function () {
-                                            alertify.log('Your view has been tweeted. Thank you.');
-                                        });
-                                    }
-                                ]
-                            }
-                        });
                     }
                 ],
                 error: [
                     function () {
-                        $('#shareModal').modal('hide');
-                        alertify.error('We apologize, but we could not create a share url for this session!', 2000);
+                        $('#' + me.SHARE_MODAL_ID).modal('hide');
+                        alertify.error('We apologize, but we could not create a share url for this session.', 2000);
                     }
                 ]
-            }
+            },
+            displayShareModal = function(url) {
+                CCH.Util.getMinifiedEndpoint({
+                    location: url,
+                    callbacks: {
+                        success: [
+                            function (json) {
+                                var minifiedUrl = json.tinyUrl,
+                                    shareInput = $('#' + me.SHARE_INPUT_ID);
+
+                                shareInput.val(minifiedUrl);
+                                $('#' + me.SHARE_URL_BUTTON_ID).attr({
+                                    'href': minifiedUrl
+                                }).removeClass('disabled');
+                                shareInput.select();
+                                twttr.widgets.createShareButton(
+                                    minifiedUrl,
+                                    $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
+                                    function (element) {
+                                        // Any callbacks that may be needed
+                                    },
+                                    {
+                                        hashtags: 'USGS_CCH',
+                                        lang: 'en',
+                                        size: 'large',
+                                        text: 'Check out my CCH View!',
+                                        count: 'none'
+                                    }
+                                );
+                                $('#' + me.SHARE_MODAL_ID).modal('show');
+                                twttr.events.bind('tweet', function () {
+                                    alertify.log('Your view has been tweeted. Thank you.');
+                                });
+                            }
+                        ],
+                        error: [
+                            function (data) {
+                                var url = data.responseJSON.full_url,
+                                    shareInput = $('#' + me.SHARE_INPUT_ID);
+                                shareInput.val(url);
+                                $('#' + me.SHARE_URL_BUTTON_ID).attr({
+                                    'href': url
+                                }).removeClass('disabled');
+                                shareInput.select();
+                                twttr.widgets.createShareButton(
+                                    url,
+                                    $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
+                                    function (element) {
+                                        // Any callbacks that may be needed
+                                    },
+                                    {
+                                        hashtags: 'USGS_CCH',
+                                        lang: 'en',
+                                        size: 'large',
+                                        text: 'Check out my CCH View!',
+                                        count: 'none'
+                                    }
+                                );
+
+                                twttr.events.bind('tweet', function () {
+                                    alertify.log('Your view has been tweeted. Thank you.');
+                                });
+                            }
+                        ]
+                    }
+                });
+            };
+            
+        if (type === 'session') {
+            // A user has clicked on the share menu item. A session needs to be 
+            // created and a token retrieved...
+            session = CCH.session;
+        } else if (type === 'item') {
+            // User is sharing a session with just this one item in the bucket. 
+            // There are a number of ways to do this, but the most quick/dirty way
+            // to do it cleanly is to clone the session, remove all other items 
+            // from it and use the cloned session to make a url
+            var session = Object.clone(CCH.session, true);
+            
+            // Using this session clone, remove all items except the current item
+            session.getSession().items.each(function (item) {
+                if (item.id !== id) {
+                    session.removeItem(item);
+                }
+            });
+        }
+        
+        session.writeSession({
+            callbacks : writeSessionCallbacks
         });
+        
     };
 
     me.helpModalDisplayHandler = function () {
@@ -278,18 +307,22 @@ CCH.Objects.UI = function (args) {
     };
 
     me.removeOverlay = function () {
-        splashUpdate("Starting Application...");
+        // Make sure that the overlay is still around
+        if ($('#' + me.APPLICATION_OVERLAY_ID).length) {
+            splashUpdate("Starting Application...");
+            
+            var applicationOverlay = $('#' + me.APPLICATION_OVERLAY_ID);
 
-        var applicationOverlay = $('#' + me.APPLICATION_OVERLAY_ID);
+            $(window).resize();
+            CCH.map.getMap().updateSize();
 
-        $(window).resize();
-        CCH.map.getMap().updateSize();
-
-        // Get rid of the overlay and clean it up out of memory and DOM
-        applicationOverlay.fadeOut(2000, function () {
-            applicationOverlay.remove();
-            $(window).trigger('cch.ui.overlay.removed');
-        });
+            // Get rid of the overlay and clean it up out of memory and DOM
+            applicationOverlay.fadeOut(2000, function () {
+                applicationOverlay.remove();
+                $(window).trigger('cch.ui.overlay.removed');
+            });
+        }
+        
     };
 
     me.displayLoadingError = function (args) {
@@ -325,7 +358,7 @@ CCH.Objects.UI = function (args) {
                 break;
             }
         }
-        
+
         $('#splash-status-update').
             empty().
             addClass('error-message').
@@ -384,11 +417,11 @@ CCH.Objects.UI = function (args) {
     $('#' + me.HELP_MODAL_ID).
         appendTo($('#' + me.CONTENT_ROW_ID)).
         on('show', me.helpModalDisplayHandler);
-    $('#' + me.SHARE_MODAL_ID).on('show', me.sharemodalDisplayHandler);
     $(window).on({
         'resize': me.windowResizeHandler,
         'cch.data.items.searched': me.itemsSearchedHandler,
-        'cch.data.locations.searched': me.locationsSearchedHandler
+        'cch.data.locations.searched': me.locationsSearchedHandler,
+        'slide.bucket.button.click.share' : me.sharemodalDisplayHandler
     });
     $(me.combinedSearch).on({
         'combined-searchbar-search-performed' : function (evt, args) {
@@ -405,7 +438,7 @@ CCH.Objects.UI = function (args) {
             clearOnClose : true
         });
     });
-
+    
     // Check for cookie to tell us if user has disabled the modal window 
     // on start. If not, show it. The user has to opt-in to have it shown 
     // next time
@@ -518,6 +551,7 @@ CCH.Objects.UI = function (args) {
         bucketSlide: me.bucketSlide,
         searchSlide: me.searchSlide,
         bucket: me.bucket,
+        share : me.share,
         CLASS_NAME : 'CCH.Objects.UI'
     });
 };

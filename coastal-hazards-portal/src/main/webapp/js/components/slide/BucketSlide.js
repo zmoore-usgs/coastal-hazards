@@ -18,10 +18,7 @@ CCH.Objects.BucketSlide = function (args) {
     "use strict";
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class is initializing.');
     args = args || {};
-
-    if (!args.containerId) {
-        throw 'containerId is required when initializing a bucket slide';
-    }
+    
     var me = (this === window) ? {} : this;
 
     me.SLIDE_CONTAINER_ID = args.containerId;
@@ -406,6 +403,13 @@ CCH.Objects.BucketSlide = function (args) {
                 direction : 1
             });
         });
+        
+        shareButton.on('click', function () {
+            $(window).trigger('slide.bucket.button.click.share', {
+                'type' : 'item',
+                'id' : id
+            });
+        });
 
         infoButton.attr({
             'target' : 'portal_info_window',
@@ -427,14 +431,20 @@ CCH.Objects.BucketSlide = function (args) {
         me.remove();
     });
     $(me.TOP_LEVEL_BUTTON_SHARE_SELECTOR).on('click', function (evt) {
+        evt.stopPropagation();
+        
+        $(window).trigger('slide.bucket.button.click.share', {
+            'type' : 'session'
+        });
     });
     $(me.TOP_LEVEL_BUTTON_DOWNLOAD_SELECTOR).on('click', function (evt) {
-        evt.stopImmediatePropagation();
+        evt.stopPropagation();
         me.downloadBucket();
     });
 
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');
     return {
+        events : me.events,
         open: me.open,
         close: me.close,
         toggle : me.toggle,
