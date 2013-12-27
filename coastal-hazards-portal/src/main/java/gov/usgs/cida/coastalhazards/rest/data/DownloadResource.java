@@ -42,7 +42,7 @@ public class DownloadResource {
         
         Item item = itemManager.loadItem(id, true);
         if (item == null) {
-            response = Response.status(Response.Status.NOT_FOUND);
+            response = Response.status(Response.Status.NOT_FOUND).build();
         } else {
             File zipFile = null;
             DownloadManager manager = new DownloadManager();
@@ -85,7 +85,7 @@ public class DownloadResource {
         try {
             String sessionJSON = sessionManager.load(id);
             if (sessionJSON == null) {
-                response = Response.status(Response.Status.NOT_FOUND);
+                response = Response.status(Response.Status.NOT_FOUND).build();
             } else {
                 DownloadManager manager = new DownloadManager();
                 File zipFile = null;
