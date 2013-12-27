@@ -95,12 +95,7 @@ CCH.Objects.Item = function (args) {
 
     me.showLayer = function () {
         var me = this;
-        // I want to zoom to a bounding box 
-        CCH.map.zoomToBoundingBox({
-            bbox : me.bbox,
-            fromProjection : new OpenLayers.Projection('EPSG:4326')
-        });
-
+        
         // Check to see if this is an aggregation. If it is, I need
         // to pull the layers from all of its children
         if (me.itemType === 'aggregation') {

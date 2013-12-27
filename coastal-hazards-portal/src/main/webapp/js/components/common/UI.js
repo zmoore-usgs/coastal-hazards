@@ -1,10 +1,11 @@
-/*jslint browser: true*/
+/*jslint browser: true */
 /*jslint plusplus: true */
-/*global $*/
-/*global CCH*/
-/*global twttr*/
-/*global splashUpdate*/
-/*global ga*/
+/*global $ */
+/*global CCH */
+/*global twttr */
+/*global splashUpdate */
+/*global OpenLayers */
+/*global ga */
 
 /**
  *  Central control object for the user interface
@@ -30,7 +31,13 @@ CCH.Objects.UI = function (args) {
     CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 
     var me = (this === window) ? {} : this,
-        helpModal;
+        errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
+            CCH.ui.displayLoadingError({
+                errorThrown: errorThrown,
+                status : jqXHR.status,
+                textStatus : textStatus
+            });
+        };
 
     // This window name is used for the info window to launch into when 
     // a user chooses to go back to the portal
@@ -43,7 +50,7 @@ CCH.Objects.UI = function (args) {
     me.MAP_DIV_ID = args.mapdivId || 'map';
     me.SLIDE_CONTAINER_DIV_ID = args.slideContainerDivId || 'application-slide-items-content-container';
     me.CCSA_AREA_ID = args.ccsAreaId || 'ccsa-area';
-    me.SHARE_MODAL_ID = args.shareModalId || 'shareModal';
+    me.SHARE_MODAL_ID = args.shareModalId || 'modal-content-share';
     me.SHARE_URL_BUTTON_ID = args.shareUrlButtonId || 'modal-share-summary-url-button';
     me.SHARE_INPUT_ID = args.shareInputId || 'modal-share-summary-url-inputbox';
     me.SHARE_TWITTER_BUTTON_ID = args.shareTwitterBtnId || 'multi-card-twitter-button';
@@ -98,7 +105,7 @@ CCH.Objects.UI = function (args) {
         }
     };
 
-    me.windowResizeHandler = function ($evt) {
+    me.windowResizeHandler = function () {
         var currWidth = $(window).width(),
             isSmall = me.isSmall(),
             headerRow = $('#' + me.HEADER_ROW_ID),
@@ -141,115 +148,123 @@ CCH.Objects.UI = function (args) {
         me.previousWidth = currWidth;
     };
 
-    me.sharemodalDisplayHandler = function () {
+    me.sharemodalDisplayHandler = function (evt, args) {
         $('#' + me.SHARE_URL_BUTTON_ID).addClass('disabled');
         $('#' + me.SHARE_INPUT_ID).val('');
         $('#' + me.SHARE_TWITTER_BUTTON_ID).empty();
-
-        // A user has clicked on the share menu item. A session needs to be 
-        // created and a token retrieved...
-        CCH.session.writeSession({
-            callbacks: {
+        
+        args =args || {};
+        
+        var type = args.type,
+            id = args.id,
+            session,
+            writeSessionCallbacks = {
                 success: [
                     function (json) {
                         var sid = json.sid,
-                            sessionUrl = CCH.CONFIG.publicUrl + '/ui/view/' + sid;
-                        CCH.Util.getMinifiedEndpoint({
-                            contextPath: CCH.CONFIG.contextPath,
-                            location: sessionUrl,
-                            callbacks: {
-                                success: [
-                                    function (json) {
-                                        var url = json.tinyUrl,
-                                            shareInput = $('#' + me.SHARE_INPUT_ID);
+                            shareUrl = CCH.CONFIG.publicUrl + '/ui/view/' + sid;
 
-                                        shareInput.val(url);
-                                        $('#' + me.SHARE_URL_BUTTON_ID).attr({
-                                            'href': url
-                                        }).removeClass('disabled');
-                                        shareInput.select();
-                                        twttr.widgets.createShareButton(
-                                            url,
-                                            $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
-                                            function (element) {
-                                                // Any callbacks that may be needed
-                                            },
-                                            {
-                                                hashtags: 'USGS_CCH',
-                                                lang: 'en',
-                                                size: 'large',
-                                                text: 'Check out my CCH View!',
-                                                count: 'none'
-                                            }
-                                        );
+                        displayShareModal(shareUrl);
 
-                                        twttr.events.bind('tweet', function () {
-                                            $.pnotify({
-                                                text: 'Your view has been tweeted. Thank you.',
-                                                styling: 'bootstrap',
-                                                type: 'info',
-                                                nonblock: true,
-                                                sticker: false,
-                                                icon: 'icon-twitter'
-                                            });
-                                        });
-                                    }
-                                ],
-                                error: [
-                                    function (data) {
-                                        var url = data.responseJSON.full_url,
-                                            shareInput = $('#' + me.SHARE_INPUT_ID);
-                                        shareInput.val(url);
-                                        $('#' + me.SHARE_URL_BUTTON_ID).attr({
-                                            'href': url
-                                        }).removeClass('disabled');
-                                        shareInput.select();
-                                        twttr.widgets.createShareButton(
-                                            url,
-                                            $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
-                                            function (element) {
-                                                // Any callbacks that may be needed
-                                            },
-                                            {
-                                                hashtags: 'USGS_CCH',
-                                                lang: 'en',
-                                                size: 'large',
-                                                text: 'Check out my CCH View!',
-                                                count: 'none'
-                                            }
-                                        );
-
-                                        twttr.events.bind('tweet', function () {
-                                            $.pnotify({
-                                                text: 'Your view has been tweeted. Thank you.',
-                                                styling: 'bootstrap',
-                                                type: 'info',
-                                                nonblock: true,
-                                                sticker: false,
-                                                icon: 'icon-twitter'
-                                            });
-                                        });
-                                    }
-                                ]
-                            }
-                        });
                     }
                 ],
                 error: [
                     function () {
-                        $('#shareModal').modal('hide');
-                        $.pnotify({
-                            text: 'We apologize, but we could not create a share url for this session!',
-                            styling: 'bootstrap',
-                            type: 'error',
-                            nonblock: true,
-                            sticker: false,
-                            icon: 'icon-warning-sign'
-                        });
+                        $('#' + me.SHARE_MODAL_ID).modal('hide');
+                        alertify.error('We apologize, but we could not create a share url for this session.', 2000);
                     }
                 ]
-            }
+            },
+            displayShareModal = function(url) {
+                CCH.Util.getMinifiedEndpoint({
+                    location: url,
+                    callbacks: {
+                        success: [
+                            function (json) {
+                                var minifiedUrl = json.tinyUrl,
+                                    shareInput = $('#' + me.SHARE_INPUT_ID);
+
+                                shareInput.val(minifiedUrl);
+                                $('#' + me.SHARE_URL_BUTTON_ID).attr({
+                                    'href': minifiedUrl
+                                }).removeClass('disabled');
+                                shareInput.select();
+                                twttr.widgets.createShareButton(
+                                    minifiedUrl,
+                                    $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
+                                    function (element) {
+                                        // Any callbacks that may be needed
+                                    },
+                                    {
+                                        hashtags: 'USGS_CCH',
+                                        lang: 'en',
+                                        size: 'large',
+                                        text: 'Check out my CCH View!',
+                                        count: 'none'
+                                    }
+                                );
+                                $('#' + me.SHARE_MODAL_ID).modal('show');
+                                twttr.events.bind('tweet', function () {
+                                    alertify.log('Your view has been tweeted. Thank you.');
+                                });
+                            }
+                        ],
+                        error: [
+                            function (data) {
+                                var url = data.responseJSON.full_url,
+                                    shareInput = $('#' + me.SHARE_INPUT_ID);
+                                shareInput.val(url);
+                                $('#' + me.SHARE_URL_BUTTON_ID).attr({
+                                    'href': url
+                                }).removeClass('disabled');
+                                shareInput.select();
+                                twttr.widgets.createShareButton(
+                                    url,
+                                    $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
+                                    function (element) {
+                                        // Any callbacks that may be needed
+                                    },
+                                    {
+                                        hashtags: 'USGS_CCH',
+                                        lang: 'en',
+                                        size: 'large',
+                                        text: 'Check out my CCH View!',
+                                        count: 'none'
+                                    }
+                                );
+
+                                twttr.events.bind('tweet', function () {
+                                    alertify.log('Your view has been tweeted. Thank you.');
+                                });
+                            }
+                        ]
+                    }
+                });
+            };
+            
+        if (type === 'session') {
+            // A user has clicked on the share menu item. A session needs to be 
+            // created and a token retrieved...
+            session = CCH.session;
+        } else if (type === 'item') {
+            // User is sharing a session with just this one item in the bucket. 
+            // There are a number of ways to do this, but the most quick/dirty way
+            // to do it cleanly is to clone the session, remove all other items 
+            // from it and use the cloned session to make a url
+            var session = Object.clone(CCH.session, true);
+            
+            // Using this session clone, remove all items except the current item
+            session.getSession().items.each(function (item) {
+                if (item.id !== id) {
+                    session.removeItem(item);
+                }
+            });
+        }
+        
+        session.writeSession({
+            callbacks : writeSessionCallbacks
         });
+        
     };
 
     me.helpModalDisplayHandler = function () {
@@ -292,134 +307,104 @@ CCH.Objects.UI = function (args) {
     };
 
     me.removeOverlay = function () {
-        splashUpdate("Starting Application...");
+        // Make sure that the overlay is still around
+        if ($('#' + me.APPLICATION_OVERLAY_ID).length) {
+            splashUpdate("Starting Application...");
+            
+            var applicationOverlay = $('#' + me.APPLICATION_OVERLAY_ID);
 
-        var applicationOverlay = $('#' + me.APPLICATION_OVERLAY_ID);
+            $(window).resize();
+            CCH.map.getMap().updateSize();
 
-        $(window).resize();
-        CCH.map.getMap().updateSize();
-
-        // Get rid of the overlay and clean it up out of memory and DOM
-        applicationOverlay.fadeOut(2000, function () {
-            applicationOverlay.remove();
-            $(window).trigger('cch.ui.overlay.removed');
-        });
-    };
-
-    me.addToAccordion = function (args) {
-        args = args || {};
-
-        var card = args.card,
-            item = args.item;
-
-        // If we are passed a product, that means we were not passed a card
-        if (item) {
-            card = new CCH.Objects.Card({
-                item : item,
-                initHide : false
+            // Get rid of the overlay and clean it up out of memory and DOM
+            applicationOverlay.fadeOut(2000, function () {
+                applicationOverlay.remove();
+                $(window).trigger('cch.ui.overlay.removed');
             });
         }
-
-        // By now, we should have a card
-        if (card) {
-            // I want to first create a bellow with this new card.
-            me.accordion.add({
-                card : card
-            });
-        }
+        
     };
 
     me.displayLoadingError = function (args) {
-        ga('send', 'event', {
-            'eventCategory': 'loadingError', // Required.
-            'eventAction': 'error', // Required.
-            'eventLabel': args.errorThrown
-        });
-        var continueLink = $('<a />').attr({
-            'href': CCH.CONFIG.contextPath,
-            'role': 'button'
-        }).addClass('btn btn-lg').html('<i class="fa fa-refresh"></i> Click to continue'),
+        args = args || {};
+
+        var errorThrown = args.errorThrown,
+            mailTo = args.mailTo || 'mailto:' + CCH.CONFIG.emailLink +
+                '?subject=Application Failed To Load Item (URL: '
+                + window.location.toString() + ' Error: ' + errorThrown + ')',
+            splashMessage = args.splashMessage,
+            status = args.status,
+            continueLink = $('<a />').attr({
+                'href': CCH.CONFIG.contextPath,
+                'role': 'button'
+            }).addClass('btn btn-lg').html('<i class="fa fa-refresh"></i> Click to continue'),
             emailLink = $('<a />').attr({
-                'href': args.mailTo,
+                'href': mailTo,
                 'role': 'button'
             }).addClass('btn btn-lg').html('<i class="fa fa-envelope"></i> Contact Us');
 
-        splashUpdate(args.splashMessage);
+        ga('send', 'event', {
+            'eventCategory': 'loadingError',
+            'eventAction': 'error',
+            'eventLabel': errorThrown
+        });
 
-        $('#splash-status-update').append(continueLink);
-        $('#splash-status-update').append(emailLink);
-        $('#splash-spinner').fadeOut(2000);
+        if (!splashMessage) {
+            switch (status) {
+            case 404:
+                splashMessage = '<b>Item Not Found</b><br /><div>There was a problem loading information.' +
+                    'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
+                    'Either try to reload the application or let us know.</div>';
+                break;
+            }
+        }
+
+        $('#splash-status-update').
+            empty().
+            addClass('error-message').
+            append(splashMessage, $('<span />').append(continueLink), emailLink);
+        $('#splash-spinner').remove();
     };
-    
-    me.loadUberItem = function (args) {
-        var zoomToBbox = args.zoomToBbox === true ? true : false;
-        
+
+    me.loadTopLevelItem = function (args) {
+        args = args || {};
+
+        var zoomToBbox = args.zoomToBbox === true ? true : false,
+            callbacks = args.callbacks || {
+                success : [],
+                error : []
+            };
+
+        callbacks.success.unshift(function (data) {
+            if (zoomToBbox) {
+                CCH.map.zoomToBoundingBox({
+                    bbox : data.bbox,
+                    fromProjection : new OpenLayers.Projection('EPSG:4326')
+                });
+            }
+
+            data.children.each(function (child) {
+                me.accordion.load({
+                    'id' : child,
+                    'callbacks' : {
+                        success : [
+                            function () {
+                                me.removeOverlay();
+                            }
+                        ],
+                        error : [errorResponseHandler]
+                    }
+                });
+            });
+        });
+
+        callbacks.error.unshift(errorResponseHandler);
+
         new CCH.Objects.Search().submitItemSearch({
             'item' : 'uber',
             'callbacks' : {
-                'success' : [
-                    function (data) {
-                        if (zoomToBbox) {
-                            CCH.map.zoomToBoundingBox({
-                                bbox : data.bbox,
-                                fromProjection : new OpenLayers.Projection('EPSG:4326')
-                            });
-                        }
-                        
-                        data.children.each(function (child) {
-                            CCH.ui.loadInitialItem(child);
-                        });
-                    }
-                ],
-                'error' : [
-                    function (jqXHR, textStatus, errorThrown) {
-                        CCH.ui.displayLoadingError({
-                            errorThrown: errorThrown,
-                            splashMessage: 404 === jqXHR.status ?
-                                    '<b>Item Not Found</b><br /><br />There was a problem loading information.<br /><br />' + 
-                                    'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
-                                    'Either try to reload the application or contact the system administrator.<br /><br />' :
-                                    'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
-                                    'Either try to reload the application or contact the system administrator.<br /><br />',
-                            mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')'
-                        });
-                    }
-                ]
-            }
-        });
-    }
-
-    me.loadInitialItem = function (id) {
-        var errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
-            CCH.ui.displayLoadingError({
-                errorThrown: errorThrown,
-                splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
-                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
-            });
-        },
-            item = new CCH.Objects.Item({ id : id });
-
-        item.load({
-            callbacks : {
-                success : [
-                    function (data, status) {
-                        if (status === 'success') {
-                            me.addToAccordion({
-                                item : CCH.items.getById({ id : id })
-                            });
-                        } else {
-                            me.displayLoadingError({
-                                errorThrown: '',
-                                splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
-                                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
-                            });
-                        }
-                    },
-                    function () {
-                        me.removeOverlay();
-                    }
-                ],
-                error : [errorResponseHandler]
+                'success' : callbacks.success,
+                'error' : callbacks.error
             }
         });
     };
@@ -432,11 +417,11 @@ CCH.Objects.UI = function (args) {
     $('#' + me.HELP_MODAL_ID).
         appendTo($('#' + me.CONTENT_ROW_ID)).
         on('show', me.helpModalDisplayHandler);
-    $('#' + me.SHARE_MODAL_ID).on('show', me.sharemodalDisplayHandler);
     $(window).on({
         'resize': me.windowResizeHandler,
         'cch.data.items.searched': me.itemsSearchedHandler,
-        'cch.data.locations.searched': me.locationsSearchedHandler
+        'cch.data.locations.searched': me.locationsSearchedHandler,
+        'slide.bucket.button.click.share' : me.sharemodalDisplayHandler
     });
     $(me.combinedSearch).on({
         'combined-searchbar-search-performed' : function (evt, args) {
@@ -453,7 +438,7 @@ CCH.Objects.UI = function (args) {
             clearOnClose : true
         });
     });
-
+    
     // Check for cookie to tell us if user has disabled the modal window 
     // on start. If not, show it. The user has to opt-in to have it shown 
     // next time
@@ -469,20 +454,10 @@ CCH.Objects.UI = function (args) {
     // 'VIEW' = Load a session which can have zero, one or more items
     // '' = Load the application normally through the uber item
     var type = (CCH.CONFIG.params.type + String()).toLowerCase(),
-        itemId = CCH.CONFIG.params.id,
+        id = CCH.CONFIG.params.id,
         removeMarkers = function () {
             CCH.map.clearBoundingBoxMarkers();
             $(window).off('cch-map-bbox-marker-added', removeMarkers);
-        },
-        errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
-            CCH.ui.displayLoadingError({
-                errorThrown: errorThrown,
-                textStatus: textStatus,
-                splashMessage: 404 === jqXHR.status ?
-                        '<b>Item Not Found</b><br /><br />The item you are attempting to view no longer exists<br /><br />' :
-                        '<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br /><br />',
-                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')'
-            });
         };
 
     // Most of the application is now initialized, so I'm going to try and load
@@ -497,40 +472,69 @@ CCH.Objects.UI = function (args) {
                 sid: CCH.CONFIG.params.id,
                 callbacks: {
                     success: [
-                        function (json) {
-                            // Figure out which ids come with this session
-                            var ids = CCH.session.getSession().items,
-                                //Memoize the incoming bbox
-                                bbox = json.bbox;
-                            
-                            if (ids.length) {
-                                ids.children.each(function (id) {
-                                    CCH.ui.loadInitialItem(id);
-                                });
-                            } else {
-                                // This session does not come with any items so 
-                                // just load the top level item and go from there
-                                me.loadUberItem({
-                                    zoomToBbox : false
-                                });
-                            }
-                            
+                        function () {
+                            var items = CCH.session.getSession().items,
+                                addToBucket = function(item) {
+                                    $(window).trigger('bucket-add', {
+                                        item : item
+                                    });
+                                };
+
+                            me.loadTopLevelItem({
+                                zoomToBbox : true,
+                                callbacks : {
+                                    success : [function () {
+                                        if (items.length) {
+                                            items.each(function (item) {
+                                                addToBucket(item);
+                                            });
+                                        }
+                                    }],
+                                    error : [errorResponseHandler]
+                                }
+                            });
                         }
                     ],
-                    error: [errorResponseHandler]
+                    error: [
+                        function () {
+                            me.loadTopLevelItem({
+                                zoomToBbox : true,
+                                callbacks : {
+                                    success : [
+                                    function () {
+                                            alertify.error('The Coastal Change Hazards Portal could not find your session.', 4000);
+                                    }],
+                                    error : []
+                                }
+                            });
+                        }]
                 }
             });
         } else if (type === 'item') {
             // User is coming in with an item, so load that item
-            splashUpdate('Loading Application');
-            CCH.ui.loadInitialItem(itemId);
+            splashUpdate('Loading Application...');
+            me.accordion.load({
+                id : id,
+                'callbacks' : {
+                    success : [
+                        function (item) {
+                            CCH.map.zoomToBoundingBox({
+                                bbox : item.bbox,
+                                fromProjection : new OpenLayers.Projection('EPSG:4326')
+                            });
+                            me.removeOverlay();
+                        }
+                    ],
+                    error : [errorResponseHandler]
+                }
+            });
         }
     } else {
         // The user is initially loading the application. I do not have any items
         // to load, nor do I have any session to load, so just start with the top
         // level item
         splashUpdate('Loading Application...');
-        me.loadUberItem({
+        me.loadTopLevelItem({
             zoomToBbox : true
         });
     }
@@ -547,8 +551,7 @@ CCH.Objects.UI = function (args) {
         bucketSlide: me.bucketSlide,
         searchSlide: me.searchSlide,
         bucket: me.bucket,
-        addToAccordion : me.addToAccordion,
-        loadInitialItem : me.loadInitialItem,
+        share : me.share,
         CLASS_NAME : 'CCH.Objects.UI'
     });
 };

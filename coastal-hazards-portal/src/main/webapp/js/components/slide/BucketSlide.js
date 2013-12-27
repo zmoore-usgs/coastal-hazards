@@ -18,10 +18,7 @@ CCH.Objects.BucketSlide = function (args) {
     "use strict";
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class is initializing.');
     args = args || {};
-
-    if (!args.containerId) {
-        throw 'containerId is required when initializing a bucket slide';
-    }
+    
     var me = (this === window) ? {} : this;
 
     me.SLIDE_CONTAINER_ID = args.containerId;
@@ -315,6 +312,28 @@ CCH.Objects.BucketSlide = function (args) {
         me.rebuild();
         return me.cards;
     };
+    
+    me.downloadBucket = function () {
+        CCH.session.writeSession({
+            callbacks : {
+                success : [
+                    function (result) {
+                        var sessionId = result.sid;
+                        
+                        if (sessionId) {
+                            window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/view/' + sessionId;
+                        }
+                    }
+                ],
+                error : [
+                    function () {
+                        alertify.error('An error has occured. We were not able to ' + 
+                                    'create your download package.', 3000);
+                    }
+                ]
+            }
+        });
+    };
 
     me.createCard = function (args) {
         args = args || {};
@@ -384,6 +403,13 @@ CCH.Objects.BucketSlide = function (args) {
                 direction : 1
             });
         });
+        
+        shareButton.on('click', function () {
+            $(window).trigger('slide.bucket.button.click.share', {
+                'type' : 'item',
+                'id' : id
+            });
+        });
 
         infoButton.attr({
             'target' : 'portal_info_window',
@@ -405,39 +431,20 @@ CCH.Objects.BucketSlide = function (args) {
         me.remove();
     });
     $(me.TOP_LEVEL_BUTTON_SHARE_SELECTOR).on('click', function (evt) {
+        evt.stopPropagation();
+        
+        $(window).trigger('slide.bucket.button.click.share', {
+            'type' : 'session'
+        });
     });
     $(me.TOP_LEVEL_BUTTON_DOWNLOAD_SELECTOR).on('click', function (evt) {
-        evt.stopImmediatePropagation();
-        CCH.session.writeSession({
-            callbacks : {
-                success : [
-                    function (result) {
-                        var sessionId = result.sid;
-                        
-                        if (sessionId) {
-                            window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/view/' + sessionId;
-                        }
-                    }
-                ],
-                error : [
-                    function () {
-                        $.pnotify({
-                            text: 'An error has occured. We were not able to ' + 
-                                    'create your download package.',
-                            styling: 'bootstrap',
-                            type: 'warn',
-                            nonblock: true,
-                            sticker: false,
-                            icon: 'icon-twitter'
-                        });
-                    }
-                ]
-            }
-        })
+        evt.stopPropagation();
+        me.downloadBucket();
     });
 
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');
     return {
+        events : me.events,
         open: me.open,
         close: me.close,
         toggle : me.toggle,

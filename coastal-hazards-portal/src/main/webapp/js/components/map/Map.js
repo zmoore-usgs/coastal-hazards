@@ -181,7 +181,7 @@ CCH.Objects.Map = function (args) {
             if (fromProjection) {
                 layerBounds.transform(new OpenLayers.Projection(fromProjection), new OpenLayers.Projection("EPSG:900913"));
             }
-            me.map.zoomToExtent(layerBounds, false);
+            me.map.zoomToExtent(layerBounds, true);
         },
         zoomToActiveLayers: function() {
             var activeLayers = me.map.getLayersBy('isItemLayer', true);

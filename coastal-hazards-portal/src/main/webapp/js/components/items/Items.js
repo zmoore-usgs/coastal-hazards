@@ -85,12 +85,7 @@ CCH.Objects.Items = function (args) {
 
         args.callbacks.error.push([
             function (xhr, status, error) {
-                $.pnotify({
-                    text: 'Could not perform search. Check logs for details.',
-                    styling: 'bootstrap',
-                    type: 'error',
-                    nonblock: true
-                });
+                alertify.error('Could not perform search. Check logs for details.', 1000)
                 CCH.LOG.warn('An error occurred during search: ' + error);
             }
         ]);

@@ -223,14 +223,13 @@ CCH.Util = {
 		}
 	},
 	getMinifiedEndpoint: function(args) {
-		var contextPath = args.contextPath;
 		var location = args.location || window.location.href;
 		var callbacks = args.callbacks || {
 			success: [],
 			error: []
 		};
 
-		$.ajax(contextPath + '/data/minifier/minify/' + location, {
+		$.ajax(CCH.CONFIG.contextPath + '/data/minifier/minify/' + location, {
 			type: 'GET',
 			dataType: 'json',
 			success: function(json, textStatus, jqXHR) {
