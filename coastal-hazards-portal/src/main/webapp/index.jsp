@@ -83,7 +83,7 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        <jsp:include page="js/pnotify/pnotify.jsp">
+        <jsp:include page="js/alertify/alertify.jsp">
             <jsp:param name="relPath" value="<%=baseUrl%>" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>

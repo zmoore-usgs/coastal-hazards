@@ -461,14 +461,13 @@ CCH.Objects.UI = function (args) {
                 callbacks: {
                     success: [
                         function () {
-                            // Figure out which ids come with this session
                             var items = CCH.session.getSession().items,
                                 addToBucket = function(item) {
                                     $(window).trigger('bucket-add', {
                                         item : item
                                     });
                                 };
-                            
+
                             me.loadTopLevelItem({
                                 zoomToBbox : true,
                                 callbacks : {
@@ -484,7 +483,19 @@ CCH.Objects.UI = function (args) {
                             });
                         }
                     ],
-                    error: [errorResponseHandler]
+                    error: [
+                        function () {
+                            me.loadTopLevelItem({
+                                zoomToBbox : true,
+                                callbacks : {
+                                    success : [
+                                    function () {
+                                            alertify.log('The Coastal Change Hazards Portal could not find your session.');
+                                    }],
+                                    error : []
+                                }
+                            });
+                        }]
                 }
             });
         } else if (type === 'item') {
