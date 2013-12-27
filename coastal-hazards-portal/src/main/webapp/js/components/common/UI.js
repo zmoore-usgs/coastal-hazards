@@ -460,20 +460,28 @@ CCH.Objects.UI = function (args) {
                 sid: CCH.CONFIG.params.id,
                 callbacks: {
                     success: [
-                        function (json) {
+                        function () {
                             // Figure out which ids come with this session
-                            var ids = CCH.session.getSession().items;
-
-                            if (ids.length) {
-                                ids.children.each(function (id) {
-                                    CCH.ui.loadItemToAccordion({
-                                        id : id
+                            var items = CCH.session.getSession().items,
+                                addToBucket = function(item) {
+                                    $(window).trigger('bucket-add', {
+                                        item : item
                                     });
-                                });
-                            }
-
-                            me.loadTopLevelItem();
-
+                                };
+                            
+                            me.loadTopLevelItem({
+                                zoomToBbox : true,
+                                callbacks : {
+                                    success : [function () {
+                                        if (items.length) {
+                                            items.each(function (item) {
+                                                addToBucket(item);
+                                            });
+                                        }
+                                    }],
+                                    error : [errorResponseHandler]
+                                }
+                            });
                         }
                     ],
                     error: [errorResponseHandler]
