@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="jiwalker" id="add_download_table">
+        <comment>map downloads </comment>
+        <createTable tableName="downloads">
+            <column name="id" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_id" type="VARCHAR(255)" />
+            <column name="session_id" type="VARCHAR(255)" />
+            <column name="persistance_uri" type="VARCHAR(511)" />
+            <column name="inserted" type="TIMESTAMP" />
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="downloads" constraintName="fk_downloads_item_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item"/>
+        <addForeignKeyConstraint baseColumnNames="session_id" baseTableName="downloads" constraintName="fk_downloads_session_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="session_table"/>
+    </changeSet>
+</databaseChangeLog>
