@@ -486,7 +486,11 @@ CCH.Objects.UI = function (args) {
                 id : id,
                 'callbacks' : {
                     success : [
-                        function () {
+                        function (item) {
+                            CCH.map.zoomToBoundingBox({
+                                bbox : item.bbox,
+                                fromProjection : new OpenLayers.Projection('EPSG:4326')
+                            });
                             me.removeOverlay();
                         }
                     ],
