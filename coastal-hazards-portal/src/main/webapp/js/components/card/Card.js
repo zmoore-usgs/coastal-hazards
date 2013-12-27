@@ -316,14 +316,7 @@ CCH.Objects.Card = function (args) {
                                     }],
                                     error: [
                                         function (jqXHR, textStatus, errorThrown) {
-                                            $.pnotify({
-                                                text: 'Could not load sub-item',
-                                                styling: 'bootstrap',
-                                                type: 'warn',
-                                                nonblock: true,
-                                                sticker: false,
-                                                icon: 'icon-twitter'
-                                            });
+                                            alertify.log('Could not load sub-item', 2000, 'error');
                                             CCH.LOG.warn('Card:: Could not load ' +
                                                 'item. Status Code: ' + textStatus +
                                                 ', Error: ' + errorThrown);

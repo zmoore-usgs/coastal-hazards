@@ -191,14 +191,7 @@ CCH.Objects.UI = function (args) {
                                         );
 
                                         twttr.events.bind('tweet', function () {
-                                            $.pnotify({
-                                                text: 'Your view has been tweeted. Thank you.',
-                                                styling: 'bootstrap',
-                                                type: 'info',
-                                                nonblock: true,
-                                                sticker: false,
-                                                icon: 'icon-twitter'
-                                            });
+                                            alertify.log('Your view has been tweeted. Thank you.');
                                         });
                                     }
                                 ],
@@ -227,14 +220,7 @@ CCH.Objects.UI = function (args) {
                                         );
 
                                         twttr.events.bind('tweet', function () {
-                                            $.pnotify({
-                                                text: 'Your view has been tweeted. Thank you.',
-                                                styling: 'bootstrap',
-                                                type: 'info',
-                                                nonblock: true,
-                                                sticker: false,
-                                                icon: 'icon-twitter'
-                                            });
+                                            alertify.log('Your view has been tweeted. Thank you.');
                                         });
                                     }
                                 ]
@@ -245,14 +231,7 @@ CCH.Objects.UI = function (args) {
                 error: [
                     function () {
                         $('#shareModal').modal('hide');
-                        $.pnotify({
-                            text: 'We apologize, but we could not create a share url for this session!',
-                            styling: 'bootstrap',
-                            type: 'error',
-                            nonblock: true,
-                            sticker: false,
-                            icon: 'icon-warning-sign'
-                        });
+                        alertify.log('We apologize, but we could not create a share url for this session!', 2000, 'error');
                     }
                 ]
             }
@@ -490,7 +469,7 @@ CCH.Objects.UI = function (args) {
                                 callbacks : {
                                     success : [
                                     function () {
-                                            alertify.log('The Coastal Change Hazards Portal could not find your session.');
+                                            alertify.log('The Coastal Change Hazards Portal could not find your session.', 4000);
                                     }],
                                     error : []
                                 }
