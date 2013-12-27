@@ -315,6 +315,35 @@ CCH.Objects.BucketSlide = function (args) {
         me.rebuild();
         return me.cards;
     };
+    
+    me.downloadBucket = function () {
+        CCH.session.writeSession({
+            callbacks : {
+                success : [
+                    function (result) {
+                        var sessionId = result.sid;
+                        
+                        if (sessionId) {
+                            window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/view/' + sessionId;
+                        }
+                    }
+                ],
+                error : [
+                    function () {
+                        $.pnotify({
+                            text: 'An error has occured. We were not able to ' + 
+                                    'create your download package.',
+                            styling: 'bootstrap',
+                            type: 'warn',
+                            nonblock: true,
+                            sticker: false,
+                            icon: 'icon-twitter'
+                        });
+                    }
+                ]
+            }
+        });
+    };
 
     me.createCard = function (args) {
         args = args || {};
@@ -408,32 +437,7 @@ CCH.Objects.BucketSlide = function (args) {
     });
     $(me.TOP_LEVEL_BUTTON_DOWNLOAD_SELECTOR).on('click', function (evt) {
         evt.stopImmediatePropagation();
-        CCH.session.writeSession({
-            callbacks : {
-                success : [
-                    function (result) {
-                        var sessionId = result.sid;
-                        
-                        if (sessionId) {
-                            window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/view/' + sessionId;
-                        }
-                    }
-                ],
-                error : [
-                    function () {
-                        $.pnotify({
-                            text: 'An error has occured. We were not able to ' + 
-                                    'create your download package.',
-                            styling: 'bootstrap',
-                            type: 'warn',
-                            nonblock: true,
-                            sticker: false,
-                            icon: 'icon-twitter'
-                        });
-                    }
-                ]
-            }
-        })
+        me.downloadBucket();
     });
 
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');

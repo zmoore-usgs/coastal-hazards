@@ -1,10 +1,11 @@
-/*jslint browser: true*/
+/*jslint browser: true */
 /*jslint plusplus: true */
-/*global $*/
-/*global CCH*/
-/*global twttr*/
-/*global splashUpdate*/
-/*global ga*/
+/*global $ */
+/*global CCH */
+/*global twttr */
+/*global splashUpdate */
+/*global OpenLayers */
+/*global ga */
 
 /**
  *  Central control object for the user interface
@@ -29,8 +30,7 @@ CCH.Objects.UI = function (args) {
     "use strict";
     CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 
-    var me = (this === window) ? {} : this,
-        helpModal;
+    var me = (this === window) ? {} : this;
 
     // This window name is used for the info window to launch into when 
     // a user chooses to go back to the portal
@@ -98,7 +98,7 @@ CCH.Objects.UI = function (args) {
         }
     };
 
-    me.windowResizeHandler = function ($evt) {
+    me.windowResizeHandler = function () {
         var currWidth = $(window).width(),
             isSmall = me.isSmall(),
             headerRow = $('#' + me.HEADER_ROW_ID),
@@ -306,29 +306,6 @@ CCH.Objects.UI = function (args) {
         });
     };
 
-    me.addToAccordion = function (args) {
-        args = args || {};
-
-        var card = args.card,
-            item = args.item;
-
-        // If we are passed a product, that means we were not passed a card
-        if (item) {
-            card = new CCH.Objects.Card({
-                item : item,
-                initHide : false
-            });
-        }
-
-        // By now, we should have a card
-        if (card) {
-            // I want to first create a bellow with this new card.
-            me.accordion.add({
-                card : card
-            });
-        }
-    };
-
     me.displayLoadingError = function (args) {
         ga('send', 'event', {
             'eventCategory': 'loadingError', // Required.
@@ -350,76 +327,97 @@ CCH.Objects.UI = function (args) {
         $('#splash-status-update').append(emailLink);
         $('#splash-spinner').fadeOut(2000);
     };
-    
-    me.loadUberItem = function (args) {
-        var zoomToBbox = args.zoomToBbox === true ? true : false;
-        
+
+    me.loadTopLevelItem = function (args) {
+        args = args || {};
+
+        var zoomToBbox = args.zoomToBbox === true ? true : false,
+            callbacks = args.callbacks || {
+                success : [],
+                error : []
+            };
+
+        callbacks.success.unshift(function (data) {
+            if (zoomToBbox) {
+                CCH.map.zoomToBoundingBox({
+                    bbox : data.bbox,
+                    fromProjection : new OpenLayers.Projection('EPSG:4326')
+                });
+            }
+
+            data.children.each(function (child) {
+                CCH.ui.loadItemToAccordion({
+                    'id' : child
+                });
+            });
+        });
+
+        callbacks.error.unshift(function (jqXHR, textStatus, errorThrown) {
+            CCH.ui.displayLoadingError({
+                errorThrown: errorThrown,
+                splashMessage: 404 === jqXHR.status ?
+                        '<b>Item Not Found</b><br /><br />There was a problem loading information.<br /><br />' + 
+                        'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
+                        'Either try to reload the application or contact the system administrator.<br /><br />' :
+                        'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
+                        'Either try to reload the application or contact the system administrator.<br /><br />',
+                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')'
+            });
+        });
+
         new CCH.Objects.Search().submitItemSearch({
             'item' : 'uber',
             'callbacks' : {
-                'success' : [
-                    function (data) {
-                        if (zoomToBbox) {
-                            CCH.map.zoomToBoundingBox({
-                                bbox : data.bbox,
-                                fromProjection : new OpenLayers.Projection('EPSG:4326')
-                            });
-                        }
-                        
-                        data.children.each(function (child) {
-                            CCH.ui.loadInitialItem(child);
-                        });
-                    }
-                ],
-                'error' : [
-                    function (jqXHR, textStatus, errorThrown) {
-                        CCH.ui.displayLoadingError({
-                            errorThrown: errorThrown,
-                            splashMessage: 404 === jqXHR.status ?
-                                    '<b>Item Not Found</b><br /><br />There was a problem loading information.<br /><br />' + 
-                                    'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
-                                    'Either try to reload the application or contact the system administrator.<br /><br />' :
-                                    'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
-                                    'Either try to reload the application or contact the system administrator.<br /><br />',
-                            mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')'
-                        });
-                    }
-                ]
+                'success' : callbacks.success,
+                'error' : callbacks.error
             }
         });
-    }
+    };
 
-    me.loadInitialItem = function (id) {
-        var errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
+    me.loadItemToAccordion = function (args) {
+        args = args || {};
+        
+        var callbacks = args.callbacks || {},
+            errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
             CCH.ui.displayLoadingError({
                 errorThrown: errorThrown,
                 splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
                 mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
             });
         },
+            id = args.id,
             item = new CCH.Objects.Item({ id : id });
-
+    
+        callbacks = args.callbacks || {
+            success : [],
+            error : []
+        };
+            
+        callbacks.success.unshift(function (data, status) {
+            if (status === 'success') {
+                me.accordion.add({
+                    item : CCH.items.getById({ id : data.id })
+                });
+            } else {
+                me.displayLoadingError({
+                    errorThrown: '',
+                    splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
+                    mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
+                });
+            }
+        });
+        callbacks.success.unshift(function () {
+            me.removeOverlay();
+        });
+        
+        callbacks.error.unshift(errorResponseHandler);
+        
+        
+            
         item.load({
             callbacks : {
-                success : [
-                    function (data, status) {
-                        if (status === 'success') {
-                            me.addToAccordion({
-                                item : CCH.items.getById({ id : id })
-                            });
-                        } else {
-                            me.displayLoadingError({
-                                errorThrown: '',
-                                splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
-                                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
-                            });
-                        }
-                    },
-                    function () {
-                        me.removeOverlay();
-                    }
-                ],
-                error : [errorResponseHandler]
+                success : callbacks.success,
+                error : callbacks.error
             }
         });
     };
@@ -499,22 +497,18 @@ CCH.Objects.UI = function (args) {
                     success: [
                         function (json) {
                             // Figure out which ids come with this session
-                            var ids = CCH.session.getSession().items,
-                                //Memoize the incoming bbox
-                                bbox = json.bbox;
-                            
+                            var ids = CCH.session.getSession().items;
+
                             if (ids.length) {
                                 ids.children.each(function (id) {
-                                    CCH.ui.loadInitialItem(id);
-                                });
-                            } else {
-                                // This session does not come with any items so 
-                                // just load the top level item and go from there
-                                me.loadUberItem({
-                                    zoomToBbox : false
+                                    CCH.ui.loadItemToAccordion({
+                                        id : id
+                                    });
                                 });
                             }
-                            
+
+                            me.loadTopLevelItem();
+
                         }
                     ],
                     error: [errorResponseHandler]
@@ -522,15 +516,17 @@ CCH.Objects.UI = function (args) {
             });
         } else if (type === 'item') {
             // User is coming in with an item, so load that item
-            splashUpdate('Loading Application');
-            CCH.ui.loadInitialItem(itemId);
+            splashUpdate('Loading Application...');
+            CCH.ui.loadItemToAccordion({
+                id : id
+            });
         }
     } else {
         // The user is initially loading the application. I do not have any items
         // to load, nor do I have any session to load, so just start with the top
         // level item
         splashUpdate('Loading Application...');
-        me.loadUberItem({
+        me.loadTopLevelItem({
             zoomToBbox : true
         });
     }
@@ -547,8 +543,6 @@ CCH.Objects.UI = function (args) {
         bucketSlide: me.bucketSlide,
         searchSlide: me.searchSlide,
         bucket: me.bucket,
-        addToAccordion : me.addToAccordion,
-        loadInitialItem : me.loadInitialItem,
         CLASS_NAME : 'CCH.Objects.UI'
     });
 };

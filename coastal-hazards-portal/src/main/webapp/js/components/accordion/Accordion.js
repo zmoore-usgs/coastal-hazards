@@ -22,11 +22,6 @@ CCH.Objects.Accordion = function (args) {
         container.addClass('panel-group');
     }
 
-    me.add = function (args) {
-        var bellow = me.addCard(args);
-        return bellow;
-    };
-
     /**
      * Uses a card to create a bellow out of
      */
@@ -34,8 +29,21 @@ CCH.Objects.Accordion = function (args) {
         args = args || {};
 
         var card = args.card,
+            item = args.item,
             index = args.index,
-            cardContainer = card.getContainer(),
+            cardContainer,
+            bellow;
+    
+            // If we are passed a product, that means we were not passed a card
+            if (item) {
+                card = new CCH.Objects.Card({
+                    item : item,
+                    initHide : false
+                });
+            }
+            
+            cardContainer = card.getContainer();
+            
             bellow = me.createBellow({
                 container : cardContainer,
                 card : card,
@@ -104,14 +112,6 @@ CCH.Objects.Accordion = function (args) {
                     'eventAction': 'show',      // Required.
                     'eventLabel': abId
                 });
-                
-                
-                
-//                $this.trigger('bellow-display-toggle', {
-//                    'id' : abId,
-//                    'display' : true,
-//                    'card' : card
-//                });
             },
             'hide.bs.collapse' : function () {
                 
@@ -127,11 +127,6 @@ CCH.Objects.Accordion = function (args) {
                 });
                 
                 card.hide();
-//                $this.trigger('bellow-display-toggle', {
-//                    'id' : abId,
-//                    'display' : false,
-//                    'card' : card
-//                });
             }
         });
 
@@ -147,7 +142,7 @@ CCH.Objects.Accordion = function (args) {
     };
 
     return $.extend(me, {
-        add: me.add,
+        add: me.addCard,
         CLASS_NAME : 'CCH.Objects.Accordion'
     });
 

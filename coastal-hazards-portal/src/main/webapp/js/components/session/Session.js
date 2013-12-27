@@ -63,78 +63,74 @@ CCH.Objects.Session = function(args) {
             }
         });
     };
+    
+    me.read = function(args) {
+        var sid = args.sid;
+        var callbacks = args.callbacks || {
+            success: [],
+            error: []
+        };
+
+        var context = args.context;
+
+        if (sid) {
+            $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint + sid, {
+                type: 'GET',
+                contentType: 'application/json;charset=utf-8',
+                dataType: 'json',
+                success: function(json, textStatus, jqXHR) {
+                    if (callbacks.success && callbacks.success.length > 0) {
+                        callbacks.success.each(function(callback) {
+                            callback.call(context, json, textStatus, jqXHR);
+                        });
+                    }
+                },
+                error: function(data, textStatus, jqXHR) {
+                    if (callbacks.error && callbacks.error.length > 0) {
+                        callbacks.error.each(function(callback) {
+                            callback.call(context, data, textStatus, jqXHR);
+                        });
+                    }
+                }
+            });
+        }
+    };
+    
+    me.load = function (args) {
+        args = args || {};
+        var sid = args.sid,
+            callbacks = args.callbacks || {
+                success : [],
+                error : []
+            };
+
+        callbacks.success.unshift(function(json, textStatus, jqXHR) {
+            if (json) {
+                CCH.LOG.info("Session.js::load: Session found on server. Updating current session.");
+                $.extend(true, me.session, json);
+                $(window).trigger('cch.data.session.loaded.true');
+            } else {
+                CCH.LOG.info("Session.js::load: Session not found on server.");
+                $(window).trigger('cch.data.session.loaded.false');
+            }
+        });
+
+        CCH.LOG.info("Session.js::load: Will try to load session '" + sid + "' from server");
+        me.read({
+            sid: sid,
+            callbacks: {
+                success: callbacks.success,
+                error: callbacks.error
+            }
+        });
+    };
 
     return $.extend(me, {
         toString: me.toString,
         getSession: me.getSession,
-        load: function(args) {
-            args = args || {};
-            var sid = args.sid,
-                callbacks = args.callbacks || {
-                    success : [],
-                    error : []
-                };
-
-            callbacks.success.unshift(function(json, textStatus, jqXHR) {
-                if (json) {
-                    CCH.LOG.info("Session.js::load: Session found on server. Updating current session.");
-                    $.extend(true, me.session, json);
-                    $(window).trigger('cch.data.session.loaded.true');
-                } else {
-                    CCH.LOG.info("Session.js::load: Session not found on server.");
-                    $(window).trigger('cch.data.session.loaded.false');
-                }
-            });
-
-            CCH.LOG.info("Session.js::load: Will try to load session '" + sid + "' from server");
-            me.readSession({
-                sid: sid,
-                callbacks: {
-                    success: callbacks.success,
-                    error: callbacks.error
-                }
-            });
-        },
-        readSession: function(args) {
-            var sid = args.sid;
-            var callbacks = args.callbacks || {
-                success: [],
-                error: []
-            };
-
-            var context = args.context;
-
-            if (sid) {
-                $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint + sid, {
-                    type: 'GET',
-                    contentType: 'application/json;charset=utf-8',
-                    dataType: 'json',
-                    success: function(json, textStatus, jqXHR) {
-                        if (callbacks.success && callbacks.success.length > 0) {
-                            callbacks.success.each(function(callback) {
-                                callback.call(context, json, textStatus, jqXHR);
-                            });
-                        }
-                    },
-                    error: function(data, textStatus, jqXHR) {
-                        if (callbacks.error && callbacks.error.length > 0) {
-                            callbacks.error.each(function(callback) {
-                                callback.call(context, data, textStatus, jqXHR);
-                            });
-                        }
-                    }
-                });
-            }
-        },
+        load : me.load,
+        readSession : me.read,
         writeSession: me.write,
-        getEndpoint: function(args) {
-            var callbacks = args.callbacks || [];
-            var context = args.context;
-            this.getIdentifier({
-                context: context,
-                callbacks: callbacks
-            });
-        },
         getItemIndex : function (item) {
             return me.session.items.findIndex(function(i) {
                 return i.id === item.id;
