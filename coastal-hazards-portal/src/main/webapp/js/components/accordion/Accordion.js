@@ -73,7 +73,7 @@ CCH.Objects.Accordion = function (args) {
 
         accordionBody.attr('id', accordionBodyId);
         accordionBody.data('id', id);
-        
+
         bodyInner.append(cardContainer);
 
         titleRow.remove();
@@ -90,7 +90,12 @@ CCH.Objects.Accordion = function (args) {
 //        });
 
         accordionBody.on({
-            'shown.bs.collapse' : function (evt) {
+            'show.bs.collapse' : function () {
+                card.show({
+                    duration : 0
+                });
+            },
+            'shown.bs.collapse' : function () {
                 var $this = $(this),
                     abId = $this.data('id');
 
@@ -99,29 +104,37 @@ CCH.Objects.Accordion = function (args) {
                     'eventAction': 'show',      // Required.
                     'eventLabel': abId
                 });
-                $this.trigger('bellow-display-toggle', {
-                    'id' : abId,
-                    'display' : true,
-                    'card' : card
-                });
+                
+                
+                
+//                $this.trigger('bellow-display-toggle', {
+//                    'id' : abId,
+//                    'display' : true,
+//                    'card' : card
+//                });
             },
-            'hidden.bs.collapse' : function (evt) {
+            'hide.bs.collapse' : function () {
+                
+            },
+            'hidden.bs.collapse' : function () {
                 var $this = $(this),
                     abId = $this.data('id');
 
                 ga('send', 'event', {
                     'eventCategory': 'accordion',   // Required.
                     'eventAction': 'hide',      // Required.
-                    'eventLabel': abId,
+                    'eventLabel': abId
                 });
-                $this.trigger('bellow-display-toggle', {
-                    'id' : abId,
-                    'display' : false,
-                    'card' : card
-                });
+                
+                card.hide();
+//                $this.trigger('bellow-display-toggle', {
+//                    'id' : abId,
+//                    'display' : false,
+//                    'card' : card
+//                });
             }
         });
-        
+
         return group;
     };
 

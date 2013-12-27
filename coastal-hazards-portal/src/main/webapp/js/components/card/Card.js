@@ -51,11 +51,18 @@ CCH.Objects.Card = function (args) {
     me.parent = args.parent;
     me.child = args.child;
     me.layer = me.item.getWmsLayer();
+    me.isOpen = false;
 
     me.show = function (args) {
         args = args || {};
 
-        var duration = args.duration || 500,
+        ga('send', 'event', {
+            'eventCategory': 'card',
+            'eventAction': 'show',
+            'eventLabel': me.id
+        });
+
+        var duration = args.duration !== undefined ? args.duration : 500,
             effect = args.effect || 'slide',
             easing = args.easing || 'swing',
             complete = args.complete || null;
@@ -68,22 +75,35 @@ CCH.Objects.Card = function (args) {
             complete : complete
         });
 
-        ga('send', 'event', {
-            'eventCategory': 'card', // Required.
-            'eventAction': 'show', // Required.
-            'eventLabel': me.id
-        });
-        CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was shown');
+        if (me.parent) {
+            me.parent.hideLayer();
+        }
+        
+        if (me.child) {
+            me.child.showLayer();
+        } else {
+           me.showLayer(); 
+        }
+        
+        me.isOpen = true;
+        
         $(me).trigger('card-display-toggle', {
             'display' : true
         });
 
+        CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was shown');
     };
 
     me.hide = function (args) {
         args = args || {};
+        
+        ga('send', 'event', {
+            'eventCategory': 'card',
+            'eventAction': 'hide',
+            'eventLabel': me.id
+        });
 
-        var duration = args.duration || 500,
+        var duration = args.duration !== undefined ? args.duration : 500,
             effect = args.effect || 'slide',
             easing = args.easing || 'swing',
             complete = args.complete || null;
@@ -95,16 +115,34 @@ CCH.Objects.Card = function (args) {
             direction : 'up',
             complete : complete
         });
-
-        ga('send', 'event', {
-            'eventCategory': 'card', // Required.
-            'eventAction': 'hide', // Required.
-            'eventLabel': me.id
-        });
-        CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was hidden');
+        
+        if (me.child) {
+            me.child.hideLayer();
+        }
+        
+        me.hideLayer();
+        
+        if (me.parent) {
+            me.parent.showLayer();
+        }
+        
         $(me).trigger('card-display-toggle', {
             'display' : false
         });
+        
+        CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was hidden');
+    };
+    
+    me.showLayer = function (args) {
+        args = args || {};
+        
+        me.item.showLayer();
+    };
+    
+    me.hideLayer = function (args) {
+        args = args || {};
+        
+        me.item.hideLayer();
     };
 
     me.close = function () {
@@ -164,34 +202,34 @@ CCH.Objects.Card = function (args) {
             $button.on('click', remove);
         }
     };
-    
+
     me.bindAggMenuToResize = function (args) {
-        $(window).on('resize', function() {
+        $(window).on('resize', function () {
             var $container = args.container,
-            $control = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:nth-child(2)'),
-            bodyWidth = $('body').outerWidth(),
-            containerWidth = $container.outerWidth(),
-            controlHeight = $control.outerHeight(),
-            controlTop = $control.offset().top,
-            controlLeft = $control.offset().left,
-            top = controlHeight + controlTop, 
-            left = controlLeft;
-            
+                $control = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:nth-child(2)'),
+                bodyWidth = $('body').outerWidth(),
+                containerWidth = $container.outerWidth(),
+                controlHeight = $control.outerHeight(),
+                controlTop = $control.offset().top,
+                controlLeft = $control.offset().left,
+                top = controlHeight + controlTop,
+                left = controlLeft;
+
             if (controlLeft + containerWidth > bodyWidth) {
                 left = bodyWidth - containerWidth;
             }
-            
+
             $container.offset({
                 'top' : top,
                 'left' : left
             });
-            
+
             $container.css({
                 'max-width' : bodyWidth + 'px'
             });
         });
     };
-    
+
     me.bindPropertyAggButton = function ($control) {
         $control.on('click', function ($evt) {
             $evt.stopImmediatePropagation();
@@ -298,18 +336,18 @@ CCH.Objects.Card = function (args) {
                         $list.append(processOption(item));
                     }
                 });
-                
+
                 me.bindAggMenuToResize({
                     container : $container
                 });
-                
+
                 $(window).trigger('resize');
             }
         });
     };
 
     me.bindMinMaxButtons = function (control) {
-        control.on('click', function (evt) {
+        control.on('click', function () {
             // A user has clicked on my min/max button. 
             // FInd out which one by querying an ancestor that has the 
             // closed/open class on it
@@ -322,18 +360,17 @@ CCH.Objects.Card = function (args) {
             }
         });
     };
-    
-    me.removeAggregationContainer = function() {
-        $('body').find('.aggregation-selection-container').remove();  
+
+    me.removeAggregationContainer = function () {
+        $('body').find('.aggregation-selection-container').remove();
     };
-    
+
     me.createContainer = function () {
         if (!me.container) {
             var container = $('#' + me.CARD_TEMPLATE_ID).clone(true).children(),
                 summary = me.summary,
                 fullSummary = summary.full,
                 mediumSummary = summary.medium,
-                tinySummary = summary.tiny,
                 largeTitle = fullSummary.title || '',
                 mediumTitle = mediumSummary.title || largeTitle,
                 largeContent = fullSummary.text || '',
@@ -372,41 +409,6 @@ CCH.Objects.Card = function (args) {
             // I have either aggregations or leaf nodes as children.
             // I am not myself a child.
             if (me.children.length) {
-                me.children.each(function (child) {
-                    var option = $('<option />'),
-                        item;
-
-                    if (typeof child === 'string') {
-                        item = CCH.items.getById(child);
-
-                        if (!item) {
-                            // The item was not already loaded so I will have 
-                            // to go out and grab it, processing it once I 
-                            // have it.
-                            new CCH.Objects.Item({ 'id' : child }).load({
-                                callbacks: {
-                                    success : [],
-                                    error: [
-                                        function (jqXHR, textStatus, errorThrown) {
-                                            $.pnotify({
-                                                text: 'Could not load sub-item',
-                                                styling: 'bootstrap',
-                                                type: 'warn',
-                                                nonblock: true,
-                                                sticker: false,
-                                                icon: 'icon-twitter'
-                                            });
-                                            CCH.LOG.warn('Card:: Could not load ' +
-                                                'item. Status Code: ' + textStatus +
-                                                ', Error: ' + errorThrown);
-                                        }
-                                    ]
-                                }
-                            });
-                        }
-                    }
-                });
-
                 // Do bindings
                 me.bindPropertyAggButton($propertyAggButton);
             } else {
@@ -445,7 +447,7 @@ CCH.Objects.Card = function (args) {
         'click': function(evt) {
             me.removeAggregationContainer(evt);
         },
-        'cch.ui.redimensioned': function(evt) {
+        'cch.ui.redimensioned': function (evt) {
             me.removeAggregationContainer(evt);
         },
         'bucket-added': function (evt, args) {
@@ -482,10 +484,12 @@ CCH.Objects.Card = function (args) {
         show : me.show,
         hide : me.hide,
         close : me.close,
+        isOpen : me.isOpen,
         child : me.child,
         closeChild : me.closeChild,
         removeSelf : me.removeSelf,
-        layer : me.layer,
+        showLayer : me.showLayer,
+        hideLayer : me.hideLayer,
         getBoundingBox: function () {
             return me.bbox;
         },

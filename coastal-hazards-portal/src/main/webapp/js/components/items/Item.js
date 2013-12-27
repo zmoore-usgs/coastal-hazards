@@ -19,14 +19,16 @@ CCH.Objects.Item = function (args) {
 
     me.UNITED_STATES_BBOX = [24.956, -124.731, 49.372, -66.97];
     me.id = args.id;
+    me.loaded = false;
 
     me.load = function (args) {
+        args = args || {};
         var callbacks = args.callbacks || {
             success : [],
             error : []
         },
-            me = this,
-            context = args.context || me;
+        me = this,
+        context = args.context || me;
 
         callbacks.success.unshift(function (data) {
             me.children = data.children || [];
@@ -39,7 +41,15 @@ CCH.Objects.Item = function (args) {
             me.type = data.type;
             me.wfsService = data.wfsService;
             me.wmsService = data.wmsService;
+            me.loaded = true;
+
             CCH.items.add({ item : me });
+
+            // If I have children, load those as well
+            me.children.each(function (childId) {
+                new CCH.Objects.Item({ id : childId }).load();
+            });
+
             CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
         });
 
@@ -48,8 +58,8 @@ CCH.Objects.Item = function (args) {
             displayNotification : false,
             context : context,
             callbacks: {
-                success: args.callbacks.success,
-                error: args.callbacks.error
+                success: callbacks.success,
+                error: callbacks.error
             }
         });
     };
@@ -83,7 +93,7 @@ CCH.Objects.Item = function (args) {
         return layer;
     };
 
-    me.toMap = function () {
+    me.showLayer = function () {
         var me = this;
         // I want to zoom to a bounding box 
         CCH.map.zoomToBoundingBox({
@@ -99,19 +109,35 @@ CCH.Objects.Item = function (args) {
             // on the map
             me.children.each(function (childItemId) {
                 var childItem = CCH.items.getById({ id : childItemId });
-                CCH.map.displayData({
+                CCH.map.showLayer({
                     item : childItem
                 });
             });
         } else {
-            // What do I do if it's not an aggregation? Will an item
-            // in a bellow ever not be an aggregation?
+            // I am not an aggregation, so just show my layer
+            CCH.map.showLayer({
+                item : me
+            });
         }
+    };
+
+    me.hideLayer = function () {
+        if (me.itemType === 'aggregation') {
+            // This aggregation should have children, so for each 
+            // child, I want to grab the child's layer and display it
+            // on the map
+            me.children.each(function (childItemId) {
+                CCH.map.removeLayersByName(childItemId);
+            });
+        } else {
+            CCH.map.removeLayersByName(me.id);
+        }
+        
     };
 
     CCH.LOG.debug('Item.js::init():Item class finished initializing.');
 
-    return {
+    return $.extend(me, {
         id : me.id,
         bbox : me.bbox,
         children : me.children,
@@ -123,7 +149,8 @@ CCH.Objects.Item = function (args) {
         wmsService : me.wmsService,
         getWmsLayer : me.createWmsLayer,
         load : me.load,
-        toMap : me.toMap,
+        showLayer : me.showLayer,
+        hideLayer : me.hideLayer,
         CLASS_NAME : 'CCH.Objects.Item'
-    };
+    });
 };

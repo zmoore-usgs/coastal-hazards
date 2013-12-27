@@ -29,7 +29,12 @@ CCH.Objects.UI = function (args) {
     "use strict";
     CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 
-    var me = (this === window) ? {} : this;
+    var me = (this === window) ? {} : this,
+        helpModal;
+
+    // This window name is used for the info window to launch into when 
+    // a user chooses to go back to the portal
+    window.name = "portal_main_window";
 
     me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
@@ -37,9 +42,6 @@ CCH.Objects.UI = function (args) {
     me.CONTENT_ROW_ID = args.contentRowId || 'content-row';
     me.MAP_DIV_ID = args.mapdivId || 'map';
     me.SLIDE_CONTAINER_DIV_ID = args.slideContainerDivId || 'application-slide-items-content-container';
-    me.NAVBAR_PIN_BUTTON_ID = args.navbarPinButtonId || 'app-navbar-pin-control-button';
-    me.NAVBAR_PIN_CONTROL_ICON_ID = args.navbarDropdownIconId || 'app-navbar-pin-control-icon';
-    me.NAVBAR_CLEAR_MENU_ITEM_ID = args.navbarClearMenuItemId || 'app-navbar-pin-control-clear';
     me.CCSA_AREA_ID = args.ccsAreaId || 'ccsa-area';
     me.SHARE_MODAL_ID = args.shareModalId || 'shareModal';
     me.SHARE_URL_BUTTON_ID = args.shareUrlButtonId || 'modal-share-summary-url-button';
@@ -50,7 +52,6 @@ CCH.Objects.UI = function (args) {
     me.ITEMS_SLIDE_CONTAINER_ID = args.slideItemsContainerId || 'application-slide-items-container';
     me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId || 'application-slide-bucket-container';
     me.SEARCH_SLIDE_CONTAINER_ID = args.slideSearchContainerId || 'application-slide-search-container';
-
     me.magicResizeNumber = 992;
     me.minimumHeight = args.minimumHeight || 480;
     me.previousWidth = $(window).width();
@@ -76,12 +77,10 @@ CCH.Objects.UI = function (args) {
         isSmall : me.isSmall,
         bucket : me.bucket
     });
-    
     me.searchSlide = new CCH.Objects.SearchSlide({
         containerId : me.SEARCH_SLIDE_CONTAINER_ID,
         isSmall : me.isSmall
     });
-    
     me.combinedSearch = new CCH.Objects.CombinedSearch();
     me.accordion = new CCH.Objects.Accordion({
         containerId : me.SLIDE_CONTAINER_DIV_ID
@@ -92,7 +91,7 @@ CCH.Objects.UI = function (args) {
             CCH.LOG.info('UI:: Items found: ' + data.items.length);
         }
     };
-    
+
     me.locationsSearchedHandler = function (evt, data) {
         if (data.items) {
             CCH.LOG.info('UI:: Locations found: ' + data.items.length);
@@ -110,9 +109,9 @@ CCH.Objects.UI = function (args) {
             footerHeight = footerRow.outerHeight(true),
             map = $('#' + me.MAP_DIV_ID),
             contentRowHeight;
-    
+
         contentRowHeight = $(window).height() - (headerHeight + footerHeight);
-        
+
         // This is an issue that happens with IE9. I've still not figured out why
         // but the height numbers seem to switch. It's probably an IE9 event
         // handling timing issue
@@ -121,7 +120,7 @@ CCH.Objects.UI = function (args) {
             contentRowHeight = footerHeight;
             footerHeight = tHeight;
         }
-        
+
         contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
 
         if (isSmall) {
@@ -306,14 +305,13 @@ CCH.Objects.UI = function (args) {
             $(window).trigger('cch.ui.overlay.removed');
         });
     };
-    
+
     me.addToAccordion = function (args) {
         args = args || {};
-        
+
         var card = args.card,
-            item = args.item,
-            bellow;
-        
+            item = args.item;
+
         // If we are passed a product, that means we were not passed a card
         if (item) {
             card = new CCH.Objects.Card({
@@ -321,37 +319,22 @@ CCH.Objects.UI = function (args) {
                 initHide : false
             });
         }
-        
+
         // By now, we should have a card
         if (card) {
             // I want to first create a bellow with this new card.
-            bellow = me.accordion.add({
+            me.accordion.add({
                 card : card
-            });
-
-            // Then add an event handler for when it opens/closes
-            bellow.on('bellow-display-toggle', function (evt, args) {
-                CCH.LOG.debug('CCH.Objects.UI:: Item ' + args.id + ' was ' + (args.display ? 'shown' : 'hidden'));
-                var id = args.id,
-                    display = args.display,
-                    cardItem = args.card.item;
-
-                // Check if I am opening a bellow 
-                if (display) {
-                    // A bellow was opened, so I need to show some layers
-                    cardItem.toMap();
-                }
-
             });
         }
     };
 
     me.displayLoadingError = function (args) {
-		ga('send', 'event', {
-			'eventCategory': 'loadingError',   // Required.
-			'eventAction': 'error',      // Required.
-			'eventLabel': args.errorThrown
-		});
+        ga('send', 'event', {
+            'eventCategory': 'loadingError', // Required.
+            'eventAction': 'error', // Required.
+            'eventLabel': args.errorThrown
+        });
         var continueLink = $('<a />').attr({
             'href': CCH.CONFIG.contextPath,
             'role': 'button'
@@ -368,103 +351,195 @@ CCH.Objects.UI = function (args) {
         $('#splash-spinner').fadeOut(2000);
     };
     
-    me.loadInitialItem = function (id) {
-            var errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
-                CCH.ui.displayLoadingError({
-                    errorThrown: errorThrown,
-                    splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
-                    mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
-                });
-            },
-                item = new CCH.Objects.Item({ id : id });
-            
-            item.load({
-                callbacks : {
-                    success : [
-                        function (data, status) {
-                            if (status === 'success') {
-                                me.addToAccordion({
-                                    item : CCH.items.getById({ id : id })
-                                });
-                            } else {
-                                me.displayLoadingError({
-                                    errorThrown: '',
-                                    splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
-                                    mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
-                                });
-                            }
-                        },
-                        function () {
-                            me.removeOverlay();
+    me.loadUberItem = function (args) {
+        var zoomToBbox = args.zoomToBbox === true ? true : false;
+        
+        new CCH.Objects.Search().submitItemSearch({
+            'item' : 'uber',
+            'callbacks' : {
+                'success' : [
+                    function (data) {
+                        if (zoomToBbox) {
+                            CCH.map.zoomToBoundingBox({
+                                bbox : data.bbox,
+                                fromProjection : new OpenLayers.Projection('EPSG:4326')
+                            });
                         }
-                    ],
-                    error : [errorResponseHandler]
-                }
+                        
+                        data.children.each(function (child) {
+                            CCH.ui.loadInitialItem(child);
+                        });
+                    }
+                ],
+                'error' : [
+                    function (jqXHR, textStatus, errorThrown) {
+                        CCH.ui.displayLoadingError({
+                            errorThrown: errorThrown,
+                            splashMessage: 404 === jqXHR.status ?
+                                    '<b>Item Not Found</b><br /><br />There was a problem loading information.<br /><br />' + 
+                                    'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
+                                    'Either try to reload the application or contact the system administrator.<br /><br />' :
+                                    'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
+                                    'Either try to reload the application or contact the system administrator.<br /><br />',
+                            mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')'
+                        });
+                    }
+                ]
+            }
+        });
+    }
+
+    me.loadInitialItem = function (id) {
+        var errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
+            CCH.ui.displayLoadingError({
+                errorThrown: errorThrown,
+                splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
+                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items (' + errorThrown + ')'
             });
-        };
+        },
+            item = new CCH.Objects.Item({ id : id });
 
-    me.init = (function () {
-        var navbarPinButton = $('#' + me.NAVBAR_PIN_BUTTON_ID),
-            navbarClearMenuItem = $('#' + me.NAVBAR_CLEAR_MENU_ITEM_ID),
-            shareModal = $('#' + me.SHARE_MODAL_ID),
-            helpModal = $('#' + me.HELP_MODAL_ID),
-            contentRow = $('#' + me.CONTENT_ROW_ID);
-
-        // This window name is used for the info window to launch into when 
-        // a user chooses to go back to the portal
-        window.name = "portal_main_window";
-
-        // Move the help modal container to the content row. It originally is in
-        // the header row but because that's not always visible, we need to move
-        // it during application initialization.
-        helpModal.appendTo(contentRow);
-
-        navbarPinButton.on('click', me.navbarMenuClickHandler);
-        navbarClearMenuItem.on('click', me.navbarClearItemClickHandler);
-        shareModal.on('show', me.sharemodalDisplayHandler);
-        helpModal.on('show', me.helpModalDisplayHandler);
-        $(window).on({
-            'resize': me.windowResizeHandler,
-            'cch.data.items.searched': me.itemsSearchedHandler,
-            'cch.data.locations.searched': me.locationsSearchedHandler,
-            'bucket-add': function(evt, args) {
-                
-            },
-            'bucket-remove': function(evt, args) {
-                
+        item.load({
+            callbacks : {
+                success : [
+                    function (data, status) {
+                        if (status === 'success') {
+                            me.addToAccordion({
+                                item : CCH.items.getById({ id : id })
+                            });
+                        } else {
+                            me.displayLoadingError({
+                                errorThrown: '',
+                                splashMessage: '<b>Oops! Something broke!</b><br /><br />There was an error communicating with the server. The application was halted.<br /><br />',
+                                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Any Items'
+                            });
+                        }
+                    },
+                    function () {
+                        me.removeOverlay();
+                    }
+                ],
+                error : [errorResponseHandler]
             }
         });
-        
-        $(me.combinedSearch).on({
-            'combined-searchbar-search-performed' : function (evt, args) {
-                me.searchSlide.displaySearchResults(args);
-            },
-            'combined-searchbar-search-performing' : function () {
-                me.searchSlide.close({
-                    clearOnClose : true
-                });
-            }
-        });
-        
-        $(CCH.map).on('map-click', function () {
+    };
+
+    // Do Bindings
+    // 
+    // Move the help modal container to the content row. It originally is in
+    // the header row but because that's not always visible, we need to move
+    // it during application initialization.
+    $('#' + me.HELP_MODAL_ID).
+        appendTo($('#' + me.CONTENT_ROW_ID)).
+        on('show', me.helpModalDisplayHandler);
+    $('#' + me.SHARE_MODAL_ID).on('show', me.sharemodalDisplayHandler);
+    $(window).on({
+        'resize': me.windowResizeHandler,
+        'cch.data.items.searched': me.itemsSearchedHandler,
+        'cch.data.locations.searched': me.locationsSearchedHandler
+    });
+    $(me.combinedSearch).on({
+        'combined-searchbar-search-performed' : function (evt, args) {
+            me.searchSlide.displaySearchResults(args);
+        },
+        'combined-searchbar-search-performing' : function () {
             me.searchSlide.close({
                 clearOnClose : true
             });
-        });
-        // Check for cookie to tell us if user has disabled the modal window 
-        // on start. If not, show it. The user has to opt-in to have it shown 
-        // next time
-        if (!$.cookie('cch_display_welcome') || $.cookie('cch_display_welcome') === 'true') {
-            $.cookie('cch_display_welcome', 'false', {path: '/'});
-            me.displayStartupModalWindow();
         }
+    });
+    $(CCH.map).on('map-click', function () {
+        me.searchSlide.close({
+            clearOnClose : true
+        });
+    });
 
-        $(window).trigger('cch.ui.initialized');
+    // Check for cookie to tell us if user has disabled the modal window 
+    // on start. If not, show it. The user has to opt-in to have it shown 
+    // next time
+    if (!$.cookie('cch_display_welcome') || $.cookie('cch_display_welcome') === 'true') {
+        $.cookie('cch_display_welcome', 'false', {path: '/'});
+        me.displayStartupModalWindow();
+    }
 
-        CCH.LOG.debug('UI.js::constructor: UI class initialized.');
-    }());
+    // Populate the UI with incoming data
+    // Decide how to load the application. 
+    // Depending on the 'idType' string, the application can be loaded either through:
+    // 'ITEM' = Load a single item from the database
+    // 'VIEW' = Load a session which can have zero, one or more items
+    // '' = Load the application normally through the uber item
+    var type = (CCH.CONFIG.params.type + String()).toLowerCase(),
+        itemId = CCH.CONFIG.params.id,
+        removeMarkers = function () {
+            CCH.map.clearBoundingBoxMarkers();
+            $(window).off('cch-map-bbox-marker-added', removeMarkers);
+        },
+        errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
+            CCH.ui.displayLoadingError({
+                errorThrown: errorThrown,
+                textStatus: textStatus,
+                splashMessage: 404 === jqXHR.status ?
+                        '<b>Item Not Found</b><br /><br />The item you are attempting to view no longer exists<br /><br />' :
+                        '<b>There was an error attempting to load an item.</b><br />The application may not function correctly.<br />Either try to reload the application or contact the system administrator.<br /><br />',
+                mailTo: 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load View (View: ' + CCH.CONFIG.id + ' Error: ' + errorThrown + ')'
+            });
+        };
 
-    return {
+    // Most of the application is now initialized, so I'm going to try and load
+    // either one item, a view or all top level items. First I check if idType exists
+    if (type) {
+        // User is coming in with either an item or a view, check which
+        if (type === 'view') {
+            splashUpdate("Loading View...");
+
+            // Begin by trying to load the session from the incoming url
+            CCH.session.load({
+                sid: CCH.CONFIG.params.id,
+                callbacks: {
+                    success: [
+                        function (json) {
+                            // Figure out which ids come with this session
+                            var ids = CCH.session.getSession().items,
+                                //Memoize the incoming bbox
+                                bbox = json.bbox;
+                            
+                            if (ids.length) {
+                                ids.children.each(function (id) {
+                                    CCH.ui.loadInitialItem(id);
+                                });
+                            } else {
+                                // This session does not come with any items so 
+                                // just load the top level item and go from there
+                                me.loadUberItem({
+                                    zoomToBbox : false
+                                });
+                            }
+                            
+                        }
+                    ],
+                    error: [errorResponseHandler]
+                }
+            });
+        } else if (type === 'item') {
+            // User is coming in with an item, so load that item
+            splashUpdate('Loading Application');
+            CCH.ui.loadInitialItem(itemId);
+        }
+    } else {
+        // The user is initially loading the application. I do not have any items
+        // to load, nor do I have any session to load, so just start with the top
+        // level item
+        splashUpdate('Loading Application...');
+        me.loadUberItem({
+            zoomToBbox : true
+        });
+    }
+
+    $(window).trigger('cch.ui.initialized');
+
+    CCH.LOG.debug('UI.js::constructor: UI class initialized.');
+
+    return $.extend(me, {
         removeOverlay: me.removeOverlay,
         isSmall: me.isSmall,
         displayLoadingError: me.displayLoadingError,
@@ -475,5 +550,5 @@ CCH.Objects.UI = function (args) {
         addToAccordion : me.addToAccordion,
         loadInitialItem : me.loadInitialItem,
         CLASS_NAME : 'CCH.Objects.UI'
-    };
+    });
 };

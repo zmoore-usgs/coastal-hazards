@@ -1,11 +1,7 @@
 package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
-import gov.usgs.cida.coastalhazards.gson.adapter.BboxAdapter;
-import gov.usgs.cida.coastalhazards.gson.adapter.CenterAdapter;
-import gov.usgs.cida.coastalhazards.gson.adapter.DoubleSerializer;
 import gov.usgs.cida.utilities.string.StringHelper;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
@@ -36,9 +32,8 @@ public class Session implements Serializable {
 	@Transient
 	boolean isValid() {
 		return (id != null && baselayer != null && !baselayer.isEmpty()
-				&& scale > 0.0 && bbox != null //&& bbox.length == 4 (bbox.isValid?)
-				&& center != null // && center.length == 2); (center.isValid?)
-                );
+				&& scale > 0.0 && bbox != null
+				&& center != null);
 	}
 
 	public String toJSON() {

@@ -96,6 +96,7 @@
         <script type="text/javascript" src="js/components/accordion/Accordion.js"></script>
         <script type="text/javascript" src="js/components/search/Search.js"></script>
         <script type="text/javascript" src="js/components/session/Session.js"></script>
+        <script type="text/javascript" src="js/components/map/LayerIdentifyControl.js"></script>
         <script type="text/javascript" src="js/components/map/Map.js"></script>
         <script type="text/javascript" src="js/components/card/Card.js"></script>
         <script type="text/javascript" src="js/components/items/Items.js"></script>
