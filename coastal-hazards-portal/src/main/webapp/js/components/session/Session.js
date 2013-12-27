@@ -14,8 +14,6 @@ CCH.Objects.Session = function(args) {
     
     me.session = {
         items: [],
-        bucket: [],
-        searches: [],
         baselayer: '',
         scale: 0,
         bbox: [0.0, 0.0, 0.0, 0.0],
@@ -136,6 +134,29 @@ CCH.Objects.Session = function(args) {
                 context: context,
                 callbacks: callbacks
             });
+        },
+        getItemIndex : function (item) {
+            return me.session.items.findIndex(function(i) {
+                return i.id === item.id;
+            });
+        },
+        addItem : function (item) {
+            var index = me.getItemIndex(item);
+            
+            if (index === -1) {
+                me.session.items.push(item);
+            }
+            
+            return me.session;
+        },
+        removeItem : function (item) {
+            var index = me.getItemIndex(item);
+            
+            if (index !== -1) {
+                me.session.items.removeAt(index);
+            }
+            
+            return me.session;
         }
     });
 };

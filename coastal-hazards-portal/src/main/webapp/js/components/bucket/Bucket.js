@@ -105,12 +105,23 @@ CCH.Objects.Bucket = function (args) {
 
             var item = args.item,
                 id = item.id;
+        
             if (!me.getItemById(id)) {
+                // Add the item to my personal bucket array
                 me.bucket.push(item);
+                
+                // Add the item to the bucket slide
                 me.slide.add({
                     item : item
                 });
+                
+                // Add the item to the session
+                CCH.session.addItem(item);
+                
+                // Increase the bucket count visually
                 me.increaseCount();
+                
+                // Trigger the addition in the window
                 $(window).trigger('bucket-added', {
                     id : id
                 });
@@ -134,12 +145,22 @@ CCH.Objects.Bucket = function (args) {
 
             if (item) {
                 id = item.id;
+                
+                // Take the item out of my personal bucket array
                 me.bucket.remove(function (item) {
                     return item.id === id;
                 });
+                
+                // Remove the item from the slide
                 me.slide.remove(item);
+                
+                // Remove the item from the session
+                CCH.session.removeItem(item);
+                
+                // Visually decrease the count
                 me.decreaseCount();
                 
+                // Trigger the removal
                 $(window).trigger('bucket-removed', {
                     id : id
                 });

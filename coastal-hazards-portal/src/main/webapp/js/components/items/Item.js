@@ -27,9 +27,7 @@ CCH.Objects.Item = function (args) {
             success : [],
             error : []
         },
-                
         me = this,
-        
         context = args.context || me;
 
         callbacks.success.unshift(function (data) {
