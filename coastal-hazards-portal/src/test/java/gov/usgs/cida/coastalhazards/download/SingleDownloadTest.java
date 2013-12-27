@@ -29,7 +29,7 @@ public class SingleDownloadTest {
         singleDownload.setWfs(wfs);
         singleDownload.addAttr("CVI");
         singleDownload.addAttr("SLRISK");
-        singleDownload.stage(DownloadManager.createDownloadStagingArea(), missing);
+        singleDownload.stage(DownloadUtility.createDownloadStagingArea(), missing);
     } 
     
 }

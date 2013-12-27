@@ -1,15 +1,17 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import gov.usgs.cida.coastalhazards.download.DownloadManager;
+import gov.usgs.cida.coastalhazards.download.DownloadUtility;
+import gov.usgs.cida.coastalhazards.jpa.DownloadManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.jpa.SessionManager;
 import gov.usgs.cida.coastalhazards.model.Session;
+import gov.usgs.cida.coastalhazards.model.util.Download;
 import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ConcurrentModificationException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -36,13 +38,35 @@ public class DownloadResource {
 	@Path("item/{id}")
     @Produces("application/zip")
 	public Response getCard(@PathParam("id") String id) throws IOException {
+        Response response = null;
+        
         Item item = itemManager.loadItem(id, true);
-        
-        File stagingDir = DownloadManager.createDownloadStagingArea();
-        DownloadManager.stageItemDownload(item, stagingDir);
-        File zipFile = DownloadManager.zipStagingAreaForDownload(stagingDir);
-        
-		Response response = Response.ok(zipFile, "application/zip").build();
+        if (item == null) {
+            response = Response.status(Response.Status.NOT_FOUND);
+        } else {
+            File zipFile = null;
+            DownloadManager manager = new DownloadManager();
+            try {
+                if (manager.isPersisted(id)) {
+                    Download persistedDownload = manager.load(id);
+                    // if we switch this to external file server or S3,
+                    // redirect to this uri as a url
+                    zipFile = new File(persistedDownload.getPersistanceURI());
+                } else {
+                    throw new FileNotFoundException();
+                }
+            } catch (FileNotFoundException ex) {
+                File stagingDir = DownloadUtility.createDownloadStagingArea();
+                DownloadUtility.stageItemDownload(item, stagingDir);
+                zipFile = DownloadUtility.zipStagingAreaForDownload(stagingDir);
+            } finally {
+                Download download = new Download();
+                download.setItemId(id);
+                download.setPersistanceURI(zipFile.toURI());
+                manager.save(download);
+            }
+            response = Response.ok(zipFile, "application/zip").build();
+        }
 		return response;
 	}
     
@@ -51,6 +75,7 @@ public class DownloadResource {
 	 *
 	 * @param id identifier of requested item
 	 * @return JSON representation of the item(s)
+     * @throws java.io.IOException
 	 */
 	@GET
 	@Path("view/{id}")
@@ -59,11 +84,27 @@ public class DownloadResource {
         Response response = null;
         try {
             String sessionJSON = sessionManager.load(id);
-            Session session = Session.fromJSON(sessionJSON);
-            File stagingDir = DownloadManager.createDownloadStagingArea();
-            DownloadManager.stageSessionDownload(session, stagingDir);
-            File zipFile = DownloadManager.zipStagingAreaForDownload(stagingDir);
-            response = Response.ok(zipFile, "application/zip").build();
+            if (sessionJSON == null) {
+                response = Response.status(Response.Status.NOT_FOUND);
+            } else {
+                DownloadManager manager = new DownloadManager();
+                File zipFile = null;
+                try {
+                    if (manager.isPersisted(id)) {
+                        Download download = manager.load(id);
+                        zipFile = new File(download.getPersistanceURI());
+                    } else {
+                        throw new FileNotFoundException();
+                    }
+                } catch (FileNotFoundException ex) {
+                    Session session = Session.fromJSON(sessionJSON);
+                    File stagingDir = DownloadUtility.createDownloadStagingArea();
+                    DownloadUtility.stageSessionDownload(session, stagingDir);
+                    zipFile = DownloadUtility.zipStagingAreaForDownload(stagingDir);
+                } finally {
+                    response = Response.ok(zipFile, "application/zip").build();
+                }
+            }
         } catch (NoSuchAlgorithmException | SessionIOException ex) {
             response = Response.serverError().entity(ex).build();
         }
