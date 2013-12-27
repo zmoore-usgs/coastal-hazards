@@ -22,6 +22,34 @@ CCH.Objects.Accordion = function (args) {
         container.addClass('panel-group');
     }
 
+    me.load = function (args) {
+        args = args || {};
+        
+        var callbacks = args.callbacks || {},
+            id = args.id,
+            item = new CCH.Objects.Item({ id : id });
+    
+        callbacks = args.callbacks || {
+            success : [],
+            error : []
+        };
+            
+        callbacks.success.unshift(function (data, status) {
+            if (status === 'success') {
+                me.add({
+                    item : CCH.items.getById({ id : data.id })
+                });
+            }
+        });
+        
+        item.load({
+            callbacks : {
+                success : callbacks.success,
+                error : callbacks.error
+            }
+        });
+    };
+
     /**
      * Uses a card to create a bellow out of
      */
@@ -143,6 +171,7 @@ CCH.Objects.Accordion = function (args) {
 
     return $.extend(me, {
         add: me.addCard,
+        load : me.load,
         CLASS_NAME : 'CCH.Objects.Accordion'
     });
 

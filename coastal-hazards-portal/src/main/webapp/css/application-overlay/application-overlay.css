@@ -34,7 +34,8 @@
 }
 
 #application-overlay > div:nth-child(2) > img:first-child {
-    max-height: 80%;
+    margin-top: 10px;
+    max-height: 65%;
     max-width: 80%;
     clear: both;
 }
@@ -61,6 +62,15 @@
     height: 60px;
     width: 50%;
     margin-left: 25%;
+}
+#application-overlay > div:nth-child(2)  > div:nth-child(4) >span.error-message {
+    width: 100%;
+    text-align: center;
+    font-size: 1.2em;
+}
+#application-overlay > div:nth-child(2)  > div:nth-child(4) >span.error-message > div {
+    font-size: 0.5em;
+    text-align: left;
 }
 /* Spinner */
 #application-overlay > div:nth-child(2) > div:nth-child(4)  > img:first-child {
