@@ -108,6 +108,14 @@ CCH.Objects.Item = function (args) {
                     item : childItem
                 });
             });
+            // Because I don't have a real layer for this aggregation, once all 
+            // of the children are added, I include this trigger so that other
+            // components can act on this layer having been added
+            $(window).trigger('cch.map.added.layer', {
+                layer : {
+                    name : me.id
+                }
+            });
         } else {
             // I am not an aggregation, so just show my layer
             CCH.map.showLayer({
@@ -123,6 +131,14 @@ CCH.Objects.Item = function (args) {
             // on the map
             me.children.each(function (childItemId) {
                 CCH.map.removeLayersByName(childItemId);
+            });
+            // Because I don't have a real layer for this aggregation, once all 
+            // of the children are removed, I include this trigger so that other
+            // components can act on this layer having been removed
+            $(window).trigger('cch.map.removed.layer', {
+                layer : {
+                    name : me.id
+                }
             });
         } else {
             CCH.map.removeLayersByName(me.id);

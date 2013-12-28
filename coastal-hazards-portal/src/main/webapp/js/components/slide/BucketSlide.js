@@ -386,8 +386,18 @@ CCH.Objects.BucketSlide = function (args) {
             window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + id;
         });
 
-        viewButton.on('click', function () {
-            item.showLayer();
+        viewButton.on('click', function (evt) {
+            var addingLayer = !evt.hasClass('active');
+            if (addingLayer) {
+                item.showLayer();
+            } else {
+                item.hideLayer();
+            }
+            
+            $(window).trigger('slide.bucket.button.click.view', {
+                'adding' : addingLayer,
+                'id' : id
+            });
         });
 
         upButton.on('click', function () {
@@ -414,6 +424,26 @@ CCH.Objects.BucketSlide = function (args) {
         infoButton.attr({
             'target' : 'portal_info_window',
             'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
+        });
+        
+        $(window).on('cch.map.added.layer', function (evt, args) {
+            var layer = args.layer,
+                viewButton;
+            
+            if (layer.name === id) {
+                viewButton = $('#' + 'application-slide-bucket-container-card-' + id).find('>div:nth-child(2)>div>button:nth-child(1)');
+                viewButton.addClass('active');
+            }
+        });
+        
+        $(window).on('cch.map.removed.layer', function (evt, args) {
+            var layer = args.layer,
+                viewButton;
+            
+            if (layer.name === id) {
+                viewButton = $('#' + 'application-slide-bucket-container-card-' + id).find('>div:nth-child(2)>div>button:nth-child(1)');
+                viewButton.removeClass('active');
+            }
         });
 
         return card;
