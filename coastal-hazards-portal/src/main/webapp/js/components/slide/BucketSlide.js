@@ -374,7 +374,9 @@ CCH.Objects.BucketSlide = function (args) {
             append(moreInfoBadge);
         card.data('id', id);
 
-        removeButton.on('click', function () {
+        removeButton.on('click', function (evt) {
+            $(evt).stopPropagation();
+            
             // I emit this to the top so that bucket can catch it, decrement itself
             // and then pass on the remove back down here to my remove method
             $(window).trigger('bucket-remove', {
@@ -387,7 +389,7 @@ CCH.Objects.BucketSlide = function (args) {
         });
 
         viewButton.on('click', function (evt) {
-            var addingLayer = !evt.hasClass('active');
+            var addingLayer = !$(evt.target).hasClass('active');
             if (addingLayer) {
                 item.showLayer();
             } else {
@@ -432,20 +434,32 @@ CCH.Objects.BucketSlide = function (args) {
             
             if (layer.name === id) {
                 viewButton = $('#' + 'application-slide-bucket-container-card-' + id).find('>div:nth-child(2)>div>button:nth-child(1)');
-                viewButton.addClass('active');
+                
+                setTimeout(function () {
+                    if (!viewButton.hasClass('active')) {
+                        viewButton.addClass('active');
+                    }
+                }, 200)
+                
             }
         });
-        
         $(window).on('cch.map.removed.layer', function (evt, args) {
             var layer = args.layer,
                 viewButton;
             
             if (layer.name === id) {
                 viewButton = $('#' + 'application-slide-bucket-container-card-' + id).find('>div:nth-child(2)>div>button:nth-child(1)');
-                viewButton.removeClass('active');
+                
+                setTimeout(function () {
+                    if (viewButton.hasClass('active')) {
+                       viewButton.removeClass('active');
+                    }
+                }, 200)
             }
         });
-
+        
+        item.showLayer();
+        
         return card;
     };
 

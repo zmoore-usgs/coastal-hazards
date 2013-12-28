@@ -485,7 +485,24 @@ CCH.Objects.UI = function (args) {
                                     success : [function () {
                                         if (items.length) {
                                             items.each(function (item) {
-                                                addToBucket(item);
+                                                if (undefined === item.CLASS_NAME) {
+                                                    item = new CCH.Objects.Item({ id : item.id });
+                                                    item.load({
+                                                        callbacks : {
+                                                            success : [
+                                                                function() {
+                                                                    me.bucket.add({ item : item });
+                                                                }],
+                                                            error : [
+                                                                function (){
+                                                                  CCH.LOG.warn('UI.js:: Could not load item '+ item.id);  
+                                                                }
+                                                            ]
+                                                        }
+                                                    })
+                                                } else {
+                                                    me.bucket.add({ item : item });
+                                                }
                                             });
                                         }
                                     }],

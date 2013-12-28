@@ -196,13 +196,15 @@ CCH.Objects.Map = function (args) {
 
             if (card && me.map.getLayersByName(id).length === 0) {
                 layer = card.layer;
-            } else if (item && 'function' === typeof item.getWmsLayer) {
+            } else if (item && 'function' === typeof item.getWmsLayer && me.map.getLayersByName(item.id).length === 0) {
                 layer = item.getWmsLayer();
             }
             
-            added = me.addLayer(layer);
-            if (added) {
-                layer.redraw(true);
+            if (layer) {
+                added = me.addLayer(layer);
+                if (added) {
+                    layer.redraw(true);
+                }
             }
         },
         addLayer: function(layer) {
