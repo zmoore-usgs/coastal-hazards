@@ -387,7 +387,7 @@ CCH.Objects.BucketSlide = function (args) {
         });
 
         viewButton.on('click', function () {
-            item.toMap();
+            item.showLayer();
         });
 
         upButton.on('click', function () {
