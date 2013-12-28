@@ -165,7 +165,6 @@ CCH.Objects.UI = function (args) {
                             shareUrl = CCH.CONFIG.publicUrl + '/ui/view/' + sid;
 
                         displayShareModal(shareUrl);
-
                     }
                 ],
                 error: [
