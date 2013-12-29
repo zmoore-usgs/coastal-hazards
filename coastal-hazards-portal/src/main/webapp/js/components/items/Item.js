@@ -104,9 +104,11 @@ CCH.Objects.Item = function (args) {
             // on the map
             me.children.each(function (childItemId) {
                 var childItem = CCH.items.getById({ id : childItemId });
-                CCH.map.showLayer({
-                    item : childItem
-                });
+                if (childItem) {
+                    CCH.map.showLayer({
+                        item : childItem
+                    });
+                }
             });
             // Because I don't have a real layer for this aggregation, once all 
             // of the children are added, I include this trigger so that other

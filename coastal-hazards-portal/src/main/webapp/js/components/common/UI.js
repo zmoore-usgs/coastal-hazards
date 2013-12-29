@@ -472,12 +472,7 @@ CCH.Objects.UI = function (args) {
                 callbacks: {
                     success: [
                         function () {
-                            var items = CCH.session.getSession().items,
-                                addToBucket = function(item) {
-                                    $(window).trigger('bucket-add', {
-                                        item : item
-                                    });
-                                };
+                            var items = CCH.session.getSession().items;
 
                             me.loadTopLevelItem({
                                 zoomToBbox : true,
