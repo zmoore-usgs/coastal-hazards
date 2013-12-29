@@ -505,7 +505,7 @@ CCH.Objects.BucketSlide = function (args) {
         return card;
     };
 
-    $(window).on('cch.ui.resized', function (args) {
+    $(window).on('resize', function (args) {
         me.resized(args);
     });
 
