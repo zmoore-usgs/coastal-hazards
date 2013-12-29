@@ -35,7 +35,7 @@
         </div>
         <div class="row text-center">
             <div class="btn-group">
-                <button class="application-slide-bucket-container-card-button-layer btn btn-default application-slide-bucket-container-card-template-button" type="button">View In Map</button>
+                <button class="application-slide-bucket-container-card-button-layer btn btn-default application-slide-bucket-container-card-template-button active" type="button" data-toggle="button">View In Map</button>
                 <button class="application-slide-bucket-container-card-button-share btn btn-default application-slide-bucket-container-card-template-button" type="button">Share</button>
                 <button class="application-slide-bucket-container-card-button-ok btn btn-default application-slide-bucket-container-card-template-button" type="button">Download</button>
             </div>

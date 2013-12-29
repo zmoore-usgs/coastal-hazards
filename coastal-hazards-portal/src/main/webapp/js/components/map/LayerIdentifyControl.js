@@ -51,7 +51,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     featuresById[id].push(feature.attributes);
                 });
 
-                popupHtml = '<div class="container col-md-12">' +
+                popupHtml = '<div class="col-md-12">' +
                         '<table>' +
                         '<tr id="loading-info-row"><td>Loading Information...</td></tr>' +
                         '</table>';
