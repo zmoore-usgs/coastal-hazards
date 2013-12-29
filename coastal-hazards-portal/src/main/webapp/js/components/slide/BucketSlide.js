@@ -391,7 +391,7 @@ CCH.Objects.BucketSlide = function (args) {
             shareButton = card.find('>div:nth-child(2)>div>button:nth-child(2)'),
             downloadButton = card.find('>div:nth-child(2)>div>button:nth-child(3)'),
             infoButton = card.find('>div:nth-child(2)>div.btn-group>a'),
-            imageContainer = card.find('img'),
+            imageContainer = card.find('>div:first-child img').first(),
             moreInfoBadge = $('<span />').
                     addClass('badge more-info-badge').
                     append($('<a />').

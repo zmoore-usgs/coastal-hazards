@@ -38,6 +38,11 @@
     margin-left: 3px;
 }
 
+/*Every image in a button on the card*/
+.application-slide-bucket-container-card-template-button > img {
+    height: 25px;
+}
+
 #application-slide-bucket-container .application-slide-bucket-container-card-image {
     width: 100%;
 }
