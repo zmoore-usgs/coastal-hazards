@@ -151,7 +151,7 @@ CCH.Objects.BucketSlide = function (args) {
 
         return extents;
     };
-
+    
     me.getCard = function (args) {
         args = args || {};
 
@@ -208,13 +208,13 @@ CCH.Objects.BucketSlide = function (args) {
         if (id) {
             $card = me.getCard({ id : id });
             me.cards.removeAt(me.getCardIndex(id));
-            
-            $('#' + me.SLIDE_CONTENT_CONTAINER).find('>div:not(:first-child())').each(function (idx, card) {
+
+            me.getContainer().find('>div:not(:first-child())').each(function (idx, card) {
                 if ($(card).data('id') === id) {
                     $(card).remove();
                 }
             });
-            
+
             if (!me.cards.length) {
                 $(me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR).addClass('hidden');
                 me.EMPTY_TEXT_CONTAINER.removeClass('hidden');
@@ -238,11 +238,31 @@ CCH.Objects.BucketSlide = function (args) {
         return $card;
     };
 
+    me.reorderLayers = function () {
+        var layerId,
+            layer,
+            layers = [];
+
+        me.cards.each(function ($cardClone) {
+            layerId = $cardClone.data('id');
+            layer = CCH.map.getMap().getLayersByName(layerId);
+
+            if (layer.length) {
+                layers.push(layer[0]);
+            }
+        });
+
+        layers.reverse().each(function (layer, ind) {
+            CCH.map.getMap().setLayerIndex(layer, CCH.map.getMap().layers.length - 1);
+            layer.redraw();
+        });
+    };
+
     me.rebuild = function (args) {
-        var $container = $('#' + me.SLIDE_CONTENT_CONTAINER);
+        var $container = me.getContainer();
         
         $container.empty();
-        me.cards.each(function ($card) {
+        me.cards.each(function ($card, index, cardArray) {
             me.append($card);
         });
         me.redrawArrows();
@@ -257,7 +277,7 @@ CCH.Objects.BucketSlide = function (args) {
             $cardUpArrow,
             $cardDownArrow;
     
-       $('#' + me.SLIDE_CONTENT_CONTAINER).find('>div:not(#application-slide-bucket-content-empty)').each(function (idx, card) {
+       me.getContainer().find('>div:not(#application-slide-bucket-content-empty)').each(function (idx, card) {
             id = $(card).data('id');
             index = me.getCardIndex(id);
             $card = me.getCard({id : id}).clone(true);
@@ -284,11 +304,13 @@ CCH.Objects.BucketSlide = function (args) {
         });
     };
 
+    me.getContainer = function () {
+        return $('#' + me.SLIDE_CONTENT_CONTAINER);
+    };
+
     me.append = function ($card) {
-        var $container = $('#' + me.SLIDE_CONTENT_CONTAINER),
-            $card = $card.clone(true);
-    
-        $container.append($card);
+        var $container = me.getContainer();
+        $container.append($card.clone(true));
     };
 
     /**
@@ -310,9 +332,10 @@ CCH.Objects.BucketSlide = function (args) {
             }
         }
         me.rebuild();
+        me.reorderLayers();
         return me.cards;
     };
-    
+
     me.downloadBucket = function () {
         CCH.session.writeSession({
             callbacks : {
@@ -415,7 +438,7 @@ CCH.Objects.BucketSlide = function (args) {
                 direction : 1
             });
         });
-        
+
         shareButton.on('click', function () {
             $(window).trigger('slide.bucket.button.click.share', {
                 'type' : 'item',
@@ -460,6 +483,10 @@ CCH.Objects.BucketSlide = function (args) {
         
         item.showLayer();
         
+        card.getContainer = function () {
+            return $('#' + this.attr('id'));
+        };
+        
         return card;
     };
 
@@ -494,11 +521,13 @@ CCH.Objects.BucketSlide = function (args) {
         toggle : me.toggle,
         add : me.add,
         remove : me.remove,
+        getContainer : me.getContainer,
         getCard : me.getCard,
         createCard : me.createCard,
         moveCard : me.moveCard,
         isClosed : me.isClosed,
         cards : me.cards,
+        reorderLayers : me.reorderLayers,
         CLASS_NAME : 'CCH.Objects.BucketSlide'
     };
 };
