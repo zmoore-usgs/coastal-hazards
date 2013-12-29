@@ -2,6 +2,7 @@
 /*jslint plusplus: true */
 /*global $*/
 /*global CCH*/
+/*global alertify*/
 /*global splashUpdate*/
 
 /**
@@ -18,7 +19,7 @@ CCH.Objects.BucketSlide = function (args) {
     "use strict";
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class is initializing.');
     args = args || {};
-    
+
     var me = (this === window) ? {} : this;
 
     me.SLIDE_CONTAINER_ID = args.containerId;
@@ -151,7 +152,7 @@ CCH.Objects.BucketSlide = function (args) {
 
         return extents;
     };
-    
+
     me.getCard = function (args) {
         args = args || {};
 
@@ -208,7 +209,9 @@ CCH.Objects.BucketSlide = function (args) {
         if (id) {
             $card = me.getCard({ id : id });
             me.cards.removeAt(me.getCardIndex(id));
-
+            
+            CCH.map.removeLayersByName(id);
+            
             me.getContainer().find('>div:not(:first-child())').each(function (idx, card) {
                 if ($(card).data('id') === id) {
                     $(card).remove();
@@ -228,7 +231,7 @@ CCH.Objects.BucketSlide = function (args) {
             // the bucket class will actually call this function with a proper
             // id. It's a long way around removing the item but it does hit 
             // multiple components
-            me.cards.each(function ($card) {
+            me.cards.reverse().each(function ($card) {
                 $(window).trigger('bucket-remove', {
                     id : $card.data('id')
                 });
@@ -252,35 +255,33 @@ CCH.Objects.BucketSlide = function (args) {
             }
         });
 
-        layers.reverse().each(function (layer, ind) {
+        layers.reverse().each(function (layer) {
             CCH.map.getMap().setLayerIndex(layer, CCH.map.getMap().layers.length - 1);
             layer.redraw();
         });
     };
 
-    me.rebuild = function (args) {
+    me.rebuild = function () {
         var $container = me.getContainer();
-        
+
         $container.empty();
-        me.cards.each(function ($card, index, cardArray) {
+        me.cards.each(function ($card) {
             me.append($card);
         });
         me.redrawArrows();
         return $container;
     };
-    
+
     me.redrawArrows = function () {
         var cardsLength = me.cards.length,
             id,
             index,
-            $card,
             $cardUpArrow,
             $cardDownArrow;
-    
-       me.getContainer().find('>div:not(#application-slide-bucket-content-empty)').each(function (idx, card) {
+
+        me.getContainer().find('>div:not(#application-slide-bucket-content-empty)').each(function (idx, card) {
             id = $(card).data('id');
             index = me.getCardIndex(id);
-            $card = me.getCard({id : id}).clone(true);
             $cardUpArrow = $(card).find('>div>div:nth-child(3)>button:nth-child(2)');
             $cardDownArrow = $(card).find('>div>div:nth-child(3)>button:nth-child(3)');
 
@@ -342,7 +343,7 @@ CCH.Objects.BucketSlide = function (args) {
                 success : [
                     function (result) {
                         var sessionId = result.sid;
-                        
+
                         if (sessionId) {
                             window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/view/' + sessionId;
                         }
@@ -350,7 +351,7 @@ CCH.Objects.BucketSlide = function (args) {
                 ],
                 error : [
                     function () {
-                        alertify.error('An error has occured. We were not able to ' + 
+                        alertify.error('An error has occured. We were not able to ' +
                                     'create your download package.', 3000);
                     }
                 ]
@@ -397,9 +398,9 @@ CCH.Objects.BucketSlide = function (args) {
             append(moreInfoBadge);
         card.data('id', id);
 
-        removeButton.on('click', function (evt) {
-            $(evt).stopPropagation();
-            
+        removeButton.on('click', function ($evt) {
+            $evt.stopPropagation();
+
             // I emit this to the top so that bucket can catch it, decrement itself
             // and then pass on the remove back down here to my remove method
             $(window).trigger('bucket-remove', {
@@ -418,7 +419,7 @@ CCH.Objects.BucketSlide = function (args) {
             } else {
                 item.hideLayer();
             }
-            
+
             $(window).trigger('slide.bucket.button.click.view', {
                 'adding' : addingLayer,
                 'id' : id
@@ -450,43 +451,44 @@ CCH.Objects.BucketSlide = function (args) {
             'target' : 'portal_info_window',
             'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
         });
-        
+
         $(window).on('cch.map.added.layer', function (evt, args) {
             var layer = args.layer,
-                viewButton;
-            
+                vButton;
+
             if (layer.name === id) {
-                viewButton = $('#' + 'application-slide-bucket-container-card-' + id).find('>div:nth-child(2)>div>button:nth-child(1)');
-                
+                vButton = $('#' + 'application-slide-bucket-container-card-' + id).find('>div:nth-child(2)>div>button:nth-child(1)');
+
+                // I do a timeout here because in some instances, this event
+                // occurs and doesn't allow for button toggling
                 setTimeout(function () {
-                    if (!viewButton.hasClass('active')) {
-                        viewButton.addClass('active');
+                    if (!vButton.hasClass('active')) {
+                        vButton.addClass('active');
                     }
-                }, 200)
-                
+                }, 200);
             }
         });
         $(window).on('cch.map.removed.layer', function (evt, args) {
             var layer = args.layer,
-                viewButton;
-            
+                vButton;
+
             if (layer.name === id) {
-                viewButton = $('#' + 'application-slide-bucket-container-card-' + id).find('>div:nth-child(2)>div>button:nth-child(1)');
-                
+                vButton = $('#' + 'application-slide-bucket-container-card-' + id).find('>div:nth-child(2)>div>button:nth-child(1)');
+
                 setTimeout(function () {
-                    if (viewButton.hasClass('active')) {
-                       viewButton.removeClass('active');
+                    if (vButton.hasClass('active')) {
+                        vButton.removeClass('active');
                     }
-                }, 200)
+                }, 200);
             }
         });
-        
+
         item.showLayer();
-        
+
         card.getContainer = function () {
             return $('#' + this.attr('id'));
         };
-        
+
         return card;
     };
 
@@ -494,16 +496,16 @@ CCH.Objects.BucketSlide = function (args) {
         me.resized(args);
     });
 
-    $(me.CLOSE_BUTTON_SELECTOR).on('click', function (evt) {
+    $(me.CLOSE_BUTTON_SELECTOR).on('click', function () {
         me.toggle();
     });
 
-    $(me.TOP_LEVEL_BUTTON_CLEAR_SELECTOR).on('click', function (evt) {
+    $(me.TOP_LEVEL_BUTTON_CLEAR_SELECTOR).on('click', function () {
         me.remove();
     });
     $(me.TOP_LEVEL_BUTTON_SHARE_SELECTOR).on('click', function (evt) {
         evt.stopPropagation();
-        
+
         $(window).trigger('slide.bucket.button.click.share', {
             'type' : 'session'
         });
