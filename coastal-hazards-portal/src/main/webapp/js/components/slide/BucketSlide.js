@@ -204,13 +204,26 @@ CCH.Objects.BucketSlide = function (args) {
         args = args || {};
 
         var id = args.id,
+            childIdArray = args.children,
             $card;
 
         if (id) {
             $card = me.getCard({ id : id });
             me.cards.removeAt(me.getCardIndex(id));
             
-            CCH.map.removeLayersByName(id);
+            // I have no children, so I'm just going to remove myself from the map
+            if (childIdArray.length === 0) {
+                childIdArray.push(id);
+            }
+            
+            // Remove all children from the map
+            childIdArray.each(function (childId, i, children) {
+                // If this ID appears elsewhere in the card stack, don't remove 
+                // it from the map
+                if (children.findAll(childId).length > 1) {
+                    CCH.map.removeLayersByName(childId);
+                }
+            });
             
             me.getContainer().find('>div:not(:first-child())').each(function (idx, card) {
                 if ($(card).data('id') === id) {
@@ -378,7 +391,7 @@ CCH.Objects.BucketSlide = function (args) {
             shareButton = card.find('>div:nth-child(2)>div>button:nth-child(2)'),
             downloadButton = card.find('>div:nth-child(2)>div>button:nth-child(3)'),
             infoButton = card.find('>div:nth-child(2)>div.btn-group>a'),
-            imageContainer = card.find('img'),
+            imageContainer = card.find('>div:first-child img').first(),
             moreInfoBadge = $('<span />').
                     addClass('badge more-info-badge').
                     append($('<a />').

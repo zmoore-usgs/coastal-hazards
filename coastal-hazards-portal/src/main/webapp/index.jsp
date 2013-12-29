@@ -57,7 +57,9 @@
             <div id="content-row" class="row">
                 <div id="content-column" class="col-md-12">
                     <div id="map" class="col-md-8 col-lg-9"></div>
-                <jsp:include page="components/slides/slider-items.jsp"></jsp:include>
+                <jsp:include page="components/slides/slider-items.jsp">
+                    <jsp:param name="base-url" value="<%=baseUrl%>" />
+                </jsp:include>
                 </div>
             </div>	
             <div id="footer-row"  class="row">
