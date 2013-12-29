@@ -29,7 +29,7 @@ CCH.Objects.Item = function (args) {
         },
         me = this,
         context = args.context || me;
-
+        
         callbacks.success.unshift(function (data) {
             me.children = data.children || [];
             me.attr = data.attr;
@@ -41,16 +41,41 @@ CCH.Objects.Item = function (args) {
             me.type = data.type;
             me.wfsService = data.wfsService;
             me.wmsService = data.wmsService;
-            me.loaded = true;
 
             CCH.items.add({ item : me });
 
-            // If I have children, load those as well
-            me.children.each(function (childId) {
-                new CCH.Objects.Item({ id : childId }).load();
-            });
-
-            CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
+            if (me.children.length) {
+                // If I have children, load those as well
+                me.children.each(function (childId, ind, allChildren) {
+                    if (ind !== allChildren.length - 1) {
+                        new CCH.Objects.Item({ id : childId }).load();
+                    } else {
+                        // If this is the last child to load, announce the parent
+                        // has loaded at the end
+                        new CCH.Objects.Item({ id : childId }).load({
+                            callbacks : {
+                                success : [
+                                    function () {
+                                        $(window).trigger('cch.item.loaded', {
+                                            id : me.id
+                                        });
+                                        me.loaded = true;
+                                        CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
+                                    }
+                                ],
+                                error : []
+                            }
+                        });
+                    }
+                    
+                });
+            } else {
+                $(window).trigger('cch.item.loaded', {
+                    id : me.id
+                });
+                me.loaded = true;
+                CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
+            }
         });
 
         CCH.items.search({

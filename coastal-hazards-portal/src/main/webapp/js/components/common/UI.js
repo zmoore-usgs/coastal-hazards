@@ -5,6 +5,7 @@
 /*global twttr */
 /*global splashUpdate */
 /*global OpenLayers */
+/*global alertify */
 /*global ga */
 
 /**
@@ -474,47 +475,42 @@ CCH.Objects.UI = function (args) {
                         function () {
                             var items = CCH.session.getSession().items;
 
-                            me.loadTopLevelItem({
-                                zoomToBbox : true,
-                                callbacks : {
-                                    success : [function () {
-                                        if (items.length) {
-                                            items.each(function (item) {
-                                                if (undefined === item.CLASS_NAME) {
-                                                    item = new CCH.Objects.Item({ id : item.id });
-                                                    item.load({
-                                                        callbacks : {
-                                                            success : [
-                                                                function() {
-                                                                    me.bucket.add({ item : item });
-                                                                }],
-                                                            error : [
-                                                                function (){
-                                                                  CCH.LOG.warn('UI.js:: Could not load item '+ item.id);  
-                                                                }
-                                                            ]
-                                                        }
-                                                    })
-                                                } else {
-                                                    me.bucket.add({ item : item });
-                                                }
-                                            });
-                                        }
-                                    }],
-                                    error : [errorResponseHandler]
+                            // Wait for each item in the session to be loaded 
+                            // before adding it to the bucket
+                            items.each(function(item) {
+                                var loadedHandler = function (evt, args) {
+                                    var loadedItemId = args.id;
+                                    if (loadedItemId === item.id) {
+                                        me.bucket.add({
+                                            item : CCH.items.getById({
+                                                id : loadedItemId
+                                            })
+                                        });
+                                    }
                                 }
+                                $(window).on('cch.item.loaded', function (evt, args) {
+                                    $(window).off('cch.item.loaded', loadedHandler);
+                                    loadedHandler(evt, args);
+                                });
+                            });
+
+                            me.loadTopLevelItem({
+                                zoomToBbox : true
                             });
                         }
                     ],
                     error: [
                         function () {
+                            // The session couldn't be loaded for whatever reason
+                            // so just load the top level item and move forward
                             me.loadTopLevelItem({
                                 zoomToBbox : true,
                                 callbacks : {
                                     success : [
-                                    function () {
+                                        function () {
                                             alertify.error('The Coastal Change Hazards Portal could not find your session.', 4000);
-                                    }],
+                                        }
+                                    ],
                                     error : []
                                 }
                             });
