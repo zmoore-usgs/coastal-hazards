@@ -138,18 +138,26 @@ CCH.Objects.CombinedSearch = function (args) {
 
         var criteria = args.criteria + String(),
             type = args.type.toLowerCase(),
-            allProducts = 'products',
+            spatialAndItemType = 'all',
+            allSpatialType = 'location',
+            allProductsType = 'products',
             itemsArray = ['storms', 'vulnerability', 'historical'],
             types = [],
             count = args.count || 20;
-
+        
+        ga('send', 'event', {
+            'eventCategory': 'search',
+            'eventAction': type,
+            'eventLabel': criteria
+        });
+        
         if (criteria) {
             $(me).trigger('combined-searchbar-search-performing', {
                 type : type
             });
 
             me.displaySpinner();
-            if (type === 'all') {
+            if (type === spatialAndItemType) {
                 me.performSpatialSearch({
                     criteria : criteria,
                     scope : me,
@@ -206,7 +214,7 @@ CCH.Objects.CombinedSearch = function (args) {
                     }
                 });
 
-            } else if (type === 'location') {
+            } else if (type === allSpatialType) {
                 me.performSpatialSearch({
                     criteria : criteria,
                     scope : me,
@@ -232,8 +240,8 @@ CCH.Objects.CombinedSearch = function (args) {
                         ]
                     }
                 });
-            } else if (type === allProducts || itemsArray.indexOf(type) !== -1) {
-                if (type === allProducts) {
+            } else if (type === allProductsType || itemsArray.indexOf(type) !== -1) {
+                if (type === allProductsType) {
                     types = itemsArray;
                 } else {
                     types = [type];
@@ -269,6 +277,8 @@ CCH.Objects.CombinedSearch = function (args) {
                     }
                 });
             }
+        } else {
+            CCH.LOG.debug('CCH.Objects.CombinedSearch:: Missing criteria');
         }
     };
 
