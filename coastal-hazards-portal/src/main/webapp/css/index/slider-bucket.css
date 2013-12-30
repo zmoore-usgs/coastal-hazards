@@ -25,8 +25,18 @@
         #application-slide-bucket-container > div > div:first-child > div > div:first-child {
             width: 10%;
         }
-        #application-slide-bucket-container > div > div:first-child > div > div:nth-child(2) {
-            width: 90%;
+        #application-slide-bucket-container > div > div:first-child > div > div:nth-child(2) li {
+            color: #262626;
+        }
+        #application-slide-bucket-container > div > div:first-child > div > div:nth-child(2) li:hover {
+            background-color: #f5f5f5;
+        }
+        #application-slide-bucket-container > div > div:first-child > div > div:nth-child(2) li > button {
+            color: #262626;
+        }
+        #application-slide-bucket-container > div > div:first-child > div > div:nth-child(2) li > button:hover{
+            text-decoration: none;
+            
         }
         #application-slide-bucket-container > div > div:first-child button > img {
             height: 30px;
@@ -47,26 +57,41 @@
             display: inline-block;
             width: 57%;
         }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(2) > div > div > div:first-child {
+                font-weight: bold;
+                font-size: 1.2em;
+                text-align: center;
+            }
 
         /* Card Navigation Column Div */
         #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(3) {
             display: inline-block;
             width: 20%;
             vertical-align: top;
+            text-align: center;
         }
             #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(3) img {
                 max-width: 100%;
             }
-
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(3) i {
+                font-size: 20px;
+                color: #1C3664;
+            }
+            
         /* Card Control Row Div */
         #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) {
             width: 100%;
+            text-align: center;
         }
             #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) > button {
-                width: 32%;
+                width: 22%;
             }
             #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) > button > img{
                 height: 20px;
+            }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) > button > i {
+                font-size: 20px;
+                color: #1C3664;
             }
             
     #application-slide-bucket-container > div > div.application-slide-content-container {

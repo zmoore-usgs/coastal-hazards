@@ -25,11 +25,14 @@ CCH.Objects.BucketSlide = function (args) {
     me.SLIDE_CONTAINER_ID = args.containerId;
     me.MAP_DIV_ID = args.mapdivId || 'map';
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
-    me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div.application-slide-controlset';
+    me.CLOSE_BUTTON = $('#' + me.SLIDE_CONTAINER_ID + '> div > div.application-slide-controlset');
+    me.DROPDOWN_CONTAINER = $('#' + me.SLIDE_CONTAINER_ID + '> div > div:first-child > div > div:nth-child(2)');
+    me.TOP_LEVEL_DROPDOWN_TRIGGER = me.DROPDOWN_CONTAINER.find('button:first-child');
+    me.TOP_LEVEL_LIST = me.DROPDOWN_CONTAINER.find('ul');
     me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div:first-child() > div:first-child() > div:nth-child(2)';
-    me.TOP_LEVEL_BUTTON_CLEAR_SELECTOR = me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR + '> button:nth-child(1)';
-    me.TOP_LEVEL_BUTTON_SHARE_SELECTOR = me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR + '> button:nth-child(2)';
-    me.TOP_LEVEL_BUTTON_DOWNLOAD_SELECTOR = me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR + '> button:nth-child(3)';
+    me.TOP_LEVEL_CLEAR = me.TOP_LEVEL_LIST.find('> li:nth-child(1)');
+    me.TOP_LEVEL_SHARE = me.TOP_LEVEL_LIST.find('> li:nth-child(2)');
+    me.TOP_LEVEL_DOWNLOAD = me.TOP_LEVEL_LIST.find('> li:nth-child(3)');
     me.CARD_TEMPLATE_ID = 'application-slide-bucket-container-card-template';
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-bucket-content-container';
     me.EMPTY_TEXT_CONTAINER = $('#' + me.SLIDE_CONTAINER_ID).find('> div > div > #application-slide-bucket-content-empty');
@@ -94,8 +97,6 @@ CCH.Objects.BucketSlide = function (args) {
         }
     };
 
-    // These functions should be implemented in the function that builds these
-    // objects
     me.resized = function () {
         var extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large,
@@ -184,7 +185,7 @@ CCH.Objects.BucketSlide = function (args) {
 
         if (item && !me.getCard({ id : item.id })) {
             me.EMPTY_TEXT_CONTAINER.addClass('hidden');
-            $(me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR).removeClass('hidden');
+            $(me.DROPDOWN_CONTAINER).removeClass('hidden');
             $card = me.createCard({
                 item : item
             });
@@ -232,7 +233,7 @@ CCH.Objects.BucketSlide = function (args) {
             });
 
             if (!me.cards.length) {
-                $(me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR).addClass('hidden');
+                $(me.DROPDOWN_CONTAINER).addClass('hidden');
                 me.EMPTY_TEXT_CONTAINER.removeClass('hidden');
             } else {
                 me.redrawArrows();
@@ -295,8 +296,8 @@ CCH.Objects.BucketSlide = function (args) {
         me.getContainer().find('>div:not(#application-slide-bucket-content-empty)').each(function (idx, card) {
             id = $(card).data('id');
             index = me.getCardIndex(id);
-            $cardUpArrow = $(card).find('>div>div:nth-child(3)>button:nth-child(2)');
-            $cardDownArrow = $(card).find('>div>div:nth-child(3)>button:nth-child(3)');
+            $cardUpArrow = $(card).find('> div:nth-child(3) > button:nth-child(2)');
+            $cardDownArrow = $(card).find('> div:nth-child(3) > button:nth-child(3)');
 
             if (cardsLength === 1) {
                 // If I am the only card
@@ -358,7 +359,7 @@ CCH.Objects.BucketSlide = function (args) {
                         var sessionId = result.sid;
 
                         if (sessionId) {
-                            window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/view/' + sessionId;
+                            window.open(window.location.origin + CCH.CONFIG.contextPath + '/data/download/view/' + sessionId);
                         }
                     }
                 ],
@@ -377,38 +378,23 @@ CCH.Objects.BucketSlide = function (args) {
         var item = args.item,
             id = item.id || new Date().getMilliseconds(),
             title = item.summary.tiny.text || 'Title Not Provided',
-            content = item.summary.medium.text || 'Description Not Provided',
             titleContainerClass = 'application-slide-bucket-container-card-title',
-            descriptionContainerClass = 'application-slide-bucket-container-card-description',
             card = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
             titleContainer = card.find('.' + titleContainerClass),
             titleContainerPNode = card.find('.' + titleContainerClass + ' p'),
-            descriptionContainer = card.find('.' + descriptionContainerClass),
-            removeButton = card.find('>div>div:nth-child(3)>button:nth-child(1)'),
-            upButton = card.find('>div>div:nth-child(3)>button:nth-child(2)'),
-            downButton = card.find('>div>div:nth-child(3)>button:nth-child(3)'),
-            viewButton = card.find('>div:nth-child(2)>div>button:nth-child(1)'),
-            shareButton = card.find('>div:nth-child(2)>div>button:nth-child(2)'),
-            downloadButton = card.find('>div:nth-child(2)>div>button:nth-child(3)'),
-            infoButton = card.find('>div:nth-child(2)>div.btn-group>a'),
-            imageContainer = card.find('>div:first-child img').first(),
-            moreInfoBadge = $('<span />').
-                    addClass('badge more-info-badge').
-                    append($('<a />').
-                        html('More Info').
-                        attr({
-                        'target' : 'portal_info_window',
-                        'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
-                    }));
+            imageContainer = card.find('> div:first-child img').first(),
+            viewButton = card.find('> div:nth-child(4) > button:nth-child(1)'),
+            shareButton = card.find('> div:nth-child(4) > button:nth-child(2)'),
+            downloadButton = card.find('> div:nth-child(4) > button:nth-child(3)'),
+            infoButton = card.find('> div:nth-child(4) > button:nth-child(4)'),
+            removeButton = card.find('> div:nth-child(3) > button:nth-child(1)'),
+            upButton = card.find('> div:nth-child(3) > button:nth-child(2)'),
+            downButton = card.find('> div:nth-child(3)> button:nth-child(3)');
 
         card.attr('id', 'application-slide-bucket-container-card-' + id);
         imageContainer.attr('src', 'http://www.tshirtdesignsnprint.com/img/not-found.png');
         titleContainer.attr('id', titleContainerClass + '-' + id);
         titleContainerPNode.html(title);
-        descriptionContainer.
-            attr('id', descriptionContainerClass + '-' + id).
-            html(content).
-            append(moreInfoBadge);
         card.data('id', id);
 
         removeButton.on('click', function ($evt) {
@@ -459,9 +445,16 @@ CCH.Objects.BucketSlide = function (args) {
                 'id' : id
             });
         });
+        
+        infoButton.on('click', function () {
+            $(window).trigger('slide.bucket.button.click.info', {
+                'id' : id
+            });
+            window.open(window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_portal_info_window')
+        });
 
         infoButton.attr({
-            'target' : 'portal_info_window',
+            'target' : '_portal_info_window',
             'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
         });
 
@@ -504,26 +497,31 @@ CCH.Objects.BucketSlide = function (args) {
 
         return card;
     };
-
-    $(window).on('resize', function (args) {
+    
+    $(window).on('cch.ui.resized', function (args) {
         me.resized(args);
     });
 
-    $(me.CLOSE_BUTTON_SELECTOR).on('click', function () {
+    me.TOP_LEVEL_DROPDOWN_TRIGGER.on('click', function (evt) {
+        evt.stopImmediatePropagation();
+        $(evt.target).dropdown('toggle');
+    });
+
+    $(me.CLOSE_BUTTON).on('click', function () {
         me.toggle();
     });
 
-    $(me.TOP_LEVEL_BUTTON_CLEAR_SELECTOR).on('click', function () {
+    $(me.TOP_LEVEL_CLEAR).on('click', function () {
         me.remove();
     });
-    $(me.TOP_LEVEL_BUTTON_SHARE_SELECTOR).on('click', function (evt) {
+    $(me.TOP_LEVEL_SHARE).on('click', function (evt) {
         evt.stopPropagation();
 
         $(window).trigger('slide.bucket.button.click.share', {
             'type' : 'session'
         });
     });
-    $(me.TOP_LEVEL_BUTTON_DOWNLOAD_SELECTOR).on('click', function (evt) {
+    $(me.TOP_LEVEL_DOWNLOAD).on('click', function (evt) {
         evt.stopPropagation();
         me.downloadBucket();
     });

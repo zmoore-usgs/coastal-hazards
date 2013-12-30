@@ -3,10 +3,19 @@
         <div id="application-slide-search-controlset"  class="application-slide-controlset row">
             <div class="col-md-12">
                 <div class="pull-left"><i class="fa fa-minus-square-o"></i></div>
-                <div class="pull-right hidden">
-                    <button type="button" class="btn btn-link application-slide-bucket-container-card-template-button"><img alt="Clear Icon" src="images/bucket/remove.svg"/></button>
-                    <button type="button" class="btn btn-link application-slide-bucket-container-card-template-button"><img alt="Share Icon" src="images/bucket/share.svg"/></button>
-                    <button type="button" class="btn btn-link application-slide-bucket-container-card-template-button"><img alt="Download Icon" src="images/bucket/download.svg"/></button>
+                <div class="btn-group pull-right hidden">
+                    <button id="bucket-manage-menu-drop" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Manage Contents <b class="caret"></b></button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="bucket-manage-menu-drop">
+                        <li role="presentation">
+                            <button role="menuitem" type="button" class="btn btn-link application-slide-bucket-container-card-template-button">Clear Bucket</button>
+                        </li>
+                        <li role="presentation">
+                            <button role="menuitem" type="button" class="btn btn-link application-slide-bucket-container-card-template-button">Share Bucket</button>
+                        </li>
+                        <li role="presentation">
+                            <button role="menuitem" type="button" class="btn btn-link application-slide-bucket-container-card-template-button">Download Bucket</button>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -32,7 +41,7 @@
         </div>
         <div>
             <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
-                <img alt="Clear Icon" src="images/bucket/remove.svg"/>
+                <i class="fa fa-times"></i>
             </button>
             <button class="application-slide-bucket-container-card-button-remove btn btn-default application-slide-bucket-container-card-template-button" type="button">
                 Up
@@ -42,14 +51,17 @@
             </button>
         </div>
         <div>
-            <button class="application-slide-bucket-container-card-button-layer btn btn-link application-slide-bucket-container-card-template-button active" type="button" data-toggle="button">
+            <button class="application-slide-bucket-container-card-button-layer application-slide-bucket-container-card-template-button active btn btn-link " type="button">
                 <img alt="Layer Off Icon" src="images/bucket/layer_off.svg"/>
             </button>
-            <button class="application-slide-bucket-container-card-button-share btn btn-link application-slide-bucket-container-card-template-button" type="button">
+            <button class="application-slide-bucket-container-card-button-shareapplication-slide-bucket-container-card-template-button btn btn-link " type="button">
                 <img alt="Share Icon" src="images/bucket/share.svg"/>
             </button>
-            <button class="application-slide-bucket-container-card-button-ok btn btn-link application-slide-bucket-container-card-template-button" type="button">
+            <button class="application-slide-bucket-container-card-button-download application-slide-bucket-container-card-template-button btn btn-link " type="button">
                 <img alt="Download Icon" src="images/bucket/download.svg"/>
+            </button>
+            <button class="application-slide-bucket-container-card-button-info application-slide-bucket-container-card-template-button btn btn-link " type="button">
+                <i class="fa fa-info"></i>
             </button>
         </div>
     </div>
