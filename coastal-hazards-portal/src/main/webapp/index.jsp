@@ -111,4 +111,7 @@
         <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
         <jsp:include page="components/item-search.jsp"></jsp:include>
+        <jsp:include page="components/image-preload.jsp">
+            <jsp:param name="relPath" value="<%=baseUrl%>" />
+        </jsp:include>
     </body>

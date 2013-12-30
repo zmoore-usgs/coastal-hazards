@@ -5,7 +5,5 @@
         </span>
     </div>
     <div class="app-navbar-bucket-container">
-        <%-- Downwards facing triangle --%>
-        <span id="app-navbar-bucket-triangle">&#9660;</span>
     </div>
 </div>
