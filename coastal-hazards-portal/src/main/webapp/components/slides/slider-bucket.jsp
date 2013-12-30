@@ -19,38 +19,38 @@
 <%-- This element is used as a template for creating new bucket cards --%>
 <div id="application-slide-bucket-container-card-template" class="hidden">
     <div class="application-slide-bucket-container-card well well-small">
-        <div class="row">
-            <div class="col-md-2"><img class="application-slide-bucket-container-card-image img-responsive" alt="Bucket Card Image" /></div>
-            <div class="application-slide-bucket-container-card-title-description-container col-md-8">
-                <div class="row">
+        <div>
+            <img class="application-slide-bucket-container-card-image img-responsive" src="http://www.tshirtdesignsnprint.com/img/not-found.png" alt="Bucket Card Image" />
+        </div>
+        <div>
+            <div class="application-slide-bucket-container-card-title-description-container">
+                <div>
                     <div class="application-slide-bucket-container-card-title"><p class="center"></p></div>
                     <div class="application-slide-bucket-container-card-description"></div>
                 </div>
             </div>
-            <div class="application-slide-bucket-container-card-title-description-container col-md-2">
-                <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
-                    <img alt="Clear Icon" src="images/bucket/remove.svg"/>
-                </button>
-                <button class="application-slide-bucket-container-card-button-remove btn btn-default application-slide-bucket-container-card-template-button" type="button">
-                    Up
-                </button>
-                <button class="application-slide-bucket-container-card-button-remove btn btn-default application-slide-bucket-container-card-template-button" type="button">
-                    Dwn
-                </button>
-            </div>
         </div>
-        <div class="row text-center">
-            <div class="btn-group">
-                <button class="application-slide-bucket-container-card-button-layer btn btn-link application-slide-bucket-container-card-template-button active" type="button" data-toggle="button">
-                    <img alt="Layer Off Icon" src="images/bucket/layer_off.svg"/>
-                </button>
-                <button class="application-slide-bucket-container-card-button-share btn btn-link application-slide-bucket-container-card-template-button" type="button">
-                    <img alt="Share Icon" src="images/bucket/share.svg"/>
-                </button>
-                <button class="application-slide-bucket-container-card-button-ok btn btn-link application-slide-bucket-container-card-template-button" type="button">
-                    <img alt="Download Icon" src="images/bucket/download.svg"/>
-                </button>
-            </div>
+        <div>
+            <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
+                <img alt="Clear Icon" src="images/bucket/remove.svg"/>
+            </button>
+            <button class="application-slide-bucket-container-card-button-remove btn btn-default application-slide-bucket-container-card-template-button" type="button">
+                Up
+            </button>
+            <button class="application-slide-bucket-container-card-button-remove btn btn-default application-slide-bucket-container-card-template-button" type="button">
+                Dwn
+            </button>
+        </div>
+        <div>
+            <button class="application-slide-bucket-container-card-button-layer btn btn-link application-slide-bucket-container-card-template-button active" type="button" data-toggle="button">
+                <img alt="Layer Off Icon" src="images/bucket/layer_off.svg"/>
+            </button>
+            <button class="application-slide-bucket-container-card-button-share btn btn-link application-slide-bucket-container-card-template-button" type="button">
+                <img alt="Share Icon" src="images/bucket/share.svg"/>
+            </button>
+            <button class="application-slide-bucket-container-card-button-ok btn btn-link application-slide-bucket-container-card-template-button" type="button">
+                <img alt="Download Icon" src="images/bucket/download.svg"/>
+            </button>
         </div>
     </div>
 </div>
