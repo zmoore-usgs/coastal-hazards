@@ -13,4 +13,5 @@
     <include file="change6.xml" relativeToChangelogFile="true"/>
     <include file="change7.xml" relativeToChangelogFile="true"/>
     <include file="aggregationModifications.xml" relativeToChangelogFile="true" />
+    <include file="persistDownloads.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
