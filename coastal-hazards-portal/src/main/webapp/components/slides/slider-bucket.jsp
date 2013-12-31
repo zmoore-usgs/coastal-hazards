@@ -7,13 +7,13 @@
                     <button id="bucket-manage-menu-drop" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Manage Contents <b class="caret"></b></button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="bucket-manage-menu-drop">
                         <li role="presentation">
-                            <button role="menuitem" type="button" class="btn btn-link application-slide-bucket-container-card-template-button">Clear Bucket</button>
+                            Clear Bucket
                         </li>
                         <li role="presentation">
-                            <button role="menuitem" type="button" class="btn btn-link application-slide-bucket-container-card-template-button">Share Bucket</button>
+                            Share Bucket
                         </li>
                         <li role="presentation">
-                            <button role="menuitem" type="button" class="btn btn-link application-slide-bucket-container-card-template-button">Download Bucket</button>
+                            Download Bucket
                         </li>
                     </ul>
                 </div>
@@ -51,9 +51,9 @@
             </button>
         </div>
         <div>
-            <button class="application-slide-bucket-container-card-button-layer application-slide-bucket-container-card-template-button active btn btn-link " type="button">
+            <div class="application-slide-bucket-container-card-button-layer application-slide-bucket-container-card-template-button active">
                 <img alt="Layer Off Icon" src="images/bucket/layer_off.svg"/>
-            </button>
+            </div>
             <button class="application-slide-bucket-container-card-button-shareapplication-slide-bucket-container-card-template-button btn btn-link " type="button">
                 <img alt="Share Icon" src="images/bucket/share.svg"/>
             </button>

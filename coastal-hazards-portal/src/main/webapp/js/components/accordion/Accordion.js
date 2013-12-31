@@ -136,8 +136,8 @@ CCH.Objects.Accordion = function (args) {
                     abId = $this.data('id');
 
                 ga('send', 'event', {
-                    'eventCategory': 'accordion',   // Required.
-                    'eventAction': 'show',      // Required.
+                    'eventCategory': 'accordion',
+                    'eventAction': 'show',
                     'eventLabel': abId
                 });
             },
