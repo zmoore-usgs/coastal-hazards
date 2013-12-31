@@ -187,6 +187,8 @@ CCH.Objects.Card = function (args) {
                     item : me.item
                 });
             },
+            // This is not currently being used - keep this functionality around
+            // for when it's needed
             remove = function () {
                 // User toggled the bucket button off - I should be removed from 
                 // bucket
@@ -198,8 +200,6 @@ CCH.Objects.Card = function (args) {
         $button.off();
         if (nextAction === 'add') {
             $button.on('click', add);
-        } else {
-            $button.on('click', remove);
         }
     };
 
@@ -445,10 +445,10 @@ CCH.Objects.Card = function (args) {
         },
         'bucket-added': function (evt, args) {
             if (args.id === me.id) {
-                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:nth-child(3)'),
-                    $img = $button.find('>img');
+                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:last-child'),
+                    $img = $button.find('> img');
 
-                $img.attr('src', 'images/cards/subtract-bucket.svg');
+                $img.attr('src', 'images/cards/add-bucket-disabled.svg');
                 me.bindBucketControl({
                     button : $button,
                     nextAction : 'remove'
@@ -457,8 +457,8 @@ CCH.Objects.Card = function (args) {
         },
         'bucket-removed': function (evt, args) {
             if (args.id === me.id) {
-                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:nth-child(3)'),
-                    $img = $button.find('>img');
+                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:last-child'),
+                    $img = $button.find('> img');
 
                 $img.attr('src', 'images/cards/add-bucket.svg');
                 me.bindBucketControl({
