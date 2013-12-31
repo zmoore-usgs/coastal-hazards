@@ -11,23 +11,15 @@ import javax.persistence.Query;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class DownloadManager {
-    
-    private static final Query selectQuery;
-    
-    static {
-        EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
-        try {
-            selectQuery = em.createNamedQuery("select d from Download d where d.item_id = :id or d.session_id = :id");
-        } finally {
-            JPAHelper.close(em);
-        }
-    }
+
+    private static final String HQL_SELECT = "select d from Download d where d.itemId = :id or d.sessionId = :id";
 
     public boolean isPersisted(String id) {
         boolean isPersisted = false;
 
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         try {
+            Query selectQuery = em.createQuery(HQL_SELECT);
             selectQuery.setParameter("id", id);
             List<Download> resultList = selectQuery.getResultList();
             if (!resultList.isEmpty()) {
@@ -38,12 +30,13 @@ public class DownloadManager {
         }
         return isPersisted;
     }
-    
+
     public Download load(String id) {
         Download download = null;
-        
+
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         try {
+            Query selectQuery = em.createQuery(HQL_SELECT);
             selectQuery.setParameter("id", id);
             List<Download> resultList = selectQuery.getResultList();
             if (!resultList.isEmpty()) {
@@ -54,37 +47,36 @@ public class DownloadManager {
         }
         return download;
     }
-    
+
     public void save(Download download) {
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = em.getTransaction();
         try {
-			transaction.begin();
-			em.persist(download);
-			transaction.commit();
-		} catch (Exception ex) {
+            transaction.begin();
+            em.persist(download);
+            transaction.commit();
+        } catch (Exception ex) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-		} finally {
+        } finally {
             JPAHelper.close(em);
         }
     }
-    
+
     public void delete(Download download) {
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = em.getTransaction();
         try {
-			transaction.begin();
-			em.remove(download);
-			transaction.commit();
-		} catch (Exception ex) {
+            transaction.begin();
+            em.remove(download);
+            transaction.commit();
+        } catch (Exception ex) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-		} finally {
+        } finally {
             JPAHelper.close(em);
         }
     }
-    
 }

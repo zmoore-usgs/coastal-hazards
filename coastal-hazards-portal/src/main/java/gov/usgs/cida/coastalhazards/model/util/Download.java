@@ -25,7 +25,7 @@ public class Download implements Serializable {
     private int id;
     private String itemId;
     private String sessionId;
-    private URI persistanceURI;
+    private String persistanceURI;
     private Date insertedTime;
 
     @Id
@@ -57,11 +57,11 @@ public class Download implements Serializable {
     }
 
     @Column(name = "persistance_uri")
-    public URI getPersistanceURI() {
+    public String getPersistanceURI() {
         return persistanceURI;
     }
 
-    public void setPersistanceURI(URI persistanceURI) {
+    public void setPersistanceURI(String persistanceURI) {
         this.persistanceURI = persistanceURI;
     }
 
