@@ -11,6 +11,7 @@
         <class>gov.usgs.cida.coastalhazards.model.TinyGov</class>
         <class>gov.usgs.cida.coastalhazards.model.Bbox</class>
         <class>gov.usgs.cida.coastalhazards.model.Center</class>
+        <class>gov.usgs.cida.coastalhazards.model.util.Download</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Summary</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Tiny</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Medium</class>

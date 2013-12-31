@@ -6,6 +6,7 @@ import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,13 +35,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class DownloadManager {
+public class DownloadUtility {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DownloadManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DownloadUtility.class);
 
+    
+    
     private static final String MISSING_FILE = "MISSING.txt";
     private static final String README_RESOURCE = "gov/usgs/cida/coastalhazards/download/README.txt";
     private static final String README_FILE = "README.txt";
+    private static final String ZIP_FILE = "download.zip";
     private static final String WINDOWS_NEWLINE = "\r\n";
 
     private static Set<File> locks = Collections.synchronizedSet(new HashSet<File>());
@@ -59,11 +63,16 @@ public class DownloadManager {
         }
     }
 
-    public static File createDownloadStagingArea() throws IOException {
+    public static File getStagingParentDir() {
         String downloadDir = JNDISingleton.getInstance().getProperty("coastal-hazards.files.directory.download",
                 System.getProperty("java.io.tmpdir"));
+        return new File(downloadDir);
+    }
+    
+    public static File createDownloadStagingArea() throws IOException {
+        File stagingParentDir = getStagingParentDir();
         UUID uuid = UUID.randomUUID();
-        File tmpDir = new File(downloadDir + File.separator + uuid.toString());
+        File tmpDir = new File(stagingParentDir, uuid.toString());
         FileUtils.forceMkdir(tmpDir);
         return tmpDir;
     }
@@ -138,6 +147,7 @@ public class DownloadManager {
         }
         finally {
             writeMissingFile(stagingDir, missing);
+            writeReadmeFile(stagingDir);
             unlock(stagingDir);
         }
     }
@@ -154,7 +164,7 @@ public class DownloadManager {
         ZipOutputStream zipOutputStream = null;
         try {
             File[] files = stagingDir.listFiles();
-            zipFile = new File(stagingDir, "download.zip");
+            zipFile = new File(stagingDir, ZIP_FILE);
             zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile), Charset.defaultCharset());
             for (File file : files) {
                 if (file.isFile()) {
@@ -176,6 +186,15 @@ public class DownloadManager {
             unlock(stagingDir);
         }
 
+        return zipFile;
+    }
+    
+    public static File getPersistedZipFile(String stagingUUID) throws FileNotFoundException {
+        File stagingParentDir = getStagingParentDir();
+        File zipFile = new File(new File(stagingParentDir, stagingUUID), ZIP_FILE);
+        if (!zipFile.exists()) {
+            throw new FileNotFoundException();
+        }
         return zipFile;
     }
 
@@ -231,7 +250,7 @@ public class DownloadManager {
     
     private static void writeReadmeFile(File stagingDir) {
         try {
-            URL resource = DownloadManager.class.getClassLoader().getResource(README_RESOURCE);
+            URL resource = DownloadUtility.class.getClassLoader().getResource(README_RESOURCE);
             File readmeIn = FileUtils.toFile(resource);
             File readmeOut = FileUtils.getFile(stagingDir, README_FILE);
             FileUtils.copyFile(readmeIn, readmeOut);
