@@ -104,6 +104,11 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                                 binIdx,
                                                 $popupHtml = $(popup.contentHTML),
                                                 $table = $popupHtml.find('table'),
+                                                $theadRow = $('<tr />').append(
+                                                    $('<td />').html('Layer'),
+                                                    $('<td />').html('Color'),
+                                                    $('<td />').html('Value')
+                                                ),
                                                 $legendRow = $('<tr>'),
                                                 $titleContainer = $('<td />'),
                                                 $colorContainer = $('<td />'),
@@ -111,7 +116,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                                 lb,
                                                 ub;
 
-
+                                            
                                             // Add up the count for each feature
                                             features.each(function (f) {
                                                 var pFl = parseFloat(f[attr]);
@@ -147,11 +152,15 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                                 }
 
                                                 $table.find('#loading-info-row').remove();
-
-                                                $titleContainer.html(title + (units ? ' (' + units + ') ' : ''));
+                                                $titleContainer.html(title);
                                                 $colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
-                                                $averageContainer.html(attrAvg % 1 === 0 ? attrAvg.toFixed(0) : attrAvg.toFixed(3));
-
+                                                
+                                                if (item.attr.toLowerCase() === 'cvirisk') {
+                                                    $averageContainer.append(bins[attrAvg.toFixed(0) - 1].category + ' Risk')
+                                                } else {
+                                                    $averageContainer.append(attrAvg % 1 === 0 ? attrAvg.toFixed(0) : attrAvg.toFixed(3));
+                                                    $averageContainer.append(' ' + units);
+                                                }
                                                 $legendRow.append($titleContainer, $colorContainer, $averageContainer);
 
                                                 $table.append($legendRow);
@@ -163,6 +172,8 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                                 popup.setSize(new OpenLayers.Size(CCH.map.getMap().getSize().w * 0.65, $table.find('tr').length * 65));
                                                 popup.panIntoView();
                                             };
+
+                                            $table.append($theadRow);
 
                                             if (item.type.toLowerCase() === 'vulnerability') {
                                                 if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(attr.toUpperCase()) !== -1) {

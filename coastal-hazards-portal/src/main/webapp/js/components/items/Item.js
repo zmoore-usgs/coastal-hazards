@@ -129,11 +129,12 @@ CCH.Objects.Item = function (args) {
             // This aggregation should have children, so for each 
             // child, I want to grab the child's layer and display it
             // on the map
-            me.children.each(function (childItemId) {
+            me.children.each(function (childItemId, idx) {
                 var childItem = CCH.items.getById({ id : childItemId });
                 if (childItem) {
                     CCH.map.showLayer({
-                        item : childItem
+                        item : childItem,
+                        ribbon : idx
                     });
                 }
             });
