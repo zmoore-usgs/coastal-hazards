@@ -104,7 +104,9 @@ CCH.Objects.Item = function (args) {
                     format: 'image/png',
                     transparent: true,
                     sld: CCH.CONFIG.publicUrl + '/data/sld/' + id,
-                    styles: 'cch'
+                    styles: 'cch',
+                    version: '1.3.0',
+                    exceptions : 'application/vnd.ogc.se_blank'
                 },
                 {
                     projection: 'EPSG:3857',

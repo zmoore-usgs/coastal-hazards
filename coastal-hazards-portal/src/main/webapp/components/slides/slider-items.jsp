@@ -46,7 +46,7 @@
                         <img src="images/cards/item-space.svg" alt="Space Aggregation Image"/>
                     </button>
                     <button class="btn btn-link item-control-button">
-                        <img src="images/cards/item-branch.svg" alt="Aggregation Image"/>
+                        <img src="images/cards/item-branch.svg" alt="Aggregation Image"/><b class="caret"></b>
                     </button>
                     <button class="btn btn-link item-control-button">
                         <img src="images/cards/add-bucket.svg" alt="Bucket Image"/>

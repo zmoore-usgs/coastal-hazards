@@ -98,9 +98,9 @@
     border: 1px #000000 solid;
     min-width: 320px;
     width: auto;
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
     z-index: 1007;
 }
 
@@ -111,13 +111,13 @@
 }
 
 .aggregation-selection-container ul li {
-    background-color: #AAAAAA;
+    background-color: #FFFFFF;
     padding: 5px;
 }
 
 .aggregation-selection-container ul li:hover {
     cursor: pointer;
-    background-color: #CCCCCC;
+    background-color: #f5f5f5;
 }
 
 @media (min-width: 992px) {

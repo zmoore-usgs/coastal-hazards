@@ -2,50 +2,116 @@
     position: absolute;
     z-index: 1008;
 }
+    #application-slide-bucket-container > div {
+        background-color: #F5F5F5;
+        border-bottom: 2px solid #E3E3E3;
+        border-top: 2px solid #E3E3E3;
+        border-left: 2px solid #E3E3E3;
+        float: right;
+        display: inline-block;
+        z-index: 2000;
+        height: 100%;
+    }
+        #application-slide-bucket-container > div > div:first-child {
+            margin-left: 0px;
+            margin-right: 0px;
+        }
+    
+        /* Empty Bucket Div */
+        #application-slide-bucket-container > div > div > #application-slide-bucket-content-empty {
+            text-align: center;
+            font-size: 1.4em;
+        }
+        #application-slide-bucket-container > div > div:first-child > div > div:first-child {
+            width: 10%;
+        }
+        #application-slide-bucket-container > div > div:first-child > div > div:nth-child(2) li {
+            color: #262626;
+            padding: 5px 5px 5px 10px;
+        }
+        #application-slide-bucket-container > div > div:first-child > div > div:nth-child(2) li:hover {
+            background-color: #f5f5f5;
+        }
+        #application-slide-bucket-container > div > div:first-child > div > div:nth-child(2) li > button {
+            color: #262626;
+        }
+        #application-slide-bucket-container > div > div:first-child > div > div:nth-child(2) li > button:hover{
+            text-decoration: none;
+            
+        }
+        #application-slide-bucket-container > div > div:first-child button > img {
+            height: 30px;
+        }
 
-#application-slide-bucket-container > div {
-    background-color: #F5F5F5;
-    border-bottom: 2px solid #E3E3E3;
-    border-top: 2px solid #E3E3E3;
-    border-left: 2px solid #E3E3E3;
-    height: 100%;
-    float: right;
-    display: inline-block;
-    z-index: 2000;
-}
+        /* Card Image Column Div */
+        #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:first-child {
+            display: inline-block;
+            width: 20%;
+            vertical-align: top;
+        }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:first-child > img {
+                max-width: 100%;
+            }
 
-#application-slide-bucket-container > div > div > #application-slide-bucket-content-empty {
-    text-align: center;
-    font-size: 1.4em;
-}
+        /* Card Description Column Div */
+        #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(2) {
+            display: inline-block;
+            width: 57%;
+        }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(2) > div > div > div:first-child {
+                font-weight: bold;
+                font-size: 1.2em;
+                text-align: center;
+            }
 
-/* Close button */
-#application-slide-bucket-container > div > div.application-slide-controlset {
-    margin-left: 5px;
-    width: 90%;
-}
-#application-slide-bucket-container > div > div.application-slide-controlset:hover {
-    font-size-adjust: 1.1;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-#application-slide-bucket-container > div > div.application-slide-content-container {
-    height: 97%;
-    margin-top: 10px;
-    overflow: scroll;
-    margin-right: 3px;
-    margin-left: 3px;
-}
-
-/*Every image in a button on the card*/
-.application-slide-bucket-container-card-template-button > img {
-    height: 25px;
-}
-
-#application-slide-bucket-container .application-slide-bucket-container-card-image {
-    width: 100%;
-}
+        /* Card Navigation Column Div */
+        #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(3) {
+            display: inline-block;
+            width: 20%;
+            vertical-align: top;
+            text-align: center;
+        }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(3) img {
+                max-width: 100%;
+            }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(3) i {
+                font-size: 20px;
+                color: #1C3664;
+            }
+            
+        /* Card Control Row Div */
+        #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) {
+            width: 100%;
+            text-align: center;
+        }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) > button {
+                width: 22%;
+            }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) > button > img{
+                height: 20px;
+            }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) > button > i {
+                font-size: 20px;
+                color: #1C3664;
+            }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) > div {
+                width: 22%;
+                display: inline-block;
+                padding: 6px 12px;
+                margin-bottom: 0;
+                vertical-align: middle;
+            }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) > div > img{
+                height: 20px;
+            }
+            
+    #application-slide-bucket-container > div > div.application-slide-content-container {
+        height: 97%;
+        margin-top: 10px;
+        overflow: scroll;
+        margin-right: 3px;
+        margin-left: 3px;
+    }
 
 #application-slide-bucket-container .more-info-badge {
     background-color: #345280;
