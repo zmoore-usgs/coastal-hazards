@@ -241,6 +241,9 @@ CCH.Objects.Map = function (args) {
         changelayerCallback: function() {
             me.updateSession();
         },
+        getLayersByName: function (name) {
+            return me.map.getLayersByName(name);
+        },
         CLASS_NAME: 'CCH.Objects.Map'
     });
 };
