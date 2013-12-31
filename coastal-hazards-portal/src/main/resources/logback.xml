@@ -26,4 +26,6 @@
     </root>
     
     <logger name="org.apache.http.wire" level="WARN" />
+    <logger name="org.hibernate" level="WARN" />
+	
 </configuration>
