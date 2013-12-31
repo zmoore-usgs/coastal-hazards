@@ -134,7 +134,7 @@ CCH.Objects.Item = function (args) {
                 if (childItem) {
                     CCH.map.showLayer({
                         item : childItem,
-                        ribbon : idx
+                        ribbon : idx + 1
                     });
                 }
             });
