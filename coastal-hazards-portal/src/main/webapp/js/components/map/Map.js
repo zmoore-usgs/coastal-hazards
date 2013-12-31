@@ -191,6 +191,7 @@ CCH.Objects.Map = function (args) {
             var card = args.card,
                 item = args.item,
                 id = item.id,
+                ribbon = args.ribbon || 0,
                 added,
                 layer;
 
@@ -198,6 +199,10 @@ CCH.Objects.Map = function (args) {
                 layer = card.layer;
             } else if (item && 'function' === typeof item.getWmsLayer && me.map.getLayersByName(item.id).length === 0) {
                 layer = item.getWmsLayer();
+            }
+            
+            if (ribbon !== 0) {
+                layer.params.SLD = layer.params.SLD + '?ribbon=' + ribbon;
             }
             
             if (layer) {
