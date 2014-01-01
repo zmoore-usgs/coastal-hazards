@@ -52,6 +52,9 @@ CCH.Objects.BucketSlide = function (args) {
         var slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large;
+    
+        $(window).trigger('cch.slide.bucket.open');
+    
         $('body').css({
             overflow : 'hidden'
         });
@@ -71,7 +74,9 @@ CCH.Objects.BucketSlide = function (args) {
 
     me.close = function () {
         var slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
-
+        
+        $(window).trigger('cch.slide.bucket.close');
+        
         $('body').css({
             overflow : 'hidden'
         });

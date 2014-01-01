@@ -65,7 +65,11 @@ CCH.Objects.SearchSlide = function (args) {
         var slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large;
+            
         if (me.isClosed) {
+            
+            $(window).trigger('cch.slide.search.open');
+            
             slideContainer.removeClass('hidden');
 
             slideContainer.animate({
@@ -80,6 +84,7 @@ CCH.Objects.SearchSlide = function (args) {
 
     me.close = function (args) {
         if (!me.isClosed) {
+            $(window).trigger('cch.slide.search.close');
             var slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
             slideContainer.animate({
                 left: $(window).width()

@@ -265,7 +265,17 @@ CCH.Objects.ItemsSlide = function (args) {
 
     $(window).on({
         'cch.ui.resized' : me.resized,
-        'cch.ui.redimensioned' : me.redimensioned
+        'cch.ui.redimensioned' : me.redimensioned,
+        'cch.slide.bucket.open' : function () {
+            if (me.isSmall()) {
+                me.open();
+            }
+        },
+        'cch.slide.search.open' : function () {
+            if (me.isSmall()) {
+                me.open();
+            }
+        }
     });
     
     me.redimensioned(null, me.isSmall());
