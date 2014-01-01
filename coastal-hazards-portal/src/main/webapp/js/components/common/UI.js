@@ -113,7 +113,7 @@ CCH.Objects.UI = function (args) {
             $footerRow = $('#' + me.FOOTER_ROW_ID),
             $contentRow = $('#' + me.CONTENT_ROW_ID),
             $titleContainer = $headerRow.find('> div:nth-child(2)'),
-            $titleContainerSiblings = $('#application-container > div:nth-child(1) > div:nth-child(2) ~ div:not(.modal)'),
+            $titleContainerSiblings = $headerRow.find('>:not(:nth-child(2)):not(.modal)'),
             headerHeight = $headerRow.outerHeight(true),
             footerHeight = $footerRow.outerHeight(true),
             windowHeight = $(window).height(),
@@ -130,12 +130,18 @@ CCH.Objects.UI = function (args) {
             contentRowHeight = footerHeight;
             footerHeight = tHeight;
         }
-
+        
+        // Set the correct height for the content row
         contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
         
         if (isSmall) {
+            // Adjust for footer size
             contentRowHeight += footerHeight;
-            $titleContainer.css('width', ($(window).width() - $titleContainer.offset().left) - ($titleContainerSiblings.outerWidth() * 2));
+            var width = 0;
+            $titleContainerSiblings.each(function (ind, obj){
+                width += $(obj).outerWidth();
+            });
+            $titleContainer.css('width', ($headerRow.innerWidth() - width- 25) + 'px');
         } else {
              $titleContainer.css('width', '');
         }
