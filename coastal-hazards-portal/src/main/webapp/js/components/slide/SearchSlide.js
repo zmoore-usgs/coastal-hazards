@@ -110,7 +110,6 @@ CCH.Objects.SearchSlide = function (args) {
             $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             $slideContent = $('#' + me.SLIDE_CONTENT_ID),
             $appContainer = $('#' + me.CONTENT_ROW_ID),
-            $cardContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).parent(),
             windowWidth = $(window).outerWidth(),
             windowHeight = $(window).outerHeight(),
             rightWindowBorderOffset = windowWidth - toExtent.left,
@@ -141,9 +140,7 @@ CCH.Objects.SearchSlide = function (args) {
             $slideContainer.height(windowHeight - toExtent.top - 1);
             $slideContainer.width(windowWidth - toExtent.left);
             $slideContent.height($slideContainer.height() - 5);
-//            $slideContent.css('width', '');
-//            $slideContent.css('height', '');
-//            $cardContainer.css('height', '');
+            $slideContent.css('width', '');
         } else {
             if (me.isClosed) {
                 $slideContainer.css({
@@ -157,9 +154,6 @@ CCH.Objects.SearchSlide = function (args) {
             $slideContainer.height($appContainer.outerHeight());
             $slideContent.css('width', slideContentWidth + 'px');
             $slideContent.css('height', $slideContainer.height() + 'px');
-//            $cardContainer.css($slideContainer.height() - $cardContainer.siblings().toArray().sum(function (x) {
-//                return $(x).outerHeight();
-//            }) + 'px');
         }
     };
 
