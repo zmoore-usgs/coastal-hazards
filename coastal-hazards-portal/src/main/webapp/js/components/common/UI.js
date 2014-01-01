@@ -109,11 +109,13 @@ CCH.Objects.UI = function (args) {
 
     me.windowResizeHandler = function () {
         var isSmall = me.isSmall(),
-            headerRow = $('#' + me.HEADER_ROW_ID),
-            footerRow = $('#' + me.FOOTER_ROW_ID),
-            contentRow = $('#' + me.CONTENT_ROW_ID),
-            headerHeight = headerRow.outerHeight(true),
-            footerHeight = footerRow.outerHeight(true),
+            $headerRow = $('#' + me.HEADER_ROW_ID),
+            $footerRow = $('#' + me.FOOTER_ROW_ID),
+            $contentRow = $('#' + me.CONTENT_ROW_ID),
+            $titleContainer = $headerRow.find('> div:nth-child(2)'),
+            $titleContainerSiblings = $('#application-container > div:nth-child(1) > div:nth-child(2) ~ div:not(.modal)'),
+            headerHeight = $headerRow.outerHeight(true),
+            footerHeight = $footerRow.outerHeight(true),
             windowHeight = $(window).height(),
             tHeight,
             contentRowHeight;
@@ -133,10 +135,14 @@ CCH.Objects.UI = function (args) {
         
         if (isSmall) {
             contentRowHeight += footerHeight;
+            $titleContainer.css('width', ($(window).width() - $titleContainer.offset().left) - ($titleContainerSiblings.outerWidth() * 2));
+        } else {
+             $titleContainer.css('width', '');
         }
         
-        contentRow.height(contentRowHeight - 1);
-
+        $contentRow.height(contentRowHeight - 1);
+        
+        
         // Check if the application was resized. If so, re-initialize the slideshow to easily
         // fit into the new layout
         if (isSmall !== me.previouslySmall) {

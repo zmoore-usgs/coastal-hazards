@@ -109,13 +109,9 @@ html, body {
         padding-left: 0px;
         padding-right:  0px;
     }
-
-    #application-container > div.row:nth-child(3) {
-        display: none;
-    }
-
+    
     /* Set the content row to not have any margins, overriding bootstrap's
-       15px margins on left/right */
+        15px margins on left/right */
     #application-container > div:nth-child(2) {
         margin-left: 0px !important;
         margin-right:  0px !important;
@@ -125,6 +121,10 @@ html, body {
     #application-container > div:nth-child(2) > div.col-md-12 {
         padding-left: 0px !important;
         padding-right:  0px !important;
+    }
+
+    #application-container > div.row:nth-child(3) {
+        display: none;
     }
 }
 
