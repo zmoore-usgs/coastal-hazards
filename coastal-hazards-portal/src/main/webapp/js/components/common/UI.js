@@ -65,10 +65,10 @@ CCH.Objects.UI = function (args) {
     me.previousWidth = $(window).width();
     me.isSmall = function () {
         // Bootstrap decides when to flip the application view based on 
-        // a specific width. 767px seems to be the point 
-        // https://github.com/twitter/bootstrap/blob/master/less/responsive-767px-max.less
-        return $(window).width() <= me.magicResizeNumber;
+        // a specific width. 992 seems to be the point 
+        return $(window).outerWidth() < me.magicResizeNumber;
     };
+    me.previouslySmall = me.isSmall();
     me.bucketSlide = new CCH.Objects.BucketSlide({
         containerId : me.BUCKET_SLIDE_CONTAINER_ID,
         mapdivId : me.MAP_DIV_ID,
@@ -108,18 +108,17 @@ CCH.Objects.UI = function (args) {
     };
 
     me.windowResizeHandler = function () {
-        var currWidth = $(window).width(),
-            isSmall = me.isSmall(),
+        var isSmall = me.isSmall(),
             headerRow = $('#' + me.HEADER_ROW_ID),
             footerRow = $('#' + me.FOOTER_ROW_ID),
             contentRow = $('#' + me.CONTENT_ROW_ID),
-            tHeight,
             headerHeight = headerRow.outerHeight(true),
             footerHeight = footerRow.outerHeight(true),
-            map = $('#' + me.MAP_DIV_ID),
+            windowHeight = $(window).height(),
+            tHeight,
             contentRowHeight;
 
-        contentRowHeight = $(window).height() - (headerHeight + footerHeight);
+        contentRowHeight = windowHeight - (headerHeight + footerHeight);
 
         // This is an issue that happens with IE9. I've still not figured out why
         // but the height numbers seem to switch. It's probably an IE9 event
@@ -131,23 +130,23 @@ CCH.Objects.UI = function (args) {
         }
 
         contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
-
+        
         if (isSmall) {
-            contentRow.height($(window).height());
-            map.height($(window).height());
-        } else {
-            contentRow.height(contentRowHeight - 1);
-            map.height(contentRowHeight);
+            contentRowHeight += footerHeight;
         }
+        
+        contentRow.height(contentRowHeight - 1);
 
         // Check if the application was resized. If so, re-initialize the slideshow to easily
         // fit into the new layout
-        if ((me.previousWidth > me.magicResizeNumber && currWidth <= me.magicResizeNumber) ||
-                (me.previousWidth <= me.magicResizeNumber && currWidth > me.magicResizeNumber)) {
+        if (isSmall !== me.previouslySmall) {
+            CCH.LOG.debug('UI:: Redimensioned To ' + isSmall ? ' Small' : ' Large');
             $(window).trigger('cch.ui.redimensioned', isSmall);
         }
+        
         $(window).trigger('cch.ui.resized', isSmall);
-        me.previousWidth = currWidth;
+        
+        me.previouslySmall = isSmall;
     };
 
     me.sharemodalDisplayHandler = function (evt, args) {
@@ -546,7 +545,6 @@ CCH.Objects.UI = function (args) {
             zoomToBbox : true
         });
     }
-
     $(window).trigger('cch.ui.initialized');
 
     CCH.LOG.debug('UI.js::constructor: UI class initialized.');
