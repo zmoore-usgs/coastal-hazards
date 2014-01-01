@@ -110,10 +110,6 @@ html, body {
         padding-right:  0px;
     }
 
-    #application-container > div.row:nth-child(1) {
-        display: none;
-    }
-
     #application-container > div.row:nth-child(3) {
         display: none;
     }
