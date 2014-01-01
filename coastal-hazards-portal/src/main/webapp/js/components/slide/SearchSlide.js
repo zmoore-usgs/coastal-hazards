@@ -109,28 +109,41 @@ CCH.Objects.SearchSlide = function (args) {
             toExtent = me.isSmall() ? extents.small : extents.large,
             $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             $slideContent = $('#' + me.SLIDE_CONTENT_ID),
-            $appContainerId = $('#' + me.CONTENT_ROW_ID),
+            $appContainer = $('#' + me.CONTENT_ROW_ID),
             $cardContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).parent(),
             windowWidth = $(window).outerWidth(),
+            windowHeight = $(window).outerHeight(),
             rightWindowBorderOffset = windowWidth - toExtent.left,
             slideContentWidth = $slideContainer.outerWidth() - me.BORDER_WIDTH;
 
         if (me.isClosed) {
-            $slideContainer.addClass('hidden');
+            $slideContainer.css({
+                display : 'none'
+            });
         } else {
-            $slideContainer.removeClass('hidden');
+            $slideContainer.css({
+                'display' : ''
+            });
         }
 
         if (me.isSmall()) {
             if (me.isClosed) {
                 $slideContainer.css({
+                    top : toExtent.top,
                     left: windowWidth
                 });
             } else {
-                $slideContainer.offset(toExtent);
+                $slideContainer.css({
+                    top : toExtent.top,
+                    left: toExtent.left
+                });
             }
-            $slideContainer.width(rightWindowBorderOffset);
-            $slideContent.width(slideContentWidth);
+            $slideContainer.height(windowHeight - toExtent.top - 1);
+            $slideContainer.width(windowWidth - toExtent.left);
+            $slideContent.height($slideContainer.height() - 5);
+//            $slideContent.css('width', '');
+//            $slideContent.css('height', '');
+//            $cardContainer.css('height', '');
         } else {
             if (me.isClosed) {
                 $slideContainer.css({
@@ -141,24 +154,27 @@ CCH.Objects.SearchSlide = function (args) {
                 $slideContainer.offset(toExtent);
             }
             $slideContainer.width(rightWindowBorderOffset);
-            $slideContainer.height($appContainerId.outerHeight());
-            $slideContent.width(slideContentWidth);
-            $cardContainer.height($slideContainer.height() - $cardContainer.siblings().toArray().sum(function (x) {
-                return $(x).outerHeight();
-            }));
+            $slideContainer.height($appContainer.outerHeight());
+            $slideContent.css('width', slideContentWidth + 'px');
+            $slideContent.css('height', $slideContainer.height() + 'px');
+//            $cardContainer.css($slideContainer.height() - $cardContainer.siblings().toArray().sum(function (x) {
+//                return $(x).outerHeight();
+//            }) + 'px');
         }
     };
 
     me.getExtents = function () {
-        var $contentRow = $('#' + me.CONTENT_ROW_ID),
+         var $slideContainer = $('#application-slide-items-content-container'),
+            $firstAggregationBellow = $slideContainer.find('>div:nth-child(2)'),
+            $contentRow = $('#' + me.CONTENT_ROW_ID),
             extents = {
                 large: {
                     top: $contentRow.offset().top,
                     left: $contentRow.outerWidth() / 2
                 },
                 small: {
-                    // top is handled by css file
-                    left: $contentRow.offset().left + me.SMALL_OFFSET
+                    top: $firstAggregationBellow.offset().top - 1,
+                    left: $slideContainer.offset().left
                 }
             };
 
@@ -574,8 +590,11 @@ CCH.Objects.SearchSlide = function (args) {
         });
     });
 
-    $(window).on('cch.ui.resized', function (args) {
-        me.resize(args);
+    $(window).on({
+        'cch.ui.resized': function (args) {
+            me.resize(args);
+        },
+        'cch.slide.items.close' : me.close
     });
 
     $('body').on('click', function (evt) {

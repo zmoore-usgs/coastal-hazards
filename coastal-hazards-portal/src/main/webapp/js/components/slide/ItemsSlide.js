@@ -91,6 +91,8 @@ CCH.Objects.ItemsSlide = function (args) {
             slideContent = $('#' + me.$SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth();
 
+        $(window).trigger('cch.slide.items.close');
+
         // We will be scrolling the entire pane out of the viewport. In order to
         // avoid scrollbars along the bottom of the screen, we temporarily set
         // the overflow to hidden for the body. We will set the display of 

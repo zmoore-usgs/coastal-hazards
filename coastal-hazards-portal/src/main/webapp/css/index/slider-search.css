@@ -30,6 +30,7 @@
     overflow-x: hidden;
     margin-right: 3px;
     margin-left: 3px;
+    height: 97%;
 }   
     /* Location and Product Container */
     #application-slide-search-container > div > div:nth-child(2) > div {
@@ -150,10 +151,6 @@
         #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:last-child {
             text-align: center;
         }
-   
-    
-
-
 
 @media (min-width: 992px) {
     #application-slide-search-container > div  {
@@ -165,8 +162,11 @@
 }
 
 @media (max-width: 991px) {
-    #application-slide-search-container {
-        top : 10px;
+    #application-slide-search-container > div {
+        height: 97%;
+        width: 100%;
+    }
+    #application-slide-search-container > div > div:nth-child(2) {
         height: 97%;
     }
 
