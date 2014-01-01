@@ -549,6 +549,7 @@ CCH.Objects.BucketSlide = function (args) {
         'cch.ui.resized' : me.resized,
         'cch.map.added.layer' : me.layerAppendRemoveHandler,
         'cch.map.removed.layer' : me.layerAppendRemoveHandler,
+        'cch.slide.items.close' : me.close
     });
 
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');
