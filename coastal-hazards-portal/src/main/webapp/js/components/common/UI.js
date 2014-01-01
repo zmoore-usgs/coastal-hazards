@@ -87,7 +87,8 @@ CCH.Objects.UI = function (args) {
     });
     me.searchSlide = new CCH.Objects.SearchSlide({
         containerId : me.SEARCH_SLIDE_CONTAINER_ID,
-        isSmall : me.isSmall
+        isSmall : me.isSmall,
+        bucket : me.bucket
     });
     me.combinedSearch = new CCH.Objects.CombinedSearch();
     me.accordion = new CCH.Objects.Accordion({
