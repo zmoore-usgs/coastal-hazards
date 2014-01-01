@@ -123,54 +123,64 @@ CCH.Objects.BucketSlide = function (args) {
     me.resized = function (evt, args) {
         var extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large,
-            slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
-            slideContent = $('#' + me.SLIDE_CONTENT_ID),
-            windowWidth = $(window).outerWidth();
+            $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
+            $slideContent = $('#' + me.SLIDE_CONTENT_ID),
+            windowWidth = $(window).outerWidth(),
+            windowHeight = $(window).outerHeight();
 
         if (me.isClosed) {
-            slideContainer.css({
+            $slideContainer.css({
                 display : 'none'
             });
         } else {
-            slideContainer.css({
+            $slideContainer.css({
                 'display' : ''
             });
         }
 
         if (me.isSmall()) {
             if (me.isClosed) {
-                slideContainer.css({
+                $slideContainer.css({
+                    top : toExtent.top,
                     left: windowWidth
                 });
             } else {
-                slideContainer.offset(toExtent);
+                $slideContainer.css({
+                    top : toExtent.top,
+                    left: toExtent.left
+                });
             }
-            slideContainer.width(windowWidth - toExtent.left);
-            slideContent.width(slideContainer.outerWidth() - me.borderWidth);
+            $slideContainer.height(windowHeight - toExtent.top - 1);
+            $slideContainer.width(windowWidth - toExtent.left);
+            $slideContent.width($slideContainer.outerWidth() - me.borderWidth);
+            $slideContent.height($slideContainer.height() - 5);
         } else {
             if (me.isClosed) {
-                slideContainer.css({
+                $slideContainer.css({
                     left: windowWidth,
                     top: toExtent.top
                 });
             } else {
-                slideContainer.offset(toExtent);
+                $slideContainer.offset(toExtent);
             }
-            slideContainer.width(windowWidth - toExtent.left);
-            slideContainer.height($('#' + me.MAP_DIV_ID).outerHeight());
-            slideContent.width(slideContainer.outerWidth() - me.borderWidth);
+            $slideContainer.width(windowWidth - toExtent.left);
+            $slideContainer.height($('#' + me.MAP_DIV_ID).outerHeight() - 1);
+            $slideContent.width($slideContainer.outerWidth() - me.borderWidth);
         }
     };
 
     me.getExtents = function () {
-        var extents = {
+        var $slideContainer = $('#application-slide-items-content-container'),
+            $firstAggregationBellow = $slideContainer.find('>div:nth-child(2)'),
+            $mapDiv = $('#' + me.MAP_DIV_ID),
+            extents = {
                 large: {
-                    top: $('#' + me.MAP_DIV_ID).offset().top,
-                    left: $('#' + me.MAP_DIV_ID).outerWidth() + $('#' + me.MAP_DIV_ID).offset().left
+                    top: $mapDiv.offset().top,
+                    left: $mapDiv.outerWidth() + $mapDiv.offset().left
                 },
                 small: {
-                    // top is handled by css
-                    left: 10
+                    top: $firstAggregationBellow.offset().top - 1,
+                    left: $slideContainer.offset().left
                 }
             };
 

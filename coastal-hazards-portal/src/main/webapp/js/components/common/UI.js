@@ -114,6 +114,7 @@ CCH.Objects.UI = function (args) {
             $contentRow = $('#' + me.CONTENT_ROW_ID),
             $titleContainer = $headerRow.find('> div:nth-child(2)'),
             $titleContainerSiblings = $headerRow.find('>:not(:nth-child(2)):not(.modal)'),
+            titleContainerSiblingsWidth = 0,
             headerHeight = $headerRow.outerHeight(true),
             footerHeight = $footerRow.outerHeight(true),
             windowHeight = $(window).height(),
@@ -137,11 +138,10 @@ CCH.Objects.UI = function (args) {
         if (isSmall) {
             // Adjust for footer size
             contentRowHeight += footerHeight;
-            var width = 0;
             $titleContainerSiblings.each(function (ind, obj){
-                width += $(obj).outerWidth();
+                titleContainerSiblingsWidth += $(obj).outerWidth();
             });
-            $titleContainer.css('width', ($headerRow.innerWidth() - width- 25) + 'px');
+            $titleContainer.css('width', ($headerRow.innerWidth() - titleContainerSiblingsWidth - 25) + 'px');
         } else {
              $titleContainer.css('width', '');
         }
