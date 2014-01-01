@@ -27,11 +27,11 @@ CCH.Objects.SearchSlide = function (args) {
 
     // Listeners 
     // window: 'cch.ui.resized'
-
+    me.$APPLICATION_CONTAINER = $('#application-container');
     me.SLIDE_CONTAINER_ID = args.containerId;
     me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
     me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div.application-slide-controlset';
-    me.APP_CONTAINER_ID = 'content-row';
+    me.CONTENT_ROW_ID = 'content-row';
     me.LOCATION_CARD_TEMPLATE_ID = 'application-slide-search-location-card-template';
     me.LOCATION_SLIDE_SEARCH_CONTAINER_ID = 'application-slide-search-location-results-content-container';
     me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID = 'application-slide-search-product-results-content-container';
@@ -109,9 +109,11 @@ CCH.Objects.SearchSlide = function (args) {
             toExtent = me.isSmall() ? extents.small : extents.large,
             $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             $slideContent = $('#' + me.SLIDE_CONTENT_ID),
-            $appContainerId = $('#' + me.APP_CONTAINER_ID),
+            $appContainerId = $('#' + me.CONTENT_ROW_ID),
             $cardContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).parent(),
-            windowWidth = $(window).outerWidth();
+            windowWidth = $(window).outerWidth(),
+            rightWindowBorderOffset = windowWidth - toExtent.left,
+            slideContentWidth = $slideContainer.outerWidth() - me.BORDER_WIDTH;
 
         if (me.isClosed) {
             $slideContainer.addClass('hidden');
@@ -127,8 +129,8 @@ CCH.Objects.SearchSlide = function (args) {
             } else {
                 $slideContainer.offset(toExtent);
             }
-            $slideContainer.width(windowWidth - toExtent.left);
-            $slideContent.width($slideContainer.outerWidth() - me.BORDER_WIDTH);
+            $slideContainer.width(rightWindowBorderOffset);
+            $slideContent.width(slideContentWidth);
         } else {
             if (me.isClosed) {
                 $slideContainer.css({
@@ -138,9 +140,9 @@ CCH.Objects.SearchSlide = function (args) {
             } else {
                 $slideContainer.offset(toExtent);
             }
-            $slideContainer.width(windowWidth - toExtent.left);
+            $slideContainer.width(rightWindowBorderOffset);
             $slideContainer.height($appContainerId.outerHeight());
-            $slideContent.width($slideContainer.width() - me.BORDER_WIDTH);
+            $slideContent.width(slideContentWidth);
             $cardContainer.height($slideContainer.height() - $cardContainer.siblings().toArray().sum(function (x) {
                 return $(x).outerHeight();
             }));
@@ -148,15 +150,15 @@ CCH.Objects.SearchSlide = function (args) {
     };
 
     me.getExtents = function () {
-        var appContainerId = $('#' + me.APP_CONTAINER_ID),
+        var $contentRow = $('#' + me.CONTENT_ROW_ID),
             extents = {
                 large: {
-                    top: appContainerId.offset().top,
-                    left: appContainerId.offset().left + 150
+                    top: $contentRow.offset().top,
+                    left: $contentRow.outerWidth() / 2
                 },
                 small: {
                     // top is handled by css file
-                    left: appContainerId.offset().left + me.SMALL_OFFSET
+                    left: $contentRow.offset().left + me.SMALL_OFFSET
                 }
             };
 
