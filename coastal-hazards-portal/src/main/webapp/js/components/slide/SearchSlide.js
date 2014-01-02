@@ -535,7 +535,7 @@ CCH.Objects.SearchSlide = function (args) {
                 imageContainerClass = 'application-slide-search-product-card-image',
                 titleContainerClass = 'application-slide-search-product-card-title',
                 descriptionContainerClass = 'application-slide-search-product-card-description',
-                $imageContainer = $newItem.find('.' + imageContainerClass),
+                $imageContainer = $newItem.find('> div > div:first-child > img'),
                 $titleContainer = $newItem.find('.' + titleContainerClass),
                 $descriptionContainer = $newItem.find('.' + descriptionContainerClass),
                 $bucketButton = $newItem.find('>span.badge'),
@@ -552,7 +552,7 @@ CCH.Objects.SearchSlide = function (args) {
             $newItem.attr('id', 'application-slide-search-product-card-' + id);
             $imageContainer.attr({
                 'id' : imageContainerClass + '-' + id,
-                'src' : image
+                'src' : 'images/thumbnail/thumb_' + id + '.png'
             });
             $titleContainer.attr('id', titleContainerClass + '-' + id);
             $titleContainer.append(title, '&nbsp;', $exploreControl);
