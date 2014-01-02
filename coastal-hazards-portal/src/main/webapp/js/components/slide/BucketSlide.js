@@ -206,7 +206,7 @@ CCH.Objects.BucketSlide = function (args) {
                     left: $mapDiv.outerWidth() + $mapDiv.offset().left
                 },
                 small: {
-                    top: $firstAggregationBellow.offset().top - 1,
+                    top: $firstAggregationBellow.offset() ? $firstAggregationBellow.offset().top - 1 : 0,
                     left: $slideContainer.offset().left
                 }
             };

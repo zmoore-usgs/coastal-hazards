@@ -198,7 +198,7 @@ CCH.Objects.SearchSlide = function (args) {
                     left: $contentRow.outerWidth() / 2
                 },
                 small: {
-                    top: $firstAggregationBellow.offset().top - 1,
+                    top: $firstAggregationBellow.offset() ? $firstAggregationBellow.offset().top - 1 : 0,
                     left: $slideContainer.offset().left
                 }
             };
