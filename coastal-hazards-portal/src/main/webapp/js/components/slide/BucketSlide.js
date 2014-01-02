@@ -206,7 +206,7 @@ CCH.Objects.BucketSlide = function (args) {
                     left: $mapDiv.outerWidth() + $mapDiv.offset().left
                 },
                 small: {
-                    top: $firstAggregationBellow.offset().top - 1,
+                    top: $firstAggregationBellow.offset() ? $firstAggregationBellow.offset().top - 1 : 0,
                     left: $slideContainer.offset().left
                 }
             };
@@ -453,7 +453,7 @@ CCH.Objects.BucketSlide = function (args) {
             $downButton = $card.find('> div:nth-child(3)> button:nth-child(3)');
 
         $card.attr('id', 'application-slide-bucket-container-card-' + id);
-        $imageContainer.attr('src', 'http://www.tshirtdesignsnprint.com/img/not-found.png');
+        $imageContainer.attr('src', 'images/thumbnail/thumb_' + id + '.png');
         $titleContainer.attr('id', titleContainerClass + '-' + id);
         $titleContainerPNode.html(title);
         $card.data('id', id);
