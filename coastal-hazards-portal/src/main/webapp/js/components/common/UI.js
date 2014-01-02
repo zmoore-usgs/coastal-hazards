@@ -121,6 +121,8 @@ CCH.Objects.UI = function (args) {
             tHeight,
             contentRowHeight;
 
+        $(window).trigger('cch.ui.resizing', isSmall);
+
         contentRowHeight = windowHeight - (headerHeight + footerHeight);
 
         // This is an issue that happens with IE9. I've still not figured out why

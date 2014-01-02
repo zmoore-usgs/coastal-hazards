@@ -49,52 +49,74 @@ CCH.Objects.BucketSlide = function (args) {
     me.cards = [];
 
     me.open = function () {
-        var slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
-            extents = me.getExtents(),
-            toExtent = me.isSmall() ? extents.small : extents.large;
-    
-        $(window).trigger('cch.slide.bucket.open');
-    
-        $('body').css({
-            overflow : 'hidden'
-        });
-        slideContainer.css({
-            display: ''
-        });
-        slideContainer.animate({
-            left: toExtent.left
-        }, me.animationTime, function () {
-            me.isClosed = false;
+        var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
+            isSmall = me.isSmall();
+        if (me.isClosed) {
+            var openSlide = function () {
+                $(window).off('cch.slide.items.opened', openSlide);
 
-            $('body').css({
-                overflow : ''
-            });
-        });
+                $('body').css({
+                    overflow : 'hidden'
+                });
+
+                $slideContainer.css({
+                    display: ''
+                });
+
+                me.getExtents()
+
+                $slideContainer.animate({
+                    left: me.getExtents()[isSmall ? 'small' : 'large'].left
+                }, me.animationTime, function () {
+                    me.isClosed = false;
+
+                    $('body').css({
+                        overflow : ''
+                    });
+
+                    $(window).trigger('cch.slide.bucket.opened');
+                });
+            }
+
+            if (isSmall) {
+                $(window).on('cch.slide.items.opened', openSlide);
+            } else {
+                openSlide();
+            }
+
+            $(window).trigger('cch.slide.bucket.opening');
+        } else {
+            $(window).trigger('cch.slide.bucket.opened');
+        }
     };
 
     me.close = function () {
-        var slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
-        
-        $(window).trigger('cch.slide.bucket.close');
-        
-        $('body').css({
-            overflow : 'hidden'
-        });
-
-        slideContainer.animate({
-            left: $(window).width()
-        }, me.animationTime, function () {
-            me.isClosed = true;
-
-            slideContainer.css({
-                display: 'none'
-            });
+        var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
+        if (!me.isClosed) {
+            $(window).trigger('cch.slide.bucket.closing');
 
             $('body').css({
                 overflow : 'hidden'
             });
 
-        });
+            $slideContainer.animate({
+                left: $(window).width()
+            }, me.animationTime, function () {
+                me.isClosed = true;
+
+                $slideContainer.css({
+                    display: 'none'
+                });
+
+                $('body').css({
+                    overflow : 'hidden'
+                });
+
+                $(window).trigger('cch.slide.bucket.closed');
+            });
+        } else {
+            $(window).trigger('cch.slide.bucket.closed');
+        }
     };
 
     me.toggle = function () {
@@ -554,7 +576,11 @@ CCH.Objects.BucketSlide = function (args) {
         'cch.ui.resized' : me.resized,
         'cch.map.added.layer' : me.layerAppendRemoveHandler,
         'cch.map.removed.layer' : me.layerAppendRemoveHandler,
-        'cch.slide.items.close' : me.close
+        'cch.slide.items.closing' : function () {
+            if (me.isSmall()) {
+                me.close();
+            }
+        }
     });
 
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');
