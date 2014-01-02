@@ -39,26 +39,40 @@ CCH.Objects.CombinedSearch = function (args) {
     me.SUBMIT_BUTTON_ID = args.submitButtonId || 'app-navbar-search-submit-button';
     me.DD_TOGGLE_SPINNER_IMG_LOCATION = 'images/spinner/ajax-loader.gif';
     me.selectedOption = 'all';
+    me.isSmall;
 
     // Internally used objects
     me.search = new CCH.Objects.Search({
         geocodeServiceEndpoint: CCH.CONFIG.data.sources.geocoding.endpoint
     });
 
-    me.resizeContainer = function (evt) {
-        var container = $('#' + me.CONTAINER_ID),
-            parentContainer = container.parent(),
-            parentContainerWidth = parentContainer.width(),
-            // Get all visible, non-modal children of the parent that are also not my container
-            parentContainerVisibleItems = parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
-            // Get the width of child containers
-            childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
-                return $(el).outerWidth(true);
-            }),
-            containerMarginRight = 15, // TODO- This is problematic between IE9 and others
-            idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
-
-        container.css({width : idealInputWidth});
+    me.resizeContainer = function (evt, isSmall) {
+        var $container = $('#' + me.CONTAINER_ID),
+            $parentContainer = $container.parent(),
+            parentContainerWidth = $parentContainer.width(),
+            parentContainerVisibleItems,
+            childrenCombinedWidth,
+            containerMarginRight,
+            idealInputWidth;
+    
+            if (me.isSmall === undefined) {
+                me.isSmall = isSmall
+            }
+            
+            if (me.isSmall) {
+                idealInputWidth = parentContainerWidth;
+            } else {
+                // Get all visible, non-modal children of the parent that are also not my container
+                parentContainerVisibleItems = $parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
+                // Get the width of child containers
+                childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
+                    return $(el).outerWidth(true);
+                }),
+                containerMarginRight = 15, // TODO- This is problematic between IE9 and others
+                idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
+            }
+            
+        $container.css({width : idealInputWidth});
     };
 
     me.setCriteria = function (args) {
@@ -341,9 +355,13 @@ CCH.Objects.CombinedSearch = function (args) {
             evt.stopImmediatePropagation();
         }
     });
-
+    
     $(window).on({
         'cch.ui.resized' : me.resizeContainer,
+        'cch.ui.redimensioned' : function(evt, isSmall) {
+            me.isSmall = isSmall;
+            me.resizeContainer();
+        },
         'slide-search-button-click' : function (evt, args) {
             // When a user searches for "all" and has mixed content come back,
             // the user is presented with the choice to "Show All x Locations". 

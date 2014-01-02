@@ -27,8 +27,11 @@ CCH.Objects.ItemsSlide = function (args) {
 
     me.SLIDE_ITEMS_CONTAINER_ID = args.containerId;
     me.MAP_DIV_ID = args.mapdivId || 'map';
+    me.$APPLICATION_CONTAINER = $('#application-container');
+    me.$HEADER_ROW = me.$APPLICATION_CONTAINER.find('> div:nth-child(1)');
+    me.$CONTENT_ROW = me.$APPLICATION_CONTAINER.find('> div:nth-child(2)');
     me.SLIDE_TAB_ID = $('#' + me.SLIDE_ITEMS_CONTAINER_ID + ' .application-slide-tab').attr('id');
-    me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_ITEMS_CONTAINER_ID + ' .application-slide-content').attr('id');
+    me.$SLIDE_CONTENT_ID = $('#' + me.SLIDE_ITEMS_CONTAINER_ID + ' .application-slide-content').attr('id');
     me.CARD_TEMPLATE_ID = 'application-slide-items-container-card-template';
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-items-content-container';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
@@ -46,73 +49,88 @@ CCH.Objects.ItemsSlide = function (args) {
 
     me.open = function () {
         var slideContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
-            slideContent = $('#' + me.SLIDE_CONTENT_ID),
+            slideContent = $('#' + me.$SLIDE_CONTENT_ID),
             slideTab = $('#' + me.SLIDE_TAB_ID),
             extents = me.getExtents(),
             windowWidth = $(window).outerWidth(),
             toExtent = extents.small;
 
-        // When opening this slider, we don't want to show scroll bars showing up 
-        // at the bottom of the window due to the width of the slider sliding 
-        // into view. When closed, the slider is invisible except for the tab. 
-        // When making it visible before sliding open, we need to set the body
-        // overflow to hidden and then reset it once the slider is opened. We also 
-        // reset the width of the container that was set to be as wide as the 
-        // tab only 
-        $('body').css({
-            overflow : 'hidden'
-        });
-        slideContainer.css({
-            width : windowWidth - toExtent.left
-        });
-        slideContent.css({
-            display : '',
-            width : slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth
-        });
-        slideContent.offset({
-            left : windowWidth - me.borderWidth
-        });
-        slideContainer.animate({
-            left: toExtent.left
-        }, me.animationTime, function () {
-            me.isClosed = false;
+        if (me.isClosed) {
+            $(window).trigger('cch.slide.items.opening');
+
+            // When opening this slider, we don't want to show scroll bars showing up 
+            // at the bottom of the window due to the width of the slider sliding 
+            // into view. When closed, the slider is invisible except for the tab. 
+            // When making it visible before sliding open, we need to set the body
+            // overflow to hidden and then reset it once the slider is opened. We also 
+            // reset the width of the container that was set to be as wide as the 
+            // tab only 
             $('body').css({
-                overflow : ''
+                overflow : 'hidden'
             });
-        });
+            slideContainer.css({
+                width : windowWidth - toExtent.left
+            });
+            slideContent.css({
+                display : '',
+                width : slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth
+            });
+            slideContent.offset({
+                left : windowWidth - me.borderWidth
+            });
+            slideContainer.animate({
+                left: toExtent.left
+            }, me.animationTime, function () {
+                me.isClosed = false;
+                $('body').css({
+                    overflow : ''
+                });
+                $(window).trigger('cch.slide.items.opened');
+            });
+        } else {
+            $(window).trigger('cch.slide.items.opened');
+        }
     };
 
     me.close = function () {
         var container = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
             slideTab = $('#' + me.SLIDE_TAB_ID),
-            slideContent = $('#' + me.SLIDE_CONTENT_ID),
+            slideContent = $('#' + me.$SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth();
 
-        // We will be scrolling the entire pane out of the viewport. In order to
-        // avoid scrollbars along the bottom of the screen, we temporarily set
-        // the overflow to hidden for the body. We will set the display of 
-        // the content to none, set the width of the container to just be the tab
-        // and reset the overflow
-        $('body').css({
-            overflow : 'hidden'
-        });
-        container.animate({
-            left: windowWidth - slideTab.outerWidth() - (me.borderWidth * 2)
-        }, me.animationTime, function () {
-            me.isClosed = true;
+        if (!me.isClosed) {
+            $(window).trigger('cch.slide.items.closing');
 
-            slideContent.css({
-                display : 'none'
-            });
-
-            container.css({
-                width : slideTab.outerWidth()
-            });
-
+            // We will be scrolling the entire pane out of the viewport. In order to
+            // avoid scrollbars along the bottom of the screen, we temporarily set
+            // the overflow to hidden for the body. We will set the display of 
+            // the content to none, set the width of the container to just be the tab
+            // and reset the overflow
             $('body').css({
-                overflow : ''
+                overflow : 'hidden'
             });
-        });
+            container.animate({
+                left: windowWidth - slideTab.outerWidth() - (me.borderWidth * 2)
+            }, me.animationTime, function () {
+                me.isClosed = true;
+
+                slideContent.css({
+                    display : 'none'
+                });
+
+                container.css({
+                    width : slideTab.outerWidth()
+                });
+
+                $('body').css({
+                    overflow : ''
+                });
+
+                $(window).trigger('cch.slide.items.closed');
+            });
+        } else {
+            $(window).trigger('cch.slide.items.closed');
+        }
     };
 
     // Toggles the container open/closed. This is only valid for when the 
@@ -128,19 +146,38 @@ CCH.Objects.ItemsSlide = function (args) {
         }
     };
 
+    me.redimensioned = function (evt, isSmall) {
+        var $slideContainer = $('#' + me.SLIDE_CONTENT_CONTAINER),
+            $slideItemsContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
+            $searchContainer;
+    
+        if (isSmall) {
+            // When I am switched to small mode, I want to remove the slideContainer's 
+            // span class because it's no longer a span.
+            $slideItemsContainer.removeClass('col-lg-3 col-md-4');
+            
+            $searchContainer = me.$HEADER_ROW.find('> div:nth-child(3)');
+            
+            // Move the Search bar from the header to my slider
+            $searchContainer.prependTo($slideContainer);
+        } else {
+            $searchContainer =  $slideContainer.find('> div:first-child');
+            
+            $slideItemsContainer.addClass('col-lg-3 col-md-4');
+            
+            $searchContainer.insertAfter(me.$HEADER_ROW.find('> div:nth-child(2)'));
+        }
+    };
+    
     me.resized = function () {
         var extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large,
-            map = $('#' + me.MAP_DIV_ID),
-            contentRow = map.parent(),
             isSmall = me.isSmall(),
-            slideContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
-            slideContainerClasses = slideContainer.attr('class').split(' '),
-            slideTab = $('#' + me.SLIDE_TAB_ID),
-            slideContent = $('#' + me.SLIDE_CONTENT_ID),
+            $slideContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
+            $slideTab = $('#' + me.SLIDE_TAB_ID),
+            slideContent = $('#' + me.$SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth(),
             windowHeight = $(window).outerHeight(),
-            marginTop = 10,
             borderSize = 4;
 
         // I've got to know what my form factor is. Bootstrap uses a special number,
@@ -149,18 +186,14 @@ CCH.Objects.ItemsSlide = function (args) {
         //   to a free-floating column and needs quite a bit of help in resizing when
         //   that happens
         if (isSmall) {
-            // When I am switched to small mode, I want to remove the slideContainer's 
-            // span class because it's no longer a span.
-            slideContainer.removeClass('col-lg-3 col-md-4');
-
             // Then there's special sizing depending on if I'm closed or not. 
             if (me.isClosed) {
                 // If I'm closed, my container, which holds my tab and content, 
                 // should be off screen to the right except for the width of the tab
                 // and its border so that just the tab is peeking out of the 
                 // right side of the screen
-                slideContainer.offset({
-                    left: windowWidth  - slideTab.outerWidth() - (me.borderWidth * 2),
+                $slideContainer.offset({
+                    left: windowWidth  - $slideTab.outerWidth() - (me.borderWidth * 2),
                     top: toExtent.top
                 });
                 // I hide the content dom since it's off screen and I don't want 
@@ -170,49 +203,45 @@ CCH.Objects.ItemsSlide = function (args) {
                 });
             } else {
                 // If I'm open...
-                slideContainer.
+                $slideContainer.
                     offset(toExtent).
                     width(windowWidth - toExtent.left);
 
                 slideContent.css({
                     display : '',
-                    width : slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth
+                    width : $slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth
                 });
             }
-            slideContainer.height(windowHeight - marginTop - borderSize);
-            slideTab.offset({
-                left: slideContainer.offset().left + borderSize,
-                top: slideContainer.height() - slideTab.outerHeight() - 20
+            $slideContainer.height(windowHeight - toExtent.top);
+            $slideTab.offset({
+                left: $slideContainer.offset().left + borderSize,
+                top: $slideContainer.height() - $slideTab.outerHeight() - 20
             });
         } else {
             slideContent.css({
                 width: '',
                 display : ''
             });
-            slideContainer.
+            $slideContainer.
                 css({
-                    'height' : contentRow.height(),
+                    'height' : me.$CONTENT_ROW.height(),
                     'position' : '',
                     'top' : '',
                     'left' : '',
                     'width' : ''
                 });
-
-            if (slideContainerClasses.length === 1) {
-                slideContainer.addClass('col-lg-3 col-md-4');
-            }
         }
     };
 
     me.getExtents = function () {
         var extents = {
                 large: {
-                    top: $('#' + me.MAP_DIV_ID).offset().top,
-                    left: $('#' + me.MAP_DIV_ID).outerWidth() + $('#' + me.MAP_DIV_ID).offset().left
+                    top: me.$CONTENT_ROW.offset().top,
+                    left: me.$CONTENT_ROW.outerWidth() + me.$CONTENT_ROW.offset().left
                 },
                 small: {
-                    top: 10,
-                    left: 10
+                    top: me.$CONTENT_ROW.offset().top + 20,
+                    left: 25
                 }
             };
 
@@ -247,9 +276,22 @@ CCH.Objects.ItemsSlide = function (args) {
         return newItem;
     };
 
-    $(window).on('cch.ui.resized', function (args) {
-        me.resized(args);
+    $(window).on({
+        'cch.ui.resized' : me.resized,
+        'cch.ui.redimensioned' : me.redimensioned,
+        'cch.slide.bucket.opening' : function () {
+            if (me.isSmall()) {
+                me.open();
+            }
+        },
+        'cch.slide.search.opening' : function () {
+            if (me.isSmall()) {
+                me.open();
+            }
+        }
     });
+    
+    me.redimensioned(null, me.isSmall());
 
     $('#' + me.SLIDE_TAB_ID).on('click', me.toggle);
 

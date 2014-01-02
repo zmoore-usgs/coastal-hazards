@@ -150,19 +150,25 @@
 }
 
 @media (max-width: 991px) {
-    /* 
-        This fixes a bootstrap issue that causes the accordion to go beyond screen 
-        height, causing scroll bars when the items slide is open
-    */
-    #application-slide-items-container .panel-group {
-        margin-bottom: 0px;
-    }
-
     #application-slide-items-container {
         position: absolute;
         z-index: 1006; /* 1005 is highest on map */
         height: 98%;
     }
+
+        #application-slide-items-container > div:nth-child(2) > div {
+            padding: 10px 5px 10px 5px;
+        }
+        #application-slide-items-container > div:nth-child(2) > div > div:first-child {
+            margin-bottom: 10px;
+        }
+        #application-slide-items-container > div:nth-child(2) > div> div:not(:first-child) {
+            /* 
+                This fixes a bootstrap issue that causes the accordion to go beyond screen 
+                height, causing scroll bars when the items slide is open
+            */
+            margin-bottom: 0px;
+        }
 
     #application-slide-items-content {
         height: 100%;

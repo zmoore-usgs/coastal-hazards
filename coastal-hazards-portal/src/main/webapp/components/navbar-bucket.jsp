@@ -4,6 +4,4 @@
             <span id="app-navbar-bucket-button-count">0</span>
         </span>
     </div>
-    <div class="app-navbar-bucket-container">
-    </div>
 </div>

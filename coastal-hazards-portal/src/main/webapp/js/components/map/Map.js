@@ -10,6 +10,7 @@ CCH.Objects.Map = function (args) {
 
     me.initialExtent = [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826];
     me.mapDivId = args.mapDiv;
+    me.$MAP_DIV = $('#' + args.mapDiv);
     me.bboxFadeoutDuration = 2000;
     return $.extend(me, {
         init: function () {
@@ -60,7 +61,9 @@ CCH.Objects.Map = function (args) {
                     // A session has been loaded. The map will be rebuilt from the session
                     me.updateFromSession();
                 },
-                'cch.ui.resized': function () {
+                'cch.ui.resized': function (evt, isSmall) {
+                    $(me.$MAP_DIV.height($('#content-row').height()))
+//                    
                     me.map.updateSize();
                 }
             });

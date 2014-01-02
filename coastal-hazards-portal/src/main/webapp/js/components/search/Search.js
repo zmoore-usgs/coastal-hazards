@@ -30,7 +30,7 @@ CCH.Objects.Search = function (args) {
                 error : []
             },
             scope = args.scope || this,
-            displayNotification = args.displayNotification === false ? false : true;;
+            displayNotification = args.displayNotification === false ? false : true;
 
         $.ajax({
             type: 'GET',

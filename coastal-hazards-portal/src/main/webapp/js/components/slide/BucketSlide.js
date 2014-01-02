@@ -49,47 +49,74 @@ CCH.Objects.BucketSlide = function (args) {
     me.cards = [];
 
     me.open = function () {
-        var slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
-            extents = me.getExtents(),
-            toExtent = me.isSmall() ? extents.small : extents.large;
-        $('body').css({
-            overflow : 'hidden'
-        });
-        slideContainer.css({
-            display: ''
-        });
-        slideContainer.animate({
-            left: toExtent.left
-        }, me.animationTime, function () {
-            me.isClosed = false;
+        var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
+            isSmall = me.isSmall();
+        if (me.isClosed) {
+            var openSlide = function () {
+                $(window).off('cch.slide.items.opened', openSlide);
 
-            $('body').css({
-                overflow : ''
-            });
-        });
+                $('body').css({
+                    overflow : 'hidden'
+                });
+
+                $slideContainer.css({
+                    display: ''
+                });
+
+                me.getExtents()
+
+                $slideContainer.animate({
+                    left: me.getExtents()[isSmall ? 'small' : 'large'].left
+                }, me.animationTime, function () {
+                    me.isClosed = false;
+
+                    $('body').css({
+                        overflow : ''
+                    });
+
+                    $(window).trigger('cch.slide.bucket.opened');
+                });
+            }
+
+            if (isSmall) {
+                $(window).on('cch.slide.items.opened', openSlide);
+            } else {
+                openSlide();
+            }
+
+            $(window).trigger('cch.slide.bucket.opening');
+        } else {
+            $(window).trigger('cch.slide.bucket.opened');
+        }
     };
 
     me.close = function () {
-        var slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
-
-        $('body').css({
-            overflow : 'hidden'
-        });
-
-        slideContainer.animate({
-            left: $(window).width()
-        }, me.animationTime, function () {
-            me.isClosed = true;
-
-            slideContainer.css({
-                display: 'none'
-            });
+        var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
+        if (!me.isClosed) {
+            $(window).trigger('cch.slide.bucket.closing');
 
             $('body').css({
                 overflow : 'hidden'
             });
 
-        });
+            $slideContainer.animate({
+                left: $(window).width()
+            }, me.animationTime, function () {
+                me.isClosed = true;
+
+                $slideContainer.css({
+                    display: 'none'
+                });
+
+                $('body').css({
+                    overflow : 'hidden'
+                });
+
+                $(window).trigger('cch.slide.bucket.closed');
+            });
+        } else {
+            $(window).trigger('cch.slide.bucket.closed');
+        }
     };
 
     me.toggle = function () {
@@ -123,54 +150,64 @@ CCH.Objects.BucketSlide = function (args) {
     me.resized = function (evt, args) {
         var extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large,
-            slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
-            slideContent = $('#' + me.SLIDE_CONTENT_ID),
-            windowWidth = $(window).outerWidth();
+            $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
+            $slideContent = $('#' + me.SLIDE_CONTENT_ID),
+            windowWidth = $(window).outerWidth(),
+            windowHeight = $(window).outerHeight();
 
         if (me.isClosed) {
-            slideContainer.css({
+            $slideContainer.css({
                 display : 'none'
             });
         } else {
-            slideContainer.css({
+            $slideContainer.css({
                 'display' : ''
             });
         }
 
         if (me.isSmall()) {
             if (me.isClosed) {
-                slideContainer.css({
+                $slideContainer.css({
+                    top : toExtent.top,
                     left: windowWidth
                 });
             } else {
-                slideContainer.offset(toExtent);
+                $slideContainer.css({
+                    top : toExtent.top,
+                    left: toExtent.left
+                });
             }
-            slideContainer.width(windowWidth - toExtent.left);
-            slideContent.width(slideContainer.outerWidth() - me.borderWidth);
+            $slideContainer.height(windowHeight - toExtent.top - 1);
+            $slideContainer.width(windowWidth - toExtent.left);
+            $slideContent.width($slideContainer.outerWidth() - me.borderWidth);
+            $slideContent.height($slideContainer.height() - 5);
         } else {
             if (me.isClosed) {
-                slideContainer.css({
+                $slideContainer.css({
                     left: windowWidth,
                     top: toExtent.top
                 });
             } else {
-                slideContainer.offset(toExtent);
+                $slideContainer.offset(toExtent);
             }
-            slideContainer.width(windowWidth - toExtent.left);
-            slideContainer.height($('#' + me.MAP_DIV_ID).outerHeight());
-            slideContent.width(slideContainer.outerWidth() - me.borderWidth);
+            $slideContainer.width(windowWidth - toExtent.left);
+            $slideContainer.height($('#' + me.MAP_DIV_ID).outerHeight() - 1);
+            $slideContent.width($slideContainer.outerWidth() - me.borderWidth);
         }
     };
 
     me.getExtents = function () {
-        var extents = {
+        var $slideContainer = $('#application-slide-items-content-container'),
+            $firstAggregationBellow = $slideContainer.find('>div:nth-child(2)'),
+            $mapDiv = $('#' + me.MAP_DIV_ID),
+            extents = {
                 large: {
-                    top: $('#' + me.MAP_DIV_ID).offset().top,
-                    left: $('#' + me.MAP_DIV_ID).outerWidth() + $('#' + me.MAP_DIV_ID).offset().left
+                    top: $mapDiv.offset().top,
+                    left: $mapDiv.outerWidth() + $mapDiv.offset().left
                 },
                 small: {
-                    // top is handled by css
-                    left: 10
+                    top: $firstAggregationBellow.offset().top - 1,
+                    left: $slideContainer.offset().left
                 }
             };
 
@@ -539,6 +576,11 @@ CCH.Objects.BucketSlide = function (args) {
         'cch.ui.resized' : me.resized,
         'cch.map.added.layer' : me.layerAppendRemoveHandler,
         'cch.map.removed.layer' : me.layerAppendRemoveHandler,
+        'cch.slide.items.closing' : function () {
+            if (me.isSmall()) {
+                me.close();
+            }
+        }
     });
 
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');
