@@ -48,6 +48,7 @@
 			'published': 'published'
 		},
 		map: {
+			ribbonOffset : 6, //Must be an integer
 			layers: {
 				markerLayer: new OpenLayers.Layer.Markers('geocoding-marker-layer', {
 					displayInLayerSwitcher: false
