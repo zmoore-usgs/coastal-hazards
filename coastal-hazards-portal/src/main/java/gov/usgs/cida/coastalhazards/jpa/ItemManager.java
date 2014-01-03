@@ -1,6 +1,5 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
-import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Item;
 import java.io.File;
@@ -8,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -110,19 +110,23 @@ public class ItemManager {
      */
 	public String query(List<String> queryText, List<String> types, String sortBy, int count, String bbox, boolean subtree) {
         StringBuilder builder = new StringBuilder();
+        List<String> queryParams = new LinkedList<>();
+        int paramIndex = 1;
         builder.append("select i from Item i");
         boolean hasQueryText = isEmpty(queryText);
         boolean hasType = isEmpty(types);
+        List<Item.Type> typesList = new LinkedList<>();
         if (hasQueryText || hasType) {
             builder.append(" where ");
             if (hasQueryText) {
 				List<String> likes = new ArrayList<String>();
 				for (String keyword : queryText) {
 					if (StringUtils.isNotBlank(keyword)) {
+                        queryParams.add('%' + keyword + "%");
 						StringBuilder likeBuilder = new StringBuilder();
-						likeBuilder.append(" lower(i.summary.keywords) like lower('%")
-							.append(keyword)
-							.append("%')");
+						likeBuilder.append(" lower(i.summary.keywords) like lower(?")
+							.append(paramIndex++)
+							.append(")");
 						likes.add(likeBuilder.toString());
 					}
 				}
@@ -132,13 +136,10 @@ public class ItemManager {
                 builder.append(" and");
             }
             if (hasType) {
-                for (int i=0; i<types.size(); i++) {
-                    types.set(i, "'" + types.get(i) + "'");
+                for (String type : types) {
+                    typesList.add(Item.Type.valueOf(type));
                 }
-                String typeInString = StringUtils.join(types, ", ");
-                builder.append(" i.type in(")
-                    .append(typeInString)
-                    .append(")");
+                builder.append(" i.type in(:types)");
             }
         }
         if ("popularity".equals(sortBy)) {
@@ -154,6 +155,13 @@ public class ItemManager {
         String jsonResult = "";
         try {
             Query query = em.createQuery(builder.toString(), Item.class);
+            for (int i=0; i<queryParams.size(); i++) {
+                String param = queryParams.get(i);
+                query.setParameter(i+1, param);
+            }
+            if (hasType) {
+                query.setParameter("types", typesList);
+            }
             if (count > 0) {
                 query.setMaxResults(count);
             }
