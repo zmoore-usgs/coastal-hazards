@@ -206,6 +206,7 @@ CCH.Objects.Map = function (args) {
             
             if (ribbon !== 0) {
                 layer.params.SLD = layer.params.SLD + '?ribbon=' + ribbon;
+                layer.params.buffer = (ribbon - 1) * CCH.CONFIG.map.ribbonOffset;
             }
             
             if (layer) {
