@@ -397,9 +397,10 @@ CCH.Objects.UI = function (args) {
                 });
             }
 
-            data.children.each(function (child) {
+            data.children.each(function (child, index) {
                 me.accordion.load({
                     'id' : child,
+                    'index' : index,
                     'callbacks' : {
                         success : [
                             function () {
@@ -501,7 +502,7 @@ CCH.Objects.UI = function (args) {
                                             })
                                         });
                                     }
-                                }
+                                };
                                 $(window).on('cch.item.loaded', function (evt, args) {
                                     $(window).off('cch.item.loaded', loadedHandler);
                                     loadedHandler(evt, args);

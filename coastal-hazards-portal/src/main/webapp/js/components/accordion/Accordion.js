@@ -27,6 +27,7 @@ CCH.Objects.Accordion = function (args) {
         
         var callbacks = args.callbacks || {},
             id = args.id,
+            index = args.index,
             item = new CCH.Objects.Item({ id : id });
     
         callbacks = args.callbacks || {
@@ -36,8 +37,9 @@ CCH.Objects.Accordion = function (args) {
             
         callbacks.success.unshift(function (data, status) {
             if (status === 'success') {
-                me.add({
-                    item : CCH.items.getById({ id : data.id })
+                me.addCard({
+                    item : CCH.items.getById({ id : data.id }),
+                    index : index
                 });
             }
         });
@@ -60,6 +62,7 @@ CCH.Objects.Accordion = function (args) {
             item = args.item,
             index = args.index,
             cardContainer,
+            accordion = me.getAccordion(),
             bellow;
     
             // If we are passed a product, that means we were not passed a card
@@ -74,11 +77,21 @@ CCH.Objects.Accordion = function (args) {
             
             bellow = me.createBellow({
                 container : cardContainer,
-                card : card,
-                index : index
+                card : card
             });
 
-        me.getAccordion().append(bellow);
+        // I want to insert the card into the accordion at a specified index if 
+        // one was specified. This fixes a race condition in the pulling of the 
+        // data for these cards 
+        if (index === undefined || accordion.children().length === 0) {
+            accordion.append(bellow);
+        } else {
+            if (index === 0) {
+                accordion.prepend(bellow);
+            } else {
+                bellow.insertAfter(accordion.children().get(index - 1));
+            }
+        }
 
         return bellow;
     };
