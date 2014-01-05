@@ -554,10 +554,7 @@ CCH.Objects.SearchSlide = function (args) {
                 'id' : imageContainerClass + '-' + id,
                 'src' : 'images/thumbnail/thumb_' + id + '.png'
             }).on('click', function () {
-                CCH.map.zoomToBoundingBox({
-                    bbox: product.bbox, 
-                    fromProjection: new OpenLayers.Projection('EPSG:4326')
-                });
+                $exploreControl.trigger('click');
             });
             $titleContainer.attr('id', titleContainerClass + '-' + id);
             $titleContainer.append(title, '&nbsp;', $exploreControl);
