@@ -1,5 +1,6 @@
 #app-navbar-bucket-control-container {
-    width: 60px;
+    width: 50px;
+    margin-left: 2px;
 }
 #app-navbar-bucket-control-container > * {
     float: left;
