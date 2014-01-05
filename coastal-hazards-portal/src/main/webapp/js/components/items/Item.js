@@ -173,7 +173,39 @@ CCH.Objects.Item = function (args) {
         } else {
             CCH.map.removeLayersByName(me.id);
         }
-        
+    };
+
+    /**
+     * Using an item id, this function will run through itself and children to
+     * return an array of item ids that is the path to the item within the children
+     * for this item.
+     * 
+     * This function is typically run through the parent item for an item chain.
+     * 
+     * If the id is not found through the item chain, an empty array is returned.
+     * 
+     * If the id is the parent item, an array of 1 item is returned.
+     * 
+     * If the id is a child down the chain, the array that is returned is an
+     * ordered list of item ids from the parent in the first index to the child 
+     * item that is being looked for in the last index.
+     * 
+     * @param {String} id - The item id that is being looked for.
+     * @param {Array.<string>} path - This param is typically passed in by callers
+     * but an empty Array.<string> also may be passed in or a path up to the item 
+     * being sought
+     */
+    me.pathToItem = function (id, path) {
+        path = path || [];
+
+        if (me.id === id || path.length > 0) {
+            path.unshift(me.id);
+        } else {
+            me.children.each(function (childId) {
+                path = CCH.items.getItems()[childId].pathToItem(id, path);
+            });
+        }
+        return path;
     };
 
     CCH.LOG.debug('Item.js::init():Item class finished initializing.');
@@ -192,6 +224,7 @@ CCH.Objects.Item = function (args) {
         load : me.load,
         showLayer : me.showLayer,
         hideLayer : me.hideLayer,
+        pathToItem: me.pathToItem,
         CLASS_NAME : 'CCH.Objects.Item'
     });
 };
