@@ -453,7 +453,14 @@ CCH.Objects.BucketSlide = function (args) {
             $downButton = $card.find('> div:nth-child(3)> button:nth-child(3)');
 
         $card.attr('id', 'application-slide-bucket-container-card-' + id);
-        $imageContainer.attr('src', 'images/thumbnail/thumb_' + id + '.png');
+        $imageContainer.
+                attr('src', 'images/thumbnail/thumb_' + id + '.png').
+                on('click', function () {
+                    CCH.map.zoomToBoundingBox({
+                        bbox: item.bbox, 
+                        fromProjection: new OpenLayers.Projection('EPSG:4326')
+                    });
+        });
         $titleContainer.attr('id', titleContainerClass + '-' + id);
         $titleContainerPNode.html(title);
         $card.data('id', id);

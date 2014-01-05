@@ -553,6 +553,8 @@ CCH.Objects.SearchSlide = function (args) {
             $imageContainer.attr({
                 'id' : imageContainerClass + '-' + id,
                 'src' : 'images/thumbnail/thumb_' + id + '.png'
+            }).on('click', function () {
+                $exploreControl.trigger('click');
             });
             $titleContainer.attr('id', titleContainerClass + '-' + id);
             $titleContainer.append(title, '&nbsp;', $exploreControl);
