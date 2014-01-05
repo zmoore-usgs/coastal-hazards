@@ -487,7 +487,7 @@ CCH.Objects.UI = function (args) {
                 sid: CCH.CONFIG.params.id,
                 callbacks: {
                     success: [
-                        function () {
+                        function (session) {
                             var items = CCH.session.getSession().items;
 
                             // Wait for each item in the session to be loaded 
@@ -510,8 +510,12 @@ CCH.Objects.UI = function (args) {
                             });
 
                             me.loadTopLevelItem({
-                                zoomToBbox : true
+                                zoomToBbox : false
                             });
+                            
+                            CCH.map.zoomToBoundingBox({
+                                'bbox' : session.bbox
+                            })
                         }
                     ],
                     error: [
