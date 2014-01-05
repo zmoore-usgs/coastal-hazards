@@ -21,7 +21,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
             var features = evt.features,
                 cchLayers,
                 layerUrlToId = {},
-                id,
+                ids,
                 layerId,
                 featuresById = {},
                 featureCount,
@@ -39,16 +39,32 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     return l.url && l.url.indexOf('geoserver') > -1;
                 });
 
-                // Set up the layer URL to ID lookup table
+                // Set up the layer URL to ID lookup table. It is possible that
+                // the map contains an aggregation of the same layer over and 
+                // over with a different SLD for each layer. In order to handle
+                // that, I need to make an array for the layer name (item.id) 
+                // to be able to process this going forward
                 cchLayers.each(function (l) {
-                    layerUrlToId[l.params.LAYERS] = l.name;
+                    if (!layerUrlToId[l.params.LAYERS]) {
+                        layerUrlToId[l.params.LAYERS] = [];
+                    }
+                    layerUrlToId[l.params.LAYERS].push(l.name);
                     featuresById[l.name] = [];
                 });
 
                 // Populate the layers map
+                // WARNING: This is a problem. There object of arrays created here 
+                // could be massive. The maximum will be the count of layers being 
+                // identified multiplied by me.maxFeatures. If max features or the
+                // amount of layers gets too high, this could impact performance.
+                // This function could probably be rewritten to use only the evt.features
+                // array and not have to duplicate it over and over if multiple layers
+                // are using the same features
                 features.each(function (feature) {
-                    id = layerUrlToId[feature.gml.featureNSPrefix + ':' + feature.gml.featureType];
-                    featuresById[id].push(feature.attributes);
+                    ids = layerUrlToId[feature.gml.featureNSPrefix + ':' + feature.gml.featureType];
+                    ids.each(function (id) {
+                        featuresById[id].push(feature.attributes);
+                    });
                 });
 
                 popupHtml = '<div class="col-md-12">' +
@@ -65,6 +81,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     true,
                     null);
 
+                // Close any other layer identification widgets on the map
                 if (CCH.map.getMap().popups.length) {
                     CCH.map.getMap().popups.each(function (popup) {
                         popup.closeDiv.click();
@@ -76,7 +93,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     if (featuresById.hasOwnProperty(layerId)) {
                         features = featuresById[layerId];
                         featureCount = features.length;
-                        if (features.length) {
+                        if (featureCount) {
                             CCH.Util.getSLD({
                                 itemId : layerId,
                                 contextPath: CCH.CONFIG.contextPath,
@@ -172,8 +189,10 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                                 popup.setSize(new OpenLayers.Size(CCH.map.getMap().getSize().w * 0.65, $table.find('tr').length * 65));
                                                 popup.panIntoView();
                                             };
-
-                                            $table.append($theadRow);
+                                            
+                                            if ($table.find('tr:not(#loading-info-row)').length === 0) {
+                                                $table.append($theadRow);
+                                            }
 
                                             if (item.type.toLowerCase() === 'vulnerability') {
                                                 if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(attr.toUpperCase()) !== -1) {
