@@ -578,6 +578,12 @@ CCH.Objects.SearchSlide = function (args) {
                     }
                 }
             });
+            $exploreControl.on('click', function () {
+                $(window).trigger('cch.slide.search.button.click.explore', {
+                    'id' : id
+                });
+                me.close();
+            });
             
             return $newItem;
         }

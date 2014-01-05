@@ -3,6 +3,7 @@
 /*global window*/
 /*global OpenLayers*/
 /*global CCH*/
+/*global alertify*/
 /*global ga*/
 
 /**
@@ -78,15 +79,15 @@ CCH.Objects.Card = function (args) {
         if (me.parent) {
             me.parent.hideLayer();
         }
-        
+
         if (me.child) {
             me.child.showLayer();
         } else {
-           me.showLayer(); 
+            me.showLayer();
         }
-        
+
         me.isOpen = true;
-        
+
         $(me).trigger('card-display-toggle', {
             'display' : true
         });
@@ -96,7 +97,7 @@ CCH.Objects.Card = function (args) {
 
     me.hide = function (args) {
         args = args || {};
-        
+
         ga('send', 'event', {
             'eventCategory': 'card',
             'eventAction': 'hide',
@@ -115,33 +116,31 @@ CCH.Objects.Card = function (args) {
             direction : 'up',
             complete : complete
         });
-        
+
         if (me.child) {
             me.child.hideLayer();
         }
-        
+
         me.hideLayer();
-        
+
         if (me.parent) {
             me.parent.showLayer();
         }
-        
+
         $(me).trigger('card-display-toggle', {
             'display' : false
         });
-        
+
         CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was hidden');
     };
-    
+
     me.showLayer = function (args) {
         args = args || {};
-        
         me.item.showLayer();
     };
-    
+
     me.hideLayer = function (args) {
         args = args || {};
-        
         me.item.hideLayer();
     };
 
@@ -230,6 +229,26 @@ CCH.Objects.Card = function (args) {
         });
     };
 
+    me.createCard = function (id) {
+        // User selected a product. I will append that card to myself
+        var card = new CCH.Objects.Card({
+            item : CCH.items.getById({
+                id : id
+            }),
+            initHide : true,
+            parent : me
+        });
+
+        // This is now my child card 
+        me.child = card;
+
+        // Append this new card to myself
+        me.container.after(card.getContainer());
+
+        // Show this new card to the user
+        card.show();
+    };
+
     me.bindPropertyAggButton = function ($control) {
         $control.on('click', function ($evt) {
             $evt.stopImmediatePropagation();
@@ -240,25 +259,6 @@ CCH.Objects.Card = function (args) {
                     addClass(containerClass),
                 item,
                 $list = $('<ul />'),
-                createCard = function (id) {
-                    // User selected a product. I will append that card to myself
-                    var card = new CCH.Objects.Card({
-                        item : CCH.items.getById({
-                            id : id
-                        }),
-                        initHide : true,
-                        parent : me
-                    });
-
-                    // This is now my child card 
-                    me.child = card;
-
-                    // Append this new card to myself
-                    me.container.after(card.getContainer());
-
-                    // Show this new card to the user
-                    card.show();
-                },
                 processOption = function (item) {
                     var name = item.summary.tiny.title || item.summary.medium.title,
                         $listItem = $('<li />');
@@ -276,13 +276,13 @@ CCH.Objects.Card = function (args) {
                                     me.child.removeSelf();
                                     // Now that my child is gone, I'm going to 
                                     // replace it with a new card
-                                    createCard(id);
+                                    me.createCard(id);
                                 }
                             });
                         } else {
                             // I have no children so I am free to go ahead and 
                             // just create a new child card
-                            createCard(id);
+                            me.createCard(id);
                         }
                     });
 
@@ -408,7 +408,7 @@ CCH.Objects.Card = function (args) {
                 // This is a leaf node so don't add an aggregation button
                 $propertyAggButton.remove();
             }
-            
+
             zoomToBadge.on('click', function () {
                 CCH.map.zoomToBoundingBox({
                     bbox : me.bbox,
@@ -432,12 +432,50 @@ CCH.Objects.Card = function (args) {
             }
 
             me.container = container;
+            container.data('card', me);
         }
         return me.container;
     };
-    
+
+    me.showPath = function (path) {
+        var nextChild = path.shift();
+
+        if (nextChild === me.id) {
+            path.shift();
+        }
+
+        me.show({
+            complete : function () {
+                if (nextChild) {
+                    if (me.child) {
+                        if (me.child.id !== nextChild) {
+                            // I am going to hide my child first, then remove it
+                            me.child.hide({
+                                complete: function () {
+                                    // Remove my child after it's hidden
+                                    me.child.removeSelf();
+                                    // Now that my child is gone, I'm going to 
+                                    // replace it with a new card
+                                    me.createCard(nextChild);
+                                    me.child.showPath(path);
+                                }
+                            });
+                        } else {
+                            me.child.showPath(path);
+                        }
+                    } else {
+                        // I have no children so I am free to go ahead and 
+                        // just create a new child card
+                        me.createCard(nextChild);
+                        me.child.showPath(path);
+                    }
+                }
+            }
+        });
+    };
+
     $(window).on({
-        'click': function(evt) {
+        'click': function (evt) {
             me.removeAggregationContainer(evt);
         },
         'cch.ui.redimensioned': function (evt) {
@@ -483,6 +521,7 @@ CCH.Objects.Card = function (args) {
         removeSelf : me.removeSelf,
         showLayer : me.showLayer,
         hideLayer : me.hideLayer,
+        showPath : me.showPath,
         getBoundingBox: function () {
             return me.bbox;
         },
