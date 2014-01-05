@@ -193,15 +193,17 @@ CCH.Objects.Map = function (args) {
         showLayer: function(args) {
             var card = args.card,
                 item = args.item,
-                id = item.id,
+                id = card ? card.id : item.id,
                 ribbon = args.ribbon || 0,
                 added,
-                layer;
-
-            if (card && me.map.getLayersByName(id).length === 0) {
-                layer = card.layer;
-            } else if (item && 'function' === typeof item.getWmsLayer && me.map.getLayersByName(item.id).length === 0) {
-                layer = item.getWmsLayer();
+                layer = me.map.getLayersByName(id)[0];
+            
+            if (!layer) {
+                if (card) {
+                    layer = card.layer;
+                } else if (item && 'function' === typeof item.getWmsLayer) {
+                    layer = item.getWmsLayer();
+                }
             }
             
             if (ribbon !== 0) {
