@@ -338,7 +338,7 @@ CCH.Objects.BucketSlide = function (args) {
     me.rebuild = function () {
         var $container = me.getContainer();
 
-        $container.empty();
+        $container.find('>div:not(:first-child())').remove();
         me.cards.each(function ($card) {
             me.append($card);
         });
