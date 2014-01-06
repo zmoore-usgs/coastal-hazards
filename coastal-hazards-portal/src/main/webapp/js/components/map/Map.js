@@ -12,6 +12,25 @@ CCH.Objects.Map = function (args) {
     me.mapDivId = args.mapDiv;
     me.$MAP_DIV = $('#' + args.mapDiv);
     me.bboxFadeoutDuration = 2000;
+    
+    me.hideLayer = function(layer) {
+        layer.setVisibility(false);
+    };
+    
+    me.hideLayerCallback = function(evt) {
+        var layer = evt.layer;
+        $(window).trigger('cch.map.hide.layer', {
+            layer : layer
+        });
+    };
+    
+    me.addLayerCallback = function(evt) {
+        var layer = evt.layer;
+        $(window).trigger('cch.map.added.layer', {
+            layer : layer
+        });
+    };
+    
     return $.extend(me, {
         init: function () {
             CCH.LOG.info('Map.js::init():Map class is initializing.');
@@ -46,7 +65,7 @@ CCH.Objects.Map = function (args) {
             me.map.events.on({
                 'zoomend': me.zoomendCallback,
                 'moveend': me.moveendCallback,
-                'removelayer': me.removeLayerCallback,
+                'removelayer': me.hideLayerCallback,
                 'addlayer': me.addLayerCallback,
                 'changelayer': me.changelayerCallback
             });
@@ -62,8 +81,7 @@ CCH.Objects.Map = function (args) {
                     me.updateFromSession();
                 },
                 'cch.ui.resized': function (evt, isSmall) {
-                    $(me.$MAP_DIV.height($('#content-row').height()))
-//                    
+                    $(me.$MAP_DIV.height($('#content-row').height()));
                     me.map.updateSize();
                 }
             });
@@ -77,9 +95,8 @@ CCH.Objects.Map = function (args) {
         getMap: function () {
             return me.map;
         },
-        addLayerToFeatureInfoControl : function (evt) {
-            var control = me.getFeatureInfoControl,
-                layer = evt.layer;
+        addLayerToFeatureInfoControl : function (layer) {
+            var control = me.getFeatureInfoControl;
 
             layer.params.STYLES = '';
             layer.url = layer.url.substring(layer.url.indexOf('geoserver'));
@@ -138,7 +155,8 @@ CCH.Objects.Map = function (args) {
             me.map.events.un({
                 'moveend': me.moveendCallback,
                 'addlayer': me.addlayerCallback,
-                'changelayer': me.changelayerCallback
+                'changelayer': me.changelayerCallback,
+                'removelayer': me.hideLayerCallback
             });
 
             // If the session holds items, they will be loaded and if they are pinned,
@@ -170,7 +188,7 @@ CCH.Objects.Map = function (args) {
             // events we disconnected earlier
             me.map.events.on({
                 'moveend': me.moveendCallback,
-                'removelayer': me.removeLayerCallback,
+                'removelayer': me.hideLayerCallback,
                 'addlayer': me.addLayerCallback,
                 'changelayer': me.changelayerCallback
             });
@@ -187,7 +205,7 @@ CCH.Objects.Map = function (args) {
             CCH.LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + name);
             var layers = me.map.getLayersByName(name) || [];
             layers.each(function(layer) {
-                me.removeLayer(layer);
+                me.hideLayer(layer);
             });
         },
         showLayer: function(args) {
@@ -206,7 +224,7 @@ CCH.Objects.Map = function (args) {
                 }
             }
             
-            if (ribbon !== 0) {
+            if (ribbon !== 0 && layer.params.SLD.indexOf('ribbon') === -1) {
                 layer.params.SLD = layer.params.SLD + '?ribbon=' + ribbon;
                 layer.params.buffer = (ribbon - 1) * CCH.CONFIG.map.ribbonOffset;
             }
@@ -218,39 +236,30 @@ CCH.Objects.Map = function (args) {
                 }
             }
         },
+        removeLayer: me.hideLayer,
         addLayer: function(layer) {
-            var added = false;
-            if (me.map.getLayersByName(layer.name).length === 0) {
+            var added = false,
+                layerName = layer.name,
+                mapLayerArray = me.map.getLayersByName(layerName);
+            if (mapLayerArray.length === 0) {
                 added = me.map.addLayer(layer);
+                me.addLayerToFeatureInfoControl(layer);
             }
+            layer.setVisibility(true);
             return added;
         },
-        removeLayer: function(layer) {
-            me.map.removeLayer(layer, true);
-        },
         zoomendCallback: function() {
-            me.updateSession();
+            CCH.session.updateSession();
         },
         moveendCallback: function() {
-            me.updateSession();
+            CCH.session.updateSession();
         },
-        removeLayerCallback: function(evt) {
-            var layer = evt.layer;
-            $(window).trigger('cch.map.removed.layer', {
-                layer : layer
+        changelayerCallback: function(evt) {
+            $(window).trigger('cch.map.layer.changed', {
+                property : evt.property,
+                layer : evt.layer
             });
-        },
-        addLayerCallback: function(evt) {
-            var layer = evt.layer;
-            $(window).trigger('cch.map.added.layer', {
-                layer : layer
-            });
-            
-            me.addLayerToFeatureInfoControl(evt);
-            me.updateSession();
-        },
-        changelayerCallback: function() {
-            me.updateSession();
+            CCH.session.updateSession();
         },
         getLayersByName: function (name) {
             return me.map.getLayersByName(name);

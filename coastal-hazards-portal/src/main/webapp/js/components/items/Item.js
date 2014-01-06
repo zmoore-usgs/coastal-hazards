@@ -164,7 +164,7 @@ CCH.Objects.Item = function (args) {
             // Because I don't have a real layer for this aggregation, once all 
             // of the children are removed, I include this trigger so that other
             // components can act on this layer having been removed
-            $(window).trigger('cch.map.removed.layer', {
+            $(window).trigger('cch.map.hid.layer', {
                 layer : {
                     name : me.id
                 }
