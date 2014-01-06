@@ -246,7 +246,9 @@ CCH.Objects.SearchSlide = function (args) {
                     $pagingContainer = $contentContainer.find('> div:nth-child(3)');
                     pageCount = Math.ceil(locationSize / slidesPerPage);
 
-                    $resultsFoundsContainer.html(locationSize + ' Location' + (locationSize > 1 ? 's' : '') + ' Found');
+                    $resultsFoundsContainer.
+                            removeClass('hidden').
+                            html(locationSize + ' Location' + (locationSize > 1 ? 's' : '') + ' Found');
 
                     // Start with a clean slate 
                     $slideContainer.empty();
@@ -334,7 +336,9 @@ CCH.Objects.SearchSlide = function (args) {
                     $pagingContainer = $contentContainer.find('>div:nth-child(3)');
                     pageCount = Math.ceil(productsSize / slidesPerPage);
                     
-                    $resultsFoundsContainer.html(productsSize + ' Result' + (productsSize > 1 ? 's' : '') + ' Found');
+                    $resultsFoundsContainer.
+                            removeClass('hidden').
+                            html(productsSize + ' Result' + (productsSize > 1 ? 's' : '') + ' Found');
                     
                         // Start with a clean slate 
                     $slideContainer.empty();
@@ -471,8 +475,9 @@ CCH.Objects.SearchSlide = function (args) {
             // I am a location
             $container = $locationContainer;
         }
-
+        
         if (!isDisabled) {
+            $container.find('>div:first-child').addClass('hidden');
             if (isNaN(toPage)) {
                 // User clicked a back or forward button
                 // 171 is the back button string char code
