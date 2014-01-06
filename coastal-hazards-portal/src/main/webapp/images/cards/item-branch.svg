@@ -5,17 +5,18 @@
 ]>
 <svg version="1.1"
 	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
-	 x="0px" y="0px" width="800px" height="600px" viewBox="0 0 800 600" overflow="visible" enable-background="new 0 0 800 600"
+	 x="0px" y="0px" width="489px" height="363px" viewBox="0 0 489 363" overflow="visible" enable-background="new 0 0 489 363"
 	 xml:space="preserve">
 <defs>
 </defs>
-<rect x="400.5" y="51.731" fill="#D1D3D4" width="400.5" height="492.281"/>
-<path fill="#FFFFFF" d="M475.242,487.613l99.029-199.336l-91.533-181.249h89.981l55.069,124.882l53.27-124.882h83.764
-	l-95.405,188.745l96.695,191.84h-91.012l-58.94-130.827l-58.433,130.827H475.242z"/>
-<rect x="200.25" y="25.031" fill="#14426F" width="400.5" height="545.682"/>
-<path fill="#FFFFFF" d="M513.818,300.375c0,62.578-50.728,113.318-113.318,113.318c-62.591,0-113.319-50.74-113.319-113.318
-	c0-62.584,50.728-113.319,113.319-113.319C463.091,187.056,513.818,237.791,513.818,300.375z"/>
-<rect fill="#BCBEC0" width="400.5" height="600.75"/>
-<path fill="#FFFFFF" d="M47.716,465.921l99.03-199.338L55.219,85.334h89.976l55.069,124.882l53.27-124.882h83.763L241.89,274.079
-	l96.697,191.842h-91.012l-58.947-130.828l-58.432,130.828H47.716z"/>
+<path fill="#DDDCDC" d="M488.841,344.823c0,10.023-10.943,18.148-24.442,18.148H24.442C10.944,362.972,0,354.847,0,344.823V18.148
+	C0,8.126,10.944,0,24.442,0h439.957c13.499,0,24.442,8.126,24.442,18.148V344.823z"/>
+<polygon fill="#959595" points="472.814,176.83 447.044,221.467 421.271,176.83 "/>
+<rect x="219.558" y="63.653" fill="#959595" width="188.772" height="232.034"/>
+<text transform="matrix(1 0 0 1 254.1787 270.5771)" fill="#FFFFFF" font-family="'Univers-CondensedBold'" font-size="249.5803">X</text>
+<rect x="125.172" y="52.543" fill="#1C3664" width="188.772" height="257.203"/>
+<path fill="#FFFFFF" d="M272.971,182.324c0,29.496-23.911,53.411-53.413,53.411s-53.413-23.915-53.413-53.411
+	c0-29.499,23.911-53.413,53.413-53.413S272.971,152.825,272.971,182.324z"/>
+<rect x="30.785" y="40.744" fill="#959595" width="188.772" height="283.159"/>
+<text transform="matrix(1 0 0 1 49.585 260.3535)" fill="#FFFFFF" font-family="'Univers-CondensedBold'" font-size="249.5803">X</text>
 </svg>
