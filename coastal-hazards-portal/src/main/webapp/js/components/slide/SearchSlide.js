@@ -245,7 +245,8 @@ CCH.Objects.SearchSlide = function (args) {
                     $slideContainer = $contentContainer.find('> div:nth-child(2)');
                     $pagingContainer = $contentContainer.find('> div:nth-child(3)');
                     pageCount = Math.ceil(locationSize / slidesPerPage);
-
+                    
+                    $contentContainer.removeClass('hidden');
                     $resultsFoundsContainer.
                             removeClass('hidden').
                             html(locationSize + ' Location' + (locationSize > 1 ? 's' : '') + ' Found');
@@ -278,51 +279,57 @@ CCH.Objects.SearchSlide = function (args) {
                     });
 
                     if (criteria.indexOf('location') === -1) {
+                        // User is searching for mixed criteria
+                        // I only want to show the first location. If I have more 
+                        // than one, I want to leave a toggle at the bottom that 
+                        // will display all the items
                         $pagingContainer.addClass('hidden');
-                    }
+                        if ($slideContainer.find('>div').length) {
+                            $slideContainer.find('>div:not(.search-result-item-page-1)').addClass('hidden');
+                            $slideContainer.find('>div:first-child()').nextAll().addClass('hidden');
+                            $slideContainer.append($showAllButton);
 
-                    // I only want to show the first location. If I have more 
-                    // than one, I want to leave a toggle at the bottom that 
-                    // will display all the items
-                    if ($slideContainer.find('>div').length > 1 && criteria.indexOf('location') === -1) {
-                        $slideContainer.find('>div:first-child()').nextAll().addClass('hidden');
-                        $slideContainer.append($showAllButton);
+                            // When the user clicks on my toggle, I want to display all
+                            // of the locations, change the search criteria to 'Locations'
+                            // and have paging for locations (if need be)
+                            $showAllButton.on('click', function ($evt) {
+                                // Stop propagation of the event because the slide
+                                // listens to body events and it might catch a click
+                                // and toggle the slide.
+                                $evt.stopImmediatePropagation();
 
-                        // When the user clicks on my toggle, I want to display all
-                        // of the locations, change the search criteria to 'Locations'
-                        // and have paging for locations (if need be)
-                        $showAllButton.on('click', function ($evt) {
-                            // Stop propagation of the event because the slide
-                            // listens to body events and it might catch a click
-                            // and toggle the slide.
-                            $evt.stopImmediatePropagation();
-
-                            // I want to emit this event because it's listened to
-                            // by the combined search bar 
-                            $(window).trigger('slide-search-button-click', {
-                                button : 'show-all-location'
-                            });
-
-                            // Check to see if I am paging by finding if I have a 
-                            // page 2 button
-                            if ($pagingContainer.find('>ul.pagination>li>a:contains("2")').length > 0) {
-                                // If I'm paging, just show the first page
-                                $pagingContainer.removeClass('hidden');
-                                me.displayPage({
-                                    num : 1,
-                                    container : $contentContainer
+                                // I want to emit this event because it's listened to
+                                // by the combined search bar 
+                                $(window).trigger('slide-search-button-click', {
+                                    button : 'show-all-location'
                                 });
-                            } else {
-                                // I'm not paging so hide the toggle button
-                                $slideContainer.find('>div:last-child').remove();
-                                // Show all the cards
-                                $slideContainer.find('>div').removeClass('hidden');
-                            }
 
-                            // Remove all of the product cards and product paging
-                            $productContentContainer.find('>div:first-child()').empty();
-                            $productContentContainer.find('>div:nth-child(2)').empty();
-                            $productContentContainer.find('>div>ul').empty();
+                                // Check to see if I am paging by finding if I have a 
+                                // page 2 button
+                                if ($pagingContainer.find('>ul.pagination>li>a:contains("2")').length > 0) {
+                                    // If I'm paging, just show the first page
+                                    $pagingContainer.removeClass('hidden');
+                                    me.displayPage({
+                                        num : 1,
+                                        container : $contentContainer
+                                    });
+                                } else {
+                                    // I'm not paging so hide the toggle button
+                                    $slideContainer.find('>div:last-child').remove();
+                                    // Show all the cards
+                                    $slideContainer.find('>div').removeClass('hidden');
+                                }
+
+                                // Remove all of the product cards and product paging
+                                $productContentContainer.find('>div:first-child()').empty();
+                                $productContentContainer.find('>div:nth-child(2)').empty();
+                                $productContentContainer.find('>div>ul').empty();
+                            });
+                        }
+                    } else {
+                        me.displayPage({
+                            num : 1,
+                            container : $contentContainer
                         });
                     }
                 }
@@ -507,7 +514,8 @@ CCH.Objects.SearchSlide = function (args) {
             $slideContainer = $productContentContainer.find('>div:nth-child(2)'),
             $pagingContainer = $productContentContainer.find('>div:nth-child(3)'),
             $listItems = $pagingContainer.find('>ul>li'),
-            $incomingListItem =  $($listItems.get(num));
+            $incomingListItem =  $($listItems.get(num)),
+            isProductPaging = $pagingContainer.attr('id').indexOf('product') > -1;
 
         $listItems.removeClass('disabled');
 
@@ -515,6 +523,14 @@ CCH.Objects.SearchSlide = function (args) {
             $listItems.first().addClass('disabled');
         } else if (num === $listItems.length - 2) {
             $listItems.last().addClass('disabled');
+        }
+        
+        if (isProductPaging) {
+            if (num === 1) {
+                $productContentContainer.parent().find('>div#application-slide-search-location-results-content-container').removeClass('hidden')
+            } else {
+                $productContentContainer.parent().find('>div#application-slide-search-location-results-content-container').addClass('hidden')
+            }
         }
 
         $incomingListItem.addClass('disabled');
