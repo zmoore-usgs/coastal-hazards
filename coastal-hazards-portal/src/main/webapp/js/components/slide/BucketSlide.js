@@ -338,7 +338,7 @@ CCH.Objects.BucketSlide = function (args) {
     me.rebuild = function () {
         var $container = me.getContainer();
 
-        $container.empty();
+        $container.find('>div:not(:first-child())').remove();
         me.cards.each(function ($card) {
             me.append($card);
         });
@@ -450,7 +450,8 @@ CCH.Objects.BucketSlide = function (args) {
             $infoButton = $card.find('> div:nth-child(4) > button:nth-child(4)'),
             $removeButton = $card.find('> div:nth-child(3) > button:nth-child(1)'),
             $upButton = $card.find('> div:nth-child(3) > button:nth-child(2)'),
-            $downButton = $card.find('> div:nth-child(3)> button:nth-child(3)');
+            $downButton = $card.find('> div:nth-child(3)> button:nth-child(3)'),
+            layerArray;
 
         $card.attr('id', 'application-slide-bucket-container-card-' + id);
         $imageContainer.
@@ -468,10 +469,12 @@ CCH.Objects.BucketSlide = function (args) {
         // Test if the layer is currently visible. If not, set view button to off 
         if (item.itemType === 'aggregation') {
             layerCurrentlyInMap = item.children.every(function(id) {
-                return CCH.map.getLayersByName(id).length > 0
+                layerArray = CCH.map.getLayersByName(id);
+                return layerArray.length > 0 && layerArray[0].getVisibility();
             });
         } else {
-            layerCurrentlyInMap = CCH.map.getLayersByName(id).length > 0;
+            layerArray = CCH.map.getLayersByName(id);
+            layerCurrentlyInMap = layerArray.length > 0 && layerArray[0].getVisibility();
         }
 
         if (layerCurrentlyInMap) {
@@ -493,14 +496,17 @@ CCH.Objects.BucketSlide = function (args) {
 
         $viewButton.on('click', function (evt) {
             var isAggregation = item.itemType === 'aggregation',
-                isLayerInMap = false;
+                isLayerInMap = false,
+                layerArray;
                 
             if (isAggregation) {
                 isLayerInMap = item.children.every(function (id) {
-                    return CCH.map.getLayersByName(id).length > 0;
+                    layerArray = CCH.map.getLayersByName(id);
+                    return layerArray.length > 0 && layerArray[0].getVisibility();
                 });
             } else {
-                isLayerInMap = CCH.map.getLayersByName(id).length > 0;
+                layerArray = CCH.map.getLayersByName(id)
+                isLayerInMap = layerArray.length > 0 && layerArray[0].getVisibility();
             }
                 
             if (isLayerInMap) {
@@ -582,7 +588,7 @@ CCH.Objects.BucketSlide = function (args) {
     $(window).on({
         'cch.ui.resized' : me.resized,
         'cch.map.added.layer' : me.layerAppendRemoveHandler,
-        'cch.map.removed.layer' : me.layerAppendRemoveHandler,
+        'cch.map.hid.layer' : me.layerAppendRemoveHandler,
         'cch.slide.items.closing' : function () {
             if (me.isSmall()) {
                 me.close();

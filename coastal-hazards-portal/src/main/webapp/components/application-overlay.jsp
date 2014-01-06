@@ -8,7 +8,7 @@
 --%>
 <div id="application-overlay">
         <div>
-            <img src="<%=request.getParameter("base-url")%>/images/splash/usgs_logo.png" alt="USGS Logo"/>
+            <img src="<%=request.getParameter("base-url")%>/images/splash/usgs.svg" alt="USGS Logo"/>
         </div>
         <div>
             <img src="<%=request.getParameter("application-overlay-background-image")%>" alt="CCH Bucket Logo"/>

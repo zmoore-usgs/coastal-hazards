@@ -27,9 +27,9 @@ CCH.Objects.Item = function (args) {
             success : [],
             error : []
         },
-        me = this,
-        context = args.context || me;
-        
+            me = this,
+            context = args.context || me;
+
         callbacks.success.unshift(function (data) {
             me.children = data.children || [];
             me.attr = data.attr;
@@ -67,7 +67,6 @@ CCH.Objects.Item = function (args) {
                             }
                         });
                     }
-                    
                 });
             } else {
                 $(window).trigger('cch.item.loaded', {
@@ -122,7 +121,7 @@ CCH.Objects.Item = function (args) {
 
     me.showLayer = function () {
         var me = this;
-        
+
         // Check to see if this is an aggregation. If it is, I need
         // to pull the layers from all of its children
         if (me.itemType === 'aggregation') {
@@ -165,7 +164,7 @@ CCH.Objects.Item = function (args) {
             // Because I don't have a real layer for this aggregation, once all 
             // of the children are removed, I include this trigger so that other
             // components can act on this layer having been removed
-            $(window).trigger('cch.map.removed.layer', {
+            $(window).trigger('cch.map.hid.layer', {
                 layer : {
                     name : me.id
                 }
@@ -197,13 +196,20 @@ CCH.Objects.Item = function (args) {
      */
     me.pathToItem = function (id, path) {
         path = path || [];
-
-        if (me.id === id || path.length > 0) {
+        
+        if (me.id === id) {
             path.unshift(me.id);
         } else {
-            me.children.each(function (childId) {
-                path = CCH.items.getItems()[childId].pathToItem(id, path);
-            });
+            if (me.children.length > 0) {
+                for (var idx = 0; idx < me.children.length && path.length === 0; idx++) {
+                    var child = CCH.items.getItems()[me.children[idx]];
+                    path = child.pathToItem(id, path);
+                }
+                
+                if (path.length > 0) {
+                    path.unshift(me.id);
+                }
+            }
         }
         return path;
     };

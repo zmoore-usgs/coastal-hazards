@@ -87,6 +87,9 @@
             width: 100%;
             text-align: center;
         }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) > *:hover {
+                cursor: pointer;
+            }
             #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) > button {
                 width: 22%;
             }

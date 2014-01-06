@@ -28,6 +28,10 @@ CCH.Objects.Session = function(args) {
         return me.session;
     };
     
+    me.update = function (args) {
+        CCH.map.updateSession();
+    };
+    
     me.write = function (args) {
         args = args || {};
         
@@ -36,11 +40,11 @@ CCH.Objects.Session = function(args) {
             error: []
         };
         
+        me.update();
+        
         callbacks.success.unshift(function(json) {
             CCH.LOG.debug("Session.js::write: " + json.sid);
         });
-        
-        CCH.map.updateSession();
         
         $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint, {
             type: 'POST',
@@ -131,6 +135,7 @@ CCH.Objects.Session = function(args) {
         load : me.load,
         readSession : me.read,
         writeSession: me.write,
+        updateSession : me.update,
         getItemIndex : function (item) {
             return me.session.items.findIndex(function(i) {
                 return i.id === item.id;

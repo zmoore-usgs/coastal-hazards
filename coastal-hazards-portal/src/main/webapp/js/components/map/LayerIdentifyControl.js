@@ -35,8 +35,11 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                 // Get just the displayed layers on the map 
                 cchLayers = CCH.map.getMap().layers.findAll(function (l) {
                     // Having geoserver as part of the url tells me that it's a
-                    // CCH layer and not anything else
-                    return l.url && l.url.indexOf('geoserver') > -1;
+                    // CCH layer and not anything else.
+                    // Even though the control itself filters by visible layer, I
+                    // have to check for visibility here because of the case where
+                    // the same layer is in the map a number of times but ribboned
+                    return l.url && l.url.indexOf('geoserver') > -1 && l.getVisibility();
                 });
 
                 // Set up the layer URL to ID lookup table. It is possible that
