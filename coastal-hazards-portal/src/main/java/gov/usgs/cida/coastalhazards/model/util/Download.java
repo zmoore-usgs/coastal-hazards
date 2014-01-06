@@ -1,13 +1,13 @@
 package gov.usgs.cida.coastalhazards.model.util;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -73,5 +73,10 @@ public class Download implements Serializable {
 
     public void setInsertedTime(Date timestamp) {
         this.insertedTime = timestamp;
+    }
+    
+    @PrePersist
+    protected void onCreate() {
+        this.insertedTime = new Date();
     }
 }
