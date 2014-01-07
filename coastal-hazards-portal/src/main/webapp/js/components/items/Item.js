@@ -21,6 +21,7 @@ CCH.Objects.Item = function (args) {
     me.id = args.id;
     me.parent = args.parent;
     me.loaded = false;
+    me.ribboned = me.id === 'C68abcd' ? true : false; //TODO - Actually get this from the data
     
     me.load = function (args) {
         args = args || {};
@@ -41,6 +42,7 @@ CCH.Objects.Item = function (args) {
             me.type = data.type;
             me.wfsService = data.wfsService;
             me.wmsService = data.wmsService;
+            me.ribboned = me.parent && me.parent.ribboned;
 
             CCH.items.add({ item : me });
 
