@@ -12,25 +12,25 @@ CCH.Objects.Map = function (args) {
     me.mapDivId = args.mapDiv;
     me.$MAP_DIV = $('#' + args.mapDiv);
     me.bboxFadeoutDuration = 2000;
-    
-    me.hideLayer = function(layer) {
+
+    me.hideLayer = function (layer) {
         layer.setVisibility(false);
     };
-    
-    me.hideLayerCallback = function(evt) {
+
+    me.hideLayerCallback = function (evt) {
         var layer = evt.layer;
         $(window).trigger('cch.map.hide.layer', {
             layer : layer
         });
     };
-    
-    me.addLayerCallback = function(evt) {
+
+    me.addLayerCallback = function (evt) {
         var layer = evt.layer;
         $(window).trigger('cch.map.added.layer', {
             layer : layer
         });
     };
-    
+
     return $.extend(me, {
         init: function () {
             CCH.LOG.info('Map.js::init():Map class is initializing.');
@@ -80,7 +80,7 @@ CCH.Objects.Map = function (args) {
                     // A session has been loaded. The map will be rebuilt from the session
                     me.updateFromSession();
                 },
-                'cch.ui.resized': function (evt, isSmall) {
+                'cch.ui.resized': function () {
                     $(me.$MAP_DIV.height($('#content-row').height()));
                     me.map.updateSize();
                 }
@@ -103,37 +103,41 @@ CCH.Objects.Map = function (args) {
             control.layers.push(layer);
             control.activate();
         },
-        zoomToBoundingBox: function(args) {
+        zoomToBoundingBox: function (args) {
             args = args || {};
             var bbox = args.bbox,
-                    fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913"),
-                    layerBounds = OpenLayers.Bounds.fromArray(bbox);
+                fromProjection = args.fromProjection || new OpenLayers.Projection("EPSG:900913"),
+                layerBounds = OpenLayers.Bounds.fromArray(bbox);
 
             if (fromProjection) {
                 layerBounds.transform(new OpenLayers.Projection(fromProjection), new OpenLayers.Projection("EPSG:900913"));
             }
             me.map.zoomToExtent(layerBounds, true);
         },
-        zoomToActiveLayers: function() {
-            var activeLayers = me.map.getLayersBy('isItemLayer', true);
-            var bounds = new OpenLayers.Bounds();
+        zoomToActiveLayers: function () {
+            var activeLayers = me.map.getLayersBy('isItemLayer', true),
+                bounds = new OpenLayers.Bounds(),
+                lIdx,
+                activeLayer,
+                layerBounds;
+
             if (activeLayers.length) {
                 // Zoom to pinned cards
-                for (var lIdx = 0; lIdx < activeLayers.length; lIdx++) {
-                    var activeLayer = activeLayers[lIdx];
-                    var layerBounds = OpenLayers.Bounds.fromArray(activeLayer.bbox).transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection);
+                for (lIdx = 0; lIdx < activeLayers.length; lIdx++) {
+                    activeLayer = activeLayers[lIdx];
+                    layerBounds = OpenLayers.Bounds.fromArray(activeLayer.bbox).transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection);
                     bounds.extend(layerBounds);
                 }
             } else {
                 // No pinned cards, zoom to the collective bbox of all cards
-                CCH.cards.getCards().each(function(card) {
+                CCH.cards.getCards().each(function (card) {
                     bounds.extend(OpenLayers.Bounds.fromArray(card.bbox).transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection));
                 });
             }
 
             me.map.zoomToExtent(bounds, false);
         },
-        updateSession: function() {
+        updateSession: function () {
             var map = me.map,
                 session = CCH.session.getSession();
 
@@ -145,9 +149,10 @@ CCH.Objects.Map = function (args) {
             session.scale = map.getScale();
             session.bbox = map.getExtent().toArray();
         },
-        updateFromSession: function() {
+        updateFromSession: function () {
             CCH.LOG.info('Map.js::updateFromSession():Map being recreated from session');
-            var session = CCH.session.getSession();
+            var session = CCH.session.getSession(),
+                baselayer;
 
             // Becaue we don't want these events to write back to the session, 
             // unhook the event handlers for map events tied to session writing.
@@ -173,7 +178,7 @@ CCH.Objects.Map = function (args) {
             if (session.baselayer && session.baselayer !== me.map.baseLayer.name) {
                 // Try to find the named base layer from the configuration object's
                 // list of layers. If found, set it to the map's new base layer
-                var baselayer = CCH.CONFIG.map.layers.baselayers.find(function(bl) {
+                baselayer = CCH.CONFIG.map.layers.baselayers.find(function (bl) {
                     return bl.name === session.baselayer;
                 });
 
@@ -201,21 +206,21 @@ CCH.Objects.Map = function (args) {
          * @param {type} name
          * @returns {undefined}
          */
-        removeLayersByName: function(name) {
+        removeLayersByName: function (name) {
             CCH.LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + name);
             var layers = me.map.getLayersByName(name) || [];
-            layers.each(function(layer) {
+            layers.each(function (layer) {
                 me.hideLayer(layer);
             });
         },
-        showLayer: function(args) {
+        showLayer: function (args) {
             var card = args.card,
                 item = args.item,
                 id = card ? card.id : item.id,
                 ribbon = args.ribbon || 0,
                 added,
                 layer = me.map.getLayersByName(id)[0];
-            
+
             if (!layer) {
                 if (card) {
                     layer = card.layer;
@@ -223,12 +228,12 @@ CCH.Objects.Map = function (args) {
                     layer = item.getWmsLayer();
                 }
             }
-            
+
             if (ribbon !== 0 && layer.params.SLD.indexOf('ribbon') === -1) {
                 layer.params.SLD = layer.params.SLD + '?ribbon=' + ribbon;
                 layer.params.buffer = (ribbon - 1) * CCH.CONFIG.map.ribbonOffset;
             }
-            
+
             if (layer) {
                 added = me.addLayer(layer);
                 if (added) {
@@ -237,7 +242,7 @@ CCH.Objects.Map = function (args) {
             }
         },
         removeLayer: me.hideLayer,
-        addLayer: function(layer) {
+        addLayer: function (layer) {
             var added = false,
                 layerName = layer.name,
                 mapLayerArray = me.map.getLayersByName(layerName);
@@ -248,13 +253,13 @@ CCH.Objects.Map = function (args) {
             layer.setVisibility(true);
             return added;
         },
-        zoomendCallback: function() {
+        zoomendCallback: function () {
             CCH.session.updateSession();
         },
-        moveendCallback: function() {
+        moveendCallback: function () {
             CCH.session.updateSession();
         },
-        changelayerCallback: function(evt) {
+        changelayerCallback: function (evt) {
             $(window).trigger('cch.map.layer.changed', {
                 property : evt.property,
                 layer : evt.layer
