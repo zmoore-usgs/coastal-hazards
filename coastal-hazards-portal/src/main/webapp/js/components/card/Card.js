@@ -159,8 +159,10 @@ CCH.Objects.Card = function (args) {
     };
 
     me.closeChild = function () {
-        me.child.removeSelf();
-        delete me.child;
+        if (me.child) {
+            me.child.removeSelf();
+            delete me.child;
+        }
     };
 
     me.removeSelf = function () {

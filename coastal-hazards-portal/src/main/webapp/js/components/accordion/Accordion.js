@@ -123,17 +123,17 @@ CCH.Objects.Accordion = function (args) {
             'href' : '#' + accordionBodyId,
             'data-toggle' : 'collapse'
         });
-        
+
         accordionBody.attr('id', accordionBodyId);
         accordionBody.data({
             'id' : id,
             'card' : card
         });
-        
+
         bodyInner.append(cardContainer);
 
         titleRow.remove();
-        
+
         group.data('id', id);
         group.append(heading, accordionBody);
         titleContainer.append(toggleTarget);
@@ -205,6 +205,7 @@ CCH.Objects.Accordion = function (args) {
             $bellowTitle,
             $bellowBody,
             path = [],
+            card,
             openPath;
 
         // Go down the top level items until we have a hit for an id
@@ -223,12 +224,14 @@ CCH.Objects.Accordion = function (args) {
             $bellow = $(me.getBellows()[idIdx - 1]);
             $bellowTitle = $bellow.find('.accordion-toggle');
             $bellowBody = $bellow.find('.panel-collapse');
+            card = $bellowBody.data().card;
+            card.closeChild();
 
             openPath = function () {
                 $bellowBody.off('shown.bs.collapse', openPath);
 
                 if (path.length > 0) {
-                    $bellowBody.data().card.showPath(path);
+                    card.showPath(path);
                 }
             };
 

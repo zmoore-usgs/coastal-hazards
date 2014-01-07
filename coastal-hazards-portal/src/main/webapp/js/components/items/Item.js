@@ -19,15 +19,15 @@ CCH.Objects.Item = function (args) {
 
     me.UNITED_STATES_BBOX = [24.956, -124.731, 49.372, -66.97];
     me.id = args.id;
+    me.parent = args.parent;
     me.loaded = false;
-
+    
     me.load = function (args) {
         args = args || {};
         var callbacks = args.callbacks || {
             success : [],
             error : []
         },
-            me = this,
             context = args.context || me;
 
         callbacks.success.unshift(function (data) {
@@ -48,11 +48,17 @@ CCH.Objects.Item = function (args) {
                 // If I have children, load those as well
                 me.children.each(function (childId, ind, allChildren) {
                     if (ind !== allChildren.length - 1) {
-                        new CCH.Objects.Item({ id : childId }).load();
+                        new CCH.Objects.Item({ 
+                            id : childId,
+                            parent : me
+                        }).load();
                     } else {
                         // If this is the last child to load, announce the parent
                         // has loaded at the end
-                        new CCH.Objects.Item({ id : childId }).load({
+                        new CCH.Objects.Item({ 
+                            id : childId,
+                            parent: me
+                        }).load({
                             callbacks : {
                                 success : [
                                     function () {
@@ -192,13 +198,14 @@ CCH.Objects.Item = function (args) {
      * being sought
      */
     me.pathToItem = function (id, path) {
+        var idx = 0;
         path = path || [];
-        
+
         if (me.id === id) {
             path.unshift(me.id);
         } else {
             if (me.children.length > 0) {
-                for (var idx = 0; idx < me.children.length && path.length === 0; idx++) {
+                for (idx; idx < me.children.length && path.length === 0; idx++) {
                     var child = CCH.items.getItems()[me.children[idx]];
                     path = child.pathToItem(id, path);
                 }
