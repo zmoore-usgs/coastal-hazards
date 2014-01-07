@@ -42,40 +42,40 @@ CCH.Objects.BucketSlide = function (args) {
     me.isClosed = me.startClosed;
     me.cards = [];
 
+    me.openSlide = function () {
+        var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
+        
+        $(window).off('cch.slide.items.opened', me.openSlide);
+
+        $('body').css({
+            overflow : 'hidden'
+        });
+
+        $slideContainer.css({
+            display: ''
+        });
+        
+        CCH.map.hideAllLayers();
+
+        $slideContainer.animate({
+            left: me.getExtents()[me.isSmall() ? 'small' : 'large'].left
+        }, me.animationTime, function () {
+            me.isClosed = false;
+
+            $('body').css({
+                overflow : ''
+            });
+            
+            $(window).trigger('cch.slide.bucket.opened');
+        });
+    };
+    
     me.open = function () {
-        var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
-            isSmall = me.isSmall();
         if (me.isClosed) {
-            var openSlide = function () {
-                $(window).off('cch.slide.items.opened', openSlide);
-
-                $('body').css({
-                    overflow : 'hidden'
-                });
-
-                $slideContainer.css({
-                    display: ''
-                });
-
-                me.getExtents()
-
-                $slideContainer.animate({
-                    left: me.getExtents()[isSmall ? 'small' : 'large'].left
-                }, me.animationTime, function () {
-                    me.isClosed = false;
-
-                    $('body').css({
-                        overflow : ''
-                    });
-
-                    $(window).trigger('cch.slide.bucket.opened');
-                });
-            }
-
-            if (isSmall) {
-                $(window).on('cch.slide.items.opened', openSlide);
+            if (me.isSmall()) {
+                $(window).on('cch.slide.items.opened', me.openSlide);
             } else {
-                openSlide();
+                me.openSlide();
             }
 
             $(window).trigger('cch.slide.bucket.opening');
@@ -276,7 +276,7 @@ CCH.Objects.BucketSlide = function (args) {
                 // If this ID appears elsewhere in the card stack, don't remove 
                 // it from the map
                 if (children.findAll(childId).length > 1) {
-                    CCH.map.removeLayersByName(childId);
+                    CCH.map.hideLayersByName(childId);
                 }
             });
             

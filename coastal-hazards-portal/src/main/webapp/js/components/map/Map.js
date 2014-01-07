@@ -13,8 +13,48 @@ CCH.Objects.Map = function (args) {
     me.$MAP_DIV = $('#' + args.mapDiv);
     me.bboxFadeoutDuration = 2000;
 
+    me.showLayer = function (args) {
+        var card = args.card,
+            item = args.item,
+            id = card ? card.id : item.id,
+            ribbon = args.ribbon || 0,
+            added,
+            layerName = ribbon === 0 ? id : id + '_r_' + ribbon,
+            layer = me.map.getLayersByName(layerName)[0];
+
+        if (!layer) {
+            if (card) {
+                layer = card.layer;
+            } else if (item && 'function' === typeof item.getWmsLayer) {
+                layer = item.getWmsLayer();
+            }
+        }
+
+        if (ribbon !== 0 && layer.params.SLD.indexOf('ribbon') === -1) {
+            layer.name = layerName;
+            layer.params.SLD = layer.params.SLD + '?ribbon=' + ribbon;
+            layer.params.buffer = (ribbon - 1) * CCH.CONFIG.map.ribbonOffset;
+        }
+
+        if (layer) {
+            added = me.addLayer(layer);
+            if (added) {
+                layer.redraw(true);
+            }
+        }
+    };
+
     me.hideLayer = function (layer) {
         layer.setVisibility(false);
+    };
+
+    me.hideAllLayers = function () {
+        var hiddenLayerNames = [];
+
+        me.map.getLayersBy('type', 'cch').each(function (layer) {
+            layer.setVisibility(false);
+            hiddenLayerNames.push(layer.name);
+        });
     };
 
     me.hideLayerCallback = function (evt) {
@@ -115,7 +155,7 @@ CCH.Objects.Map = function (args) {
             me.map.zoomToExtent(layerBounds, true);
         },
         zoomToActiveLayers: function () {
-            var activeLayers = me.map.getLayersBy('isItemLayer', true),
+            var activeLayers = me.map.getLayersBy('type', 'cch'),
                 bounds = new OpenLayers.Bounds(),
                 lIdx,
                 activeLayer,
@@ -198,6 +238,7 @@ CCH.Objects.Map = function (args) {
                 'changelayer': me.changelayerCallback
             });
         },
+        hideAllLayers : me.hideAllLayers,
         /**
          * Removes a layer from the map based on the layer's name. If more
          * than one layer with the same name exists in the map, removes
@@ -206,41 +247,14 @@ CCH.Objects.Map = function (args) {
          * @param {type} name
          * @returns {undefined}
          */
-        removeLayersByName: function (name) {
+        hideLayersByName: function (name) {
             CCH.LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + name);
             var layers = me.map.getLayersByName(name) || [];
             layers.each(function (layer) {
                 me.hideLayer(layer);
             });
         },
-        showLayer: function (args) {
-            var card = args.card,
-                item = args.item,
-                id = card ? card.id : item.id,
-                ribbon = args.ribbon || 0,
-                added,
-                layer = me.map.getLayersByName(id)[0];
-
-            if (!layer) {
-                if (card) {
-                    layer = card.layer;
-                } else if (item && 'function' === typeof item.getWmsLayer) {
-                    layer = item.getWmsLayer();
-                }
-            }
-
-            if (ribbon !== 0 && layer.params.SLD.indexOf('ribbon') === -1) {
-                layer.params.SLD = layer.params.SLD + '?ribbon=' + ribbon;
-                layer.params.buffer = (ribbon - 1) * CCH.CONFIG.map.ribbonOffset;
-            }
-
-            if (layer) {
-                added = me.addLayer(layer);
-                if (added) {
-                    layer.redraw(true);
-                }
-            }
-        },
+        showLayer: me.showLayer,
         removeLayer: me.hideLayer,
         addLayer: function (layer) {
             var added = false,

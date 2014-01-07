@@ -89,13 +89,12 @@ CCH.Objects.Item = function (args) {
     };
 
     me.createWmsLayer = function () {
-        var me = this,
-            id = me.id,
-            service = me.wmsService,
+        var id = this.id,
+            service = this.wmsService,
             endpoint = service.endpoint,
             layers = service.layers || [],
-            bbox = me.bbox,
-            layer = me.itemType === 'aggregation' ? null : new OpenLayers.Layer.WMS(
+            bbox = this.bbox,
+            layer = this.itemType === 'aggregation' ? null : new OpenLayers.Layer.WMS(
                 id,
                 endpoint,
                 {
@@ -111,8 +110,8 @@ CCH.Objects.Item = function (args) {
                     projection: 'EPSG:3857',
                     isBaseLayer: false,
                     displayInLayerSwitcher: false,
-                    isItemLayer: true, // CCH specific setting
-                    bbox: bbox
+                    bbox: bbox,
+                    type: 'cch'// CCH specific setting
                 }
             );
 
@@ -120,15 +119,13 @@ CCH.Objects.Item = function (args) {
     };
 
     me.showLayer = function () {
-        var me = this;
-
         // Check to see if this is an aggregation. If it is, I need
         // to pull the layers from all of its children
-        if (me.itemType === 'aggregation') {
+        if (this.itemType === 'aggregation') {
             // This aggregation should have children, so for each 
             // child, I want to grab the child's layer and display it
             // on the map
-            me.children.each(function (childItemId, idx) {
+            this.children.each(function (childItemId, idx) {
                 var childItem = CCH.items.getById({ id : childItemId });
                 if (childItem) {
                     CCH.map.showLayer({
@@ -142,13 +139,13 @@ CCH.Objects.Item = function (args) {
             // components can act on this layer having been added
             $(window).trigger('cch.map.added.layer', {
                 layer : {
-                    name : me.id
+                    name : this.id
                 }
             });
         } else {
             // I am not an aggregation, so just show my layer
             CCH.map.showLayer({
-                item : me
+                item : this
             });
         }
     };
@@ -158,8 +155,8 @@ CCH.Objects.Item = function (args) {
             // This aggregation should have children, so for each 
             // child, I want to grab the child's layer and display it
             // on the map
-            me.children.each(function (childItemId) {
-                CCH.map.removeLayersByName(childItemId);
+            me.children.each(function (childItemId, idx) {
+                CCH.map.hideLayersByName(childItemId + '_r_' + (idx + 1));
             });
             // Because I don't have a real layer for this aggregation, once all 
             // of the children are removed, I include this trigger so that other
@@ -170,7 +167,7 @@ CCH.Objects.Item = function (args) {
                 }
             });
         } else {
-            CCH.map.removeLayersByName(me.id);
+            CCH.map.hideLayersByName(me.id);
         }
     };
 

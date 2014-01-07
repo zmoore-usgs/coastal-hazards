@@ -22,11 +22,15 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                 cchLayers,
                 layerUrlToId = {},
                 ids,
-                layerId,
-                featuresById = {},
+                layerName,
+                featuresByName = {},
                 featureCount,
                 popup,
-                popupHtml;
+                popupHtml,
+                trimLayerName = function (name) {
+                    var ribbonIndex = name.indexOf('_r_');
+                    return ribbonIndex > -1 ? name.substring(0, ribbonIndex) : name;
+                };
 
             // I don't roll out of bed before having some features to work with.
             // If I have no features, this means the user clicked in an empty
@@ -48,11 +52,14 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                 // that, I need to make an array for the layer name (item.id) 
                 // to be able to process this going forward
                 cchLayers.each(function (l) {
+                    var lName = trimLayerName(l.name);
+                    
                     if (!layerUrlToId[l.params.LAYERS]) {
                         layerUrlToId[l.params.LAYERS] = [];
                     }
-                    layerUrlToId[l.params.LAYERS].push(l.name);
-                    featuresById[l.name] = [];
+                    
+                    layerUrlToId[l.params.LAYERS].push(lName);
+                    featuresByName[lName] = [];
                 });
 
                 // Populate the layers map
@@ -66,7 +73,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                 features.each(function (feature) {
                     ids = layerUrlToId[feature.gml.featureNSPrefix + ':' + feature.gml.featureType];
                     ids.each(function (id) {
-                        featuresById[id].push(feature.attributes);
+                        featuresByName[id].push(feature.attributes);
                     });
                 });
 
@@ -92,17 +99,18 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                 }
                 CCH.map.getMap().addPopup(popup, true);
 
-                for (layerId in featuresById) {
-                    if (featuresById.hasOwnProperty(layerId)) {
-                        features = featuresById[layerId];
+                for (layerName in featuresByName) {
+                    layerName = trimLayerName(layerName);
+                    if (featuresByName.hasOwnProperty(layerName)) {
+                        features = featuresByName[layerName];
                         featureCount = features.length;
                         if (featureCount) {
                             CCH.Util.getSLD({
-                                itemId : layerId,
+                                itemId : layerName,
                                 contextPath: CCH.CONFIG.contextPath,
                                 context : {
                                     features : features,
-                                    layerId : layerId,
+                                    layerId : layerName,
                                     evt : evt,
                                     popup : popup
                                 },
@@ -213,7 +221,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                     ],
                                     error : [
                                         function () {
-                                            CCH.LOG.warn('Map.js::Could not get SLD information for item ' + layerId);
+                                            CCH.LOG.warn('Map.js::Could not get SLD information for item ' + layerName);
                                         }
                                     ]
                                 }
