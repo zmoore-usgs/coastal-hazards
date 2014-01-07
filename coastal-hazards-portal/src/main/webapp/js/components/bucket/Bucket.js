@@ -17,6 +17,27 @@ CCH.Objects.Bucket = function (args) {
     me.INITIAL_BUCKET_COUNT_MARGIN_LEFT = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left');
     me.MARGIN_WIDTH = 0;
     me.bucket = [];
+    me.bucketAddClickHandler = function (evt, args) {
+        args = args || {};
+        var item = args.item;
+
+        if (item) {
+            me.add({
+                item: item
+            });
+        }
+    };
+    me.bucketRemoveClickHandler = function (evt, args) {
+        args = args || {};
+        var id = args.id,
+            item = id ? CCH.items.getById({ id : id }) : args.item;
+
+        if (item) {
+            me.remove({
+                item: item
+            });
+        }
+    };
 
     me.countChanged = function () {
         var count = me.getCount(),
@@ -62,29 +83,13 @@ CCH.Objects.Bucket = function (args) {
         $(me).trigger('app-navbar-button-clicked');
         me.slide.toggle();
     });
-
+    
     $(window).on({
-        'bucket-add': function (evt, args) {
-            args = args || {};
-            var item = args.item;
-
-            if (item) {
-                me.add({
-                    item: item
-                });
-            }
-        },
-        'bucket-remove': function (evt, args) {
-            args = args || {};
-            var id = args.id,
-                item = id ? CCH.items.getById({ id : id }) : args.item;
-
-            if (item) {
-                me.remove({
-                    item: item
-                });
-            }
-        }
+        'cch.card.bucket.add': me.bucketAddClickHandler,
+        'cch.slide.search.button.bucket.add': me.bucketAddClickHandler,
+        'cch.card.bucket.remove' : me.bucketRemoveClickHandler,
+        'cch.slide.bucket.remove' : me.bucketRemoveClickHandler,
+        'bucket-remove': me.bucketRemoveClickHandler
     });
 
     // Preload required images

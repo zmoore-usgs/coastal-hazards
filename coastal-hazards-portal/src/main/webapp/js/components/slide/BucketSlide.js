@@ -6,12 +6,6 @@
 /*global splashUpdate*/
 
 /**
- * Emits: 
- * window: 'bucket-remove'
- * 
- * Listeners:
- * window: 'cch.ui.resized'
- * 
  * @param {type} args
  * @returns {CCH.Objects.BucketSlide.Anonym$12}
  */
@@ -306,7 +300,7 @@ CCH.Objects.BucketSlide = function (args) {
             // id. It's a long way around removing the item but it does hit 
             // multiple components
             me.cards.reverse().each(function ($card) {
-                $(window).trigger('bucket-remove', {
+                $(window).trigger('cch.slide.bucket.remove', {
                     id : $card.data('id')
                 });
             });
@@ -485,7 +479,7 @@ CCH.Objects.BucketSlide = function (args) {
             $evt.stopPropagation();
             // I emit this to the top so that bucket can catch it, decrement itself
             // and then pass on the remove back down here to my remove method
-            $(window).trigger('bucket-remove', {
+            $(window).trigger('cch.slide.bucket.remove', {
                 id : id
             });
         });

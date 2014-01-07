@@ -9,10 +9,6 @@
 /**
  * Represents a product as a card
  * 
- * Emits: 
- * window: "item-button-click-bucket-add"
- * window: "item-button-click-bucket-remove"
- * 
  * @param {type} args
  * @returns {CCH.Objects.Card.Anonym$2}
  */
@@ -183,7 +179,7 @@ CCH.Objects.Card = function (args) {
             nextAction = args.nextAction,
             add = function () {
                 // User pressed bucket button in and wants to add me to a bucket
-                $(window).trigger('bucket-add', {
+                $(window).trigger('cch.card.bucket.add', {
                     item : me.item
                 });
             },
@@ -192,7 +188,7 @@ CCH.Objects.Card = function (args) {
             remove = function () {
                 // User toggled the bucket button off - I should be removed from 
                 // bucket
-                $(window).trigger('bucket-remove', {
+                $(window).trigger('cch.card.bucket.remove', {
                     item : me.item
                 });
             };

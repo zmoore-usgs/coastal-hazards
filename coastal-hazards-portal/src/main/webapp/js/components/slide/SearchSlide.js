@@ -566,7 +566,7 @@ CCH.Objects.SearchSlide = function (args) {
                         addClass('badge').
                         append($('<i />').addClass('fa fa-arrow-circle-o-right'), ' Explore'),
                 bucketAdd = function () {
-                    $(window).trigger('bucket-add', {
+                    $(window).trigger('cch.slide.search.button.bucket.add', {
                         item : product
                     });
                 };
