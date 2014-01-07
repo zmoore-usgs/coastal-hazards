@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="jiwalker" id="make_service_join">
+        <comment>Service parameter column is shared between WFS typeName or WMS layerName</comment>
+        <createTable tableName="service">
+            <column name="id" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_id" type="VARCHAR(255)" />
+            <column name="service_type" type="VARCHAR(15)" />
+            <column name="service_endpoint" type="VARCHAR(255)" />
+            <column name="service_parameter" type="VARCHAR(63)" />
+            <column name="list_index" type="INT4" />
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="service" constraintName="fk_service_item_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item"/>
+    </changeSet>
+</databaseChangeLog>
