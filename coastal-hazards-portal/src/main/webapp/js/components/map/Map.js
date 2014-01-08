@@ -42,6 +42,8 @@ CCH.Objects.Map = function (args) {
                 layer.redraw(true);
             }
         }
+        
+        return layer;
     };
 
     me.hideLayer = function (layer) {
@@ -51,7 +53,7 @@ CCH.Objects.Map = function (args) {
     me.hideAllLayers = function () {
         var hiddenLayerNames = [];
 
-        me.map.getLayersBy('type', 'cch').each(function (layer) {
+        me.getLayersBy('type', 'cch').each(function (layer) {
             layer.setVisibility(false);
             hiddenLayerNames.push(layer.name);
         });
@@ -155,7 +157,7 @@ CCH.Objects.Map = function (args) {
             me.map.zoomToExtent(layerBounds, true);
         },
         zoomToActiveLayers: function () {
-            var activeLayers = me.map.getLayersBy('type', 'cch'),
+            var activeLayers = me.getLayersBy('type', 'cch'),
                 bounds = new OpenLayers.Bounds(),
                 lIdx,
                 activeLayer,
@@ -279,6 +281,9 @@ CCH.Objects.Map = function (args) {
                 layer : evt.layer
             });
             CCH.session.updateSession();
+        },
+        getLayersBy : function (attr, value) {
+            return me.map.getLayersBy(attr, value)
         },
         getLayersByName: function (name) {
             return me.map.getLayersByName(name);
