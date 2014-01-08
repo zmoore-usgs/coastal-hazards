@@ -19,7 +19,7 @@ CCH.Objects.Item = function (args) {
 
     me.UNITED_STATES_BBOX = [24.956, -124.731, 49.372, -66.97];
     me.id = args.id;
-    me.parent = args.parent;
+    me.parent = args.parent || null;
     me.loaded = false;
     me.ribboned = me.id === 'C68abcd' ? true : false; //TODO - Actually get this from the data
     
@@ -42,8 +42,15 @@ CCH.Objects.Item = function (args) {
             me.type = data.type;
             me.wfsService = data.wfsService;
             me.wmsService = data.wmsService;
-            me.ribboned = me.parent && me.parent.ribboned;
-
+            
+            if (me.parent) {
+                if (me.parent.ribboned === true) {
+                    me.ribboned = true;
+                } else {
+                    me.ribboned = false;
+                }
+            }
+            
             CCH.items.add({ item : me });
 
             if (me.children.length) {
@@ -122,7 +129,7 @@ CCH.Objects.Item = function (args) {
                     type: 'cch'// CCH specific setting
                 }
             );
-
+        
         return layer;
     };
 
