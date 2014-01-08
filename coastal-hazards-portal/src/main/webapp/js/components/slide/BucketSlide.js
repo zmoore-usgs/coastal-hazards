@@ -312,77 +312,24 @@ CCH.Objects.BucketSlide = function (args) {
     me.reorderLayers = function () {
         var id,
             layer,
-            item,
-            ribbon = 0,
-            parent,
-            parents = {},
             layers = [],
-            layerAlreadyInArray,
-            itemParent = function(item) {
-                var parent = item.parent;
-                if (item.parent === null) {
-                    return item;
-                } else {
-                    return itemParent(parent);
-                }
-            },
-            fillLayerArray = function (item) {
-                layerAlreadyInArray = layers.find(function(l) {
-                        return l.name.substring(0, item.id.length) === item.id;
-                    }) !== undefined;
-                
-                if (!layerAlreadyInArray) {
-                
-                // Item is a child item. See if it's ribboned
-                if (item.ribboned) {
-                    // It's ribboned, so I need to increment the ribbon counter
-                    // to the amount of ribbons already in existence for this
-                    // parent, plus one
-                    parent = itemParent(item);
-                    
-                    // This is the first item for this parent
-                    if (!parents[parent.id]) {
-                        parents[parent.id] = 0;
-                    } 
-                    
-                    parents[parent.id]++;
-                    ribbon = parents[parent.id];
-                    id = id + '_r_' + ribbon;
-                }
-                
-                layer = CCH.map.getLayersByName(id);
-                
-                if (layer.length > 0) {
-                    layers.push(layer[0]);
-                } else {
-                    layer = CCH.map.showLayer({
-                        item : item,
-                        ribbon : ribbon
-                    });
-                    layer.setVisibility(false);
-                    layers.push(layer);
-                }
-            };
-        }
-
-        CCH.map.hideAllLayers();
-
-        me.cards.each(function ($card, idx) {
-            id = $card.data('id');
-            item = CCH.items.getById({ id : id });
+            item;
+        
+        me.cards.each(function ($cardClone) {
+            id = $cardClone.data('id');
+            item = CCH.items.getById({id : id});
             
-            if (item.itemType !== 'aggregation') {
-                fillLayerArray(item);
+            layer = CCH.map.getLayersByName(id);
+            if (layer.length) {
+                layers.push(layer[0]);
             } else {
-                item.children.each(function (child) {
-                    fillLayerArray(CCH.items.getById({ id : child }));
-                });
+                layers.concat(item.showLayer({item : item}));
             }
         });
 
         layers.each(function (layer) {
             CCH.map.getMap().setLayerIndex(layer, CCH.map.getMap().layers.length - 1);
-            layer.setVisibility(true);
+            layer.redraw();
         });
     };
 
@@ -518,19 +465,19 @@ CCH.Objects.BucketSlide = function (args) {
         $card.data('id', id);
         
         // Test if the layer is currently visible. If not, set view button to off 
-//        if (item.itemType === 'aggregation') {
-//            layerCurrentlyInMap = item.children.every(function(id) {
-//                layerArray = CCH.map.getLayersBy('id', id);
-//                return layerArray.length > 0 && layerArray[0].getVisibility();
-//            });
-//        } else {
-//            layerArray = CCH.map.getLayersBy('id', id);
-//            layerCurrentlyInMap = layerArray.length > 0 && layerArray[0].getVisibility();
-//        }
-//
-//        if (layerCurrentlyInMap) {
+        if (item.itemType === 'aggregation') {
+            layerCurrentlyInMap = item.children.every(function(id) {
+                layerArray = CCH.map.getLayersBy('id', id);
+                return layerArray.length > 0 && layerArray[0].getVisibility();
+            });
+        } else {
+            layerArray = CCH.map.getLayersBy('id', id);
+            layerCurrentlyInMap = layerArray.length > 0 && layerArray[0].getVisibility();
+        }
+
+        if (layerCurrentlyInMap) {
             $viewButton.find('> img').attr('src', 'images/bucket/layer_on.svg');
-//        }
+        }
 
         $removeButton.on('click', function ($evt) {
             $evt.stopPropagation();
