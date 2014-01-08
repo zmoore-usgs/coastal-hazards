@@ -9,9 +9,17 @@
             <column name="item_id" type="VARCHAR(255)" />
             <column name="service_type" type="VARCHAR(15)" />
             <column name="service_endpoint" type="VARCHAR(255)" />
-            <column name="service_parameter" type="VARCHAR(63)" />
+            <column name="service_parameter" type="VARCHAR(255)" />
             <column name="list_index" type="INT4" />
         </createTable>
         <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="service" constraintName="fk_service_item_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item"/>
+    </changeSet>
+    <changeSet author="jiwalker" id="move_endpoints_from_item">
+        <comment>Modify item table to use the new service table</comment>
+        <dropColumn tableName="item" columnName="metadata" />
+        <dropColumn tableName="item" columnName="wfs_endpoint" />
+        <dropColumn tableName="item" columnName="wfs_typename" />
+        <dropColumn tableName="item" columnName="wms_endpoint" />
+        <dropColumn tableName="item" columnName="wms_layers" />
     </changeSet>
 </databaseChangeLog>
