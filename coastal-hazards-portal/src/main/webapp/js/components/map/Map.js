@@ -17,10 +17,17 @@ CCH.Objects.Map = function (args) {
         var card = args.card,
             item = args.item,
             id = card ? card.id : item.id,
-            ribbon = args.ribbon || 0,
-            added,
-            layerName = ribbon === 0 ? id : id + '_r_' + ribbon,
-            layer = me.map.getLayersByName(layerName)[0];
+            ribbonIndex = args.ribbon || 0,
+            layerName = id,
+            layer;
+
+        if (ribbonIndex !== 0) {
+            if (layerName.indexOf('ribbon') === -1) {
+                layerName = layerName + '_r_' + ribbonIndex;
+            }
+        }
+
+       layer = me.map.getLayersByName(layerName)[0];
 
         if (!layer) {
             if (card) {
@@ -30,18 +37,13 @@ CCH.Objects.Map = function (args) {
             }
         }
 
-        if (ribbon !== 0 && layer.params.SLD.indexOf('ribbon') === -1) {
+        if (ribbonIndex !== 0 && layer.params.SLD.indexOf('ribbon') === -1) {
             layer.name = layerName;
-            layer.params.SLD = layer.params.SLD + '?ribbon=' + ribbon;
-            layer.params.buffer = (ribbon - 1) * CCH.CONFIG.map.ribbonOffset;
+            layer.params.SLD = layer.params.SLD + '?ribbon=' + ribbonIndex;
+            layer.params.buffer = (ribbonIndex - 1) * CCH.CONFIG.map.ribbonOffset;
         }
 
-        if (layer) {
-            added = me.addLayer(layer);
-            if (added) {
-                layer.redraw(true);
-            }
-        }
+        me.addLayer(layer);
         
         return layer;
     };
