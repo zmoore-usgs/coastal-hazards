@@ -4,7 +4,7 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import gov.usgs.cida.coastalhazards.model.Session;
-import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
+import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
 import java.io.FileInputStream;

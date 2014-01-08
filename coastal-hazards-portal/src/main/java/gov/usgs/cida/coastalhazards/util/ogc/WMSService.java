@@ -1,4 +1,4 @@
-package gov.usgs.cida.coastalhazards.model.ogc;
+package gov.usgs.cida.coastalhazards.util.ogc;
 
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
@@ -10,7 +10,6 @@ import javax.persistence.Embeddable;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Embeddable
 public class WMSService implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -32,7 +31,6 @@ public class WMSService implements Serializable {
         }
     }
     
-    @Column(name="wms_endpoint")
     public String getEndpoint() {
         return endpoint;
     }
@@ -41,7 +39,6 @@ public class WMSService implements Serializable {
         this.endpoint = endpoint;
     }
 
-    @Column(name="wms_layers")
     public String getLayers() {
         return layers;
     }

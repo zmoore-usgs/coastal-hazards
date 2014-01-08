@@ -3,7 +3,7 @@ package gov.usgs.cida.coastalhazards.model;
 import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
-import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
+import gov.usgs.cida.coastalhazards.util.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
