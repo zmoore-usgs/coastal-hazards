@@ -1,5 +1,7 @@
 package gov.usgs.cida.coastalhazards.model.ogc;
 
+import gov.usgs.cida.coastalhazards.model.Service;
+import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,6 +21,20 @@ public class WFSService implements Serializable {
     
     private String endpoint;
     private String typeName;
+    
+    public WFSService() {
+        // default constructor, must call setters
+    }
+    
+    public WFSService(Service service) {
+        if (service != null && (service.getType() == ServiceType.source_wfs ||
+                service.getType() == ServiceType.proxy_wfs)) {
+            endpoint = service.getEndpoint();
+            typeName = service.getServiceParameter();
+        } else {
+            throw new IllegalArgumentException("Service must be WFS type");
+        }
+    }
     
     @Column(name="wfs_endpoint")
     public String getEndpoint() {

@@ -2,6 +2,8 @@ package gov.usgs.cida.coastalhazards.model;
 
 import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
+import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
+import gov.usgs.cida.coastalhazards.model.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
@@ -67,7 +69,6 @@ public class Item implements Serializable {
     private Bbox bbox;
     private Summary summary;
     private String name;
-    private String metadata;
     /**
      * @deprecated or rename to theme
      */
@@ -77,7 +78,7 @@ public class Item implements Serializable {
      * @deprecated
      */
     private transient Rank rank;
-    private transient List<Service> services;
+    private List<Service> services;
     private transient List<Item> children;
 
     @Id
@@ -117,15 +118,6 @@ public class Item implements Serializable {
 
     public void setSummary(Summary summary) {
         this.summary = summary;
-    }
-
-    @Column(name = "metadata")
-    public String getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(String metadata) {
-        this.metadata = (StringUtils.isBlank(metadata)) ? null : metadata;
     }
 
     public String getName() {
@@ -178,6 +170,22 @@ public class Item implements Serializable {
 
     public void setServices(List<Service> services) {
         this.services = services;
+    }
+    
+    /**
+     * Get the WMSService to display from the services
+     * @return 
+     */
+    public WMSService fetchWmsService() {
+        WMSService wmsService = null;
+        if (services != null) {
+            for (Service service : services) {
+                if (service.getType() == ServiceType.proxy_wms) {
+                    wmsService = new WMSService(service);
+                }
+            }
+        }
+        return wmsService;
     }
 
     @ManyToMany(fetch = FetchType.LAZY)

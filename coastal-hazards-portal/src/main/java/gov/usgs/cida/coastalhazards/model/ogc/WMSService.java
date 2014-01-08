@@ -1,5 +1,7 @@
 package gov.usgs.cida.coastalhazards.model.ogc;
 
+import gov.usgs.cida.coastalhazards.model.Service;
+import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -15,6 +17,20 @@ public class WMSService implements Serializable {
     
     private String endpoint;
     private String layers;
+    
+    public WMSService() {
+        // empty constructor, must call setters
+    }
+    
+    public WMSService(Service service) {
+        if (service != null && (service.getType() == ServiceType.source_wms ||
+                service.getType() == ServiceType.proxy_wms)) {
+            endpoint = service.getEndpoint();
+            layers = service.getServiceParameter();
+        } else {
+            throw new IllegalArgumentException("Service must be of WMS type");
+        }
+    }
     
     @Column(name="wms_endpoint")
     public String getEndpoint() {

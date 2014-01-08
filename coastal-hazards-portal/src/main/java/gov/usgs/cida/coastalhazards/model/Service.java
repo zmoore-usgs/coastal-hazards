@@ -20,18 +20,19 @@ public class Service implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-    private int id;
+    private transient int id;
     private ServiceType type;
-    private String itemId;
+    private transient String itemId;
     private String endpoint;
     private String serviceParameter;
     
     public enum ServiceType {
-        SOURCE_WFS,
-        SOURCE_WMS,
-        ESRI_REST,
-        PROXY_WFS,
-        PROXY_WMS;
+        source_wfs,
+        source_wms,
+        esri_rest,
+        proxy_wfs,
+        proxy_wms,
+        csw;
     }
     
     @Id
