@@ -2,7 +2,7 @@ package gov.usgs.cida.coastalhazards.download;
 
 import gov.usgs.cida.coastalhazards.export.FeatureCollectionExport;
 import gov.usgs.cida.coastalhazards.export.WFSExportClient;
-import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
+import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
