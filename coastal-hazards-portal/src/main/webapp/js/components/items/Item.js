@@ -134,6 +134,7 @@ CCH.Objects.Item = function (args) {
     };
 
     me.showLayer = function () {
+        var layers = [];
         // Check to see if this is an aggregation. If it is, I need
         // to pull the layers from all of its children
         if (this.itemType === 'aggregation') {
@@ -143,10 +144,10 @@ CCH.Objects.Item = function (args) {
             this.children.each(function (childItemId, idx) {
                 var childItem = CCH.items.getById({ id : childItemId });
                 if (childItem) {
-                    CCH.map.showLayer({
+                    layers.push(CCH.map.showLayer({
                         item : childItem,
                         ribbon : idx + 1
-                    });
+                    }));
                 }
             });
             // Because I don't have a real layer for this aggregation, once all 
@@ -159,9 +160,9 @@ CCH.Objects.Item = function (args) {
             });
         } else {
             // I am not an aggregation, so just show my layer
-            CCH.map.showLayer({
+            layers.push(CCH.map.showLayer({
                 item : this
-            });
+            }));
         }
     };
 
