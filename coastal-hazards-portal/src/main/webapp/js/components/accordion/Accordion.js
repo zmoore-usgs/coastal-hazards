@@ -258,10 +258,19 @@ CCH.Objects.Accordion = function (args) {
         }
 
     });
+    
+    me.showCurrent = function () {
+        var currentCard = me.getBellows().find('.in > div > div:last-child');
+        
+        if (currentCard.length > 0) {
+            currentCard.data()['card'].show();
+        } 
+    };
 
     return $.extend(me, {
         add: me.addCard,
         load : me.load,
+        showCurrent : me.showCurrent,
         CLASS_NAME : 'CCH.Objects.Accordion'
     });
 };
