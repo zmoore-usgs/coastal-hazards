@@ -15,6 +15,7 @@
     boolean development = Boolean.parseBoolean(props.getProperty("development"));
     String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
     String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
+    String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,6 +30,7 @@
         <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full.min.js"></script>
         <script type="text/javascript">
             var CCH = {
+                Objects : {},
                 CONFIG: {
                     itemId: '${it.id}',
                     contextPath: '<%=baseUrl%>',
@@ -37,7 +39,32 @@
                     initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
                     item: null,
                     emailLink: 'CCH_Help@usgs.gov',
-                    publicUrl: '<%=publicUrl%>'
+                    publicUrl: '<%=publicUrl%>',
+                    data: {
+                        sources: {
+                            <%-- 
+                            'cida-geoserver': {
+                                'endpoint': '<%=geoserverEndpoint%>',
+                                'proxy': 'geoserver/'
+                            },
+                            'stpete-arcserver': {
+                                'endpoint': '<%=stPeteArcServerEndpoint%>',
+                                'proxy': 'stpgis/'
+                            },
+                            --%>
+                            'item': {
+                                'endpoint': '/data/item'
+                            },
+                                    
+                            'geocoding': {
+                                'endpoint': '<%=geocodeEndpoint%>'
+                            }
+                            <%-- ,
+                            'session': {
+                                'endpoint': '/data/view/'
+                            } --%>
+                        }
+                    }
                 }
             };
             
@@ -47,6 +74,14 @@
               window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
             }
         </script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/components/search/Search.js"></script>
+        <jsp:include page="js/log4javascript/log4javascript.jsp">
+            <jsp:param name="relPath" value="" />
+            <jsp:param name="debug-qualifier" value="<%= development%>" />
+        </jsp:include>
+        <script type="text/javascript" src="<%=baseUrl%>/js/components/search/Search.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/components/items/Items.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/components/items/Item.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/components/util/Util.js"></script>
         <script type="text/javascript" src='<%=baseUrl%>/js/components/info/info.js'></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />

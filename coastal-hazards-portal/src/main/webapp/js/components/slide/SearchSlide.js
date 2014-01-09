@@ -39,7 +39,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.SLIDE_SEARCH_CONTAINER_PARENT_ID = 'application-slide-search-content-container';
     me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER = 'application-slide-search-product-results-paging-container';
     me.bucket = args.bucket;
-    
+
     me.SMALL_OFFSET = 10;
     me.PAGE_ITEM_COUNT = 5;
     me.BORDER_WIDTH = 2;
@@ -55,7 +55,7 @@ CCH.Objects.SearchSlide = function (args) {
             $productSlide = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID);
 
         [$locationSlide, $productSlide].each(function ($slide) {
-            $slide.find('>div:nth-child(1)').empty()
+            $slide.find('>div:nth-child(1)').empty();
             $slide.find('>div:nth-child(2)').empty();
             $slide.find('>div:nth-child(3)>ul').empty();
         });
@@ -63,10 +63,11 @@ CCH.Objects.SearchSlide = function (args) {
 
     me.open = function () {
         var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
-            isSmall = me.isSmall()
-            
+            isSmall = me.isSmall(),
+            openSlide;
+
         if (me.isClosed) {
-            var openSlide = function () {
+            openSlide = function () {
                 $(window).off('cch.slide.items.opened', openSlide);
 
                 $('body').css({
@@ -77,7 +78,7 @@ CCH.Objects.SearchSlide = function (args) {
                     display: ''
                 });
 
-                 $slideContainer.removeClass('hidden');
+                $slideContainer.removeClass('hidden');
 
                 $slideContainer.animate({
                     left: me.getExtents()[isSmall ? 'small' : 'large'].left
@@ -90,7 +91,7 @@ CCH.Objects.SearchSlide = function (args) {
 
                     $(window).trigger('cch.slide.search.opened');
                 });
-            }
+            };
 
             if (isSmall) {
                 $(window).on('cch.slide.items.opened', openSlide);
@@ -100,16 +101,16 @@ CCH.Objects.SearchSlide = function (args) {
 
             $(window).trigger('cch.slide.search.opening');
         } else {
-             $(window).trigger('cch.slide.search.opened');
+            $(window).trigger('cch.slide.search.opened');
         }
     };
 
     me.close = function (args) {
         if (!me.isClosed) {
             $(window).trigger('cch.slide.search.closing');
-            
+
             var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
-            
+
             $slideContainer.animate({
                 left: $(window).width()
             }, me.ANIMATION_TIME, function () {
@@ -189,7 +190,7 @@ CCH.Objects.SearchSlide = function (args) {
     };
 
     me.getExtents = function () {
-         var $slideContainer = $('#application-slide-items-content-container'),
+        var $slideContainer = $('#application-slide-items-content-container'),
             $firstAggregationBellow = $slideContainer.find('>div:nth-child(2)'),
             $contentRow = $('#' + me.CONTENT_ROW_ID),
             extents = {
@@ -245,7 +246,7 @@ CCH.Objects.SearchSlide = function (args) {
                     $slideContainer = $contentContainer.find('> div:nth-child(2)');
                     $pagingContainer = $contentContainer.find('> div:nth-child(3)');
                     pageCount = Math.ceil(locationSize / slidesPerPage);
-                    
+
                     $contentContainer.removeClass('hidden');
                     $resultsFoundsContainer.
                             removeClass('hidden').
@@ -342,12 +343,12 @@ CCH.Objects.SearchSlide = function (args) {
                     $slideContainer = $contentContainer.find('>div:nth-child(2)');
                     $pagingContainer = $contentContainer.find('>div:nth-child(3)');
                     pageCount = Math.ceil(productsSize / slidesPerPage);
-                    
+
                     $resultsFoundsContainer.
                             removeClass('hidden').
                             html(productsSize + ' Result' + (productsSize > 1 ? 's' : '') + ' Found');
-                    
-                        // Start with a clean slate 
+
+                    // Start with a clean slate 
                     $slideContainer.empty();
                     $pagingContainer.find('>ul').empty();
 
@@ -482,7 +483,7 @@ CCH.Objects.SearchSlide = function (args) {
             // I am a location
             $container = $locationContainer;
         }
-        
+
         if (!isDisabled) {
             $container.find('>div:first-child').addClass('hidden');
             if (isNaN(toPage)) {
@@ -515,7 +516,8 @@ CCH.Objects.SearchSlide = function (args) {
             $pagingContainer = $productContentContainer.find('>div:nth-child(3)'),
             $listItems = $pagingContainer.find('>ul>li'),
             $incomingListItem =  $($listItems.get(num)),
-            isProductPaging = $pagingContainer.attr('id').indexOf('product') > -1;
+            isProductPaging = $pagingContainer.attr('id').indexOf('product') > -1,
+            $locationContainer = $productContentContainer.parent().find('>div#application-slide-search-location-results-content-container');
 
         $listItems.removeClass('disabled');
 
@@ -524,12 +526,12 @@ CCH.Objects.SearchSlide = function (args) {
         } else if (num === $listItems.length - 2) {
             $listItems.last().addClass('disabled');
         }
-        
+
         if (isProductPaging) {
             if (num === 1) {
-                $productContentContainer.parent().find('>div#application-slide-search-location-results-content-container').removeClass('hidden')
+                $locationContainer.removeClass('hidden');
             } else {
-                $productContentContainer.parent().find('>div#application-slide-search-location-results-content-container').addClass('hidden')
+                $locationContainer.addClass('hidden');
             }
         }
 
@@ -547,6 +549,7 @@ CCH.Objects.SearchSlide = function (args) {
 
         if (args.product) {
             var product = args.product,
+                item = CCH.items.getById({ id : product.id }),
                 image = args.image,
                 id = product.id,
                 summary = product.summary.medium,
@@ -563,11 +566,10 @@ CCH.Objects.SearchSlide = function (args) {
                 $exploreControl = $('<span />').
                         addClass('badge').
                         append($('<i />').addClass('fa fa-arrow-circle-o-right'), ' Explore'),
-                bucketAdd = function (evt) {
-                    $(window).trigger('bucket-add', {
-                        item : product
+                bucketAdd = function () {
+                    $(window).trigger('cch.slide.search.button.bucket.add', {
+                        item : item
                     });
-                    
                 };
 
             $newItem.attr('id', 'application-slide-search-product-card-' + id);
@@ -580,19 +582,19 @@ CCH.Objects.SearchSlide = function (args) {
             $titleContainer.attr('id', titleContainerClass + '-' + id);
             $titleContainer.append(title, '&nbsp;', $exploreControl);
             $descriptionContainer.attr('id', descriptionContainerClass + '-' + id).html(description);
-            
+
             if (me.bucket.getItemById(id) === undefined) {
                 $bucketButton.on('click', bucketAdd);
             } else {
                 $bucketButton.addClass('disabled');
             }
-            
+
             $(window).on({
-                'bucket-removed' : function (evt, args) {
+                'cch.bucket.card.removed' : function (evt, args) {
                     if (args.id === id && $bucketButton.hasClass('disabled')) {
                         $bucketButton.removeClass('disabled');
                         $bucketButton.on('click', bucketAdd);
-                    } 
+                    }
                 },
                 'bucket-added' : function (evt, args) {
                     if (args.id === id && !$bucketButton.hasClass('disabled')) {
@@ -607,7 +609,6 @@ CCH.Objects.SearchSlide = function (args) {
                 });
                 me.close();
             });
-            
             return $newItem;
         }
     };
@@ -624,12 +625,12 @@ CCH.Objects.SearchSlide = function (args) {
             $zoomToBadge = $('<span />').
                 addClass('badge').
                 append($('<i />').addClass('fa fa-search-plus'), ' Zoom To');
-        
+
         newItem.attr('id', 'application-slide-search-location-card-' + id);
         $titleContainer.attr('id', titleContainerClass + '-' + id);
         $titleContainer.append(name, '&nbsp;', $zoomToBadge);
-        
-        $zoomToBadge.on('click', function (evt) {
+
+        $zoomToBadge.on('click', function () {
             CCH.map.zoomToBoundingBox({
                 bbox : [extent.xmin, extent.ymin, extent.xmax, extent.ymax]
             });
