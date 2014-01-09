@@ -166,7 +166,7 @@ CCH.Objects.Bucket = function (args) {
                 me.decreaseCount();
                 
                 // Trigger the removal
-                $(window).trigger('bucket-removed', {
+                $(window).trigger('cch.bucket.card.removed', {
                     id : id
                 });
             }

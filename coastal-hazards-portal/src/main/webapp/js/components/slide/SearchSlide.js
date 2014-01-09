@@ -549,6 +549,7 @@ CCH.Objects.SearchSlide = function (args) {
 
         if (args.product) {
             var product = args.product,
+                item = CCH.items.getById({ id : product.id }),
                 image = args.image,
                 id = product.id,
                 summary = product.summary.medium,
@@ -567,7 +568,7 @@ CCH.Objects.SearchSlide = function (args) {
                         append($('<i />').addClass('fa fa-arrow-circle-o-right'), ' Explore'),
                 bucketAdd = function () {
                     $(window).trigger('cch.slide.search.button.bucket.add', {
-                        item : product
+                        item : item
                     });
                 };
 
@@ -589,7 +590,7 @@ CCH.Objects.SearchSlide = function (args) {
             }
 
             $(window).on({
-                'bucket-removed' : function (evt, args) {
+                'cch.bucket.card.removed' : function (evt, args) {
                     if (args.id === id && $bucketButton.hasClass('disabled')) {
                         $bucketButton.removeClass('disabled');
                         $bucketButton.on('click', bucketAdd);

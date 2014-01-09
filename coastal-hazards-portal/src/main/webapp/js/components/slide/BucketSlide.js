@@ -123,10 +123,14 @@ CCH.Objects.BucketSlide = function (args) {
     
     me.layerAppendRemoveHandler = function (evt, args) {
         var layer = args.layer,
-            $card = $('#' + 'application-slide-bucket-container-card-' + layer.name),
-            $image = $('#' + 'application-slide-bucket-container-card-' + layer.name).
+            $card = $('#application-slide-bucket-container-card-' + layer.name),
+            $image = $('#application-slide-bucket-container-card-' + layer.name).
                 find('> div:nth-child(4) > div:first-child > img'),
-            evtType = evt.namespace === 'layer.map.removed' ? 'remove' : 'add';
+            evtType = evt.namespace === 'hid.layer.map' ? 'remove' : 'add';
+
+        if (evt.type === 'cch') {
+            
+        }
 
         if ($card.length) {
             if (evtType === 'remove') {
@@ -329,7 +333,6 @@ CCH.Objects.BucketSlide = function (args) {
 
         layers.each(function (layer) {
             CCH.map.getMap().setLayerIndex(layer, CCH.map.getMap().layers.length - 1);
-            layer.redraw();
         });
     };
 
@@ -466,12 +469,15 @@ CCH.Objects.BucketSlide = function (args) {
         
         // Test if the layer is currently visible. If not, set view button to off 
         if (item.itemType === 'aggregation') {
-            layerCurrentlyInMap = item.children.every(function(id) {
-                layerArray = CCH.map.getLayersBy('id', id);
+            layerCurrentlyInMap = item.children.every(function(id, idx) {
+                if (item.ribboned) {
+                    id = id + '_r_' + (idx + 1);
+                }
+                layerArray = CCH.map.getLayersBy('name', id);
                 return layerArray.length > 0 && layerArray[0].getVisibility();
             });
         } else {
-            layerArray = CCH.map.getLayersBy('id', id);
+            layerArray = CCH.map.getLayersBy('name', id);
             layerCurrentlyInMap = layerArray.length > 0 && layerArray[0].getVisibility();
         }
 
@@ -481,11 +487,15 @@ CCH.Objects.BucketSlide = function (args) {
 
         $removeButton.on('click', function ($evt) {
             $evt.stopPropagation();
+            // If I am open, remove my layer
+            item.hideLayer();
+            
             // I emit this to the top so that bucket can catch it, decrement itself
             // and then pass on the remove back down here to my remove method
             $(window).trigger('cch.slide.bucket.remove', {
                 id : id
             });
+            
         });
 
         $downloadButton.on('click', function () {
@@ -498,12 +508,15 @@ CCH.Objects.BucketSlide = function (args) {
                 layerArray;
                 
             if (isAggregation) {
-                isLayerInMap = item.children.every(function (id) {
-                    layerArray = CCH.map.getLayersByName(id);
+                isLayerInMap = item.children.every(function(id, idx) {
+                    if (item.ribboned) {
+                        id = id + '_r_' + (idx + 1);
+                    }
+                    layerArray = CCH.map.getLayersBy('name', id);
                     return layerArray.length > 0 && layerArray[0].getVisibility();
                 });
             } else {
-                layerArray = CCH.map.getLayersByName(id)
+                layerArray = CCH.map.getLayersBy('name', id)
                 isLayerInMap = layerArray.length > 0 && layerArray[0].getVisibility();
             }
                 
@@ -586,6 +599,7 @@ CCH.Objects.BucketSlide = function (args) {
     $(window).on({
         'cch.ui.resized' : me.resized,
         'cch.map.added.layer' : me.layerAppendRemoveHandler,
+        'cch.map.shown.layer' : me.layerAppendRemoveHandler,
         'cch.map.hid.layer' : me.layerAppendRemoveHandler,
         'cch.slide.items.closing' : function () {
             if (me.isSmall()) {

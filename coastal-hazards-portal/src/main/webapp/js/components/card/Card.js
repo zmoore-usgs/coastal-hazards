@@ -492,7 +492,7 @@ CCH.Objects.Card = function (args) {
                 });
             }
         },
-        'bucket-removed': function (evt, args) {
+        'cch.bucket.card.removed': function (evt, args) {
             if (args.id === me.id) {
                 var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:last-child'),
                     $img = $button.find('> img');

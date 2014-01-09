@@ -45,25 +45,33 @@ CCH.Objects.Map = function (args) {
 
         me.addLayer(layer);
         
+        layer.setVisibility(true);
+        $(window).trigger('cch.map.shown.layer', {
+            layer : layer
+        });
         return layer;
     };
 
     me.hideLayer = function (layer) {
         layer.setVisibility(false);
+        $(window).trigger('cch.map.hid.layer', {
+            layer : layer
+        });
     };
 
     me.hideAllLayers = function () {
         var hiddenLayerNames = [];
 
         me.getLayersBy('type', 'cch').each(function (layer) {
-            layer.setVisibility(false);
+            me.hideLayer(layer);
             hiddenLayerNames.push(layer.name);
         });
+        return hiddenLayerNames;
     };
 
-    me.hideLayerCallback = function (evt) {
+    me.removeLayerCallback = function (evt) {
         var layer = evt.layer;
-        $(window).trigger('cch.map.hide.layer', {
+        $(window).trigger('cch.map.removed.layer', {
             layer : layer
         });
     };
@@ -109,7 +117,7 @@ CCH.Objects.Map = function (args) {
             me.map.events.on({
                 'zoomend': me.zoomendCallback,
                 'moveend': me.moveendCallback,
-                'removelayer': me.hideLayerCallback,
+                'removelayer': me.removeLayerCallback,
                 'addlayer': me.addLayerCallback,
                 'changelayer': me.changelayerCallback
             });
@@ -205,7 +213,7 @@ CCH.Objects.Map = function (args) {
                 'moveend': me.moveendCallback,
                 'addlayer': me.addlayerCallback,
                 'changelayer': me.changelayerCallback,
-                'removelayer': me.hideLayerCallback
+                'removelayer': me.removeLayerCallback
             });
 
             // If the session holds items, they will be loaded and if they are pinned,
@@ -237,7 +245,7 @@ CCH.Objects.Map = function (args) {
             // events we disconnected earlier
             me.map.events.on({
                 'moveend': me.moveendCallback,
-                'removelayer': me.hideLayerCallback,
+                'removelayer': me.removeLayerCallback,
                 'addlayer': me.addLayerCallback,
                 'changelayer': me.changelayerCallback
             });
@@ -252,7 +260,7 @@ CCH.Objects.Map = function (args) {
          * @returns {undefined}
          */
         hideLayersByName: function (name) {
-            CCH.LOG.info('Map.js::removeLayerByName: Trying to remove a layer from map. Layer name: ' + name);
+            CCH.LOG.debug('Map.js::hideLayersByName: Trying to hide a layer. Layer name: ' + name);
             var layers = me.map.getLayersByName(name) || [];
             layers.each(function (layer) {
                 me.hideLayer(layer);
@@ -261,15 +269,15 @@ CCH.Objects.Map = function (args) {
         showLayer: me.showLayer,
         removeLayer: me.hideLayer,
         addLayer: function (layer) {
-            var added = false,
-                layerName = layer.name,
+            var layerName = layer.name,
                 mapLayerArray = me.map.getLayersByName(layerName);
+        
             if (mapLayerArray.length === 0) {
-                added = me.map.addLayer(layer);
+                me.map.addLayer(layer);
                 me.addLayerToFeatureInfoControl(layer);
             }
-            layer.setVisibility(true);
-            return added;
+            
+            return layer;
         },
         zoomendCallback: function () {
             CCH.session.updateSession();

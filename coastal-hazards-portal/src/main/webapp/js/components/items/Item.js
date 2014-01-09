@@ -135,7 +135,8 @@ CCH.Objects.Item = function (args) {
     };
 
     me.showLayer = function () {
-        var layers = [];
+        var layer,
+            layers = [];
         // Check to see if this is an aggregation. If it is, I need
         // to pull the layers from all of its children
         if (this.itemType === 'aggregation') {
@@ -145,26 +146,29 @@ CCH.Objects.Item = function (args) {
             this.children.each(function (childItemId, idx) {
                 var childItem = CCH.items.getById({ id : childItemId });
                 if (childItem) {
-                    layers.push(CCH.map.showLayer({
+                    layer = CCH.map.showLayer({
                         item : childItem,
-                        ribbon : idx + 1
-                    }));
+                        ribbon : me.ribboned ? idx + 1 : 0
+                    });
+                    layers.push(layer);
                 }
             });
             // Because I don't have a real layer for this aggregation, once all 
             // of the children are added, I include this trigger so that other
             // components can act on this layer having been added
-            $(window).trigger('cch.map.added.layer', {
+            $(window).trigger('cch.map.shown.layer', {
                 layer : {
                     name : this.id
                 }
             });
         } else {
             // I am not an aggregation, so just show my layer
-            layers.push(CCH.map.showLayer({
+            layer = CCH.map.showLayer({
                 item : this
-            }));
+            });
+            layers.push(layer);
         }
+        return layers;
     };
 
     me.hideLayer = function () {
@@ -173,7 +177,10 @@ CCH.Objects.Item = function (args) {
             // child, I want to grab the child's layer and display it
             // on the map
             me.children.each(function (childItemId, idx) {
-                CCH.map.hideLayersByName(childItemId + '_r_' + (idx + 1));
+                if (me.ribboned) {
+                    childItemId = childItemId + '_r_' + (idx + 1);
+                }
+                CCH.map.hideLayersByName(childItemId);
             });
             // Because I don't have a real layer for this aggregation, once all 
             // of the children are removed, I include this trigger so that other
