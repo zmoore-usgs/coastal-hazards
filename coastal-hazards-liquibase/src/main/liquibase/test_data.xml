@@ -54,6 +54,9 @@
             <column header="attr" name="attr" type="STRING"/>
             <column header="name" name="name" type="STRING"/>
             <column header="type" name="type" type="STRING"/>
+            <column header="ribbonable" name="ribbonable" type="BOOLEAN" />
+            <column header="show_children" name="show_children" type="BOOLEAN" />
+            <column header="enabled" name="enabled" type="BOOLEAN" />
         </loadData>
         <loadData encoding="UTF-8" file="data/aggregation_children.csv" quotchar="&quot;" separator="," tableName="aggregation_children">
             <column header="aggregation_id" name="aggregation_id" type="STRING"/>

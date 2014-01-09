@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="jiwalker" id="add_displayed_children_list">
+        <createTable tableName="displayed_children">
+            <column name="item_id" type="VARCHAR(255)" />
+            <column name="child_id" type="VARCHAR(255)" />
+            <column name="list_index" type="INT4" />
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="displayed_children" constraintName="fk_displayed_children_item_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item"/>
+    </changeSet>
+    <changeSet author="jiwalker" id="add_boolean_flags">
+        <addColumn tableName="item">
+            <column name="ribbonable" type="BIT" />
+            <column name="show_children" type="BIT" />
+            <column name="enabled" type="BIT" />
+        </addColumn>
+    </changeSet>
+    <changeSet author="jiwalker" id="add_primary_keys">
+        <addPrimaryKey tableName="displayed_children" columnNames="item_id,child_id" />
+        <addPrimaryKey tableName="downloads" columnNames="id" />
+        <addPrimaryKey tableName="full_publications" columnNames="id" />
+        <addPrimaryKey tableName="service" columnNames="id" />
+        <addPrimaryKey tableName="session_item" columnNames="session_id,item_id"/>
+        <addPrimaryKey tableName="aggregation_children" columnNames="aggregation_id,item_id"/>
+    </changeSet>
+</databaseChangeLog>
