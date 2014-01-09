@@ -204,9 +204,9 @@ public class RibboningProcess implements GeoServerProcess {
 
 					MultiLineString lines = getMultiLineString(feature);
 					if (null != lines) {
-						List<MultiLineString> ribbonLines = new ArrayList<MultiLineString>();
+						List<Geometry> ribbonLines = new ArrayList<Geometry>();
 						for (int ribbonNum = 0; ribbonNum < ribbonCount; ribbonNum++) {
-							ribbonLines.add((MultiLineString) lines.clone());
+							ribbonLines.add((Geometry) lines.clone());
 						}
 
 						for (int geomNum = 0; geomNum < lines.getNumGeometries(); geomNum++) {

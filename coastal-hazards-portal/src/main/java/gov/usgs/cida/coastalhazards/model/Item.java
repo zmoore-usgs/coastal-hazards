@@ -11,7 +11,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -73,13 +75,22 @@ public class Item implements Serializable {
      * @deprecated or rename to theme
      */
     private Type type;
+    /* Attribute this item displays, null for aggregation */
     private String attr;
+    /* Whether this type is able to be ribboned */
+    private boolean ribbonable;
+    /* Whether to show children in navigation menu */
+    private boolean showChildren;
+    /* Whether to show this item at all, used in mediation */
+    private boolean enabled;
     /**
      * @deprecated
      */
     private transient Rank rank;
     private List<Service> services;
     private transient List<Item> children;
+    /* Show only a subset of children */
+    private List<String> displayedChildren;
 
     @Id
     public String getId() {
@@ -145,6 +156,31 @@ public class Item implements Serializable {
         this.attr = (StringUtils.isBlank(attr)) ? null : attr;
     }
 
+    public boolean isRibbonable() {
+        return ribbonable;
+    }
+
+    public void setRibbonable(boolean ribbonable) {
+        this.ribbonable = ribbonable;
+    }
+
+    @Column(name = "show_children")
+    public boolean isShowChildren() {
+        return showChildren;
+    }
+
+    public void setShowChildren(boolean showChildren) {
+        this.showChildren = showChildren;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    
     /**
      * @deprecated
      */
@@ -218,6 +254,18 @@ public class Item implements Serializable {
      */
     public void setChildren(List<Item> children) {
         this.children = (children == null || children.isEmpty()) ? null : children;
+    }
+
+    @ElementCollection
+    @CollectionTable(name = "displayed_children", joinColumns = @JoinColumn(name = "item_id"))
+    @IndexColumn(name = "list_index")
+    @Column(name = "child_id")
+    public List<String> getDisplayedChildren() {
+        return displayedChildren;
+    }
+
+    public void setDisplayedChildren(List<String> displayedChildren) {
+        this.displayedChildren = displayedChildren;
     }
 
     public String toJSON(boolean subtree) {
