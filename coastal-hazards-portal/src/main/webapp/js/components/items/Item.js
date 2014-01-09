@@ -126,6 +126,7 @@ CCH.Objects.Item = function (args) {
                     isBaseLayer: false,
                     displayInLayerSwitcher: false,
                     bbox: bbox,
+                    itemid: id,
                     type: 'cch'// CCH specific setting
                 }
             );
@@ -227,6 +228,14 @@ CCH.Objects.Item = function (args) {
         }
         return path;
     };
+    
+    me.getAncestor = function () {
+        if (!me.parent) {
+            return me;
+        } else {
+            return me.parent.getAncestor();
+        }
+    };
 
     CCH.LOG.debug('Item.js::init():Item class finished initializing.');
 
@@ -245,6 +254,7 @@ CCH.Objects.Item = function (args) {
         showLayer : me.showLayer,
         hideLayer : me.hideLayer,
         pathToItem: me.pathToItem,
+        getAncestor : me.getAncestor,
         CLASS_NAME : 'CCH.Objects.Item'
     });
 };
