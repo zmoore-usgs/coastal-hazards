@@ -116,7 +116,7 @@ public class SLDGenerator {
 	}
 
 	public String getId() {
-		return this.item.getWmsService().getLayers();
+		return this.item.fetchWmsService().getLayers();
 	}
 
 	public String getStyle() {

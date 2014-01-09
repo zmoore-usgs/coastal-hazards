@@ -52,13 +52,8 @@
             <column header="item_type" name="item_type" type="STRING"/>
             <column header="summary_id" name="summary_id" type="STRING"/>
             <column header="attr" name="attr" type="STRING"/>
-            <column header="metadata" name="metadata" type="STRING"/>
             <column header="name" name="name" type="STRING"/>
             <column header="type" name="type" type="STRING"/>
-            <column header="wfs_endpoint" name="wfs_endpoint" type="STRING"/>
-            <column header="wfs_typename" name="wfs_typename" type="STRING"/>
-            <column header="wms_endpoint" name="wms_endpoint" type="STRING"/>
-            <column header="wms_layers" name="wms_layers" type="STRING"/>
         </loadData>
         <loadData encoding="UTF-8" file="data/aggregation_children.csv" quotchar="&quot;" separator="," tableName="aggregation_children">
             <column header="aggregation_id" name="aggregation_id" type="STRING"/>
@@ -79,6 +74,14 @@
             <column header="full_url" name="full_url" type="STRING"/>
             <column header="tiny_url" name="tiny_url" type="STRING"/>
         </loadData>
+        <loadData encoding="UTF-8" file="data/service.csv" quotchar="&quot;" separator="," tableName="service">
+            <column header="id" name="id" type="NUMERIC"/>
+            <column header="item_id" name="item_id" type="STRING" />
+            <column header="service_type" name="service_type" type="STRING" />
+            <column header="service_endpoint" name="service_endpoint" type="STRING" />
+            <column header="service_parameter" name="service_parameter" type="STRING" />
+            <column header="list_index" name="list_index" type="NUMERIC" />
+        </loadData>
         <rollback>
             <delete tableName="tinygov" />
             <delete tableName="session_item" />
@@ -92,6 +95,7 @@
             <delete tableName="center" />
             <delete tableName="bbox" />
             <delete tableName="activity" />
+            <delete tableName="service" />
         </rollback>
     </changeSet>
 </databaseChangeLog>

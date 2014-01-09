@@ -1,8 +1,10 @@
 package gov.usgs.cida.coastalhazards.download;
 
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.Service;
+import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import gov.usgs.cida.coastalhazards.model.Session;
-import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
+import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
 import java.io.FileInputStream;
@@ -208,7 +210,7 @@ public class DownloadUtility {
         // (i.e. an item that sees itself in the subtree throws an exception)
         while (itemQueue.peek() != null) {
             Item currentItem = itemQueue.poll();
-            WFSService wfs = currentItem.getWfsService();
+            WFSService wfs = getWfsService(currentItem);
             if (wfs.checkValidity()) {
                 if (downloadMap.containsKey(wfs)) {
                     download = downloadMap.get(wfs);
@@ -257,6 +259,22 @@ public class DownloadUtility {
         } catch (IOException ex) {
             LOG.error("unable to write README file", ex);
         }
+    }
+    
+    /**
+     * Replaces item.getWfsService() after services were added to list
+     * @param item
+     * @return source wfsService representing the canonical dataset
+     */
+    private static WFSService getWfsService(Item item) {
+        WFSService sourceWfs = null;
+        List<Service> services = item.getServices();
+        for (Service service : services) {
+            if (service.getType() == ServiceType.source_wfs) {
+                sourceWfs = new WFSService(service);
+            }
+        }
+        return sourceWfs;
     }
 
 }
