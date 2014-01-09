@@ -6,12 +6,6 @@
 /*global splashUpdate*/
 
 /**
- * Emits: 
- * window: 'bucket-remove'
- * 
- * Listeners:
- * window: 'cch.ui.resized'
- * 
  * @param {type} args
  * @returns {CCH.Objects.BucketSlide.Anonym$12}
  */
@@ -48,53 +42,53 @@ CCH.Objects.BucketSlide = function (args) {
     me.isClosed = me.startClosed;
     me.cards = [];
 
+    me.openSlide = function () {
+        var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
+        
+        $(window).off('cch.slide.items.opened', me.openSlide);
+
+        $('body').css({
+            overflow : 'hidden'
+        });
+
+        $slideContainer.css({
+            display: ''
+        });
+        
+        me.reorderLayers();
+
+        $slideContainer.animate({
+            left: me.getExtents()[me.isSmall() ? 'small' : 'large'].left
+        }, me.animationTime, function () {
+            me.isClosed = false;
+
+            $('body').css({
+                overflow : ''
+            });
+            
+            $(window).trigger('cch.slide.bucket.opened');
+        });
+    };
+    
     me.open = function () {
-        var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
-            isSmall = me.isSmall();
         if (me.isClosed) {
-            var openSlide = function () {
-                $(window).off('cch.slide.items.opened', openSlide);
-
-                $('body').css({
-                    overflow : 'hidden'
-                });
-
-                $slideContainer.css({
-                    display: ''
-                });
-
-                me.getExtents()
-
-                $slideContainer.animate({
-                    left: me.getExtents()[isSmall ? 'small' : 'large'].left
-                }, me.animationTime, function () {
-                    me.isClosed = false;
-
-                    $('body').css({
-                        overflow : ''
-                    });
-
-                    $(window).trigger('cch.slide.bucket.opened');
-                });
-            }
-
-            if (isSmall) {
-                $(window).on('cch.slide.items.opened', openSlide);
+            if (me.isSmall()) {
+                $(window).on('cch.slide.items.opened', me.openSlide);
             } else {
-                openSlide();
+                me.openSlide();
             }
 
             $(window).trigger('cch.slide.bucket.opening');
         } else {
+            me.reorderLayers();
             $(window).trigger('cch.slide.bucket.opened');
         }
     };
 
     me.close = function () {
         var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
+        $(window).trigger('cch.slide.bucket.closing');
         if (!me.isClosed) {
-            $(window).trigger('cch.slide.bucket.closing');
-
             $('body').css({
                 overflow : 'hidden'
             });
@@ -129,19 +123,26 @@ CCH.Objects.BucketSlide = function (args) {
     
     me.layerAppendRemoveHandler = function (evt, args) {
         var layer = args.layer,
-            $card = $('#' + 'application-slide-bucket-container-card-' + layer.name),
-            $image = $('#' + 'application-slide-bucket-container-card-' + layer.name).
-                find('> div:nth-child(4) > div:first-child > img'),
-            evtType = evt.namespace === 'layer.map.removed' ? 'remove' : 'add';
+            $card = $('#application-slide-bucket-container-card-' + layer.name),
+            $myCard,
+            evtType = evt.namespace === 'hid.layer.map' ? 'remove' : 'add',
+            findImage = function ($cardItem) {
+                return $cardItem.find('> div:nth-child(4) > div:first-child > img');
+            };
 
         if ($card.length) {
+            $myCard = me.getCard({ id : layer.itemid});
             if (evtType === 'remove') {
                 setTimeout(function () {
-                    $image.attr('src', 'images/bucket/layer_off.svg');
+                    [$card, $myCard].each(function (card) {
+                        findImage(card).attr('src', 'images/bucket/layer_off.svg');
+                    });
                 }, 200);
             } else if (evtType === 'add') {
                 setTimeout(function () {
-                    $image.attr('src', 'images/bucket/layer_on.svg');
+                    [$card, $myCard].each(function (card) {
+                        findImage(card).attr('src', 'images/bucket/layer_on.svg');
+                    });
                 }, 200);
             }
         }
@@ -282,7 +283,7 @@ CCH.Objects.BucketSlide = function (args) {
                 // If this ID appears elsewhere in the card stack, don't remove 
                 // it from the map
                 if (children.findAll(childId).length > 1) {
-                    CCH.map.removeLayersByName(childId);
+                    CCH.map.hideLayersByName(childId);
                 }
             });
             
@@ -306,7 +307,7 @@ CCH.Objects.BucketSlide = function (args) {
             // id. It's a long way around removing the item but it does hit 
             // multiple components
             me.cards.reverse().each(function ($card) {
-                $(window).trigger('bucket-remove', {
+                $(window).trigger('cch.slide.bucket.remove', {
                     id : $card.data('id')
                 });
             });
@@ -316,22 +317,25 @@ CCH.Objects.BucketSlide = function (args) {
     };
 
     me.reorderLayers = function () {
-        var layerId,
+        var id,
             layer,
-            layers = [];
-
+            layers = [],
+            item;
+        
         me.cards.each(function ($cardClone) {
-            layerId = $cardClone.data('id');
-            layer = CCH.map.getLayersByName(layerId);
-
+            id = $cardClone.data('id');
+            item = CCH.items.getById({id : id});
+            
+            layer = CCH.map.getLayersByName(id);
             if (layer.length) {
                 layers.push(layer[0]);
+            } else {
+                layers.concat(item.showLayer({item : item}));
             }
         });
 
         layers.reverse().each(function (layer) {
             CCH.map.getMap().setLayerIndex(layer, CCH.map.getMap().layers.length - 1);
-            layer.redraw();
         });
     };
 
@@ -468,12 +472,15 @@ CCH.Objects.BucketSlide = function (args) {
         
         // Test if the layer is currently visible. If not, set view button to off 
         if (item.itemType === 'aggregation') {
-            layerCurrentlyInMap = item.children.every(function(id) {
-                layerArray = CCH.map.getLayersByName(id);
+            layerCurrentlyInMap = item.children.every(function(id, idx) {
+                if (item.ribboned) {
+                    id = id + '_r_' + (idx + 1);
+                }
+                layerArray = CCH.map.getLayersBy('name', id);
                 return layerArray.length > 0 && layerArray[0].getVisibility();
             });
         } else {
-            layerArray = CCH.map.getLayersByName(id);
+            layerArray = CCH.map.getLayersBy('name', id);
             layerCurrentlyInMap = layerArray.length > 0 && layerArray[0].getVisibility();
         }
 
@@ -483,11 +490,15 @@ CCH.Objects.BucketSlide = function (args) {
 
         $removeButton.on('click', function ($evt) {
             $evt.stopPropagation();
+            // If I am open, remove my layer
+            item.hideLayer();
+            
             // I emit this to the top so that bucket can catch it, decrement itself
             // and then pass on the remove back down here to my remove method
-            $(window).trigger('bucket-remove', {
+            $(window).trigger('cch.slide.bucket.remove', {
                 id : id
             });
+            
         });
 
         $downloadButton.on('click', function () {
@@ -500,12 +511,15 @@ CCH.Objects.BucketSlide = function (args) {
                 layerArray;
                 
             if (isAggregation) {
-                isLayerInMap = item.children.every(function (id) {
-                    layerArray = CCH.map.getLayersByName(id);
+                isLayerInMap = item.children.every(function(id, idx) {
+                    if (item.ribboned) {
+                        id = id + '_r_' + (idx + 1);
+                    }
+                    layerArray = CCH.map.getLayersBy('name', id);
                     return layerArray.length > 0 && layerArray[0].getVisibility();
                 });
             } else {
-                layerArray = CCH.map.getLayersByName(id)
+                layerArray = CCH.map.getLayersBy('name', id)
                 isLayerInMap = layerArray.length > 0 && layerArray[0].getVisibility();
             }
                 
@@ -588,6 +602,7 @@ CCH.Objects.BucketSlide = function (args) {
     $(window).on({
         'cch.ui.resized' : me.resized,
         'cch.map.added.layer' : me.layerAppendRemoveHandler,
+        'cch.map.shown.layer' : me.layerAppendRemoveHandler,
         'cch.map.hid.layer' : me.layerAppendRemoveHandler,
         'cch.slide.items.closing' : function () {
             if (me.isSmall()) {

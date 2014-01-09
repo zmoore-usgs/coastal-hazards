@@ -53,16 +53,12 @@ CCH.Objects.Accordion = function (args) {
         });
     };
 
-    /**
-     * Uses a card to create a bellow out of
-     */
     me.addCard = function (args) {
         args = args || {};
 
         var card = args.card,
             item = args.item,
             index = args.index,
-            cardContainer,
             accordion = me.getAccordion(),
             bellow;
 
@@ -73,11 +69,9 @@ CCH.Objects.Accordion = function (args) {
                 initHide : false
             });
         }
-
-        cardContainer = card.getContainer();
-
+        
+        // Using the card, create a container from it
         bellow = me.createBellow({
-            container : cardContainer,
             card : card
         });
 
@@ -102,7 +96,7 @@ CCH.Objects.Accordion = function (args) {
 
         var card = args.card,
             id = card.id,
-            cardContainer = args.container,
+            cardContainer = card.getContainer(),
             titleRow = cardContainer.find('.application-card-title-row'),
             titleMedium = titleRow.find('.application-card-title-container-medium').html(),
             group = $('<div />').addClass('panel panel-default'),
@@ -140,8 +134,8 @@ CCH.Objects.Accordion = function (args) {
 
         titleRow.remove();
 
-        group.append(heading, accordionBody);
         group.data('id', id);
+        group.append(heading, accordionBody);
         titleContainer.append(toggleTarget);
         heading.append(titleContainer);
         accordionBody.append(bodyInner);
@@ -149,12 +143,14 @@ CCH.Objects.Accordion = function (args) {
         heading.on('click', headingClickHandler);
 
         accordionBody.on({
-            'show.bs.collapse' : function () {
+            'show.bs.collapse' : function (evt) {
+                $(window).trigger('cch.accordion.show', evt);
                 card.show({
                     duration : 0
                 });
             },
-            'shown.bs.collapse' : function () {
+            'shown.bs.collapse' : function (evt) {
+                $(window).trigger('cch.accordion.shown', evt);
                 var $this = $(this),
                     abId = $this.data('id');
 
@@ -164,8 +160,11 @@ CCH.Objects.Accordion = function (args) {
                     'eventLabel': abId
                 });
             },
-            'hide.bs.collapse' : function () {},
-            'hidden.bs.collapse' : function () {
+            'hide.bs.collapse' : function (evt) {
+                $(window).trigger('cch.accordion.hide', evt);
+            },
+            'hidden.bs.collapse' : function (evt) {
+                $(window).trigger('cch.accordion.hidden', evt);
                 var $this = $(this),
                     abId = $this.data('id');
 
@@ -199,13 +198,14 @@ CCH.Objects.Accordion = function (args) {
         // and add it to the accordion.
         var id = args.id,
             idIdx = 0,
-            ids = me.getBellows().map(function(ind, b) {
+            ids = me.getBellows().map(function (ind, b) {
                 return $(b).data().id;
             }),
             $bellow,
             $bellowTitle,
             $bellowBody,
             path = [],
+            card,
             openPath;
 
         // Go down the top level items until we have a hit for an id
@@ -224,12 +224,14 @@ CCH.Objects.Accordion = function (args) {
             $bellow = $(me.getBellows()[idIdx - 1]);
             $bellowTitle = $bellow.find('.accordion-toggle');
             $bellowBody = $bellow.find('.panel-collapse');
+            card = $bellowBody.data().card;
+            card.closeChild();
 
             openPath = function () {
                 $bellowBody.off('shown.bs.collapse', openPath);
 
                 if (path.length > 0) {
-                    $bellowBody.data().card.showPath(path);
+                    card.showPath(path);
                 }
             };
 
@@ -237,7 +239,7 @@ CCH.Objects.Accordion = function (args) {
             // There's a check that's done in the 'pathToItem()' function that does
             // a similar check for id equality but I just short cut it here
             path = path.removeAt(0);
-            
+
             // The action begins by opening a bellow. I check here to see if the 
             // bellow I want to open is already open. If not, bind openPath() to
             // the opened action. Otherwise, just call openPath() directly
@@ -256,11 +258,19 @@ CCH.Objects.Accordion = function (args) {
         }
 
     });
+    
+    me.showCurrent = function () {
+        var currentCard = me.getBellows().find('.in > div > div:last-child');
+        
+        if (currentCard.length > 0) {
+            currentCard.data()['card'].show();
+        } 
+    };
 
     return $.extend(me, {
         add: me.addCard,
         load : me.load,
+        showCurrent : me.showCurrent,
         CLASS_NAME : 'CCH.Objects.Accordion'
     });
-
 };

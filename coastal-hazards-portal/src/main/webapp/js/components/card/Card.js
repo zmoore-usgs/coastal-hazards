@@ -9,10 +9,6 @@
 /**
  * Represents a product as a card
  * 
- * Emits: 
- * window: "item-button-click-bucket-add"
- * window: "item-button-click-bucket-remove"
- * 
  * @param {type} args
  * @returns {CCH.Objects.Card.Anonym$2}
  */
@@ -163,8 +159,10 @@ CCH.Objects.Card = function (args) {
     };
 
     me.closeChild = function () {
-        me.child.removeSelf();
-        delete me.child;
+        if (me.child) {
+            me.child.removeSelf();
+            delete me.child;
+        }
     };
 
     me.removeSelf = function () {
@@ -183,7 +181,7 @@ CCH.Objects.Card = function (args) {
             nextAction = args.nextAction,
             add = function () {
                 // User pressed bucket button in and wants to add me to a bucket
-                $(window).trigger('bucket-add', {
+                $(window).trigger('cch.card.bucket.add', {
                     item : me.item
                 });
             },
@@ -192,7 +190,7 @@ CCH.Objects.Card = function (args) {
             remove = function () {
                 // User toggled the bucket button off - I should be removed from 
                 // bucket
-                $(window).trigger('bucket-remove', {
+                $(window).trigger('cch.card.bucket.remove', {
                     item : me.item
                 });
             };
@@ -494,7 +492,7 @@ CCH.Objects.Card = function (args) {
                 });
             }
         },
-        'bucket-removed': function (evt, args) {
+        'cch.bucket.card.removed': function (evt, args) {
             if (args.id === me.id) {
                 var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:last-child'),
                     $img = $button.find('> img');

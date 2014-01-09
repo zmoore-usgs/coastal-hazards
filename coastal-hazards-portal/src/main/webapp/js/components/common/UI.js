@@ -436,7 +436,11 @@ CCH.Objects.UI = function (args) {
         'resize': me.windowResizeHandler,
         'cch.data.items.searched': me.itemsSearchedHandler,
         'cch.data.locations.searched': me.locationsSearchedHandler,
-        'slide.bucket.button.click.share' : me.sharemodalDisplayHandler
+        'slide.bucket.button.click.share' : me.sharemodalDisplayHandler,
+        'cch.slide.bucket.closing' : function () {
+            CCH.map.hideAllLayers();
+            me.accordion.showCurrent();
+        }
     });
     $(me.combinedSearch).on({
         'combined-searchbar-search-performed' : function (evt, args) {
