@@ -33,7 +33,7 @@ public final class Pcoi {
     protected static final float[] thresholds = new float[] {0.0f, 10.0f, 25.0f, 50.0f, 75.0f, 90.0f};
     protected static final String[] colors = {"#FFFFFE", "#FFE6E6", "#FFCCCD", "#FF9C95", "#FF574A", "#FF0000"};
 	
-	protected static final String jspPath = "/pcoi.jsp";
+	protected static final String jspPath = "SLD/pcoi.jsp";
 	protected static final String units = "%";
 	protected static final List<Map<String,Object>> bins;
 	static {

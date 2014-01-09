@@ -19,7 +19,7 @@ public final class DuneHeight {
     protected static final String[] colorsToe = {"#D7F1AF", "#BBD190", "#A3B574", "#8C9C5A", "#768242", "#5F6A27"};
 
 	
-	protected static final String jspPath = "/bins_line.jsp";
+	protected static final String jspPath = "SLD/bins_line.jsp";
 	protected static final String units = "m";
 	protected static final List<Map<String,Object>> binsCrest;
 	protected static final List<Map<String,Object>> binsToe;
