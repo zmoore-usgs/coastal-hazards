@@ -22,6 +22,15 @@ CCH.Objects.Item = function (args) {
     me.parent = args.parent || null;
     me.loaded = false;
     me.ribboned = me.id === 'C68abcd' ? true : false; //TODO - Actually get this from the data
+    me.children = [];
+    me.attr = null;
+    me.metadata = null;
+    me.bbox = me.UNITED_STATES_BBOX;
+    me.itemType = null;
+    me.name = null;
+    me.summary = null;
+    me.type = null;
+    me.services = null;
     
     me.load = function (args) {
         args = args || {};
@@ -40,8 +49,7 @@ CCH.Objects.Item = function (args) {
             me.name = data.name;
             me.summary = data.summary;
             me.type = data.type;
-            me.wfsService = data.wfsService;
-            me.wmsService = data.wmsService;
+            me.services = data.services;
             
             if (me.parent) {
                 if (me.parent.ribboned === true) {
@@ -104,12 +112,12 @@ CCH.Objects.Item = function (args) {
     };
 
     me.createWmsLayer = function () {
-        var id = this.id,
-            service = this.wmsService,
+        var id = me.id,
+            service = me.getService('proxy_wms'),
             endpoint = service.endpoint,
-            layers = service.layers || [],
-            bbox = this.bbox,
-            layer = this.itemType === 'aggregation' ? null : new OpenLayers.Layer.WMS(
+            layers = service.serviceParameter || [],
+            bbox = me.bbox,
+            layer = me.itemType === 'aggregation' ? null : new OpenLayers.Layer.WMS(
                 id,
                 endpoint,
                 {
@@ -243,6 +251,23 @@ CCH.Objects.Item = function (args) {
             return me.parent.getAncestor();
         }
     };
+    
+    me.getService = function (type) {
+        var defaultServiceObject = {
+            endpoint : 'na',
+            serviceParameter : 'na',
+            type : type
+        },
+        serviceObject;
+        
+        serviceObject = me.services.find(function (service) {
+            if (service.type === type) {
+                return service;
+            }
+        });
+        
+        return serviceObject || defaultServiceObject;
+    }
 
     CCH.LOG.debug('Item.js::init():Item class finished initializing.');
 
@@ -251,11 +276,10 @@ CCH.Objects.Item = function (args) {
         bbox : me.bbox,
         children : me.children,
         itemType : me.itemType,
+        getService : me.getService,
         name : me.name,
         summary : me.summary,
         type : me.type,
-        wfsService : me.wfsService,
-        wmsService : me.wmsService,
         getWmsLayer : me.createWmsLayer,
         load : me.load,
         showLayer : me.showLayer,
