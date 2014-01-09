@@ -16,7 +16,7 @@ public final class OldSchoolCVI {
     protected static final String[] colors = {"#006945", "#3B6800", "#FFFF00", "#FEAC00", "#FF0000"};
     protected static final String[] categories = {"Very Low", "Low", "Moderate", "High", "Very High"};
 	
-	protected static final String jspPath = "/categorical_line.jsp";
+	protected static final String jspPath = "SLD/categorical_line.jsp";
 	protected static final String units = "";
 	protected static final List<Map<String,Object>> bins;
 	static {

@@ -16,11 +16,12 @@
     String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
     String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
     String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
+    String version = props.getProperty("application.version");
 %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <jsp:include page="components/meta-tags.jsp"></jsp:include>
+        <jsp:include page="WEB-INF/jsp/components/common/meta-tags.jsp"></jsp:include>
         <title>USGS Coastal Change Hazards Portal</title>
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
@@ -42,16 +43,6 @@
                     publicUrl: '<%=publicUrl%>',
                     data: {
                         sources: {
-                            <%-- 
-                            'cida-geoserver': {
-                                'endpoint': '<%=geoserverEndpoint%>',
-                                'proxy': 'geoserver/'
-                            },
-                            'stpete-arcserver': {
-                                'endpoint': '<%=stPeteArcServerEndpoint%>',
-                                'proxy': 'stpgis/'
-                            },
-                            --%>
                             'item': {
                                 'endpoint': '/data/item'
                             },
@@ -59,10 +50,6 @@
                             'geocoding': {
                                 'endpoint': '<%=geocodeEndpoint%>'
                             }
-                            <%-- ,
-                            'session': {
-                                'endpoint': '/data/view/'
-                            } --%>
                         }
                     }
                 }
@@ -74,16 +61,15 @@
               window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
             }
         </script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/components/search/Search.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search.js"></script>
         <jsp:include page="js/log4javascript/log4javascript.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        <script type="text/javascript" src="<%=baseUrl%>/js/components/search/Search.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/components/items/Items.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/components/items/Item.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/components/util/Util.js"></script>
-        <script type="text/javascript" src='<%=baseUrl%>/js/components/info/info.js'></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Items.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/util/Util.js"></script>
+        <script type="text/javascript" src='<%=baseUrl%>/js/application/back/info/info.js'></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
 		<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -97,12 +83,13 @@
 		</script>
     </head>
     <body>
-        <jsp:include page="components/application-overlay.jsp">
+        <jsp:include page="WEB-INF/jsp/components/common/application-overlay.jsp">
             <jsp:param name="application-overlay-description" value="USGS coastal change hazards research produces data, 
                        knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
                        here. They can be used to increase awareness and provide a basis for decision making." />
-            <jsp:param name="application-overlay-background-image" value="images/splash/splash_info.png" />
+            <jsp:param name="application-overlay-background-image" value="images/splash/splash.svg" />
             <jsp:param name="base-url" value="<%=baseUrl%>" />
+            <jsp:param name="version" value="<%=version%>" />
         </jsp:include>
         <%-- Content Here --%>
         <div id="info-content" class="container">

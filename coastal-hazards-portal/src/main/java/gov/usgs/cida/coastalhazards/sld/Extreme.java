@@ -15,7 +15,7 @@ public final class Extreme {
     protected static final float[] thresholds = {3.5f, 5.0f, 6.5f, 8.0f};
     protected static final String[] colors = {"#DFB8E6", "#C78CEB", "#AC64EE", "#9040F1", "#6F07F3"};
 	
-	protected static final String jspPath = "/bins_line.jsp";
+	protected static final String jspPath = "SLD/bins_line.jsp";
 	protected static final String units = "m";
 	protected static final List<Map<String,Object>> bins;
 	static {
