@@ -96,7 +96,7 @@
             <jsp:param name="relPath" value="<%=baseUrl%>" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        <jsp:include page="js/jquery-cookie/jquery-cookie.jsp"></jsp:include>
+        <jsp:include page="js/third-party/jquery-cookie/jquery-cookie.jsp"></jsp:include>
             <script type="text/javascript" src="js/application/common/items/Item.js"></script>
             <script type="text/javascript" src="js/application/front/slide/ItemsSlide.js"></script>
             <script type="text/javascript" src="js/application/front/slide/BucketSlide.js"></script>
