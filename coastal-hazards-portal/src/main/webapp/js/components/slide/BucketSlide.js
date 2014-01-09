@@ -124,22 +124,25 @@ CCH.Objects.BucketSlide = function (args) {
     me.layerAppendRemoveHandler = function (evt, args) {
         var layer = args.layer,
             $card = $('#application-slide-bucket-container-card-' + layer.name),
-            $image = $('#application-slide-bucket-container-card-' + layer.name).
-                find('> div:nth-child(4) > div:first-child > img'),
-            evtType = evt.namespace === 'hid.layer.map' ? 'remove' : 'add';
-
-        if (evt.type === 'cch') {
-            
-        }
+            $myCard,
+            evtType = evt.namespace === 'hid.layer.map' ? 'remove' : 'add',
+            findImage = function ($cardItem) {
+                return $cardItem.find('> div:nth-child(4) > div:first-child > img');
+            };
 
         if ($card.length) {
+            $myCard = me.getCard({ id : layer.itemid});
             if (evtType === 'remove') {
                 setTimeout(function () {
-                    $image.attr('src', 'images/bucket/layer_off.svg');
+                    [$card, $myCard].each(function (card) {
+                        findImage(card).attr('src', 'images/bucket/layer_off.svg');
+                    });
                 }, 200);
             } else if (evtType === 'add') {
                 setTimeout(function () {
-                    $image.attr('src', 'images/bucket/layer_on.svg');
+                    [$card, $myCard].each(function (card) {
+                        findImage(card).attr('src', 'images/bucket/layer_on.svg');
+                    });
                 }, 200);
             }
         }
@@ -331,7 +334,7 @@ CCH.Objects.BucketSlide = function (args) {
             }
         });
 
-        layers.each(function (layer) {
+        layers.reverse().each(function (layer) {
             CCH.map.getMap().setLayerIndex(layer, CCH.map.getMap().layers.length - 1);
         });
     };
