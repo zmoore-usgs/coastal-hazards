@@ -34,9 +34,9 @@ CCH.Objects.Card = function (args) {
     me.attr = me.item.attr;
     me.service = me.item.service;
     me.children = me.item.children || [];
-    me.wmsService = me.item.wmsService || {};
-    me.wmsEndpoint = me.wmsService.endpoint || '';
-    me.wmsLayers = me.wmsService.layers || [];
+    me.wmsService = me.item.getService('proxy_wms');
+    me.wmsEndpoint;
+    me.wmsLayers;
     me.container = null;
     me.descriptionContainer = null;
     // Is the card hidden by default? We probably want it to be false when creating
@@ -49,6 +49,11 @@ CCH.Objects.Card = function (args) {
     me.child = args.child;
     me.layer = me.item.getWmsLayer();
     me.isOpen = false;
+
+    if (me.wmsService) {
+        me.wmsEndpoint = me.wmsService.endpoint;
+        me.wmsLayers = [me.wmsService.serviceParameter]
+    }
 
     me.show = function (args) {
         args = args || {};
