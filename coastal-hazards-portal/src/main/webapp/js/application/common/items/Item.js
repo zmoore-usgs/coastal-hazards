@@ -141,6 +141,38 @@ CCH.Objects.Item = function (args) {
         
         return layer;
     };
+    
+    me.getLayerList = function(layers) {
+        var index, 
+            layer,
+            layerName;
+    
+        layers = layers || [];
+    
+        if (me.itemType === 'aggregation') {
+            for (var idx = 0;idx < this.children.length;idx++) {
+                var child = CCH.items.getById({ id : this.children[idx] });
+                if (child) {
+                    layers.concat(child.getLayerList(layers));
+                }
+
+            }
+        } else {
+            if (me.ribboned) {
+                if (layers.length > 0) {
+                    layer = layers[layers.length - 1];
+                    index = parseInt(layer.substring(layer.lastIndexOf('_') + 1)) + 1;
+                } else {
+                    index = 1;
+                }
+                layerName = me.id + '_r_' + index;
+            } else {
+                layerName = me.id;
+            }
+            layers.push(layerName);
+        }
+        return layers;
+    }
 
     me.showLayer = function (layers) {
         var index, 
@@ -167,7 +199,7 @@ CCH.Objects.Item = function (args) {
             // components can act on this layer having been added
             $(window).trigger('cch.map.shown.layer', {
                 layer : {
-                    name : this.id
+                    itemid : this.id
                 }
             });
         } else {
@@ -195,7 +227,8 @@ CCH.Objects.Item = function (args) {
 
     me.hideLayer = function (layers) {
         var index, 
-            layer;
+            layer,
+            layerName;
     
         layers = layers || [];
     
@@ -218,7 +251,7 @@ CCH.Objects.Item = function (args) {
             // components can act on this layer having been added
             $(window).trigger('cch.map.hid.layer', {
                 layer : {
-                    name : me.id
+                    itemid : me.id
                 }
             });
         } else {
@@ -230,38 +263,16 @@ CCH.Objects.Item = function (args) {
                 } else {
                     index = 1;
                 }
+                layerName = me.id + '_r_' + index;
             } else {
-                index = 0;
+                layerName = me.id;
             }
 
-            layer = CCH.map.hideLayersByName(me.id + '_r_' + index); 
+            layer = CCH.map.hideLayersByName(layerName); 
             layers = layers.concat(layer);
-            CCH.LOG.debug('Item.js::showLayer:Item ' + me.id + ' added to map at index ' + index);
+            CCH.LOG.debug('Item.js::showLayer:Layer ' + layerName + ' was hidden');
         }
         return layers;
-        
-        
-//        if (me.itemType === 'aggregation') {
-//            // This aggregation should have children, so for each 
-//            // child, I want to grab the child's layer and display it
-//            // on the map
-//            me.children.each(function (childItemId, idx) {
-//                if (me.ribboned) {
-//                    childItemId = childItemId + '_r_' + (idx + 1);
-//                }
-//                CCH.map.hideLayersByName(childItemId);
-//            });
-//            // Because I don't have a real layer for this aggregation, once all 
-//            // of the children are removed, I include this trigger so that other
-//            // components can act on this layer having been removed
-//            $(window).trigger('cch.map.hid.layer', {
-//                layer : {
-//                    name : me.id
-//                }
-//            });
-//        } else {
-//            CCH.map.hideLayersByName(me.id);
-//        }
     };
 
     /**
@@ -343,6 +354,7 @@ CCH.Objects.Item = function (args) {
         type : me.type,
         getWmsLayer : me.createWmsLayer,
         load : me.load,
+        getlayerList : me.getLayerList,
         showLayer : me.showLayer,
         hideLayer : me.hideLayer,
         pathToItem: me.pathToItem,

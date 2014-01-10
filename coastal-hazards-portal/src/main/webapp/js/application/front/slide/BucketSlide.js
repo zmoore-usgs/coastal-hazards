@@ -123,7 +123,7 @@ CCH.Objects.BucketSlide = function (args) {
     
     me.layerAppendRemoveHandler = function (evt, args) {
         var layer = args.layer,
-            $card = $('#application-slide-bucket-container-card-' + layer.name),
+            $card = $('#application-slide-bucket-container-card-' + layer.itemid),
             $myCard,
             evtType = evt.namespace === 'hid.layer.map' ? 'remove' : 'add',
             findImage = function ($cardItem) {
@@ -266,10 +266,11 @@ CCH.Objects.BucketSlide = function (args) {
         args = args || {};
 
         var id = args.id,
-            childIdArray = args.children,
+            childIdArray,
             $card;
 
         if (id) {
+            childIdArray = args.children.slice(0);
             $card = me.getCard({ id : id });
             me.cards.removeAt(me.getCardIndex(id));
             
@@ -330,7 +331,7 @@ CCH.Objects.BucketSlide = function (args) {
             if (layer.length) {
                 layers.push(layer[0]);
             } else {
-                layers.concat(item.showLayer({item : item}));
+                layers = layers.concat(item.showLayer());
             }
         });
 
@@ -471,18 +472,10 @@ CCH.Objects.BucketSlide = function (args) {
         $card.data('id', id);
         
         // Test if the layer is currently visible. If not, set view button to off 
-        if (item.itemType === 'aggregation') {
-            layerCurrentlyInMap = item.children.every(function(id, idx) {
-                if (item.ribboned) {
-                    id = id + '_r_' + (idx + 1);
-                }
-                layerArray = CCH.map.getLayersBy('name', id);
-                return layerArray.length > 0 && layerArray[0].getVisibility();
-            });
-        } else {
+        layerCurrentlyInMap = item.getLayerList().every(function(id, idx) {
             layerArray = CCH.map.getLayersBy('name', id);
-            layerCurrentlyInMap = layerArray.length > 0 && layerArray[0].getVisibility();
-        }
+            return layerArray.length > 0 && layerArray[0].getVisibility();
+        });
 
         if (layerCurrentlyInMap) {
             $viewButton.find('> img').attr('src', 'images/bucket/layer_on.svg');
@@ -498,7 +491,6 @@ CCH.Objects.BucketSlide = function (args) {
             $(window).trigger('cch.slide.bucket.remove', {
                 id : id
             });
-            
         });
 
         $downloadButton.on('click', function () {
@@ -510,23 +502,36 @@ CCH.Objects.BucketSlide = function (args) {
                 isLayerInMap = false,
                 layerArray;
                 
-            if (isAggregation) {
-                isLayerInMap = item.children.every(function(id, idx) {
-                    if (item.ribboned) {
-                        id = id + '_r_' + (idx + 1);
-                    }
-                    layerArray = CCH.map.getLayersBy('name', id);
-                    return layerArray.length > 0 && layerArray[0].getVisibility();
-                });
-            } else {
-                layerArray = CCH.map.getLayersBy('name', id)
-                isLayerInMap = layerArray.length > 0 && layerArray[0].getVisibility();
-            }
-                
+            isLayerInMap = item.getLayerList().every(function(id) {
+                layerArray = CCH.map.getLayersBy('name', id);
+                return layerArray.length > 0 && layerArray[0].getVisibility();
+            });
+            
             if (isLayerInMap) {
                 item.hideLayer();
+                if (isAggregation) {
+                    me.layerAppendRemoveHandler(
+                        {
+                            namespace : 'hid.layer.map'
+                        },
+                        { layer : {
+                            name : id,
+                            itemid : id
+                        }});
+                }
             } else {
                 item.showLayer();
+                if (isAggregation) {
+                    me.layerAppendRemoveHandler(
+                            {
+                                namespace: 'show.layer.map'
+                            },
+                    {
+                        layer: {
+                            name: id,
+                            itemid: id
+                        }});
+                }
             }
 
             $(window).trigger('slide.bucket.button.click.view', {
