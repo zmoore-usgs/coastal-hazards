@@ -246,7 +246,7 @@ CCH.Objects.UI = function (args) {
                                         count: 'none'
                                     }
                                 );
-
+                                $('#' + me.SHARE_MODAL_ID).modal('show');
                                 twttr.events.bind('tweet', function () {
                                     alertify.log('Your view has been tweeted. Thank you.');
                                 });
