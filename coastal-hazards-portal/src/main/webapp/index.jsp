@@ -96,26 +96,26 @@
             <jsp:param name="relPath" value="<%=baseUrl%>" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        <jsp:include page="js/jquery-cookie/jquery-cookie.jsp"></jsp:include>
-            <script type="text/javascript" src="js/application/common/items/Item.js"></script>
-            <script type="text/javascript" src="js/application/front/slide/ItemsSlide.js"></script>
-            <script type="text/javascript" src="js/application/front/slide/BucketSlide.js"></script>
-            <script type="text/javascript" src="js/application/front/slide/SearchSlide.js"></script>
-            <script type="text/javascript" src="js/application/common/util/Util.js"></script>
-            <script type="text/javascript" src="js/application/front/accordion/Accordion.js"></script>
-            <script type="text/javascript" src="js/application/common/search/Search.js"></script>
-            <script type="text/javascript" src="js/application/front/session/Session.js"></script>
-            <script type="text/javascript" src="js/application/front/map/LayerIdentifyControl.js"></script>
-            <script type="text/javascript" src="js/application/front/map/Map.js"></script>
-            <script type="text/javascript" src="js/application/front/card/Card.js"></script>
-            <script type="text/javascript" src="js/application/common/items/Items.js"></script>
-            <script type="text/javascript" src="js/application/front/popularity/Popularity.js"></script>
-            <script type="text/javascript" src="js/application/front/OWS.js"></script>
-            <script type="text/javascript" src="js/application/front/bucket/Bucket.js"></script>
-            <script type="text/javascript" src="js/application/front/search/combined-searchbar.js"></script>
-            <script type="text/javascript" src="js/application/front/ui/UI.js"></script>
-            <script type="text/javascript" src="js/application/front/OnReady.js"></script>
-            <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+        <jsp:include page="js/third-party/jquery-cookie/jquery-cookie.jsp"></jsp:include>
+        <script type="text/javascript" src="js/application/common/items/Item.js"></script>
+        <script type="text/javascript" src="js/application/front/slide/ItemsSlide.js"></script>
+        <script type="text/javascript" src="js/application/front/slide/BucketSlide.js"></script>
+        <script type="text/javascript" src="js/application/front/slide/SearchSlide.js"></script>
+        <script type="text/javascript" src="js/application/common/util/Util.js"></script>
+        <script type="text/javascript" src="js/application/front/accordion/Accordion.js"></script>
+        <script type="text/javascript" src="js/application/common/search/Search.js"></script>
+        <script type="text/javascript" src="js/application/front/session/Session.js"></script>
+        <script type="text/javascript" src="js/application/front/map/LayerIdentifyControl.js"></script>
+        <script type="text/javascript" src="js/application/front/map/Map.js"></script>
+        <script type="text/javascript" src="js/application/front/card/Card.js"></script>
+        <script type="text/javascript" src="js/application/common/items/Items.js"></script>
+        <script type="text/javascript" src="js/application/front/popularity/Popularity.js"></script>
+        <script type="text/javascript" src="js/application/front/OWS.js"></script>
+        <script type="text/javascript" src="js/application/front/bucket/Bucket.js"></script>
+        <script type="text/javascript" src="js/application/front/search/combined-searchbar.js"></script>
+        <script type="text/javascript" src="js/application/front/ui/UI.js"></script>
+        <script type="text/javascript" src="js/application/front/OnReady.js"></script>
+        <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
         <jsp:include page="WEB-INF/jsp/components/front/image-preload.jsp">
             <jsp:param name="relPath" value="<%=baseUrl%>" />

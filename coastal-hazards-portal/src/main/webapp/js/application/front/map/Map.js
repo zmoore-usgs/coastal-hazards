@@ -265,6 +265,7 @@ CCH.Objects.Map = function (args) {
             layers.each(function (layer) {
                 me.hideLayer(layer);
             });
+            return layers;
         },
         showLayer: me.showLayer,
         removeLayer: me.hideLayer,
