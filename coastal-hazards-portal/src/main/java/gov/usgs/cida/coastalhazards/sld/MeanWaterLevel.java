@@ -15,7 +15,7 @@ public final class MeanWaterLevel {
     protected static final float[] thresholds = {3.5f, 5.0f, 6.5f, 8.0f};
     protected static final String[] colors = {"#BFFFE9", "#7ABCE6", "#1F84E1", "#1945B8", "#070791"};
 
-	protected static final String jspPath = "SLD/bins_line.jsp";
+	protected static final String jspPath = "/SLD/bins_line.jsp";
 	protected static final String units = "m";
 	protected static final List<Map<String,Object>> bins;
 	static {
