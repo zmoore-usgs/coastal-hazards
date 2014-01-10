@@ -119,7 +119,7 @@ CCH.Objects.Card = function (args) {
         });
 
         if (me.child) {
-            me.child.hideLayer();
+            me.child.hide();
         }
 
         me.hideLayer();
