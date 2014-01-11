@@ -1,25 +1,18 @@
-var CCH = {
-	config: {
-		metadataToken: '',
-		metadataUrl: '',
-		bbox: [],
-		type: '',
-		attributes: [],
-		endpoint: {
-			wfs: '',
-			wfsFullpath: '',
-			wfsValid: false,
-			wfsCaps: null,
-			wms: '',
-			wmsFullpath: '',
-			wmsValid: false,
-			servertype: ''
-		}
-	},
-	items: []
-};
 $(document).ready(function() {
-
+    initializeLogging({
+        LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
+    });
+    CCH.LOG = LOG;
+    
+    if (CCH.itemid) {
+        new CCH.Objects.Search({
+            geocodeServiceEndpoint : 'na'
+        }).submitItemSearch({
+            item : CCH.itemid,
+            displayNotification : false
+        });
+    }
+    
 	$('#publish-publish-button').on('click', publishButtonClickHandler);
 	$('#publish-services-wfs').on('blur', wfsInputboxBlurHandler);
 	$('#publish-services-wms').on('blur', wmsInputBoxBlurHandler);

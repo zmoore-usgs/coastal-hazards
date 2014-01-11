@@ -4,9 +4,9 @@
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page import="java.util.Map" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
+<%!	
+    protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
     {
         try {
             props = props.addJNDIContexts(new String[0]);
@@ -20,32 +20,67 @@
     String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
 
     // Figure out the path based on the ID passed in, if any
-    String id = (String) pageContext.findAttribute("id");
-    String path = "../../../../";
+    Map<String, String>  attributeMap = (Map<String, String>) pageContext.findAttribute("it");
+    String id = attributeMap.get("id");
+    String path = "../../../";
     if (null != id && !"".equals(id)) {
         path += "../";
     }
     String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
     String jsURI = path + "js/third-party/jsuri/jsuri.jsp";
     String fineUploader = path + "js/fineuploader/fineuploader.jsp";
+    String log4js = path + "js/log4javascript/log4javascript.jsp";
 %>
 <!DOCTYPE html>
 <html>
     <head>
-        <jsp:include page="<%= metaTags%>"></jsp:include>
-            <title>USGS Coastal Change Hazards Portal - Publish</title>
-            <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
+        <jsp:include page="<%=metaTags%>"></jsp:include>
+        <title>USGS Coastal Change Hazards Portal - Publish</title>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <jsp:include page="<%= jsURI%>">
             <jsp:param name="relPath" value="../../" />
         </jsp:include>
+        <jsp:include page="<%= log4js %>">
+            <jsp:param name="relPath" value="../../" />
+            <jsp:param name="debug-qualifier" value="<%= development%>" />
+        </jsp:include>
         <script type="text/javascript">
-			var contextPath = '<%=baseUrl%>';
+            var contextPath = '<%= baseUrl %>',
+                CCH = {
+                    Objects : {},
+                    itemid : '<%= id %>',
+                    CONFIG : {
+                        development : <%= development %>,
+                        data : {
+                            sources : {
+                                item : {
+                                    endpoint : '<%= path %>data/item'
+                                }
+                            }
+                        },
+                        metadataToken: '',
+                        metadataUrl: '',
+                        bbox: [],
+                        type: '',
+                        attributes: [],
+                        endpoint: {
+                            wfs: '',
+                            wfsFullpath: '',
+                            wfsValid: false,
+                            wfsCaps: null,
+                            wms: '',
+                            wmsFullpath: '',
+                            wmsValid: false,
+                            servertype: ''
+                        }
+                    },
+                    items: []
+            };
 		</script>
         <style type="text/css">
             .container {
@@ -131,8 +166,10 @@
                 </div>
             </div>
         </div>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/publish.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/util/Util.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/publish.js"></script>
         <jsp:include page="<%= fineUploader %>">
             <jsp:param name="relPath" value="../../" />
         </jsp:include>
