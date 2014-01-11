@@ -70,10 +70,12 @@ public class PublishResource {
     @Path("/item/{token}")
     public Response viewItemById(@Context HttpServletRequest req, @PathParam("token") String token) throws URISyntaxException {
         String intent = "/publish/item/";
+        Map<String, String> map = new HashMap<>();
+        map.put("id", token);
         if (!verifyOIDSession(req)) {
             return Response.temporaryRedirect(new URI(VERIFICATION_URL + intent + token)).build();
         }
-        return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", token)).build();
+        return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", map)).build();
     }
     
     private boolean verifyOIDSession(@Context HttpServletRequest req) throws URISyntaxException {

@@ -1,11 +1,4 @@
 <link type="text/css" rel="stylesheet" href="<%=request.getParameter("base-url")%>/css/application-overlay/application-overlay.css" />
-<%-- 
-<style type="text/css">
-    #application-overlay {
-        background-image: url("<%=request.getParameter("application-overlay-background-image")%>");
-    }
-</style>
---%>
 <div id="application-overlay">
         <div>
             <img src="<%=request.getParameter("base-url")%>/images/splash/usgs.svg" alt="USGS Logo"/>
