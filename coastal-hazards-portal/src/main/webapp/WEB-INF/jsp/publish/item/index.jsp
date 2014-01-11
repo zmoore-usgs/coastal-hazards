@@ -31,6 +31,7 @@
         <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
+        <%--
         <jsp:include page="../../template/USGSHead.jsp">
             <jsp:param name="relPath" value="../../" />
             <jsp:param name="shortName" value="USGS Coastal Change Hazards Portal" />
@@ -44,15 +45,18 @@
             <jsp:param name="expires" value="never" />
             <jsp:param name="development" value="false" />
         </jsp:include>
+        --%>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/2.3.2/css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/2.3.2/css/bootstrap-responsive.min.css" />
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/2.3.2/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar.min.js"></script>
+        <%--
 		<jsp:include page="../../js/third-party/jsuri/jsuri.jsp">
             <jsp:param name="relPath" value="../../" />
 		</jsp:include>
+        --%>
 		<style type="text/css">
 			.container {
 				margin-top: 10px;
@@ -77,10 +81,13 @@
 		</style>
     </head>
     <body>
+        <%-- 
 		<jsp:include page="../../template/USGSHeader.jsp">
 			<jsp:param name="relPath" value="../../" />
 			<jsp:param name="site-title" value="USGS Coastal Change Hazards Portal" />
 		</jsp:include>
+        
+        --%>
         <c:choose>
 			<c:when test='${empty pageContext.session.getAttribute("oid-info")}'>
 				Could not find your log-in info. 
@@ -159,19 +166,23 @@
 				</div>
 			</c:otherwise>
 		</c:choose>
+                <%-- 
 		<jsp:include page="../../template/USGSFooter.jsp">
 			<jsp:param name="relPath" value="../../" />
 			<jsp:param name="footer-class" value="" />
 			<jsp:param name="site-url" value="<script type='text/javascript'>document.write(document.location.href);</script>" />
 			<jsp:param name="contact-info" value="<a href='mailto:jread@usgs.gov?Subject=Coastal%20Hazards%20Feedback'>Site Administrator</a>" />
 		</jsp:include>
+                --%>
 		<script type="text/javascript">
 			var contextPath = '<%=baseUrl%>';
 		</script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/components/publish/publish.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/components/util/Util.js"></script>
+        <%--
 		<jsp:include page="../../js/fineuploader/fineuploader.jsp">
 			<jsp:param name="relPath" value="../../" />
 		</jsp:include>
+        --%>
 	</body>
 </html>

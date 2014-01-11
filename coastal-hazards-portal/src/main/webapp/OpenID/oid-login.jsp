@@ -1,3 +1,4 @@
+<%@page import="java.net.URLEncoder"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -12,6 +13,7 @@
 	}
 %>
 <%
+    String originatingUri = StringUtils.isNotBlank(request.getParameter("originating_uri")) ? request.getParameter("originating_uri") : "";
 	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
 %>
 <!DOCTYPE html>
@@ -43,6 +45,7 @@
 				<input type="text" name="typeUri" value="http://axschema.org/pref/language" />
 				<input type="checkbox" name="required4" id="required4" checked="checked" />
 				<input type="text" name="count" value="1" />
+                <input type="text" name="originating_uri" value="<%= URLEncoder.encode(originatingUri, "UTF-8") %>" />
 				<button type="submit" name="login"></button>
 			</form>
 		</div>
