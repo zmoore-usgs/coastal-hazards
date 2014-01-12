@@ -49,11 +49,11 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
         <script type="text/javascript">
-            var contextPath = '<%= baseUrl %>',
-                CCH = {
+            var CCH = {
                     Objects : {},
                     itemid : '<%= id %>',
                     CONFIG : {
+                        contextPath : '<%= baseUrl %>',
                         development : <%= development %>,
                         user : {
                             firstName : '${pageContext.session.getAttribute("oid-info").get("oid-firstname")}',
@@ -70,7 +70,7 @@
                                     'endpoint': '<%=geocodeEndpoint%>'
                                 },
                                 item : {
-                                    endpoint : '<%= path %>data/item'
+                                    endpoint : '/data/item'
                                 }
                             }
                         },
@@ -163,6 +163,23 @@
                     <h3 class="panel-title"></h3>
                 </div>
                 <div class="panel-body">
+                    <div class="row row-control center-block">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown">
+                                Create New Item <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">Item</a></li>
+                                <li><a href="#">Aggregation</a></li>
+                            </ul>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" id="publish-button-edit-existing" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown">
+                                Edit Existing <span class="caret"></span>
+                            </button>
+                            <ul id="publish-button-edit-existing-list" class="dropdown-menu" role="menu"></ul>
+                        </div>
+                    </div>
                     <form class="form-inline" role="form">
                         <input type="hidden" id="form-publish-info-item-itemtype" />
                         <%-- 2 column layout --%>

@@ -30,8 +30,8 @@ import org.apache.commons.io.IOUtils;
 @Path("metadata")
 public class MetadataResource {
 
-	private static int FILE_UPLOAD_MAX_SIZE = 15728640;
-	private static String FILENAME_PARAM = "qqfile";
+	private static final int FILE_UPLOAD_MAX_SIZE = 15728640;
+	private static final String FILENAME_PARAM = "qqfile";
 	private static File UPLOAD_DIR;
 
 	public MetadataResource() {
@@ -45,7 +45,7 @@ public class MetadataResource {
 		int maxFileSize = FILE_UPLOAD_MAX_SIZE;
 		int fileSize = Integer.parseInt(req.getHeader("Content-Length"));
 		File tempFile = File.createTempFile(UUID.randomUUID().toString(), "temp");
-		Map<String, String> responseContent = new HashMap<String, String>();
+		Map<String, String> responseContent = new HashMap<>();
 		String fileName;
 
 		if (maxFileSize > 0 && fileSize > maxFileSize) {
@@ -62,11 +62,7 @@ public class MetadataResource {
 
 		try {
 			FormUploadHandler.saveFileFromRequest(req, FILENAME_PARAM, tempFile);
-		} catch (FileUploadException ex) {
-			responseContent.put("message", ex.getMessage());
-			responseContent.put("success", "false");
-			return Response.serverError().entity(responseContent).build();
-		} catch (IOException ex) {
+		} catch (FileUploadException | IOException ex) {
 			responseContent.put("message", ex.getMessage());
 			responseContent.put("success", "false");
 			return Response.serverError().entity(responseContent).build();
@@ -97,7 +93,7 @@ public class MetadataResource {
 	@Produces(MediaType.APPLICATION_XML)
 	public Response getFileById(@PathParam("fid") String fid) throws IOException {
 		File readFile = new File(UPLOAD_DIR, fid);
-		Map<String, String> responseContent = new HashMap<String, String>();
+		Map<String, String> responseContent = new HashMap<>();
 		if (!readFile.exists()) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		} else if (!readFile.canRead()) {
