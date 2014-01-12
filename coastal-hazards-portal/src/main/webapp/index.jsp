@@ -110,7 +110,7 @@
         <script type="text/javascript" src="js/application/front/card/Card.js"></script>
         <script type="text/javascript" src="js/application/common/items/Items.js"></script>
         <script type="text/javascript" src="js/application/front/popularity/Popularity.js"></script>
-        <script type="text/javascript" src="js/application/front/OWS.js"></script>
+        <script type="text/javascript" src="js/application/common/ows/OWS.js"></script>
         <script type="text/javascript" src="js/application/front/bucket/Bucket.js"></script>
         <script type="text/javascript" src="js/application/front/search/combined-searchbar.js"></script>
         <script type="text/javascript" src="js/application/front/ui/UI.js"></script>

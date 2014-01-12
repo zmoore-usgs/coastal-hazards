@@ -18,14 +18,13 @@
 <%
     boolean development = Boolean.parseBoolean(props.getProperty("development"));
     String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+    String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
+    String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
 
     // Figure out the path based on the ID passed in, if any
     Map<String, String>  attributeMap = (Map<String, String>) pageContext.findAttribute("it");
     String id = attributeMap.get("id");
-    String path = "../../../";
-    if (null != id && !"".equals(id)) {
-        path += "../";
-    }
+    String path = "../../../../";
     String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
     String jsURI = path + "js/third-party/jsuri/jsuri.jsp";
     String fineUploader = path + "js/fineuploader/fineuploader.jsp";
@@ -56,121 +55,325 @@
                     itemid : '<%= id %>',
                     CONFIG : {
                         development : <%= development %>,
+                        user : {
+                            firstName : '${pageContext.session.getAttribute("oid-info").get("oid-firstname")}',
+                            lastName : '${pageContext.session.getAttribute("oid-info").get("oid-lastname")}',
+                            email : '${pageContext.session.getAttribute("oid-info").get("oid-email")}'
+                        },
                         data : {
                             sources : {
+                                'cida-geoserver': {
+                                    'endpoint': '<%=geoserverEndpoint%>',
+                                    'proxy': 'geoserver/'
+                                },
+                                'geocoding': {
+                                    'endpoint': '<%=geocodeEndpoint%>'
+                                },
                                 item : {
                                     endpoint : '<%= path %>data/item'
                                 }
                             }
                         },
-                        metadataToken: '',
-                        metadataUrl: '',
-                        bbox: [],
-                        type: '',
-                        attributes: [],
-                        endpoint: {
-                            wfs: '',
-                            wfsFullpath: '',
-                            wfsValid: false,
-                            wfsCaps: null,
-                            wms: '',
-                            wmsFullpath: '',
-                            wmsValid: false,
-                            servertype: ''
-                        }
+                        item : null
                     },
-                    items: []
+                    items : []
             };
 		</script>
         <style type="text/css">
-            .container {
+            .panel-body .row:not(:first-child) {
                 margin-top: 10px;
-                font-size: 1.25em;
             }
-
-            .publish-services-input {
-                width: 70%;
+            .panel-body .row:not(:last-child) {
+                margin-bottom: 10px;
             }
-
-            #publish-name-input {
-                width: 70%;
+            
+            .row-id .form-control {
+                width: auto;
             }
-
-            .publish-container-actions {
-                margin-left : 15px;
+            
+            .row-name .form-control {
+                width: auto;
             }
-
-            .name-span {
-                width: auto !important;
+            
+            .row-type .form-group {
+                width: 100%;
+            }
+            .row-type .form-control {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                width: 100%;
+            }
+            
+            .row-attribute .form-group {
+                width: 100%;
+            }
+            .row-attribute .form-control {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                width: 100%;
+            }
+            
+            .row-title .form-group {
+                width: 100%;
+            }
+            .row-title .form-control {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                width: 100%;
+            }
+            
+            
+            .row-children .form-group {
+                width: 100%;
+            }
+            .row-children .form-control {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                width: 100%;
+            }
+            
+            
+            .row-description .form-group {
+                width: 100%;
+            }
+            .row-description .form-control {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                width: 100%;
+            }
+            
+            .form-publish-info-item-bbox h5 {
+                font-weight: bold;
+            }
+            
+            #services-panel .form-group {
+                width: 100%;
             }
         </style>
     </head>
     <body>
         <div class="container">
-            <div class="row">
-                <div class="well well-small col-md-6">
-                    <div id="publish-user-container-row">
-                        <div class="well well-small">
-                            User: 
-                            <span class="publish-user-container" id="publish-user-name-first">${pageContext.session.getAttribute("oid-info").get("oid-firstname")}</span>&nbsp;
-                            <span class="publish-user-container" id="publish-user-name-last">${pageContext.session.getAttribute("oid-info").get("oid-lastname")}</span>&nbsp;
-                            ( <span class="publish-user-container" id="publish-user-name-email">${pageContext.session.getAttribute("oid-info").get("oid-email")}</span> )
-                        </div>
-                    </div>
-                    <div id="publish-type-container-row" class="row">
-                        <div class="publish-metadata-container-row row">
-                            <div class="well well-small">
-                                <span class="publish-container-metadata">
-                                    Metadata&nbsp;&nbsp;<span id="publish-metadata-upload-button">Upload Metadata</span><span id="publish-metadata-validate"></span>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="publish-name-container-row row">
-                            <div class="well well-small">
-                                <span id="publish-container-name">
-                                    Name: <input type="text" id="publish-name-input" />
-                                </span>
-                            </div>
-                        </div>
-                        <div class="publish-services-container-row row">
-                            <div class="well well-small">
-                                <span id="publish-container-services-wfs">
-                                    WFS: <input type="text" id="publish-services-wfs"class="publish-services-input"/><span id="publish-services-wfs-validate"></span>
-                                </span>
-                                <br />
-                                <span id="publish-container-services-wms">
-                                    WMS: <input type="text" id="publish-services-wms"class="publish-services-input"/><span id="publish-services-wms-validate"></span>
-                                </span>
-                                <br />
-                                <span id="publish-container-services-types">
-                                    Types: <select type="text" id="publish-services-types" class="publish-types-input"></select>
-                                </span>
-                                <span id="publish-container-services-layers">
-                                    Layers: <select type="text" id="publish-services-layers" class="publish-layers-input"></select>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"></h3>
                 </div>
-
-                <div class="well well-small col-md-6">
-                    <div class="well well-small">
-                        <div class="row">
-                            <button id="publish-publish-button" class="btn btn-default btn-primary disabled pull-right">Publish</button>
+                <div class="panel-body">
+                    <form class="form-inline" role="form">
+                        <input type="hidden" id="form-publish-info-item-itemtype" />
+                        <%-- 2 column layout --%>
+                        <div class="col-md-6">
+                            
+                            <%-- ITEM ID --%>
+                            <div id="form-publish-info-item-id" class="row row-id">
+                                <div class="form-group">
+                                    <label for="form-publish-item-id">Item ID</label>
+                                    <input type="text" class="form-control" id="form-publish-item-id" disabled="disabled" />
+                                </div>
+                            </div>
+                            
+                            <%-- ITEM TITLE --%>
+                            <div id="form-publish-info-item-title-full" class="row row-title">
+                                <div class="form-group">
+                                    <label for="form-publish-item-title-full">Title (Full)</label>
+                                    <textarea class="form-control" rows="2" id="form-publish-item-title-full" disabled="disabled"></textarea>
+                                </div>
+                            </div>
+                            <div id="form-publish-info-item-title-medium" class="row row-title">
+                                <div class="form-group">
+                                    <label for="form-publish-item-title-medium">Title (Medium)</label>
+                                    <textarea class="form-control" rows="2" id="form-publish-item-title-medium" disabled="disabled"></textarea>
+                                </div>
+                            </div>
+                            <div id="form-publish-info-item-title-tiny" class="row row-title">
+                                <div class="form-group">
+                                    <label for="form-publish-item-title-tiny">Title (Tiny)</label>
+                                    <textarea class="form-control" rows="2" id="form-publish-item-title-tiny" disabled="disabled"></textarea>
+                                </div>
+                            </div>
+                            
+                            <%-- ITEM DESCRIPTION --%>
+                            <div id="form-publish-info-item-description-full" class="row row-description">
+                                <div class="form-group">
+                                    <label for="form-publish-item-description-full">Description (Full)</label>
+                                    <textarea class="form-control" rows="4" id="form-publish-item-description-full" disabled="disabled"></textarea>
+                                </div>
+                            </div>
+                            <div id="form-publish-info-item-description-medium" class="row row-description">
+                                <div class="form-group">
+                                    <label for="form-publish-item-description-medium">Description (Medium)</label>
+                                    <textarea class="form-control" rows="2" id="form-publish-item-description-medium" disabled="disabled"></textarea>
+                                </div>
+                            </div>
+                            <div id="form-publish-info-item-description-tiny" class="row row-description">
+                                <div class="form-group">
+                                    <label for="form-publish-item-description-tiny">Description (Tiny)</label>
+                                    <textarea class="form-control" rows="2" id="form-publish-item-description-tiny" disabled="disabled"></textarea>
+                                </div>
+                            </div>
+                            
+                            <%-- KEYWORDS --%>
+                            <div id="form-publish-info-item-keywords" class="row row-keywords">
+                                <div><h3>Keywords</h3></div>
+                                <div class="input-group form-group-keyword">
+                                    <input type="text" class="form-control form-publish-item-keyword" placeholder="Enter Keyword" disabled="disabled" />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" disabled="disabled"><i class="fa fa-check-circle-o"></i></button>
+                                        <button class="btn btn-default" type="button" disabled="disabled"><i class="fa fa-times-circle-o"></i></button>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                        <div id="attribute-checkbox-list-div" class="row">
-                            <label>Attributes</label>
-                            <ul id="attribute-checkbox-list"></ul>
+                            
+                            
+                        <%-- COLUMN TWO --%>
+                        <div class="col-md-6">
+                            
+                            <%-- ITEM TYPE --%>
+                            <div id="form-publish-info-item-type" class="row row-type">
+                                <div class="form-group">
+                                    <label for="form-publish-item-type">Item Type</label>
+                                    <select class="form-control" id="form-publish-item-type" disabled="disabled">
+                                        <option value="storms">Storms</option>
+                                        <option value="vulnerability">Vulnerability</option>
+                                        <option value="historical">Historical</option>
+                                        <option value="mixed">Mixed</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <%-- NAME --%>
+                            <div id="form-publish-info-item-name" class="row row-name">
+                                <div class="form-group">
+                                    <label for="form-publish-item-name">Name</label>
+                                    <input type="text" class="form-control" id="form-publish-item-name" disabled="disabled" />
+                                </div>
+                            </div>
+                            
+                            <%-- BBOX --%>
+                            <div id="form-publish-info-item-bbox" class="row row-bbox">
+                                <div><h5>Bounding Box</h5></div>
+                                <table id="bbox-table">
+                                    <tr>
+                                        <td></td>
+                                        <td id="form-publish-info-item-bbox-table-north">
+                                            <label for="form-publish-item-bbox-input-north">North</label>
+                                            <input type="text" id="form-publish-item-bbox-input-north" class="form-control" placeholder="180" disabled="disabled" />
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td id="form-publish-info-item-bbox-table-west">
+                                            <label for="form-publish-item-bbox-input-west">West</label>
+                                            <input type="text" id="form-publish-item-bbox-input-west" class="form-control" placeholder="-180" disabled="disabled" />
+                                        </td>
+                                        <td></td>
+                                        <td id="form-publish-info-item-bbox-table-east">
+                                            <label for="form-publish-item-bbox-input-east">East</label>
+                                            <input type="text" id="form-publish-item-bbox-input-east" class="form-control" placeholder="180" disabled="disabled" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td id="form-publish-info-item-bbox-table-south">
+                                            <label for="form-publish-item-bbox-input-south">South</label>
+                                            <input type="text" id="form-publish-item-bbox-input-south" class="form-control" placeholder="-180" disabled="disabled" />
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            
+                            <%-- Services --%>
+                            <div id="services-panel" class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Services</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="form-publish-info-item-service-csw" class="row row-csw">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-csw">CSW</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-csw" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                    <div id="form-publish-info-item-service-source-wfs" class="row row-src-wfs">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-source-wfs">Source WFS</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs" disabled="disabled" />
+                                            <label for="form-publish-item-service-source-wfs-serviceparam">Service Parameter</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                    <div id="form-publish-info-item-service-source-wms" class="row row-src-wms">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-source-wms">Source WMS</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms" disabled="disabled" />
+                                            <label for="form-publish-item-service-source-wms-serviceparam">Service Parameter</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms-serviceparam" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                    <div id="form-publish-info-item-service-proxy-wfs" class="row row-prx-wfs">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-proxy-wfs">Proxy WFS</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs" disabled="disabled" />
+                                            <label for="form-publish-item-service-proxy-wfs-serviceparam">Service Parameter</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs-serviceparam" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                    <div id="form-publish-info-item-service-proxy-wms" class="row row-prx-wms">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-proxy-wms">Proxy WMS</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms" disabled="disabled" />
+                                            <label for="form-publish-item-service-proxy-wms-serviceparam">Service Parameter</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms-serviceparam" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <%-- Attribute --%>
+                            <div class="row row-attribute">
+                                <div class="form-group">
+                                    <label for="form-publish-item-attribute">Attribute</label>
+                                    <select class="form-control" id="form-publish-item-attribute" disabled="disabled"></select>
+                                </div>
+                            </div>
+                            
+                            <%-- Children --%>
+                            <div id="form-publish-info-item-children" class="row row-children">
+                                <div class="form-group">
+                                    <label for="form-publish-item-children">Description (Tiny)</label>
+                                    <select class="form-control" multiple id="form-publish-item-children" disabled="disabled"></select>
+                                </div>
+                            </div>
+                            
+                            <%-- Ribbonable --%>
+                            <div class="row row-ribbonable">
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <input id="form-publish-item-ribbonable" type="checkbox" disabled="disabled">
+                                        <label for="fform-publish-item-ribbonable">Ribbonable</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
+
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/ui/UI.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/ows/OWS.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/util/Util.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/publish.js"></script>
-        <jsp:include page="<%= fineUploader %>">
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/OnReady.js"></script>
+        <jsp:include page="<%= fineUploader%>">
             <jsp:param name="relPath" value="../../" />
         </jsp:include>
     </body>

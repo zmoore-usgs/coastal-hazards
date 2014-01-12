@@ -3,7 +3,6 @@ CCH.Objects.OWS = function() {
     CCH.LOG.info('OWS.js::constructor: OWS class is initializing.');
     var me = (this === window) ? {} : this;
 
-
     CCH.LOG.debug('OWS.js::constructor: OWS class initialized.');
     return $.extend(me, {
         init: function () {
@@ -30,52 +29,36 @@ CCH.Objects.OWS = function() {
                             }
                         }
                     }
-                },
-                'stpete-arcserver-vulnerability-se-erosion': {
-                    endpoints: {
-                        endpoint: CCH.CONFIG.data.sources['stpete-arcserver'].endpoint,
-                        proxy: CCH.CONFIG.data.sources['stpete-arcserver'].proxy,
-                        wmsGetCapsUrl: CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_erosion_hazards/MapServer/WMSServer?request=GetCapabilities&version=1.3.0&service=WMS',
-                        wmsGetImageUrl: CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_erosion_hazards/MapServer/WMSServer?'
-                    },
-                    data: {
-                        wms: {
-                            capabilities: {
-                                xml: '',
-                                object: {}
-                            }
-                        },
-                        wfs: {
-                            capabilities: {
-                                xml: '',
-                                object: {}
-                            }
-                        }
-                    }
-                },
-                'stpete-arcserver-vulnerability-se-dune': {
-                    endpoints: {
-                        endpoint: CCH.CONFIG.data.sources['stpete-arcserver'].endpoint,
-                        proxy: CCH.CONFIG.data.sources['stpete-arcserver'].proxy,
-                        wmsGetCapsUrl: CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'Vulnerability/SE_dune_vulnerability/MapServer/WMSServer?request=GetCapabilities&service=WMS'
-                    },
-                    data: {
-                        wms: {
-                            capabilities: {
-                                xml: '',
-                                object: {}
-                            }
-                        },
-                        wfs: {
-                            capabilities: {
-                                xml: '',
-                                object: {}
-                            }
-                        }
-                    }
                 }
             };
             return me;
+        },
+        describeFeatureType : function(args) {
+            args = args || {};
+            var callbacks = args.callbacks || {
+                success: [],
+                error: []
+            },
+                layername = args.layerName || '';
+            $.ajax(CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?', {
+                data: {
+                    request: 'DescribeFeaturetype',
+                    service: 'WFS',
+                    version: '1.0.0',
+                    typename: layername || ''
+                },
+                success: function(data, textStatus, jqXHR) {
+                    var describeFTResponse = new OpenLayers.Format.WFSDescribeFeatureType().read(data);
+                    $(callbacks.success).each(function(index, callback, allCallbacks) {
+                        callback(describeFTResponse);
+                    });
+                },
+                error: function(data, textStatus, jqXHR) {
+                    $(callbacks.error).each(function(index, callback, allCallbacks) {
+                        callback(data);
+                    });
+                }
+            });
         },
         getWMSCapabilities: function(args) {
             var callbacks = args.callbacks || {};
@@ -120,7 +103,6 @@ CCH.Objects.OWS = function() {
             });
         },
         getFilteredFeature: function(args) {
-            CCH.LOG.info('OWS.js::getFilteredFeature');
             CCH.LOG.debug('OWS.js::getFilteredFeature: Building request for WFS GetFeature (filtered)');
             var layerName = args.layerName;
             var layerPrefix = layerName.split(':')[0];
@@ -128,8 +110,9 @@ CCH.Objects.OWS = function() {
             var scope = args.scope;
             var propertyArray = args.propertyArray;
             var callbacks = args.callbacks;
+            var proxyEndpoint = me.servers['cida-geoserver'].endpoints.proxy;
 
-            var url = me.geoserverProxyEndpoint + layerPrefix + '/wfs?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&typeName=' + layerName + '&propertyName=';
+            var url = proxyEndpoint + layerPrefix + '/wfs?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&typeName=' + layerName + '&propertyName=';
             url += (propertyArray || []).join(',');
 
             $.ajax(url, {

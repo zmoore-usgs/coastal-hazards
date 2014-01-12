@@ -83,11 +83,12 @@ CCH.Objects.Search = function (args) {
                 bbox: bbox,
                 sortBy: sortBy,
                 query: criteria,
-                type: types
+                type: types,
+                subtree : args.subtree || false
             },
             url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.item.endpoint,
             displayNotification = args.displayNotification === false ? false : true;
-
+        
         if (!item) {
             if (!count) {
                 delete data.count;
