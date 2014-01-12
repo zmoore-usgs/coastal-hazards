@@ -90,31 +90,60 @@ CCH.Objects.UI = function () {
         return qqUploader;
     };
 
-    me.createUploader = function () {
+    me.createUploader = function (args) {
         // Set the URL to not have an item ID in it
         history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
         me.initUploader({
             button : document.getElementById('qq-uploader-dummy'),
+            callbacks : args.callbacks
+        });
+    };
+    
+    $('#publish-button-create-item-option').on('click', function () {
+        me.createUploader({
             callbacks : {
                 success : [
-                    function () {
-                        debugger;
+                    function (args) {
+                        me.publishMetadata(args)
                     }
                 ],
                 error : [
-                    function () {
+                    function (args) {
                         debugger;
                     }
                 ]
             }
         });
-    };
-    
-    $('#publish-button-create-item-option').on('click', function () {
-        me.createUploader();
     });
-    me.initializeNewItem = function () {
-        
+    
+    
+    me.publishMetadata = function (args) {
+        args = args || {};
+        var token = args.token;
+        var callbacks = args.callbacks || {
+            success: [],
+            error: []
+        };
+
+        $.ajax({
+            url: CCH.CONFIG.contextPath + '/publish/metadata/' + token,
+            type: 'POST',
+            dataType: 'json',
+            success: function(json, textStatus, jqXHR) {
+                if (callbacks.success && callbacks.success.length > 0) {
+                    callbacks.success.each(function(callback) {
+                        callback.call(null, json, textStatus, jqXHR);
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                if (callbacks.error && callbacks.error.length > 0) {
+                    callbacks.error.each(function(callback) {
+                        callback.call(null, xhr, status, error);
+                    });
+                }
+            }
+        });
     };
 
     me.addUserInformationToForm = function (args) {

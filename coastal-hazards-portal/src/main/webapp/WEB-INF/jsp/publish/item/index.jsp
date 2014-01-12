@@ -159,6 +159,10 @@
                 display: none;
             }
             
+            #qq-uploader-dummy ul {
+                display: none;
+            }
+            
             .qq-upload-button {
                 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
                 -webkit-box-sizing: border-box;
