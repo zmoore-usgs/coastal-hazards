@@ -20,7 +20,7 @@
 <% String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");%>
 <html lang="en"> 
     <head>
-        <jsp:include page="WEB-INF/jsp/components/common/meta-tags.jsp"></jsp:include>
+        <jsp:include page="/WEB-INF/jsp/components/common/meta-tags.jsp"></jsp:include>
         <title>USGS Coastal Change Hazards Portal</title>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery.ui<%= development ? ".all" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
@@ -110,7 +110,7 @@
         <script type="text/javascript" src="js/application/front/card/Card.js"></script>
         <script type="text/javascript" src="js/application/common/items/Items.js"></script>
         <script type="text/javascript" src="js/application/front/popularity/Popularity.js"></script>
-        <script type="text/javascript" src="js/application/front/OWS.js"></script>
+        <script type="text/javascript" src="js/application/common/ows/OWS.js"></script>
         <script type="text/javascript" src="js/application/front/bucket/Bucket.js"></script>
         <script type="text/javascript" src="js/application/front/search/combined-searchbar.js"></script>
         <script type="text/javascript" src="js/application/front/ui/UI.js"></script>

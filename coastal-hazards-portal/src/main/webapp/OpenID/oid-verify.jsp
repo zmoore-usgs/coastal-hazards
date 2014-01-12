@@ -1,3 +1,4 @@
+<%@page import="java.lang.String"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -14,6 +15,7 @@
 	}
 %>
 <%
+    String originatingUri = StringUtils.isNotBlank(request.getParameter("originating_uri")) ? request.getParameter("originating_uri") : "/publish";
 	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
 %>
 <?xml version="1.0" encoding="UTF-8"?>
@@ -29,12 +31,12 @@
 			<c:when test='${sessionScope.sessionValid == null or sessionScope.sessionValid == false}'>
 				Could not find your log-in info or you are not an authorized user. 
 				<br />
-				<a href="publish">Try again?</a>
+				<a href="publish/item">Try again?</a>
 				<br />
 				<a href="<%=baseUrl%>/">Go to Coastal Change Hazards Portal?</a>
 			</c:when>
 			<c:when test='${sessionScope.sessionValid == true}'>
-				You have been logged in. <a href="<%=baseUrl%>/publish">Go to publish form</a>
+				You have been logged in. <a href="<%=baseUrl%><%=originatingUri%>">Go to publish form</a>
 			</c:when>
 		</c:choose>
 	</body>
