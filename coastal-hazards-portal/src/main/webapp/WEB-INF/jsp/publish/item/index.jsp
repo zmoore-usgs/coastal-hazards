@@ -154,10 +154,46 @@
             #services-panel .form-group {
                 width: 100%;
             }
+            
+            #qq-uploader-dummy {
+                display: none;
+            }
+            
+            .qq-upload-button {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                display: inline-block !important;
+                margin-bottom: 0;
+                font-weight: normal;
+                text-align: center;
+                white-space: nowrap;
+                vertical-align: middle;
+                cursor: pointer;
+                background-image: none;
+                border: 1px solid transparent;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                -o-user-select: none;
+                user-select: none;
+                color: #ffffff;
+                background-color: #5cb85c;
+                border-color: #4cae4c;
+                padding: 10px 16px  !important;
+                font-size: 18px;
+                line-height: 1.33;
+                border-radius: 6px;
+                background: #5cb85c !important;
+                width: auto !important;
+            }
         </style>
     </head>
     <body>
+        
         <div class="container">
+            
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title"></h3>
@@ -165,20 +201,21 @@
                 <div class="panel-body">
                     <div class="row row-control center-block">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown">
-                                Create New Item <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">Item</a></li>
-                                <li><a href="#">Aggregation</a></li>
-                            </ul>
-                        </div>
-                        <div class="btn-group">
                             <button type="button" id="publish-button-edit-existing" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown">
                                 Edit Existing <span class="caret"></span>
                             </button>
                             <ul id="publish-button-edit-existing-list" class="dropdown-menu" role="menu"></ul>
                         </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown">
+                                Create New Item <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a id="publish-button-create-item-option" href="#">Item</a></li>
+                                <li><a href="#">Aggregation</a></li>
+                            </ul>
+                        </div>
+                        <div id="qq-uploader-dummy"></div>
                     </div>
                     <form class="form-inline" role="form">
                         <input type="hidden" id="form-publish-info-item-itemtype" />
@@ -392,6 +429,7 @@
         <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/OnReady.js"></script>
         <jsp:include page="<%= fineUploader%>">
             <jsp:param name="relPath" value="../../" />
+            <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
     </body>
 </html>

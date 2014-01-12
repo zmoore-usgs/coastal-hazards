@@ -8,7 +8,114 @@ CCH.Objects.UI = function () {
 
     CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 
-    var me = (this === window) ? {} : this;
+    var me = (this === window) ? {} : this,
+        $form = $('form'),
+        $itemIdInput = $form.find('#form-publish-item-id'),
+        $titleFullTextArea = $form.find('#form-publish-item-title-full'),
+        $titleMediumTextArea = $form.find('#form-publish-item-title-medium'),
+        $titleTinyTextArea = $form.find('#form-publish-item-title-tiny'),
+        $descriptionFullTextArea = $form.find('#form-publish-item-description-full'),
+        $descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
+        $descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
+        $bboxNorth = $form.find('#form-publish-item-bbox-input-north'),
+        $bboxWest = $form.find('#form-publish-item-bbox-input-west'),
+        $bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
+        $bboxEast = $form.find('#form-publish-item-bbox-input-east'),
+        $type = $form.find('#form-publish-item-type'),
+        $attributeSelect = $form.find('#form-publish-item-attribute'),
+        $keywordGroup = $form.find('.form-group-keyword'),
+        $cswServiceInput = $form.find('#form-publish-item-service-csw'),
+        $srcWfsServiceInput = $form.find('#form-publish-item-service-source-wfs'),
+        $srcWfsServiceParamInput = $form.find('#form-publish-item-service-source-wfs-serviceparam'),
+        $srcWmsServiceInput = $form.find('#form-publish-item-service-source-wms'),
+        $srcWmsServiceParamInput = $form.find('#form-publish-item-service-source-wms-serviceparam'),
+        $proxyWfsServiceInput = $form.find('#form-publish-item-service-proxy-wfs'),
+        $proxyWfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wfs-serviceparam'),
+        $proxyWmsServiceInput = $form.find('#form-publish-item-service-proxy-wms'),
+        $proxyWmfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
+        $ribbonableCb = $form.find('#form-publish-item-ribbonable'),
+        $itemType = $form.find('#form-publish-info-item-itemtype'),
+        $name = $form.find('#form-publish-item-name'),
+        $keywordGroupClone = $keywordGroup.clone(),
+        $childrenSb = $form.find('#form-publish-item-children');
+
+        me.initUploader = function (args) {
+            args = args || {};
+            var button = args.button,
+                callbacks = args.callbacks || {
+                    success : [],
+                    error : []
+                },
+                qqUploader;
+        
+            qqUploader = new qq.FineUploader({
+                element:button,
+                autoUpload: true,
+                paramsInBody: false,
+                forceMultipart: false,
+                request: {
+                    endpoint: CCH.CONFIG.contextPath + '/data/metadata/'
+                },
+                validation: {
+                    allowedExtensions: ['xml'],
+                    sizeLimit: 15728640
+                },
+                callbacks: {
+                    onComplete: function (id, fileName, responseJSON) {
+                        if (responseJSON.success) {
+                            callbacks.success.each(function (cb) {
+                                cb({
+                                    token : responseJSON.fid,
+                                    id: id,
+                                    fileName : fileName,
+                                    responseJSON : responseJSON
+                                });
+                            });
+                        } else {
+                            callbacks.error.each(function (cb) {
+                                cb({
+                                    token : responseJSON.fid,
+                                    id: id,
+                                    fileName : fileName,
+                                    responseJSON : responseJSON
+                                });
+                            });
+                        }
+                    }
+                }
+            });
+        $('#qq-uploader-dummy').css('display', 'inline-block');
+        $('.qq-upload-button').find('> div').html('Upload Metadata')
+        $(button).click();
+        return qqUploader;
+    };
+
+    me.createUploader = function () {
+        // Set the URL to not have an item ID in it
+        history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
+        me.initUploader({
+            button : document.getElementById('qq-uploader-dummy'),
+            callbacks : {
+                success : [
+                    function () {
+                        debugger;
+                    }
+                ],
+                error : [
+                    function () {
+                        debugger;
+                    }
+                ]
+            }
+        });
+    };
+    
+    $('#publish-button-create-item-option').on('click', function () {
+        me.createUploader();
+    });
+    me.initializeNewItem = function () {
+        
+    };
 
     me.addUserInformationToForm = function (args) {
         args = args || {};
@@ -26,35 +133,6 @@ CCH.Objects.UI = function () {
         CCH.LOG.info('UI.js::putItemOnForm: Adding item to form.');
         args = args || {};
         var item = args.data || CCH.CONFIG.item,
-            $form = $('form'),
-            $itemIdInput = $form.find('#form-publish-item-id'),
-            $titleFullTextArea = $form.find('#form-publish-item-title-full'),
-            $titleMediumTextArea = $form.find('#form-publish-item-title-medium'),
-            $titleTinyTextArea = $form.find('#form-publish-item-title-tiny'),
-            $descriptionFullTextArea = $form.find('#form-publish-item-description-full'),
-            $descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
-            $descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
-            $bboxNorth = $form.find('#form-publish-item-bbox-input-north'),
-            $bboxWest = $form.find('#form-publish-item-bbox-input-west'),
-            $bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
-            $bboxEast = $form.find('#form-publish-item-bbox-input-east'),
-            $type = $form.find('#form-publish-item-type'),
-            $attributeSelect = $form.find('#form-publish-item-attribute'),
-            $keywordGroup = $form.find('.form-group-keyword'),
-            $cswServiceInput = $form.find('#form-publish-item-service-csw'),
-            $srcWfsServiceInput = $form.find('#form-publish-item-service-source-wfs'),
-            $srcWfsServiceParamInput = $form.find('#form-publish-item-service-source-wfs-serviceparam'),
-            $srcWmsServiceInput = $form.find('#form-publish-item-service-source-wms'),
-            $srcWmsServiceParamInput = $form.find('#form-publish-item-service-source-wms-serviceparam'),
-            $proxyWfsServiceInput = $form.find('#form-publish-item-service-proxy-wfs'),
-            $proxyWfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wfs-serviceparam'),
-            $proxyWmsServiceInput = $form.find('#form-publish-item-service-proxy-wms'),
-            $proxyWmfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
-            $ribbonableCb = $form.find('#form-publish-item-ribbonable'),
-            $itemType = $form.find('#form-publish-info-item-itemtype'),
-            $name = $form.find('#form-publish-item-name'),
-            $keywordGroupClone = $keywordGroup.clone(),
-            $childrenSb = $form.find('#form-publish-item-children'),
             $keywordGroupLocal,
             id,
             summary,
@@ -118,6 +196,7 @@ CCH.Objects.UI = function () {
         });
 
         if (item) {
+            item.children = item.children || [];
             id = item.id;
             summary = item.summary;
             titleFull = summary.full.title;
@@ -136,7 +215,7 @@ CCH.Objects.UI = function () {
             });
 
             // Hidden field. Should be changed implicitly
-            $itemType.val(item.itemType)
+            $itemType.val(item.itemType);
             
             $name.
                 val(item.name).
@@ -271,36 +350,7 @@ CCH.Objects.UI = function () {
         }
     };
     
-    me.initUploader = function () {
-        var qq = new qq.FineUploader({
-            element: $('#publish-metadata-upload-button')[0],
-            autoUpload: true,
-            paramsInBody: false,
-            forceMultipart: false,
-            request: {
-                endpoint: contextPath + '/data/metadata/'
-            },
-            validation: {
-                allowedExtensions: ['xml'],
-                sizeLimit: 15728640
-            },
-            classes: {
-                success: 'alert alert-success',
-                fail: 'alert alert-danger'
-            },
-            callbacks: {
-                onComplete: function (id, fileName, responseJSON) {
-                    if (responseJSON.success) {
-                        CCH.config.metadataToken = responseJSON.fid;
-                        $('#publish-metadata-validate').html('Valid');
-                    } else {
-                        CCH.config.metadataToken = '';
-                        $('#publish-metadata-validate').html('Invalid');
-                    }
-                }
-            }
-        });
-    };
-
+    
+    
     return me;
 };
