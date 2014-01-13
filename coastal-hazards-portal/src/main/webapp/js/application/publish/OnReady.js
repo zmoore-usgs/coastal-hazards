@@ -48,10 +48,22 @@ $(document).ready(function () {
                                 CCH.items.push(item);
                             }
                         }
-                    }
+                    },
+                        $option;
                     
                     CCH.items.each(function (item) {
                         rootOutChildren(item);
+                    });
+                    
+                    CCH.items.each(function (item) {
+                        $option = $('<li />').
+                                append(
+                                $('<a />').
+                                    attr({
+                                        'href' : CCH.CONFIG.contextPath + '/publish/item/' + item.id
+                                    }).
+                                    html(item.summary.medium.title));
+                        $('#publish-button-edit-existing-list').append($option);
                     });
                     
                     if (CCH.itemid) {
