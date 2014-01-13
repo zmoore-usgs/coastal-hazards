@@ -216,7 +216,7 @@
                             </button>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a id="publish-button-create-item-option" href="#">Item</a></li>
-                                <li><a href="#">Aggregation</a></li>
+                                <li><a id="publish-button-create-aggregation-option" href="#">Aggregation</a></li>
                             </ul>
                         </div>
                         <div id="qq-uploader-dummy"></div>
@@ -404,7 +404,7 @@
                             <%-- Children --%>
                             <div id="form-publish-info-item-children" class="row row-children">
                                 <div class="form-group">
-                                    <label for="form-publish-item-children">Description (Tiny)</label>
+                                    <label for="form-publish-item-children">Children</label>
                                     <select class="form-control" multiple id="form-publish-item-children" disabled="disabled"></select>
                                 </div>
                             </div>
