@@ -12,12 +12,14 @@
         <class>gov.usgs.cida.coastalhazards.model.Bbox</class>
         <class>gov.usgs.cida.coastalhazards.model.Center</class>
         <class>gov.usgs.cida.coastalhazards.model.Service</class>
+        <class>gov.usgs.cida.coastalhazards.model.Thumbnail</class>
         <class>gov.usgs.cida.coastalhazards.model.util.Download</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Summary</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Tiny</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Medium</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Full</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Publication</class>
+
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
