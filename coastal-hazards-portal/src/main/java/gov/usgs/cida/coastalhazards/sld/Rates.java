@@ -16,7 +16,7 @@ public final class Rates {
     protected static final String[] colors = {"#ED2024", "#FCBF10", "#F6EB13", "#00B04F", "#29ADE3"};
 
 	
-	protected static final String jspPath = "/bins_line.jsp";
+	protected static final String jspPath = "/SLD/bins_line.jsp";
 	protected static final String units = "m/yr";
 	protected static final List<Map<String,Object>> bins;
 	static {

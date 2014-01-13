@@ -3,6 +3,8 @@ package gov.usgs.cida.coastalhazards.rest.data;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.Service;
+import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
@@ -159,7 +161,7 @@ public class ItemResource {
         Item item = Item.fromJSON(content);
 
         try {
-            String jsonSummary = getSummaryFromWPS(item.getMetadata(), item.getAttr());
+            String jsonSummary = getSummaryFromWPS(getMetadataUrl(item), item.getAttr());
             // this is not actually summary json object, so we need to change that a bit
             Summary summary = GsonUtil.getDefault().fromJson(jsonSummary, Summary.class);
             item.setSummary(summary);
@@ -258,5 +260,18 @@ public class ItemResource {
                 throw new RuntimeException(error);
             }
             return data;
+    }
+    
+    private static String getMetadataUrl(Item item) {
+        String url = "";
+        if (item != null) {
+            List<Service> services = item.getServices();
+            for (Service service : services) {
+                if (service.getType() == ServiceType.csw) {
+                    url = service.getEndpoint();
+                }
+            }
+        }
+        return url;
     }
 }

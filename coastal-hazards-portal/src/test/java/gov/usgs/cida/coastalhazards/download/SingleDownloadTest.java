@@ -1,6 +1,6 @@
 package gov.usgs.cida.coastalhazards.download;
 
-import gov.usgs.cida.coastalhazards.model.ogc.WFSService;
+import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class SingleDownloadTest {
         singleDownload.setWfs(wfs);
         singleDownload.addAttr("CVI");
         singleDownload.addAttr("SLRISK");
-        singleDownload.stage(DownloadManager.createDownloadStagingArea(), missing);
+        singleDownload.stage(DownloadUtility.createDownloadStagingArea(), missing);
     } 
     
 }

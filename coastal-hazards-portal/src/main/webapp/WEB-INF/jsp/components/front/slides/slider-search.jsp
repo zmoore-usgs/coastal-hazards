@@ -1,0 +1,56 @@
+<div id="application-slide-search-container" class="application-search-container">
+    <div id="application-slide-search-content" class="application-slide-content">
+        <div id="application-slide-search-controlset" class="application-slide-controlset">
+            <div class="pull-left"><i class="fa fa-minus-square-o"></i></div>
+        </div>
+        <div id="application-slide-search-content-container" class="application-slide-content-container row">
+            <%-- Location Container --%>
+            <div id="application-slide-search-location-results-content-container">
+                <div><%-- Results Found Count Container--%></div>
+                <div id="application-slide-search-location-results-card-container" class="row"></div>
+                <div id="application-slide-search-location-results-paging-container" class="application-slide-search-paging-container row">
+                    <ul class="pagination"></ul>
+                </div>
+            </div>
+
+            <%-- Product container --%>
+            <div id="application-slide-search-product-results-content-container">
+                <div><%-- Results Found Count Container--%></div>
+                <div id="application-slide-search-product-results-card-container" class="row"></div>
+                <div id="application-slide-search-product-results-paging-container" class="application-slide-search-paging-container row">
+                    <ul class="pagination"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%-- This element is used as a template for creating new search cards --%>
+<%-- Location --%>
+<div id="application-slide-search-location-card-template" class="hidden">
+    <div class="application-slide-search-location-card well well-small">
+        <div>
+            <div><img src="images/search/compass.svg" alt="Compass Search Icon" /></div>
+            <div class="application-slide-search-location-card-title-description-container">
+                <div>
+                    <div class="application-slide-search-location-card-title"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%-- Product --%>
+<div id="application-slide-search-product-card-template" class="hidden">
+    <div class="application-slide-search-product-card well well-small">
+        <div>
+            <div><img src="images/search/compass.svg" alt="Missing Thumbnail Icon" /></div>
+            <div class="application-slide-search-product-card-title-description-container">
+                <div>
+                    <div class="application-slide-search-product-card-title"></div>
+                    <div class="application-slide-search-product-card-description"></div>
+                </div>
+            </div>
+        </div>
+        <span class="badge"><img src="images/banner/bucket/bucket.svg" alt="Bucket Icon" /> Add To Bucket</span>
+    </div>
+</div>

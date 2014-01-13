@@ -8,6 +8,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -31,6 +32,7 @@ import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.feature.simple.SimpleFeature;
@@ -38,6 +40,9 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
+import org.opengis.geometry.DirectPosition;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 
 /**
  *
@@ -86,7 +91,10 @@ public class RibboningProcess implements GeoServerProcess {
 			featuresToProcess = sortFeatures(sortAttribute, features);
 		}
 		
-		double[] xyOffset = getXYOffset(bbox, width, height, offset);
+		CoordinateReferenceSystem bboxCRS = bbox.getCoordinateReferenceSystem();
+		CoordinateReferenceSystem featureCRS = CRSUtils.getCRSFromFeatureCollection(featuresToProcess);
+		
+		double[] xyOffset = getXYOffset(bbox, bboxCRS, featureCRS, width, height, offset);
 		
 		return new Process(featuresToProcess, invertSide, sortAttribute, calcAngles, ribbonCount, xyOffset).execute();
 
@@ -113,18 +121,37 @@ public class RibboningProcess implements GeoServerProcess {
 		return result;
 	}
 
-	private double[] getXYOffset(ReferencedEnvelope bbox, Integer width, Integer height, Integer offset) {
+	private double[] getXYOffset(ReferencedEnvelope bbox, CoordinateReferenceSystem bboxCRS, CoordinateReferenceSystem featureCRS, Integer width, Integer height, Integer offset) {
 		double[] result = new double[] {offset, offset};
 		
-		double bbwidth = bbox.getWidth();
-		double bbheight = bbox.getHeight();
-		double pxwidth = width.doubleValue();
-		double pxheight = height.doubleValue();
-		
-		result = new double[] {
-			(bbwidth / pxwidth) * offset,
-			(bbheight / pxheight) * offset
-		};
+		try {
+			MathTransform transformToFeature = null;
+			try {
+				transformToFeature = CRS.findMathTransform(bboxCRS, featureCRS);
+			} catch (Exception e) {
+				LOGGER.log(Level.INFO, "Could not find transform for CRS", e);
+			}
+
+			double bbwidth = bbox.getWidth();
+			double bbheight = bbox.getHeight();
+			double pxwidth = width.doubleValue();
+			double pxheight = height.doubleValue();
+
+			if (null != transformToFeature) {
+				DirectPosition upperCorner = transformToFeature.transform(bbox.getUpperCorner(), null);
+				DirectPosition lowerCorner = transformToFeature.transform(bbox.getLowerCorner(), null);
+				
+				bbwidth = upperCorner.getOrdinate(0) - lowerCorner.getOrdinate(0);
+				bbheight = upperCorner.getOrdinate(1) - lowerCorner.getOrdinate(1);
+			}
+
+			result = new double[] {
+				(bbwidth / pxwidth) * offset,
+				(bbheight / pxheight) * offset
+			};
+		} catch (Exception e) {
+			LOGGER.log(Level.INFO, "Could not transform to feature CRS");
+		}
 		
 		return result;
 	}
@@ -177,9 +204,9 @@ public class RibboningProcess implements GeoServerProcess {
 
 					MultiLineString lines = getMultiLineString(feature);
 					if (null != lines) {
-						List<MultiLineString> ribbonLines = new ArrayList<MultiLineString>();
+						List<Geometry> ribbonLines = new ArrayList<Geometry>();
 						for (int ribbonNum = 0; ribbonNum < ribbonCount; ribbonNum++) {
-							ribbonLines.add((MultiLineString) lines.clone());
+							ribbonLines.add((Geometry) lines.clone());
 						}
 
 						for (int geomNum = 0; geomNum < lines.getNumGeometries(); geomNum++) {
@@ -263,18 +290,18 @@ public class RibboningProcess implements GeoServerProcess {
 			if ((null != prevStart && null != prevEnd)
 					&& (null != currStart && null != currEnd)) {
 				if (isSequential) {
-					LOGGER.log(Level.FINEST, "Sequential order");
+					LOGGER.log(Level.FINE, "Sequential order");
 					if (null != this.sortAttribute && this.calcAngles) {
 						angle = invertIfNecessary(getAngle(prevStart, currStart, currEnd), this.invert);
 					} else {
 						angle = invertIfNecessary(getAngle(currStart, currEnd), this.invert);
 					}
 				} else {
-					LOGGER.log(Level.FINEST, "Broken order");
+					LOGGER.log(Level.FINE, "Broken order");
 					angle = invertIfNecessary(getAngle(currStart, currEnd), this.invert);
 				}
 			} else if ((null != currStart && null != currEnd)) {
-				LOGGER.log(Level.FINEST, "just curr");
+				LOGGER.log(Level.FINE, "just curr");
 				angle = invertIfNecessary(getAngle(currStart, currEnd), this.invert);
 			} else if ((null != prevStart && null != prevEnd)) {
 				LOGGER.log(Level.WARNING, "A prev, but no curr?");
@@ -296,7 +323,7 @@ public class RibboningProcess implements GeoServerProcess {
 				yOffset = getYOffset(angle, xyOffset[1]);
 
 				result = new double[] {xOffset, yOffset};
-				LOGGER.log(Level.FINEST, "Angle : {0}, X : {1}, Y : {2}", new Object[] {angle, xOffset, yOffset});
+				LOGGER.log(Level.FINE, "Angle : {0}, X : {1}, Y : {2}", new Object[] {angle, xOffset, yOffset});
 			} else {
 				LOGGER.log(Level.WARNING, "No angle computed");
 			}

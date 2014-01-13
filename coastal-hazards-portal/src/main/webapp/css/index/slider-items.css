@@ -63,9 +63,12 @@
     background-color: #345280;
     margin-left: 5px;
 }
-.application-card-container .more-info-badge a {
-    color: #FFFFFF;
-}
+    .application-card-container .more-info-badge a {
+        color: #FFFFFF;
+    }
+    .application-card-container .more-info-badge a:hover {
+        text-decoration: none;
+    }
 
 .application-card-container.open .application-card-collapse-row-closed {
     display: none;
@@ -98,9 +101,9 @@
     border: 1px #000000 solid;
     min-width: 320px;
     width: auto;
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
     z-index: 1007;
 }
 
@@ -111,13 +114,13 @@
 }
 
 .aggregation-selection-container ul li {
-    background-color: #AAAAAA;
+    background-color: #FFFFFF;
     padding: 5px;
 }
 
 .aggregation-selection-container ul li:hover {
     cursor: pointer;
-    background-color: #CCCCCC;
+    background-color: #f5f5f5;
 }
 
 @media (min-width: 992px) {
@@ -150,19 +153,25 @@
 }
 
 @media (max-width: 991px) {
-    /* 
-        This fixes a bootstrap issue that causes the accordion to go beyond screen 
-        height, causing scroll bars when the items slide is open
-    */
-    #application-slide-items-container .panel-group {
-        margin-bottom: 0px;
-    }
-
     #application-slide-items-container {
         position: absolute;
         z-index: 1006; /* 1005 is highest on map */
         height: 98%;
     }
+
+        #application-slide-items-container > div:nth-child(2) > div {
+            padding: 10px 5px 10px 5px;
+        }
+        #application-slide-items-container > div:nth-child(2) > div > div:first-child {
+            margin-bottom: 10px;
+        }
+        #application-slide-items-container > div:nth-child(2) > div> div:not(:first-child) {
+            /* 
+                This fixes a bootstrap issue that causes the accordion to go beyond screen 
+                height, causing scroll bars when the items slide is open
+            */
+            margin-bottom: 0px;
+        }
 
     #application-slide-items-content {
         height: 100%;
