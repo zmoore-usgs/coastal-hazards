@@ -152,8 +152,12 @@ CCH.Objects.Accordion = function (args) {
             'shown.bs.collapse' : function (evt) {
                 $(window).trigger('cch.accordion.shown', evt);
                 var $this = $(this),
-                    abId = $this.data('id');
-
+                    abId = $this.data('id'),
+					currentUrl = window.location.href;
+					
+				// Clean up the url
+				history.pushState(null, null, currentUrl.substring(0, currentUrl.indexOf(window.location.hash)));
+				
                 ga('send', 'event', {
                     'eventCategory': 'accordion',
                     'eventAction': 'show',
