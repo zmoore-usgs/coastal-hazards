@@ -142,11 +142,11 @@ public class ItemManager {
                 builder.append(" i.type in(:types)");
             }
         }
-        if ("popularity".equals(sortBy)) {
-            builder.append(" order by i.rank.totalScore desc");
-        } else if (false/*replace with other sort options */) {
+//        if ("popularity".equals(sortBy)) {
+//            builder.append(" order by i.rank.totalScore desc");
+//        } else if (false/*replace with other sort options */) {
             // TODO add order by clause
-        }
+//        }
         if (StringUtils.isNotBlank(bbox)) {
             //TODO bbox stuff here
         }
