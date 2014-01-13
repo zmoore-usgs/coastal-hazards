@@ -3,6 +3,7 @@
 /*global $*/
 /*global LOG*/
 /*global CCH*/
+/*global qq*/
 CCH.Objects.UI = function () {
     "use strict";
 
@@ -39,160 +40,184 @@ CCH.Objects.UI = function () {
         $keywordGroupClone = $keywordGroup.clone(),
         $childrenSb = $form.find('#form-publish-item-children');
 
-        $keywordGroup.find('input').removeAttr('disabled');
-        $keywordGroup.find('button:nth-child(2)').addClass('hidden');
-        $keywordGroup.find('button').removeAttr('disabled');
-        $keywordGroup.find('button').on('click', function() {
-            if ($keywordGroup.find('input').val() !== '') {
-                me.addKeywordGroup($keywordGroup.find('input').val());
-            }
+    $keywordGroup.find('input').removeAttr('disabled');
+    $keywordGroup.find('button:nth-child(2)').addClass('hidden');
+    $keywordGroup.find('button').removeAttr('disabled');
+    $keywordGroup.find('button').on('click', function () {
+        if ($keywordGroup.find('input').val() !== '') {
+            me.addKeywordGroup($keywordGroup.find('input').val());
+        }
+    });
+
+    me.clearForm = function () {
+        $titleFullTextArea.attr('disabled', 'disabled');
+        $titleMediumTextArea.attr('disabled', 'disabled');
+        $titleTinyTextArea.attr('disabled', 'disabled');
+        $descriptionFullTextArea.attr('disabled', 'disabled');
+        $descriptionMediumTextArea.attr('disabled', 'disabled');
+        $descriptionTinyTextArea.attr('disabled', 'disabled');
+        $bboxNorth.attr('disabled', 'disabled');
+        $bboxWest.attr('disabled', 'disabled');
+        $bboxSouth.attr('disabled', 'disabled');
+        $bboxEast.attr('disabled', 'disabled');
+        $type.attr('disabled', 'disabled');
+        $attributeSelect.attr('disabled', 'disabled');
+        $('.form-group-keyword input').attr('disabled', 'disabled');
+        $srcWfsServiceInput.attr('disabled', 'disabled');
+        $srcWfsServiceParamInput.attr('disabled', 'disabled');
+        $srcWmsServiceInput.attr('disabled', 'disabled');
+        $srcWmsServiceParamInput.attr('disabled', 'disabled');
+        $proxyWfsServiceInput.attr('disabled', 'disabled');
+        $proxyWfsServiceParamInput.attr('disabled', 'disabled');
+        $proxyWmsServiceInput.attr('disabled', 'disabled');
+        $proxyWmfsServiceParamInput.attr('disabled', 'disabled');
+        $ribbonableCb.attr('disabled', 'disabled');
+        $itemType.attr('disabled', 'disabled');
+        $name.attr('disabled', 'disabled');
+        $itemIdInput.val('');
+        $titleFullTextArea.val('');
+        $titleMediumTextArea.val('');
+        $titleTinyTextArea.val('');
+        $descriptionFullTextArea.val('');
+        $descriptionMediumTextArea.val('');
+        $descriptionTinyTextArea.val('');
+        $bboxNorth.val('');
+        $bboxWest.val('');
+        $bboxSouth.val('');
+        $bboxEast.val('');
+        $type.val('');
+        $attributeSelect.val('');
+        $('.form-group-keyword').not(':first').remove();
+        $('.form-group-keyword button:nth-child(2)').removeClass('hidden');
+        $('.form-group-keyword input').val('');
+        $cswServiceInput.val('');
+        $srcWfsServiceInput.val('');
+        $srcWfsServiceParamInput.val('');
+        $srcWmsServiceInput.val('');
+        $srcWmsServiceParamInput.val('');
+        $proxyWfsServiceInput.val('');
+        $proxyWfsServiceParamInput.val('');
+        $proxyWmsServiceInput.val('');
+        $proxyWmfsServiceParamInput.val('');
+        $ribbonableCb.prop('checked', false);
+        $itemType.val('');
+        $name.val('');
+        $childrenSb.empty();
+        CCH.items.each(function (cchItem) {
+            var option = $('<option />').
+                attr('value', cchItem.id).
+                html(cchItem.summary.tiny.text);
+            $childrenSb.append(option);
         });
+    };
 
-        me.clearForm = function () {
-            $itemIdInput.val('');
-            $titleFullTextArea.val('');
-            $titleMediumTextArea.val('');
-            $titleTinyTextArea.val('');
-            $descriptionFullTextArea.val('');
-            $descriptionMediumTextArea.val('');
-            $descriptionTinyTextArea.val('');
-            $bboxNorth.val('');
-            $bboxWest.val('');
-            $bboxSouth.val('');
-            $bboxEast.val('');
-            $type.val('');
-            $attributeSelect.val('');
-            $('.form-group-keyword').not(':first').remove();
-            $('.form-group-keyword button:nth-child(2)').removeClass('hidden');
-            $('.form-group-keyword input').val('');
-            $cswServiceInput.val('');
-            $srcWfsServiceInput.val('');
-            $srcWfsServiceParamInput.val('');
-            $srcWmsServiceInput.val('');
-            $srcWmsServiceParamInput.val('');
-            $proxyWfsServiceInput.val('');
-            $proxyWfsServiceParamInput.val('');
-            $proxyWmsServiceInput.val('');
-            $proxyWmfsServiceParamInput.val('');
-            $ribbonableCb.prop('checked', false);
-            $itemType.val('');
-            $name.val('');
-            $childrenSb.empty();
-            CCH.items.each(function (cchItem) {
-                var option = $('<option />').
-                    attr('value', cchItem.id).
-                    html(cchItem.summary.tiny.text);
-                $childrenSb.append(option);
-            });
-        };
-        
-        me.enableNewItemForm = function () {
-            $titleFullTextArea.removeAttr('disabled');
-            $titleMediumTextArea.removeAttr('disabled');
-            $titleTinyTextArea.removeAttr('disabled');
-            $descriptionFullTextArea.removeAttr('disabled');
-            $descriptionMediumTextArea.removeAttr('disabled');
-            $descriptionTinyTextArea.removeAttr('disabled');
-            $bboxNorth.removeAttr('disabled');
-            $bboxWest.removeAttr('disabled');
-            $bboxSouth.removeAttr('disabled');
-            $bboxEast.removeAttr('disabled');
-            $type.removeAttr('disabled');
-            $attributeSelect.removeAttr('disabled');
-            $('.form-group-keyword input').removeAttr('disabled');
-            $srcWfsServiceInput.removeAttr('disabled');
-            $srcWfsServiceParamInput.removeAttr('disabled');
-            $srcWmsServiceInput.removeAttr('disabled');
-            $srcWmsServiceParamInput.removeAttr('disabled');
-            $proxyWfsServiceInput.removeAttr('disabled');
-            $proxyWfsServiceParamInput.removeAttr('disabled');
-            $proxyWmsServiceInput.removeAttr('disabled');
-            $proxyWmfsServiceParamInput.removeAttr('disabled');
-            $ribbonableCb.removeAttr('disabled');
-            $itemType.removeAttr('disabled');
-            $name.removeAttr('disabled');
-            $('#qq-uploader-dummy').removeClass('hidden');
-        };
-        
-        me.enableNewAggregationForm = function () {
-            $('#qq-uploader-dummy').empty().addClass('hidden');
-            $titleFullTextArea.removeAttr('disabled');
-            $titleMediumTextArea.removeAttr('disabled');
-            $titleTinyTextArea.removeAttr('disabled');
-            $descriptionFullTextArea.removeAttr('disabled');
-            $descriptionMediumTextArea.removeAttr('disabled');
-            $descriptionTinyTextArea.removeAttr('disabled');
-            $bboxNorth.removeAttr('disabled');
-            $bboxWest.removeAttr('disabled');
-            $bboxSouth.removeAttr('disabled');
-            $bboxEast.removeAttr('disabled');
-            $srcWfsServiceInput.attr('disabled', 'disabled');
-            $srcWfsServiceParamInput.attr('disabled', 'disabled');
-            $srcWmsServiceInput.attr('disabled', 'disabled');
-            $srcWmsServiceParamInput.attr('disabled', 'disabled');
-            $proxyWfsServiceInput.attr('disabled', 'disabled');
-            $proxyWfsServiceParamInput.attr('disabled', 'disabled');
-            $proxyWmsServiceInput.attr('disabled', 'disabled');
-            $proxyWmfsServiceParamInput.attr('disabled', 'disabled');
-            $type.removeAttr('disabled');
-            $('.form-group-keyword input').removeAttr('disabled');
-            $ribbonableCb.removeAttr('disabled');
-            $itemType.removeAttr('disabled');
-            $name.removeAttr('disabled');
-            $childrenSb.removeAttr('disabled');
-        };
+    me.enableNewItemForm = function () {
+        $titleFullTextArea.removeAttr('disabled');
+        $titleMediumTextArea.removeAttr('disabled');
+        $titleTinyTextArea.removeAttr('disabled');
+        $descriptionFullTextArea.removeAttr('disabled');
+        $descriptionMediumTextArea.removeAttr('disabled');
+        $descriptionTinyTextArea.removeAttr('disabled');
+        $bboxNorth.removeAttr('disabled');
+        $bboxWest.removeAttr('disabled');
+        $bboxSouth.removeAttr('disabled');
+        $bboxEast.removeAttr('disabled');
+        $type.removeAttr('disabled');
+        $attributeSelect.removeAttr('disabled');
+        $('.form-group-keyword input').removeAttr('disabled');
+        $srcWfsServiceInput.removeAttr('disabled');
+        $srcWfsServiceParamInput.removeAttr('disabled');
+        $srcWmsServiceInput.removeAttr('disabled');
+        $srcWmsServiceParamInput.removeAttr('disabled');
+        $proxyWfsServiceInput.removeAttr('disabled');
+        $proxyWfsServiceParamInput.removeAttr('disabled');
+        $proxyWmsServiceInput.removeAttr('disabled');
+        $proxyWmfsServiceParamInput.removeAttr('disabled');
+        $ribbonableCb.removeAttr('disabled');
+        $itemType.removeAttr('disabled');
+        $name.removeAttr('disabled');
+        $('#qq-uploader-dummy').removeClass('hidden');
+    };
 
-        me.initUploader = function (args) {
-            args = args || {};
-            var button = args.button,
-                callbacks = args.callbacks || {
-                    success : [],
-                    error : []
-                },
-                qqUploader;
-        
-            qqUploader = new qq.FineUploader({
-                element:button,
-                autoUpload: true,
-                paramsInBody: false,
-                forceMultipart: false,
-                request: {
-                    endpoint: CCH.CONFIG.contextPath + '/data/metadata/'
-                },
-                validation: {
-                    allowedExtensions: ['xml'],
-                    sizeLimit: 15728640
-                },
-                callbacks: {
-                    onComplete: function (id, fileName, responseJSON) {
-                        if (responseJSON.success) {
-                            callbacks.success.each(function (cb) {
-                                cb({
-                                    token : responseJSON.fid,
-                                    id: id,
-                                    fileName : fileName,
-                                    responseJSON : responseJSON
-                                });
+    me.enableNewAggregationForm = function () {
+        $('#qq-uploader-dummy').empty().addClass('hidden');
+        $titleFullTextArea.removeAttr('disabled');
+        $titleMediumTextArea.removeAttr('disabled');
+        $titleTinyTextArea.removeAttr('disabled');
+        $descriptionFullTextArea.removeAttr('disabled');
+        $descriptionMediumTextArea.removeAttr('disabled');
+        $descriptionTinyTextArea.removeAttr('disabled');
+        $bboxNorth.removeAttr('disabled');
+        $bboxWest.removeAttr('disabled');
+        $bboxSouth.removeAttr('disabled');
+        $bboxEast.removeAttr('disabled');
+        $srcWfsServiceInput.attr('disabled', 'disabled');
+        $srcWfsServiceParamInput.attr('disabled', 'disabled');
+        $srcWmsServiceInput.attr('disabled', 'disabled');
+        $srcWmsServiceParamInput.attr('disabled', 'disabled');
+        $proxyWfsServiceInput.attr('disabled', 'disabled');
+        $proxyWfsServiceParamInput.attr('disabled', 'disabled');
+        $proxyWmsServiceInput.attr('disabled', 'disabled');
+        $proxyWmfsServiceParamInput.attr('disabled', 'disabled');
+        $type.removeAttr('disabled');
+        $('.form-group-keyword input').removeAttr('disabled');
+        $ribbonableCb.removeAttr('disabled');
+        $itemType.removeAttr('disabled');
+        $name.removeAttr('disabled');
+        $childrenSb.removeAttr('disabled');
+    };
+
+    me.initUploader = function (args) {
+        args = args || {};
+        var button = args.button,
+            callbacks = args.callbacks || {
+                success : [],
+                error : []
+            },
+            qqUploader;
+
+        qqUploader = new qq.FineUploader({
+            element: button,
+            autoUpload: true,
+            paramsInBody: false,
+            forceMultipart: false,
+            request: {
+                endpoint: CCH.CONFIG.contextPath + '/data/metadata/'
+            },
+            validation: {
+                allowedExtensions: ['xml'],
+                sizeLimit: 15728640
+            },
+            callbacks: {
+                onComplete: function (id, fileName, responseJSON) {
+                    if (responseJSON.success) {
+                        callbacks.success.each(function (cb) {
+                            cb({
+                                token : responseJSON.fid,
+                                id: id,
+                                fileName : fileName,
+                                responseJSON : responseJSON
                             });
-                        } else {
-                            callbacks.error.each(function (cb) {
-                                cb({
-                                    token : responseJSON.fid,
-                                    id: id,
-                                    fileName : fileName,
-                                    responseJSON : responseJSON
-                                });
+                        });
+                    } else {
+                        callbacks.error.each(function (cb) {
+                            cb({
+                                token : responseJSON.fid,
+                                id: id,
+                                fileName : fileName,
+                                responseJSON : responseJSON
                             });
-                        }
+                        });
                     }
                 }
-            });
+            }
+        });
         $('#qq-uploader-dummy').css('display', 'inline-block');
-        $('.qq-upload-button').find('> div').html('Upload Metadata')
+        $('.qq-upload-button').find('> div').html('Upload Metadata');
         $(button).click();
         return qqUploader;
     };
-    
+
     me.createUploader = function (args) {
         // Set the URL to not have an item ID in it
         history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
@@ -201,7 +226,7 @@ CCH.Objects.UI = function () {
             callbacks : args.callbacks
         });
     };
-    
+
     me.bindKeywordGroup = function ($grp) {
         $grp.find('button').
             on('click', function () {
@@ -219,18 +244,18 @@ CCH.Objects.UI = function () {
                 }
             });
     };
-    
+
     me.addKeywordGroup = function (keyword) {
         var keywordExists,
             $keywordGroupLocal;
         // Figure out if this keyword would be doubled by adding it
         keywordExists = $form.
-                find('.form-group-keyword input').
-                not(':first').
-                toArray().
-                count(function(input) {
-                    return $(input).val().trim() === keyword.trim();
-                }) > 0;
+            find('.form-group-keyword input').
+            not(':first').
+            toArray().
+            count(function (input) {
+                return $(input).val().trim() === keyword.trim();
+            }) > 0;
 
         if (!keywordExists) {
             $keywordGroupLocal = $keywordGroupClone.clone();
@@ -247,45 +272,45 @@ CCH.Objects.UI = function () {
 
     me.initNewItemForm = function () {
         var cswUrl = $('#form-publish-item-service-csw').val();
-        
+
         me.clearForm();
         me.enableNewItemForm();
-        
-        $('#form-publish-item-service-csw').val(cswUrl)
-        
+
+        $('#form-publish-item-service-csw').val(cswUrl);
+
         me.getCSWInfo({
             url : cswUrl,
             callbacks : {
                 success : [
-                    function (responseObject, textStatus, jqXHR) {
+                    function (responseObject, textStatus) {
                         if (textStatus === 'success') {
                             var cswNodes = responseObject.children,
                                 tag;
                             cswNodes[0].children.each(function (node) {
                                 tag = node.tag;
                                 switch (tag) {
-                                    case 'idinfo': {
-                                            node.children.each(function (childNode) {
-                                                tag = childNode.tag;
-                                            switch (tag) {
-                                                case 'spdom':
-                                                    childNode.children[0].children.each(function (spdom) {
-                                                        var direction = spdom.tag.substring(0,spdom.tag.length - 2);
-                                                        $('#form-publish-item-bbox-input-' + direction).val(spdom.text);
-                                                    });  
-                                                    break;
-                                                case 'keywords':
-                                                    childNode.children.each(function (kwNode) {
-                                                        var keywords = kwNode.children;
-                                                        keywords.splice(1).each(function (kwObject) {
-                                                            var keyword = kwObject.text;
-                                                            me.addKeywordGroup(keyword);
-                                                        });
-                                                    });
-                                                    break;
-                                            }
-                                        });
-                                    }
+                                case 'idinfo':
+                                    node.children.each(function (childNode) {
+                                        tag = childNode.tag;
+                                        switch (tag) {
+                                        case 'spdom':
+                                            childNode.children[0].children.each(function (spdom) {
+                                                var direction = spdom.tag.substring(0, spdom.tag.length - 2);
+                                                $('#form-publish-item-bbox-input-' + direction).val(spdom.text);
+                                            });
+                                            break;
+                                        case 'keywords':
+                                            childNode.children.each(function (kwNode) {
+                                                var keywords = kwNode.children;
+                                                keywords.splice(1).each(function (kwObject) {
+                                                    var keyword = kwObject.text;
+                                                    me.addKeywordGroup(keyword);
+                                                });
+                                            });
+                                            break;
+                                        }
+                                    });
+                                    break;
                                 }
                             });
                         }
@@ -299,42 +324,43 @@ CCH.Objects.UI = function () {
             }
         });
     };
-    
+
     me.getCSWInfo = function (args) {
         args = args || {};
-        
+
         var callbacks = args.callbacks || {
             success : [],
             error : []
         },
             cswURL = args.url,
-            url = CCH.CONFIG.contextPath + '/csw/' + 
-                cswURL.substring(cswURL.indexOf('?')) + 
-                '&outputFormat=application/json';
-        
+            url = CCH.CONFIG.contextPath + '/csw/' +
+            cswURL.substring(cswURL.indexOf('?')) +
+            '&outputFormat=application/json';
+
         $.ajax({
             url: url,
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
-            success: function(json, textStatus, jqXHR) {
-                callbacks.success.each(function(cb) {
+            success: function (json, textStatus, jqXHR) {
+                callbacks.success.each(function (cb) {
                     cb(json, textStatus, jqXHR);
                 });
             },
             error : function () {
-                callbacks.error.each(function(cb) {
+                callbacks.error.each(function (cb) {
                     cb();
                 });
             }
-        })
+        });
     };
-    
-    $('#publish-button-create-aggregation-option').on('click', function() {
+
+    $('#publish-button-create-aggregation-option').on('click', function () {
         me.clearForm();
-        me.enableNewAggregationForm()
+        me.enableNewAggregationForm();
     });
-    
+
     $('#publish-button-create-item-option').on('click', function () {
+        me.clearForm();
         $('#qq-uploader-dummy').removeClass('hidden');
         me.createUploader({
             callbacks : {
@@ -345,56 +371,55 @@ CCH.Objects.UI = function () {
                                 token : args.token,
                                 callbacks : {
                                     success : [
-                                        function (mdObject, status, jqXHR) {
+                                        function (mdObject, status) {
                                             if (status === 'success') {
                                                 $('#form-publish-info-item-itemtype').val('data');
                                                 $('#form-publish-item-service-csw').val(mdObject.metadata);
                                                 me.initNewItemForm();
                                             }
                                         }
-                                    ], 
+                                    ],
                                     error : [
                                         function () {
                                             debugger;
                                         }
                                     ]
                                 }
-                            })
+                            });
                         }
                     }
                 ],
                 error : [
-                    function (args) {
+                    function () {
                         debugger;
                     }
                 ]
             }
         });
     });
-    
-    
+
     me.publishMetadata = function (args) {
         args = args || {};
-        var token = args.token;
-        var callbacks = args.callbacks || {
-            success: [],
-            error: []
-        };
+        var token = args.token,
+            callbacks = args.callbacks || {
+                success: [],
+                error: []
+            };
 
         $.ajax({
             url: CCH.CONFIG.contextPath + '/publish/metadata/' + token,
             type: 'POST',
             dataType: 'json',
-            success: function(json, textStatus, jqXHR) {
+            success: function (json, textStatus, jqXHR) {
                 if (callbacks.success && callbacks.success.length > 0) {
-                    callbacks.success.each(function(callback) {
+                    callbacks.success.each(function (callback) {
                         callback.call(null, json, textStatus, jqXHR);
                     });
                 }
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 if (callbacks.error && callbacks.error.length > 0) {
-                    callbacks.error.each(function(callback) {
+                    callbacks.error.each(function (callback) {
                         callback.call(null, xhr, status, error);
                     });
                 }
