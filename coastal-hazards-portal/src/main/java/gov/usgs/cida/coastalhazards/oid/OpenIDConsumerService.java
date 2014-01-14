@@ -15,7 +15,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -57,6 +56,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * {@inheritDoc}
+     * @throws javax.servlet.ServletException
 	 */
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -81,6 +81,8 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * {@inheritDoc}
+     * @throws javax.servlet.ServletException
+     * @throws java.io.IOException
 	 */
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -90,6 +92,8 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 
 	/**
 	 * {@inheritDoc}
+     * @throws javax.servlet.ServletException
+     * @throws java.io.IOException
 	 */
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -101,7 +105,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 			if (identifier != null) {
 				this.authRequest(identifier, req, resp);
 			} else {
-				this.getServletContext().getRequestDispatcher("/components/OpenID/oid-verify.jsp")
+				this.getServletContext().getRequestDispatcher("/OpenID/oid-verify.jsp")
 						.forward(req, resp);
 			}
 		}
@@ -112,10 +116,17 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 		Identifier identifier = this.verifyResponse(req);
 		LOG.debug("identifier: " + identifier);
 		if (identifier == null) {
-			this.getServletContext().getRequestDispatcher("/components/OpenID/oid-login.jsp").forward(req, resp);
+			this.getServletContext().getRequestDispatcher("/OpenID/oid-login.jsp").forward(req, resp);
 		} else {
+            String originatingURI = req.getParameter("originating_uri");
+            
+            if (StringUtils.isNotBlank(originatingURI)) {
+                originatingURI = "?originating_uri=" + originatingURI;
+            } else {
+                originatingURI = "";
+            }
 			req.setAttribute("identifier", identifier.getIdentifier());
-			this.getServletContext().getRequestDispatcher("/components/OpenID/oid-verify.jsp").forward(req, resp);
+			this.getServletContext().getRequestDispatcher("/OpenID/oid-verify.jsp" + originatingURI).forward(req, resp);
 		}
 	}
 
@@ -124,11 +135,17 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 			HttpServletRequest httpReq, HttpServletResponse httpResp)
 			throws IOException, ServletException {
 		try {
+            String originatingURI = httpReq.getParameter("originating_uri");
+            
 			// configure the return_to URL where your application will receive
 			// the authentication responses from the OpenID provider
 			// String returnToUrl = "http://example.com/openid";
 			String returnToUrl = httpReq.getRequestURL().toString()
 					+ "?is_return=true";
+            
+            if (StringUtils.isNotBlank(originatingURI)) {
+                returnToUrl += "&originating_uri=" + originatingURI;
+            }
 
 			// perform discovery on the user-supplied identifier
 			List discoveries = manager.discover(userSuppliedString);
@@ -157,7 +174,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 				return null;
 			} else {
 				// Option 2: HTML FORM Redirection (Allows payloads >2048 bytes)
-				RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/components/OpenID/oid-formredirection.jsp");
+				RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/OpenID/oid-formredirection.jsp");
 				httpReq.setAttribute("prameterMap", httpReq.getParameterMap());
 				httpReq.setAttribute("message", authReq);
 				// httpReq.setAttribute("destinationUrl", httpResp
@@ -196,10 +213,10 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 			String attribute = attributes[i];
 			String value = httpReq.getParameter(attribute);
 			if (OPTIONAL_VALUE.equals(value)) {
-				sregReq.addAttribute(attribute, false);
+                    sregReq.addAttribute(attribute, false);
 			} else if (REQUIRED_VALUE.equals(value)) {
-				sregReq.addAttribute(attribute, true);
-			}
+                    sregReq.addAttribute(attribute, true);
+            }
 		}
 
 		// attach the extension to the authentication request
@@ -271,7 +288,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 
 				receiveAttributeExchange(httpReq, authSuccess);
 
-				Map<String, String> oidInfoMap = new HashMap<String, String>();
+				Map<String, String> oidInfoMap = new HashMap<>();
 				oidInfoMap.put("oid-firstname", response.getParameter("openid.ext1.value.firstname").getValue());
 				oidInfoMap.put("oid-lastname", response.getParameter("openid.ext1.value.lastname").getValue());
 				oidInfoMap.put("oid-country", response.getParameter("openid.ext1.value.country").getValue());
