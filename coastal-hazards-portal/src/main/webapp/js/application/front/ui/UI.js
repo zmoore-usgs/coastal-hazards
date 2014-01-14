@@ -50,7 +50,6 @@ CCH.Objects.UI = function (args) {
     me.CONTENT_ROW_ID = args.contentRowId || 'content-row';
     me.MAP_DIV_ID = args.mapdivId || 'map';
     me.SLIDE_CONTAINER_DIV_ID = args.slideContainerDivId || 'application-slide-items-content-container';
-    me.CCSA_AREA_ID = args.ccsAreaId || 'ccsa-area';
     me.SHARE_MODAL_ID = args.shareModalId || 'modal-content-share';
     me.SHARE_URL_BUTTON_ID = args.shareUrlButtonId || 'modal-share-summary-url-button';
     me.SHARE_INPUT_ID = args.shareInputId || 'modal-share-summary-url-inputbox';
