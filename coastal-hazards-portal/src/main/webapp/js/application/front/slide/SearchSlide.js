@@ -38,6 +38,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.PRODUCT_CARD_TEMPLATE_ID = 'application-slide-search-product-card-template';
     me.SLIDE_SEARCH_CONTAINER_PARENT_ID = 'application-slide-search-content-container';
     me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER = 'application-slide-search-product-results-paging-container';
+    me.LOCATION_SLIDE_SEARCH_PAGE_CONTAINER = 'application-slide-search-location-results-paging-container';
     me.bucket = args.bucket;
 
     me.SMALL_OFFSET = 10;
@@ -56,7 +57,14 @@ CCH.Objects.SearchSlide = function (args) {
 
         [$locationSlide, $productSlide].each(function ($slide) {
             $slide.find('>div:nth-child(1)').empty();
-            $slide.find('>div:nth-child(2)').empty();
+            $slide.find('>div:nth-child(2)').
+                empty().
+                append($('<img />').
+                    addClass('img-responsive').
+                    attr({
+                        'src' : 'images/spinner/spinner3.gif',
+                        'alt' : "Spinner Image"
+                    }));
             $slide.find('>div:nth-child(3)>ul').empty();
         });
     };
@@ -236,15 +244,16 @@ CCH.Objects.SearchSlide = function (args) {
             // The data type can either be location or item
             switch (type) {
             case 'location':
+                $contentContainer = $locationContentContainer;
+                $resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
+                $slideContainer = $contentContainer.find('> div:nth-child(2)');
+                $pagingContainer = $contentContainer.find('> div:nth-child(3)');
                 // I want to show locations if we have locations to show
                 if (locationSize > 0) {
                     $showAllButton = $('<div />').
                             addClass('application-slide-search-location-card-toggle').
                             append($('<span />').addClass('badge').html('Show All ' + locationSize + ' Locations'));
-                    $contentContainer = $locationContentContainer;
-                    $resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
-                    $slideContainer = $contentContainer.find('> div:nth-child(2)');
-                    $pagingContainer = $contentContainer.find('> div:nth-child(3)');
+                    
                     pageCount = Math.ceil(locationSize / slidesPerPage);
 
                     $contentContainer.removeClass('hidden');
@@ -254,6 +263,7 @@ CCH.Objects.SearchSlide = function (args) {
 
                     // Start with a clean slate 
                     $slideContainer.empty();
+                    $slideContainer.css('backgroundImage', '');
                     $pagingContainer.find('>ul').empty();
 
                     // I want to build a card for every search result item
@@ -333,15 +343,19 @@ CCH.Objects.SearchSlide = function (args) {
                             container : $contentContainer
                         });
                     }
+                } else {
+                    $slideContainer.empty();
                 }
                 break;
 
             case 'item':
+                $contentContainer = $productContentContainer;
+                $resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
+                $slideContainer = $contentContainer.find('>div:nth-child(2)');
+                $pagingContainer = $contentContainer.find('>div:nth-child(3)');
+                
                 if (productsSize > 0) {
-                    $contentContainer = $productContentContainer;
-                    $resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
-                    $slideContainer = $contentContainer.find('>div:nth-child(2)');
-                    $pagingContainer = $contentContainer.find('>div:nth-child(3)');
+                    
                     pageCount = Math.ceil(productsSize / slidesPerPage);
 
                     $resultsFoundsContainer.
@@ -350,6 +364,7 @@ CCH.Objects.SearchSlide = function (args) {
 
                     // Start with a clean slate 
                     $slideContainer.empty();
+                    $slideContainer.css('backgroundImage', '');
                     $pagingContainer.find('>ul').empty();
 
                     for (itemsIdx = 0; itemsIdx < productsSize; itemsIdx++) {
@@ -369,6 +384,8 @@ CCH.Objects.SearchSlide = function (args) {
                         container : $contentContainer,
                         pageCount : pageCount
                     });
+                } else {
+                    $slideContainer.empty();
                 }
                 break;
             }
@@ -450,8 +467,9 @@ CCH.Objects.SearchSlide = function (args) {
         $pagingContainer.removeClass('hidden');
     };
 
-    me.getCurrentlyDisabledPageButton = function () {
-        var $pagingContainer = $('.' + me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER),
+    me.getCurrentlyDisabledPageButton = function (type) {
+        var type = type === 'location' ? me.LOCATION_SLIDE_SEARCH_PAGE_CONTAINER : me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER,
+            $pagingContainer = $('#' + type),
             $pagingButtonGroup = $pagingContainer.find('>ul.pagination'),
             numString = $pagingButtonGroup.find('> li.disabled:not(.page-move) > a').html(),
             num = parseInt(numString, 10);
@@ -469,7 +487,7 @@ CCH.Objects.SearchSlide = function (args) {
             linkString = $link.html(),
             toPage = parseInt(linkString, 10),
             isDisabled = $li.hasClass('disabled'),
-            currentPage = me.getCurrentlyDisabledPageButton(),
+            currentPage,
             $productContainer = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID),
             $locationContainer = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
             $container;
@@ -479,9 +497,11 @@ CCH.Objects.SearchSlide = function (args) {
         if ($li.parent().parent().attr('id').indexOf('product') !== -1) {
             // I am a product
             $container = $productContainer;
+            currentPage = me.getCurrentlyDisabledPageButton('product');
         } else {
             // I am a location
             $container = $locationContainer;
+            currentPage = me.getCurrentlyDisabledPageButton('location');
         }
 
         if (!isDisabled) {
