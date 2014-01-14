@@ -609,6 +609,7 @@ CCH.Objects.BucketSlide = function (args) {
         'cch.map.added.layer' : me.layerAppendRemoveHandler,
         'cch.map.shown.layer' : me.layerAppendRemoveHandler,
         'cch.map.hid.layer' : me.layerAppendRemoveHandler,
+        'cch.slide.search.button.click.explore' : me.close,
         'cch.slide.items.closing' : function () {
             if (me.isSmall()) {
                 me.close();
