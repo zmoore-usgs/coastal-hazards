@@ -666,16 +666,3 @@ var getFullEndpoint = function(val) {
 
     return fullPath;
 };
-
-var historicAttributes = ['date_', 'lrr', 'wlr', 'sce', 'nsm', 'epr'];
-var vulnAttributes = ['waverisk', 'tiderisk', 'sloperisk', 'errrisk', 'slrisk', 'geom', 'cvirisk', 'rslr', 'mwh', 'tr', 'e_rate', 'peros2', 'peros1', 'pstable', 'pacc1', 'pacc2'];
-var stormAttributes = ['pcol', 'pcol1', 'pcol2', 'pcol3', 'pcol4', 'pcol5',
-    'povw', 'povw1', 'povw2', 'povw3', 'povw4', 'povw5',
-    'pind', 'pind1', 'pind2', 'pind3', 'pind4', 'pind5',
-    'dhigh', 'dlow', 'dhirms', 'dlorms',
-    'surge', 'surge1', 'surge2', 'surge3', 'surge4', 'surge5',
-    'setup', 'setup1', 'setup2', 'setup3', 'setup4', 'setup5',
-    'runup', 'runup1', 'runup2', 'runup3', 'runup4', 'runup5',
-    'mean', 'mean1', 'mean2', 'mean3', 'mean4', 'mean5',
-    'extreme', 'extreme1', 'extreme2', 'extreme3', 'extreme4', 'extreme5',
-    'tide'];

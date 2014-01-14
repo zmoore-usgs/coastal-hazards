@@ -95,9 +95,15 @@ public class PublishResource {
     @POST
     @Path("metadata/{token}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response publishItems(@PathParam("token") String metaToken) {
+    public Response publishItems(@Context HttpServletRequest req, @PathParam("token") String metaToken) throws URISyntaxException {
         Response response = null;
         Map<String, String> responseContent = new HashMap<String, String>();
+        String intent = "/metadata/";
+        
+        if (!verifyOIDSession(req)) {
+            return Response.temporaryRedirect(new URI(VERIFICATION_URL + intent + metaToken)).build();
+        }
+        
         try {
             String identifier = doCSWTransaction(metaToken);
             if (identifier == null) {
@@ -106,7 +112,7 @@ public class PublishResource {
             String url = cswExternalEndpoint + "?service=CSW&request=GetRecordById&version=2.0.2&typeNames=fgdc:metadata&id=" + identifier +"&outputSchema=http://www.opengis.net/cat/csw/csdgm&elementSetName=full";
             responseContent.put("metadata", url);
             response = Response.ok(GsonUtil.getDefault().toJson(responseContent, HashMap.class)).build();
-        } catch (Exception ex) {
+        } catch (IOException | RuntimeException | ParserConfigurationException | SAXException ex) {
             responseContent.put("message", ex.getMessage() == null ? "NPE" : ex.getMessage());
             response = Response.serverError().entity(GsonUtil.getDefault().toJson(responseContent, HashMap.class)).build();
         }
