@@ -169,7 +169,7 @@
             <div class="row">
                 <div class="well well-small">
                     <span id="metadata-link"></span>
-					<span id="view-services"><button type=button" data-toggle="modal" data-target="#modal-services-view" class="btn btn-default">View Services</button></span>
+					<span id="view-services"><button type="button" data-toggle="modal" data-target="#modal-services-view" class="btn btn-default">View Map Services</button></span>
                     <span id="download-full-link"></span>
                     <span id="download-item-link"></span>
                 </div>
