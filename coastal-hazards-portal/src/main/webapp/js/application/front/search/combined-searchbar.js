@@ -193,6 +193,13 @@ CCH.Objects.CombinedSearch = function (args) {
                             me.hideSpinner,
                             function (jqXHR, textStatus, errorThrown) {
                                 CCH.LOG.warn('CCH.Objects.CombinedSearch:: Could not complete geo-search:' + errorThrown);
+                                $(me).trigger('combined-searchbar-search-performed', {
+                                    'type' : 'location',
+                                    'data' : {
+                                        'locations' : [] 
+                                    },
+                                    'criteria' : me.getCriteria()
+                                });
                             }
                         ]
                     }
@@ -223,6 +230,13 @@ CCH.Objects.CombinedSearch = function (args) {
                             me.hideSpinner,
                             function (jqXHR, textStatus, errorThrown) {
                                 CCH.LOG.warn('CCH.Objects.CombinedSearch:: Item search could not complete items search:' + errorThrown);
+                                $(me).trigger('combined-searchbar-search-performed', {
+                                    'type' : 'item',
+                                    'data' : {
+                                        'products' : [] 
+                                    },
+                                    'criteria' : me.getCriteria()
+                                });
                             }
                         ]
                     }
