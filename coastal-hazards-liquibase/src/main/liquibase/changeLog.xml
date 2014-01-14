@@ -16,5 +16,4 @@
     <include file="persistDownloads.xml" relativeToChangelogFile="true" />
     <include file="updateServiceModel.xml" relativeToChangelogFile="true" />
     <include file="addItemFlags.xml" relativeToChangelogFile="true" />
-    <include file="addPublicationType.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
