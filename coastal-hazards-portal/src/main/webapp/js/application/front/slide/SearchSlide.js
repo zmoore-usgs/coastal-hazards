@@ -56,7 +56,14 @@ CCH.Objects.SearchSlide = function (args) {
 
         [$locationSlide, $productSlide].each(function ($slide) {
             $slide.find('>div:nth-child(1)').empty();
-            $slide.find('>div:nth-child(2)').empty();
+            $slide.find('>div:nth-child(2)').
+                empty().
+                append($('<img />').
+                    addClass('img-responsive').
+                    attr({
+                        'src' : 'images/spinner/spinner3.gif',
+                        'alt' : "Spinner Image"
+                    }));
             $slide.find('>div:nth-child(3)>ul').empty();
         });
     };
@@ -236,15 +243,16 @@ CCH.Objects.SearchSlide = function (args) {
             // The data type can either be location or item
             switch (type) {
             case 'location':
+                $contentContainer = $locationContentContainer;
+                $resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
+                $slideContainer = $contentContainer.find('> div:nth-child(2)');
+                $pagingContainer = $contentContainer.find('> div:nth-child(3)');
                 // I want to show locations if we have locations to show
                 if (locationSize > 0) {
                     $showAllButton = $('<div />').
                             addClass('application-slide-search-location-card-toggle').
                             append($('<span />').addClass('badge').html('Show All ' + locationSize + ' Locations'));
-                    $contentContainer = $locationContentContainer;
-                    $resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
-                    $slideContainer = $contentContainer.find('> div:nth-child(2)');
-                    $pagingContainer = $contentContainer.find('> div:nth-child(3)');
+                    
                     pageCount = Math.ceil(locationSize / slidesPerPage);
 
                     $contentContainer.removeClass('hidden');
@@ -254,6 +262,7 @@ CCH.Objects.SearchSlide = function (args) {
 
                     // Start with a clean slate 
                     $slideContainer.empty();
+                    $slideContainer.css('backgroundImage', '');
                     $pagingContainer.find('>ul').empty();
 
                     // I want to build a card for every search result item
@@ -333,15 +342,19 @@ CCH.Objects.SearchSlide = function (args) {
                             container : $contentContainer
                         });
                     }
+                } else {
+                    $slideContainer.empty();
                 }
                 break;
 
             case 'item':
+                $contentContainer = $productContentContainer;
+                $resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
+                $slideContainer = $contentContainer.find('>div:nth-child(2)');
+                $pagingContainer = $contentContainer.find('>div:nth-child(3)');
+                
                 if (productsSize > 0) {
-                    $contentContainer = $productContentContainer;
-                    $resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
-                    $slideContainer = $contentContainer.find('>div:nth-child(2)');
-                    $pagingContainer = $contentContainer.find('>div:nth-child(3)');
+                    
                     pageCount = Math.ceil(productsSize / slidesPerPage);
 
                     $resultsFoundsContainer.
@@ -350,6 +363,7 @@ CCH.Objects.SearchSlide = function (args) {
 
                     // Start with a clean slate 
                     $slideContainer.empty();
+                    $slideContainer.css('backgroundImage', '');
                     $pagingContainer.find('>ul').empty();
 
                     for (itemsIdx = 0; itemsIdx < productsSize; itemsIdx++) {
@@ -369,6 +383,8 @@ CCH.Objects.SearchSlide = function (args) {
                         container : $contentContainer,
                         pageCount : pageCount
                     });
+                } else {
+                    $slideContainer.empty();
                 }
                 break;
             }
