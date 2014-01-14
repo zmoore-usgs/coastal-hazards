@@ -161,4 +161,13 @@ public class PublishResource {
             }
             return insertedId;
     }
+    
+    public static boolean isValidSession(HttpServletRequest request) {
+        boolean valid = false;
+        HttpSession session = request.getSession();
+        if (session != null) {
+            valid = (session.getAttribute("sessionValid") == null) ? false : (Boolean)session.getAttribute("sessionValid");
+        }
+        return valid;
+    }
 }

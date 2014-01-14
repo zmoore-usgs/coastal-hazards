@@ -10,7 +10,7 @@ import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
-import java.io.ByteArrayInputStream;
+import gov.usgs.cida.coastalhazards.rest.publish.PublishResource;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -29,21 +29,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.jxpath.JXPathContext;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
@@ -131,8 +117,7 @@ public class ItemResource {
         if (session == null) {
             response = Response.status(Response.Status.BAD_REQUEST).build();
         } else {
-            Boolean valid = (session.getAttribute("sessionValid") == null) ? false : (Boolean)session.getAttribute("sessionValid");
-            if (valid) {
+            if (PublishResource.isValidSession(request)) {
                 final String id = itemManager.save(content);
 
                 if (null == id) {
