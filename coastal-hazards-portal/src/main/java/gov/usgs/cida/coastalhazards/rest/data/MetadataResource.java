@@ -1,7 +1,12 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
+import com.google.gson.JsonSyntaxException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
+import gov.usgs.cida.coastalhazards.model.summary.Summary;
+import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
+import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.FormUploadHandler;
+import gov.usgs.cida.utilities.properties.JNDISingleton;
 import gov.usgs.cida.utilities.string.StringHelper;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,17 +24,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.xml.sax.SAXException;
 
 /**
  *
  * @author isuftin
  */
-@Path("metadata")
+@Path("/metadata")
 public class MetadataResource {
-
+    
 	private static final int FILE_UPLOAD_MAX_SIZE = 15728640;
 	private static final String FILENAME_PARAM = "qqfile";
 	private static File UPLOAD_DIR;
@@ -38,7 +45,7 @@ public class MetadataResource {
 		super();
 		UPLOAD_DIR = new File(FileUtils.getTempDirectoryPath() + "/metadata-upload");
 	}
-
+    
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response acceptMetadata(@Context HttpServletRequest req) throws IOException {
@@ -88,7 +95,7 @@ public class MetadataResource {
 
 	}
 
-	@GET
+    @GET
 	@Path("{fid}")
 	@Produces(MediaType.APPLICATION_XML)
 	public Response getFileById(@PathParam("fid") String fid) throws IOException {
@@ -103,4 +110,23 @@ public class MetadataResource {
 			return Response.ok(IOUtils.toString(new FileInputStream(readFile)), MediaType.APPLICATION_XML_TYPE).build();
 		}
 	}
+    
+    @GET
+    @Path("/summarize/{fid}/attribute/{attr}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMetadataSummaryByAttribtue(@PathParam("fid") String fid,
+        @PathParam("attr") String attr) {
+        Response response;
+        try {
+            String jsonSummary = MetadataUtil.getSummaryFromWPS(fid, attr);
+            Summary summary = GsonUtil.getDefault().fromJson(jsonSummary, Summary.class);
+            response = Response.ok(GsonUtil.getDefault().toJson(summary, Summary.class), MediaType.APPLICATION_JSON_TYPE).build();
+        } catch (IOException | ParserConfigurationException | SAXException | JsonSyntaxException ex) {
+            Map<String,String> err = new HashMap<>();
+            err.put("message", ex.getMessage());
+            response = Response.serverError().entity(GsonUtil.getDefault().toJson(err, HashMap.class)).build();
+        }
+        return response;
+    }
+    
 }
