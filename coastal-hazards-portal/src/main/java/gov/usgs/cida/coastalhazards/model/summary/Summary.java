@@ -20,6 +20,7 @@ public class Summary implements Serializable {
 	private static final long serialVersionUID = 182763L;
 
     private transient int id;
+    private String version;
     private Tiny tiny;
     private Medium medium;
     private Full full;
@@ -33,6 +34,14 @@ public class Summary implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     @Embedded

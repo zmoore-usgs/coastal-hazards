@@ -6,4 +6,10 @@
             <column name="list_index" type="INT" />
         </addColumn>
     </changeSet>
+    <changeSet author="jiwalker" id="add_summary_version">
+        <addColumn tableName="summary">
+            <column name="version" type="VARCHAR(15)" />
+        </addColumn>
+        <addDefaultValue tableName="summary" columnName="version" defaultValue="unknown" />
+    </changeSet>
 </databaseChangeLog>
