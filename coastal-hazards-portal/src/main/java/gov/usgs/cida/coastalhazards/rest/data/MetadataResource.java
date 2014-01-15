@@ -1,7 +1,12 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
+import com.google.gson.JsonSyntaxException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
+import gov.usgs.cida.coastalhazards.model.summary.Summary;
+import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
+import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.FormUploadHandler;
+import gov.usgs.cida.utilities.properties.JNDISingleton;
 import gov.usgs.cida.utilities.string.StringHelper;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,33 +24,35 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.xml.sax.SAXException;
 
 /**
  *
  * @author isuftin
  */
-@Path("metadata")
+@Path("/metadata")
 public class MetadataResource {
-
-	private static int FILE_UPLOAD_MAX_SIZE = 15728640;
-	private static String FILENAME_PARAM = "qqfile";
+    
+	private static final int FILE_UPLOAD_MAX_SIZE = 15728640;
+	private static final String FILENAME_PARAM = "qqfile";
 	private static File UPLOAD_DIR;
 
 	public MetadataResource() {
 		super();
 		UPLOAD_DIR = new File(FileUtils.getTempDirectoryPath() + "/metadata-upload");
 	}
-
+    
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response acceptMetadata(@Context HttpServletRequest req) throws IOException {
 		int maxFileSize = FILE_UPLOAD_MAX_SIZE;
 		int fileSize = Integer.parseInt(req.getHeader("Content-Length"));
 		File tempFile = File.createTempFile(UUID.randomUUID().toString(), "temp");
-		Map<String, String> responseContent = new HashMap<String, String>();
+		Map<String, String> responseContent = new HashMap<>();
 		String fileName;
 
 		if (maxFileSize > 0 && fileSize > maxFileSize) {
@@ -62,11 +69,7 @@ public class MetadataResource {
 
 		try {
 			FormUploadHandler.saveFileFromRequest(req, FILENAME_PARAM, tempFile);
-		} catch (FileUploadException ex) {
-			responseContent.put("message", ex.getMessage());
-			responseContent.put("success", "false");
-			return Response.serverError().entity(responseContent).build();
-		} catch (IOException ex) {
+		} catch (FileUploadException | IOException ex) {
 			responseContent.put("message", ex.getMessage());
 			responseContent.put("success", "false");
 			return Response.serverError().entity(responseContent).build();
@@ -92,12 +95,12 @@ public class MetadataResource {
 
 	}
 
-	@GET
+    @GET
 	@Path("{fid}")
 	@Produces(MediaType.APPLICATION_XML)
 	public Response getFileById(@PathParam("fid") String fid) throws IOException {
 		File readFile = new File(UPLOAD_DIR, fid);
-		Map<String, String> responseContent = new HashMap<String, String>();
+		Map<String, String> responseContent = new HashMap<>();
 		if (!readFile.exists()) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		} else if (!readFile.canRead()) {
@@ -107,4 +110,23 @@ public class MetadataResource {
 			return Response.ok(IOUtils.toString(new FileInputStream(readFile)), MediaType.APPLICATION_XML_TYPE).build();
 		}
 	}
+    
+    @GET
+    @Path("/summarize/{fid}/attribute/{attr}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMetadataSummaryByAttribtue(@PathParam("fid") String fid,
+        @PathParam("attr") String attr) {
+        Response response;
+        try {
+            String jsonSummary = MetadataUtil.getSummaryFromWPS(fid, attr);
+            Summary summary = GsonUtil.getDefault().fromJson(jsonSummary, Summary.class);
+            response = Response.ok(GsonUtil.getDefault().toJson(summary, Summary.class), MediaType.APPLICATION_JSON_TYPE).build();
+        } catch (IOException | ParserConfigurationException | SAXException | JsonSyntaxException ex) {
+            Map<String,String> err = new HashMap<>();
+            err.put("message", ex.getMessage());
+            response = Response.serverError().entity(GsonUtil.getDefault().toJson(err, HashMap.class)).build();
+        }
+        return response;
+    }
+    
 }

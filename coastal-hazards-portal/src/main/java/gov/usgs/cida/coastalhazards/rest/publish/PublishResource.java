@@ -1,6 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.publish;
 
-import com.google.gson.Gson;
+import com.sun.jersey.api.view.Viewable;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.rest.data.MetadataResource;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
@@ -50,6 +50,7 @@ public class PublishResource {
     private static final DynamicReadOnlyProperties props;
     private static final String NAMESPACE_CSW = "http://www.opengis.net/cat/csw/2.0.2";
     private static final String NAMESPACE_DC = "http://purl.org/dc/elements/1.1/";
+    private static final String VERIFICATION_URL = "../OpenID/oid-login.jsp?originating_uri=";
 
 	static {
         props = JNDISingleton.getInstance();
@@ -57,30 +58,52 @@ public class PublishResource {
         cswExternalEndpoint = props.getProperty("coastal-hazards.csw.endpoint");
     }
 
-	@GET
-	@Path("")
-	public Response publishEntryRouter(@Context HttpServletRequest req) throws IOException, URISyntaxException {
-		HttpSession session = req.getSession(false);
-		URI redir;
-		if (session == null
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/item/")
+    public Response viewBlankItem(@Context HttpServletRequest req) throws URISyntaxException {
+       return viewItemById(req, "");
+    }
+    
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/item/{token}")
+    public Response viewItemById(@Context HttpServletRequest req, @PathParam("token") String token) throws URISyntaxException {
+        String intent = "/publish/item/";
+        Map<String, String> map = new HashMap<>();
+        map.put("id", token);
+        if (!verifyOIDSession(req)) {
+            return Response.temporaryRedirect(new URI(VERIFICATION_URL + intent + token)).build();
+        }
+        return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", map)).build();
+    }
+    
+    private boolean verifyOIDSession(@Context HttpServletRequest req) throws URISyntaxException {
+        HttpSession session = req.getSession(false);
+        if (session == null
 				|| session.getAttribute("oid-info") == null
 				|| ((Map<String, String>) session.getAttribute("oid-info")).isEmpty()
 				|| StringUtils.isEmpty(((Map<String, String>) session.getAttribute("oid-info")).get("oid-email"))
 				|| session.getAttribute("sessionValid") == null
 				|| ((Boolean) session.getAttribute("sessionValid")) == false) {
-			redir = new URI("../components/OpenID/oid-login.jsp");
-		} else {
-			redir = new URI("../components/publish/");
+            return false;
 		}
-		return Response.temporaryRedirect(redir).build();
-	}
+        return true;
+    }
+    
     
     @POST
     @Path("metadata/{token}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response publishItems(@PathParam("token") String metaToken) {
+    public Response publishItems(@Context HttpServletRequest req, @PathParam("token") String metaToken) throws URISyntaxException {
         Response response = null;
         Map<String, String> responseContent = new HashMap<String, String>();
+        String intent = "/metadata/";
+        
+        if (!verifyOIDSession(req)) {
+            return Response.temporaryRedirect(new URI(VERIFICATION_URL + intent + metaToken)).build();
+        }
+        
         try {
             String identifier = doCSWTransaction(metaToken);
             if (identifier == null) {
@@ -89,7 +112,7 @@ public class PublishResource {
             String url = cswExternalEndpoint + "?service=CSW&request=GetRecordById&version=2.0.2&typeNames=fgdc:metadata&id=" + identifier +"&outputSchema=http://www.opengis.net/cat/csw/csdgm&elementSetName=full";
             responseContent.put("metadata", url);
             response = Response.ok(GsonUtil.getDefault().toJson(responseContent, HashMap.class)).build();
-        } catch (Exception ex) {
+        } catch (IOException | RuntimeException | ParserConfigurationException | SAXException ex) {
             responseContent.put("message", ex.getMessage() == null ? "NPE" : ex.getMessage());
             response = Response.serverError().entity(GsonUtil.getDefault().toJson(responseContent, HashMap.class)).build();
         }
@@ -137,5 +160,14 @@ public class PublishResource {
                 insertedId = idNode.getTextContent();
             }
             return insertedId;
+    }
+    
+    public static boolean isValidSession(HttpServletRequest request) {
+        boolean valid = false;
+        HttpSession session = request.getSession();
+        if (session != null) {
+            valid = (session.getAttribute("sessionValid") == null) ? false : (Boolean)session.getAttribute("sessionValid");
+        }
+        return valid;
     }
 }
