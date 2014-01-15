@@ -49,14 +49,6 @@
         </init-param>
     </servlet>
     <servlet>
-        <servlet-name>DiagnosticsServlet</servlet-name>
-        <servlet-class>gov.usgs.cida.utilities.DiagnosticsServlet</servlet-class>
-    </servlet>
-	<servlet-mapping>
-		<servlet-name>DiagnosticsServlet</servlet-name>
-		<url-pattern>/diagnostics</url-pattern>
-	</servlet-mapping>
-    <servlet>
         <servlet-name>StPeteArcServerServlet</servlet-name>
         <servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
         <init-param>
@@ -92,9 +84,9 @@
     <servlet-mapping>
         <servlet-name>GeoServerServlet</servlet-name>
         <url-pattern>/geoserver/*</url-pattern>
-         <url-pattern>/ui/item/geoserver/*</url-pattern>
-         <url-pattern>/ui/view/geoserver/*</url-pattern>
-         <url-pattern>/publish/item/geoserver/*</url-pattern>
+        <url-pattern>/ui/item/geoserver/*</url-pattern>
+        <url-pattern>/ui/view/geoserver/*</url-pattern>
+        <url-pattern>/publish/item/geoserver/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StPeteArcServerServlet</servlet-name>
