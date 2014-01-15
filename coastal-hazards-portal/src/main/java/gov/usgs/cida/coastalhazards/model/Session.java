@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import javax.persistence.*;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  *
@@ -22,7 +24,7 @@ public class Session implements Serializable {
 	private double scale;
 	private Bbox bbox;
 	private Center center;
-	private List<Item> items;
+	private List<SessionItem> items;
 
 	/**
 	 * Checks that the session has all required properties set
@@ -99,18 +101,17 @@ public class Session implements Serializable {
 		this.center = center;
 	}
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(
-			name = "session_item",
-			joinColumns = {
-		@JoinColumn(name = "session_id", referencedColumnName = "id")},
-			inverseJoinColumns = {
-		@JoinColumn(name = "item_id", referencedColumnName = "id")})
-	public List<Item> getItems() {
+    @ElementCollection
+    @CollectionTable(name="session_item", joinColumns=@JoinColumn(name="session_id"))
+    @AttributeOverrides({
+        @AttributeOverride(name="itemId", column=@Column(name="item_id"))
+    })
+    @IndexColumn(name = "list_index")
+	public List<SessionItem> getItems() {
 		return items;
 	}
 
-	public void setItems(List<Item> items) {
+	public void setItems(List<SessionItem> items) {
 		this.items = items;
 	}
 }
