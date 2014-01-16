@@ -32,7 +32,6 @@ public class PublishResource {
     
     private static final String cswExternalEndpoint;
     private static final DynamicReadOnlyProperties props;
-    private static final String VERIFICATION_URL = "../OpenID/oid-login.jsp?originating_uri=";
 
 	static {
         props = JNDISingleton.getInstance();
@@ -54,7 +53,7 @@ public class PublishResource {
         Map<String, String> map = new HashMap<>();
         map.put("id", token);
         if (!OpenIDConsumerService.verifyOIDSession(req)) {
-            return Response.temporaryRedirect(new URI(VERIFICATION_URL + intent + token)).build();
+            return Response.temporaryRedirect(new URI(OpenIDConsumerService.VERIFICATION_URL  + intent + token)).build();
         }
         return Response.ok(new Viewable("/WEB-INF/jsp/publish/item/index.jsp", map)).build();
     }
@@ -68,7 +67,7 @@ public class PublishResource {
         String intent = "/metadata/";
         
         if (!OpenIDConsumerService.verifyOIDSession(req)) {
-            return Response.temporaryRedirect(new URI(VERIFICATION_URL + intent + metaToken)).build();
+            return Response.temporaryRedirect(new URI(OpenIDConsumerService.VERIFICATION_URL  + intent + metaToken)).build();
         }
         
         try {

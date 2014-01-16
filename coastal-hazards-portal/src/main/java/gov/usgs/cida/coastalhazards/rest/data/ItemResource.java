@@ -40,8 +40,6 @@ import org.xml.sax.SAXException;
 @Path("item")
 public class ItemResource {
 
-	@Context
-	private UriInfo context;
 	private static ItemManager itemManager;
     private static String cchn52Endpoint;
     private static final DynamicReadOnlyProperties props;

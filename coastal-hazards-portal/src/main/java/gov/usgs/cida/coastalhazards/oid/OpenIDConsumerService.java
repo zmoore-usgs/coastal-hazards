@@ -53,6 +53,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 	private static final String OPTIONAL_VALUE = "0";
 	private static final String REQUIRED_VALUE = "1";
 	private static final Logger LOG = LoggerFactory.getLogger(OpenIDConsumerService.class);
+	public static final String VERIFICATION_URL = "../OpenID/oid-login.jsp?originating_uri=";
 	private ServletContext context;
 	private ConsumerManager manager;
 
