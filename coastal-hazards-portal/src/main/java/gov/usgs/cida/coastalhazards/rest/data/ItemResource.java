@@ -23,11 +23,13 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
@@ -62,7 +64,7 @@ public class ItemResource {
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getCard(@PathParam("id") String id, 
+	public Response getItem(@PathParam("id") String id, 
             @DefaultValue("false") @QueryParam("subtree") boolean subtree) {
 		String jsonResult = itemManager.load(id, subtree);
 		Response response;
@@ -83,13 +85,13 @@ public class ItemResource {
 	@GET
 	@Path("uber")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getUberCard(@DefaultValue("false") @QueryParam("subtree") boolean subtree) {
-        return getCard(Item.UBER_ID, subtree);
+	public Response getUberItem(@DefaultValue("false") @QueryParam("subtree") boolean subtree) {
+        return getItem(Item.UBER_ID, subtree);
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response searchCards(
+	public Response searchItems(
             @DefaultValue("") @QueryParam("query") List<String> query,
             @DefaultValue("") @QueryParam("type") List<String> type,
 			@DefaultValue("popularity") @QueryParam("sortBy") String sortBy,
@@ -111,14 +113,14 @@ public class ItemResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response postCard(String content, @Context HttpServletRequest request) {
+	public Response postItem(String content, @Context HttpServletRequest request) {
         Response response;
         HttpSession session = request.getSession();
         if (session == null) {
             response = Response.status(Response.Status.BAD_REQUEST).build();
         } else {
             if (PublishResource.isValidSession(request)) {
-                final String id = itemManager.save(content);
+                final String id = itemManager.persist(content);
 
                 if (null == id) {
                     response = Response.status(Response.Status.BAD_REQUEST).build();
@@ -137,7 +139,36 @@ public class ItemResource {
         }
 		return response;
 	}
+    
+    /**
+     * @param request
+     * @param id
+     * @param content
+     * @return 
+     */
+    @PUT
+    @Path("{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
+        Response response = null;
+        if (PublishResource.isValidSession(request)) {
+            
+            Item editedItem = Item.fromJSON(content);
+        } else {
+            response = Response.status(Status.FORBIDDEN).build();
+        }
+        // walk through editedItem and merge with dbItem to get item to persist
+        return response;
+    }
 
+    /**
+     * This should either be removed or changed to its new purpose.
+     * We are no longer previewing unpublished items, but starting out as disabled until they are ready.
+     * 
+     * @param content
+     * @return 
+     */
 	@POST
 	@Path("/preview")
 	@Consumes(MediaType.APPLICATION_JSON)

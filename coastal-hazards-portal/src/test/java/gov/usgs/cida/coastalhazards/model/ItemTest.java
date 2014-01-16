@@ -57,7 +57,7 @@ public class ItemTest {
         ItemManager manager = new ItemManager();
 		String id;
 		
-		id = manager.save(itemJSON);
+		id = manager.persist(itemJSON);
 		assertNotNull(id);
 		
 		String json = manager.load(id, false);

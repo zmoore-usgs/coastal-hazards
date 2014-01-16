@@ -64,7 +64,7 @@ public class ItemManager {
         return item;
     }
 
-	public synchronized String save(String item) {
+	public synchronized String persist(String item) {
 		String id = "ERR";
         
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
@@ -84,7 +84,16 @@ public class ItemManager {
         }
 		return id;
 	}
+    
+    public synchronized void merge (String item) {
+        // do same as persist above, but do em.merge
+    }
 	
+    /**
+     * This will no longer be used and can be removed when calling class is changed
+     * @param item
+     * @return 
+     */
 	public String savePreview(Item item) {
         String id = item.getId();
 		try {

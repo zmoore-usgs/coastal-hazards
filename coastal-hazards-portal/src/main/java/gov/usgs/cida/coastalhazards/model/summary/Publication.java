@@ -29,7 +29,7 @@ public class Publication implements Serializable {
     public static final String TITLE = "title";
     public static final String LINK = "link";
 
-    private transient long id;
+    private long id;
     private transient long fullId;
     private String title;
     private String link;
