@@ -29,7 +29,7 @@
     String jsURI = path + "js/third-party/jsuri/jsuri.jsp";
     String fineUploader = path + "js/fineuploader/fineuploader.jsp";
     String log4js = path + "js/log4javascript/log4javascript.jsp";
-	String configration = path + "WEB-INF/jsp/components/combined/config.jsp";
+	String configration = path + "WEB-INF/jsp/components/common/config.jsp";
 %>
 <!DOCTYPE html>
 <html>
