@@ -34,6 +34,7 @@ CCH.Objects.UI = function () {
         $proxyWfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wfs-serviceparam'),
         $proxyWmsServiceInput = $form.find('#form-publish-item-service-proxy-wms'),
         $proxyWmfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
+        $publicationsPanel = $form.find('#publications-panel'),
         $ribbonableCb = $form.find('#form-publish-item-ribbonable'),
         $itemType = $form.find('#form-publish-info-item-itemtype'),
         $name = $form.find('#form-publish-item-name'),
@@ -74,6 +75,7 @@ CCH.Objects.UI = function () {
         $ribbonableCb.attr('disabled', 'disabled');
         $itemType.attr('disabled', 'disabled');
         $name.attr('disabled', 'disabled');
+        $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').attr('disabled', 'disabled');
         $itemIdInput.val('');
         $titleFullTextArea.val('');
         $titleMediumTextArea.val('');
@@ -99,6 +101,7 @@ CCH.Objects.UI = function () {
         $proxyWfsServiceParamInput.val('');
         $proxyWmsServiceInput.val('');
         $proxyWmfsServiceParamInput.val('');
+        $publicationsPanel.find('.panel-body').empty();
         $ribbonableCb.prop('checked', false);
         $itemType.val('');
         $name.val('');
@@ -136,6 +139,7 @@ CCH.Objects.UI = function () {
         $ribbonableCb.removeAttr('disabled');
         $itemType.removeAttr('disabled');
         $name.removeAttr('disabled');
+        $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled');
         $('#qq-uploader-dummy').removeClass('hidden');
     };
 
@@ -160,10 +164,11 @@ CCH.Objects.UI = function () {
         $proxyWmsServiceInput.attr('disabled', 'disabled');
         $proxyWmfsServiceParamInput.attr('disabled', 'disabled');
         $type.removeAttr('disabled');
-        $('.form-group-keyword input').removeAttr('disabled');
+        $('.form-group-keyword input').find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled');
         $ribbonableCb.removeAttr('disabled');
         $itemType.removeAttr('disabled');
         $name.removeAttr('disabled');
+        $publicationsPanel.removeAttr('disabled');
         $childrenSb.removeAttr('disabled');
     };
 
@@ -353,6 +358,10 @@ CCH.Objects.UI = function () {
             }
         });
     };
+    
+    $('#form-publish-info-item-panel-publications-button-add').on('click', function () {
+        me.createPublicationRow('','');
+    });
 
     $('#publish-button-create-aggregation-option').on('click', function () {
         me.clearForm();
@@ -437,6 +446,42 @@ CCH.Objects.UI = function () {
             $panetTitle = $container.find('> div > div > h3');
 
         $panetTitle.append('Welcome, ', firstName, lastName, email, '.');
+    };
+    
+    me.createPublicationRow = function(link, title) {
+        var $panelBody = $publicationsPanel.find('>div:nth-child(2)'),
+            $closeButtonRow = $('<div />').addClass('pull-right'),
+            $closeButton = $('<i />').addClass('fa fa-times'),
+            $smallWell = $('<div />').addClass('well well-small'),
+            $linkRow = $('<div />').addClass('row'),
+            $titleRow = $('<div />').addClass('row'),
+            $linkLabel = $('<label />').html('Link'),
+            $linkInput = $('<input />').
+                attr({
+                    type : 'text'
+                }).
+                addClass('form-control').
+                val(link),
+            $titleLabel = $('<label />').html('Title'),
+            $titleInput = $('<input />').attr({
+                type : 'text'
+            }).
+            addClass('form-control').
+            val(title);
+        
+        $closeButton.
+            on('click', function () {
+                 $smallWell.remove();   
+            });
+        
+        $closeButtonRow.append($closeButton);
+        
+        $linkRow.append($linkLabel, $linkInput);
+        $titleRow.append($titleLabel, $titleInput);
+            
+        $smallWell.append($closeButtonRow, $titleRow, $linkRow);
+        
+        $panelBody.append($smallWell);
     };
 
     me.addItemToForm = function (args) {
@@ -610,6 +655,12 @@ CCH.Objects.UI = function () {
                 $childrenSb.
                     find('option[value="'+child.id+'"]').
                     prop('selected', 'selected');
+            });
+            
+            // Publications
+            $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled', 'disabled');
+            item.summary.full.publications.publications.each(function (publication) {
+                me.createPublicationRow(publication.link, publication.title);
             });
 
             $childrenSb.removeAttr('disabled');

@@ -163,6 +163,17 @@
                 display: none;
             }
             
+            #publications-panel .panel-heading button {
+                margin-top: -5px;
+            }
+            
+            #publications-panel .panel-body >div.well >div:nth-child(1) {
+                margin-top: -10px;
+            }
+            #publications-panel .panel-body >div.well >div:nth-child(1):hover {
+                cursor: pointer;
+            }
+            
             .qq-upload-button {
                 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
                 -webkit-box-sizing: border-box;
@@ -344,6 +355,17 @@
                                         <td></td>
                                     </tr>
                                 </table>
+                            </div>
+                            
+                            <%-- Publications --%>
+                            <div id="publications-panel" class="panel panel-default">
+                                <div class="panel-heading">
+                                    <button id="form-publish-info-item-panel-publications-button-add" type="button" class="btn btn-default btn-sm pull-right" disabled="disabled">Add</button>
+                                    <h3 class="panel-title">Publications</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <%-- Added programatically --%>
+                                </div>
                             </div>
                             
                             <%-- Services --%>
