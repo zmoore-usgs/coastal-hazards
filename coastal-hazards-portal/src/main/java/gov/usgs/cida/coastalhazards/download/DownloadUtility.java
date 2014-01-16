@@ -1,9 +1,11 @@
 package gov.usgs.cida.coastalhazards.download;
 
+import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import gov.usgs.cida.coastalhazards.model.Session;
+import gov.usgs.cida.coastalhazards.model.SessionItem;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
@@ -128,11 +130,13 @@ public class DownloadUtility {
     public static void stageSessionDownload(Session stageThis, File stagingDir) throws IOException, ConcurrentModificationException {
         lock(stagingDir);
 
+        ItemManager itemManager = new ItemManager();
         List<String> missing = new LinkedList<>();
 
         try {
             Map<WFSService, SingleDownload> downloadMap = new HashMap<>();
-            for (Item item : stageThis.getItems()) {
+            for (SessionItem sessionItem : stageThis.getItems()) {
+                Item item = itemManager.loadItem(sessionItem.getItemId());
                 populateDownloadMap(downloadMap, item);
             }
             List<String> namesUsed = new ArrayList<>();

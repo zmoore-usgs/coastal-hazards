@@ -18,4 +18,5 @@
     <include file="addItemFlags.xml" relativeToChangelogFile="true" />
     <include file="addThumbnails.xml" relativeToChangelogFile="true" />
     <include file="addPublicationType.xml" relativeToChangelogFile="true" />
+    <include file="sessionItemAttributes.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

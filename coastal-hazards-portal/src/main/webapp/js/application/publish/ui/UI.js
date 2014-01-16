@@ -453,7 +453,7 @@ CCH.Objects.UI = function () {
             descriptionTiny,
             keywords = [],
             services = {};
-
+            
         // Populate children
         CCH.items.each(function (cchItem) {
             if (!item || item.id !== cchItem.id) {
@@ -485,7 +485,7 @@ CCH.Objects.UI = function () {
 
             // Hidden field. Should be changed implicitly
             $itemType.val(item.itemType);
-
+            
             $name.
                 val(item.name).
                 removeAttr('disabled');
@@ -551,10 +551,10 @@ CCH.Objects.UI = function () {
                             if (featureTypes) {
                                 featureTypes = featureTypes[0];
                                 featureTypes.properties.each(function (ft) {
-                                    ftName = ft.name;
+                                    ftName = ft.name,
                                     ftNameLower = ftName.toLowerCase();
                                     if (ftNameLower !== 'objectid' &&
-                                            ftNameLower !== 'shape' &&
+                                            ftNameLower !== 'shape' && 
                                             ftNameLower !== 'shape.len') {
                                         $option = $('<option>').
                                                 attr('value', ft.name).
@@ -565,11 +565,11 @@ CCH.Objects.UI = function () {
                                 $attributeSelect.
                                     val(item.attr).
                                     removeAttr('disabled');
-                                };
+                                }
                         }]
                     }
                 });
-
+                
                 // Fill out services panel
                 $cswServiceInput.
                     val(services.csw.endpoint).
@@ -598,24 +598,28 @@ CCH.Objects.UI = function () {
                 $proxyWmfsServiceParamInput.
                     val(services.proxy_wms.serviceParameter).
                     removeAttr('disabled');
+                
             }
-
+            
             // Ribbonable
             $ribbonableCb.
                 prop('checked', item.ribbonable).
                 removeAttr('disabled');
-
+        
             // Select children
             item.children.each(function (child) {
                 $childrenSb.
                     find('option[value="'+child.id+'"]').
                     prop('selected', 'selected');
             });
-
+            
             $childrenSb.removeAttr('disabled');
         } else {
             CCH.LOG.warn('UI.js::putItemOnForm: function was called with no item');
         }
     };
+    
+    
+    
     return me;
 };
