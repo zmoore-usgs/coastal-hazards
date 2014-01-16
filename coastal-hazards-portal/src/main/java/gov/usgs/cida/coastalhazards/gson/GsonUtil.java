@@ -5,11 +5,13 @@ import com.google.gson.GsonBuilder;
 import gov.usgs.cida.coastalhazards.gson.adapter.BboxAdapter;
 import gov.usgs.cida.coastalhazards.gson.adapter.CenterAdapter;
 import gov.usgs.cida.coastalhazards.gson.adapter.DoubleSerializer;
+import gov.usgs.cida.coastalhazards.gson.adapter.FullSummaryAdapter;
 import gov.usgs.cida.coastalhazards.gson.adapter.ItemAdapter;
 import gov.usgs.cida.coastalhazards.gson.adapter.ItemProxyAdapter;
 import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Center;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.summary.Full;
 
 /**
  *
@@ -28,6 +30,7 @@ public class GsonUtil {
                     .registerTypeAdapter(Bbox.class, new BboxAdapter())
                     .registerTypeAdapter(Center.class, new CenterAdapter())
                     .registerTypeAdapter(Double.class, new DoubleSerializer(doublePrecision))
+                    .registerTypeAdapter(Full.class, new FullSummaryAdapter())
                     .create(); 
         }
         return defaultGson;
@@ -40,6 +43,7 @@ public class GsonUtil {
                     .registerTypeAdapter(Center.class, new CenterAdapter())
                     .registerTypeAdapter(Double.class, new DoubleSerializer(doublePrecision))
                     .registerTypeAdapter(Item.class, new ItemProxyAdapter())
+                    .registerTypeAdapter(Full.class, new FullSummaryAdapter())
                     .create(); 
         }
         return proxyGson;
