@@ -41,4 +41,11 @@ public class ViewRouter {
 	public Response useJspAtUIPath(@PathParam("jspPath") String jspPath) {
 		return Response.ok(new Viewable("/" + jspPath)).build();
 	}
+    
+    @GET
+    @Produces("text/html")
+	@Path("/diagnostics")
+    public Response useDiagnosticsPage() {
+		return Response.ok(new Viewable("/diagnostics.jsp")).build();
+	}
 }

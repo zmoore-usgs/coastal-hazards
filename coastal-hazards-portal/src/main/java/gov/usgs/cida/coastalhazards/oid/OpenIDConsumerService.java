@@ -143,13 +143,9 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 			// configure the return_to URL where your application will receive
 			// the authentication responses from the OpenID provider
 			// String returnToUrl = "http://example.com/openid";
-			String unsafeUrl = httpReq.getHeader("x-unsafe-request-url");
-			String requestUrl = httpReq.getRequestURL().toString();
-			if (StringUtils.isNotBlank(unsafeUrl)) {
-				requestUrl = unsafeUrl;
-			}
-			
-			String returnToUrl = requestUrl + "?is_return=true";
+			String returnToUrl = httpReq.getRequestURL().toString()
+					+ "?is_return=true";
+            
             if (StringUtils.isNotBlank(originatingURI)) {
                 returnToUrl += "&originating_uri=" + originatingURI;
             }
@@ -275,13 +271,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 			DiscoveryInformation discovered = (DiscoveryInformation) httpReq.getSession().getAttribute("openid-disc");
 
 			// extract the receiving URL from the HTTP request
-			String unsafeUrl = httpReq.getHeader("x-unsafe-request-url");
-			StringBuffer receivingURL;
-			if (StringUtils.isNotBlank(unsafeUrl)) {
-				receivingURL = new StringBuffer(unsafeUrl);
-			} else {
-				receivingURL = httpReq.getRequestURL();
-			}
+			StringBuffer receivingURL = httpReq.getRequestURL();
 			String queryString = httpReq.getQueryString();
 			if (queryString != null && queryString.length() > 0) {
 				receivingURL.append("?").append(httpReq.getQueryString());

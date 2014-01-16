@@ -178,7 +178,7 @@ $(document).ready(function () {
 								{
 								$link.html('CSW :');
 								$textBox.val(endpoint);
-								$newRow.append($link, $textBox);
+								$newRow.append($link, $textBox)
 								break;
 								}
 							case ('source_wms') :
@@ -186,7 +186,7 @@ $(document).ready(function () {
 								$link.html('Source WMS :');
 								$textBox.val(endpoint);
 								$serviceParamSpan.append(serviceParam, ' )');
-								$newRow.append($link, $serviceParamSpan, $textBox);
+								$newRow.append($link, $serviceParamSpan, $textBox)
 								break;
 								}
 							case ('source_wfs') :
@@ -194,7 +194,7 @@ $(document).ready(function () {
 								$link.html('Source WFS :');
 								$textBox.val(endpoint);
 								$serviceParamSpan.append(serviceParam, ' )');
-								$newRow.append($link, $serviceParamSpan, $textBox);
+								$newRow.append($link, $serviceParamSpan, $textBox)
 								break;
 								}
 							case ('proxy_wfs') :
@@ -202,7 +202,7 @@ $(document).ready(function () {
 								$link.html('Proxy WFS :');
 								$textBox.val(endpoint);
 								$serviceParamSpan.append(serviceParam, ' )');
-								$newRow.append($link, $serviceParamSpan, $textBox);
+								$newRow.append($link, $serviceParamSpan, $textBox)
 								break;
 								}
 							case ('proxy_wms') :
@@ -210,13 +210,13 @@ $(document).ready(function () {
 								$link.html('Proxy WMS :');
 								$textBox.val(endpoint);
 								$serviceParamSpan.append(serviceParam, ' )');
-								$newRow.append($link, $serviceParamSpan, $textBox);
+								$newRow.append($link, $serviceParamSpan, $textBox)
 								break;
 								}
 						}
 							
 						
-						$('#modal-services-view .modal-body').append($newRow);
+						$('#modal-services-view .modal-body').append($newRow)
 					});
 					
                     $('#info-title').html(data.summary.full.title);
@@ -253,7 +253,7 @@ $(document).ready(function () {
                 }
             ]
         }
-    });
+    })
     
     var removeLegendContainer = function() {
         $('#info-legend').remove();
@@ -342,7 +342,7 @@ $(document).ready(function () {
 					styles: 'cch',
 					transparent: true
 				}, {
-			singleTile: true,
+			singleTile: false,
 			displayInLayerSwitcher: false,
 			transparent: true,
 			isBaseLayer: false,
