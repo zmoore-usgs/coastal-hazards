@@ -125,7 +125,6 @@
                 width: 100%;
             }
             
-            
             .row-children .form-group {
                 width: 100%;
             }
@@ -135,7 +134,15 @@
                 box-sizing: border-box;
                 width: 100%;
             }
-            
+			.row-displayed-children .form-group {
+                width: 100%;
+            }
+            .row-displayed-children .form-control {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                width: 100%;
+            }
             
             .row-description .form-group {
                 width: 100%;
@@ -296,6 +303,53 @@
                                     </span>
                                 </div>
                             </div>
+							
+							 <%-- Services --%>
+                            <div id="services-panel" class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Services</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="form-publish-info-item-service-csw" class="row row-csw">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-csw">CSW</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-csw" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                    <div id="form-publish-info-item-service-source-wfs" class="row row-src-wfs">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-source-wfs">Source WFS</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs" disabled="disabled" />
+                                            <label for="form-publish-item-service-source-wfs-serviceparam">Service Parameter</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                    <div id="form-publish-info-item-service-source-wms" class="row row-src-wms">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-source-wms">Source WMS</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms" disabled="disabled" />
+                                            <label for="form-publish-item-service-source-wms-serviceparam">Service Parameter</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms-serviceparam" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                    <div id="form-publish-info-item-service-proxy-wfs" class="row row-prx-wfs">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-proxy-wfs">Proxy WFS</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs" disabled="disabled" />
+                                            <label for="form-publish-item-service-proxy-wfs-serviceparam">Service Parameter</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs-serviceparam" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                    <div id="form-publish-info-item-service-proxy-wms" class="row row-prx-wms">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-proxy-wms">Proxy WMS</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms" disabled="disabled" />
+                                            <label for="form-publish-item-service-proxy-wms-serviceparam">Service Parameter</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms-serviceparam" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                             
                             
@@ -365,53 +419,6 @@
                                 </div>
                                 <div class="panel-body">
                                     <%-- Added programatically --%>
-                                </div>
-                            </div>
-                            
-                            <%-- Services --%>
-                            <div id="services-panel" class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Services</h3>
-                                </div>
-                                <div class="panel-body">
-                                    <div id="form-publish-info-item-service-csw" class="row row-csw">
-                                        <div class="form-group">
-                                            <label for="form-publish-item-service-csw">CSW</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-csw" disabled="disabled" />
-                                        </div>
-                                    </div>
-                                    <div id="form-publish-info-item-service-source-wfs" class="row row-src-wfs">
-                                        <div class="form-group">
-                                            <label for="form-publish-item-service-source-wfs">Source WFS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs" disabled="disabled" />
-                                            <label for="form-publish-item-service-source-wfs-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled" />
-                                        </div>
-                                    </div>
-                                    <div id="form-publish-info-item-service-source-wms" class="row row-src-wms">
-                                        <div class="form-group">
-                                            <label for="form-publish-item-service-source-wms">Source WMS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms" disabled="disabled" />
-                                            <label for="form-publish-item-service-source-wms-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms-serviceparam" disabled="disabled" />
-                                        </div>
-                                    </div>
-                                    <div id="form-publish-info-item-service-proxy-wfs" class="row row-prx-wfs">
-                                        <div class="form-group">
-                                            <label for="form-publish-item-service-proxy-wfs">Proxy WFS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs" disabled="disabled" />
-                                            <label for="form-publish-item-service-proxy-wfs-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs-serviceparam" disabled="disabled" />
-                                        </div>
-                                    </div>
-                                    <div id="form-publish-info-item-service-proxy-wms" class="row row-prx-wms">
-                                        <div class="form-group">
-                                            <label for="form-publish-item-service-proxy-wms">Proxy WMS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms" disabled="disabled" />
-                                            <label for="form-publish-item-service-proxy-wms-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms-serviceparam" disabled="disabled" />
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                             
