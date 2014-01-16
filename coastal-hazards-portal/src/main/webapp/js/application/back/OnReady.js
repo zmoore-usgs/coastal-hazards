@@ -129,9 +129,9 @@ $(document).ready(function () {
 
                     // Build the publications list for the item
                     var publist = 'None Found';
-                    if (data.summary.full.publications.length) {
+                    if (data.summary.full.publications.publications.length) {
                         publist = $('<ul />').attr('id', 'info-container-publications-list');
-                        data.summary.full.publications.each(function(item) {
+                        data.summary.full.publications.publications.each(function(item) {
                             var li = $('<li />');
                             var a = $('<a />').attr({
                                 'href': item.link,
