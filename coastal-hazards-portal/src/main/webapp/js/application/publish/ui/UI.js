@@ -38,6 +38,7 @@ CCH.Objects.UI = function () {
         $ribbonableCb = $form.find('#form-publish-item-ribbonable'),
         $itemType = $form.find('#form-publish-info-item-itemtype'),
         $name = $form.find('#form-publish-item-name'),
+		$displayedChildrenSb = $form.find('#form-publish-item-displayed-children'),
         $keywordGroupClone = $keywordGroup.clone(),
         $childrenSb = $form.find('#form-publish-item-children');
 
@@ -75,6 +76,7 @@ CCH.Objects.UI = function () {
         $ribbonableCb.attr('disabled', 'disabled');
         $itemType.attr('disabled', 'disabled');
         $name.attr('disabled', 'disabled');
+		$displayedChildrenSb.attr('disabled', 'disabled');
         $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').attr('disabled', 'disabled');
         $itemIdInput.val('');
         $titleFullTextArea.val('');
@@ -106,6 +108,7 @@ CCH.Objects.UI = function () {
         $itemType.val('');
         $name.val('');
         $childrenSb.empty();
+		$displayedChildrenSb.empty();
         CCH.items.each(function (cchItem) {
             var option = $('<option />').
                 attr('value', cchItem.id).
@@ -170,6 +173,7 @@ CCH.Objects.UI = function () {
         $name.removeAttr('disabled');
         $publicationsPanel.removeAttr('disabled');
         $childrenSb.removeAttr('disabled');
+		$displayedChildrenSb.removeAttr('disabled');
     };
 
     me.initUploader = function (args) {
@@ -522,6 +526,7 @@ CCH.Objects.UI = function () {
                     attr('value', cchItem.id).
                     html(cchItem.summary.tiny.text);
                 $childrenSb.append(option);
+				$displayedChildrenSb.append(option.clone());
             }
         });
 
@@ -672,16 +677,22 @@ CCH.Objects.UI = function () {
                     find('option[value="'+child.id+'"]').
                     prop('selected', 'selected');
             });
+			item.displayedChildren.each(function (child) {
+				$displayedChildrenSb.
+					find('option[value="' + child + '"]').
+					prop('selected', 'selected');
+			});
             
             // Publications
             $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled', 'disabled');
             Object.keys(item.summary.full.publications, function (type) {
                 item.summary.full.publications[type].each(function (publication) {
                     me.createPublicationRow(publication.link, publication.title, type);
-                })
+                });
             });
 
             $childrenSb.removeAttr('disabled');
+			$displayedChildrenSb.removeAttr('disabled');
         } else {
             CCH.LOG.warn('UI.js::putItemOnForm: function was called with no item');
         }

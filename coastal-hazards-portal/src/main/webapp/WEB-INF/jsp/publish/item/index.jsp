@@ -430,6 +430,12 @@
                                     <select class="form-control" multiple id="form-publish-item-children" disabled="disabled"></select>
                                 </div>
                             </div>
+							<div id="form-publish-info-item-displayed-children" class="row row-displayed-children">
+                                <div class="form-group">
+                                    <label for="form-publish-item-displayed-children">Displayed Children</label>
+                                    <select class="form-control" multiple id="form-publish-item-displayed-children" disabled="disabled"></select>
+                                </div>
+                            </div>
                             
                             <%-- Ribbonable --%>
                             <div class="row row-ribbonable">
