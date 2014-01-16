@@ -139,6 +139,30 @@ CCH.Objects.OWS = function() {
                     });
                 }
             });
-        }
+        },
+		buildServiceEndpoint: function (endpoint) {
+			var updatedEndpoint = null,
+				urlIndex = 0;
+			if (endpoint && endpoint.toLowerCase().indexOf('http') !== -1) {
+				if (endpoint.toLowerCase().has('coastalmap.marine.usgs.gov')) {
+					urlIndex = endpoint.indexOf('cmgp/') + 5;
+					updatedEndpoint = contextPath + '/marine/' + endpoint.substring(urlIndex);
+					CCH.config.endpoint.servertype = 'arcgis';
+				} else if (endpoint.toLowerCase().has('olga.er.usgs.gov')) {
+					urlIndex = endpoint.indexOf('services') + 8;
+					updatedEndpoint = contextPath + '/stpgis/' + endpoint.substring(urlIndex);
+					CCH.config.endpoint.servertype = 'arcgis';
+				} else if (endpoint.toLowerCase().has('cida.usgs.gov')) {
+					urlIndex = endpoint.indexOf('geoserver') + 10;
+					updatedEndpoint = contextPath + '/cidags/' + endpoint.substring(urlIndex);
+					CCH.config.endpoint.servertype = 'geoserver';
+				}
+				var indexOfQueryStart = updatedEndpoint ? updatedEndpoint.indexOf('?') : -1;
+				if (indexOfQueryStart !== -1) {
+					return updatedEndpoint.substring(0, indexOfQueryStart);
+				}
+			}
+			return updatedEndpoint;
+		}
     });
 };

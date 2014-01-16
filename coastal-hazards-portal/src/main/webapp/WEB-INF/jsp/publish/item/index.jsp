@@ -29,6 +29,7 @@
     String jsURI = path + "js/third-party/jsuri/jsuri.jsp";
     String fineUploader = path + "js/fineuploader/fineuploader.jsp";
     String log4js = path + "js/log4javascript/log4javascript.jsp";
+	String configration = path + "WEB-INF/jsp/components/combined/config.jsp";
 %>
 <!DOCTYPE html>
 <html>
@@ -49,36 +50,13 @@
             <jsp:param name="relPath" value="../../" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+		<jsp:include page="<%= fineUploader%>">
+            <jsp:param name="relPath" value="../../" />
+            <jsp:param name="debug-qualifier" value="<%= development%>" />
+        </jsp:include>
+		<jsp:include page="<%= configration%>"></jsp:include>
         <script type="text/javascript">
-            var CCH = {
-                    Objects : {},
-                    itemid : '<%= id %>',
-                    CONFIG : {
-                        contextPath : '<%= baseUrl %>',
-                        development : <%= development %>,
-                        user : {
-                            firstName : '${pageContext.session.getAttribute("oid-info").get("oid-firstname")}',
-                            lastName : '${pageContext.session.getAttribute("oid-info").get("oid-lastname")}',
-                            email : '${pageContext.session.getAttribute("oid-info").get("oid-email")}'
-                        },
-                        data : {
-                            sources : {
-                                'cida-geoserver': {
-                                    'endpoint': '<%=geoserverEndpoint%>',
-                                    'proxy': 'geoserver/'
-                                },
-                                'geocoding': {
-                                    'endpoint': '<%=geocodeEndpoint%>'
-                                },
-                                item : {
-                                    endpoint : '/data/item'
-                                }
-                            }
-                        },
-                        item : null
-                    },
-                    items : []
-            };
+			CCH.itemid = '<%= id %>';
 		</script>
     </head>
     <body>
@@ -335,9 +313,5 @@
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/OnReady.js"></script>
-        <jsp:include page="<%= fineUploader%>">
-            <jsp:param name="relPath" value="../../" />
-            <jsp:param name="debug-qualifier" value="<%= development%>" />
-        </jsp:include>
     </body>
 </html>
