@@ -7,10 +7,10 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
+import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
-import gov.usgs.cida.coastalhazards.rest.publish.PublishResource;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -117,7 +117,7 @@ public class ItemResource {
         if (session == null) {
             response = Response.status(Response.Status.BAD_REQUEST).build();
         } else {
-            if (PublishResource.isValidSession(request)) {
+            if (SessionResource.isValidSession(request)) {
                 final String id = itemManager.save(content);
 
                 if (null == id) {

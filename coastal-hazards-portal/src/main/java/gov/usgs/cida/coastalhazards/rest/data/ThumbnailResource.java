@@ -2,7 +2,7 @@ package gov.usgs.cida.coastalhazards.rest.data;
 
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Thumbnail;
-import gov.usgs.cida.coastalhazards.rest.publish.PublishResource;
+import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
 import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -45,7 +45,7 @@ public class ThumbnailResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response putImage(@PathParam("id") String id, String content, @Context HttpServletRequest request) {
         Response response = null;
-        if (PublishResource.isValidSession(request)) {
+        if (SessionResource.isValidSession(request)) {
             Thumbnail thumb = new Thumbnail();
             thumb.setItemId(id);
             thumb.setImage(content);

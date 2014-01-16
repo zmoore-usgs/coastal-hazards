@@ -21,6 +21,15 @@ import javax.ws.rs.core.Response;
 @Path("/session")
 public class SessionResource {
 
+	public static boolean isValidSession(HttpServletRequest request) {
+		boolean valid = false;
+		HttpSession session = request.getSession();
+		if (session != null) {
+			valid = (session.getAttribute("sessionValid") == null) ? false : (Boolean) session.getAttribute("sessionValid");
+		}
+		return valid;
+	}
+
 	@GET
 	@Path("/oid")
 	@Produces(MediaType.APPLICATION_JSON)
