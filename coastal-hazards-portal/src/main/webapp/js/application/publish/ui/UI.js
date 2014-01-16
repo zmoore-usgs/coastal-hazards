@@ -448,13 +448,14 @@ CCH.Objects.UI = function () {
         $panetTitle.append('Welcome, ', firstName, lastName, email, '.');
     };
     
-    me.createPublicationRow = function(link, title) {
+    me.createPublicationRow = function(link, title, type) {
         var $panelBody = $publicationsPanel.find('>div:nth-child(2)'),
             $closeButtonRow = $('<div />').addClass('pull-right'),
             $closeButton = $('<i />').addClass('fa fa-times'),
             $smallWell = $('<div />').addClass('well well-small'),
             $linkRow = $('<div />').addClass('row'),
             $titleRow = $('<div />').addClass('row'),
+            $typeRow = $('<div />').addClass('row'),
             $linkLabel = $('<label />').html('Link'),
             $linkInput = $('<input />').
                 attr({
@@ -463,12 +464,27 @@ CCH.Objects.UI = function () {
                 addClass('form-control').
                 val(link),
             $titleLabel = $('<label />').html('Title'),
-            $titleInput = $('<input />').attr({
-                type : 'text'
-            }).
-            addClass('form-control').
-            val(title);
-        
+            $titleInput = $('<input />').
+                attr({
+                    type : 'text'
+                }).
+                addClass('form-control').
+                val(title),
+            $dataOption = $('<option />').
+                attr('value', 'data').
+                html('Data'),
+            $publicationOption = $('<option />').
+                attr('value', 'publications').
+                html('Publication'),
+            $resourceOption = $('<option />').
+                attr('value', 'resource').
+                html('Resource'),
+            $typeSelect = $('<select />').
+                addClass('form-control').
+                append($dataOption, $publicationOption, $resourceOption);
+            $typeRow.append($typeSelect);
+            $typeSelect.val(type);
+            
         $closeButton.
             on('click', function () {
                  $smallWell.remove();   
@@ -479,7 +495,7 @@ CCH.Objects.UI = function () {
         $linkRow.append($linkLabel, $linkInput);
         $titleRow.append($titleLabel, $titleInput);
             
-        $smallWell.append($closeButtonRow, $titleRow, $linkRow);
+        $smallWell.append($closeButtonRow, $titleRow, $linkRow, $typeRow);
         
         $panelBody.append($smallWell);
     };
@@ -659,8 +675,10 @@ CCH.Objects.UI = function () {
             
             // Publications
             $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled', 'disabled');
-            item.summary.full.publications.publications.each(function (publication) {
-                me.createPublicationRow(publication.link, publication.title);
+            Object.keys(item.summary.full.publications, function (type) {
+                item.summary.full.publications[type].each(function (publication) {
+                    me.createPublicationRow(publication.link, publication.title, type);
+                })
             });
 
             $childrenSb.removeAttr('disabled');
