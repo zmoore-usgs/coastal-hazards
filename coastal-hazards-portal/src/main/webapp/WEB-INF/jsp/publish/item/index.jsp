@@ -38,6 +38,7 @@
         <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
+		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/publish/publish.css" />
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
@@ -79,138 +80,6 @@
                     items : []
             };
 		</script>
-        <style type="text/css">
-            .panel-body .row:not(:first-child) {
-                margin-top: 10px;
-            }
-            .panel-body .row:not(:last-child) {
-                margin-bottom: 10px;
-            }
-            
-            .row-id .form-control {
-                width: auto;
-            }
-            
-            .row-name .form-control {
-                width: auto;
-            }
-            
-            .row-type .form-group {
-                width: 100%;
-            }
-            .row-type .form-control {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                width: 100%;
-            }
-            
-            .row-attribute .form-group {
-                width: 100%;
-            }
-            .row-attribute .form-control {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                width: 100%;
-            }
-            
-            .row-title .form-group {
-                width: 100%;
-            }
-            .row-title .form-control {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                width: 100%;
-            }
-            
-            .row-children .form-group {
-                width: 100%;
-            }
-            .row-children .form-control {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                width: 100%;
-            }
-			.row-displayed-children .form-group {
-                width: 100%;
-            }
-            .row-displayed-children .form-control {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                width: 100%;
-            }
-            
-            .row-description .form-group {
-                width: 100%;
-            }
-            .row-description .form-control {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                width: 100%;
-            }
-            
-            .form-publish-info-item-bbox h5 {
-                font-weight: bold;
-            }
-            
-            #services-panel .form-group {
-                width: 100%;
-            }
-            
-            #qq-uploader-dummy {
-                display: none;
-            }
-            
-            #qq-uploader-dummy ul {
-                display: none;
-            }
-            
-            #publications-panel .panel-heading button {
-                margin-top: -5px;
-            }
-            
-            #publications-panel .panel-body >div.well >div:nth-child(1) {
-                margin-top: -10px;
-            }
-            #publications-panel .panel-body >div.well >div:nth-child(1):hover {
-                cursor: pointer;
-            }
-            
-            .qq-upload-button {
-                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                display: inline-block !important;
-                margin-bottom: 0;
-                font-weight: normal;
-                text-align: center;
-                white-space: nowrap;
-                vertical-align: middle;
-                cursor: pointer;
-                background-image: none;
-                border: 1px solid transparent;
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                -o-user-select: none;
-                user-select: none;
-                color: #ffffff;
-                background-color: #5cb85c;
-                border-color: #4cae4c;
-                padding: 10px 16px  !important;
-                font-size: 18px;
-                line-height: 1.33;
-                border-radius: 6px;
-                background: #5cb85c !important;
-                width: auto !important;
-            }
-        </style>
     </head>
     <body>
         
