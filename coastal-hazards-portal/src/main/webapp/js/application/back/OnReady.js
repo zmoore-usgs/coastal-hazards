@@ -1,21 +1,24 @@
 /*jslint browser: true*/
 /*global $*/
 /*global CCH*/
+/*global initializeLogging*/
+/*global LOG*/
 $(document).ready(function () {
+    "use strict";
     // Header fix
     $('#ccsa-area').find('br').first().remove();
-    
+
     initializeLogging({
         LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
     });
     CCH.LOG = LOG;
-    
+
     CCH.items = new CCH.Objects.Items();
-    
+
     CCH.CONFIG.item = new CCH.Objects.Item({
         id : CCH.CONFIG.itemId
     });
-    
+
     CCH.CONFIG.item.load({
         callbacks : {
             success : [
@@ -113,7 +116,7 @@ $(document).ready(function () {
                         'target': 'portal_metadata_window',
                         'role': 'button'
                     }).addClass('btn btn-default').html('<i class="fa fa-download"></i> View Metadata');
-					
+
                     // Create a "Download Full" button
                     var downloadFull = $('<a />').attr({
                         'role': 'button',
@@ -129,18 +132,28 @@ $(document).ready(function () {
 
                     // Build the publications list for the item
                     var publist = 'None Found';
-                    if (data.summary.full.publications.publications.length) {
-                        publist = $('<ul />').attr('id', 'info-container-publications-list');
-                        data.summary.full.publications.publications.each(function(item) {
-                            var li = $('<li />');
-                            var a = $('<a />').attr({
-                                'href': item.link,
-                                'target': 'portal_publication_window'
-                            }).html(item.title);
-                            li.append(a);
-                            publist.append(li);
-                        });
-                    }
+					if (data.summary.full.publications) {
+						publist = $('<ul />').attr('id', 'info-container-publications-list');
+						Object.keys(data.summary.full.publications, function (type) {
+							var pubTypeArray = data.summary.full.publications[type],
+								pubTypeListHeader = $('<li />').
+									addClass('publist-header').
+									html(type),
+								subList = $('<ul />'),
+								pubLink;
+							if (pubTypeArray.length) {
+								pubTypeListHeader.append(subList);
+								publist.append(pubTypeListHeader);
+								data.summary.full.publications[type].each(function (publication) {
+									pubLink = $('<a />').attr({
+										'href' : publication.link,
+										'target': 'portal_publication_window'
+									}).html(publication.title);
+									subList.append($('<li />').append(pubLink));
+								});
+							}
+						});
+					}
 					
 					// Fill out the modal window with services
 					CCH.CONFIG.item.services.each(function (service) {
