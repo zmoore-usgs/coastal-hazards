@@ -1,10 +1,13 @@
 # wps.des: id=SummaryGenerator, title=Parse metadata into summary for Coastal Change Hazards, abstract=Generates tiny medium and full summaries;
-# wps.in: input, xml, FGDC xml metadata, uploaded metadata for building the summaries;
+# wps.in: input, string, FGDC xml metadata url, uploaded metadata for building the summaries;
 # wps.in: attr, string, attribute, attribute for which to create the summaries;
 
 # find theme
 
 library(itemSummaryService)
+library(RCurl)
+
+metadata <- getURL(url=input)
 
 attr <- tolower(attr)
 themeNames	<-	names(attrMap)
@@ -19,11 +22,11 @@ if (is.null(theme)){stop(paste(c(attr,'not supported by this service'),collapse=
 
 # should overload 'summary.service' to take a storm, historical, and vulnerability object?
 if (theme=='historical'){
-	summary	<-	historical.service(input,attr)
+	summary	<-	historical.service(metadata,attr)
 } else if (theme=='vulnerability'){
-	summary	<-	vulnerability.service(input,attr)
+	summary	<-	vulnerability.service(metadata,attr)
 } else if (theme=='storm'){
-	summary	<-	storm.service(input,attr)
+	summary	<-	storm.service(metadata,attr)
 }
 
 sink('output.json')
