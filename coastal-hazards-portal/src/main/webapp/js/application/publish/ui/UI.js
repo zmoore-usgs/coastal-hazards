@@ -33,7 +33,7 @@ CCH.Objects.UI = function () {
         $proxyWfsServiceInput = $form.find('#form-publish-item-service-proxy-wfs'),
         $proxyWfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wfs-serviceparam'),
         $proxyWmsServiceInput = $form.find('#form-publish-item-service-proxy-wms'),
-        $proxyWmfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
+        $proxyWmsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
         $publicationsPanel = $form.find('#publications-panel'),
         $ribbonableCb = $form.find('#form-publish-item-ribbonable'),
         $itemType = $form.find('#form-publish-info-item-itemtype'),
@@ -73,7 +73,7 @@ CCH.Objects.UI = function () {
         $proxyWfsServiceInput.attr('disabled', 'disabled');
         $proxyWfsServiceParamInput.attr('disabled', 'disabled');
         $proxyWmsServiceInput.attr('disabled', 'disabled');
-        $proxyWmfsServiceParamInput.attr('disabled', 'disabled');
+        $proxyWmsServiceParamInput.attr('disabled', 'disabled');
         $ribbonableCb.attr('disabled', 'disabled');
         $itemType.attr('disabled', 'disabled');
         $name.attr('disabled', 'disabled');
@@ -104,7 +104,7 @@ CCH.Objects.UI = function () {
         $proxyWfsServiceInput.val('');
         $proxyWfsServiceParamInput.val('');
         $proxyWmsServiceInput.val('');
-        $proxyWmfsServiceParamInput.val('');
+        $proxyWmsServiceParamInput.val('');
         $publicationsPanel.find('.panel-body').empty();
         $ribbonableCb.prop('checked', false);
         $itemType.val('');
@@ -140,7 +140,7 @@ CCH.Objects.UI = function () {
         $proxyWfsServiceInput.removeAttr('disabled');
         $proxyWfsServiceParamInput.removeAttr('disabled');
         $proxyWmsServiceInput.removeAttr('disabled');
-        $proxyWmfsServiceParamInput.removeAttr('disabled');
+        $proxyWmsServiceParamInput.removeAttr('disabled');
         $ribbonableCb.removeAttr('disabled');
         $itemType.removeAttr('disabled');
         $name.removeAttr('disabled');
@@ -167,7 +167,7 @@ CCH.Objects.UI = function () {
         $proxyWfsServiceInput.attr('disabled', 'disabled');
         $proxyWfsServiceParamInput.attr('disabled', 'disabled');
         $proxyWmsServiceInput.attr('disabled', 'disabled');
-        $proxyWmfsServiceParamInput.attr('disabled', 'disabled');
+        $proxyWmsServiceParamInput.attr('disabled', 'disabled');
         $type.removeAttr('disabled');
         $('.form-group-keyword input').find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled');
         $ribbonableCb.removeAttr('disabled');
@@ -454,6 +454,31 @@ CCH.Objects.UI = function () {
         $panetTitle.append('Welcome, ', firstName, lastName, email, '.');
     };
     
+    me.updateSelectAttribtue = function (responseObject) {
+        var featureTypes = responseObject.featureTypes,
+                $option,
+                ftName,
+                ftNameLower;
+        
+        $attributeSelect.empty();
+        
+        if (featureTypes) {
+            featureTypes = featureTypes[0];
+            featureTypes.properties.each(function(ft) {
+                ftName = ft.name,
+                        ftNameLower = ftName.toLowerCase();
+                if (ftNameLower !== 'objectid' &&
+                        ftNameLower !== 'shape' &&
+                        ftNameLower !== 'shape.len') {
+                    $option = $('<option>').
+                            attr('value', ft.name).
+                            html(ft.name);
+                    $attributeSelect.append($option);
+                }
+            });
+        }
+    };
+    
     me.createPublicationRow = function(link, title, type) {
         var $panelBody = $publicationsPanel.find('>div:nth-child(2)'),
             $closeButtonRow = $('<div />').addClass('pull-right'),
@@ -611,29 +636,10 @@ CCH.Objects.UI = function () {
                     layerName : services.proxy_wfs.serviceParameter,
                     callbacks : {
                         success : [function (responseObject) {
-                            var featureTypes = responseObject.featureTypes,
-                                $option,
-                                ftName,
-                                ftNameLower;
-
-                            if (featureTypes) {
-                                featureTypes = featureTypes[0];
-                                featureTypes.properties.each(function (ft) {
-                                    ftName = ft.name,
-                                    ftNameLower = ftName.toLowerCase();
-                                    if (ftNameLower !== 'objectid' &&
-                                            ftNameLower !== 'shape' && 
-                                            ftNameLower !== 'shape.len') {
-                                        $option = $('<option>').
-                                                attr('value', ft.name).
-                                                html(ft.name);
-                                        $attributeSelect.append($option);
-                                    }
-                                });
+                                me.updateSelectAttribtue(responseObject);
                                 $attributeSelect.
                                     val(item.attr).
                                     removeAttr('disabled');
-                                }
                         }]
                     }
                 });
@@ -671,7 +677,7 @@ CCH.Objects.UI = function () {
                 $proxyWmsServiceInput.
                     val(services.proxy_wms.endpoint).
                     removeAttr('disabled');
-                $proxyWmfsServiceParamInput.
+                $proxyWmsServiceParamInput.
                     val(services.proxy_wms.serviceParameter).
                     removeAttr('disabled');
             }
@@ -720,12 +726,39 @@ CCH.Objects.UI = function () {
             param : $srcWfsServiceParamInput.val(),
             callbacks : {
                 success : [
-                    function () {
-                        debugger;
+                    function (responseObject) {
+                        
+                        var responseText = responseObject.responseText,
+                            baseUrl = CCH.CONFIG.publicUrl;
+                        
+                        if (baseUrl.lastIndexOf('/') !== baseUrl.length - 1) {
+                            baseUrl += '/';
+                        }
+                        
+                        $proxyWfsServiceInput.val(baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/wfs');
+                        $proxyWmsServiceInput.val(baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/wms');
+                        $proxyWfsServiceParamInput.val(responseText);
+                        $proxyWmsServiceParamInput.val(responseText);
+                        
+                        CCH.ows.describeFeatureType({
+                            layerName : responseText,
+                            callbacks : {
+                                success : [
+                                    function (featureDescription) {
+                                        me.updateSelectAttribtue(featureDescription);
+                                    }
+                                ],
+                                error : [
+                                    function () {
+                                        debugger;
+                                    }
+                                ]
+                            }
+                        });
                     }
                 ],
                 error : [
-                    function () {
+                    function (errorText) {
                         debugger;
                     }
                 ]

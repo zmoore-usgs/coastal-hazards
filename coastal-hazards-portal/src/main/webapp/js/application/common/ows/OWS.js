@@ -103,7 +103,7 @@ CCH.Objects.OWS = function() {
                     var errorText = $(response.responseText).find('ows\\:ExceptionText');
                     if (errorText.length === 0) {
                         callbacks.success.each(function (cb) {
-                            cb(errorText.text());
+                            cb(response);
                         });
                     } else {
                         callbacks.error.each(function (cb) {
