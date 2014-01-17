@@ -63,4 +63,14 @@ public class Bbox implements Serializable {
     public void setMaxy(double maxy) {
         this.maxy = maxy;
     }
+    
+    public static Bbox copyValues(Bbox from, Bbox to) {
+        Bbox bbox = new Bbox();
+        bbox.setId(to.getId());
+        bbox.setMaxx(from.getMaxx());
+        bbox.setMaxy(from.getMaxy());
+        bbox.setMinx(from.getMinx());
+        bbox.setMiny(from.getMiny());
+        return bbox;
+    }
 }

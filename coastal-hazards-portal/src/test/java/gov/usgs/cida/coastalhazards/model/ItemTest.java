@@ -36,11 +36,13 @@ public class ItemTest {
 "                   \"text\": \"This dataset includes shorelines ranging from 1927 to 2008 in the Kauai East coastal region from Pilaa to Nawiliwili. Linear Regression Rate is a shoreline change metric calculated using the Digital Shoreline Analysis System. Data sources: aerial photographs, coastal survey maps\"" +
 "               },\n" +
 "               \"full\": {\n" +
+"                   \"id\": \"124\"," +
 "                   \"title\": \"The Category 3 inundation element of National Assessment of Hurricane-Induced Coastal Erosion Hazards: Southeast Atlantic\"," +
 "                   \"text\": \"These data sets contain information on the probabilities of hurricane-induced erosion (collision, inundation and overwash) for each 1-km section of the Southeast Atlantic coast for category 1-5 hurricanes. The analysis is based on a storm-impact scaling model that uses observations of beach morphology combined with sophisticated hydrodynamic models to predict how the coast will respond to the direct landfall of category 1-5 hurricanes. Hurricane-induced water levels, due to both surge and waves, are compared to beach and dune elevations to determine the probabilities of three types of coastal change: collision (dune erosion), overwash, and inundation. Data on dune morphology (dune crest and toe elevation) and hydrodynamics (storm surge, wave setup and runup) are also included in this data set. As new beach morphology observations and storm predictions become available, this analysis will be updated to describe how coastal vulnerability to storms will vary in the future. The data presented here include the dune morphology observations, as derived from lidar surveys.\",\n" +
 "                   \"publications\": {" +
 "                       \"data\": [" +
 "                           {" +
+"                               \"id\": 23," +
 "                               \"title\": \"pub title\"," +
 "                               \"link\": \"pub link\"" +
 "                           }" +

@@ -152,12 +152,22 @@ public class ItemResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
         Response response = null;
-        if (PublishResource.isValidSession(request)) {
-            
-            Item editedItem = Item.fromJSON(content);
-        } else {
-            response = Response.status(Status.FORBIDDEN).build();
-        }
+        //if (PublishResource.isValidSession(request)) {
+            Item dbItem = itemManager.loadItem(id);
+            Item updatedItem = Item.fromJSON(content);
+            Item mergedItem = Item.copyValues(updatedItem, dbItem);
+            final String mergedId = itemManager.merge(mergedItem);
+            if (null != mergedId) {
+                Map<String, String> ok = new HashMap<String, String>() {{
+                    put("id", mergedId);
+                }};
+                response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+            } else {
+                response = Response.status(Response.Status.BAD_REQUEST).build();
+            }
+//        } else {
+//            response = Response.status(Status.UNAUTHORIZED).build();
+//        }
         // walk through editedItem and merge with dbItem to get item to persist
         return response;
     }

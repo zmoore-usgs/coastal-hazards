@@ -1,9 +1,12 @@
 package gov.usgs.cida.coastalhazards.model.summary;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -54,7 +57,7 @@ public class Full implements Serializable {
         this.title = title;
     }
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "full_id")
     @IndexColumn(name = "list_index")
     public List<Publication> getPublications() {
@@ -63,6 +66,24 @@ public class Full implements Serializable {
 
     public void setPublications(List<Publication> publications) {
         this.publications = publications;
+    }
+    
+    public static Full copyValues(Full from, Full to) {
+        Full full = new Full();
+        full.setId(to.getId());
+        full.setTitle(from.getTitle());
+        full.setText(from.getText());
+        full.setPublications(fillInFullId(from.getPublications(), to.getId()));
+        return full;
+    }
+    
+    public static List<Publication> fillInFullId(List<Publication> from, long fullId) {
+        List<Publication> pubs = new LinkedList<>();
+        for (Publication pub : from) {
+            pub.setFullId(fullId);
+            pubs.add(pub);
+        }
+        return pubs;
     }
     
 }
