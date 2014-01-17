@@ -657,7 +657,22 @@ CCH.Objects.UI = function () {
                                 $attributeSelect.
                                     val(item.attr).
                                     removeAttr('disabled');
-                        }]
+                        }],
+						error : [
+							function(data) {
+								var errorText = data.firstChild.textContent.trim();
+								if (errorText.indexOf('not find')) {
+									$srcWfsServiceInput.empty();
+									$srcWfsServiceParamInput.empty();
+									$srcWmsServiceInput.empty();
+									$srcWmsServiceParamInput.empty();
+									$alertModalTitle.html('Proxy Layer Could Not Be Found');
+									$alertModalBody.html('The proxy layer could not be found on our server.' + 
+										' You may want to try re-importing it');
+									$alertModal.modal('show');
+								}
+							}
+						]
                     }
                 });
                 

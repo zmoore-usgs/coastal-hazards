@@ -137,9 +137,15 @@ CCH.Objects.OWS = function() {
                 },
                 success: function(data, textStatus, jqXHR) {
                     var describeFTResponse = new OpenLayers.Format.WFSDescribeFeatureType().read(data);
-                    $(callbacks.success).each(function(index, callback, allCallbacks) {
-                        callback(describeFTResponse);
-                    });
+					if (Object.keys(describeFTResponse).length > 0) {
+						$(callbacks.success).each(function(index, callback, allCallbacks) {
+							callback(describeFTResponse);
+						});
+					} else {
+						$(callbacks.error).each(function(index, callback, allCallbacks) {
+							callback(data);
+						});
+					}
                 },
                 error: function(data, textStatus, jqXHR) {
                     $(callbacks.error).each(function(index, callback, allCallbacks) {
