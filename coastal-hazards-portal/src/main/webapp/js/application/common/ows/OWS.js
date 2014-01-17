@@ -33,6 +33,86 @@ CCH.Objects.OWS = function() {
             };
             return me;
         },
+        importWfsLayer : function (args) {
+            args = args || {};
+            var callbacks = args.callbacks || {
+                success : [],
+                error : []
+            },
+            endpoint = args.endpoint,
+            param = args.param,
+            referenceUrl =  endpoint +
+                '?service=wfs&version=1.0.0&request=GetFeature&typeNames=' +
+                param,
+            wpsFormat = new OpenLayers.Format.WPSExecute(),
+            doc = wpsFormat.write({
+                identifier: "gs:Import",
+                dataInputs: [{
+                        identifier: "features",
+                        reference: {
+                            mimeType: 'text/xml; subtype=wfs-collection/1.0',
+                            href: referenceUrl,
+                            method: 'GET'
+                        }
+                    },
+                    {
+                        identifier: "workspace",
+                        data: {
+                            literalData: {
+                                value: 'proxied'
+                            }
+                        }
+                    },
+                    {
+                        identifier: "store",
+                        data: {
+                            literalData: {
+                                value: 'proxied'
+                            }
+                        }
+                    },
+                    {
+                        identifier: "srs",
+                        data: {
+                            literalData: {
+                                value: 'EPSG:3857'
+                            }
+                        }
+                    },
+                    {
+                        identifier: "srsHandling",
+                        data: {
+                            literalData: {
+                                value: 'NONE'
+                            }
+                        }
+                    }
+                ],
+                responseForm: {
+                    rawDataOutput: {
+                        mimeType: "text/xml",
+                        identifier: "layerName"
+                    }
+                }
+            });
+
+            OpenLayers.Request.POST({
+                url: CCH.CONFIG.contextPath + '/geoserver/wps',
+                data:doc,
+                success:function(response){
+                    var errorText = $(response.responseText).find('ows\\:ExceptionText');
+                    if (errorText.length === 0) {
+                        callbacks.success.each(function (cb) {
+                            cb(errorText.text());
+                        });
+                    } else {
+                        callbacks.error.each(function (cb) {
+                            cb(errorText.text());
+                        });
+                    }
+                }
+            });
+        },
         describeFeatureType : function(args) {
             args = args || {};
             var callbacks = args.callbacks || {

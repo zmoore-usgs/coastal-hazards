@@ -168,7 +168,12 @@
                                             <label for="form-publish-item-service-source-wfs">Source WFS</label>
                                             <input type="text" class="form-control" id="form-publish-item-service-source-wfs" disabled="disabled" />
                                             <label for="form-publish-item-service-source-wfs-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled" />
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled" />
+                                                <span class="input-group-btn">
+                                                    <button id="form-publish-item-service-source-wfs-import-button" class="btn btn-default" type="button" disabled="disabled">Import</button>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div id="form-publish-info-item-service-source-wms" class="row row-src-wms">

@@ -39,6 +39,7 @@ CCH.Objects.UI = function () {
         $itemType = $form.find('#form-publish-info-item-itemtype'),
         $name = $form.find('#form-publish-item-name'),
 		$displayedChildrenSb = $form.find('#form-publish-item-displayed-children'),
+        $wfsImportButton = $form.find('#form-publish-item-service-source-wfs-import-button'),
         $keywordGroupClone = $keywordGroup.clone(),
         $childrenSb = $form.find('#form-publish-item-children');
 
@@ -50,7 +51,7 @@ CCH.Objects.UI = function () {
             me.addKeywordGroup($keywordGroup.find('input').val());
         }
     });
-
+    
     me.clearForm = function () {
         $titleFullTextArea.attr('disabled', 'disabled');
         $titleMediumTextArea.attr('disabled', 'disabled');
@@ -77,6 +78,7 @@ CCH.Objects.UI = function () {
         $itemType.attr('disabled', 'disabled');
         $name.attr('disabled', 'disabled');
 		$displayedChildrenSb.attr('disabled', 'disabled');
+        $wfsImportButton.attr('disabled', 'disabled');
         $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').attr('disabled', 'disabled');
         $itemIdInput.val('');
         $titleFullTextArea.val('');
@@ -645,7 +647,15 @@ CCH.Objects.UI = function () {
                     removeAttr('disabled');
                 $srcWfsServiceParamInput.
                     val(services.source_wfs.serviceParameter).
-                    removeAttr('disabled');
+                    removeAttr('disabled').
+                    keyup(function (evt) {
+                        if ($srcWfsServiceInput.val().trim() !== '' &&
+                                $(evt.target).val().trim() !== '') {
+                            $wfsImportButton.removeAttr('disabled');
+                        } else {
+                            $wfsImportButton.attr('disabled', 'disabled');
+                        }
+                });
                 $srcWmsServiceInput.
                     val(services.source_wms.endpoint).
                     removeAttr('disabled');
@@ -664,7 +674,12 @@ CCH.Objects.UI = function () {
                 $proxyWmfsServiceParamInput.
                     val(services.proxy_wms.serviceParameter).
                     removeAttr('disabled');
-                
+            }
+            
+            if ($srcWfsServiceInput.val().trim() !== '' && $srcWfsServiceParamInput.val().trim() !== '') {
+                $wfsImportButton.removeAttr('disabled');
+            } else {
+                $wfsImportButton.attr('disabled', 'disabled');
             }
             
             // Ribbonable
@@ -699,7 +714,34 @@ CCH.Objects.UI = function () {
         }
     };
     
+    $wfsImportButton.on('click', function () {
+        CCH.ows.importWfsLayer({
+            endpoint : $srcWfsServiceInput.val(),
+            param : $srcWfsServiceParamInput.val(),
+            callbacks : {
+                success : [
+                    function () {
+                        debugger;
+                    }
+                ],
+                error : [
+                    function () {
+                        debugger;
+                    }
+                ]
+            }
+        });
+    });
     
+    $srcWfsServiceParamInput.
+        keyup(function (evt) {
+            if ($srcWfsServiceInput.val().trim() !== '' &&
+                    $(evt.target).val().trim() !== '') {
+                $wfsImportButton.removeAttr('disabled');
+            } else {
+                $wfsImportButton.attr('disabled', 'disabled');
+            }
+    });
     
     return me;
 };
