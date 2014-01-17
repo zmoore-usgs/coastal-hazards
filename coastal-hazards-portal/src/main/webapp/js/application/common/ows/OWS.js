@@ -91,7 +91,7 @@ CCH.Objects.OWS = function() {
                         identifier: "srsHandling",
                         data: {
                             literalData: {
-                                value: 'NONE'
+                                value: 'REPROJECT_TO_DECLARED'
                             }
                         }
                     }
