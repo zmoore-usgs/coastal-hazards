@@ -29,6 +29,7 @@
     String jsURI = path + "js/third-party/jsuri/jsuri.jsp";
     String fineUploader = path + "js/fineuploader/fineuploader.jsp";
     String log4js = path + "js/log4javascript/log4javascript.jsp";
+	String configration = path + "WEB-INF/jsp/components/common/config.jsp";
 %>
 <!DOCTYPE html>
 <html>
@@ -38,6 +39,7 @@
         <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
+		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/publish/publish.css" />
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
@@ -48,151 +50,14 @@
             <jsp:param name="relPath" value="../../" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+		<jsp:include page="<%= fineUploader%>">
+            <jsp:param name="relPath" value="../../" />
+            <jsp:param name="debug-qualifier" value="<%= development%>" />
+        </jsp:include>
+		<jsp:include page="<%= configration%>"></jsp:include>
         <script type="text/javascript">
-            var CCH = {
-                    Objects : {},
-                    itemid : '<%= id %>',
-                    CONFIG : {
-                        contextPath : '<%= baseUrl %>',
-                        development : <%= development %>,
-                        user : {
-                            firstName : '${pageContext.session.getAttribute("oid-info").get("oid-firstname")}',
-                            lastName : '${pageContext.session.getAttribute("oid-info").get("oid-lastname")}',
-                            email : '${pageContext.session.getAttribute("oid-info").get("oid-email")}'
-                        },
-                        data : {
-                            sources : {
-                                'cida-geoserver': {
-                                    'endpoint': '<%=geoserverEndpoint%>',
-                                    'proxy': 'geoserver/'
-                                },
-                                'geocoding': {
-                                    'endpoint': '<%=geocodeEndpoint%>'
-                                },
-                                item : {
-                                    endpoint : '/data/item'
-                                }
-                            }
-                        },
-                        item : null
-                    },
-                    items : []
-            };
+			CCH.itemid = '<%= id %>';
 		</script>
-        <style type="text/css">
-            .panel-body .row:not(:first-child) {
-                margin-top: 10px;
-            }
-            .panel-body .row:not(:last-child) {
-                margin-bottom: 10px;
-            }
-            
-            .row-id .form-control {
-                width: auto;
-            }
-            
-            .row-name .form-control {
-                width: auto;
-            }
-            
-            .row-type .form-group {
-                width: 100%;
-            }
-            .row-type .form-control {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                width: 100%;
-            }
-            
-            .row-attribute .form-group {
-                width: 100%;
-            }
-            .row-attribute .form-control {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                width: 100%;
-            }
-            
-            .row-title .form-group {
-                width: 100%;
-            }
-            .row-title .form-control {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                width: 100%;
-            }
-            
-            
-            .row-children .form-group {
-                width: 100%;
-            }
-            .row-children .form-control {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                width: 100%;
-            }
-            
-            
-            .row-description .form-group {
-                width: 100%;
-            }
-            .row-description .form-control {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                width: 100%;
-            }
-            
-            .form-publish-info-item-bbox h5 {
-                font-weight: bold;
-            }
-            
-            #services-panel .form-group {
-                width: 100%;
-            }
-            
-            #qq-uploader-dummy {
-                display: none;
-            }
-            
-            #qq-uploader-dummy ul {
-                display: none;
-            }
-            
-            .qq-upload-button {
-                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                display: inline-block !important;
-                margin-bottom: 0;
-                font-weight: normal;
-                text-align: center;
-                white-space: nowrap;
-                vertical-align: middle;
-                cursor: pointer;
-                background-image: none;
-                border: 1px solid transparent;
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                -o-user-select: none;
-                user-select: none;
-                color: #ffffff;
-                background-color: #5cb85c;
-                border-color: #4cae4c;
-                padding: 10px 16px  !important;
-                font-size: 18px;
-                line-height: 1.33;
-                border-radius: 6px;
-                background: #5cb85c !important;
-                width: auto !important;
-            }
-        </style>
     </head>
     <body>
         
@@ -285,6 +150,58 @@
                                     </span>
                                 </div>
                             </div>
+							
+							 <%-- Services --%>
+                            <div id="services-panel" class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Services</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="form-publish-info-item-service-csw" class="row row-csw">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-csw">CSW</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-csw" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                    <div id="form-publish-info-item-service-source-wfs" class="row row-src-wfs">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-source-wfs">Source WFS</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs" disabled="disabled" />
+                                            <label for="form-publish-item-service-source-wfs-serviceparam">Service Parameter</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled" />
+                                                <span class="input-group-btn">
+                                                    <button id="form-publish-item-service-source-wfs-import-button" class="btn btn-default" type="button" disabled="disabled">Import</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="form-publish-info-item-service-source-wms" class="row row-src-wms">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-source-wms">Source WMS</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms" disabled="disabled" />
+                                            <label for="form-publish-item-service-source-wms-serviceparam">Service Parameter</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms-serviceparam" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                    <div id="form-publish-info-item-service-proxy-wfs" class="row row-prx-wfs">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-proxy-wfs">Proxy WFS</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs" disabled="disabled" />
+                                            <label for="form-publish-item-service-proxy-wfs-serviceparam">Service Parameter</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs-serviceparam" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                    <div id="form-publish-info-item-service-proxy-wms" class="row row-prx-wms">
+                                        <div class="form-group">
+                                            <label for="form-publish-item-service-proxy-wms">Proxy WMS</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms" disabled="disabled" />
+                                            <label for="form-publish-item-service-proxy-wms-serviceparam">Service Parameter</label>
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms-serviceparam" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                             
                             
@@ -346,50 +263,14 @@
                                 </table>
                             </div>
                             
-                            <%-- Services --%>
-                            <div id="services-panel" class="panel panel-default">
+                            <%-- Publications --%>
+                            <div id="publications-panel" class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h3 class="panel-title">Services</h3>
+                                    <button id="form-publish-info-item-panel-publications-button-add" type="button" class="btn btn-default btn-sm pull-right" disabled="disabled">Add</button>
+                                    <h3 class="panel-title">Publications</h3>
                                 </div>
                                 <div class="panel-body">
-                                    <div id="form-publish-info-item-service-csw" class="row row-csw">
-                                        <div class="form-group">
-                                            <label for="form-publish-item-service-csw">CSW</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-csw" disabled="disabled" />
-                                        </div>
-                                    </div>
-                                    <div id="form-publish-info-item-service-source-wfs" class="row row-src-wfs">
-                                        <div class="form-group">
-                                            <label for="form-publish-item-service-source-wfs">Source WFS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs" disabled="disabled" />
-                                            <label for="form-publish-item-service-source-wfs-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled" />
-                                        </div>
-                                    </div>
-                                    <div id="form-publish-info-item-service-source-wms" class="row row-src-wms">
-                                        <div class="form-group">
-                                            <label for="form-publish-item-service-source-wms">Source WMS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms" disabled="disabled" />
-                                            <label for="form-publish-item-service-source-wms-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms-serviceparam" disabled="disabled" />
-                                        </div>
-                                    </div>
-                                    <div id="form-publish-info-item-service-proxy-wfs" class="row row-prx-wfs">
-                                        <div class="form-group">
-                                            <label for="form-publish-item-service-proxy-wfs">Proxy WFS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs" disabled="disabled" />
-                                            <label for="form-publish-item-service-proxy-wfs-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs-serviceparam" disabled="disabled" />
-                                        </div>
-                                    </div>
-                                    <div id="form-publish-info-item-service-proxy-wms" class="row row-prx-wms">
-                                        <div class="form-group">
-                                            <label for="form-publish-item-service-proxy-wms">Proxy WMS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms" disabled="disabled" />
-                                            <label for="form-publish-item-service-proxy-wms-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms-serviceparam" disabled="disabled" />
-                                        </div>
-                                    </div>
+                                    <%-- Added programatically --%>
                                 </div>
                             </div>
                             
@@ -406,6 +287,12 @@
                                 <div class="form-group">
                                     <label for="form-publish-item-children">Children</label>
                                     <select class="form-control" multiple id="form-publish-item-children" disabled="disabled"></select>
+                                </div>
+                            </div>
+							<div id="form-publish-info-item-displayed-children" class="row row-displayed-children">
+                                <div class="form-group">
+                                    <label for="form-publish-item-displayed-children">Displayed Children</label>
+                                    <select class="form-control" multiple id="form-publish-item-displayed-children" disabled="disabled"></select>
                                 </div>
                             </div>
                             
@@ -431,9 +318,5 @@
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/OnReady.js"></script>
-        <jsp:include page="<%= fineUploader%>">
-            <jsp:param name="relPath" value="../../" />
-            <jsp:param name="debug-qualifier" value="<%= development%>" />
-        </jsp:include>
     </body>
 </html>

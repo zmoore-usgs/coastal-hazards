@@ -33,10 +33,13 @@ CCH.Objects.UI = function () {
         $proxyWfsServiceInput = $form.find('#form-publish-item-service-proxy-wfs'),
         $proxyWfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wfs-serviceparam'),
         $proxyWmsServiceInput = $form.find('#form-publish-item-service-proxy-wms'),
-        $proxyWmfsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
+        $proxyWmsServiceParamInput = $form.find('#form-publish-item-service-proxy-wms-serviceparam'),
+        $publicationsPanel = $form.find('#publications-panel'),
         $ribbonableCb = $form.find('#form-publish-item-ribbonable'),
         $itemType = $form.find('#form-publish-info-item-itemtype'),
         $name = $form.find('#form-publish-item-name'),
+		$displayedChildrenSb = $form.find('#form-publish-item-displayed-children'),
+        $wfsImportButton = $form.find('#form-publish-item-service-source-wfs-import-button'),
         $keywordGroupClone = $keywordGroup.clone(),
         $childrenSb = $form.find('#form-publish-item-children');
 
@@ -48,7 +51,7 @@ CCH.Objects.UI = function () {
             me.addKeywordGroup($keywordGroup.find('input').val());
         }
     });
-
+    
     me.clearForm = function () {
         $titleFullTextArea.attr('disabled', 'disabled');
         $titleMediumTextArea.attr('disabled', 'disabled');
@@ -70,10 +73,13 @@ CCH.Objects.UI = function () {
         $proxyWfsServiceInput.attr('disabled', 'disabled');
         $proxyWfsServiceParamInput.attr('disabled', 'disabled');
         $proxyWmsServiceInput.attr('disabled', 'disabled');
-        $proxyWmfsServiceParamInput.attr('disabled', 'disabled');
+        $proxyWmsServiceParamInput.attr('disabled', 'disabled');
         $ribbonableCb.attr('disabled', 'disabled');
         $itemType.attr('disabled', 'disabled');
         $name.attr('disabled', 'disabled');
+		$displayedChildrenSb.attr('disabled', 'disabled');
+        $wfsImportButton.attr('disabled', 'disabled');
+        $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').attr('disabled', 'disabled');
         $itemIdInput.val('');
         $titleFullTextArea.val('');
         $titleMediumTextArea.val('');
@@ -98,11 +104,13 @@ CCH.Objects.UI = function () {
         $proxyWfsServiceInput.val('');
         $proxyWfsServiceParamInput.val('');
         $proxyWmsServiceInput.val('');
-        $proxyWmfsServiceParamInput.val('');
+        $proxyWmsServiceParamInput.val('');
+        $publicationsPanel.find('.panel-body').empty();
         $ribbonableCb.prop('checked', false);
         $itemType.val('');
         $name.val('');
         $childrenSb.empty();
+		$displayedChildrenSb.empty();
         CCH.items.each(function (cchItem) {
             var option = $('<option />').
                 attr('value', cchItem.id).
@@ -132,10 +140,11 @@ CCH.Objects.UI = function () {
         $proxyWfsServiceInput.removeAttr('disabled');
         $proxyWfsServiceParamInput.removeAttr('disabled');
         $proxyWmsServiceInput.removeAttr('disabled');
-        $proxyWmfsServiceParamInput.removeAttr('disabled');
+        $proxyWmsServiceParamInput.removeAttr('disabled');
         $ribbonableCb.removeAttr('disabled');
         $itemType.removeAttr('disabled');
         $name.removeAttr('disabled');
+        $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled');
         $('#qq-uploader-dummy').removeClass('hidden');
     };
 
@@ -158,13 +167,15 @@ CCH.Objects.UI = function () {
         $proxyWfsServiceInput.attr('disabled', 'disabled');
         $proxyWfsServiceParamInput.attr('disabled', 'disabled');
         $proxyWmsServiceInput.attr('disabled', 'disabled');
-        $proxyWmfsServiceParamInput.attr('disabled', 'disabled');
+        $proxyWmsServiceParamInput.attr('disabled', 'disabled');
         $type.removeAttr('disabled');
-        $('.form-group-keyword input').removeAttr('disabled');
+        $('.form-group-keyword input').find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled');
         $ribbonableCb.removeAttr('disabled');
         $itemType.removeAttr('disabled');
         $name.removeAttr('disabled');
+        $publicationsPanel.removeAttr('disabled');
         $childrenSb.removeAttr('disabled');
+		$displayedChildrenSb.removeAttr('disabled');
     };
 
     me.initUploader = function (args) {
@@ -353,6 +364,10 @@ CCH.Objects.UI = function () {
             }
         });
     };
+    
+    $('#form-publish-info-item-panel-publications-button-add').on('click', function () {
+        me.createPublicationRow('','');
+    });
 
     $('#publish-button-create-aggregation-option').on('click', function () {
         me.clearForm();
@@ -438,6 +453,83 @@ CCH.Objects.UI = function () {
 
         $panetTitle.append('Welcome, ', firstName, lastName, email, '.');
     };
+    
+    me.updateSelectAttribtue = function (responseObject) {
+        var featureTypes = responseObject.featureTypes,
+                $option,
+                ftName,
+                ftNameLower;
+        
+        $attributeSelect.empty();
+        
+        if (featureTypes) {
+            featureTypes = featureTypes[0];
+            featureTypes.properties.each(function(ft) {
+                ftName = ft.name,
+                        ftNameLower = ftName.toLowerCase();
+                if (ftNameLower !== 'objectid' &&
+                        ftNameLower !== 'shape' &&
+                        ftNameLower !== 'shape.len') {
+                    $option = $('<option>').
+                            attr('value', ft.name).
+                            html(ft.name);
+                    $attributeSelect.append($option);
+                }
+            });
+        }
+    };
+    
+    me.createPublicationRow = function(link, title, type) {
+        var $panelBody = $publicationsPanel.find('>div:nth-child(2)'),
+            $closeButtonRow = $('<div />').addClass('pull-right'),
+            $closeButton = $('<i />').addClass('fa fa-times'),
+            $smallWell = $('<div />').addClass('well well-small'),
+            $linkRow = $('<div />').addClass('row'),
+            $titleRow = $('<div />').addClass('row'),
+            $typeRow = $('<div />').addClass('row'),
+            $linkLabel = $('<label />').html('Link'),
+            $linkInput = $('<input />').
+                attr({
+                    type : 'text'
+                }).
+                addClass('form-control').
+                val(link),
+            $titleLabel = $('<label />').html('Title'),
+            $titleInput = $('<input />').
+                attr({
+                    type : 'text'
+                }).
+                addClass('form-control').
+                val(title),
+            $dataOption = $('<option />').
+                attr('value', 'data').
+                html('Data'),
+            $publicationOption = $('<option />').
+                attr('value', 'publications').
+                html('Publication'),
+            $resourceOption = $('<option />').
+                attr('value', 'resource').
+                html('Resource'),
+            $typeSelect = $('<select />').
+                addClass('form-control').
+                append($dataOption, $publicationOption, $resourceOption);
+            $typeRow.append($typeSelect);
+            $typeSelect.val(type);
+            
+        $closeButton.
+            on('click', function () {
+                 $smallWell.remove();   
+            });
+        
+        $closeButtonRow.append($closeButton);
+        
+        $linkRow.append($linkLabel, $linkInput);
+        $titleRow.append($titleLabel, $titleInput);
+            
+        $smallWell.append($closeButtonRow, $titleRow, $linkRow, $typeRow);
+        
+        $panelBody.append($smallWell);
+    };
 
     me.addItemToForm = function (args) {
         CCH.LOG.info('UI.js::putItemOnForm: Adding item to form.');
@@ -461,6 +553,7 @@ CCH.Objects.UI = function () {
                     attr('value', cchItem.id).
                     html(cchItem.summary.tiny.text);
                 $childrenSb.append(option);
+				$displayedChildrenSb.append(option.clone());
             }
         });
 
@@ -543,29 +636,10 @@ CCH.Objects.UI = function () {
                     layerName : services.proxy_wfs.serviceParameter,
                     callbacks : {
                         success : [function (responseObject) {
-                            var featureTypes = responseObject.featureTypes,
-                                $option,
-                                ftName,
-                                ftNameLower;
-
-                            if (featureTypes) {
-                                featureTypes = featureTypes[0];
-                                featureTypes.properties.each(function (ft) {
-                                    ftName = ft.name,
-                                    ftNameLower = ftName.toLowerCase();
-                                    if (ftNameLower !== 'objectid' &&
-                                            ftNameLower !== 'shape' && 
-                                            ftNameLower !== 'shape.len') {
-                                        $option = $('<option>').
-                                                attr('value', ft.name).
-                                                html(ft.name);
-                                        $attributeSelect.append($option);
-                                    }
-                                });
+                                me.updateSelectAttribtue(responseObject);
                                 $attributeSelect.
                                     val(item.attr).
                                     removeAttr('disabled');
-                                }
                         }]
                     }
                 });
@@ -579,7 +653,15 @@ CCH.Objects.UI = function () {
                     removeAttr('disabled');
                 $srcWfsServiceParamInput.
                     val(services.source_wfs.serviceParameter).
-                    removeAttr('disabled');
+                    removeAttr('disabled').
+                    keyup(function (evt) {
+                        if ($srcWfsServiceInput.val().trim() !== '' &&
+                                $(evt.target).val().trim() !== '') {
+                            $wfsImportButton.removeAttr('disabled');
+                        } else {
+                            $wfsImportButton.attr('disabled', 'disabled');
+                        }
+                });
                 $srcWmsServiceInput.
                     val(services.source_wms.endpoint).
                     removeAttr('disabled');
@@ -595,10 +677,15 @@ CCH.Objects.UI = function () {
                 $proxyWmsServiceInput.
                     val(services.proxy_wms.endpoint).
                     removeAttr('disabled');
-                $proxyWmfsServiceParamInput.
+                $proxyWmsServiceParamInput.
                     val(services.proxy_wms.serviceParameter).
                     removeAttr('disabled');
-                
+            }
+            
+            if ($srcWfsServiceInput.val().trim() !== '' && $srcWfsServiceParamInput.val().trim() !== '') {
+                $wfsImportButton.removeAttr('disabled');
+            } else {
+                $wfsImportButton.attr('disabled', 'disabled');
             }
             
             // Ribbonable
@@ -612,14 +699,82 @@ CCH.Objects.UI = function () {
                     find('option[value="'+child.id+'"]').
                     prop('selected', 'selected');
             });
+			item.displayedChildren.each(function (child) {
+				$displayedChildrenSb.
+					find('option[value="' + child + '"]').
+					prop('selected', 'selected');
+			});
             
+            // Publications
+            $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled', 'disabled');
+            Object.keys(item.summary.full.publications, function (type) {
+                item.summary.full.publications[type].each(function (publication) {
+                    me.createPublicationRow(publication.link, publication.title, type);
+                });
+            });
+
             $childrenSb.removeAttr('disabled');
+			$displayedChildrenSb.removeAttr('disabled');
         } else {
             CCH.LOG.warn('UI.js::putItemOnForm: function was called with no item');
         }
     };
     
+    $wfsImportButton.on('click', function () {
+        CCH.ows.importWfsLayer({
+            endpoint : $srcWfsServiceInput.val(),
+            param : $srcWfsServiceParamInput.val(),
+            callbacks : {
+                success : [
+                    function (responseObject) {
+                        
+                        var responseText = responseObject.responseText,
+                            baseUrl = CCH.CONFIG.publicUrl;
+                        
+                        if (baseUrl.lastIndexOf('/') !== baseUrl.length - 1) {
+                            baseUrl += '/';
+                        }
+                        
+                        $proxyWfsServiceInput.val(baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/wfs');
+                        $proxyWmsServiceInput.val(baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/wms');
+                        $proxyWfsServiceParamInput.val(responseText);
+                        $proxyWmsServiceParamInput.val(responseText);
+                        
+                        CCH.ows.describeFeatureType({
+                            layerName : responseText,
+                            callbacks : {
+                                success : [
+                                    function (featureDescription) {
+                                        me.updateSelectAttribtue(featureDescription);
+                                    }
+                                ],
+                                error : [
+                                    function () {
+                                        debugger;
+                                    }
+                                ]
+                            }
+                        });
+                    }
+                ],
+                error : [
+                    function (errorText) {
+                        debugger;
+                    }
+                ]
+            }
+        });
+    });
     
+    $srcWfsServiceParamInput.
+        keyup(function (evt) {
+            if ($srcWfsServiceInput.val().trim() !== '' &&
+                    $(evt.target).val().trim() !== '') {
+                $wfsImportButton.removeAttr('disabled');
+            } else {
+                $wfsImportButton.attr('disabled', 'disabled');
+            }
+    });
     
     return me;
 };
