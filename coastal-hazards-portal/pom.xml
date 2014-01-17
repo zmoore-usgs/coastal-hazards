@@ -165,7 +165,11 @@
             <groupId>org.openid4java</groupId>
             <artifactId>openid4java</artifactId>
         </dependency>
-
+		<dependency>
+			<groupId>it.geosolutions</groupId>
+			<artifactId>geoserver-manager</artifactId>
+			<version>1.5.2</version>
+		</dependency>
 		
         <!-- this has to be after hibernate in the classpath :( -->
         <dependency>

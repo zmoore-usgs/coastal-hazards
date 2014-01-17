@@ -71,6 +71,14 @@ CCH.Objects.OWS = function() {
                             }
                         }
                     },
+					{
+                        identifier: "name",
+                        data: {
+                            literalData: {
+                                value: (param.indexOf(':') !== -1 ? param.split(':')[1] : param) + '_' + new Date().getTime()
+                            }
+                        }
+                    },
                     {
                         identifier: "srs",
                         data: {
