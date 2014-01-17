@@ -3,6 +3,7 @@ package gov.usgs.cida.coastalhazards.oid;
 import gov.usgs.cida.coastalhazards.jpa.UserManager;
 import gov.usgs.cida.coastalhazards.model.AuthorizedUser;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -15,6 +16,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -51,6 +53,7 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 	private static final String OPTIONAL_VALUE = "0";
 	private static final String REQUIRED_VALUE = "1";
 	private static final Logger LOG = LoggerFactory.getLogger(OpenIDConsumerService.class);
+	public static final String VERIFICATION_URL = "../OpenID/oid-login.jsp?originating_uri=";
 	private ServletContext context;
 	private ConsumerManager manager;
 
@@ -394,4 +397,17 @@ public class OpenIDConsumerService extends javax.servlet.http.HttpServlet {
 		}
 		return proxyProps;
 	}
+	
+	public static  boolean verifyOIDSession(HttpServletRequest req) throws URISyntaxException {
+        HttpSession session = req.getSession(false);
+        if (session == null
+				|| session.getAttribute("oid-info") == null
+				|| ((Map<String, String>) session.getAttribute("oid-info")).isEmpty()
+				|| StringUtils.isEmpty(((Map<String, String>) session.getAttribute("oid-info")).get("oid-email"))
+				|| session.getAttribute("sessionValid") == null
+				|| ((Boolean) session.getAttribute("sessionValid")) == false) {
+            return false;
+		}
+        return true;
+    }
 }

@@ -140,6 +140,10 @@ html, body {
 	width: 100%;
 }
 
+/* Publications List */
+#info-container-publications-list-span > ul > li {
+	text-transform: capitalize;
+}
 
 @media (max-width: 440px) {
     /* Item Title Row*/
