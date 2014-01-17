@@ -657,6 +657,7 @@ CCH.Objects.UI = function () {
                                 $attributeSelect.
                                     val(item.attr).
                                     removeAttr('disabled');
+							
                         }],
 						error : [
 							function(data) {

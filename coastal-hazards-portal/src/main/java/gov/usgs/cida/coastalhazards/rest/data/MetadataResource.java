@@ -2,6 +2,9 @@ package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.google.gson.JsonSyntaxException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
+import gov.usgs.cida.coastalhazards.jpa.ItemManager;
+import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
@@ -11,8 +14,10 @@ import gov.usgs.cida.utilities.string.StringHelper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -40,10 +45,15 @@ public class MetadataResource {
 	private static final int FILE_UPLOAD_MAX_SIZE = 15728640;
 	private static final String FILENAME_PARAM = "qqfile";
 	private static File UPLOAD_DIR;
+	private static ItemManager itemManager;
 
 	public MetadataResource() {
 		super();
 		UPLOAD_DIR = new File(FileUtils.getTempDirectoryPath() + "/metadata-upload");
+	}
+	
+	static { 
+		itemManager = new ItemManager();
 	}
     
 	@POST
@@ -111,11 +121,30 @@ public class MetadataResource {
 		}
 	}
     
-    @GET
-    @Path("/summarize/{fid}/attribute/{attr}")
+	@GET
+    @Path("/summarize/itemid/{itemid}/attribute/{attr}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMetadataSummaryByAttribtue(@PathParam("fid") String fid,
-        @PathParam("attr") String attr) {
+    public Response getMetadataSummaryByAttribtueUsingItemID(@PathParam("itemid") String itemId,
+        @PathParam("attr") String attr) throws URISyntaxException {
+        Response response;
+        try {
+			Item item = itemManager.loadItem(itemId);
+            String jsonSummary = MetadataUtil.getSummaryFromWPS(getMetadataUrl(item), attr);
+            Summary summary = GsonUtil.getDefault().fromJson(jsonSummary, Summary.class);
+            response = Response.ok(GsonUtil.getDefault().toJson(summary, Summary.class), MediaType.APPLICATION_JSON_TYPE).build();
+        } catch (IOException | ParserConfigurationException | SAXException | JsonSyntaxException ex) {
+            Map<String,String> err = new HashMap<>();
+            err.put("message", ex.getMessage());
+            response = Response.serverError().entity(GsonUtil.getDefault().toJson(err, HashMap.class)).build();
+        }
+        return response;
+    }
+	
+    @GET
+    @Path("/summarize/fid/{fid}/attribute/{attr}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMetadataSummaryByAttribtueUsingFD(@PathParam("fid") String fid,
+        @PathParam("attr") String attr) throws URISyntaxException {
         Response response;
         try {
             String jsonSummary = MetadataUtil.getSummaryFromWPS(fid, attr);
@@ -129,4 +158,17 @@ public class MetadataResource {
         return response;
     }
     
+	private static String getMetadataUrl(Item item) {
+        String url = "";
+        if (item != null) {
+            List<Service> services = item.getServices();
+            for (Service service : services) {
+                if (service.getType() == Service.ServiceType.csw) {
+                    url = service.getEndpoint();
+                }
+            }
+        }
+        return url;
+    }
+	
 }
