@@ -318,5 +318,20 @@
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/OnReady.js"></script>
-    </body>
+
+		<div id="alert-modal" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title"></h4>
+					</div>
+					<div class="modal-body"></div>
+					<div class="modal-footer">
+						<button id="alert-modal-close-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>

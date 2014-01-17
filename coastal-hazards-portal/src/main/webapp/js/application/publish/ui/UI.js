@@ -41,7 +41,11 @@ CCH.Objects.UI = function () {
 		$displayedChildrenSb = $form.find('#form-publish-item-displayed-children'),
         $wfsImportButton = $form.find('#form-publish-item-service-source-wfs-import-button'),
         $keywordGroupClone = $keywordGroup.clone(),
-        $childrenSb = $form.find('#form-publish-item-children');
+        $childrenSb = $form.find('#form-publish-item-children'),
+		$alertModal = $('#alert-modal'),
+		$alertModalTitle = $alertModal.find('.modal-title'),
+		$alertModalBody = $alertModal.find('.modal-body'),
+		$alertModalFooter = $alertModal.find('.modal-footer');
 
     $keywordGroup.find('input').removeAttr('disabled');
     $keywordGroup.find('button:nth-child(2)').addClass('hidden');
@@ -51,6 +55,12 @@ CCH.Objects.UI = function () {
             me.addKeywordGroup($keywordGroup.find('input').val());
         }
     });
+	
+	$alertModal.on('hidden.bs.modal', function () {
+		$alertModalTitle.empty();
+		$alertModalBody.empty();
+		$alertModalFooter.find('button').not('#alert-modal-close-button').remove();
+	});
     
     me.clearForm = function () {
         $titleFullTextArea.attr('disabled', 'disabled');
@@ -721,49 +731,97 @@ CCH.Objects.UI = function () {
     };
     
     $wfsImportButton.on('click', function () {
-        CCH.ows.importWfsLayer({
-            endpoint : $srcWfsServiceInput.val(),
-            param : $srcWfsServiceParamInput.val(),
-            callbacks : {
-                success : [
-                    function (responseObject) {
-                        
-                        var responseText = responseObject.responseText,
-                            baseUrl = CCH.CONFIG.publicUrl;
-                        
-                        if (baseUrl.lastIndexOf('/') !== baseUrl.length - 1) {
-                            baseUrl += '/';
-                        }
-                        
-                        $proxyWfsServiceInput.val(baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/wfs');
-                        $proxyWmsServiceInput.val(baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/wms');
-                        $proxyWfsServiceParamInput.val(responseText);
-                        $proxyWmsServiceParamInput.val(responseText);
-                        
-                        CCH.ows.describeFeatureType({
-                            layerName : responseText,
-                            callbacks : {
-                                success : [
-                                    function (featureDescription) {
-                                        me.updateSelectAttribtue(featureDescription);
-                                    }
-                                ],
-                                error : [
-                                    function () {
-                                        debugger;
-                                    }
-                                ]
-                            }
-                        });
-                    }
-                ],
-                error : [
-                    function (errorText) {
-                        debugger;
-                    }
-                ]
-            }
-        });
+		var importCall = function () {
+			CCH.ows.importWfsLayer({
+				endpoint : $srcWfsServiceInput.val(),
+				param : $srcWfsServiceParamInput.val(),
+				callbacks : {
+					success : [ successCallback ],
+					error : [ errorCallback ]
+				}
+			});
+		};
+		
+		var successCallback = function (responseObject) {
+			var responseText = responseObject.responseText,
+				baseUrl = CCH.CONFIG.publicUrl;
+
+			if (baseUrl.lastIndexOf('/') !== baseUrl.length - 1) {
+				baseUrl += '/';
+			}
+
+			$proxyWfsServiceInput.val(baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/wfs');
+			$proxyWmsServiceInput.val(baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/wms');
+			$proxyWfsServiceParamInput.val(responseText);
+			$proxyWmsServiceParamInput.val(responseText);
+
+			CCH.ows.describeFeatureType({
+				layerName : responseText,
+				callbacks : {
+					success : [
+						function (featureDescription) {
+							me.updateSelectAttribtue(featureDescription);
+						}
+					],
+					error : [
+						function () {
+							debugger;
+						}
+					]
+				}
+			});
+		};
+		
+		var errorCallback =  function (errorText) {
+			if (errorText.indexOf('already exists') !== -1) {
+				var $overwriteButton = $('<button />').
+					attr({
+						type : 'button',
+						'data-dismiss' : 'modal'
+					}).
+					addClass('btn btn-primary').
+					html('Overwrite').
+					on('click', function () {
+						$alertModal.modal('hide');
+						
+						var deleteCall = function () {
+							$alertModal.off('hidden.bs.modal', deleteCall);
+							var updatedLayerName = $srcWfsServiceParamInput.val().split(':')[1];
+							
+							$.ajax({
+								url : CCH.CONFIG.contextPath +  '/data/layer/' +  encodeURIComponent(updatedLayerName),
+								method : 'DELETE',
+								success : function () {
+									importCall();
+								},
+								error : function (jqXHR, err, errTxt) {
+									if (errTxt.indexOf('Unauthorized')) {
+										$alertModalTitle.html('Layer Could Not Be Removed');
+										$alertModalBody.html('It looks like your session has expired.' +
+											'You should try reloading the page to continue.');
+										$alertModal.modal('show');
+									}
+									$alertModalTitle.html('Layer Could Not Be Removed');
+									$alertModalBody.html('Unfortunately the layer you\'re ' + 
+											'trying to import could not be overwritten. ' + 
+											'You may need to contact the system administrator ' + 
+											'to manually remove it in order to continue');
+									$alertModal.modal('show');
+								}
+							});
+						}
+						
+						$alertModal.on('hidden.bs.modal', deleteCall);
+					});
+				$alertModalTitle.html('Layer Could Not Be Imported');
+				$alertModalBody.html('Layer Already Exists On Server. Overwrite?');
+				$alertModalFooter.append($overwriteButton);
+				$alertModal.modal('show');
+			}
+		};
+		
+        importCall();
+		
     });
     
     $srcWfsServiceParamInput.
