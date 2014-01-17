@@ -150,4 +150,12 @@ public class SLDGenerator {
 	public int getBinCount() {
 		return this.config.getColors().length;
 	}
+	
+	public int[] getScales() {
+		return this.config.getScales();
+	}
+	
+	public int getScaleCount() {
+		return this.config.getScales().length;
+	}
 }

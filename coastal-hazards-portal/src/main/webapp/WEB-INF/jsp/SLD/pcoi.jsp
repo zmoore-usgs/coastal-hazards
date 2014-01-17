@@ -47,6 +47,12 @@
 							<ogc:Literal>offset</ogc:Literal>
 							<ogc:Literal>${it.strokeWidth + ((it.strokeWidth / 2) + 1)}</ogc:Literal>
 						</ogc:Function>
+						<ogc:Function name="parameter">
+							<ogc:Literal>scale</ogc:Literal>
+							<ogc:Function name="env">
+								<ogc:Literal>wms_scale_denominator</ogc:Literal>
+							</ogc:Function>
+						</ogc:Function>
 					</ogc:Function>
 				</sld:Transformation>
 				</c:if>
@@ -55,7 +61,10 @@
 				<sld:Rule><sld:LineSymbolizer></sld:LineSymbolizer></sld:Rule>
 				</c:if>
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
+					<c:forEach var="scale" begin="0" end="${it.scaleCount-2}">
 				<sld:Rule>
+					<sld:MinScaleDenominator>${it.scales[scale+1]}</sld:MinScaleDenominator>
+					<sld:MaxScaleDenominator>${it.scales[scale]}</sld:MaxScaleDenominator>
 					<ogc:Filter>
 						<c:if test="${null != it.ribbon}">
 						<ogc:And>
@@ -87,11 +96,12 @@
 					<sld:LineSymbolizer>
 						<sld:Stroke>
 							<sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
-							<sld:CssParameter name="stroke-width">${it.strokeWidth}</sld:CssParameter>
+							<sld:CssParameter name="stroke-width">${it.strokeWidth + (scale * (5 * it.strokeWidth / it.scaleCount))}</sld:CssParameter>
 							<sld:CssParameter name="stroke-opacity">${it.strokeOpacity}</sld:CssParameter>
 						</sld:Stroke>
 					</sld:LineSymbolizer>
 				</sld:Rule>
+					</c:forEach>
                 </c:forEach>
             </sld:FeatureTypeStyle>
         </sld:UserStyle>
