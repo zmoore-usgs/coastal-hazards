@@ -43,7 +43,7 @@ public class DownloadResource {
     public Response getCard(@PathParam("id") String id) throws IOException {
         Response response = null;
 
-        Item item = itemManager.loadItem(id, true);
+        Item item = itemManager.loadItem(id);
         if (item == null) {
             response = Response.status(Response.Status.NOT_FOUND).build();
         } else {

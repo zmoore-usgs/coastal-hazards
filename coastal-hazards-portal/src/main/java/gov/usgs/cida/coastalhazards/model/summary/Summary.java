@@ -80,4 +80,14 @@ public class Summary implements Serializable {
         this.keywords = keywords;
     }
     
+    public static Summary copyValues(final Summary from, final Summary to) {
+        Summary summary = new Summary();
+        summary.setId(to.getId());
+        summary.setVersion(from.getVersion());
+        summary.setTiny(from.getTiny());
+        summary.setMedium(from.getMedium());
+        summary.setFull(Full.copyValues(from.getFull(), to.getFull()));
+        summary.setKeywords(from.getKeywords());
+        return summary;
+    }
 }
