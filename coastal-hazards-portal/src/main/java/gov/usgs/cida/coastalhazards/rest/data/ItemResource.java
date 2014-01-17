@@ -152,7 +152,7 @@ public class ItemResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
         Response response = null;
-        //if (PublishResource.isValidSession(request)) {
+        if (PublishResource.isValidSession(request)) {
             Item dbItem = itemManager.loadItem(id);
             Item updatedItem = Item.fromJSON(content);
             Item mergedItem = Item.copyValues(updatedItem, dbItem);
@@ -165,10 +165,9 @@ public class ItemResource {
             } else {
                 response = Response.status(Response.Status.BAD_REQUEST).build();
             }
-//        } else {
-//            response = Response.status(Status.UNAUTHORIZED).build();
-//        }
-        // walk through editedItem and merge with dbItem to get item to persist
+        } else {
+            response = Response.status(Status.UNAUTHORIZED).build();
+        }
         return response;
     }
 

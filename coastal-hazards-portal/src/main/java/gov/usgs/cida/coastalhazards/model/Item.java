@@ -198,8 +198,8 @@ public class Item implements Serializable {
         this.rank = rank;
     }
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "item_id")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "item_id", referencedColumnName = "id")
     @IndexColumn(name = "list_index")
     public List<Service> getServices() {
         return services;
@@ -322,7 +322,7 @@ public class Item implements Serializable {
     
     public static List<Service> fillInServices(List<Service> from, String itemId) {
         List<Service> services = new LinkedList<>();
-        for (Service service : services) {
+        for (Service service : from) {
             service.setItemId(itemId);
             services.add(service);
         }

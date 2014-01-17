@@ -57,7 +57,7 @@ public class Full implements Serializable {
         this.title = title;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "full_id")
     @IndexColumn(name = "list_index")
     public List<Publication> getPublications() {
