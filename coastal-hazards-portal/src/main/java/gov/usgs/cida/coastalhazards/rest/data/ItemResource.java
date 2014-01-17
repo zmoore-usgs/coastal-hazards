@@ -11,6 +11,7 @@ import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import gov.usgs.cida.coastalhazards.rest.publish.PublishResource;
+import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +31,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -42,8 +42,6 @@ import org.xml.sax.SAXException;
 @Path("item")
 public class ItemResource {
 
-	@Context
-	private UriInfo context;
 	private static ItemManager itemManager;
     private static String cchn52Endpoint;
     private static final DynamicReadOnlyProperties props;
@@ -119,7 +117,7 @@ public class ItemResource {
         if (session == null) {
             response = Response.status(Response.Status.BAD_REQUEST).build();
         } else {
-            if (PublishResource.isValidSession(request)) {
+            if (SessionResource.isValidSession(request)) {
                 final String id = itemManager.persist(content);
 
                 if (null == id) {
@@ -152,7 +150,7 @@ public class ItemResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
         Response response = null;
-        if (PublishResource.isValidSession(request)) {
+        if (SessionResource.isValidSession(request)) {
             Item dbItem = itemManager.loadItem(id);
             Item updatedItem = Item.fromJSON(content);
             Item mergedItem = Item.copyValues(updatedItem, dbItem);

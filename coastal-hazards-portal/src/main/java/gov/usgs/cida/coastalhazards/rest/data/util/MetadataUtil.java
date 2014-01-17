@@ -30,13 +30,60 @@ import org.xml.sax.SAXException;
  */
 public class MetadataUtil {
 
+	private static final String cswLocalEndpoint;
     private static final String cchn52Endpoint;
     private static final DynamicReadOnlyProperties props;
+	private static final String NAMESPACE_CSW = "http://www.opengis.net/cat/csw/2.0.2";
+    private static final String NAMESPACE_DC = "http://purl.org/dc/elements/1.1/";
     
     static {
         props = JNDISingleton.getInstance();
+		cswLocalEndpoint = props.getProperty("coastal-hazards.csw.internal.endpoint");
         cchn52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
 	}
+	
+	public static String doCSWTransaction(String metadataId) throws IOException, ParserConfigurationException, SAXException {
+        String insertedId = null;
+        
+        MetadataResource metadata = new MetadataResource();
+        Response response = metadata.getFileById(metadataId);
+        String xmlWithoutHeader = response.getEntity().toString().replaceAll("<\\?xml[^>]*>", "");
+        String cswRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                    + "<csw:Transaction service=\"CSW\" version=\"2.0.2\" xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\">"
+                    + "<csw:Insert>"
+                    + xmlWithoutHeader
+                    + "</csw:Insert>"
+                    + "</csw:Transaction>";
+            HttpUriRequest req = new HttpPost(cswLocalEndpoint);
+            HttpClient client = new DefaultHttpClient();
+            req.addHeader("Content-Type", "text/xml");
+            if (!StringUtils.isBlank(cswRequest) && req instanceof HttpEntityEnclosingRequestBase) {
+                StringEntity contentEntity = new StringEntity(cswRequest);
+                ((HttpEntityEnclosingRequestBase) req).setEntity(contentEntity);
+            }
+            HttpResponse resp = client.execute(req);
+            StatusLine statusLine = resp.getStatusLine();
+
+            if (statusLine.getStatusCode() != 200) {
+                throw new IOException("Error in response from csw");
+            }
+            String data = IOUtils.toString(resp.getEntity().getContent(), "UTF-8");
+            if (data.contains("ExceptionReport")) {
+                throw new IOException("Error in response from csw");
+            }
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(data.getBytes()));
+            JXPathContext ctx = JXPathContext.newContext(doc.getDocumentElement());
+            ctx.registerNamespace("csw", NAMESPACE_CSW);
+            ctx.registerNamespace("dc", NAMESPACE_DC);
+            Node inserted = (Node) ctx.selectSingleNode("//csw:totalInserted/text()");
+            if (1 == Integer.parseInt(inserted.getTextContent())) {
+                Node idNode = (Node) ctx.selectSingleNode("//dc:identifier/text()");
+                insertedId = idNode.getTextContent();
+            }
+            return insertedId;
+    }
     
     /**
      * I really don't like this in its current form, we should rethink this process and move this around
