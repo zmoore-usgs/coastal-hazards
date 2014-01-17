@@ -6,6 +6,10 @@
             <column name="list_index" type="INT4" />
         </addColumn>
         <addForeignKeyConstraint baseColumnNames="session_id" baseTableName="session_item" constraintName="fk_session_session_item_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="session_table"/>
-        <dropPrimaryKey tableName="session_item" />
+        <dropPrimaryKey constraintName="session_item_pkey" tableName="session_item" />
+    </changeSet>
+    <changeSet author="jiwalker" id="remove_not_null_full_id">
+        <comment>This was preventing the flush that hibernate likes to do for collections</comment>
+        <dropNotNullConstraint tableName="full_publications" columnName="full_id" />
     </changeSet>
 </databaseChangeLog>

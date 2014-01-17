@@ -1,8 +1,10 @@
 package gov.usgs.cida.coastalhazards.model.summary;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,6 +12,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import org.hibernate.annotations.ForeignKey;
 
 /**
  * Name full_publications is holdout from when this was embedded, didn't want to
@@ -26,14 +29,15 @@ public class Publication implements Serializable {
         resources;
     }
     
+    public static final String ID = "id";
     public static final String TITLE = "title";
     public static final String LINK = "link";
 
-    private transient long id;
-    private transient long fullId;
+    private long id;
+    private long fullId;
     private String title;
     private String link;
-    private transient PublicationType type;
+    private PublicationType type;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -90,4 +94,5 @@ public class Publication implements Serializable {
         }
         return typedPubs;
     }
+    
 }

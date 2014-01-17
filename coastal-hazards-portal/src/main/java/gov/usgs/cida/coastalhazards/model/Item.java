@@ -9,6 +9,7 @@ import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -197,8 +198,8 @@ public class Item implements Serializable {
         this.rank = rank;
     }
 
-    @OneToMany
-    @JoinColumn(name = "item_id")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "item_id", referencedColumnName = "id")
     @IndexColumn(name = "list_index")
     public List<Service> getServices() {
         return services;
@@ -256,7 +257,7 @@ public class Item implements Serializable {
         this.children = (children == null || children.isEmpty()) ? null : children;
     }
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "displayed_children", joinColumns = @JoinColumn(name = "item_id"))
     @IndexColumn(name = "list_index")
     @Column(name = "child_id")
@@ -288,5 +289,43 @@ public class Item implements Serializable {
             node.setId(IdGenerator.generate());
         }
         return node;
+    }
+    
+    /**
+     * I'm creating a new item rather than modifying references (hence final)
+     * @param from item to copy values from
+     * @param to item to retain ids for
+     * @return new Item that is fully hydrated
+     */
+    public static Item copyValues(final Item from, final Item to) {
+        Item item = new Item();
+        
+        if (to.getItemType() != from.getItemType()) {
+            throw new UnsupportedOperationException("Cannot change item type");
+        }
+        item.setId(to.getId());
+        item.setItemType(from.getItemType());
+        item.setType(from.getType());
+        item.setName(from.getName());
+        item.setAttr(from.getAttr());
+        item.setBbox(Bbox.copyValues(from.getBbox(), to.getBbox()));
+        item.setSummary(Summary.copyValues(from.getSummary(), to.getSummary()));
+        item.setRibbonable(from.isRibbonable());
+        item.setShowChildren(from.isShowChildren());
+        item.setEnabled(from.isEnabled());
+        item.setServices(fillInServices(from.getServices(), to.getId()));
+        item.setChildren(from.getChildren());
+        item.setDisplayedChildren(from.getDisplayedChildren());
+    
+        return item;
+    }
+    
+    public static List<Service> fillInServices(List<Service> from, String itemId) {
+        List<Service> services = new LinkedList<>();
+        for (Service service : from) {
+            service.setItemId(itemId);
+            services.add(service);
+        }
+        return services;
     }
 }
