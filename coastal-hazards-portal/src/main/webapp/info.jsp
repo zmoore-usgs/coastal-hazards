@@ -72,7 +72,7 @@
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/util/Util.js"></script>
         <script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady.js'></script>
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/back/back.css" />
 		<script>
 			(function(i, s, o, g, r, a, m) {
 				i['GoogleAnalyticsObject'] = r;
