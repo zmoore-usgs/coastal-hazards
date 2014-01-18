@@ -3,11 +3,16 @@
 /*global $ */
 /*global CCH */
 /*global OpenLayers */
-CCH.Objects.UI = function () {
+CCH.Objects.UI = function (args) {
     "use strict";
     CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 
-    var me = (this === window) ? {} : this;
+    var me = (this === window) ? {} : this,
+        $metadataLink,
+        $downloadFull,
+        $applicationLink,
+        $publist,
+        itemData = args.itemData;
 
     me.buildLegend = function (args) {
         args = args || {};
@@ -215,9 +220,175 @@ CCH.Objects.UI = function () {
                 legendTableHead,
                 legendTableBody
                 ));
-
+        
+        $('#info-legend').append(legendDiv);
+        
         return legendDiv;
     };
+    
+    me.removeLegendContainer = function() {
+        $('#info-legend').remove();
+    };
+    
+    me.buildTwitterButton = function() {
+        var url = window.location.origin + CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId;
+        CCH.Util.getMinifiedEndpoint({
+            location: url,
+            contextPath: CCH.CONFIG.contextPath,
+            callbacks: {
+                success: [
+                    function(data, textStatus, jqXHR) {
+                       me.createShareButton(data.tinyUrl);
+                    }],
+                error: [
+                    function(jqXHR, textStatus, errorThrown) {
+                        me.createShareButton(url);
+                    }]
+            }
+        });
+    };
+    
+    me.createShareButton = function(url) {
+        twttr.ready(function(twttr) {
+            twttr.widgets.createShareButton(
+                    url,
+                    $('#social-link')[0],
+                    function(element) {
+                        // Any callbacks that may be needed
+                    },
+                    {
+                        hashtags: 'USGS_CCH',
+                        lang: 'en',
+                        size: 'large',
+                        text: CCH.CONFIG.item.summary.tiny.text
+                    });
 
+            twttr.events.bind('tweet', function(event) {
+                
+            });
+        });
+    };
+    
+    // Initialize The UI
+ 
+    // Fill out the modal window with services
+    CCH.CONFIG.item.services.each(function (service) {
+        var endpoint = service.endpoint,
+            serviceType = service.type,
+            serviceParam = service.serviceParameter,
+
+            $link = $('<a />').attr({
+                        'href' : endpoint,
+                        'target' : '_services'
+                    }),
+            $textBox = $('<input />').attr({
+                'type' : 'text'
+            }),
+            $serviceParamSpan = $('<span />').html(' (Service Parameter: '),
+            $newRow = $('<div />').
+                addClass('row').
+                append($link);
+
+        switch (serviceType) {
+            case ('csw') :
+                {
+                $link.html('CSW :');
+                $textBox.val(endpoint);
+                $newRow.append($link, $textBox)
+                break;
+                }
+            case ('source_wms') :
+                {
+                $link.html('Source WMS :');
+                $textBox.val(endpoint);
+                $serviceParamSpan.append(serviceParam, ' )');
+                $newRow.append($link, $serviceParamSpan, $textBox)
+                break;
+                }
+            case ('source_wfs') :
+                {
+                $link.html('Source WFS :');
+                $textBox.val(endpoint);
+                $serviceParamSpan.append(serviceParam, ' )');
+                $newRow.append($link, $serviceParamSpan, $textBox)
+                break;
+                }
+            case ('proxy_wfs') :
+                {
+                $link.html('Proxy WFS :');
+                $textBox.val(endpoint);
+                $serviceParamSpan.append(serviceParam, ' )');
+                $newRow.append($link, $serviceParamSpan, $textBox)
+                break;
+                }
+            case ('proxy_wms') :
+                {
+                $link.html('Proxy WMS :');
+                $textBox.val(endpoint);
+                $serviceParamSpan.append(serviceParam, ' )');
+                $newRow.append($link, $serviceParamSpan, $textBox)
+                break;
+                }
+        }
+
+        $('#modal-services-view .modal-body').append($newRow)
+    });
+    
+    // Create a "Download Full" button
+    $downloadFull = $('<a />').attr({
+        'role': 'button',
+        'href': window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + CCH.CONFIG.itemId
+    }).addClass('btn btn-default').html('<i class="fa fa-download"></i> Download Full Data');
+ 
+    // Create a "View Metadata" button
+    $metadataLink = $('<a />').attr({
+        'href': CCH.CONFIG.item.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
+        'target': 'portal_metadata_window',
+        'role': 'button'
+    }).addClass('btn btn-default').html('<i class="fa fa-download"></i> View Metadata');
+    $('#metadata-link').append($metadataLink);
+    $('#download-full-link').append($downloadFull);
+    
+    // Create a "View in Portal" link to let the user view this in the portal
+    $applicationLink = $('<a />').attr({
+        'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId,
+        'target': 'portal_main_window',
+        'role': 'button'
+    }).addClass('btn btn-default').html('<i class="fa fa-eye"></i> View In Portal');
+    $('#application-link').append($applicationLink);
+    
+    // Build the publications list for the item
+    if (itemData.summary.full.publications) {
+        $publist = $('<ul />').attr('id', 'info-container-publications-list');
+        Object.keys(itemData.summary.full.publications, function (type) {
+            var pubTypeArray = itemData.summary.full.publications[type],
+                pubTypeListHeader = $('<li />').
+                    addClass('publist-header').
+                    html(type),
+                subList = $('<ul />'),
+                pubLink;
+            if (pubTypeArray.length) {
+                pubTypeListHeader.append(subList);
+                $publist.append(pubTypeListHeader);
+                itemData.summary.full.publications[type].each(function (publication) {
+                    pubLink = $('<a />').attr({
+                        'href' : publication.link,
+                        'target': 'portal_publication_window'
+                    }).html(publication.title);
+                    subList.append($('<li />').append(pubLink));
+                });
+            }
+        });
+    } else {
+        $('#info-container-publications-list-span').remove();
+    }
+
+    $('#info-title').html(itemData.summary.full.title);
+    $('#info-summary').html(itemData.summary.full.text);
+    $('#info-container-publications-list-span').append($publist);
+    
+    me.buildTwitterButton();
+    CCH.map.buildMap();
+    
     return me;
 };

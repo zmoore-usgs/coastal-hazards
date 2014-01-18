@@ -72,6 +72,7 @@
             <jsp:param name="relPath" value="../../" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/ows/OWS.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/back/map/map.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/back/ui/UI.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Items.js"></script>
