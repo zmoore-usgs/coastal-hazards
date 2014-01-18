@@ -151,8 +151,8 @@ CCH.Objects.Item = function (args) {
         layers = layers || [];
 
         if (me.itemType === 'aggregation') {
-            for (idx = 0;idx < this.children.length;idx++) {
-                var child = CCH.items.getById({ id : this.children[idx] });
+            for (idx = 0;idx < this.displayedChildren.length;idx++) {
+                var child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
                     layers.concat(child.getLayerList(layers));
                 }
@@ -192,7 +192,6 @@ CCH.Objects.Item = function (args) {
                 if (child) {
                     layers = layers.concat(child.showLayer(layers));
                 }
-
             }
             
             // Because I don't have a real layer for this aggregation, once all 
@@ -204,7 +203,6 @@ CCH.Objects.Item = function (args) {
                 }
             });
         } else {
-            
             if (me.ribboned) {
                 if (layers.length > 0) {
                     layer = layers[layers.length - 1];
@@ -220,60 +218,24 @@ CCH.Objects.Item = function (args) {
                 item : this,
                 ribbon : index
             }); 
-            layers.push(layer);
-            CCH.LOG.debug('Item.js::showLayer:Item ' + me.id + ' added to map at index ' + index);
         }
-        return layers;
+        return layer;
     };
 
     me.hideLayer = function (layers) {
-        var index, 
-            layer,
-            layerName;
+        var layers;
     
-        layers = layers || [];
-    
-        // Check to see if this is an aggregation. If it is, I need
-        // to pull the layers from all of its children
-        if (this.itemType === 'aggregation') {
-            // This aggregation should have children, so for each 
-            // child, I want to grab the child's layer and display it
-            // on the map
-            for (var idx = 0;idx < this.children.length;idx++) {
-                var child = CCH.items.getById({ id : this.children[idx] });
-                if (child) {
-                    layers = layers.concat(child.hideLayer(layers));
-                }
-
-            }
-            
-            // Because I don't have a real layer for this aggregation, once all 
-            // of the children are added, I include this trigger so that other
-            // components can act on this layer having been added
+        me.getLayerList().each(function (layerName) {
+            layers = CCH.map.hideLayersByName(layerName);
+        });
+        
+        if (me.itemType === 'aggregation') {
             $(window).trigger('cch.map.hid.layer', {
                 layer : {
                     itemid : me.id
                 }
             });
-        } else {
-            
-            if (me.ribboned) {
-                if (layers.length > 0) {
-                    layer = layers[layers.length - 1];
-                    index = parseInt(layer.name.substring(layer.name.lastIndexOf('_') + 1)) + 1;
-                } else {
-                    index = 1;
-                }
-                layerName = me.id + '_r_' + index;
-            } else {
-                layerName = me.id;
-            }
-
-            layer = CCH.map.hideLayersByName(layerName); 
-            layers = layers.concat(layer);
-            CCH.LOG.debug('Item.js::showLayer:Layer ' + layerName + ' was hidden');
         }
-        return layers;
     };
 
     /**
