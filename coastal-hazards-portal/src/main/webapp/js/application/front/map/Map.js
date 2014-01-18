@@ -103,7 +103,7 @@ CCH.Objects.Map = function (args) {
             me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
 
             me.attributionControl = new OpenLayers.Control.Attribution({
-                'template' : '<img id="openlayers-map-attribution-image" src="'+me.attributionSource+'" />'
+                'template' : '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="'+me.attributionSource+'" /></a>'
             });
 
             CCH.LOG.debug('Map.js::init():Adding base layers to map');

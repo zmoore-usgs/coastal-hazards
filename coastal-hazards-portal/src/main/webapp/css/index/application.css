@@ -205,10 +205,3 @@ html, body {
     font-size: 1.5em;
     line-height: 1.5em;
 }
-
-
-/* Attribution Image */
-#map #openlayers-map-attribution-image {
-    height: 40px;
-    opacity: .5;
-}

@@ -42,6 +42,7 @@
 				CONFIG: {
 					itemId: '${it.id}',
 					contextPath: '<%=baseUrl%>',
+                    development: <%=development%>,
 					map: null,
 					projection: "EPSG:3857",
 					initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
@@ -79,6 +80,7 @@
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/util/Util.js"></script>
         <script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady.js'></script>
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/back/back.css" />
 		<script>
 			(function(i, s, o, g, r, a, m) {

@@ -25,6 +25,7 @@
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery.ui<%= development ? ".all" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/index/custom.css" />
         <script>
             (function(i, s, o, g, r, a, m) {

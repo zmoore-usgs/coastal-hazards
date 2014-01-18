@@ -21,8 +21,9 @@ CCH.Objects.Item = function (args) {
     me.id = args.id;
     me.parent = args.parent || null;
     me.loaded = false;
-    me.ribboned = me.id === 'C68abcd' ? true : false; //TODO - Actually get this from the data
+    me.ribboned;
     me.children = [];
+    me.displayedChildren = [];
     me.attr = null;
     me.metadata = null;
     me.bbox = me.UNITED_STATES_BBOX;
@@ -31,7 +32,7 @@ CCH.Objects.Item = function (args) {
     me.summary = null;
     me.type = null;
     me.services = null;
-    
+
     me.load = function (args) {
         args = args || {};
         var callbacks = args.callbacks || {
@@ -42,15 +43,17 @@ CCH.Objects.Item = function (args) {
 
         callbacks.success.unshift(function (data) {
             me.children = data.children || [];
+            me.displayedChildren = data.displayedChildren || [];
             me.attr = data.attr;
             me.metadata = data.metadata;
+            me.ribboned = data.ribbonable;
             me.bbox = data.bbox || me.UNITED_STATES_BBOX;
             me.itemType = data.itemType;
             me.name = data.name;
             me.summary = data.summary;
             me.type = data.type;
             me.services = data.services;
-            
+
             if (me.parent) {
                 if (me.parent.ribboned === true) {
                     me.ribboned = true;
@@ -58,38 +61,35 @@ CCH.Objects.Item = function (args) {
                     me.ribboned = false;
                 }
             }
-            
+
             CCH.items.add({ item : me });
 
             if (me.children.length) {
                 // If I have children, load those as well
-                me.children.each(function (childId, ind, allChildren) {
-                    if (ind !== allChildren.length - 1) {
-                        new CCH.Objects.Item({ 
-                            id : childId,
-                            parent : me
-                        }).load();
-                    } else {
-                        // If this is the last child to load, announce the parent
-                        // has loaded at the end
-                        new CCH.Objects.Item({ 
-                            id : childId,
-                            parent: me
-                        }).load({
-                            callbacks : {
-                                success : [
-                                    function () {
-                                        $(window).trigger('cch.item.loaded', {
-                                            id : me.id
-                                        });
-                                        me.loaded = true;
-                                        CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
-                                    }
-                                ],
-                                error : []
-                            }
-                        });
+                var setLoaded = function () {
+                    if (!me.loaded) {
+                        var allChildrenLoaded = me.children.findIndex(function () {
+                                return !me.loaded;
+                            }) === -1;
+
+                        if (allChildrenLoaded) {
+                            me.loaded = true;
+                            CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
+                            $(window).off('cch.item.loaded');
+                            $(window).trigger('cch.item.loaded', {
+                                id : me.id
+                            });
+                        }
                     }
+                };
+
+                $(window).on('cch.item.loaded', setLoaded);
+
+                me.children.each(function (childId) {
+                    new CCH.Objects.Item({
+                        id : childId,
+                        parent : me
+                    }).load();
                 });
             } else {
                 $(window).trigger('cch.item.loaded', {
@@ -138,19 +138,20 @@ CCH.Objects.Item = function (args) {
                     type: 'cch'// CCH specific setting
                 }
             );
-        
+
         return layer;
     };
-    
-    me.getLayerList = function(layers) {
-        var index, 
+
+    me.getLayerList = function (layers) {
+        var index,
             layer,
-            layerName;
-    
+            layerName,
+            idx;
+
         layers = layers || [];
-    
+
         if (me.itemType === 'aggregation') {
-            for (var idx = 0;idx < this.children.length;idx++) {
+            for (idx = 0;idx < this.children.length;idx++) {
                 var child = CCH.items.getById({ id : this.children[idx] });
                 if (child) {
                     layers.concat(child.getLayerList(layers));
@@ -186,8 +187,8 @@ CCH.Objects.Item = function (args) {
             // This aggregation should have children, so for each 
             // child, I want to grab the child's layer and display it
             // on the map
-            for (var idx = 0;idx < this.children.length;idx++) {
-                var child = CCH.items.getById({ id : this.children[idx] });
+            for (var idx = 0;idx < this.displayedChildren.length;idx++) {
+                var child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
                     layers = layers.concat(child.showLayer(layers));
                 }
