@@ -2,9 +2,12 @@ package gov.usgs.cida.coastalhazards.rest.data.util;
 
 import gov.usgs.cida.coastalhazards.rest.data.MetadataResource;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
+import gov.usgs.cida.utilities.communication.HttpClientSingleton;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import javax.ws.rs.core.Response;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,9 +19,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -95,10 +100,11 @@ public class MetadataUtil {
      * @throws ParserConfigurationException
      * @throws SAXException 
      */
-    static public String getSummaryFromWPS(String metadataId, String attr) throws IOException, ParserConfigurationException, SAXException {
-        MetadataResource metadata = new MetadataResource();
-        Response response = metadata.getFileById(metadataId);
-        String xmlWithoutHeader = response.getEntity().toString().replaceAll("<\\?xml[^>]*>", "");
+    static public String getSummaryFromWPS(String metadataEndpoint, String attr) throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
+		HttpGet httpGet = new HttpGet(new URI(metadataEndpoint));
+		HttpClient httpClient = HttpClientSingleton.getInstance();
+		String response = httpClient.execute(httpGet, new BasicResponseHandler());
+        String xmlWithoutHeader = response.replaceAll("<\\?xml[^>]*>", "");
         String wpsRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:Execute xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" service=\"WPS\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd\">"
                 + "<ows:Identifier>org.n52.wps.server.r.item.summary</ows:Identifier>"

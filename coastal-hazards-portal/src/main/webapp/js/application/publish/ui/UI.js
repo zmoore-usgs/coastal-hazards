@@ -61,6 +61,10 @@ CCH.Objects.UI = function () {
 		$alertModalBody.empty();
 		$alertModalFooter.find('button').not('#alert-modal-close-button').remove();
 	});
+	
+	$attributeSelect.on('select', function (evt) {
+		debugger
+	});
     
     me.clearForm = function () {
         $titleFullTextArea.attr('disabled', 'disabled');
@@ -479,7 +483,10 @@ CCH.Objects.UI = function () {
                         ftNameLower = ftName.toLowerCase();
                 if (ftNameLower !== 'objectid' &&
                         ftNameLower !== 'shape' &&
-                        ftNameLower !== 'shape.len') {
+                        ftNameLower !== 'shape.len' &&
+						ftNameLower !== 'the_geom' &&
+						ftNameLower !== 'descriptio' &&
+						ftNameLower !== 'name') {
                     $option = $('<option>').
                             attr('value', ft.name).
                             html(ft.name);
@@ -650,7 +657,23 @@ CCH.Objects.UI = function () {
                                 $attributeSelect.
                                     val(item.attr).
                                     removeAttr('disabled');
-                        }]
+							
+                        }],
+						error : [
+							function(data) {
+								var errorText = data.firstChild.textContent.trim();
+								if (errorText.indexOf('not find')) {
+									$srcWfsServiceInput.empty();
+									$srcWfsServiceParamInput.empty();
+									$srcWmsServiceInput.empty();
+									$srcWmsServiceParamInput.empty();
+									$alertModalTitle.html('Proxy Layer Could Not Be Found');
+									$alertModalBody.html('The proxy layer could not be found on our server.' + 
+										' You may want to try re-importing it');
+									$alertModal.modal('show');
+								}
+							}
+						]
                     }
                 });
                 
@@ -815,6 +838,11 @@ CCH.Objects.UI = function () {
 					});
 				$alertModalTitle.html('Layer Could Not Be Imported');
 				$alertModalBody.html('Layer Already Exists On Server. Overwrite?');
+				$alertModalFooter.append($overwriteButton);
+				$alertModal.modal('show');
+			} else {
+				$alertModalTitle.html('Layer Could Not Be Imported');
+				$alertModalBody.html('Layer could not be created. Error: ' + errorText);
 				$alertModalFooter.append($overwriteButton);
 				$alertModal.modal('show');
 			}

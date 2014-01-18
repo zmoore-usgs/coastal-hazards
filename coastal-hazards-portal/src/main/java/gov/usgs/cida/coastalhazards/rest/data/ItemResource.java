@@ -14,6 +14,7 @@ import gov.usgs.cida.utilities.properties.JNDISingleton;
 import gov.usgs.cida.coastalhazards.rest.publish.PublishResource;
 import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -181,7 +182,7 @@ public class ItemResource {
 	@Path("/preview")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response publishPreviewCard(String content) {
+	public Response publishPreviewCard(String content) throws URISyntaxException {
         Response response = Response.serverError().build();
         
         Item item = Item.fromJSON(content);
