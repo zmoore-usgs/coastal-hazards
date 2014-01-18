@@ -569,17 +569,6 @@ var publish = function(args) {
                                             callbacks: {
                                                 success: [
                                                     function(data, textStatus, jqXHR) {
-                                                        // Using the published item, update the popularity
-                                                        CCH.Util.updateItemPopularity({
-                                                            item: data.id,
-                                                            type: 'publish',
-                                                            contextPath: contextPath
-                                                        });
-                                                        CCH.Util.updateItemPopularity({
-                                                            item: data.id,
-                                                            type: 'insert',
-                                                            contextPath: contextPath
-                                                        });
                                                         console.log('PUBLISHED');
                                                         publish();
                                                     }

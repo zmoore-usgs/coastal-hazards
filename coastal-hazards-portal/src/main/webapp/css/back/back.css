@@ -27,6 +27,11 @@ html, body {
     width: 100%;
 }
 
+/* Attribution Image */
+#map #openlayers-map-attribution-image {
+    height: 40px;
+    opacity: .5;
+}
 
 /* Header Row */
 .container > div.row:first-child {

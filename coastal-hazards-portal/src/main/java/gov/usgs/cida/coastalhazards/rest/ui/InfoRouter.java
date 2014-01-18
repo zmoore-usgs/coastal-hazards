@@ -20,7 +20,7 @@ public class InfoRouter {
     @Path("{id}")
     public Response useInfoJsp(@PathParam("id") String id) {
         Identifier identifier = new Identifier(id, Identifier.IdentifierType.INFO);
-        return Response.ok(new Viewable("/info.jsp", identifier)).build();
+        return Response.ok(new Viewable("/WEB-INF/jsp/components/back/index.jsp", identifier)).build();
     }
     
     @GET
