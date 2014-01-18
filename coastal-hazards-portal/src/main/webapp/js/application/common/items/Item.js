@@ -146,13 +146,14 @@ CCH.Objects.Item = function (args) {
         var index,
             layer,
             layerName,
-            idx;
+            idx,
+            child;
 
         layers = layers || [];
 
         if (me.itemType === 'aggregation') {
-            for (idx = 0;idx < this.displayedChildren.length;idx++) {
-                var child = CCH.items.getById({ id : this.displayedChildren[idx] });
+            for (idx = 0; idx < this.displayedChildren.length; idx++) {
+                child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
                     layers.concat(child.getLayerList(layers));
                 }
@@ -162,7 +163,7 @@ CCH.Objects.Item = function (args) {
             if (me.ribboned) {
                 if (layers.length > 0) {
                     layer = layers[layers.length - 1];
-                    index = parseInt(layer.substring(layer.lastIndexOf('_') + 1)) + 1;
+                    index = parseInt(layer.substring(layer.lastIndexOf('_') + 1), 10) + 1;
                 } else {
                     index = 1;
                 }
@@ -173,24 +174,25 @@ CCH.Objects.Item = function (args) {
             layers.push(layerName);
         }
         return layers;
-    }
+    };
 
     me.showLayer = function (layers) {
-        var index, 
-            layer;
-    
+        var index,
+            layer,
+            idx;
+
         layers = layers || [];
-    
+
         // Check to see if this is an aggregation. If it is, I need
         // to pull the layers from all of its children
         if (this.itemType === 'aggregation') {
             // This aggregation should have children, so for each 
             // child, I want to grab the child's layer and display it
             // on the map
-            for (var idx = 0;idx < this.displayedChildren.length;idx++) {
+            for (idx = 0;idx < this.displayedChildren.length;idx++) {
                 var child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
-                    layers = layers.concat(child.showLayer(layers));
+                    child.showLayer(layers);
                 }
             }
             
@@ -218,8 +220,9 @@ CCH.Objects.Item = function (args) {
                 item : this,
                 ribbon : index
             }); 
+            layers.push(layer);
         }
-        return layer;
+        return layers;
     };
 
     me.hideLayer = function (layers) {
@@ -302,7 +305,7 @@ CCH.Objects.Item = function (args) {
         });
         
         return serviceObject || defaultServiceObject;
-    }
+    };
 
     CCH.LOG.debug('Item.js::init():Item class finished initializing.');
 
