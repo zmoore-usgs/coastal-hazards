@@ -145,6 +145,7 @@ CCH.Objects.Item = function (args) {
                     projection: 'EPSG:3857',
                     isBaseLayer: false,
                     displayInLayerSwitcher: false,
+                    singleTile : true,
                     bbox: bbox,
                     itemid: id,
                     type: 'cch'// CCH specific setting

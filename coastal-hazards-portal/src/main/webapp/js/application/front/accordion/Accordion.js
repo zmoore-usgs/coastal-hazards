@@ -193,7 +193,9 @@ CCH.Objects.Accordion = function (args) {
         return $('#' + me.CONTAINER_ID + ' .panel');
     };
 
-    $(window).on('cch.slide.search.button.click.explore', me.explore);
+    $(window).on('cch.slide.search.button.click.explore', function (evt, args) {
+        me.explore(evt, args);
+    });
     
     me.explore = function (evt, args) {
         // When a user clicks explore, I want to be able to search through every

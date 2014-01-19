@@ -41,9 +41,8 @@ CCH.Objects.Map = function (args) {
             layer.name = layerName;
             layer.params.SLD = layer.params.SLD + '?ribbon=' + ribbonIndex;
             layer.params.buffer = (ribbonIndex - 1) * CCH.CONFIG.map.ribbonOffset;
-            layer.singleTile = true;
         }
-
+        
         me.addLayer(layer);
         
         layer.setVisibility(true);

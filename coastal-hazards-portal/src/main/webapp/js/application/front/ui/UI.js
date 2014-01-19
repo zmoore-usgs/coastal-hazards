@@ -501,9 +501,9 @@ CCH.Objects.UI = function (args) {
             splashUpdate('Loading Application...');
             
             $(window).on('cch.ui.overlay.removed', function () {
-                me.accordion.explore(null, {
+                $(window).trigger('cch.slide.search.button.click.explore', {
                     id : id
-                });
+                })
             });
             
             me.loadTopLevelItem({
