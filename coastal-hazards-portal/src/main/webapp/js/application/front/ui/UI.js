@@ -442,17 +442,18 @@ CCH.Objects.UI = function (args) {
                             items.each(function(item) {
                                 var loadedHandler = function (evt, args) {
                                     var loadedItemId = args.id;
-                                    if (loadedItemId === item.id) {
-                                        me.bucket.add({
-                                            item : CCH.items.getById({
-                                                id : loadedItemId
-                                            })
-                                        });
-                                    }
+                                    me.bucket.add({
+                                        item : CCH.items.getById({
+                                            id : loadedItemId
+                                        }),
+                                        visible : item.visible
+                                    });
                                 };
                                 $(window).on('cch.item.loaded', function (evt, args) {
-                                    $(window).off('cch.item.loaded', loadedHandler);
-                                    loadedHandler(evt, args);
+                                    if (args.id === item.itemId) {
+                                        $(window).off('cch.item.loaded', loadedHandler);
+                                        loadedHandler(evt, args);
+                                    }
                                 });
                             });
 

@@ -248,7 +248,8 @@ CCH.Objects.BucketSlide = function (args) {
             me.$EMPTY_TEXT_CONTAINER.addClass('hidden');
             $(me.$DROPDOWN_CONTAINER).removeClass('hidden');
             $card = me.createCard({
-                item : item
+                item : item,
+                visible : args.visible
             });
             me.cards.push($card);
             me.append($card);
@@ -334,7 +335,7 @@ CCH.Objects.BucketSlide = function (args) {
                 layers = layers.concat(item.showLayer());
             }
         });
-
+        
         layers.reverse().each(function (layer) {
             CCH.map.getMap().setLayerIndex(layer, CCH.map.getMap().layers.length - 1);
         });
@@ -443,6 +444,7 @@ CCH.Objects.BucketSlide = function (args) {
         var item = args.item,
             layerCurrentlyInMap = false,
             id = item.id || new Date().getMilliseconds(),
+            visible = args.visible,
             title = item.summary.tiny.text || 'Title Not Provided',
             titleContainerClass = 'application-slide-bucket-container-card-title',
             $card = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
@@ -477,8 +479,10 @@ CCH.Objects.BucketSlide = function (args) {
             return layerArray.length > 0 && layerArray[0].getVisibility();
         });
 
-        if (layerCurrentlyInMap) {
+        if (layerCurrentlyInMap || visible === true) {
             $viewButton.find('> img').attr('src', 'images/bucket/layer_on.svg');
+        } else {
+            $viewButton.find('> img').attr('src', 'images/bucket/layer_off.svg');
         }
 
         $removeButton.on('click', function ($evt) {
@@ -500,6 +504,7 @@ CCH.Objects.BucketSlide = function (args) {
         $viewButton.on('click', function (evt) {
             var isAggregation = item.itemType === 'aggregation',
                 isLayerInMap = false,
+                turningOn = $(evt.currentTarget).find('img').attr('src').indexOf('off') !== 1,
                 layerArray;
                 
             isLayerInMap = item.getLayerList().every(function(id) {
