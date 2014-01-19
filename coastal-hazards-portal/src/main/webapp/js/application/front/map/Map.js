@@ -39,8 +39,10 @@ CCH.Objects.Map = function (args) {
 
         if (ribbonIndex !== 0 && layer.params.SLD.indexOf('ribbon') === -1) {
             layer.name = layerName;
-            layer.params.SLD = layer.params.SLD + '?ribbon=' + ribbonIndex;
-            layer.params.buffer = (ribbonIndex - 1) * CCH.CONFIG.map.ribbonOffset;
+            layer.mergeNewParams({
+                'SLD' : layer.params.SLD + '?ribbon=' + ribbonIndex,
+                'buffer' : (ribbonIndex - 1) * 6
+            });
         }
         
         me.addLayer(layer);
@@ -91,7 +93,8 @@ CCH.Objects.Map = function (args) {
             me.map = new OpenLayers.Map(me.mapDivId, {
                 projection: "EPSG:900913",
                 initialExtent: me.initialExtent,
-                displayProjection: new OpenLayers.Projection("EPSG:900913")
+                displayProjection: new OpenLayers.Projection("EPSG:900913"),
+                tileManager : new CCH.Objects.FixedTileManager()
             });
 
             me.layerSwitcher = new OpenLayers.Control.LayerSwitcher({
@@ -154,7 +157,6 @@ CCH.Objects.Map = function (args) {
         },
         addLayerToFeatureInfoControl : function (layer) {
             var control = me.getFeatureInfoControl;
-
             layer.params.STYLES = '';
             layer.url = layer.url.substring(layer.url.indexOf('geoserver'));
             control.layers.push(layer);

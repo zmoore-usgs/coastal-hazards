@@ -146,6 +146,7 @@ CCH.Objects.Item = function (args) {
                     isBaseLayer: false,
                     displayInLayerSwitcher: false,
                     singleTile : true,
+                    ratio : 1,
                     bbox: bbox,
                     itemid: id,
                     type: 'cch'// CCH specific setting
@@ -232,7 +233,7 @@ CCH.Objects.Item = function (args) {
             layer = CCH.map.showLayer({
                 item : this,
                 ribbon : index
-            }); 
+            });
             layers.push(layer);
         }
         return layers;

@@ -4,12 +4,13 @@
 /*global LOG*/
 /*global CCH*/
 /*global OpenLayers*/
+/*global ga*/
 CCH.Objects.Map = function (args) {
     "use strict";
     var me = (this === window) ? {} : this;
 
     me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
-    
+
     me.addLayer = function (layer) {
         CCH.CONFIG.map.addLayer(layer);
     };
@@ -18,7 +19,7 @@ CCH.Objects.Map = function (args) {
         layers = layers || [];
         CCH.CONFIG.map.addLayers(layers);
     };
-    
+
     me.showLayer = function (args) {
         var card = args.card,
             item = args.item,
@@ -33,7 +34,7 @@ CCH.Objects.Map = function (args) {
             }
         }
 
-       layer = CCH.CONFIG.map.getLayersByName(layerName)[0];
+        layer = CCH.CONFIG.map.getLayersByName(layerName)[0];
 
         if (!layer) {
             if (card) {
@@ -43,16 +44,18 @@ CCH.Objects.Map = function (args) {
             }
         }
 
-        if (ribbonIndex !== 0 && layer.params.SLD.indexOf('ribbon') === -1) {
+        if (layer.params.SLD.indexOf('ribbon') === -1) {
             layer.name = layerName;
-            layer.params.SLD = layer.params.SLD + '?ribbon=' + ribbonIndex;
-            layer.params.buffer = (ribbonIndex - 1) * 6;
-            layer.singleTile = true;
+            layer.mergeNewParams({
+                'SLD' : layer.params.SLD + '?ribbon=' + ribbonIndex,
+                'buffer' : (ribbonIndex - 1) * 6
+            });
         }
 
         CCH.CONFIG.map.addLayer(layer);
-        
+
         layer.setVisibility(true);
+
         $(window).trigger('cch.map.shown.layer', {
             layer : layer
         });
@@ -78,26 +81,27 @@ CCH.Objects.Map = function (args) {
         CCH.CONFIG.map = new OpenLayers.Map('map', {
             projection: CCH.CONFIG.projection,
             displayProjection: new OpenLayers.Projection(CCH.CONFIG.projection),
-            restrictedExtent: bounds
+            restrictedExtent: bounds,
+            tileManager : new CCH.Objects.FixedTileManager()
         });
 
         CCH.CONFIG.map.addLayer(new OpenLayers.Layer.XYZ("Light Gray Base",
-                "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}",
-                {
-                    sphericalMercator: true,
-                    isBaseLayer: true,
-                    numZoomLevels: 17,
-                    wrapDateLine: true
-                }
+            "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}",
+            {
+                sphericalMercator: true,
+                isBaseLayer: true,
+                numZoomLevels: 17,
+                wrapDateLine: true
+            }
         ));
 
         attributionControl = new OpenLayers.Control.Attribution({
             'template' : '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="' + me.attributionSource + '" /></a>'
         });
 
-		CCH.CONFIG.map.zoomToExtent(new OpenLayers.Bounds(CCH.CONFIG.item.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')));
+        CCH.CONFIG.map.zoomToExtent(new OpenLayers.Bounds(CCH.CONFIG.item.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')));
         CCH.CONFIG.map.addControl(attributionControl);
-        
+
         $('a').click(function(event) {
             ga('send', 'event', {
                 'eventCategory': 'link',   // Required.
@@ -105,8 +109,7 @@ CCH.Objects.Map = function (args) {
                 'eventLabel': event.target.href
             });
         });
-	};
-    
+    };
+
     return me;
-    
 };
