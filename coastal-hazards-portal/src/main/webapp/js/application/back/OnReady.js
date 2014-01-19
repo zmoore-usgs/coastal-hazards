@@ -4,6 +4,7 @@
 /*global initializeLogging*/
 /*global LOG*/
 /*global OpenLayers*/
+/*global splashUpdate*/
 $(document).ready(function () {
     "use strict";
 
@@ -21,84 +22,101 @@ $(document).ready(function () {
     $(window).on('cch.item.loaded', function (evt, args) {
         var id = args.id || '',
             item = CCH.CONFIG.item,
-            legend;
+            layers,
+            buildLegend = function (data, dataItem, index) {
+                var sld = data,
+                    featureLegend,
+                    existingDivArray,
+                    insertLegendAtIndex = function (legend, index) {
+                        var $legendContainer = $('#info-legend');
+                        if (index === 0) {
+                            $legendContainer.prepend(legend);
+                        } else {
+                            existingDivArray = $legendContainer.find('> div:nth-child(' + (index + 1) + ')');
+                            if (existingDivArray.length) {
+                                existingDivArray.before(legend);
+                            } else {
+                                $legendContainer.append(legend);
+                            }
+                        }
+                    };
+                if (dataItem.type === 'historical') {
+                    if (dataItem.item.name === 'rates') {
+                        featureLegend = CCH.ui.buildLegend({
+                            type: dataItem.item.type,
+                            name: dataItem.item.name,
+                            attr: dataItem.item.attr,
+                            sld: sld
+                        });
+                        insertLegendAtIndex(featureLegend, index);
+                    } else {
+                        // - The legend builder is going to need the actual data from the shorelines layer
+                        // 
+                        // - Using the wmsService.layers info for a WMS request because that's properly
+                        // formatted to go into this request. The wfsService has the fully qualified namespace
+                        // which borks the WFS request
+                        CCH.ows.getFilteredFeature({
+                            layerName : dataItem.wmsService.layers,
+                            propertyArray : [dataItem.attr],
+                            success : [
+                                function (data) {
+                                    var gmlReader = new OpenLayers.Format.GML.v3(),
+                                        features = gmlReader.read(data);
+                                    featureLegend = CCH.ui.buildLegend({
+                                        type: dataItem.type,
+                                        attr: dataItem.attr,
+                                        sld: sld,
+                                        features: features
+                                    });
+                                    insertLegendAtIndex(featureLegend, index);
+                                }
+                            ],
+                            error : [
+                                function (data, textStatus, jqXHR) {
+                                    LOG.warn(textStatus);
+                                    CCH.ui.removeLegendContainer();
+                                }
+                            ]
+                        });
+                    }
+                } else if (dataItem.type === 'storms') {
+                    featureLegend = CCH.ui.buildLegend({
+                        type: dataItem.type,
+                        sld: sld
+                    });
+                    insertLegendAtIndex(featureLegend, index);
+                } else if (dataItem.type === 'vulnerability') {
+                    featureLegend = CCH.ui.buildLegend({
+                        type: dataItem.type,
+                        attr: dataItem.attr,
+                        sld: sld
+                    });
+                    insertLegendAtIndex(featureLegend, index);
+                }
+            };
 
         if (CCH.CONFIG.item.id === id) {
             CCH.ui = new CCH.Objects.UI({item : item});
-            if (item.itemType === 'aggregation') {
-                item.showLayer();
-            } else {
-                item.showLayer();
+            layers = item.showLayer();
+            layers.each(function (child, index) {
                 CCH.Util.getSLD({
                     contextPath: CCH.CONFIG.contextPath,
-                    itemId: CCH.CONFIG.itemId,
+                    itemId: child.itemid,
                     callbacks: {
                         success : [
                             function (data) {
-                                var sld = data;
-                                if (CCH.CONFIG.item.type === 'historical') {
-                                    if (CCH.CONFIG.item.name === 'rates') {
-                                        legend = CCH.ui.buildLegend({
-                                            type: CCH.CONFIG.item.type,
-                                            name: CCH.CONFIG.item.name,
-                                            attr: CCH.CONFIG.item.attr,
-                                            sld: sld
-                                        });
-                                        $('#info-legend').append(legend);
-                                    } else {
-                                        // - The legend builder is going to need the actual data from the shorelines layer
-                                        // 
-                                        // - Using the wmsService.layers info for a WMS request because that's properly
-                                        // formatted to go into this request. The wfsService has the fully qualified namespace
-                                        // which borks the WFS request
-                                        CCH.ows.getFilteredFeature({
-                                            layerName : CCH.CONFIG.item.wmsService.layers,
-                                            propertyArray : [CCH.CONFIG.item.attr],
-                                            success : [
-                                                function (data) {
-                                                    var gmlReader = new OpenLayers.Format.GML.v3(),
-                                                        features = gmlReader.read(data),
-                                                        featureLegend = CCH.Util.buildLegend({
-                                                            type: CCH.CONFIG.item.type,
-                                                            attr: CCH.CONFIG.item.attr,
-                                                            sld: sld,
-                                                            features: features
-                                                        });
-                                                    $('#info-legend').append(featureLegend);
-                                                }
-                                            ],
-                                            error : [
-                                                function (data, textStatus, jqXHR) {
-                                                    LOG.warn(textStatus);
-                                                    CCH.ui.removeLegendContainer();
-                                                }
-                                            ]
-                                        });
-                                    }
-                                } else if (CCH.CONFIG.item.type === 'storms') {
-                                    CCH.ui.buildLegend({
-                                        type: CCH.CONFIG.item.type,
-                                        sld: sld
-                                    });
-                                } else if (CCH.CONFIG.item.type === 'vulnerability') {
-                                    CCH.ui.buildLegend({
-                                        type: CCH.CONFIG.item.type,
-                                        attr: CCH.CONFIG.item.attr,
-                                        sld: sld
-                                    });
-                                }
+                                buildLegend(data, CCH.items.getById({ id : child.itemid }), index);
                             }
                         ],
                         error : [
                             function (jqXHR, textStatus, errorThrown) {
                                 LOG.warn(errorThrown);
-                                CCH.ui.removeLegendContainer();
                             }
                         ]
                     }
-                })
-            }
-            
+                });
+            });
+
             // Clear the overlay
             $('#application-overlay').fadeOut(2000, function () {
                 $('#application-overlay').remove();
@@ -111,16 +129,15 @@ $(document).ready(function () {
             success : [
             ],
             error : [
-                function(jqXHR, textStatus, errorThrown) {
+                function (jqXHR, textStatus, errorThrown) {
                     var continueLink = $('<a />').attr({
                         'href': CCH.CONFIG.contextPath,
                         'role': 'button'
-                    }).addClass('btn btn-lg').html('<i class="fa fa-refresh"></i> Click to continue')
-
-                    var emailLink = $('<a />').attr({
-                        'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')',
-                        'role': 'button'
-                    }).addClass('btn btn-lg').html('<i class="fa fa-envelope"></i> Contact Us');
+                    }).addClass('btn btn-lg').html('<i class="fa fa-refresh"></i> Click to continue'),
+                        emailLink = $('<a />').attr({
+                            'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')',
+                            'role': 'button'
+                        }).addClass('btn btn-lg').html('<i class="fa fa-envelope"></i> Contact Us');
 
                     if (404 === jqXHR.status) {
                         splashUpdate("<b>Item Not Found</b><br /><br />We couldn't find the item you are looking for<br /><br />");

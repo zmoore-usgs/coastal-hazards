@@ -17,6 +17,12 @@ html, body {
     height: 100%;
 }
 
+#info-legend {
+    overflow-y: scroll;
+    width: 100%;
+    height: 400px;
+}
+
 /* Fixes pink tile issue in OpenLayers map */
 .olImageLoadError {
     display : none !important;

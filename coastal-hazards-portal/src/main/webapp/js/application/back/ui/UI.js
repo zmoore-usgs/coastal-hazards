@@ -26,9 +26,9 @@ CCH.Objects.UI = function (args) {
             bInd = 0,
             ub,
             lb,
-            legendDiv = $('<div />').attr({'id': 'cch-ui-legend-div'}),
-            legendTable = $('<table />').attr({'id': 'cch-ui-legend-table'}).addClass('table table-bordered table-hover'),
-            legendTableCaption = $('<caption />').attr({'id': 'cch-ui-legend-table-caption'}).html(sld.title),
+            legendDiv = $('<div />').addClass('cch-ui-legend-div'),
+            legendTable = $('<table />').addClass('cch-ui-legend-table table table-bordered table-hover'),
+            legendTableCaption = $('<caption />').addClass('cch-ui-legend-table-caption').html(sld.title),
             legendTableHead = $('<thead />').append(
                 $('<tr />').append(
                     $('<th />').attr({'scope': 'col'}),
@@ -220,8 +220,6 @@ CCH.Objects.UI = function (args) {
                 legendTableHead,
                 legendTableBody
                 ));
-        
-        $('#info-legend').append(legendDiv);
         
         return legendDiv;
     };
