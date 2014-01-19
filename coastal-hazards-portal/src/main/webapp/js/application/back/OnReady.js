@@ -22,78 +22,7 @@ $(document).ready(function () {
     $(window).on('cch.item.loaded', function (evt, args) {
         var id = args.id || '',
             item = CCH.CONFIG.item,
-            layers,
-            buildLegend = function (data, dataItem, index) {
-                var sld = data,
-                    featureLegend,
-                    existingDivArray,
-                    insertLegendAtIndex = function (legend, index) {
-                        var $legendContainer = $('#info-legend');
-                        if (index === 0) {
-                            $legendContainer.prepend(legend);
-                        } else {
-                            existingDivArray = $legendContainer.find('> div:nth-child(' + (index + 1) + ')');
-                            if (existingDivArray.length) {
-                                existingDivArray.before(legend);
-                            } else {
-                                $legendContainer.append(legend);
-                            }
-                        }
-                    };
-                if (dataItem.type === 'historical') {
-                    if (dataItem.item.name === 'rates') {
-                        featureLegend = CCH.ui.buildLegend({
-                            type: dataItem.item.type,
-                            name: dataItem.item.name,
-                            attr: dataItem.item.attr,
-                            sld: sld
-                        });
-                        insertLegendAtIndex(featureLegend, index);
-                    } else {
-                        // - The legend builder is going to need the actual data from the shorelines layer
-                        // 
-                        // - Using the wmsService.layers info for a WMS request because that's properly
-                        // formatted to go into this request. The wfsService has the fully qualified namespace
-                        // which borks the WFS request
-                        CCH.ows.getFilteredFeature({
-                            layerName : dataItem.wmsService.layers,
-                            propertyArray : [dataItem.attr],
-                            success : [
-                                function (data) {
-                                    var gmlReader = new OpenLayers.Format.GML.v3(),
-                                        features = gmlReader.read(data);
-                                    featureLegend = CCH.ui.buildLegend({
-                                        type: dataItem.type,
-                                        attr: dataItem.attr,
-                                        sld: sld,
-                                        features: features
-                                    });
-                                    insertLegendAtIndex(featureLegend, index);
-                                }
-                            ],
-                            error : [
-                                function (data, textStatus, jqXHR) {
-                                    LOG.warn(textStatus);
-                                    CCH.ui.removeLegendContainer();
-                                }
-                            ]
-                        });
-                    }
-                } else if (dataItem.type === 'storms') {
-                    featureLegend = CCH.ui.buildLegend({
-                        type: dataItem.type,
-                        sld: sld
-                    });
-                    insertLegendAtIndex(featureLegend, index);
-                } else if (dataItem.type === 'vulnerability') {
-                    featureLegend = CCH.ui.buildLegend({
-                        type: dataItem.type,
-                        attr: dataItem.attr,
-                        sld: sld
-                    });
-                    insertLegendAtIndex(featureLegend, index);
-                }
-            };
+            layers;
 
         if (CCH.CONFIG.item.id === id) {
             CCH.ui = new CCH.Objects.UI({item : item});
@@ -105,7 +34,7 @@ $(document).ready(function () {
                     callbacks: {
                         success : [
                             function (data) {
-                                buildLegend(data, CCH.items.getById({ id : child.itemid }), index);
+                                CCH.ui.loadSLDCallback(data, CCH.items.getById({ id : child.itemid }), index);
                             }
                         ],
                         error : [
