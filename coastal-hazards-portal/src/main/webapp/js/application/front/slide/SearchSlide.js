@@ -360,7 +360,7 @@ CCH.Objects.SearchSlide = function (args) {
 
                     $resultsFoundsContainer.
                             removeClass('hidden').
-                            html(productsSize + ' Result' + (productsSize > 1 ? 's' : '') + ' Found');
+                            html(productsSize + ' Product' + (productsSize > 1 ? 's' : '') + ' Found');
 
                     // Start with a clean slate 
                     $slideContainer.empty();

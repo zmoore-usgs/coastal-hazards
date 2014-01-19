@@ -12,7 +12,7 @@ CCH.Objects.Map = function (args) {
     me.mapDivId = args.mapDiv;
     me.$MAP_DIV = $('#' + args.mapDiv);
     me.bboxFadeoutDuration = 2000;
-
+    me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
     me.showLayer = function (args) {
         var card = args.card,
             item = args.item,
@@ -102,13 +102,18 @@ CCH.Objects.Map = function (args) {
             // This control is used as the on-click identifier for layers
             me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
 
+            me.attributionControl = new OpenLayers.Control.Attribution({
+                'template' : '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="'+me.attributionSource+'" /></a>'
+            });
+
             CCH.LOG.debug('Map.js::init():Adding base layers to map');
             me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
 
             CCH.LOG.debug('Map.js::init():Adding ontrols to map');
             me.map.addControls([
                 me.layerSwitcher,
-                me.getFeatureInfoControl
+                me.getFeatureInfoControl,
+                me.attributionControl
             ]);
 
             CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);

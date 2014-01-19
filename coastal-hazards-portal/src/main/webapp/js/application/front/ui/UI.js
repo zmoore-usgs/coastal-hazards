@@ -284,41 +284,6 @@ CCH.Objects.UI = function (args) {
         $('#' + me.HELP_MODAL_BODY_ID).css('max-height', window.innerHeight - window.innerHeight * 0.2);
     };
 
-    me.displayStartupModalWindow = function () {
-        $('#helpModal .modal-footer').prepend(
-            $('<div />').attr({
-                'id': 'set-modal-display-cookie-container'
-            }).addClass('pull-left')
-                .append(
-                    $('<label />').attr({
-                        'for': 'set-modal-display-cookie-cb-label'
-                    }).html('Don\'t show this again ').append(
-                        $('<input />').attr({
-                            'id': 'set-modal-display-cookie-cb',
-                            'type': 'checkbox',
-                            'checked': 'checked'
-                        })
-                    )
-                )
-        );
-
-        var removeCheck = function () {
-            $('#set-modal-display-cookie-container').remove();
-            $('#helpModal').off('hidden', removeCheck);
-        };
-
-        $('#set-modal-display-cookie-cb').on('change', function (evt) {
-            if (evt.target.checked) {
-                $.cookie('cch_display_welcome', 'false', {path: '/'});
-            } else {
-                $.cookie('cch_display_welcome', 'true', {path: '/'});
-            }
-        });
-
-        $('#helpModal').on('hidden', removeCheck);
-        $('#helpModal').modal('toggle');
-    };
-
     me.removeOverlay = function () {
         // Make sure that the overlay is still around
         if ($('#' + me.APPLICATION_OVERLAY_ID).length) {
@@ -456,14 +421,6 @@ CCH.Objects.UI = function (args) {
             clearOnClose : true
         });
     });
-    
-    // Check for cookie to tell us if user has disabled the modal window 
-    // on start. If not, show it. The user has to opt-in to have it shown 
-    // next time
-    if (!$.cookie('cch_display_welcome') || $.cookie('cch_display_welcome') === 'true') {
-        $.cookie('cch_display_welcome', 'false', {path: '/'});
-        me.displayStartupModalWindow();
-    }
 
     // Populate the UI with incoming data
     // Decide how to load the application. 
@@ -542,20 +499,15 @@ CCH.Objects.UI = function (args) {
         } else if (type === 'item') {
             // User is coming in with an item, so load that item
             splashUpdate('Loading Application...');
-            me.accordion.load({
-                id : id,
-                'callbacks' : {
-                    success : [
-                        function (item) {
-                            CCH.map.zoomToBoundingBox({
-                                bbox : item.bbox,
-                                fromProjection : new OpenLayers.Projection('EPSG:4326')
-                            });
-                            me.removeOverlay();
-                        }
-                    ],
-                    error : [errorResponseHandler]
-                }
+            
+            $(window).on('cch.ui.overlay.removed', function () {
+                me.accordion.explore(null, {
+                    id : id
+                });
+            });
+            
+            me.loadTopLevelItem({
+                zoomToBbox : true
             });
         }
     } else {

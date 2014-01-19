@@ -193,7 +193,9 @@ CCH.Objects.Accordion = function (args) {
         return $('#' + me.CONTAINER_ID + ' .panel');
     };
 
-    $(window).on('cch.slide.search.button.click.explore', function (evt, args) {
+    $(window).on('cch.slide.search.button.click.explore', me.explore);
+    
+    me.explore = function (evt, args) {
         // When a user clicks explore, I want to be able to search through every
         // item currently in the accordion slider starting with top level items
         // through their children. If found through the initial search, I want to 
@@ -261,7 +263,7 @@ CCH.Objects.Accordion = function (args) {
             });
         }
 
-    });
+    };
     
     me.showCurrent = function () {
         var currentCard = me.getBellows().find('.in > div > div:last-child');
@@ -275,6 +277,7 @@ CCH.Objects.Accordion = function (args) {
         add: me.addCard,
         load : me.load,
         showCurrent : me.showCurrent,
+        explore : me.explore,
         CLASS_NAME : 'CCH.Objects.Accordion'
     });
 };

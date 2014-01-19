@@ -12,7 +12,79 @@ CCH.Objects.UI = function (args) {
         $downloadFull,
         $applicationLink,
         $publist,
-        itemData = args.itemData;
+        item = args.item;
+
+    me.loadSLDCallback = function (data, dataItem, index) {
+        var sld = data,
+            featureLegend,
+            existingDivArray,
+            insertLegendAtIndex = function (legend, index) {
+                var $legendContainer = $('#info-legend');
+                if (index === 0) {
+                    $legendContainer.prepend(legend);
+                } else {
+                    existingDivArray = $legendContainer.find('> div:nth-child(' + (index + 1) + ')');
+                    if (existingDivArray.length) {
+                        existingDivArray.before(legend);
+                    } else {
+                        $legendContainer.append(legend);
+                    }
+                }
+            };
+        if (dataItem.type === 'historical') {
+            if (dataItem.item.name === 'rates') {
+                featureLegend = CCH.ui.buildLegend({
+                    type: dataItem.item.type,
+                    name: dataItem.item.name,
+                    attr: dataItem.item.attr,
+                    sld: sld
+                });
+                insertLegendAtIndex(featureLegend, index);
+            } else {
+                // - The legend builder is going to need the actual data from the shorelines layer
+                // 
+                // - Using the wmsService.layers info for a WMS request because that's properly
+                // formatted to go into this request. The wfsService has the fully qualified namespace
+                // which borks the WFS request
+                CCH.ows.getFilteredFeature({
+                    layerName : dataItem.wmsService.layers,
+                    propertyArray : [dataItem.attr],
+                    success : [
+                        function (data) {
+                            var gmlReader = new OpenLayers.Format.GML.v3(),
+                                features = gmlReader.read(data);
+                            featureLegend = CCH.ui.buildLegend({
+                                type: dataItem.type,
+                                attr: dataItem.attr,
+                                sld: sld,
+                                features: features
+                            });
+                            insertLegendAtIndex(featureLegend, index);
+                        }
+                    ],
+                    error : [
+                        function (data, textStatus, jqXHR) {
+                            LOG.warn(textStatus);
+                            CCH.ui.removeLegendContainer();
+                        }
+                    ]
+                });
+            }
+        } else if (dataItem.type === 'storms') {
+            featureLegend = CCH.ui.buildLegend({
+                type: dataItem.type,
+                sld: sld
+            });
+            insertLegendAtIndex(featureLegend, index);
+        } else if (dataItem.type === 'vulnerability') {
+            featureLegend = CCH.ui.buildLegend({
+                type: dataItem.type,
+                attr: dataItem.attr,
+                sld: sld
+            });
+            insertLegendAtIndex(featureLegend, index);
+        }
+    };
 
     me.buildLegend = function (args) {
         args = args || {};
@@ -26,9 +98,9 @@ CCH.Objects.UI = function (args) {
             bInd = 0,
             ub,
             lb,
-            legendDiv = $('<div />').attr({'id': 'cch-ui-legend-div'}),
-            legendTable = $('<table />').attr({'id': 'cch-ui-legend-table'}).addClass('table table-bordered table-hover'),
-            legendTableCaption = $('<caption />').attr({'id': 'cch-ui-legend-table-caption'}).html(sld.title),
+            legendDiv = $('<div />').addClass('cch-ui-legend-div'),
+            legendTable = $('<table />').addClass('cch-ui-legend-table table table-bordered table-hover'),
+            legendTableCaption = $('<caption />').addClass('cch-ui-legend-table-caption').html(sld.title),
             legendTableHead = $('<thead />').append(
                 $('<tr />').append(
                     $('<th />').attr({'scope': 'col'}),
@@ -221,8 +293,6 @@ CCH.Objects.UI = function (args) {
                 legendTableBody
                 ));
         
-        $('#info-legend').append(legendDiv);
-        
         return legendDiv;
     };
     
@@ -358,10 +428,10 @@ CCH.Objects.UI = function (args) {
     $('#application-link').append($applicationLink);
     
     // Build the publications list for the item
-    if (itemData.summary.full.publications) {
+    if (item.summary.full.publications) {
         $publist = $('<ul />').attr('id', 'info-container-publications-list');
-        Object.keys(itemData.summary.full.publications, function (type) {
-            var pubTypeArray = itemData.summary.full.publications[type],
+        Object.keys(item.summary.full.publications, function (type) {
+            var pubTypeArray = item.summary.full.publications[type],
                 pubTypeListHeader = $('<li />').
                     addClass('publist-header').
                     html(type),
@@ -370,7 +440,7 @@ CCH.Objects.UI = function (args) {
             if (pubTypeArray.length) {
                 pubTypeListHeader.append(subList);
                 $publist.append(pubTypeListHeader);
-                itemData.summary.full.publications[type].each(function (publication) {
+                item.summary.full.publications[type].each(function (publication) {
                     pubLink = $('<a />').attr({
                         'href' : publication.link,
                         'target': 'portal_publication_window'
@@ -383,8 +453,8 @@ CCH.Objects.UI = function (args) {
         $('#info-container-publications-list-span').remove();
     }
 
-    $('#info-title').html(itemData.summary.full.title);
-    $('#info-summary').html(itemData.summary.full.text);
+    $('#info-title').html(item.summary.full.title);
+    $('#info-summary').html(item.summary.full.text);
     $('#info-container-publications-list-span').append($publist);
     
     me.buildTwitterButton();

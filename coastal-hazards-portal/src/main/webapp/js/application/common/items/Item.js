@@ -21,8 +21,9 @@ CCH.Objects.Item = function (args) {
     me.id = args.id;
     me.parent = args.parent || null;
     me.loaded = false;
-    me.ribboned = me.id === 'C68abcd' ? true : false; //TODO - Actually get this from the data
+    me.ribboned = null;
     me.children = [];
+    me.displayedChildren = [];
     me.attr = null;
     me.metadata = null;
     me.bbox = me.UNITED_STATES_BBOX;
@@ -31,7 +32,7 @@ CCH.Objects.Item = function (args) {
     me.summary = null;
     me.type = null;
     me.services = null;
-    
+
     me.load = function (args) {
         args = args || {};
         var callbacks = args.callbacks || {
@@ -42,15 +43,17 @@ CCH.Objects.Item = function (args) {
 
         callbacks.success.unshift(function (data) {
             me.children = data.children || [];
+            me.displayedChildren = data.displayedChildren || [];
             me.attr = data.attr;
             me.metadata = data.metadata;
+            me.ribboned = data.ribbonable;
             me.bbox = data.bbox || me.UNITED_STATES_BBOX;
             me.itemType = data.itemType;
             me.name = data.name;
             me.summary = data.summary;
             me.type = data.type;
             me.services = data.services;
-            
+
             if (me.parent) {
                 if (me.parent.ribboned === true) {
                     me.ribboned = true;
@@ -58,44 +61,53 @@ CCH.Objects.Item = function (args) {
                     me.ribboned = false;
                 }
             }
-            
+
             CCH.items.add({ item : me });
 
             if (me.children.length) {
                 // If I have children, load those as well
-                me.children.each(function (childId, ind, allChildren) {
-                    if (ind !== allChildren.length - 1) {
-                        new CCH.Objects.Item({ 
-                            id : childId,
-                            parent : me
-                        }).load();
-                    } else {
-                        // If this is the last child to load, announce the parent
-                        // has loaded at the end
-                        new CCH.Objects.Item({ 
-                            id : childId,
-                            parent: me
-                        }).load({
-                            callbacks : {
-                                success : [
-                                    function () {
-                                        $(window).trigger('cch.item.loaded', {
-                                            id : me.id
-                                        });
-                                        me.loaded = true;
-                                        CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
-                                    }
-                                ],
-                                error : []
+                var setLoaded = function (evt, args) {
+                    if (!me.loaded) {
+                        var loadedItemIsChild = me.children.findIndex(args.id) !== -1,
+                            childItems = [],
+                            allLoaded;
+                        if (loadedItemIsChild) {
+                            me.children.each(function (childId) {
+                                var childItem = CCH.items.getById({ id : childId });
+                                if (childItem) {
+                                    childItems.push(childItem);
+                                }
+                            });
+
+                            if (childItems.length === me.children.length) {
+                                allLoaded = childItems.findIndex(function (childItem) {
+                                    return !childItem.loaded;
+                                }) === -1;
+                                if (allLoaded) {
+                                    me.loaded = true;
+                                    CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
+                                    $(window).trigger('cch.item.loaded', {
+                                        id : me.id
+                                    });
+                                }
                             }
-                        });
+                        }
                     }
+                };
+
+                $(window).on('cch.item.loaded', setLoaded);
+
+                me.children.each(function (childId) {
+                    new CCH.Objects.Item({
+                        id : childId,
+                        parent : me
+                    }).load();
                 });
             } else {
+                me.loaded = true;
                 $(window).trigger('cch.item.loaded', {
                     id : me.id
                 });
-                me.loaded = true;
                 CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
             }
         });
@@ -138,20 +150,22 @@ CCH.Objects.Item = function (args) {
                     type: 'cch'// CCH specific setting
                 }
             );
-        
+
         return layer;
     };
-    
-    me.getLayerList = function(layers) {
-        var index, 
+
+    me.getLayerList = function (layers) {
+        var index,
             layer,
-            layerName;
-    
+            layerName,
+            idx,
+            child;
+
         layers = layers || [];
-    
+
         if (me.itemType === 'aggregation') {
-            for (var idx = 0;idx < this.children.length;idx++) {
-                var child = CCH.items.getById({ id : this.children[idx] });
+            for (idx = 0; idx < this.displayedChildren.length; idx++) {
+                child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
                     layers.concat(child.getLayerList(layers));
                 }
@@ -161,7 +175,7 @@ CCH.Objects.Item = function (args) {
             if (me.ribboned) {
                 if (layers.length > 0) {
                     layer = layers[layers.length - 1];
-                    index = parseInt(layer.substring(layer.lastIndexOf('_') + 1)) + 1;
+                    index = parseInt(layer.substring(layer.lastIndexOf('_') + 1), 10) + 1;
                 } else {
                     index = 1;
                 }
@@ -172,26 +186,26 @@ CCH.Objects.Item = function (args) {
             layers.push(layerName);
         }
         return layers;
-    }
+    };
 
     me.showLayer = function (layers) {
-        var index, 
-            layer;
-    
+        var index,
+            layer,
+            idx;
+
         layers = layers || [];
-    
+
         // Check to see if this is an aggregation. If it is, I need
         // to pull the layers from all of its children
         if (this.itemType === 'aggregation') {
             // This aggregation should have children, so for each 
             // child, I want to grab the child's layer and display it
             // on the map
-            for (var idx = 0;idx < this.children.length;idx++) {
-                var child = CCH.items.getById({ id : this.children[idx] });
+            for (idx = 0;idx < this.displayedChildren.length;idx++) {
+                var child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
-                    layers = layers.concat(child.showLayer(layers));
+                    child.showLayer(layers);
                 }
-
             }
             
             // Because I don't have a real layer for this aggregation, once all 
@@ -203,7 +217,6 @@ CCH.Objects.Item = function (args) {
                 }
             });
         } else {
-            
             if (me.ribboned) {
                 if (layers.length > 0) {
                     layer = layers[layers.length - 1];
@@ -220,59 +233,24 @@ CCH.Objects.Item = function (args) {
                 ribbon : index
             }); 
             layers.push(layer);
-            CCH.LOG.debug('Item.js::showLayer:Item ' + me.id + ' added to map at index ' + index);
         }
         return layers;
     };
 
     me.hideLayer = function (layers) {
-        var index, 
-            layer,
-            layerName;
+        var layers;
     
-        layers = layers || [];
-    
-        // Check to see if this is an aggregation. If it is, I need
-        // to pull the layers from all of its children
-        if (this.itemType === 'aggregation') {
-            // This aggregation should have children, so for each 
-            // child, I want to grab the child's layer and display it
-            // on the map
-            for (var idx = 0;idx < this.children.length;idx++) {
-                var child = CCH.items.getById({ id : this.children[idx] });
-                if (child) {
-                    layers = layers.concat(child.hideLayer(layers));
-                }
-
-            }
-            
-            // Because I don't have a real layer for this aggregation, once all 
-            // of the children are added, I include this trigger so that other
-            // components can act on this layer having been added
+        me.getLayerList().each(function (layerName) {
+            layers = CCH.map.hideLayersByName(layerName);
+        });
+        
+        if (me.itemType === 'aggregation') {
             $(window).trigger('cch.map.hid.layer', {
                 layer : {
                     itemid : me.id
                 }
             });
-        } else {
-            
-            if (me.ribboned) {
-                if (layers.length > 0) {
-                    layer = layers[layers.length - 1];
-                    index = parseInt(layer.name.substring(layer.name.lastIndexOf('_') + 1)) + 1;
-                } else {
-                    index = 1;
-                }
-                layerName = me.id + '_r_' + index;
-            } else {
-                layerName = me.id;
-            }
-
-            layer = CCH.map.hideLayersByName(layerName); 
-            layers = layers.concat(layer);
-            CCH.LOG.debug('Item.js::showLayer:Layer ' + layerName + ' was hidden');
         }
-        return layers;
     };
 
     /**
@@ -339,7 +317,7 @@ CCH.Objects.Item = function (args) {
         });
         
         return serviceObject || defaultServiceObject;
-    }
+    };
 
     CCH.LOG.debug('Item.js::init():Item class finished initializing.');
 
