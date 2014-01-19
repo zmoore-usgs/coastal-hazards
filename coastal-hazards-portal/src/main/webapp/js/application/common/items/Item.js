@@ -21,7 +21,7 @@ CCH.Objects.Item = function (args) {
     me.id = args.id;
     me.parent = args.parent || null;
     me.loaded = false;
-    me.ribboned;
+    me.ribboned = null;
     me.children = [];
     me.displayedChildren = [];
     me.attr = null;
@@ -66,19 +66,31 @@ CCH.Objects.Item = function (args) {
 
             if (me.children.length) {
                 // If I have children, load those as well
-                var setLoaded = function () {
+                var setLoaded = function (evt, args) {
                     if (!me.loaded) {
-                        var allChildrenLoaded = me.children.findIndex(function () {
-                                return !me.loaded;
-                            }) === -1;
-
-                        if (allChildrenLoaded) {
-                            me.loaded = true;
-                            CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
-                            $(window).off('cch.item.loaded');
-                            $(window).trigger('cch.item.loaded', {
-                                id : me.id
+                        var loadedItemIsChild = me.children.findIndex(args.id) !== -1,
+                            childItems = [],
+                            allLoaded;
+                        if (loadedItemIsChild) {
+                            me.children.each(function (childId) {
+                                var childItem = CCH.items.getById({ id : childId });
+                                if (childItem) {
+                                    childItems.push(childItem);
+                                }
                             });
+
+                            if (childItems.length === me.children.length) {
+                                allLoaded = childItems.findIndex(function (childItem) {
+                                    return !childItem.loaded;
+                                }) === -1;
+                                if (allLoaded) {
+                                    me.loaded = true;
+                                    CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
+                                    $(window).trigger('cch.item.loaded', {
+                                        id : me.id
+                                    });
+                                }
+                            }
                         }
                     }
                 };
@@ -92,10 +104,10 @@ CCH.Objects.Item = function (args) {
                     }).load();
                 });
             } else {
+                me.loaded = true;
                 $(window).trigger('cch.item.loaded', {
                     id : me.id
                 });
-                me.loaded = true;
                 CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
             }
         });

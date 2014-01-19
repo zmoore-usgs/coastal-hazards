@@ -20,18 +20,10 @@ $(document).ready(function () {
 
     $(window).on('cch.item.loaded', function (evt, args) {
         var id = args.id || '',
-            isAggregation,
-            item = CCH.CONFIG.item,
-            displayedChildrenIds;
+            item = CCH.CONFIG.item;
         
         if (CCH.CONFIG.item.id === id) {
-            isAggregation = item.itemType === 'aggregation';
-            
-            if (isAggregation) {
-                CCH.map.addLayers(CCH.CONFIG.item.showLayer());
-            } else {
-                
-            }
+            item.showLayer();
         }
     });
 
@@ -42,8 +34,7 @@ $(document).ready(function () {
             success : [
                 function (itemData) {
                     var legend,
-                        isAggregation = itemData.itemType === 'aggregation',
-                        displayedChildrenIds = itemData.displayedChildren || [];
+                        isAggregation = itemData.itemType === 'aggregation'
 
                     CCH.ui = new CCH.Objects.UI({itemData : itemData});
 
