@@ -19,6 +19,7 @@ CCH.Objects.Map = function (args) {
             id = card ? card.id : item.id,
             ribbonIndex = args.ribbon || 0,
             layerName = id,
+            visible = args.visible || true,
             layer;
 
         if (ribbonIndex !== 0) {
@@ -45,9 +46,10 @@ CCH.Objects.Map = function (args) {
             });
         }
         
+        layer.setVisibility(visible);
+        
         me.addLayer(layer);
         
-        layer.setVisibility(true);
         $(window).trigger('cch.map.shown.layer', {
             layer : layer
         });
