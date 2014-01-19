@@ -162,122 +162,109 @@ CCH.Objects.UI = function (args) {
         me.previouslySmall = isSmall;
     };
 
+    me.displayShareModal = function(url) {
+        CCH.Util.getMinifiedEndpoint({
+            location: url,
+            callbacks: {
+                success: [
+                    function (json) {
+                        var minifiedUrl = json.tinyUrl,
+                            shareInput = $('#' + me.SHARE_INPUT_ID);
+
+                        shareInput.val(minifiedUrl);
+                        $('#' + me.SHARE_URL_BUTTON_ID).attr({
+                            'href': minifiedUrl
+                        }).removeClass('disabled');
+                        shareInput.select();
+                        twttr.widgets.createShareButton(
+                            minifiedUrl,
+                            $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
+                            function (element) {
+                                // Any callbacks that may be needed
+                            },
+                            {
+                                hashtags: 'USGS_CCH',
+                                lang: 'en',
+                                size: 'large',
+                                text: 'Check out my CCH View!',
+                                count: 'none'
+                            }
+                        );
+                        $('#' + me.SHARE_MODAL_ID).modal('show');
+                        twttr.events.bind('tweet', function () {
+                            alertify.log('Your view has been tweeted. Thank you.');
+                        });
+                    }
+                ],
+                error: [
+                    function (data) {
+                        var url = data.responseJSON.full_url,
+                            shareInput = $('#' + me.SHARE_INPUT_ID);
+                        shareInput.val(url);
+                        $('#' + me.SHARE_URL_BUTTON_ID).attr({
+                            'href': url
+                        }).removeClass('disabled');
+                        shareInput.select();
+                        twttr.widgets.createShareButton(
+                            url,
+                            $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
+                            function (element) {
+                                // Any callbacks that may be needed
+                            },
+                            {
+                                hashtags: 'USGS_CCH',
+                                lang: 'en',
+                                size: 'large',
+                                text: 'Check out my CCH View!',
+                                count: 'none'
+                            }
+                        );
+                        $('#' + me.SHARE_MODAL_ID).modal('show');
+                        twttr.events.bind('tweet', function () {
+                            alertify.log('Your view has been tweeted. Thank you.');
+                        });
+                    }
+                ]
+            }
+        });
+    };
+
     me.sharemodalDisplayHandler = function (evt, args) {
         $('#' + me.SHARE_URL_BUTTON_ID).addClass('disabled');
         $('#' + me.SHARE_INPUT_ID).val('');
         $('#' + me.SHARE_TWITTER_BUTTON_ID).empty();
         
-        args =args || {};
+        args = args || {};
         
         var type = args.type,
             id = args.id,
-            session,
-            writeSessionCallbacks = {
-                success: [
-                    function (json) {
-                        var sid = json.sid,
-                            shareUrl = CCH.CONFIG.publicUrl + '/ui/view/' + sid;
-
-                        displayShareModal(shareUrl);
-                    }
-                ],
-                error: [
-                    function () {
-                        $('#' + me.SHARE_MODAL_ID).modal('hide');
-                        alertify.error('We apologize, but we could not create a share url for this session.', 2000);
-                    }
-                ]
-            },
-            displayShareModal = function(url) {
-                CCH.Util.getMinifiedEndpoint({
-                    location: url,
-                    callbacks: {
-                        success: [
-                            function (json) {
-                                var minifiedUrl = json.tinyUrl,
-                                    shareInput = $('#' + me.SHARE_INPUT_ID);
-
-                                shareInput.val(minifiedUrl);
-                                $('#' + me.SHARE_URL_BUTTON_ID).attr({
-                                    'href': minifiedUrl
-                                }).removeClass('disabled');
-                                shareInput.select();
-                                twttr.widgets.createShareButton(
-                                    minifiedUrl,
-                                    $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
-                                    function (element) {
-                                        // Any callbacks that may be needed
-                                    },
-                                    {
-                                        hashtags: 'USGS_CCH',
-                                        lang: 'en',
-                                        size: 'large',
-                                        text: 'Check out my CCH View!',
-                                        count: 'none'
-                                    }
-                                );
-                                $('#' + me.SHARE_MODAL_ID).modal('show');
-                                twttr.events.bind('tweet', function () {
-                                    alertify.log('Your view has been tweeted. Thank you.');
-                                });
-                            }
-                        ],
-                        error: [
-                            function (data) {
-                                var url = data.responseJSON.full_url,
-                                    shareInput = $('#' + me.SHARE_INPUT_ID);
-                                shareInput.val(url);
-                                $('#' + me.SHARE_URL_BUTTON_ID).attr({
-                                    'href': url
-                                }).removeClass('disabled');
-                                shareInput.select();
-                                twttr.widgets.createShareButton(
-                                    url,
-                                    $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
-                                    function (element) {
-                                        // Any callbacks that may be needed
-                                    },
-                                    {
-                                        hashtags: 'USGS_CCH',
-                                        lang: 'en',
-                                        size: 'large',
-                                        text: 'Check out my CCH View!',
-                                        count: 'none'
-                                    }
-                                );
-                                $('#' + me.SHARE_MODAL_ID).modal('show');
-                                twttr.events.bind('tweet', function () {
-                                    alertify.log('Your view has been tweeted. Thank you.');
-                                });
-                            }
-                        ]
-                    }
-                });
-            };
+            session;
             
         if (type === 'session') {
             // A user has clicked on the share menu item. A session needs to be 
             // created and a token retrieved...
             session = CCH.session;
-        } else if (type === 'item') {
-            // User is sharing a session with just this one item in the bucket. 
-            // There are a number of ways to do this, but the most quick/dirty way
-            // to do it cleanly is to clone the session, remove all other items 
-            // from it and use the cloned session to make a url
-            var session = Object.clone(CCH.session, true);
-            
-            // Using this session clone, remove all items except the current item
-            session.getSession().items.each(function (item) {
-                if (item.id !== id) {
-                    session.removeItem(item);
+            session.writeSession({
+                callbacks : {
+                    success: [
+                        function (json) {
+                            var sid = json.sid,
+                                shareUrl = CCH.CONFIG.publicUrl + '/ui/view/' + sid;
+
+                            me.displayShareModal(shareUrl);
+                        }
+                    ],
+                    error: [
+                        function () {
+                            $('#' + me.SHARE_MODAL_ID).modal('hide');
+                            alertify.error('We apologize, but we could not create a share url for this session.', 2000);
+                        }
+                    ]
                 }
             });
+        } else if (type === 'item') {
+            me.displayShareModal(CCH.CONFIG.publicUrl +'/ui/item/' + id);
         }
-        
-        session.writeSession({
-            callbacks : writeSessionCallbacks
-        });
-        
     };
 
     me.helpModalDisplayHandler = function () {
