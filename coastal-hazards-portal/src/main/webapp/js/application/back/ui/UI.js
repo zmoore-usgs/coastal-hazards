@@ -12,7 +12,7 @@ CCH.Objects.UI = function (args) {
         $downloadFull,
         $applicationLink,
         $publist,
-        itemData = args.itemData;
+        item = args.item;
 
     me.buildLegend = function (args) {
         args = args || {};
@@ -358,10 +358,10 @@ CCH.Objects.UI = function (args) {
     $('#application-link').append($applicationLink);
     
     // Build the publications list for the item
-    if (itemData.summary.full.publications) {
+    if (item.summary.full.publications) {
         $publist = $('<ul />').attr('id', 'info-container-publications-list');
-        Object.keys(itemData.summary.full.publications, function (type) {
-            var pubTypeArray = itemData.summary.full.publications[type],
+        Object.keys(item.summary.full.publications, function (type) {
+            var pubTypeArray = item.summary.full.publications[type],
                 pubTypeListHeader = $('<li />').
                     addClass('publist-header').
                     html(type),
@@ -370,7 +370,7 @@ CCH.Objects.UI = function (args) {
             if (pubTypeArray.length) {
                 pubTypeListHeader.append(subList);
                 $publist.append(pubTypeListHeader);
-                itemData.summary.full.publications[type].each(function (publication) {
+                item.summary.full.publications[type].each(function (publication) {
                     pubLink = $('<a />').attr({
                         'href' : publication.link,
                         'target': 'portal_publication_window'
@@ -383,8 +383,8 @@ CCH.Objects.UI = function (args) {
         $('#info-container-publications-list-span').remove();
     }
 
-    $('#info-title').html(itemData.summary.full.title);
-    $('#info-summary').html(itemData.summary.full.text);
+    $('#info-title').html(item.summary.full.title);
+    $('#info-summary').html(item.summary.full.text);
     $('#info-container-publications-list-span').append($publist);
     
     me.buildTwitterButton();

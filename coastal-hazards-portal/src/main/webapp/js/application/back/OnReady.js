@@ -20,102 +20,95 @@ $(document).ready(function () {
 
     $(window).on('cch.item.loaded', function (evt, args) {
         var id = args.id || '',
-            item = CCH.CONFIG.item;
-        
+            item = CCH.CONFIG.item,
+            legend;
+
         if (CCH.CONFIG.item.id === id) {
-            item.showLayer();
+            CCH.ui = new CCH.Objects.UI({item : item});
+            if (item.itemType === 'aggregation') {
+                item.showLayer();
+            } else {
+                item.showLayer();
+                CCH.Util.getSLD({
+                    contextPath: CCH.CONFIG.contextPath,
+                    itemId: CCH.CONFIG.itemId,
+                    callbacks: {
+                        success : [
+                            function (data) {
+                                var sld = data;
+                                if (CCH.CONFIG.item.type === 'historical') {
+                                    if (CCH.CONFIG.item.name === 'rates') {
+                                        legend = CCH.ui.buildLegend({
+                                            type: CCH.CONFIG.item.type,
+                                            name: CCH.CONFIG.item.name,
+                                            attr: CCH.CONFIG.item.attr,
+                                            sld: sld
+                                        });
+                                        $('#info-legend').append(legend);
+                                    } else {
+                                        // - The legend builder is going to need the actual data from the shorelines layer
+                                        // 
+                                        // - Using the wmsService.layers info for a WMS request because that's properly
+                                        // formatted to go into this request. The wfsService has the fully qualified namespace
+                                        // which borks the WFS request
+                                        CCH.ows.getFilteredFeature({
+                                            layerName : CCH.CONFIG.item.wmsService.layers,
+                                            propertyArray : [CCH.CONFIG.item.attr],
+                                            success : [
+                                                function (data) {
+                                                    var gmlReader = new OpenLayers.Format.GML.v3(),
+                                                        features = gmlReader.read(data),
+                                                        featureLegend = CCH.Util.buildLegend({
+                                                            type: CCH.CONFIG.item.type,
+                                                            attr: CCH.CONFIG.item.attr,
+                                                            sld: sld,
+                                                            features: features
+                                                        });
+                                                    $('#info-legend').append(featureLegend);
+                                                }
+                                            ],
+                                            error : [
+                                                function (data, textStatus, jqXHR) {
+                                                    LOG.warn(textStatus);
+                                                    CCH.ui.removeLegendContainer();
+                                                }
+                                            ]
+                                        });
+                                    }
+                                } else if (CCH.CONFIG.item.type === 'storms') {
+                                    CCH.ui.buildLegend({
+                                        type: CCH.CONFIG.item.type,
+                                        sld: sld
+                                    });
+                                } else if (CCH.CONFIG.item.type === 'vulnerability') {
+                                    CCH.ui.buildLegend({
+                                        type: CCH.CONFIG.item.type,
+                                        attr: CCH.CONFIG.item.attr,
+                                        sld: sld
+                                    });
+                                }
+                            }
+                        ],
+                        error : [
+                            function (jqXHR, textStatus, errorThrown) {
+                                LOG.warn(errorThrown);
+                                CCH.ui.removeLegendContainer();
+                            }
+                        ]
+                    }
+                })
+            }
+            
+            // Clear the overlay
+            $('#application-overlay').fadeOut(2000, function () {
+                $('#application-overlay').remove();
+            });
         }
     });
-
-    
 
     CCH.CONFIG.item.load({
         callbacks : {
             success : [
-                function (itemData) {
-                    var legend,
-                        isAggregation = itemData.itemType === 'aggregation'
-
-                    CCH.ui = new CCH.Objects.UI({itemData : itemData});
-
-                    if (isAggregation) {
-                    } else {
-                        CCH.Util.getSLD({
-                            contextPath: CCH.CONFIG.contextPath,
-                            itemId: CCH.CONFIG.itemId,
-                            callbacks: {
-                                success: [
-                                    function (data) {
-                                        var sld = data;
-                                        if (CCH.CONFIG.item.type === 'historical') {
-                                            if (CCH.CONFIG.item.name === 'rates') {
-                                                legend = CCH.ui.buildLegend({
-                                                    type: CCH.CONFIG.item.type,
-                                                    name: CCH.CONFIG.item.name,
-                                                    attr: CCH.CONFIG.item.attr,
-                                                    sld: sld
-                                                });
-                                                $('#info-legend').append(legend);
-                                            } else {
-                                                // - The legend builder is going to need the actual data from the shorelines layer
-                                                // 
-                                                // - Using the wmsService.layers info for a WMS request because that's properly
-                                                // formatted to go into this request. The wfsService has the fully qualified namespace
-                                                // which borks the WFS request
-                                                CCH.ows.getFilteredFeature({
-                                                    layerName : CCH.CONFIG.item.wmsService.layers,
-                                                    propertyArray : [CCH.CONFIG.item.attr],
-                                                    success : [
-                                                        function (data) {
-                                                            var gmlReader = new OpenLayers.Format.GML.v3(),
-                                                                features = gmlReader.read(data),
-                                                                featureLegend = CCH.Util.buildLegend({
-                                                                    type: CCH.CONFIG.item.type,
-                                                                    attr: CCH.CONFIG.item.attr,
-                                                                    sld: sld,
-                                                                    features: features
-                                                                });
-                                                            $('#info-legend').append(featureLegend);
-                                                        }
-                                                    ],
-                                                    error : [
-                                                        function (data, textStatus, jqXHR) {
-                                                            LOG.warn(textStatus);
-                                                            CCH.ui.removeLegendContainer();
-                                                        }
-                                                    ]
-                                                });
-                                            }
-                                        } else if (CCH.CONFIG.item.type === 'storms') {
-                                            CCH.ui.buildLegend({
-                                                type: CCH.CONFIG.item.type,
-                                                sld: sld
-                                            });
-                                        } else if (CCH.CONFIG.item.type === 'vulnerability') {
-                                            CCH.Util.buildLegend({
-                                                type: CCH.CONFIG.item.type,
-                                                attr: CCH.CONFIG.item.attr,
-                                                sld: sld
-                                            });
-                                        }
-
-                                    }
-                                ],
-                                error: [
-                                    function (jqXHR, textStatus, errorThrown) {
-                                        LOG.warn(errorThrown);
-                                        CCH.ui.removeLegendContainer();
-                                    }
-                                ]
-                            }
-                        });
-                    }
-
-                    // Clear the overlay
-                    $('#application-overlay').fadeOut(2000, function () {
-                        $('#application-overlay').remove();
-                    });
-                }
             ],
             error : [
                 function(jqXHR, textStatus, errorThrown) {

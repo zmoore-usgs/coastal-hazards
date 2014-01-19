@@ -74,7 +74,7 @@ CCH.Objects.Map = function (args) {
 
         originalBounds.extend(extendedBounds);
         bounds = originalBounds.transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));
-        
+
         CCH.CONFIG.map = new OpenLayers.Map('map', {
             projection: CCH.CONFIG.projection,
             displayProjection: new OpenLayers.Projection(CCH.CONFIG.projection),
