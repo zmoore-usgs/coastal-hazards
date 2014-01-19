@@ -30,6 +30,19 @@ CCH.Objects.Session = function(args) {
     
     me.update = function (args) {
         CCH.map.updateSession();
+        args = args || {};
+        var itemid = args.itemid,
+            visibility = args.visibility,
+            itemIndex;
+    
+        if (itemid) {
+            itemIndex = me.getItemIndex({
+                id : itemid
+            });
+            if (itemIndex !== -1) {
+                me.session.items[itemIndex].visibility = visibility;
+            }
+        }
     };
     
     me.write = function (args) {
@@ -138,14 +151,17 @@ CCH.Objects.Session = function(args) {
         updateSession : me.update,
         getItemIndex : function (item) {
             return me.session.items.findIndex(function(i) {
-                return i.id === item.id;
+                return i.itemId === item.id;
             });
         },
         addItem : function (item) {
             var index = me.getItemIndex(item);
             
             if (index === -1) {
-                me.session.items.push(item);
+                me.session.items.push({
+                    itemId : item.id,
+                    visibility : true
+                });
             }
             
             return me.session;

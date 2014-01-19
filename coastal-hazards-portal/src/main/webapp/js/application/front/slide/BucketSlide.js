@@ -533,6 +533,16 @@ CCH.Objects.BucketSlide = function (args) {
                         }});
                 }
             }
+            
+            // Regular layers will properly update a session, but because 
+            // aggregations don't actually have layers, sessions need to be updated
+            // manually for the aggregation object
+            if (isAggregation) {
+                CCH.session.update({
+                    itemid : id,
+                    visibility : !isLayerInMap
+                });
+            }
 
             $(window).trigger('slide.bucket.button.click.view', {
                 'adding' : !isLayerInMap,

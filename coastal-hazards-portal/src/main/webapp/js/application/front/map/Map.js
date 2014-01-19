@@ -294,11 +294,15 @@ CCH.Objects.Map = function (args) {
             CCH.session.updateSession();
         },
         changelayerCallback: function (evt) {
+            var layer = evt.layer;
             $(window).trigger('cch.map.layer.changed', {
                 property : evt.property,
-                layer : evt.layer
+                layer : layer
             });
-            CCH.session.updateSession();
+            CCH.session.updateSession({
+                itemid : layer.itemid,
+                visibility : layer.visbility
+            });
         },
         getLayersBy : function (attr, value) {
             return me.map.getLayersBy(attr, value)
