@@ -499,20 +499,15 @@ CCH.Objects.UI = function (args) {
         } else if (type === 'item') {
             // User is coming in with an item, so load that item
             splashUpdate('Loading Application...');
-            me.accordion.load({
-                id : id,
-                'callbacks' : {
-                    success : [
-                        function (item) {
-                            CCH.map.zoomToBoundingBox({
-                                bbox : item.bbox,
-                                fromProjection : new OpenLayers.Projection('EPSG:4326')
-                            });
-                            me.removeOverlay();
-                        }
-                    ],
-                    error : [errorResponseHandler]
-                }
+            
+            $(window).on('cch.ui.overlay.removed', function () {
+                me.accordion.explore(null, {
+                    id : id
+                });
+            });
+            
+            me.loadTopLevelItem({
+                zoomToBbox : true
             });
         }
     } else {
