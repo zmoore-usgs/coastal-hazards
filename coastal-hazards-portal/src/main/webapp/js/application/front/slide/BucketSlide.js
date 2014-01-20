@@ -523,31 +523,27 @@ CCH.Objects.BucketSlide = function (args) {
 
             if (isLayerInMap) {
                 item.hideLayer();
-                if (isAggregation) {
-                    me.layerAppendRemoveHandler(
-                        {
-                            namespace : 'hid.layer.map'
-                        },
-                        { layer : {
-                            name : id,
-                            itemid : id
-                        }}
-                    );
-                }
+                me.layerAppendRemoveHandler(
+                    {
+                        namespace : 'hid.layer.map'
+                    },
+                    { layer : {
+                        name : id,
+                        itemid : id
+                    }}
+                );
                 CCH.session.getItemById(item.id).visible = false;
             } else {
                 item.showLayer();
-                if (isAggregation) {
-                    me.layerAppendRemoveHandler({
-                        namespace: 'show.layer.map'
-                    },
-                        {
-                            layer: {
-                                name: id,
-                                itemid: id
-                            }
-                        });
-                }
+                me.layerAppendRemoveHandler({
+                    namespace: 'show.layer.map'
+                },
+                {
+                    layer: {
+                        name: id,
+                        itemid: id
+                    }
+                });
                 CCH.session.getItemById(item.id).visible = true;
             }
 
