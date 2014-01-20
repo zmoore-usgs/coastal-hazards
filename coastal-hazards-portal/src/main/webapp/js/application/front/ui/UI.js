@@ -89,11 +89,11 @@ CCH.Objects.UI = function (args) {
         isSmall : me.isSmall,
         bucket : me.bucket
     });
-    me.combinedSearch = new CCH.Objects.CombinedSearch();
     me.accordion = new CCH.Objects.Accordion({
         containerId : me.SLIDE_CONTAINER_DIV_ID
     });
-
+    me.combinedSearch = new CCH.Objects.CombinedSearch();
+    
     me.itemsSearchedHandler = function (evt, data) {
         if (data.items) {
             CCH.LOG.info('UI:: Items found: ' + data.items.length);

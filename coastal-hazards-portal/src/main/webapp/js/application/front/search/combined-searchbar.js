@@ -46,21 +46,18 @@ CCH.Objects.CombinedSearch = function (args) {
         geocodeServiceEndpoint: CCH.CONFIG.data.sources.geocoding.endpoint
     });
 
-    me.resizeContainer = function (evt, isSmall) {
+    me.resizeContainer = function (evt) {
         var $container = $('#' + me.CONTAINER_ID),
             $parentContainer = $container.parent(),
             parentContainerWidth = $parentContainer.width(),
             parentContainerVisibleItems,
             childrenCombinedWidth,
             containerMarginRight,
-            idealInputWidth;
-    
-            if (me.isSmall === undefined) {
-                me.isSmall = isSmall
-            }
+            idealInputWidth,
+            isSmall = CCH.ui.isSmall();
             
-            if (me.isSmall) {
-                idealInputWidth = parentContainerWidth;
+            if (isSmall) {
+                idealInputWidth = '100%';
             } else {
                 // Get all visible, non-modal children of the parent that are also not my container
                 parentContainerVisibleItems = $parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
@@ -372,10 +369,6 @@ CCH.Objects.CombinedSearch = function (args) {
     
     $(window).on({
         'cch.ui.resized' : me.resizeContainer,
-        'cch.ui.redimensioned' : function(evt, isSmall) {
-            me.isSmall = isSmall;
-            me.resizeContainer();
-        },
         'slide-search-button-click' : function (evt, args) {
             // When a user searches for "all" and has mixed content come back,
             // the user is presented with the choice to "Show All x Locations". 
