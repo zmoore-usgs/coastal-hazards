@@ -126,6 +126,17 @@ html, body {
     #application-container > div.row:nth-child(3) {
         display: none;
     }
+    
+    .application-slide-controlset {
+        margin-top: 10px;
+    }
+    .application-slide-controlset div.pull-left > i {
+        font-size: 1.5em;
+    }
+    .application-slide-controlset div.pull-left > i:hover {
+        cursor: pointer;
+    }
+    
 }
 
 @media (max-width: 440px) {
