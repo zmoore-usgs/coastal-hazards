@@ -166,7 +166,7 @@ CCH.Objects.CombinedSearch = function (args) {
             $(me).trigger('combined-searchbar-search-performing', {
                 type : type
             });
-
+            $('#app-navbar-search-input').trigger('blur');
             me.displaySpinner();
             if (type === spatialAndItemType) {
                 me.performSpatialSearch({

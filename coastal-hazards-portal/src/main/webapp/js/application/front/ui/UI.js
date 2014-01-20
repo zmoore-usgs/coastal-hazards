@@ -395,11 +395,23 @@ CCH.Objects.UI = function (args) {
     });
     $(me.combinedSearch).on({
         'combined-searchbar-search-performed' : function (evt, args) {
-            me.searchSlide.displaySearchResults(args);
+            var dispResults = function () {
+                $(window).off('cch.slide.search.closed', dispResults);
+                me.searchSlide.displaySearchResults(args);
+            }
+            
+            if (!me.searchSlide.isClosed && !me.searchSlide.isClosing) {
+                $(window).on('cch.slide.search.closed', dispResults);
+                me.searchSlide.close({
+                    clearOnClose : false
+                });
+            } else {
+                dispResults();
+            }
         },
         'combined-searchbar-search-performing' : function () {
             me.searchSlide.close({
-                clearOnClose : true
+                clearOnClose : false
             });
         }
     });
