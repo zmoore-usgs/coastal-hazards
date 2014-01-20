@@ -93,7 +93,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
             // Create the popup and add it to the map
             popup = new OpenLayers.Popup.FramedCloud('feature-identification-popup',
                 CCH.map.getMap().getLonLatFromPixel(evt.xy),
-                null,
+                new OpenLayers.Size(50,50),
                 popupHtml,
                 null,
                 true,
@@ -181,7 +181,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                         // Set the size of the popup to be 
                         // 1/3rd of the map's width and add
                         // 60 pixels for each row
-                        popup.setSize(new OpenLayers.Size(CCH.map.getMap().getSize().w * 0.65, $table.find('tr').length * 65));
+                        popup.setSize(new OpenLayers.Size($('#feature-identification-popup div.col-md-12 > table').width(), $('#feature-identification-popup div.col-md-12 > table').height()));
                         popup.panIntoView();
                     };
 
