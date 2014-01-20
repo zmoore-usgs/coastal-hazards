@@ -19,7 +19,7 @@ CCH.Objects.Map = function (args) {
             id = card ? card.id : item.id,
             ribbonIndex = args.ribbon || 0,
             layerName = id,
-            visible = args.visible || true,
+            visible = args.visible  === false ? false : true,
             layer;
 
         if (ribbonIndex !== 0) {

@@ -141,6 +141,18 @@ CCH.Objects.Session = function(args) {
             }
         });
     };
+    
+    me.getItemById = function (id) {
+        var item = null,
+            index = me.getItemIndex({
+                id : id
+            });
+            
+        if (index !== -1) {
+            item = me.getSession().items[index];
+        }
+        return item;
+    };
 
     return $.extend(me, {
         toString: me.toString,
@@ -149,6 +161,7 @@ CCH.Objects.Session = function(args) {
         readSession : me.read,
         writeSession: me.write,
         updateSession : me.update,
+        getItemById : me.getItemById,
         getItemIndex : function (item) {
             return me.session.items.findIndex(function(i) {
                 return i.itemId === item.id;

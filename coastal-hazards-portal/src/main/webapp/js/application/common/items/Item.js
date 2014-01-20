@@ -190,12 +190,14 @@ CCH.Objects.Item = function (args) {
         return layers;
     };
 
-    me.showLayer = function (layers) {
+    me.showLayer = function (args) {
+        args = args || {};
         var index,
             layer,
-            idx;
+            idx,
+            visible = args.visible,
+            layers = args.layers || [];
 
-        layers = layers || [];
 
         // Check to see if this is an aggregation. If it is, I need
         // to pull the layers from all of its children
@@ -206,7 +208,10 @@ CCH.Objects.Item = function (args) {
             for (idx = 0;idx < this.displayedChildren.length;idx++) {
                 var child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
-                    child.showLayer(layers);
+                    child.showLayer({
+                        layers : layers,
+                        visible : visible
+                    });
                 }
             }
             
@@ -232,7 +237,8 @@ CCH.Objects.Item = function (args) {
 
             layer = CCH.map.showLayer({
                 item : this,
-                ribbon : index
+                ribbon : index,
+                visible : visible
             });
             layers.push(layer);
         }
