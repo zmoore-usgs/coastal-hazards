@@ -85,7 +85,13 @@ CCH.Objects.Accordion = function (args) {
             if (index === undefined || index === 0) {
                 $('#app-navbar-search-container').after(bellow);
             } else {
-                bellow.insertAfter($accordion.children().get(index));
+                var child = $accordion.children().get(index);
+                if (child) {
+                    bellow.insertAfter(child);
+                } else {
+                    $accordion.append(bellow);
+                }
+                
             }
         } else {
             if (index === undefined || $accordion.children().length === 0) {
@@ -94,7 +100,12 @@ CCH.Objects.Accordion = function (args) {
                 if (index === 0) {
                     $accordion.prepend(bellow);
                 } else {
-                    bellow.insertAfter($accordion.children().get(index - 1));
+                    var child = $accordion.children().get(index - 1);
+                    if (child) {
+                        bellow.insertAfter(child);
+                    } else {
+                        $accordion.append(bellow);
+                    }
                 }
             }
         }
