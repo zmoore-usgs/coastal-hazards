@@ -25,6 +25,7 @@ CCH.Objects.Map = function (args) {
             item = args.item,
             id = card ? card.id : item.id,
             ribbonIndex = args.ribbon || 0,
+            aggregationName = args.aggregationName || '',
             layerName = id,
             layer;
 
@@ -32,6 +33,10 @@ CCH.Objects.Map = function (args) {
             if (layerName.indexOf('ribbon') === -1) {
                 layerName = layerName + '_r_' + ribbonIndex;
             }
+        }
+        
+        if (aggregationName !== '') {
+            layerName = aggregationName + layerName;
         }
 
         layer = CCH.CONFIG.map.getLayersByName(layerName)[0];

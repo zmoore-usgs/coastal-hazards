@@ -69,7 +69,7 @@ CCH.Objects.Accordion = function (args) {
                 initHide : false
             });
         }
-        
+
         // Using the card, create a container from it
         bellow = me.createBellow({
             card : card
@@ -122,7 +122,8 @@ CCH.Objects.Accordion = function (args) {
             'data-parent' : '#' + me.CONTAINER_ID,
             'href' : '#' + accordionBodyId,
             'data-toggle' : 'collapse',
-            'onclick' : 'javascript:return false;'
+            'onclick' : 'javascript:return false;' // Yes, this isn't ideal but
+            // it does keep from the url being altered when a user clicks a bellow
         });
 
         accordionBody.attr('id', accordionBodyId);
@@ -154,7 +155,7 @@ CCH.Objects.Accordion = function (args) {
                 $(window).trigger('cch.accordion.shown', evt);
                 var $this = $(this),
                     abId = $this.data('id');
-				
+
                 ga('send', 'event', {
                     'eventCategory': 'accordion',
                     'eventAction': 'show',
@@ -193,7 +194,7 @@ CCH.Objects.Accordion = function (args) {
     $(window).on('cch.slide.search.button.click.explore', function (evt, args) {
         me.explore(evt, args);
     });
-    
+
     me.explore = function (evt, args) {
         // When a user clicks explore, I want to be able to search through every
         // item currently in the accordion slider starting with top level items
@@ -263,13 +264,13 @@ CCH.Objects.Accordion = function (args) {
         }
 
     };
-    
+
     me.showCurrent = function () {
         var currentCard = me.getBellows().find('.in > div > div:last-child');
-        
+
         if (currentCard.length > 0) {
             currentCard.data()['card'].show();
-        } 
+        }
     };
 
     return $.extend(me, {

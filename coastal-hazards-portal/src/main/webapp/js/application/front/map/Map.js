@@ -14,32 +14,23 @@ CCH.Objects.Map = function (args) {
     me.bboxFadeoutDuration = 2000;
     me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
     me.showLayer = function (args) {
-        var card = args.card,
-            item = args.item,
-            id = card ? card.id : item.id,
+        var item = args.item,
             ribbonIndex = args.ribbon || 0,
-            layerName = id,
+            name = args.name,
             visible = args.visible  === false ? false : true,
             layer;
 
-        if (ribbonIndex !== 0) {
-            if (layerName.indexOf('ribbon') === -1) {
-                layerName = layerName + '_r_' + ribbonIndex;
-            }
-        }
-
-       layer = me.map.getLayersByName(layerName)[0];
+       layer = me.map.getLayersByName(name)[0];
 
         if (!layer) {
-            if (card) {
-                layer = card.layer;
-            } else if (item && 'function' === typeof item.getWmsLayer) {
+            if (item && 'function' === typeof item.getWmsLayer) {
                 layer = item.getWmsLayer();
             }
         }
 
+        layer.name = name;
+
         if (ribbonIndex !== 0 && layer.params.SLD.indexOf('ribbon') === -1) {
-            layer.name = layerName;
             layer.mergeNewParams({
                 'SLD' : layer.params.SLD + '?ribbon=' + ribbonIndex,
                 'buffer' : (ribbonIndex - 1) * 6
