@@ -8,7 +8,7 @@
 /*global OpenLayers*/
 $(document).ready(function () {
     "use strict";
-    return;
+    
     splashUpdate("Initializing Logging...");
     initializeLogging({
         LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
