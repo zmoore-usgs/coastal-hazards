@@ -24,16 +24,17 @@ CCH.Objects.BucketSlide = function (args) {
     me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div:first-child() > div:first-child() > div:nth-child(2)';
 
     me.$SLIDE_CONTAINER = $('#' + me.SLIDE_CONTAINER_ID);
+    me.$SLIDE_CONTROLSET = me.$SLIDE_CONTAINER.find('> div > div:first-child');
+    me.$DROPDOWN_CONTAINER = me.$SLIDE_CONTAINER.find('> div > div:nth-child(2)');
     me.SLIDE_CONTENT_ID = me.$SLIDE_CONTAINER.find(' .application-slide-content').attr('id');
     me.$CLOSE_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset');
-    me.$DROPDOWN_CONTAINER = me.$SLIDE_CONTAINER.find('> div > div:first-child > div > div:nth-child(2)');
     me.$TOP_LEVEL_DROPDOWN_TRIGGER = me.$DROPDOWN_CONTAINER.find('button:first-child');
     me.$TOP_LEVEL_LIST = me.$DROPDOWN_CONTAINER.find('ul');
     me.$TOP_LEVEL_CLEAR = me.$TOP_LEVEL_LIST.find('> li:nth-child(1)');
     me.$TOP_LEVEL_SHARE = me.$TOP_LEVEL_LIST.find('> li:nth-child(2)');
     me.$TOP_LEVEL_DOWNLOAD = me.$TOP_LEVEL_LIST.find('> li:nth-child(3)');
     me.$EMPTY_TEXT_CONTAINER = me.$SLIDE_CONTAINER.find('> div > div > #application-slide-bucket-content-empty');
-
+    
     me.borderWidth = 2;
     me.animationTime = 500;
     me.placement = 'right';
@@ -209,7 +210,7 @@ CCH.Objects.BucketSlide = function (args) {
             $slideContainer.height(windowHeight - toExtent.top - 1);
             $slideContainer.width(windowWidth - toExtent.left);
             $slideContent.width($slideContainer.outerWidth() - me.borderWidth);
-            $slideContent.height($slideContainer.height() - 5);
+            $slideContent.height($slideContainer.innerHeight() - me.$SLIDE_CONTROLSET.outerHeight() - me.borderWidth);
         } else {
             if (me.isClosed) {
                 $slideContainer.css({
@@ -220,8 +221,9 @@ CCH.Objects.BucketSlide = function (args) {
                 $slideContainer.offset(toExtent);
             }
             $slideContainer.width(windowWidth - toExtent.left);
-            $slideContainer.height($('#' + me.MAP_DIV_ID).outerHeight() - 1);
+            $slideContainer.height($('#' + me.MAP_DIV_ID).outerHeight() - me.borderWidth);
             $slideContent.width($slideContainer.outerWidth() - me.borderWidth);
+            $slideContent.height($slideContainer - me.borderWidth);
         }
     };
 

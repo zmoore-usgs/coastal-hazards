@@ -68,7 +68,9 @@ CCH.Objects.Item = function (args) {
                 // If I have children, load those as well
                 var setLoaded = function (evt, args) {
                     if (!me.loaded) {
-                        var loadedItemIsChild = me.children.findIndex(args.id) !== -1,
+                        var loadedItemIsChild = me.children.findIndex(function (childId) {
+                            return childId === args.id;
+                        }) !== -1,
                             childItems = [],
                             allLoaded;
                         if (loadedItemIsChild) {
