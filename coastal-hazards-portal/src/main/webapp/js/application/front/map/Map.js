@@ -14,39 +14,33 @@ CCH.Objects.Map = function (args) {
     me.bboxFadeoutDuration = 2000;
     me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
     me.showLayer = function (args) {
-        var card = args.card,
-            item = args.item,
-            id = card ? card.id : item.id,
+        var item = args.item,
             ribbonIndex = args.ribbon || 0,
-            layerName = id,
+            name = args.name,
+            visible = args.visible  === false ? false : true,
             layer;
 
-        if (ribbonIndex !== 0) {
-            if (layerName.indexOf('ribbon') === -1) {
-                layerName = layerName + '_r_' + ribbonIndex;
-            }
-        }
-
-       layer = me.map.getLayersByName(layerName)[0];
+       layer = me.map.getLayersByName(name)[0];
 
         if (!layer) {
-            if (card) {
-                layer = card.layer;
-            } else if (item && 'function' === typeof item.getWmsLayer) {
+            if (item && 'function' === typeof item.getWmsLayer) {
                 layer = item.getWmsLayer();
             }
         }
 
-        if (ribbonIndex !== 0 && layer.params.SLD.indexOf('ribbon') === -1) {
-            layer.name = layerName;
-            layer.params.SLD = layer.params.SLD + '?ribbon=' + ribbonIndex;
-            layer.params.buffer = (ribbonIndex - 1) * CCH.CONFIG.map.ribbonOffset;
-            layer.singleTile = true;
-        }
+        layer.name = name;
 
+        if (ribbonIndex !== 0 && layer.params.SLD.indexOf('ribbon') === -1) {
+            layer.mergeNewParams({
+                'SLD' : layer.params.SLD + '?ribbon=' + ribbonIndex,
+                'buffer' : (ribbonIndex - 1) * 6
+            });
+        }
+        
+        layer.setVisibility(visible);
+        
         me.addLayer(layer);
         
-        layer.setVisibility(true);
         $(window).trigger('cch.map.shown.layer', {
             layer : layer
         });
@@ -92,7 +86,8 @@ CCH.Objects.Map = function (args) {
             me.map = new OpenLayers.Map(me.mapDivId, {
                 projection: "EPSG:900913",
                 initialExtent: me.initialExtent,
-                displayProjection: new OpenLayers.Projection("EPSG:900913")
+                displayProjection: new OpenLayers.Projection("EPSG:900913"),
+                tileManager : new CCH.Objects.FixedTileManager()
             });
 
             me.layerSwitcher = new OpenLayers.Control.LayerSwitcher({
@@ -155,7 +150,6 @@ CCH.Objects.Map = function (args) {
         },
         addLayerToFeatureInfoControl : function (layer) {
             var control = me.getFeatureInfoControl;
-
             layer.params.STYLES = '';
             layer.url = layer.url.substring(layer.url.indexOf('geoserver'));
             control.layers.push(layer);
@@ -293,11 +287,15 @@ CCH.Objects.Map = function (args) {
             CCH.session.updateSession();
         },
         changelayerCallback: function (evt) {
+            var layer = evt.layer;
             $(window).trigger('cch.map.layer.changed', {
                 property : evt.property,
-                layer : evt.layer
+                layer : layer
             });
-            CCH.session.updateSession();
+            CCH.session.updateSession({
+                itemid : layer.itemid,
+                visibility : layer.visbility
+            });
         },
         getLayersBy : function (attr, value) {
             return me.map.getLayersBy(attr, value)

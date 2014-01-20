@@ -69,7 +69,7 @@ CCH.Objects.Accordion = function (args) {
                 initHide : false
             });
         }
-        
+
         // Using the card, create a container from it
         bellow = me.createBellow({
             card : card
@@ -121,7 +121,9 @@ CCH.Objects.Accordion = function (args) {
         ).attr({
             'data-parent' : '#' + me.CONTAINER_ID,
             'href' : '#' + accordionBodyId,
-            'data-toggle' : 'collapse'
+            'data-toggle' : 'collapse',
+            'onclick' : 'javascript:return false;' // Yes, this isn't ideal but
+            // it does keep from the url being altered when a user clicks a bellow
         });
 
         accordionBody.attr('id', accordionBodyId);
@@ -152,12 +154,8 @@ CCH.Objects.Accordion = function (args) {
             'shown.bs.collapse' : function (evt) {
                 $(window).trigger('cch.accordion.shown', evt);
                 var $this = $(this),
-                    abId = $this.data('id'),
-					currentUrl = window.location.href;
-					
-				// Clean up the url
-				history.pushState(null, null, currentUrl.substring(0, currentUrl.indexOf(window.location.hash)));
-				
+                    abId = $this.data('id');
+
                 ga('send', 'event', {
                     'eventCategory': 'accordion',
                     'eventAction': 'show',
@@ -193,8 +191,10 @@ CCH.Objects.Accordion = function (args) {
         return $('#' + me.CONTAINER_ID + ' .panel');
     };
 
-    $(window).on('cch.slide.search.button.click.explore', me.explore);
-    
+    $(window).on('cch.slide.search.button.click.explore', function (evt, args) {
+        me.explore(evt, args);
+    });
+
     me.explore = function (evt, args) {
         // When a user clicks explore, I want to be able to search through every
         // item currently in the accordion slider starting with top level items
@@ -264,13 +264,13 @@ CCH.Objects.Accordion = function (args) {
         }
 
     };
-    
+
     me.showCurrent = function () {
         var currentCard = me.getBellows().find('.in > div > div:last-child');
-        
+
         if (currentCard.length > 0) {
             currentCard.data()['card'].show();
-        } 
+        }
     };
 
     return $.extend(me, {

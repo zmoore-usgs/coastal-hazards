@@ -145,6 +145,8 @@ CCH.Objects.Item = function (args) {
                     projection: 'EPSG:3857',
                     isBaseLayer: false,
                     displayInLayerSwitcher: false,
+                    singleTile : true,
+                    ratio : 1,
                     bbox: bbox,
                     itemid: id,
                     type: 'cch'// CCH specific setting
@@ -154,20 +156,27 @@ CCH.Objects.Item = function (args) {
         return layer;
     };
 
-    me.getLayerList = function (layers) {
+    me.getLayerList = function (args) {
+        args = args || {};
         var index,
             layer,
             layerName,
             idx,
-            child;
-
-        layers = layers || [];
+            child,
+            aggregationName = args.aggregationName || '',
+            layers = args.layers || [];
 
         if (me.itemType === 'aggregation') {
+            if (aggregationName === '') {
+                aggregationName = me.id + '_';
+            }
             for (idx = 0; idx < this.displayedChildren.length; idx++) {
                 child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
-                    layers.concat(child.getLayerList(layers));
+                    layers.concat(child.getLayerList({
+                        layers : layers,
+                        aggregationName : aggregationName
+                    }));
                 }
 
             }
@@ -179,32 +188,46 @@ CCH.Objects.Item = function (args) {
                 } else {
                     index = 1;
                 }
-                layerName = me.id + '_r_' + index;
+                layerName = aggregationName + me.id + '_r_' + index;
             } else {
-                layerName = me.id;
+                layerName = aggregationName + me.id;
             }
+            
             layers.push(layerName);
         }
         return layers;
     };
 
-    me.showLayer = function (layers) {
+    me.showLayer = function (args) {
+        args = args || {};
         var index,
             layer,
-            idx;
+            idx,
+            layerName,
+            aggregationName = args.aggregationName || '',
+            visible = args.visible,
+            layers = args.layers || [];
 
-        layers = layers || [];
 
         // Check to see if this is an aggregation. If it is, I need
         // to pull the layers from all of its children
         if (this.itemType === 'aggregation') {
+            
+            if (aggregationName === '') {
+                aggregationName = me.id + '_';
+            }
+            
             // This aggregation should have children, so for each 
             // child, I want to grab the child's layer and display it
             // on the map
             for (idx = 0;idx < this.displayedChildren.length;idx++) {
                 var child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
-                    child.showLayer(layers);
+                    child.showLayer({
+                        layers : layers,
+                        visible : visible,
+                        aggregationName : aggregationName
+                    });
                 }
             }
             
@@ -217,6 +240,9 @@ CCH.Objects.Item = function (args) {
                 }
             });
         } else {
+            
+            layerName = aggregationName + this.id;
+            
             if (me.ribboned) {
                 if (layers.length > 0) {
                     layer = layers[layers.length - 1];
@@ -224,14 +250,18 @@ CCH.Objects.Item = function (args) {
                 } else {
                     index = 1;
                 }
+                layerName = layerName + '_r_' + index;
             } else {
                 index = 0;
             }
 
             layer = CCH.map.showLayer({
                 item : this,
-                ribbon : index
-            }); 
+                ribbon : index,
+                visible : visible,
+                aggregationName : aggregationName,
+                name : layerName
+            });
             layers.push(layer);
         }
         return layers;

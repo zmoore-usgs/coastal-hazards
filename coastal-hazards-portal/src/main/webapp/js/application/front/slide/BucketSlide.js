@@ -4,6 +4,7 @@
 /*global CCH*/
 /*global alertify*/
 /*global splashUpdate*/
+/*global OpenLayers*/
 
 /**
  * @param {type} args
@@ -21,7 +22,7 @@ CCH.Objects.BucketSlide = function (args) {
     me.CARD_TEMPLATE_ID = 'application-slide-bucket-container-card-template';
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-bucket-content-container';
     me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div:first-child() > div:first-child() > div:nth-child(2)';
-    
+
     me.$SLIDE_CONTAINER = $('#' + me.SLIDE_CONTAINER_ID);
     me.SLIDE_CONTENT_ID = me.$SLIDE_CONTAINER.find(' .application-slide-content').attr('id');
     me.$CLOSE_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset');
@@ -32,7 +33,7 @@ CCH.Objects.BucketSlide = function (args) {
     me.$TOP_LEVEL_SHARE = me.$TOP_LEVEL_LIST.find('> li:nth-child(2)');
     me.$TOP_LEVEL_DOWNLOAD = me.$TOP_LEVEL_LIST.find('> li:nth-child(3)');
     me.$EMPTY_TEXT_CONTAINER = me.$SLIDE_CONTAINER.find('> div > div > #application-slide-bucket-content-empty');
-    
+
     me.borderWidth = 2;
     me.animationTime = 500;
     me.placement = 'right';
@@ -44,7 +45,7 @@ CCH.Objects.BucketSlide = function (args) {
 
     me.openSlide = function () {
         var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
-        
+
         $(window).off('cch.slide.items.opened', me.openSlide);
 
         $('body').css({
@@ -54,7 +55,7 @@ CCH.Objects.BucketSlide = function (args) {
         $slideContainer.css({
             display: ''
         });
-        
+
         me.reorderLayers();
 
         $slideContainer.animate({
@@ -65,11 +66,11 @@ CCH.Objects.BucketSlide = function (args) {
             $('body').css({
                 overflow : ''
             });
-            
+
             $(window).trigger('cch.slide.bucket.opened');
         });
     };
-    
+
     me.open = function () {
         if (me.isClosed) {
             if (me.isSmall()) {
@@ -120,7 +121,34 @@ CCH.Objects.BucketSlide = function (args) {
             me.close();
         }
     };
-    
+
+    me.reorderLayers = function () {
+        var id,
+            layer,
+            layers = [],
+            item,
+            sessionItem;
+
+        me.cards.each(function ($cardClone) {
+            id = $cardClone.data('id');
+            item = CCH.items.getById({id : id});
+            sessionItem = CCH.session.getItemById(id);
+            layer = CCH.map.getLayersByName(id);
+
+            if (layer.length) {
+                layers.push(layer[0]);
+            } else {
+                layers = layers.concat(item.showLayer({
+                    visible : sessionItem.visible
+                }));
+            }
+        });
+
+        layers.reverse().each(function (layer) {
+            CCH.map.getMap().setLayerIndex(layer, CCH.map.getMap().layers.length - 1);
+        });
+    };
+
     me.layerAppendRemoveHandler = function (evt, args) {
         var layer = args.layer,
             $card = $('#application-slide-bucket-container-card-' + layer.itemid),
@@ -148,7 +176,7 @@ CCH.Objects.BucketSlide = function (args) {
         }
     };
 
-    me.resized = function (evt, args) {
+    me.resized = function () {
         var extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large,
             $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
@@ -248,7 +276,8 @@ CCH.Objects.BucketSlide = function (args) {
             me.$EMPTY_TEXT_CONTAINER.addClass('hidden');
             $(me.$DROPDOWN_CONTAINER).removeClass('hidden');
             $card = me.createCard({
-                item : item
+                item : item,
+                visible : args.visible
             });
             me.cards.push($card);
             me.append($card);
@@ -273,12 +302,12 @@ CCH.Objects.BucketSlide = function (args) {
             childIdArray = args.children.slice(0);
             $card = me.getCard({ id : id });
             me.cards.removeAt(me.getCardIndex(id));
-            
+
             // I have no children, so I'm just going to remove myself from the map
             if (childIdArray.length === 0) {
                 childIdArray.push(id);
             }
-            
+
             // Remove all children from the map
             childIdArray.each(function (childId, i, children) {
                 // If this ID appears elsewhere in the card stack, don't remove 
@@ -287,7 +316,7 @@ CCH.Objects.BucketSlide = function (args) {
                     CCH.map.hideLayersByName(childId);
                 }
             });
-            
+
             me.getContainer().find('>div:not(:first-child())').each(function (idx, card) {
                 if ($(card).data('id') === id) {
                     $(card).remove();
@@ -315,29 +344,6 @@ CCH.Objects.BucketSlide = function (args) {
         }
 
         return $card;
-    };
-
-    me.reorderLayers = function () {
-        var id,
-            layer,
-            layers = [],
-            item;
-        
-        me.cards.each(function ($cardClone) {
-            id = $cardClone.data('id');
-            item = CCH.items.getById({id : id});
-            
-            layer = CCH.map.getLayersByName(id);
-            if (layer.length) {
-                layers.push(layer[0]);
-            } else {
-                layers = layers.concat(item.showLayer());
-            }
-        });
-
-        layers.reverse().each(function (layer) {
-            CCH.map.getMap().setLayerIndex(layer, CCH.map.getMap().layers.length - 1);
-        });
     };
 
     me.rebuild = function () {
@@ -443,6 +449,7 @@ CCH.Objects.BucketSlide = function (args) {
         var item = args.item,
             layerCurrentlyInMap = false,
             id = item.id || new Date().getMilliseconds(),
+            visible = args.visible,
             title = item.summary.tiny.text || 'Title Not Provided',
             titleContainerClass = 'application-slide-bucket-container-card-title',
             $card = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
@@ -462,30 +469,38 @@ CCH.Objects.BucketSlide = function (args) {
         $imageContainer.
                 attr('src', 'images/thumbnail/thumb_' + id + '.png').
                 on('click', function () {
-                    CCH.map.zoomToBoundingBox({
-                        bbox: item.bbox, 
-                        fromProjection: new OpenLayers.Projection('EPSG:4326')
-                    });
-        });
+                CCH.map.zoomToBoundingBox({
+                    bbox: item.bbox,
+                    fromProjection: new OpenLayers.Projection('EPSG:4326')
+                });
+            });
         $titleContainer.attr('id', titleContainerClass + '-' + id);
         $titleContainerPNode.html(title);
         $card.data('id', id);
-        
+
         // Test if the layer is currently visible. If not, set view button to off 
-        layerCurrentlyInMap = item.getLayerList().every(function(id, idx) {
+        layerCurrentlyInMap = item.getLayerList().every(function (id) {
             layerArray = CCH.map.getLayersBy('name', id);
             return layerArray.length > 0 && layerArray[0].getVisibility();
         });
 
-        if (layerCurrentlyInMap) {
+        if (visible === true && !layerCurrentlyInMap) {
+            item.showLayer({
+                visible : false
+            });
+        }
+
+        if (layerCurrentlyInMap || visible === true) {
             $viewButton.find('> img').attr('src', 'images/bucket/layer_on.svg');
+        } else {
+            $viewButton.find('> img').attr('src', 'images/bucket/layer_off.svg');
         }
 
         $removeButton.on('click', function ($evt) {
             $evt.stopPropagation();
             // If I am open, remove my layer
             item.hideLayer();
-            
+
             // I emit this to the top so that bucket can catch it, decrement itself
             // and then pass on the remove back down here to my remove method
             $(window).trigger('cch.slide.bucket.remove', {
@@ -497,41 +512,49 @@ CCH.Objects.BucketSlide = function (args) {
             window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + id;
         });
 
-        $viewButton.on('click', function (evt) {
+        $viewButton.on('click', function () {
             var isAggregation = item.itemType === 'aggregation',
-                isLayerInMap = false,
-                layerArray;
-                
-            isLayerInMap = item.getLayerList().every(function(id) {
+                isLayerInMap = false;
+
+            isLayerInMap = item.getLayerList().every(function (id) {
                 layerArray = CCH.map.getLayersBy('name', id);
                 return layerArray.length > 0 && layerArray[0].getVisibility();
             });
-            
+
             if (isLayerInMap) {
                 item.hideLayer();
-                if (isAggregation) {
-                    me.layerAppendRemoveHandler(
-                        {
-                            namespace : 'hid.layer.map'
-                        },
-                        { layer : {
-                            name : id,
-                            itemid : id
-                        }});
-                }
+                me.layerAppendRemoveHandler(
+                    {
+                        namespace : 'hid.layer.map'
+                    },
+                    { layer : {
+                        name : id,
+                        itemid : id
+                    }}
+                );
+                CCH.session.getItemById(item.id).visible = false;
             } else {
                 item.showLayer();
-                if (isAggregation) {
-                    me.layerAppendRemoveHandler(
-                            {
-                                namespace: 'show.layer.map'
-                            },
-                    {
-                        layer: {
-                            name: id,
-                            itemid: id
-                        }});
-                }
+                me.layerAppendRemoveHandler({
+                    namespace: 'show.layer.map'
+                },
+                {
+                    layer: {
+                        name: id,
+                        itemid: id
+                    }
+                });
+                CCH.session.getItemById(item.id).visible = true;
+            }
+
+            // Regular layers will properly update a session, but because 
+            // aggregations don't actually have layers, sessions need to be updated
+            // manually for the aggregation object
+            if (isAggregation) {
+                CCH.session.update({
+                    itemid : id,
+                    visibility : !isLayerInMap
+                });
             }
 
             $(window).trigger('slide.bucket.button.click.view', {
@@ -560,7 +583,7 @@ CCH.Objects.BucketSlide = function (args) {
                 'id' : id
             });
         });
-        
+
         $infoButton.on('click', function () {
             $(window).trigger('slide.bucket.button.click.info', {
                 'id' : id
@@ -572,14 +595,14 @@ CCH.Objects.BucketSlide = function (args) {
             'target' : '_portal_info_window',
             'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
         });
-        
+
         $card.getContainer = function () {
             return $('#' + this.attr('id'));
         };
 
         return $card;
     };
-    
+
     me.$TOP_LEVEL_DROPDOWN_TRIGGER.on('click', function (evt) {
         evt.stopImmediatePropagation();
         $(evt.target).dropdown('toggle');
@@ -603,12 +626,9 @@ CCH.Objects.BucketSlide = function (args) {
         evt.stopPropagation();
         me.downloadBucket();
     });
-    
+
     $(window).on({
         'cch.ui.resized' : me.resized,
-        'cch.map.added.layer' : me.layerAppendRemoveHandler,
-        'cch.map.shown.layer' : me.layerAppendRemoveHandler,
-        'cch.map.hid.layer' : me.layerAppendRemoveHandler,
         'cch.slide.search.button.click.explore' : me.close,
         'cch.slide.items.closing' : function () {
             if (me.isSmall()) {
@@ -618,7 +638,7 @@ CCH.Objects.BucketSlide = function (args) {
     });
 
     CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');
-    
+
     return {
         events : me.events,
         open: me.open,

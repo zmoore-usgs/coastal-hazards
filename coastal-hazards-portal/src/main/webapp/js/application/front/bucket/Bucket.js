@@ -109,7 +109,8 @@ CCH.Objects.Bucket = function (args) {
             }
 
             var item = args.item,
-                id = item.id;
+                id = item.id,
+                visible = args.visible;
         
             if (!me.getItemById(id)) {
                 // Add the item to my personal bucket array
@@ -117,7 +118,8 @@ CCH.Objects.Bucket = function (args) {
                 
                 // Add the item to the bucket slide
                 me.slide.add({
-                    item : item
+                    item : item,
+                    visible : visible
                 });
                 
                 // Add the item to the session
