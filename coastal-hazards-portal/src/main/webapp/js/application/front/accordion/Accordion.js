@@ -121,7 +121,8 @@ CCH.Objects.Accordion = function (args) {
         ).attr({
             'data-parent' : '#' + me.CONTAINER_ID,
             'href' : '#' + accordionBodyId,
-            'data-toggle' : 'collapse'
+            'data-toggle' : 'collapse',
+            'onclick' : 'javascript:return false;'
         });
 
         accordionBody.attr('id', accordionBodyId);
@@ -152,11 +153,7 @@ CCH.Objects.Accordion = function (args) {
             'shown.bs.collapse' : function (evt) {
                 $(window).trigger('cch.accordion.shown', evt);
                 var $this = $(this),
-                    abId = $this.data('id'),
-					currentUrl = window.location.href;
-					
-				// Clean up the url
-				history.pushState(null, null, currentUrl.substring(0, currentUrl.indexOf(window.location.hash)));
+                    abId = $this.data('id');
 				
                 ga('send', 'event', {
                     'eventCategory': 'accordion',
