@@ -216,10 +216,12 @@ public class ItemManager {
             resultMap.put("items", resultList);
             if (subtree) {
                 jsonResult = GsonUtil.getSubtreeGson().toJson(resultMap, HashMap.class);
-            } else {
+            }
+            else {
                 jsonResult = GsonUtil.getIdOnlyGson().toJson(resultMap, HashMap.class);
             }
-        } finally {
+        }
+        finally {
             JPAHelper.close(em);
         }
         return jsonResult;
