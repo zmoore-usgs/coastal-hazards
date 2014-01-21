@@ -25,7 +25,7 @@ CCH.Objects.BucketSlide = function (args) {
 
     me.$SLIDE_CONTAINER = $('#' + me.SLIDE_CONTAINER_ID);
     me.$SLIDE_CONTROLSET = me.$SLIDE_CONTAINER.find('> div > div:first-child');
-    me.$DROPDOWN_CONTAINER = me.$SLIDE_CONTAINER.find('> div > div:nth-child(2)');
+    me.$DROPDOWN_CONTAINER = me.$SLIDE_CONTROLSET.find('> div > div:nth-child(2)');
     me.SLIDE_CONTENT_ID = me.$SLIDE_CONTAINER.find(' .application-slide-content').attr('id');
     me.$CLOSE_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset');
     me.$TOP_LEVEL_DROPDOWN_TRIGGER = me.$DROPDOWN_CONTAINER.find('button:first-child');
