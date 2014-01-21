@@ -431,7 +431,30 @@ CCH.Objects.UI = function (args) {
         removeMarkers = function () {
             CCH.map.clearBoundingBoxMarkers();
             $(window).off('cch-map-bbox-marker-added', removeMarkers);
-        };
+        },
+        addItemsToBucketOnLoad = function(items) {
+            items = items || [];
+            // Wait for each item in the session to be loaded 
+            // before adding it to the bucket
+            items.each(function(item) {
+                var loadedHandler = function (evt, args) {
+                    var loadedItemId = args.id;
+                    me.bucket.add({
+                        item : CCH.items.getById({
+                            id : loadedItemId
+                        }),
+                        visible : item.visible
+                    });
+                };
+                $(window).on('cch.item.loaded', function (evt, args) {
+                    if (args.id === item.itemId) {
+                        $(window).off('cch.item.loaded', loadedHandler);
+                        loadedHandler(evt, args);
+                    }
+                });
+            })
+        },
+        cookieItems = $.cookie('cch')['items'] || [];
 
     // Most of the application is now initialized, so I'm going to try and load
     // either one item, a view or all top level items. First I check if idType exists
@@ -448,25 +471,7 @@ CCH.Objects.UI = function (args) {
                         function (session) {
                             var items = CCH.session.getSession().items;
 
-                            // Wait for each item in the session to be loaded 
-                            // before adding it to the bucket
-                            items.each(function(item) {
-                                var loadedHandler = function (evt, args) {
-                                    var loadedItemId = args.id;
-                                    me.bucket.add({
-                                        item : CCH.items.getById({
-                                            id : loadedItemId
-                                        }),
-                                        visible : item.visible
-                                    });
-                                };
-                                $(window).on('cch.item.loaded', function (evt, args) {
-                                    if (args.id === item.itemId) {
-                                        $(window).off('cch.item.loaded', loadedHandler);
-                                        loadedHandler(evt, args);
-                                    }
-                                });
-                            });
+                            addItemsToBucketOnLoad(items);
 
                             me.loadTopLevelItem({
                                 zoomToBbox : false
@@ -505,6 +510,8 @@ CCH.Objects.UI = function (args) {
                 })
             });
             
+            addItemsToBucketOnLoad(cookieItems);
+            
             me.loadTopLevelItem({
                 zoomToBbox : true
             });
@@ -514,6 +521,9 @@ CCH.Objects.UI = function (args) {
         // to load, nor do I have any session to load, so just start with the top
         // level item
         splashUpdate('Loading Application...');
+        
+        addItemsToBucketOnLoad(cookieItems);
+        
         me.loadTopLevelItem({
             zoomToBbox : true
         });

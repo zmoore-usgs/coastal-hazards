@@ -33,7 +33,8 @@ CCH.Objects.Session = function(args) {
         args = args || {};
         var itemid = args.itemid,
             visibility = args.visibility,
-            itemIndex;
+            itemIndex,
+            cookie;
     
         if (itemid) {
             itemIndex = me.getItemIndex({
@@ -43,6 +44,10 @@ CCH.Objects.Session = function(args) {
                 me.session.items[itemIndex].visibility = visibility;
             }
         }
+        
+        cookie = $.cookie('cch');
+        cookie.items = me.session.items;
+        $.cookie('cch', cookie);
     };
     
     me.write = function (args) {
@@ -119,12 +124,18 @@ CCH.Objects.Session = function(args) {
             callbacks = args.callbacks || {
                 success : [],
                 error : []
-            };
+            },
+            cookie;
 
         callbacks.success.unshift(function(json, textStatus, jqXHR) {
             if (json) {
                 CCH.LOG.info("Session.js::load: Session found on server. Updating current session.");
                 $.extend(true, me.session, json);
+                
+                cookie = $.cookie('cch');
+                cookie.items = me.session.items;
+                $.cookie('cch', cookie);
+                
                 $(window).trigger('cch.data.session.loaded.true');
             } else {
                 CCH.LOG.info("Session.js::load: Session not found on server.");
@@ -168,7 +179,8 @@ CCH.Objects.Session = function(args) {
             });
         },
         addItem : function (item) {
-            var index = me.getItemIndex(item);
+            var index = me.getItemIndex(item),
+                cookie;
             
             if (index === -1) {
                 me.session.items.push({
@@ -177,15 +189,23 @@ CCH.Objects.Session = function(args) {
                 });
             }
             
+            cookie = $.cookie('cch');
+            cookie.items = me.session.items;
+            $.cookie('cch', cookie);
+            
             return me.session;
         },
         removeItem : function (item) {
-            var index = me.getItemIndex(item);
+            var index = me.getItemIndex(item),
+                cookie;
             
             if (index !== -1) {
                 me.session.items.removeAt(index);
             }
             
+            cookie = $.cookie('cch');
+            cookie.items = me.session.items;
+            $.cookie('cch', cookie);
             return me.session;
         }
     });

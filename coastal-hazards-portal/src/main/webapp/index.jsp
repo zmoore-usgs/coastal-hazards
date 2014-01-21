@@ -83,6 +83,7 @@
         <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/1.10.3/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+         <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-cookie/1.4.0/jquery.cookie.js"></script>
         <jsp:include page="WEB-INF/jsp/components/common/config.jsp">
             <jsp:param name="id" value="${it.id}" /> 
             <jsp:param name="idType" value="${it.type}" /> 
@@ -97,7 +98,6 @@
             <jsp:param name="relPath" value="<%=baseUrl%>" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        <jsp:include page="js/third-party/jquery-cookie/jquery-cookie.jsp"></jsp:include>
         <script type="text/javascript" src="js/third-party/openlayers/FixedTileManager.js"></script>
         <script type="text/javascript" src="js/application/common/items/Item.js"></script>
         <script type="text/javascript" src="js/application/front/slide/ItemsSlide.js"></script>
