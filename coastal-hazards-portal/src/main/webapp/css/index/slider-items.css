@@ -179,8 +179,7 @@
     }
 
     #application-slide-items-content-container {
-        overflow-y: scroll;
-        overflow-x: hidden;
+        overflow: auto;
         background-color: #F5F5F5;
         height: 100%;
         border-left: 2px solid #E3E3E3;
