@@ -151,6 +151,7 @@ CCH.Objects.Item = function (args) {
                     ratio : 1,
                     bbox: bbox,
                     itemid: id,
+                    transitionEffect : 'map-resize',
                     type: 'cch'// CCH specific setting
                 }
             );
