@@ -19,7 +19,6 @@
  *  window: 'cch.ui.overlay.removed'
 
  *  Events Listened To:
- *  this.bucket : 'app-navbar-button-clicked'
  *  this.combinedSearch: 'combined-searchbar-search-performing'
  *  this.combinedSearch : 'combined-searchbar-search-performed'
  *  window : 'button-click-bucket-add'
@@ -93,7 +92,7 @@ CCH.Objects.UI = function (args) {
         containerId : me.SLIDE_CONTAINER_DIV_ID
     });
     me.combinedSearch = new CCH.Objects.CombinedSearch();
-    
+
     me.itemsSearchedHandler = function (evt, data) {
         if (data.items) {
             CCH.LOG.info('UI:: Items found: ' + data.items.length);
@@ -132,10 +131,10 @@ CCH.Objects.UI = function (args) {
             contentRowHeight = footerHeight;
             footerHeight = tHeight;
         }
-        
+
         // Set the correct height for the content row
         contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
-        
+
         if (isSmall) {
             // Adjust for footer size
             contentRowHeight += footerHeight;
@@ -146,23 +145,22 @@ CCH.Objects.UI = function (args) {
         } else {
              $titleContainer.css('width', '');
         }
-        
+
         $contentRow.height(contentRowHeight - 1);
-        
-        
+
         // Check if the application was resized. If so, re-initialize the slideshow to easily
         // fit into the new layout
         if (isSmall !== me.previouslySmall) {
             CCH.LOG.debug('UI:: Redimensioned To ' + isSmall ? ' Small' : ' Large');
             $(window).trigger('cch.ui.redimensioned', isSmall);
         }
-        
+
         $(window).trigger('cch.ui.resized', isSmall);
-        
+
         me.previouslySmall = isSmall;
     };
 
-    me.displayShareModal = function(url) {
+    me.displayShareModal = function (url) {
         CCH.Util.getMinifiedEndpoint({
             location: url,
             callbacks: {
@@ -198,17 +196,17 @@ CCH.Objects.UI = function (args) {
                 ],
                 error: [
                     function (data) {
-                        var url = data.responseJSON.full_url,
+                        var fullUrl = data.responseJSON.full_url,
                             shareInput = $('#' + me.SHARE_INPUT_ID);
-                        shareInput.val(url);
+                        shareInput.val(fullUrl);
                         $('#' + me.SHARE_URL_BUTTON_ID).attr({
-                            'href': url
+                            'href': fullUrl
                         }).removeClass('disabled');
                         shareInput.select();
                         twttr.widgets.createShareButton(
-                            url,
+                            fullUrl,
                             $('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
-                            function (element) {
+                            function () {
                                 // Any callbacks that may be needed
                             },
                             {
@@ -233,13 +231,13 @@ CCH.Objects.UI = function (args) {
         $('#' + me.SHARE_URL_BUTTON_ID).addClass('disabled');
         $('#' + me.SHARE_INPUT_ID).val('');
         $('#' + me.SHARE_TWITTER_BUTTON_ID).empty();
-        
+
         args = args || {};
-        
+
         var type = args.type,
             id = args.id,
             session;
-            
+
         if (type === 'session') {
             // A user has clicked on the share menu item. A session needs to be 
             // created and a token retrieved...
@@ -275,7 +273,7 @@ CCH.Objects.UI = function (args) {
         // Make sure that the overlay is still around
         if ($('#' + me.APPLICATION_OVERLAY_ID).length) {
             splashUpdate("Starting Application...");
-            
+
             var applicationOverlay = $('#' + me.APPLICATION_OVERLAY_ID);
 
             $(window).resize();
@@ -287,7 +285,7 @@ CCH.Objects.UI = function (args) {
                 $(window).trigger('cch.ui.overlay.removed');
             });
         }
-        
+
     };
 
     me.displayLoadingError = function (args) {
@@ -398,8 +396,8 @@ CCH.Objects.UI = function (args) {
             var dispResults = function () {
                 $(window).off('cch.slide.search.closed', dispResults);
                 me.searchSlide.displaySearchResults(args);
-            }
-            
+            };
+
             if (!me.searchSlide.isClosed && !me.searchSlide.isClosing) {
                 $(window).on('cch.slide.search.closed', dispResults);
                 me.searchSlide.close({
@@ -432,7 +430,30 @@ CCH.Objects.UI = function (args) {
         removeMarkers = function () {
             CCH.map.clearBoundingBoxMarkers();
             $(window).off('cch-map-bbox-marker-added', removeMarkers);
-        };
+        },
+        addItemsToBucketOnLoad = function (items) {
+            items = items || [];
+            // Wait for each item in the session to be loaded 
+            // before adding it to the bucket
+            items.each(function (item) {
+                var loadedHandler = function (evt, args) {
+                    var loadedItemId = args.id;
+                    me.bucket.add({
+                        item : CCH.items.getById({
+                            id : loadedItemId
+                        }),
+                        visible : item.visible
+                    });
+                };
+                $(window).on('cch.item.loaded', function (evt, args) {
+                    if (args.id === item.itemId) {
+                        $(window).off('cch.item.loaded', loadedHandler);
+                        loadedHandler(evt, args);
+                    }
+                });
+            });
+        },
+        cookieItems = $.cookie('cch').items || [];
 
     // Most of the application is now initialized, so I'm going to try and load
     // either one item, a view or all top level items. First I check if idType exists
@@ -449,33 +470,15 @@ CCH.Objects.UI = function (args) {
                         function (session) {
                             var items = CCH.session.getSession().items;
 
-                            // Wait for each item in the session to be loaded 
-                            // before adding it to the bucket
-                            items.each(function(item) {
-                                var loadedHandler = function (evt, args) {
-                                    var loadedItemId = args.id;
-                                    me.bucket.add({
-                                        item : CCH.items.getById({
-                                            id : loadedItemId
-                                        }),
-                                        visible : item.visible
-                                    });
-                                };
-                                $(window).on('cch.item.loaded', function (evt, args) {
-                                    if (args.id === item.itemId) {
-                                        $(window).off('cch.item.loaded', loadedHandler);
-                                        loadedHandler(evt, args);
-                                    }
-                                });
-                            });
+                            addItemsToBucketOnLoad(items);
 
                             me.loadTopLevelItem({
                                 zoomToBbox : false
                             });
-                            
+
                             CCH.map.zoomToBoundingBox({
                                 'bbox' : session.bbox
-                            })
+                            });
                         }
                     ],
                     error: [
@@ -499,13 +502,15 @@ CCH.Objects.UI = function (args) {
         } else if (type === 'item') {
             // User is coming in with an item, so load that item
             splashUpdate('Loading Application...');
-            
+
             $(window).on('cch.ui.overlay.removed', function () {
                 $(window).trigger('cch.slide.search.button.click.explore', {
                     id : id
-                })
+                });
             });
-            
+
+            addItemsToBucketOnLoad(cookieItems);
+
             me.loadTopLevelItem({
                 zoomToBbox : true
             });
@@ -515,6 +520,9 @@ CCH.Objects.UI = function (args) {
         // to load, nor do I have any session to load, so just start with the top
         // level item
         splashUpdate('Loading Application...');
+
+        addItemsToBucketOnLoad(cookieItems);
+
         me.loadTopLevelItem({
             zoomToBbox : true
         });

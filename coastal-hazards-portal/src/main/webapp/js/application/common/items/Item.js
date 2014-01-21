@@ -151,6 +151,7 @@ CCH.Objects.Item = function (args) {
                     ratio : 1,
                     bbox: bbox,
                     itemid: id,
+                    transitionEffect : 'map-resize',
                     type: 'cch'// CCH specific setting
                 }
             );
@@ -194,7 +195,7 @@ CCH.Objects.Item = function (args) {
             } else {
                 layerName = aggregationName + me.id;
             }
-            
+
             layers.push(layerName);
         }
         return layers;
@@ -205,6 +206,7 @@ CCH.Objects.Item = function (args) {
         var index,
             layer,
             idx,
+            child,
             layerName,
             aggregationName = args.aggregationName || '',
             visible = args.visible,
@@ -214,16 +216,16 @@ CCH.Objects.Item = function (args) {
         // Check to see if this is an aggregation. If it is, I need
         // to pull the layers from all of its children
         if (this.itemType === 'aggregation') {
-            
+
             if (aggregationName === '') {
                 aggregationName = me.id + '_';
             }
-            
+
             // This aggregation should have children, so for each 
             // child, I want to grab the child's layer and display it
             // on the map
-            for (idx = 0;idx < this.displayedChildren.length;idx++) {
-                var child = CCH.items.getById({ id : this.displayedChildren[idx] });
+            for (idx = 0; idx < this.displayedChildren.length; idx++) {
+                child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
                     child.showLayer({
                         layers : layers,
@@ -232,7 +234,7 @@ CCH.Objects.Item = function (args) {
                     });
                 }
             }
-            
+
             // Because I don't have a real layer for this aggregation, once all 
             // of the children are added, I include this trigger so that other
             // components can act on this layer having been added
@@ -242,13 +244,13 @@ CCH.Objects.Item = function (args) {
                 }
             });
         } else {
-            
+
             layerName = aggregationName + this.id;
-            
+
             if (me.ribboned) {
                 if (layers.length > 0) {
                     layer = layers[layers.length - 1];
-                    index = parseInt(layer.name.substring(layer.name.lastIndexOf('_') + 1)) + 1;
+                    index = parseInt(layer.name.substring(layer.name.lastIndexOf('_') + 1), 10) + 1;
                 } else {
                     index = 1;
                 }
@@ -269,13 +271,11 @@ CCH.Objects.Item = function (args) {
         return layers;
     };
 
-    me.hideLayer = function (layers) {
-        var layers;
-    
+    me.hideLayer = function () {
         me.getLayerList().each(function (layerName) {
             layers = CCH.map.hideLayersByName(layerName);
         });
-        
+
         if (me.itemType === 'aggregation') {
             $(window).trigger('cch.map.hid.layer', {
                 layer : {
@@ -306,7 +306,8 @@ CCH.Objects.Item = function (args) {
      * being sought
      */
     me.pathToItem = function (id, path) {
-        var idx = 0;
+        var idx = 0,
+            child;
         path = path || [];
 
         if (me.id === id) {
@@ -314,10 +315,10 @@ CCH.Objects.Item = function (args) {
         } else {
             if (me.children.length > 0) {
                 for (idx; idx < me.children.length && path.length === 0; idx++) {
-                    var child = CCH.items.getItems()[me.children[idx]];
+                    child = CCH.items.getItems()[me.children[idx]];
                     path = child.pathToItem(id, path);
                 }
-                
+
                 if (path.length > 0) {
                     path.unshift(me.id);
                 }
@@ -325,29 +326,28 @@ CCH.Objects.Item = function (args) {
         }
         return path;
     };
-    
+
     me.getAncestor = function () {
         if (!me.parent) {
             return me;
-        } else {
-            return me.parent.getAncestor();
         }
+        return me.parent.getAncestor();
     };
-    
+
     me.getService = function (type) {
         var defaultServiceObject = {
             endpoint : 'na',
             serviceParameter : 'na',
             type : type
         },
-        serviceObject;
-        
+            serviceObject;
+
         serviceObject = me.services.find(function (service) {
             if (service.type === type) {
                 return service;
             }
         });
-        
+
         return serviceObject || defaultServiceObject;
     };
 

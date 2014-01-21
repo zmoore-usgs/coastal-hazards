@@ -17,6 +17,7 @@ CCH.Objects.Bucket = function (args) {
     me.INITIAL_BUCKET_COUNT_MARGIN_LEFT = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left');
     me.MARGIN_WIDTH = 0;
     me.bucket = [];
+    
     me.bucketAddClickHandler = function (evt, args) {
         args = args || {};
         var item = args.item;
@@ -80,8 +81,7 @@ CCH.Objects.Bucket = function (args) {
     };
 
     $('#' + me.BUCKET_CONTAINER_ID).on('click', function () {
-        $(me).trigger('app-navbar-button-clicked');
-        me.slide.toggle();
+        $(window).trigger('app-navbar-button-clicked');
     });
     
     $(window).on({

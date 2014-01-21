@@ -75,7 +75,10 @@ CCH.Objects.BucketSlide = function (args) {
     me.open = function () {
         if (me.isClosed) {
             if (me.isSmall()) {
-                $(window).on('cch.slide.items.opened', me.openSlide);
+                $(window).on('cch.slide.items.opened', function () {
+                    me.resized();
+                    me.openSlide();
+                });
             } else {
                 me.openSlide();
             }
@@ -632,6 +635,7 @@ CCH.Objects.BucketSlide = function (args) {
     $(window).on({
         'cch.ui.resized' : me.resized,
         'cch.slide.search.button.click.explore' : me.close,
+        'app-navbar-button-clicked' : me.toggle,
         'cch.slide.items.closing' : function () {
             if (me.isSmall()) {
                 me.close();

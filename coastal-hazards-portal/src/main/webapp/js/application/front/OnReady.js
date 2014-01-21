@@ -21,9 +21,19 @@ $(document).ready(function () {
     $(document).ajaxStop(function () {
         $('body').css('cursor', 'default');
     });
-
+    
     splashUpdate("Initializing Session Subsystem...");
     CCH.session = new CCH.Objects.Session();
+    
+    $.cookie.json = true;
+    if ($.cookie('cch') === undefined) {
+        $.cookie('cch', {
+            'items' : CCH.session.getSession().items
+        },
+        {
+            path: '/'
+        });
+    }
 
     splashUpdate("Initializing Map...");
     CCH.map = new CCH.Objects.Map({
