@@ -108,10 +108,10 @@ public class ItemResource {
      * @param request passed through context of request
 	 * @return
 	 */
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response postCard(String content, @Context HttpServletRequest request) {
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response postCard(String content, @Context HttpServletRequest request) {
         Response response;
         HttpSession session = request.getSession();
         if (session == null) {
@@ -135,8 +135,8 @@ public class ItemResource {
                 response = Response.status(Response.Status.UNAUTHORIZED).build();
             }
         }
-		return response;
-	}
+        return response;
+    }
 
 	@POST
 	@Path("/preview")

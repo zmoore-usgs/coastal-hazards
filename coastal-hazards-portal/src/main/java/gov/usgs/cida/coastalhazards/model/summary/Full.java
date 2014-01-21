@@ -2,6 +2,7 @@ package gov.usgs.cida.coastalhazards.model.summary;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -54,7 +55,7 @@ public class Full implements Serializable {
         this.title = title;
     }
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "full_id")
     @IndexColumn(name = "list_index")
     public List<Publication> getPublications() {

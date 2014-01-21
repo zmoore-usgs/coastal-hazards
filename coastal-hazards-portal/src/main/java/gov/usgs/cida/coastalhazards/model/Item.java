@@ -180,24 +180,8 @@ public class Item implements Serializable {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-    
-    /**
-     * @deprecated
-     */
-    @OneToOne
-    @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
-    public Rank getRank() {
-        return rank;
-    }
 
-    /**
-     * @deprecated
-     */
-    public void setRank(Rank rank) {
-        this.rank = rank;
-    }
-
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "item_id")
     @IndexColumn(name = "list_index")
     public List<Service> getServices() {
@@ -224,7 +208,7 @@ public class Item implements Serializable {
         return wmsService;
     }
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @JoinTable(
             name = "aggregation_children",
