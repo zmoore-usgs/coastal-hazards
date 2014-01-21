@@ -33,6 +33,94 @@ CCH.Objects.OWS = function() {
             };
             return me;
         },
+        importWfsLayer : function (args) {
+            args = args || {};
+            var callbacks = args.callbacks || {
+                success : [],
+                error : []
+            },
+            endpoint = args.endpoint,
+            param = args.param,
+            referenceUrl =  endpoint +
+                '?service=wfs&version=1.0.0&request=GetFeature&typeNames=' +
+                param,
+            wpsFormat = new OpenLayers.Format.WPSExecute(),
+            doc = wpsFormat.write({
+                identifier: "gs:Import",
+                dataInputs: [{
+                        identifier: "features",
+                        reference: {
+                            mimeType: 'text/xml; subtype=wfs-collection/1.0',
+                            href: referenceUrl,
+                            method: 'GET'
+                        }
+                    },
+                    {
+                        identifier: "workspace",
+                        data: {
+                            literalData: {
+                                value: 'proxied'
+                            }
+                        }
+                    },
+                    {
+                        identifier: "store",
+                        data: {
+                            literalData: {
+                                value: 'proxied'
+                            }
+                        }
+                    },
+					{
+                        identifier: "name",
+                        data: {
+                            literalData: {
+                                value: (param.indexOf(':') !== -1 ? param.split(':')[1] : param) + '_' + new Date().getTime()
+                            }
+                        }
+                    },
+                    {
+                        identifier: "srs",
+                        data: {
+                            literalData: {
+                                value: 'EPSG:3857'
+                            }
+                        }
+                    },
+                    {
+                        identifier: "srsHandling",
+                        data: {
+                            literalData: {
+                                value: 'REPROJECT_TO_DECLARED'
+                            }
+                        }
+                    }
+                ],
+                responseForm: {
+                    rawDataOutput: {
+                        mimeType: "text/xml",
+                        identifier: "layerName"
+                    }
+                }
+            });
+
+            OpenLayers.Request.POST({
+                url: CCH.CONFIG.contextPath + '/geoserver/wps',
+                data:doc,
+                success:function(response){
+                    var errorText = $(response.responseText).find('ows\\:ExceptionText');
+                    if (errorText.length === 0) {
+                        callbacks.success.each(function (cb) {
+                            cb(response);
+                        });
+                    } else {
+                        callbacks.error.each(function (cb) {
+                            cb(errorText.text());
+                        });
+                    }
+                }
+            });
+        },
         describeFeatureType : function(args) {
             args = args || {};
             var callbacks = args.callbacks || {
@@ -49,9 +137,15 @@ CCH.Objects.OWS = function() {
                 },
                 success: function(data, textStatus, jqXHR) {
                     var describeFTResponse = new OpenLayers.Format.WFSDescribeFeatureType().read(data);
-                    $(callbacks.success).each(function(index, callback, allCallbacks) {
-                        callback(describeFTResponse);
-                    });
+					if (Object.keys(describeFTResponse).length > 0) {
+						$(callbacks.success).each(function(index, callback, allCallbacks) {
+							callback(describeFTResponse);
+						});
+					} else {
+						$(callbacks.error).each(function(index, callback, allCallbacks) {
+							callback(data);
+						});
+					}
                 },
                 error: function(data, textStatus, jqXHR) {
                     $(callbacks.error).each(function(index, callback, allCallbacks) {
@@ -139,6 +233,30 @@ CCH.Objects.OWS = function() {
                     });
                 }
             });
-        }
+        },
+		buildServiceEndpoint: function (endpoint) {
+			var updatedEndpoint = null,
+				urlIndex = 0;
+			if (endpoint && endpoint.toLowerCase().indexOf('http') !== -1) {
+				if (endpoint.toLowerCase().has('coastalmap.marine.usgs.gov')) {
+					urlIndex = endpoint.indexOf('cmgp/') + 5;
+					updatedEndpoint = contextPath + '/marine/' + endpoint.substring(urlIndex);
+					CCH.config.endpoint.servertype = 'arcgis';
+				} else if (endpoint.toLowerCase().has('olga.er.usgs.gov')) {
+					urlIndex = endpoint.indexOf('services') + 8;
+					updatedEndpoint = contextPath + '/stpgis/' + endpoint.substring(urlIndex);
+					CCH.config.endpoint.servertype = 'arcgis';
+				} else if (endpoint.toLowerCase().has('cida.usgs.gov')) {
+					urlIndex = endpoint.indexOf('geoserver') + 10;
+					updatedEndpoint = contextPath + '/cidags/' + endpoint.substring(urlIndex);
+					CCH.config.endpoint.servertype = 'geoserver';
+				}
+				var indexOfQueryStart = updatedEndpoint ? updatedEndpoint.indexOf('?') : -1;
+				if (indexOfQueryStart !== -1) {
+					return updatedEndpoint.substring(0, indexOfQueryStart);
+				}
+			}
+			return updatedEndpoint;
+		}
     });
 };

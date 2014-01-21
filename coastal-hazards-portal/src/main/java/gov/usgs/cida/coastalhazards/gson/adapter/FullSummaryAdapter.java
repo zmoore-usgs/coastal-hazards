@@ -54,14 +54,18 @@ public class FullSummaryAdapter implements JsonSerializer<Full>, JsonDeserialize
             for (PublicationType type : PublicationType.values()) {
                 JsonArray typedArray = publications.getAsJsonArray(type.name());
                 if (typedArray != null) {
-                    List<Map<String,String>> typeList = context.deserialize(typedArray, ArrayList.class);
-                    for(Map<String,String> pubMap : typeList) {
-                        if (!pubMap.containsKey(Publication.TITLE) || !pubMap.containsKey(Publication.LINK)) {
+                    List<Map<String,Object>> typeList = context.deserialize(typedArray, ArrayList.class);
+                    for(Map<String,Object> pubMap : typeList) {
+                        if (!pubMap.containsKey(Publication.ID) ||
+                                !pubMap.containsKey(Publication.TITLE) ||
+                                !pubMap.containsKey(Publication.LINK)) {
                             throw new IllegalStateException("Expected publication, was not a publication");
                         }
                         Publication pub = new Publication();
-                        pub.setTitle(pubMap.get(Publication.TITLE));
-                        pub.setLink(pubMap.get(Publication.LINK));
+                        Number id = (Number)pubMap.get(Publication.ID);
+                        pub.setId(id.longValue());
+                        pub.setTitle((String)pubMap.get(Publication.TITLE));
+                        pub.setLink((String)pubMap.get(Publication.LINK));
                         pub.setType(type);
                         fullPubList.add(pub);
                     }

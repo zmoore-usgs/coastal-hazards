@@ -1,6 +1,6 @@
 <div id="application-slide-bucket-container" class="application-slide-container">
     <div id="application-slide-bucket-content" class="application-slide-content">
-        <div id="application-slide-search-controlset"  class="application-slide-controlset row">
+        <div id="application-slide-bucket-controlset"  class="application-slide-controlset row">
             <div class="col-md-12">
                 <div class="pull-left"><i class="fa fa-minus-square-o"></i></div>
                 <div class="btn-group pull-right hidden">

@@ -59,7 +59,8 @@ CCH.Objects.Accordion = function (args) {
         var card = args.card,
             item = args.item,
             index = args.index,
-            accordion = me.getAccordion(),
+            $accordion = me.getAccordion(),
+            isSmall = CCH.ui.isSmall(),
             bellow;
 
         // If we are passed a product, that means we were not passed a card
@@ -69,7 +70,7 @@ CCH.Objects.Accordion = function (args) {
                 initHide : false
             });
         }
-        
+
         // Using the card, create a container from it
         bellow = me.createBellow({
             card : card
@@ -78,15 +79,37 @@ CCH.Objects.Accordion = function (args) {
         // I want to insert the card into the accordion at a specified index if 
         // one was specified. This fixes a race condition in the pulling of the 
         // data for these cards 
-        if (index === undefined || accordion.children().length === 0) {
-            accordion.append(bellow);
-        } else {
-            if (index === 0) {
-                accordion.prepend(bellow);
+        if (isSmall) {
+            // I expect to find the search container inside the accordion
+            // in a small form factor
+            if (index === undefined || index === 0) {
+                $('#app-navbar-search-container').after(bellow);
             } else {
-                bellow.insertAfter(accordion.children().get(index - 1));
+                var child = $accordion.children().get(index);
+                if (child) {
+                    bellow.insertAfter(child);
+                } else {
+                    $accordion.append(bellow);
+                }
+                
+            }
+        } else {
+            if (index === undefined || $accordion.children().length === 0) {
+                $accordion.append(bellow);
+            } else {
+                if (index === 0) {
+                    $accordion.prepend(bellow);
+                } else {
+                    var child = $accordion.children().get(index - 1);
+                    if (child) {
+                        bellow.insertAfter(child);
+                    } else {
+                        $accordion.append(bellow);
+                    }
+                }
             }
         }
+        
 
         return bellow;
     };
@@ -121,7 +144,9 @@ CCH.Objects.Accordion = function (args) {
         ).attr({
             'data-parent' : '#' + me.CONTAINER_ID,
             'href' : '#' + accordionBodyId,
-            'data-toggle' : 'collapse'
+            'data-toggle' : 'collapse',
+            'onclick' : 'javascript:return false;' // Yes, this isn't ideal but
+            // it does keep from the url being altered when a user clicks a bellow
         });
 
         accordionBody.attr('id', accordionBodyId);
@@ -152,12 +177,8 @@ CCH.Objects.Accordion = function (args) {
             'shown.bs.collapse' : function (evt) {
                 $(window).trigger('cch.accordion.shown', evt);
                 var $this = $(this),
-                    abId = $this.data('id'),
-					currentUrl = window.location.href;
-					
-				// Clean up the url
-				history.pushState(null, null, currentUrl.substring(0, currentUrl.indexOf(window.location.hash)));
-				
+                    abId = $this.data('id');
+
                 ga('send', 'event', {
                     'eventCategory': 'accordion',
                     'eventAction': 'show',
@@ -194,6 +215,10 @@ CCH.Objects.Accordion = function (args) {
     };
 
     $(window).on('cch.slide.search.button.click.explore', function (evt, args) {
+        me.explore(evt, args);
+    });
+
+    me.explore = function (evt, args) {
         // When a user clicks explore, I want to be able to search through every
         // item currently in the accordion slider starting with top level items
         // through their children. If found through the initial search, I want to 
@@ -261,20 +286,21 @@ CCH.Objects.Accordion = function (args) {
             });
         }
 
-    });
-    
+    };
+
     me.showCurrent = function () {
         var currentCard = me.getBellows().find('.in > div > div:last-child');
-        
+
         if (currentCard.length > 0) {
             currentCard.data()['card'].show();
-        } 
+        }
     };
 
     return $.extend(me, {
         add: me.addCard,
         load : me.load,
         showCurrent : me.showCurrent,
+        explore : me.explore,
         CLASS_NAME : 'CCH.Objects.Accordion'
     });
 };

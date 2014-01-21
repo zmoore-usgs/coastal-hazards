@@ -50,6 +50,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.START_CLOSED = true;
     me.isInitialized = false;
     me.isClosed = me.START_CLOSED;
+    me.isClosing = false;
 
     me.clear = function () {
         var $locationSlide = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
@@ -114,19 +115,20 @@ CCH.Objects.SearchSlide = function (args) {
     };
 
     me.close = function (args) {
-        if (!me.isClosed) {
+        if (!me.isClosed && !me.isClosing) {
             $(window).trigger('cch.slide.search.closing');
-
+            
             var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
-
+            me.isClosing = true;
             $slideContainer.animate({
                 left: $(window).width()
             }, me.ANIMATION_TIME, function () {
-                me.isClosed = true;
                 $slideContainer.addClass('hidden');
                 if (args && args.clearOnClose) {
                     me.clear();
                 }
+                me.isClosing = false;
+                me.isClosed = true;
                 $(window).trigger('cch.slide.search.closed');
             });
         } else {
@@ -360,7 +362,7 @@ CCH.Objects.SearchSlide = function (args) {
 
                     $resultsFoundsContainer.
                             removeClass('hidden').
-                            html(productsSize + ' Result' + (productsSize > 1 ? 's' : '') + ' Found');
+                            html(productsSize + ' Product' + (productsSize > 1 ? 's' : '') + ' Found');
 
                     // Start with a clean slate 
                     $slideContainer.empty();
@@ -695,6 +697,7 @@ CCH.Objects.SearchSlide = function (args) {
         toggle : me.toggle,
         clear : me.clear,
         isClosed : me.isClosed,
+        isClosing : me.isClosing,
         displaySearchResults : me.displaySearchResults,
         CLASS_NAME : 'CCH.Objects.SearchSlide'
     };

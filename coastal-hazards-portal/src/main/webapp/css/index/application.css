@@ -15,6 +15,7 @@ html, body {
     height: 100%;
     border: 0px;
     padding: 0px;
+    font-size: 100%;
 }
 
 /*
@@ -126,6 +127,21 @@ html, body {
     #application-container > div.row:nth-child(3) {
         display: none;
     }
+    
+    .application-slide-controlset {
+        margin-top: 10px;
+    }
+    .application-slide-controlset div.pull-left > i {
+        font-size: 1.5em;
+    }
+    .application-slide-controlset div.pull-left > i:hover {
+        cursor: pointer;
+    }
+    
+    #map #feature-identification-popup table tr {
+        font-size: 12px;
+    }
+    
 }
 
 @media (max-width: 440px) {

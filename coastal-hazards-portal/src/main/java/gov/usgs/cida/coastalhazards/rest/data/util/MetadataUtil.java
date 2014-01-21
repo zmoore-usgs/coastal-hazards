@@ -2,9 +2,12 @@ package gov.usgs.cida.coastalhazards.rest.data.util;
 
 import gov.usgs.cida.coastalhazards.rest.data.MetadataResource;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
+import gov.usgs.cida.utilities.communication.HttpClientSingleton;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import javax.ws.rs.core.Response;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,9 +19,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -30,13 +35,60 @@ import org.xml.sax.SAXException;
  */
 public class MetadataUtil {
 
+	private static final String cswLocalEndpoint;
     private static final String cchn52Endpoint;
     private static final DynamicReadOnlyProperties props;
+	private static final String NAMESPACE_CSW = "http://www.opengis.net/cat/csw/2.0.2";
+    private static final String NAMESPACE_DC = "http://purl.org/dc/elements/1.1/";
     
     static {
         props = JNDISingleton.getInstance();
+		cswLocalEndpoint = props.getProperty("coastal-hazards.csw.internal.endpoint");
         cchn52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
 	}
+	
+	public static String doCSWTransaction(String metadataId) throws IOException, ParserConfigurationException, SAXException {
+        String insertedId = null;
+        
+        MetadataResource metadata = new MetadataResource();
+        Response response = metadata.getFileById(metadataId);
+        String xmlWithoutHeader = response.getEntity().toString().replaceAll("<\\?xml[^>]*>", "");
+        String cswRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                    + "<csw:Transaction service=\"CSW\" version=\"2.0.2\" xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\">"
+                    + "<csw:Insert>"
+                    + xmlWithoutHeader
+                    + "</csw:Insert>"
+                    + "</csw:Transaction>";
+            HttpUriRequest req = new HttpPost(cswLocalEndpoint);
+            HttpClient client = new DefaultHttpClient();
+            req.addHeader("Content-Type", "text/xml");
+            if (!StringUtils.isBlank(cswRequest) && req instanceof HttpEntityEnclosingRequestBase) {
+                StringEntity contentEntity = new StringEntity(cswRequest);
+                ((HttpEntityEnclosingRequestBase) req).setEntity(contentEntity);
+            }
+            HttpResponse resp = client.execute(req);
+            StatusLine statusLine = resp.getStatusLine();
+
+            if (statusLine.getStatusCode() != 200) {
+                throw new IOException("Error in response from csw");
+            }
+            String data = IOUtils.toString(resp.getEntity().getContent(), "UTF-8");
+            if (data.contains("ExceptionReport")) {
+                throw new IOException("Error in response from csw");
+            }
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(data.getBytes()));
+            JXPathContext ctx = JXPathContext.newContext(doc.getDocumentElement());
+            ctx.registerNamespace("csw", NAMESPACE_CSW);
+            ctx.registerNamespace("dc", NAMESPACE_DC);
+            Node inserted = (Node) ctx.selectSingleNode("//csw:totalInserted/text()");
+            if (1 == Integer.parseInt(inserted.getTextContent())) {
+                Node idNode = (Node) ctx.selectSingleNode("//dc:identifier/text()");
+                insertedId = idNode.getTextContent();
+            }
+            return insertedId;
+    }
     
     /**
      * I really don't like this in its current form, we should rethink this process and move this around
@@ -48,10 +100,11 @@ public class MetadataUtil {
      * @throws ParserConfigurationException
      * @throws SAXException 
      */
-    static public String getSummaryFromWPS(String metadataId, String attr) throws IOException, ParserConfigurationException, SAXException {
-        MetadataResource metadata = new MetadataResource();
-        Response response = metadata.getFileById(metadataId);
-        String xmlWithoutHeader = response.getEntity().toString().replaceAll("<\\?xml[^>]*>", "");
+    static public String getSummaryFromWPS(String metadataEndpoint, String attr) throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
+		HttpGet httpGet = new HttpGet(new URI(metadataEndpoint));
+		HttpClient httpClient = HttpClientSingleton.getInstance();
+		String response = httpClient.execute(httpGet, new BasicResponseHandler());
+        String xmlWithoutHeader = response.replaceAll("<\\?xml[^>]*>", "");
         String wpsRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:Execute xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" service=\"WPS\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd\">"
                 + "<ows:Identifier>org.n52.wps.server.r.item.summary</ows:Identifier>"

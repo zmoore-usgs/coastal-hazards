@@ -10,8 +10,9 @@ import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
-import gov.usgs.cida.coastalhazards.rest.publish.PublishResource;
+import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +24,13 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -40,15 +42,9 @@ import org.xml.sax.SAXException;
 @Path("item")
 public class ItemResource {
 
-	@Context
-	private UriInfo context;
 	private static ItemManager itemManager;
-    private static String cchn52Endpoint;
-    private static final DynamicReadOnlyProperties props;
 
 	static {
-        props = JNDISingleton.getInstance();
-        cchn52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
 		itemManager = new ItemManager();
 	}
 
@@ -62,7 +58,7 @@ public class ItemResource {
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getCard(@PathParam("id") String id, 
+	public Response getItem(@PathParam("id") String id, 
             @DefaultValue("false") @QueryParam("subtree") boolean subtree) {
 		String jsonResult = itemManager.load(id, subtree);
 		Response response;
@@ -83,13 +79,13 @@ public class ItemResource {
 	@GET
 	@Path("uber")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getUberCard(@DefaultValue("false") @QueryParam("subtree") boolean subtree) {
-        return getCard(Item.UBER_ID, subtree);
+	public Response getUberItem(@DefaultValue("false") @QueryParam("subtree") boolean subtree) {
+        return getItem(Item.UBER_ID, subtree);
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response searchCards(
+	public Response searchItems(
             @DefaultValue("") @QueryParam("query") List<String> query,
             @DefaultValue("") @QueryParam("type") List<String> type,
 			@DefaultValue("popularity") @QueryParam("sortBy") String sortBy,
@@ -108,41 +104,74 @@ public class ItemResource {
      * @param request passed through context of request
 	 * @return
 	 */
-    @POST
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response postItem(String content, @Context HttpServletRequest request) {
+        Response response;
+        if (SessionResource.isValidSession(request)) {
+            final String id = itemManager.persist(content);
+
+            if (null == id) {
+                response = Response.status(Response.Status.BAD_REQUEST).build();
+            } else {
+                Map<String, Object> ok = new HashMap<String, Object>() {
+                    private static final long serialVersionUID = 2398472L;
+                    {
+                        put("id", id);
+                    }
+                };
+                response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+            }
+        } else {
+            response = Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+		return response;
+	}
+    
+    /**
+     * @param request
+     * @param id
+     * @param content
+     * @return 
+     */
+    @PUT
+    @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response postCard(String content, @Context HttpServletRequest request) {
-        Response response;
-        HttpSession session = request.getSession();
-        if (session == null) {
-            response = Response.status(Response.Status.BAD_REQUEST).build();
-        } else {
-            if (PublishResource.isValidSession(request)) {
-                final String id = itemManager.save(content);
-
-                if (null == id) {
-                    response = Response.status(Response.Status.BAD_REQUEST).build();
-                } else {
-                    Map<String, Object> ok = new HashMap<String, Object>() {
-                        private static final long serialVersionUID = 2398472L;
-                        {
-                            put("id", id);
-                        }
-                    };
-                    response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
-                }
+    public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
+        Response response = null;
+        if (SessionResource.isValidSession(request)) {
+            Item dbItem = itemManager.loadItem(id);
+            Item updatedItem = Item.fromJSON(content);
+            Item mergedItem = Item.copyValues(updatedItem, dbItem);
+            final String mergedId = itemManager.merge(mergedItem);
+            if (null != mergedId) {
+                Map<String, String> ok = new HashMap<String, String>() {{
+                    put("id", mergedId);
+                }};
+                response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
             } else {
-                response = Response.status(Response.Status.UNAUTHORIZED).build();
+                response = Response.status(Response.Status.BAD_REQUEST).build();
             }
+        } else {
+            response = Response.status(Status.UNAUTHORIZED).build();
         }
         return response;
     }
 
+    /**
+     * This should either be removed or changed to its new purpose.
+     * We are no longer previewing unpublished items, but starting out as disabled until they are ready.
+     * 
+     * @param content
+     * @return 
+     */
 	@POST
 	@Path("/preview")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response publishPreviewCard(String content) {
+	public Response publishPreviewCard(String content) throws URISyntaxException {
         Response response = Response.serverError().build();
         
         Item item = Item.fromJSON(content);

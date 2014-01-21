@@ -17,6 +17,12 @@ html, body {
     height: 100%;
 }
 
+#info-legend {
+    overflow-y: scroll;
+    width: 100%;
+    height: 400px;
+}
+
 /* Fixes pink tile issue in OpenLayers map */
 .olImageLoadError {
     display : none !important;
@@ -26,7 +32,6 @@ html, body {
 .container {
     width: 100%;
 }
-
 
 /* Header Row */
 .container > div.row:first-child {
@@ -140,6 +145,10 @@ html, body {
 	width: 100%;
 }
 
+/* Publications List */
+#info-container-publications-list-span > ul > li {
+	text-transform: capitalize;
+}
 
 @media (max-width: 440px) {
     /* Item Title Row*/

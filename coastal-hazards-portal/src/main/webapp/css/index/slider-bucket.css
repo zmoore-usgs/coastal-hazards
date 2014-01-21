@@ -11,6 +11,7 @@
         display: inline-block;
         z-index: 2000;
         height: 100%;
+        overflow-y: scroll;
     }
         #application-slide-bucket-container > div > div:first-child {
             margin-left: 0px;
@@ -112,12 +113,11 @@
             }
             
     #application-slide-bucket-container > div > div.application-slide-content-container {
-        height: 97%;
         margin-top: 10px;
-        overflow: scroll;
         margin-right: 3px;
         margin-left: 3px;
     }
+    
 
 #application-slide-bucket-container .more-info-badge {
     background-color: #345280;

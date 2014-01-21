@@ -186,16 +186,20 @@ CCH.Objects.ItemsSlide = function (args) {
         //   to a free-floating column and needs quite a bit of help in resizing when
         //   that happens
         if (isSmall) {
+            $slideContainer.width(windowWidth - toExtent.left);
+            slideContent.css('width', $slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth);
+            $slideContainer.height(windowHeight - toExtent.top);
             // Then there's special sizing depending on if I'm closed or not. 
             if (me.isClosed) {
                 // If I'm closed, my container, which holds my tab and content, 
                 // should be off screen to the right except for the width of the tab
                 // and its border so that just the tab is peeking out of the 
                 // right side of the screen
-                $slideContainer.offset({
-                    left: windowWidth  - $slideTab.outerWidth() - (me.borderWidth * 2),
-                    top: toExtent.top
-                });
+                $slideContainer.
+                    offset({
+                        left: windowWidth  - $slideTab.outerWidth() - (me.borderWidth * 2),
+                        top: toExtent.top
+                    });
                 // I hide the content dom since it's off screen and I don't want 
                 // to show it
                 slideContent.css({
@@ -203,20 +207,18 @@ CCH.Objects.ItemsSlide = function (args) {
                 });
             } else {
                 // If I'm open...
-                $slideContainer.
-                    offset(toExtent).
-                    width(windowWidth - toExtent.left);
+                $slideContainer.offset(toExtent);
 
                 slideContent.css({
-                    display : '',
-                    width : $slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth
+                    display : ''
                 });
             }
-            $slideContainer.height(windowHeight - toExtent.top);
+            
             $slideTab.offset({
                 left: $slideContainer.offset().left + borderSize,
                 top: $slideContainer.height() - $slideTab.outerHeight() - 20
             });
+            
         } else {
             slideContent.css({
                 width: '',

@@ -26,50 +26,60 @@ public class ItemManager {
     
     private static final Logger log = Logger.getLogger(ItemManager.class);
 
-	public String load(String itemId, boolean subtree) {
- 		String jsonItem = null;
+    public String load(String itemId, boolean subtree) {
+        String jsonItem = null;
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         Item item = null;
         try {
             item = em.find(Item.class, itemId);
-            
+
             if (null == item) {
                 File onDiskItem = new File(FileUtils.getTempDirectory(), itemId);
                 if (onDiskItem.exists()) {
                     try {
                         jsonItem = IOUtils.toString(new FileInputStream(onDiskItem));
                         item = Item.fromJSON(jsonItem);
-                    } catch (IOException ex) {
+                    }
+                    catch (IOException ex) {
                         // Ignore - pass back null
                     }
                 }
-            } else {
+            }
+            else {
                 jsonItem = item.toJSON(subtree);
             }
-        } finally {
+        }
+        finally {
             JPAHelper.close(em);
         }
         if (item != null && StringUtils.isNotBlank(jsonItem)) {
             jsonItem = item.toJSON(subtree);
         }
-        
-		return jsonItem;
-	}
-    
-    public Item loadItem(String itemId) {
-        // retain default of not loading subtree
-        return loadItem(itemId, false);
+
+        return jsonItem;
     }
-    
-    public Item loadItem(String itemId, boolean subtree) {
-        String jsonItem = load(itemId, subtree);
-        Item item = Item.fromJSON(jsonItem);
+
+    // JSON and back removes ids
+    private Item loadItemFromDb(String itemId) {
+        Item item = null;
+        EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
+        try {
+            item = em.find(Item.class, itemId);
+        }
+        finally {
+            JPAHelper.close(em);
+        }
         return item;
     }
 
-	public synchronized String save(String item) {
-		String id = null;
-        
+    public Item loadItem(String itemId) {
+        // retain default of not loading subtree
+        return loadItemFromDb(itemId);
+    }
+
+    public synchronized String persist(String item) {
+        String id = null;
+
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = em.getTransaction();
 		try {
@@ -87,24 +97,55 @@ public class ItemManager {
 		} finally {
             JPAHelper.close(em);
         }
-		return id;
-	}
-	
-	public String savePreview(Item item) {
+        return id;
+    }
+
+    public synchronized String merge(Item item) {
+        String id = null;
+        EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+            em.merge(item);
+            id = item.getId();
+            transaction.commit();
+        }
+        catch (Exception ex) {
+            log.debug("Transaction failed on merge", ex);
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            id = null;
+        }
+        finally {
+            JPAHelper.close(em);
+        }
+        return id;
+    }
+
+    /**
+     * This will no longer be used and can be removed when calling class is
+     * changed
+     *
+     * @param item
+     * @return
+     */
+    public String savePreview(Item item) {
         String id = item.getId();
-		try {
-			File onDiskItem = new File(FileUtils.getTempDirectory(), id);
-			FileUtils.write(onDiskItem, item.toJSON(false));
-			onDiskItem.deleteOnExit();
-		} catch (Exception ex) {
-			id = "ERR";
-		}
-		return id;
-	}
+        try {
+            File onDiskItem = new File(FileUtils.getTempDirectory(), id);
+            FileUtils.write(onDiskItem, item.toJSON(false));
+            onDiskItem.deleteOnExit();
+        }
+        catch (Exception ex) {
+            id = "ERR";
+        }
+        return id;
+    }
 
     /**
      * Query the database for items and return it as a json string
-     * 
+     *
      * @param queryText keywords to query on
      * @param types item types to include in results
      * @param sortBy sort the results according to this technique
@@ -113,7 +154,7 @@ public class ItemManager {
      * @param subtree whether to return entire subtree for aggregated items
      * @return JSON result of items
      */
-	public String query(List<String> queryText, List<String> types, String sortBy, int count, String bbox, boolean subtree) {
+    public String query(List<String> queryText, List<String> types, String sortBy, int count, String bbox, boolean subtree) {
         StringBuilder builder = new StringBuilder();
         List<String> queryParams = new LinkedList<>();
         int paramIndex = 1;
@@ -128,14 +169,14 @@ public class ItemManager {
 				for (String keyword : queryText) {
 					if (StringUtils.isNotBlank(keyword)) {
                         queryParams.add('%' + keyword + "%");
-						StringBuilder likeBuilder = new StringBuilder();
-						likeBuilder.append(" lower(i.summary.keywords) like lower(?")
-							.append(paramIndex++)
-							.append(")");
-						likes.add(likeBuilder.toString());
-					}
-				}
-				builder.append(StringUtils.join(likes, " or"));
+                        StringBuilder likeBuilder = new StringBuilder();
+                        likeBuilder.append(" lower(i.summary.keywords) like lower(?")
+                                .append(paramIndex++)
+                                .append(")");
+                        likes.add(likeBuilder.toString());
+                    }
+                }
+                builder.append(StringUtils.join(likes, " or"));
             }
             if (hasType) {
                 builder.append(" and");
@@ -148,19 +189,19 @@ public class ItemManager {
 //        if ("popularity".equals(sortBy)) {
 //            builder.append(" order by i.rank.totalScore desc");
 //        } else if (false/*replace with other sort options */) {
-            // TODO add order by clause
+        // TODO add order by clause
 //        }
         if (StringUtils.isNotBlank(bbox)) {
             //TODO bbox stuff here
         }
-        
+
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         String jsonResult = "";
         try {
             Query query = em.createQuery(builder.toString(), Item.class);
-            for (int i=0; i<queryParams.size(); i++) {
+            for (int i = 0; i < queryParams.size(); i++) {
                 String param = queryParams.get(i);
-                query.setParameter(i+1, param);
+                query.setParameter(i + 1, param);
             }
             if (hasType) {
                 query.setParameter("types", typesList);
@@ -181,19 +222,19 @@ public class ItemManager {
         } finally {
             JPAHelper.close(em);
         }
-		return jsonResult;
-	}
-	
-	private boolean isEmpty(List<String> args) {
-		boolean result = false;
-		if (args != null) {
-			for (String str : args) {
-				if (StringUtils.isNotBlank(str)) {
-					result = true;
-				}
-			}
-		}
-		return result;
-	}
-    
+        return jsonResult;
+    }
+
+    private boolean isEmpty(List<String> args) {
+        boolean result = false;
+        if (args != null) {
+            for (String str : args) {
+                if (StringUtils.isNotBlank(str)) {
+                    result = true;
+                }
+            }
+        }
+        return result;
+    }
+
 }
