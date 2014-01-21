@@ -43,12 +43,8 @@ import org.xml.sax.SAXException;
 public class ItemResource {
 
 	private static ItemManager itemManager;
-    private static String cchn52Endpoint;
-    private static final DynamicReadOnlyProperties props;
 
 	static {
-        props = JNDISingleton.getInstance();
-        cchn52Endpoint = props.getProperty("coastal-hazards.n52.endpoint");
 		itemManager = new ItemManager();
 	}
 
@@ -113,27 +109,22 @@ public class ItemResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response postItem(String content, @Context HttpServletRequest request) {
         Response response;
-        HttpSession session = request.getSession();
-        if (session == null) {
-            response = Response.status(Response.Status.BAD_REQUEST).build();
-        } else {
-            if (SessionResource.isValidSession(request)) {
-                final String id = itemManager.persist(content);
+        if (SessionResource.isValidSession(request)) {
+            final String id = itemManager.persist(content);
 
-                if (null == id) {
-                    response = Response.status(Response.Status.BAD_REQUEST).build();
-                } else {
-                    Map<String, Object> ok = new HashMap<String, Object>() {
-                        private static final long serialVersionUID = 2398472L;
-                        {
-                            put("id", id);
-                        }
-                    };
-                    response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
-                }
+            if (null == id) {
+                response = Response.status(Response.Status.BAD_REQUEST).build();
             } else {
-                response = Response.status(Response.Status.UNAUTHORIZED).build();
+                Map<String, Object> ok = new HashMap<String, Object>() {
+                    private static final long serialVersionUID = 2398472L;
+                    {
+                        put("id", id);
+                    }
+                };
+                response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
             }
+        } else {
+            response = Response.status(Response.Status.UNAUTHORIZED).build();
         }
 		return response;
 	}

@@ -16,12 +16,15 @@ import javax.persistence.Query;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class ItemManager {
+    
+    private static final Logger log = Logger.getLogger(ItemManager.class);
 
     public String load(String itemId, boolean subtree) {
         String jsonItem = null;
@@ -75,30 +78,29 @@ public class ItemManager {
     }
 
     public synchronized String persist(String item) {
-        String id = "ERR";
+        String id = null;
 
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            Item itemObj = Item.fromJSON(item);
-            em.persist(itemObj);
-            id = itemObj.getId();
-            transaction.commit();
-        }
-        catch (Exception ex) {
+		try {
+			transaction.begin();
+			Item itemObj = Item.fromJSON(item);
+			em.persist(itemObj);
+			id = itemObj.getId();
+			transaction.commit();
+		} catch (Exception ex) {
+            log.debug("Exception during save", ex);
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-        }
-        finally {
+            id = null;
+		} finally {
             JPAHelper.close(em);
         }
         return id;
     }
 
     public synchronized String merge(Item item) {
-        // null is better than ERR
         String id = null;
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = em.getTransaction();
@@ -109,10 +111,11 @@ public class ItemManager {
             transaction.commit();
         }
         catch (Exception ex) {
+            log.debug("Transaction failed on merge", ex);
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-            throw new RuntimeException(ex);
+            id = null;
         }
         finally {
             JPAHelper.close(em);
@@ -155,16 +158,16 @@ public class ItemManager {
         StringBuilder builder = new StringBuilder();
         List<String> queryParams = new LinkedList<>();
         int paramIndex = 1;
-        builder.append("select i from Item i");
+        builder.append("select i from Item i where i.enabled = true");
         boolean hasQueryText = isEmpty(queryText);
         boolean hasType = isEmpty(types);
         List<Item.Type> typesList = new LinkedList<>();
         if (hasQueryText || hasType) {
-            builder.append(" where ");
             if (hasQueryText) {
-                List<String> likes = new ArrayList<String>();
-                for (String keyword : queryText) {
-                    if (StringUtils.isNotBlank(keyword)) {
+                builder.append(" and ");
+				List<String> likes = new ArrayList<String>();
+				for (String keyword : queryText) {
+					if (StringUtils.isNotBlank(keyword)) {
                         queryParams.add('%' + keyword + "%");
                         StringBuilder likeBuilder = new StringBuilder();
                         likeBuilder.append(" lower(i.summary.keywords) like lower(?")
@@ -175,10 +178,8 @@ public class ItemManager {
                 }
                 builder.append(StringUtils.join(likes, " or"));
             }
-            if (hasQueryText && hasType) {
-                builder.append(" and");
-            }
             if (hasType) {
+                builder.append(" and");
                 for (String type : types) {
                     typesList.add(Item.Type.valueOf(type));
                 }
