@@ -25,7 +25,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.IndexColumn;
@@ -84,10 +83,6 @@ public class Item implements Serializable {
     private boolean showChildren;
     /* Whether to show this item at all, used in mediation */
     private boolean enabled;
-    /**
-     * @deprecated
-     */
-    private transient Rank rank;
     private List<Service> services;
     private transient List<Item> children;
     /* Show only a subset of children */
@@ -181,22 +176,6 @@ public class Item implements Serializable {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-    
-    /**
-     * @deprecated
-     */
-    @OneToOne
-    @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
-    public Rank getRank() {
-        return rank;
-    }
-
-    /**
-     * @deprecated
-     */
-    public void setRank(Rank rank) {
-        this.rank = rank;
-    }
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "item_id", referencedColumnName = "id")
@@ -225,7 +204,7 @@ public class Item implements Serializable {
         return wmsService;
     }
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @JoinTable(
             name = "aggregation_children",

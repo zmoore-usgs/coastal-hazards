@@ -16,7 +16,7 @@ import javax.persistence.Table;
 public class Bbox implements Serializable {
 	private static final long serialVersionUID = 1L;
     
-    private int id;
+    private transient int id;
     private double minx;
     private double miny;
     private double maxx;
