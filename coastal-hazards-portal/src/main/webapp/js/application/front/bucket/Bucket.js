@@ -80,8 +80,7 @@ CCH.Objects.Bucket = function (args) {
     };
 
     $('#' + me.BUCKET_CONTAINER_ID).on('click', function () {
-        $(me).trigger('app-navbar-button-clicked');
-        me.slide.toggle();
+        $(window).trigger('app-navbar-button-clicked');
     });
     
     $(window).on({

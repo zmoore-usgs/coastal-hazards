@@ -19,7 +19,6 @@
  *  window: 'cch.ui.overlay.removed'
 
  *  Events Listened To:
- *  this.bucket : 'app-navbar-button-clicked'
  *  this.combinedSearch: 'combined-searchbar-search-performing'
  *  this.combinedSearch : 'combined-searchbar-search-performed'
  *  window : 'button-click-bucket-add'
