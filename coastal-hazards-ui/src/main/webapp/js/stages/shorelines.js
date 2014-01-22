@@ -113,12 +113,12 @@ var Shorelines = {
                             attributes : attributes
                         });
                         
-                        var foundAll = true;
-                        Shorelines.mandatoryColumns.each(function(mc){
-                            if (!layerColumns.values().find(mc)) {
-                                foundAll = false;
-                            }
-                        });
+                            var foundAll = true;
+                            Shorelines.mandatoryColumns.each(function (mc) {
+                                if (layerColumns.values().indexOf(mc) === -1) {
+                                    foundAll = false;
+                                }
+                            });
                         
                         if (layerPrefix !== CONFIG.name.published && !foundAll) {
                             CONFIG.ui.buildColumnMatchingModalWindow({

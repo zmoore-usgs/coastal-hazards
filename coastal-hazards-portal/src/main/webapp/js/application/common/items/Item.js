@@ -273,7 +273,7 @@ CCH.Objects.Item = function (args) {
 
     me.hideLayer = function () {
         me.getLayerList().each(function (layerName) {
-            layers = CCH.map.hideLayersByName(layerName);
+            CCH.map.hideLayersByName(layerName);
         });
 
         if (me.itemType === 'aggregation') {
