@@ -234,6 +234,59 @@ CCH.Objects.OWS = function() {
                 }
             });
         },
+        requestSummaryByAttribute : function (args) {
+            args = args || {};
+            var url = args.url ? args.url : '',
+                attribute = args.attribute,
+                callbacks = args.callbacks || {
+                    success : [],
+                    error : []
+                },
+                wpsFormat = new OpenLayers.Format.WPSExecute(),
+                wpsRequest;
+                
+                wpsRequest = wpsFormat.write({
+                    identifier: "org.n52.wps.server.r.item.summary",
+                    dataInputs: [{
+                        identifier: "input",
+                        data: {
+                            literalData: {
+                                value: url
+                            }
+                        }
+                    },
+                    {
+                        identifier: "attr",
+                        data: {
+                            literalData: {
+                                value: attribute
+                            }
+                        }
+                    }],
+                    responseForm: {
+                        rawDataOutput: {
+                            identifier: "output"
+                        }
+                    }
+                });
+            
+            OpenLayers.Request.POST({
+                url: CCH.CONFIG.contextPath + '/52n/WebProcessingService',
+                data: wpsRequest,
+                success:function(response){
+                    var responseText = response.responseText;
+                    if (responseText.charAt(0) === '{') {
+                        callbacks.success.each(function (cb) {
+                            cb(JSON.parse(responseText));
+                        });
+                    } else {
+                        callbacks.error.each(function (cb) {
+                            cb(responseText);
+                        });
+                    }
+                }
+            });
+        },
 		buildServiceEndpoint: function (endpoint) {
 			var updatedEndpoint = null,
 				urlIndex = 0;

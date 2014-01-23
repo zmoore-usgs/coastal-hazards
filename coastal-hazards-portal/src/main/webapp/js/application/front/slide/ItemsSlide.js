@@ -177,7 +177,6 @@ CCH.Objects.ItemsSlide = function (args) {
             $slideTab = $('#' + me.SLIDE_TAB_ID),
             slideContent = $('#' + me.$SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth(),
-            windowHeight = $(window).outerHeight(),
             borderSize = 4;
 
         // I've got to know what my form factor is. Bootstrap uses a special number,
@@ -188,7 +187,7 @@ CCH.Objects.ItemsSlide = function (args) {
         if (isSmall) {
             $slideContainer.width(windowWidth - toExtent.left);
             slideContent.css('width', $slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth);
-            $slideContainer.height(windowHeight - toExtent.top);
+            $slideContainer.height($('body').height() - toExtent.top);
             // Then there's special sizing depending on if I'm closed or not. 
             if (me.isClosed) {
                 // If I'm closed, my container, which holds my tab and content, 
@@ -292,6 +291,31 @@ CCH.Objects.ItemsSlide = function (args) {
             }
         }
     });
+    
+    // This is a horrible hack - Chrome for android seems to be not show anything
+    // above or below the cutoff of my cards whenever I scroll into view. Updating
+    // the CSS slightly forces Chrome to perform a re-flow of the DOM in the container
+    if (new RegExp("Android").test(navigator.userAgent) && 
+            new RegExp("Chrome/[.0-9]*").test(navigator.userAgent)) {
+        $.fn.scrollStopped = function (callback) {
+            $(this).scroll(function () {
+                var self = this,
+                    $this = $(self);
+                if ($this.data('scrollTimeout')) {
+                    clearTimeout($this.data('scrollTimeout'));
+                }
+                $this.data('scrollTimeout', setTimeout(callback, 1, self));
+            });
+        }
+        $('#' + me.SLIDE_CONTENT_CONTAINER).scrollStopped(function(element) {
+            setTimeout(function(element) {
+                $(element).height($(element).height() - 1);
+            }, 2, element);
+            setTimeout(function (element) {
+                $(element).height($(element).height() + 1);
+            }, 3, element);
+        });
+    }
     
     me.redimensioned(null, me.isSmall());
 

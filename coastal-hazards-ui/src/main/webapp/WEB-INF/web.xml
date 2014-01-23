@@ -30,7 +30,7 @@
 		<servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
 		<init-param>
 			<param-name>forward-url-param</param-name>
-			<param-value>coastal-hazards.52nr.endpoint</param-value>
+			<param-value>coastal-hazards.n52.endpoint</param-value>
 		</init-param>
 		<init-param>
 			<param-name>readTimeout</param-name>
