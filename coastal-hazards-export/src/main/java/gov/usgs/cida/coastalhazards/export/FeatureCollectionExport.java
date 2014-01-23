@@ -8,24 +8,32 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.geotools.data.FeatureWriter;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FileDataStoreFactorySpi;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.crs.DefaultProjectedCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.ProjectedCRS;
 
 /**
  * This utility takes a feature collection and saves it to file in the 
@@ -65,8 +73,14 @@ public class FeatureCollectionExport {
     }
     
     public void writeToShapefile() throws MalformedURLException, IOException {
-        SimpleFeatureIterator features = simpleFeatureCollection.features();
+        //SimpleFeatureIterator features = simpleFeatureCollection.features();
         SimpleFeatureType type = buildFeatureType();
+        try {
+            setCRS(CRS.decode("EPSG:3857"));
+        }
+        catch (FactoryException ex) {
+            setCRS(DEFAULT_CRS);
+        }
         FileDataStoreFactorySpi factory = FileDataStoreFinder.getDataStoreFactory("shp");
         File shpFile = checkAndCreateFile();
         Map datastoreConfig = new HashMap<>();
@@ -74,22 +88,25 @@ public class FeatureCollectionExport {
         ShapefileDataStore shpfileDataStore = (ShapefileDataStore)factory.createNewDataStore(datastoreConfig);
         shpfileDataStore.createSchema(type);
         shpfileDataStore.forceSchemaCRS(this.crs);
-        
-        FeatureWriter<SimpleFeatureType, SimpleFeature> featureWriter = shpfileDataStore.getFeatureWriter(namePrefix, Transaction.AUTO_COMMIT);
-        try {
-            while (features.hasNext()) {
-                SimpleFeature srcFeature = features.next();
-                SimpleFeature next = featureWriter.next();
-                next.setDefaultGeometry(srcFeature.getDefaultGeometry());
-                for (String name : attributes) {
-                    next.setAttribute(name, srcFeature.getAttribute(name));
-                }
-                featureWriter.write();
+        //DataStore dataStore = factory.createNewDataStore(datastoreConfig);
+        SimpleFeatureStore featureStore = (SimpleFeatureStore) shpfileDataStore.getFeatureSource(type.getName());
+        Transaction t = new DefaultTransaction();
+
+        // Copied directly from Import process
+        featureStore.setTransaction(t);
+        SimpleFeatureIterator fi = simpleFeatureCollection.features();
+        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(type);
+        while (fi.hasNext()) {
+            SimpleFeature source = fi.next();
+            fb.reset();
+            for (AttributeDescriptor desc : type.getAttributeDescriptors()) {
+                fb.set(desc.getName(), source.getAttribute(desc.getName()));
             }
-        } finally {
-            IOUtils.closeQuietly(featureWriter);
-            IOUtils.closeQuietly(features);
+            SimpleFeature target = fb.buildFeature(null);
+            featureStore.addFeatures(DataUtilities.collection(target));
         }
+        t.commit();
+        t.close();
     }
     
     private SimpleFeatureType buildFeatureType() {
