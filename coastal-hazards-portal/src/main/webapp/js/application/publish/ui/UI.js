@@ -45,7 +45,10 @@ CCH.Objects.UI = function () {
 		$alertModal = $('#alert-modal'),
 		$alertModalTitle = $alertModal.find('.modal-title'),
 		$alertModalBody = $alertModal.find('.modal-body'),
-		$alertModalFooter = $alertModal.find('.modal-footer');
+		$alertModalFooter = $alertModal.find('.modal-footer'),
+        $metadataDropdownGroup = $('#publish-button-edit-metadata-existing-grp'),
+        $metadataDropdownList = $('#publish-list-edit-metadata-existing'),
+        $uploaderDummy = $('#qq-uploader-dummy');
 
     me.clearForm = function () {
         $titleFullTextArea.attr('disabled', 'disabled');
@@ -106,6 +109,7 @@ CCH.Objects.UI = function () {
         $name.val('');
         $childrenSb.empty();
 		$displayedChildrenSb.empty();
+        $metadataDropdownGroup.addClass('hidden');
         CCH.items.each(function (cchItem) {
             var option = $('<option />').
                 attr('value', cchItem.id).
@@ -140,11 +144,13 @@ CCH.Objects.UI = function () {
         $itemType.removeAttr('disabled');
         $name.removeAttr('disabled');
         $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled');
-        $('#qq-uploader-dummy').removeClass('hidden');
+        $uploaderDummy.removeClass('hidden');
+        $metadataDropdownGroup.removeClass('hidden');
+        
+        
     };
 
     me.enableNewAggregationForm = function () {
-        $('#qq-uploader-dummy').empty().addClass('hidden');
         $titleFullTextArea.removeAttr('disabled');
         $titleMediumTextArea.removeAttr('disabled');
         $titleTinyTextArea.removeAttr('disabled');
@@ -171,6 +177,7 @@ CCH.Objects.UI = function () {
         $publicationsPanel.removeAttr('disabled');
         $childrenSb.removeAttr('disabled');
 		$displayedChildrenSb.removeAttr('disabled');
+        $uploaderDummy.empty().addClass('hidden');
     };
 
     me.initUploader = function (args) {
@@ -275,6 +282,40 @@ CCH.Objects.UI = function () {
             $keywordGroup.after($keywordGroupLocal);
         }
     };
+    
+    me.updateFormWithNewCSWInfo = function (responseObject, textStatus) {
+        if (textStatus === 'success') {
+            var cswNodes = responseObject.children,
+                tag;
+            cswNodes[0].children.each(function (node) {
+                tag = node.tag;
+                switch (tag) {
+                case 'idinfo':
+                    node.children.each(function (childNode) {
+                        tag = childNode.tag;
+                        switch (tag) {
+                        case 'spdom':
+                            childNode.children[0].children.each(function (spdom) {
+                                var direction = spdom.tag.substring(0, spdom.tag.length - 2);
+                                $('#form-publish-item-bbox-input-' + direction).val(spdom.text);
+                            });
+                            break;
+                        case 'keywords':
+                            childNode.children.each(function (kwNode) {
+                                var keywords = kwNode.children;
+                                keywords.splice(1).each(function (kwObject) {
+                                    var keyword = kwObject.text;
+                                    me.addKeywordGroup(keyword);
+                                });
+                            });
+                            break;
+                        }
+                    });
+                    break;
+                }
+            });
+        }
+    };
 
     me.initNewItemForm = function () {
         var cswUrl = $('#form-publish-item-service-csw').val();
@@ -287,41 +328,7 @@ CCH.Objects.UI = function () {
         me.getCSWInfo({
             url : cswUrl,
             callbacks : {
-                success : [
-                    function (responseObject, textStatus) {
-                        if (textStatus === 'success') {
-                            var cswNodes = responseObject.children,
-                                tag;
-                            cswNodes[0].children.each(function (node) {
-                                tag = node.tag;
-                                switch (tag) {
-                                case 'idinfo':
-                                    node.children.each(function (childNode) {
-                                        tag = childNode.tag;
-                                        switch (tag) {
-                                        case 'spdom':
-                                            childNode.children[0].children.each(function (spdom) {
-                                                var direction = spdom.tag.substring(0, spdom.tag.length - 2);
-                                                $('#form-publish-item-bbox-input-' + direction).val(spdom.text);
-                                            });
-                                            break;
-                                        case 'keywords':
-                                            childNode.children.each(function (kwNode) {
-                                                var keywords = kwNode.children;
-                                                keywords.splice(1).each(function (kwObject) {
-                                                    var keyword = kwObject.text;
-                                                    me.addKeywordGroup(keyword);
-                                                });
-                                            });
-                                            break;
-                                        }
-                                    });
-                                    break;
-                                }
-                            });
-                        }
-                    }
-                ],
+                success : [me.updateFormWithNewCSWInfo],
                 error : [
                     function () {
                         debugger;
@@ -428,6 +435,24 @@ CCH.Objects.UI = function () {
             });
         }
         $attributeSelect.removeAttr('disabled');
+    };
+    
+    me.metadataPublishCallback = function (mdObject, status) {
+        if (status === 'success') {
+            $('#form-publish-info-item-itemtype').val('data');
+            $('#form-publish-item-service-csw').val(mdObject.metadata);
+             me.getCSWInfo({
+                url : mdObject.metadata,
+                callbacks : {
+                    success : [me.updateFormWithNewCSWInfo],
+                    error : [
+                        function () {
+                            debugger;
+                        }
+                    ]
+                }
+            });
+        }
     };
     
     me.createPublicationRow = function(link, title, type) {
@@ -682,6 +707,35 @@ CCH.Objects.UI = function () {
 
             $childrenSb.removeAttr('disabled');
 			$displayedChildrenSb.removeAttr('disabled');
+            $metadataDropdownGroup.removeClass('hidden');
+            
+            $('#qq-uploader-dummy').removeClass('hidden');
+            me.createUploader({
+                callbacks : {
+                    success : [
+                        function (args) {
+                            if (args.responseJSON && args.responseJSON.success === 'true') {
+                                me.publishMetadata({
+                                    token : args.token,
+                                    callbacks : {
+                                        success : [me.metadataPublishCallback],
+                                        error : [
+                                            function () {
+                                                debugger;
+                                            }
+                                        ]
+                                    }
+                                });
+                            }
+                        }
+                    ],
+                    error : [
+                        function () {
+                            debugger;
+                        }
+                    ]
+                }
+            });
         } else {
             CCH.LOG.warn('UI.js::putItemOnForm: function was called with no item');
         }
@@ -756,20 +810,23 @@ CCH.Objects.UI = function () {
 		
 		var successCallback = function (responseObject) {
 			var responseText = responseObject.responseText,
-				baseUrl = CCH.CONFIG.publicUrl;
+				baseUrl = CCH.CONFIG.publicUrl,
+                baseService = baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/',
+                wfsServiceVal = baseService + 'wfs',
+                wmsServiceVal = baseService + 'wms';
 
 			if (baseUrl.lastIndexOf('/') !== baseUrl.length - 1) {
 				baseUrl += '/';
 			}
 
-			$proxyWfsServiceInput.val(baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/wfs');
-			$proxyWmsServiceInput.val(baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/wms');
+			$proxyWfsServiceInput.val(wfsServiceVal);
+			$proxyWmsServiceInput.val(wmsServiceVal);
 			$proxyWfsServiceParamInput.val(responseText);
 			$proxyWmsServiceParamInput.val(responseText);
 
             me.updateAttributedUsingDescribeFeaturetype({
-                service : service,
-                param : param,
+                service : $proxyWfsServiceInput,
+                param : responseText,
                 callbacks : {
                     success : [
                         function (featureDescription) {
@@ -870,7 +927,16 @@ CCH.Objects.UI = function () {
 
     $('#publish-button-create-item-option').on('click', function () {
         me.clearForm();
-        $('#qq-uploader-dummy').removeClass('hidden');
+        $uploaderDummy.removeClass('hidden');
+        $metadataDropdownGroup.removeClass('hidden');
+        
+        var mdgClickHandler = function (evt) {
+            $(evt.target).off('click', mdgClickHandler);
+            me.initNewItemForm();
+            
+        }
+        $metadataDropdownGroup.find('a').on('click', mdgClickHandler);
+        
         me.createUploader({
             callbacks : {
                 success : [
@@ -918,7 +984,7 @@ CCH.Objects.UI = function () {
 	
 	$attributeSelect.on('change', function (evt) {
 		var attribute = $(evt.target).val();
-        
+
         CCH.ows.requestSummaryByAttribute({
             url : $('#form-publish-item-service-csw').val(),
             attribute : attribute,
@@ -956,6 +1022,61 @@ CCH.Objects.UI = function () {
             }
         })
 	});
+    
+    CCH.ows.requestCSWRecords({
+        callbacks : {
+            success : [
+                function (response) {
+                    response.children.each(function (responseChild) {
+                        if (responseChild.tag === "csw:SearchResults") {
+                            var id,
+                                title,
+                                $li,
+                                $a;
+
+                            responseChild.children.each(function (recordSummary) {
+                                recordSummary.children.each(function (recordAttribute) {
+                                    if (recordAttribute.tag === "dc:identifier") {
+                                        id = recordAttribute.text;
+                                    } else if (recordAttribute.tag === "dc:title") {
+                                        title = recordAttribute.text;
+                                    }
+                                })
+                                
+                                if (id && title) {
+                                    $li = $('<li />');
+                                    $a = $('<a />').
+                                        attr('href', '#').
+                                        html(title);
+                                    $li.append($a);
+                                    $metadataDropdownList.append($li);
+                                    
+                                    $a.on('click', function (evt) {
+                                        var endpoint = CCH.CONFIG.publicUrl;
+                                        endpoint += '/csw/?';
+                                        endpoint += 'service=CSW';
+                                        endpoint += '&request=GetRecordById';
+                                        endpoint += '&version=2.0.2';
+                                        endpoint += '&typeNames=fgdc:metadata';
+                                        endpoint += '&id=' + id;
+                                        endpoint += '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
+                                        endpoint += '&elementSetName=full';
+                                        $cswServiceInput.val(endpoint);
+                                        
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            ],
+            error : [
+                function (response) {
+                    debugger;
+                }
+            ]
+        }
+    });
     
     return me;
 };

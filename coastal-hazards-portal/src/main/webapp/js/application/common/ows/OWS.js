@@ -310,6 +310,40 @@ CCH.Objects.OWS = function() {
 				}
 			}
 			return updatedEndpoint;
-		}
+		},
+        requestCSWRecords: function (args) {
+            args = args || {};
+            
+            var callbacks = args.callbacks || {
+                success : [],
+                error : []
+            }
+            
+            $.ajax({
+                url : CCH.CONFIG.contextPath + '/csw/csw',
+                data : {
+                    'request' : 'GetRecords',
+                    'service' : 'CSW',
+                    'version' : '2.0.2',
+                    'namespace' : 'namespace=xmlns(csw=http://www.opengis.net/cat/csw)',
+                    'resultType' : 'results',
+                    'outputSchema' : 'http://www.opengis.net/cat/csw/2.0.2',
+                    'typeNames' : 'csw:Record',
+                    'elementSetname' : 'summary',
+                    'constraint_language_version' : '1.1.0',
+                    'outputFormat' : 'application/json'
+                },
+                success : function (response) {
+                    callbacks.success.each(function (cb) {
+                        cb(response);
+                    })
+                },
+                error : function (response) {
+                    callbacks.error.each(function (cb) {
+                        cb(response);
+                    })
+                }
+            })
+        }
     });
 };
