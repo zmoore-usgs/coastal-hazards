@@ -19,15 +19,13 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
-import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.factory.GeoTools;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.filter.FilterFactory;
 
 /**
  *
@@ -40,6 +38,7 @@ public class FeatureCollectionExportTest {
      * ignoring this so it doesn't hit the server too much, mock this out for real test
      */
     @Test
+    @Ignore
     public void testWriteToShapefile() throws Exception {
         WFSDataStoreFactory datastore = new WFSDataStoreFactory();
         Map params = new HashMap<>();
@@ -57,6 +56,7 @@ public class FeatureCollectionExportTest {
     }
     
     @Test
+    @Ignore
     public void testWriteSolo() throws Exception {
         WFSDataStoreFactory datastore = new WFSDataStoreFactory();
         Map params = new HashMap<>();
@@ -99,6 +99,7 @@ public class FeatureCollectionExportTest {
     }
     
     @Test
+    @Ignore
     public void testHttpComponentsGetter() throws Exception {
         HttpComponentsWFSClient wfs = new HttpComponentsWFSClient();
         wfs.setupDatastoreFromEndpoint("http://cida-wiwsc-cchdev:8081/geoserver/wfs");

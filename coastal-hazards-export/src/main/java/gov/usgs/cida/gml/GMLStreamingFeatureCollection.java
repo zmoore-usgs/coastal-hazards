@@ -13,9 +13,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLStreamException;
+import org.geotools.data.FeatureListener;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.feature.CollectionListener;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureImpl;
@@ -25,7 +26,7 @@ import org.geotools.feature.type.GeometryTypeImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.xml.Configuration;
-import org.geotools.xml.StreamingParser;
+import org.geotools.xml.PullParser;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
@@ -52,46 +53,24 @@ public class GMLStreamingFeatureCollection implements SimpleFeatureCollection {
     
 	final private File file;
 	final private SimpleFeatureType featureType;
-	final private ReferencedEnvelope bounds;
-	final private int size;
 	final private Configuration configuration;
-    final private boolean ignoreNoGeomFeatures;
 
-	public GMLStreamingFeatureCollection(File file, boolean ignoreNoGeomFeatures) {
+	public GMLStreamingFeatureCollection(File file) {
 
         LOGGER.debug("Starting parse of file {}", file.getName());
 		this.file = file;
 		this.configuration = GMLUtil.generateGMLConfiguration(file);
-        this.ignoreNoGeomFeatures = ignoreNoGeomFeatures;
-
-		StreamingFeatureIterator iterator = null;
-		try {
-			MetaDataFilter metaDataFilter = new MetaDataFilter();
-			iterator = new StreamingFeatureIterator(metaDataFilter, false);
-			while (iterator.hasNext()) {
-				iterator.next();
-			}
-			this.bounds = metaDataFilter.collectionBounds;
-			this.featureType = metaDataFilter.wrappedFeatureType;
-			this.size = metaDataFilter.size;
-
-            if (size < 1) {
+        try (SimpleFeatureIterator iterator = new StreamingFeatureIterator(FILTER_PASSTHRU, false)) {
+            if (iterator.hasNext()) {
+                SimpleFeature feature = iterator.next();
+                this.featureType = feature.getFeatureType();
+            } else {
                 throw new RuntimeException("Empty Feature Collection");
             }
-
-		} catch (IOException e) {
+        } catch (IOException | SAXException | ParserConfigurationException e) {
 			throw new RuntimeException(e);
-		} catch (SAXException e) {
-			throw new RuntimeException(e);
-		} catch (ParserConfigurationException e) {
-			throw new RuntimeException(e);
-		} finally {
-			if (iterator != null) {
-				iterator.close();
-			}
 		}
-        LOGGER.debug("Finished parse of file {}, {} features found", file.getName(), size);
-	}
+    }
 
 	@Override
 	public SimpleFeatureIterator features() {
@@ -131,11 +110,11 @@ public class GMLStreamingFeatureCollection implements SimpleFeatureCollection {
 		throw new RuntimeException("iterator not known by this instance");
 	}
 
-	public void addListener(CollectionListener listener) throws NullPointerException {
+	public void addListener(FeatureListener listener) throws NullPointerException {
 		// do nothing, this collection is read-only
 	}
 
-	public void removeListener(CollectionListener listener) throws NullPointerException {
+	public void removeListener(FeatureListener listener) throws NullPointerException {
 		// do nothing, this collection is read-only
 	}
 
@@ -166,12 +145,12 @@ public class GMLStreamingFeatureCollection implements SimpleFeatureCollection {
 
 	@Override
 	public ReferencedEnvelope getBounds() {
-		return bounds;
+		throw new UnsupportedOperationException("Not supported in simplified version.");
 	}
 
 	@Override
 	public int size() {
-		return size;
+		throw new UnsupportedOperationException("Not supported in simplified version.");
 	}
 
 	public void purge() {
@@ -266,7 +245,7 @@ public class GMLStreamingFeatureCollection implements SimpleFeatureCollection {
 
 	private final class StreamingFeatureIterator implements SimpleFeatureIterator, Iterator {
 
-		private StreamingParser parser;
+		private PullParser parser;
 		private InputStream inputStream;
 		private Filter filter;
 		private SimpleFeature next;
@@ -274,7 +253,7 @@ public class GMLStreamingFeatureCollection implements SimpleFeatureCollection {
         private boolean wrap;
 
         private StreamingFeatureIterator(Filter filter) throws ParserConfigurationException, SAXException, FileNotFoundException {
-            this(filter, true);
+            this(filter, false);
         }
 
 		private StreamingFeatureIterator(Filter filter, boolean wrap) throws ParserConfigurationException, SAXException, FileNotFoundException {
@@ -284,7 +263,7 @@ public class GMLStreamingFeatureCollection implements SimpleFeatureCollection {
 			inputStream = new BufferedInputStream(
 					new FileInputStream(file),
 					16 << 10);
-			parser = new StreamingParser(
+			parser = new PullParser(
 					configuration,
 					inputStream,
 					SimpleFeature.class);
@@ -338,15 +317,19 @@ public class GMLStreamingFeatureCollection implements SimpleFeatureCollection {
 
 		protected void findNext() {
 			while (next == null && open) {
-				Object parsed = parser.parse();
-				if (parsed instanceof SimpleFeature) {
-					SimpleFeature candidate = (SimpleFeature) parsed;
-					if (filter.evaluate(candidate)) {
-						next = wrap ? wrap(candidate) : candidate;
-					}
-				} else {
-					close();
-				}
+                try {
+                    Object parsed = parser.parse();
+                    if (parsed instanceof SimpleFeature) {
+                        SimpleFeature candidate = (SimpleFeature) parsed;
+                        if (filter.evaluate(candidate)) {
+                            next = wrap ? wrap(candidate) : candidate;
+                        }
+                    } else {
+                        close();
+                    }
+                } catch (IOException | XMLStreamException | SAXException ex) {
+                    LOGGER.debug("Exception caught, moving to next");
+                }
 			}
 		}
 	}
@@ -355,94 +338,5 @@ public class GMLStreamingFeatureCollection implements SimpleFeatureCollection {
 		@Override public boolean evaluate(Object object) { return true; }
 		@Override public Object accept(FilterVisitor visitor, Object extraData) { return true; }
 	};
-
-	private class MetaDataFilter implements Filter {
-
-        private CoordinateReferenceSystem collectionCRS;
-		private ReferencedEnvelope collectionBounds;
-        private SimpleFeatureType baseFeatureType;
-		private SimpleFeatureType wrappedFeatureType;
-		private int size;
-
-		@Override
-		public boolean evaluate(Object object) {
-			if (object instanceof SimpleFeature) {
-				SimpleFeature feature = (SimpleFeature) object;
-                Object geometryObject = feature.getDefaultGeometry();
-                if (geometryObject instanceof Geometry) {
-                    Object crsObject = ((Geometry)feature.getDefaultGeometry()).getUserData();
-                    if (crsObject instanceof CoordinateReferenceSystem) {
-                        CoordinateReferenceSystem featureCRS = (CoordinateReferenceSystem)crsObject;
-                        if (collectionCRS == null) {
-                            collectionCRS = featureCRS;
-                            LOGGER.debug("CRS for file {}: {}", collectionCRS);
-                        }
-                        if (collectionBounds == null) {
-                            collectionBounds = new ReferencedEnvelope(collectionCRS);
-                        }
-                        if (CRS.equalsIgnoreMetadata(featureCRS, collectionCRS)) {
-                            collectionBounds.include(feature.getBounds());
-                        } else {
-                            throw new RuntimeException("Inconsistent CRS encountered.");
-                        }
-                    } else {
-                        throw new RuntimeException("Error extracting CRS from feature geometry");
-                    }
-                } else if (ignoreNoGeomFeatures) {
-                    return false;
-                } else {
-                    throw new RuntimeException("Error extracting geometry from feature");
-                }
-
-                if (baseFeatureType == null) {
-                    baseFeatureType = feature.getFeatureType();
-                } else if (!baseFeatureType.equals(feature.getFeatureType())) {
-                    throw new RuntimeException("FeatureType mismatch");
-                }
-                if (wrappedFeatureType == null) {
-                    // FeatureType from GML parser deosn't contain CRS, we
-                    // need to regenerate new FeatureType w/ CRS as this
-                    // information is required downstream...
-                    GeometryDescriptor baseGeometryDescriptor = baseFeatureType.getGeometryDescriptor();
-                    GeometryType baseGeometryType = baseGeometryDescriptor.getType();
-                    GeometryType collectionGeometryType = new GeometryTypeImpl(
-                            baseGeometryType.getName(),
-                            baseGeometryType.getBinding(),
-                            collectionCRS,
-                            baseGeometryType.isIdentified(),
-                            baseGeometryType.isAbstract(),
-                            baseGeometryType.getRestrictions(),
-                            baseGeometryType.getSuper(),
-                            baseGeometryType.getDescription());
-                    GeometryDescriptor collectionGeometryDescriptor =
-                            new GeometryDescriptorImpl(
-                                collectionGeometryType,
-                                baseGeometryDescriptor.getName(),
-                                baseGeometryDescriptor.getMinOccurs(),
-                                baseGeometryDescriptor.getMaxOccurs(),
-                                baseGeometryDescriptor.isNillable(),
-                                null);
-                    wrappedFeatureType = new SimpleFeatureTypeImpl(
-                            baseFeatureType.getName(),
-                            baseFeatureType.getAttributeDescriptors(),
-                            collectionGeometryDescriptor,
-                            baseFeatureType.isAbstract(),
-                            baseFeatureType.getRestrictions(),
-                            baseFeatureType.getSuper(),
-                            baseFeatureType.getDescription());
-                }
-                LOGGER.debug("Processed feature index {} in file {}", size, file.getName());
-                ++size;
-                return true;
-			} else {
-                throw new RuntimeException("Error extracting feature from GML.");
-            }
-		}
-
-		@Override
-		public Object accept(FilterVisitor visitor, Object extraData) {
-			throw new UnsupportedOperationException("Unimplemented.");
-		}
-	}
 
 }

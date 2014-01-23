@@ -74,4 +74,9 @@ public class WFSExportClient implements WFSClientInterface {
         String[] typeNames = wfs.getTypeNames();
         return typeNames;
     }
+
+    @Override
+    public void close() {
+        wfs.dispose();
+    }
 }

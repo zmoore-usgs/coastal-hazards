@@ -88,7 +88,7 @@ public class HttpComponentsWFSClient implements WFSClientInterface {
             IOUtils.closeQuietly(is);
             IOUtils.closeQuietly(os);
         }
-        collection = new GMLStreamingFeatureCollection(tmpWfsFile, true);
+        collection = new GMLStreamingFeatureCollection(tmpWfsFile);
         
         return collection;
     }
@@ -96,6 +96,11 @@ public class HttpComponentsWFSClient implements WFSClientInterface {
     @Override
     public String[] getTypeNames() throws IOException {
         throw new UnsupportedOperationException("Not supported yet. Skipping getCaps for now");
+    }
+    
+    @Override
+    public void close() {
+        FileUtils.deleteQuietly(tmpWfsFile);
     }
     
     private String fillInTemplate(String typeName, String filter) {

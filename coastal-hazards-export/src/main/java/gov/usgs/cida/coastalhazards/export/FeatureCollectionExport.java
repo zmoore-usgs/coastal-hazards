@@ -8,9 +8,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FileDataStoreFactorySpi;
@@ -24,7 +23,6 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.referencing.crs.DefaultProjectedCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -33,7 +31,6 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.crs.ProjectedCRS;
 
 /**
  * This utility takes a feature collection and saves it to file in the 
@@ -91,22 +88,26 @@ public class FeatureCollectionExport {
         //DataStore dataStore = factory.createNewDataStore(datastoreConfig);
         SimpleFeatureStore featureStore = (SimpleFeatureStore) shpfileDataStore.getFeatureSource(type.getName());
         Transaction t = new DefaultTransaction();
-
-        // Copied directly from Import process
-        featureStore.setTransaction(t);
-        SimpleFeatureIterator fi = simpleFeatureCollection.features();
-        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(type);
-        while (fi.hasNext()) {
-            SimpleFeature source = fi.next();
-            fb.reset();
-            for (AttributeDescriptor desc : type.getAttributeDescriptors()) {
-                fb.set(desc.getName(), source.getAttribute(desc.getName()));
+        SimpleFeatureIterator fi = null;
+        try { 
+            // Copied directly from Import process
+            featureStore.setTransaction(t);
+            fi = simpleFeatureCollection.features();
+            SimpleFeatureBuilder fb = new SimpleFeatureBuilder(type);
+            while (fi.hasNext()) {
+                SimpleFeature source = fi.next();
+                fb.reset();
+                for (AttributeDescriptor desc : type.getAttributeDescriptors()) {
+                    fb.set(desc.getName(), source.getAttribute(desc.getName()));
+                }
+                SimpleFeature target = fb.buildFeature(null);
+                featureStore.addFeatures(DataUtilities.collection(target));
             }
-            SimpleFeature target = fb.buildFeature(null);
-            featureStore.addFeatures(DataUtilities.collection(target));
+        } finally {
+            t.commit();
+            t.close();
+            IOUtils.closeQuietly(fi);
         }
-        t.commit();
-        t.close();
     }
     
     private SimpleFeatureType buildFeatureType() {

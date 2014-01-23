@@ -9,7 +9,7 @@ import org.opengis.filter.Filter;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public interface WFSClientInterface {
+public interface WFSClientInterface extends AutoCloseable {
 
     public void setupDatastoreFromGetCaps(String getCapsUrlString) throws MalformedURLException, IOException;
     
@@ -18,4 +18,5 @@ public interface WFSClientInterface {
     public SimpleFeatureCollection getFeatureCollection(String typeName, Filter filter) throws IOException;
     
     public String[] getTypeNames() throws IOException;
+
 }
