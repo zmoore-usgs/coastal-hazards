@@ -47,25 +47,6 @@ CCH.Objects.UI = function () {
 		$alertModalBody = $alertModal.find('.modal-body'),
 		$alertModalFooter = $alertModal.find('.modal-footer');
 
-    $keywordGroup.find('input').removeAttr('disabled');
-    $keywordGroup.find('button:nth-child(2)').addClass('hidden');
-    $keywordGroup.find('button').removeAttr('disabled');
-    $keywordGroup.find('button').on('click', function () {
-        if ($keywordGroup.find('input').val() !== '') {
-            me.addKeywordGroup($keywordGroup.find('input').val());
-        }
-    });
-	
-	$alertModal.on('hidden.bs.modal', function () {
-		$alertModalTitle.empty();
-		$alertModalBody.empty();
-		$alertModalFooter.find('button').not('#alert-modal-close-button').remove();
-	});
-	
-	$attributeSelect.on('select', function (evt) {
-		debugger
-	});
-    
     me.clearForm = function () {
         $titleFullTextArea.attr('disabled', 'disabled');
         $titleMediumTextArea.attr('disabled', 'disabled');
@@ -378,54 +359,6 @@ CCH.Objects.UI = function () {
             }
         });
     };
-    
-    $('#form-publish-info-item-panel-publications-button-add').on('click', function () {
-        me.createPublicationRow('','');
-    });
-
-    $('#publish-button-create-aggregation-option').on('click', function () {
-        me.clearForm();
-        me.enableNewAggregationForm();
-    });
-
-    $('#publish-button-create-item-option').on('click', function () {
-        me.clearForm();
-        $('#qq-uploader-dummy').removeClass('hidden');
-        me.createUploader({
-            callbacks : {
-                success : [
-                    function (args) {
-                        if (args.responseJSON && args.responseJSON.success === 'true') {
-                            me.publishMetadata({
-                                token : args.token,
-                                callbacks : {
-                                    success : [
-                                        function (mdObject, status) {
-                                            if (status === 'success') {
-                                                $('#form-publish-info-item-itemtype').val('data');
-                                                $('#form-publish-item-service-csw').val(mdObject.metadata);
-                                                me.initNewItemForm();
-                                            }
-                                        }
-                                    ],
-                                    error : [
-                                        function () {
-                                            debugger;
-                                        }
-                                    ]
-                                }
-                            });
-                        }
-                    }
-                ],
-                error : [
-                    function () {
-                        debugger;
-                    }
-                ]
-            }
-        });
-    });
 
     me.publishMetadata = function (args) {
         args = args || {};
@@ -494,6 +427,7 @@ CCH.Objects.UI = function () {
                 }
             });
         }
+        $attributeSelect.removeAttr('disabled');
     };
     
     me.createPublicationRow = function(link, title, type) {
@@ -547,7 +481,7 @@ CCH.Objects.UI = function () {
         
         $panelBody.append($smallWell);
     };
-
+    
     me.addItemToForm = function (args) {
         CCH.LOG.info('UI.js::putItemOnForm: Adding item to form.');
         args = args || {};
@@ -753,6 +687,61 @@ CCH.Objects.UI = function () {
         }
     };
     
+    me.wfsInfoUpdated = function() {
+        var service = $proxyWfsServiceInput.val().trim(),
+            param = $proxyWfsServiceParamInput.val().trim();
+            
+        me.updateAttributedUsingDescribeFeaturetype({
+            service : service,
+            param : param,
+            callbacks : {
+                success : [
+                    function (featureDescription) {
+                        me.updateSelectAttribtue(featureDescription);
+                    }
+                ],
+                error : [
+                    function (error) {
+                        CCH.LOG.warn('Error pulling describe feature: ' + $(error).find('ServiceException').text());
+                    }
+                ]
+            }
+        });
+    };
+    
+    me.updateAttributedUsingDescribeFeaturetype = function (args) {
+        args = args || {};
+        
+        var service = args.service,
+            param = args.param,
+            callbacks = args.callbacks || {
+                success : [],
+                error : []
+            }
+            
+        if (service && param) {
+            CCH.ows.describeFeatureType({
+				layerName : param,
+				callbacks : {
+					success : [
+						function (featureDescription) {
+                            callbacks.success.each(function(cb) {
+                                cb(featureDescription);
+                            })
+						}
+					],
+					error : [
+						function (error) {
+							callbacks.error.each(function(cb) {
+                                cb(error);
+                            })
+						}
+					]
+				}
+			});
+        }
+    }
+    
     $wfsImportButton.on('click', function () {
 		var importCall = function () {
 			CCH.ows.importWfsLayer({
@@ -778,21 +767,22 @@ CCH.Objects.UI = function () {
 			$proxyWfsServiceParamInput.val(responseText);
 			$proxyWmsServiceParamInput.val(responseText);
 
-			CCH.ows.describeFeatureType({
-				layerName : responseText,
-				callbacks : {
-					success : [
-						function (featureDescription) {
-							me.updateSelectAttribtue(featureDescription);
-						}
-					],
-					error : [
-						function () {
-							debugger;
-						}
-					]
-				}
-			});
+            me.updateAttributedUsingDescribeFeaturetype({
+                service : service,
+                param : param,
+                callbacks : {
+                    success : [
+                        function (featureDescription) {
+                            me.updateSelectAttribtue(featureDescription);
+                        }
+                    ],
+                    error : [
+                        function (error) {
+                            CCH.LOG.warn('Error pulling describe feature: ' + error);
+                        }
+                    ]
+                }
+            });
 		};
 		
 		var errorCallback =  function (errorText) {
@@ -847,9 +837,16 @@ CCH.Objects.UI = function () {
 				$alertModal.modal('show');
 			}
 		};
-		
         importCall();
-		
+    });
+    
+    $keywordGroup.find('input').removeAttr('disabled');
+    $keywordGroup.find('button:nth-child(2)').addClass('hidden');
+    $keywordGroup.find('button').removeAttr('disabled');
+    $keywordGroup.find('button').on('click', function () {
+        if ($keywordGroup.find('input').val() !== '') {
+            me.addKeywordGroup($keywordGroup.find('input').val());
+        }
     });
     
     $srcWfsServiceParamInput.
@@ -861,6 +858,104 @@ CCH.Objects.UI = function () {
                 $wfsImportButton.attr('disabled', 'disabled');
             }
     });
+    
+    $('#form-publish-info-item-panel-publications-button-add').on('click', function () {
+        me.createPublicationRow('','');
+    });
+
+    $('#publish-button-create-aggregation-option').on('click', function () {
+        me.clearForm();
+        me.enableNewAggregationForm();
+    });
+
+    $('#publish-button-create-item-option').on('click', function () {
+        me.clearForm();
+        $('#qq-uploader-dummy').removeClass('hidden');
+        me.createUploader({
+            callbacks : {
+                success : [
+                    function (args) {
+                        if (args.responseJSON && args.responseJSON.success === 'true') {
+                            me.publishMetadata({
+                                token : args.token,
+                                callbacks : {
+                                    success : [
+                                        function (mdObject, status) {
+                                            if (status === 'success') {
+                                                $('#form-publish-info-item-itemtype').val('data');
+                                                $('#form-publish-item-service-csw').val(mdObject.metadata);
+                                                me.initNewItemForm();
+                                            }
+                                        }
+                                    ],
+                                    error : [
+                                        function () {
+                                            debugger;
+                                        }
+                                    ]
+                                }
+                            });
+                        }
+                    }
+                ],
+                error : [
+                    function () {
+                        debugger;
+                    }
+                ]
+            }
+        });
+    });
+    
+	$proxyWfsServiceInput.on('blur', me.wfsInfoUpdated);
+	$proxyWfsServiceParamInput.on('blur', me.wfsInfoUpdated);
+    
+	$alertModal.on('hidden.bs.modal', function () {
+		$alertModalTitle.empty();
+		$alertModalBody.empty();
+		$alertModalFooter.find('button').not('#alert-modal-close-button').remove();
+	});
+	
+	$attributeSelect.on('change', function (evt) {
+		var attribute = $(evt.target).val();
+        
+        CCH.ows.requestSummaryByAttribute({
+            url : $('#form-publish-item-service-csw').val(),
+            attribute : attribute,
+            callbacks : {
+                success : [
+                    function (response) {
+                        $titleFullTextArea.val(response.full.title || '');
+                        $descriptionFullTextArea.val(response.full.text || '');
+                        
+                        $titleMediumTextArea.val(response.medium.title || '');
+                        $descriptionMediumTextArea.val(response.medium.text || '');
+                        
+                        $titleTinyTextArea.val(response.tiny.title || '');
+                        $descriptionTinyTextArea.val(response.tiny.text || '');
+                        
+                        $publicationsPanel.find('>div:nth-child(2)').empty();
+                        $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled', 'disabled');
+                        Object.keys(response.full.publications, function (type) {
+                            response.full.publications[type].each(function (publication) {
+                                me.createPublicationRow(publication.link, publication.title, type);
+                            });
+                        });
+                        
+                        response.keywords.split('|').each(function (keyword) {
+                            me.addKeywordGroup(keyword);
+                        });
+                        
+                    }
+                ],
+                error : [
+                    function (errorText) {
+                        debugger;
+                    }
+                ]
+            }
+        })
+	});
     
     return me;
 };
