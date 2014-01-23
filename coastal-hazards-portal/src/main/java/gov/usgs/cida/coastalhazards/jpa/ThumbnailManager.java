@@ -31,7 +31,7 @@ public class ThumbnailManager {
         String result = "{\"success\": false}";
 		try {
 			transaction.begin();
-			em.persist(thumbnail);
+			em.merge(thumbnail);
 			transaction.commit();
             result = "{\"success\": true}";
 		} catch (Exception ex) {
