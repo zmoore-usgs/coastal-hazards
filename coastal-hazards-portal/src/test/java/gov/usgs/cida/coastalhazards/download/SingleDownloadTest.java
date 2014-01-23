@@ -24,11 +24,11 @@ public class SingleDownloadTest {
         SingleDownload singleDownload = new SingleDownload();
         singleDownload.setName("test");
         WFSService wfs = new WFSService();
-        wfs.setEndpoint("http://coastalmap.marine.usgs.gov/cmgp/National/cvi_WFS/MapServer/WFSServer");
-        wfs.setTypeName("National_cvi_WFS:GulfofMexico_CVI");
+        wfs.setEndpoint("http://cida-wiwsc-cchdev:8081/geoserver/wfs");
+        wfs.setTypeName("proxied:sandy_example");
         singleDownload.setWfs(wfs);
-        singleDownload.addAttr("CVI");
-        singleDownload.addAttr("SLRISK");
+        singleDownload.addAttr("PCOL");
+        singleDownload.addAttr("POVW");
         singleDownload.stage(DownloadUtility.createDownloadStagingArea(), missing);
     } 
     
