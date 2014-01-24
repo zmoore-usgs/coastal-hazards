@@ -7,9 +7,7 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.rest.data.util.MetadataUtil;
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.FormUploadHandler;
-import gov.usgs.cida.utilities.properties.JNDISingleton;
 import gov.usgs.cida.utilities.string.StringHelper;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,15 +43,10 @@ public class MetadataResource {
 	private static final int FILE_UPLOAD_MAX_SIZE = 15728640;
 	private static final String FILENAME_PARAM = "qqfile";
 	private static File UPLOAD_DIR;
-	private static ItemManager itemManager;
 
 	public MetadataResource() {
 		super();
 		UPLOAD_DIR = new File(FileUtils.getTempDirectoryPath() + "/metadata-upload");
-	}
-	
-	static { 
-		itemManager = new ItemManager();
 	}
     
 	@POST
@@ -127,8 +120,8 @@ public class MetadataResource {
     public Response getMetadataSummaryByAttribtueUsingItemID(@PathParam("itemid") String itemId,
         @PathParam("attr") String attr) throws URISyntaxException {
         Response response;
-        try {
-			Item item = itemManager.loadItem(itemId);
+        try (ItemManager itemManager = new ItemManager()) {
+			Item item = itemManager.load(itemId);
             String jsonSummary = MetadataUtil.getSummaryFromWPS(getMetadataUrl(item), attr);
             Summary summary = GsonUtil.getDefault().fromJson(jsonSummary, Summary.class);
             response = Response.ok(GsonUtil.getDefault().toJson(summary, Summary.class), MediaType.APPLICATION_JSON_TYPE).build();
