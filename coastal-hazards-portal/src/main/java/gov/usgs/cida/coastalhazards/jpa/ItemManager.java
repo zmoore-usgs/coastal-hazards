@@ -69,6 +69,24 @@ public class ItemManager implements AutoCloseable {
         }
         return id;
     }
+    
+    public boolean delete(String itemId) {
+        boolean deleted = false;
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+            Item item = em.find(Item.class, itemId);
+            em.remove(item);
+            transaction.commit();
+            deleted = true;
+        } catch (Exception ex) {
+            log.debug("Transaction failed on delete", ex);
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+        }
+        return deleted;
+    }
 
     /**
      * Query the database for items and return it as a json string
