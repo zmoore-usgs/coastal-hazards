@@ -66,18 +66,13 @@ public class FeatureCollectionExport {
     }
     
     public void setCRS(CoordinateReferenceSystem crs) {
-        this.crs = crs;
+        throw new UnsupportedOperationException("Removing this option for now, will be able to reproject in future");
+        //this.crs = crs;
     }
     
     public void writeToShapefile() throws MalformedURLException, IOException {
         //SimpleFeatureIterator features = simpleFeatureCollection.features();
         SimpleFeatureType type = buildFeatureType();
-        try {
-            setCRS(CRS.decode("EPSG:3857"));
-        }
-        catch (FactoryException ex) {
-            setCRS(DEFAULT_CRS);
-        }
         FileDataStoreFactorySpi factory = FileDataStoreFinder.getDataStoreFactory("shp");
         File shpFile = checkAndCreateFile();
         Map datastoreConfig = new HashMap<>();
@@ -113,6 +108,7 @@ public class FeatureCollectionExport {
     private SimpleFeatureType buildFeatureType() {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName(namePrefix);
+        builder.setCRS(this.crs);
         builder.add(getGeometryDescriptor());
         for (String name : attributes) {
             AttributeDescriptor descriptor = getDescriptorFromPrototype(name);
