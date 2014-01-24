@@ -28,7 +28,6 @@ public class FullSummaryAdapter implements JsonSerializer<Full>, JsonDeserialize
     public JsonElement serialize(Full src, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject fullSummary = new JsonObject();
         
-        fullSummary.add("id", context.serialize(src.getId()));
         fullSummary.add("title", context.serialize(src.getTitle()));
         fullSummary.add("text", context.serialize(src.getText()));
         
@@ -47,7 +46,6 @@ public class FullSummaryAdapter implements JsonSerializer<Full>, JsonDeserialize
         Full result = new Full();
         if (json instanceof JsonObject) {
             JsonObject fullJson = (JsonObject)json;
-            result.setId(fullJson.getAsJsonPrimitive("id").getAsLong());
             result.setTitle(fullJson.getAsJsonPrimitive("title").getAsString());
             result.setText(fullJson.getAsJsonPrimitive("text").getAsString());
             

@@ -34,8 +34,8 @@
 <html>
     <head>
         <jsp:include page="<%=metaTags%>"></jsp:include>
-        <title>USGS Coastal Change Hazards Portal - Publish</title>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
+            <title>USGS Coastal Change Hazards Portal - Publish</title>
+            <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/publish/publish.css" />
@@ -54,14 +54,13 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
         <jsp:include page="<%= configration%>"></jsp:include>
-        <script type="text/javascript">
+            <script type="text/javascript">
             CCH.itemid = '<%= id%>';
         </script>
     </head>
     <body>
 
         <div class="container">
-
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title"></h3>
@@ -92,7 +91,11 @@
                         <div id="qq-uploader-dummy"></div>
                     </div>
                     <form class="form-inline" role="form">
+
                         <input type="hidden" id="form-publish-info-item-itemtype" />
+                        <input type="hidden" id="form-publish-info-item-summary-version" />
+                        <input type="hidden" id="form-publish-info-item-enabled" />
+
                         <%-- 2 column layout --%>
                         <div class="col-md-6">
 
@@ -306,13 +309,28 @@
                                 <div class="form-group">
                                     <div class="checkbox">
                                         <input id="form-publish-item-ribbonable" type="checkbox" disabled="disabled">
-                                        <label for="fform-publish-item-ribbonable">Ribbonable</label>
+                                        <label for="form-publish-item-ribbonable">Ribbonable</label>
                                     </div>
                                 </div>
                             </div>
-
+                            <div class="row row-showchildren">
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <input id="form-publish-item-showchildren" type="checkbox" disabled="disabled">
+                                        <label for="form-publish-item-showchildren">Show Children</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </form>
+                </div>
+                <div id="row-controls-save" class="row clear">
+                    <button type="button" id="publish-button-save" class="btn btn-lg btn-success">
+                        Save
+                    </button>
+                    <button type="button" id="publish-button-publish" class="btn btn-lg btn-success">
+                        Publish
+                    </button>
                 </div>
             </div>
         </div>
