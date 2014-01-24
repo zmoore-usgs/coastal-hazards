@@ -99,6 +99,35 @@
 	cursor: pointer;
 }
 
+#form-publish-info-item-children-sortable-ul {
+    list-style-type: none;
+    padding-left: 0px;
+}
+#form-publish-info-item-children-sortable-ul li {
+    padding: 10px;
+    border: 1px solid #DDD;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    text-align: center;
+}
+#form-publish-info-item-children-sortable-ul li span > i:first-child {
+    float: left;
+    font-size: 2em;
+}
+
+#form-publish-info-item-children-sortable-ul li span > div button {
+    width: 20%;
+}
+
+#form-publish-info-item-children-sortable-ul li span > div button i {
+    font-size: 1.7em;
+}
+
+#form-publish-info-item-children-sortable-ul li span > div {
+    clear : both
+}
+
 .qq-upload-button {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	-webkit-box-sizing: border-box;

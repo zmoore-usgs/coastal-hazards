@@ -39,9 +39,11 @@
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/publish/publish.css" />
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/1.10.3/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+        
         <jsp:include page="<%= jsURI%>">
             <jsp:param name="relPath" value="../../" />
         </jsp:include>
@@ -106,6 +108,11 @@
                                     <input type="text" class="form-control" id="form-publish-item-id" disabled="disabled" />
                                 </div>
                             </div>
+                            
+                            <%-- ITEM IMAGE --%>
+                            <div id="form-publish-info-item-id" class="row row-id">
+                                <img id="form-publish-info-item-image" src="" /> 
+                            </div>
 
                             <%-- ITEM TITLE --%>
                             <div id="form-publish-info-item-title-full" class="row row-title">
@@ -118,12 +125,6 @@
                                 <div class="form-group">
                                     <label for="form-publish-item-title-medium">Title (Medium)</label>
                                     <textarea class="form-control" rows="2" id="form-publish-item-title-medium" disabled="disabled"></textarea>
-                                </div>
-                            </div>
-                            <div id="form-publish-info-item-title-tiny" class="row row-title">
-                                <div class="form-group">
-                                    <label for="form-publish-item-title-tiny">Title (Tiny)</label>
-                                    <textarea class="form-control" rows="2" id="form-publish-item-title-tiny" disabled="disabled"></textarea>
                                 </div>
                             </div>
 
@@ -291,19 +292,12 @@
                             </div>
 
                             <%-- Children --%>
-                            <div id="form-publish-info-item-children" class="row row-children">
+                            <div id="form-publish-info-item-children-sortable-row" class="row row-children">
                                 <div class="form-group">
-                                    <label for="form-publish-item-children">Children</label>
-                                    <select class="form-control" multiple id="form-publish-item-children" disabled="disabled"></select>
+                                    <ul id="form-publish-info-item-children-sortable-ul"></ul>
                                 </div>
                             </div>
-                            <div id="form-publish-info-item-displayed-children" class="row row-displayed-children">
-                                <div class="form-group">
-                                    <label for="form-publish-item-displayed-children">Displayed Children</label>
-                                    <select class="form-control" multiple id="form-publish-item-displayed-children" disabled="disabled"></select>
-                                </div>
-                            </div>
-
+                            
                             <%-- Ribbonable --%>
                             <div class="row row-ribbonable">
                                 <div class="form-group">
