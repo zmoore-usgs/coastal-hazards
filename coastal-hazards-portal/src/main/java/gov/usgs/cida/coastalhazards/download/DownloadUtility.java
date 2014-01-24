@@ -130,13 +130,12 @@ public class DownloadUtility {
     public static void stageSessionDownload(Session stageThis, File stagingDir) throws IOException, ConcurrentModificationException {
         lock(stagingDir);
 
-        ItemManager itemManager = new ItemManager();
         List<String> missing = new LinkedList<>();
 
-        try {
+        try (ItemManager itemManager = new ItemManager()) {
             Map<WFSService, SingleDownload> downloadMap = new HashMap<>();
             for (SessionItem sessionItem : stageThis.getItems()) {
-                Item item = itemManager.loadItem(sessionItem.getItemId());
+                Item item = itemManager.load(sessionItem.getItemId());
                 populateDownloadMap(downloadMap, item);
             }
             List<String> namesUsed = new ArrayList<>();

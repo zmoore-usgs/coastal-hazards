@@ -33,11 +33,11 @@ public class Publication implements Serializable {
     public static final String TITLE = "title";
     public static final String LINK = "link";
 
-    private long id;
-    private long fullId;
+    private transient long id;
+    private transient long fullId;
     private String title;
     private String link;
-    private PublicationType type;
+    private transient PublicationType type;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
