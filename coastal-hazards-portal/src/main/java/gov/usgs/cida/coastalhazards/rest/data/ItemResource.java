@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
@@ -129,7 +130,6 @@ public class ItemResource {
     @PUT
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id, String content) {
         Response response = null;
         if (SessionResource.isValidSession(request)) {
@@ -139,12 +139,27 @@ public class ItemResource {
                 Item mergedItem = Item.copyValues(updatedItem, dbItem);
                 final String mergedId = itemManager.merge(mergedItem);
                 if (null != mergedId) {
-                    Map<String, String> ok = new HashMap<String, String>() {{
-                        put("id", mergedId);
-                    }};
-                    response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+                    response = Response.ok().build();
                 } else {
                     response = Response.status(Response.Status.BAD_REQUEST).build();
+                }
+            }
+        } else {
+            response = Response.status(Status.UNAUTHORIZED).build();
+        }
+        return response;
+    }
+    
+    @DELETE
+    @Path("{id}")
+    public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id) {
+        Response response = null;
+        if (SessionResource.isValidSession(request)) {
+            try (ItemManager itemManager = new ItemManager()) {
+                if (itemManager.delete(id)) {
+                    response = Response.ok().build();
+                } else {
+                    response = Response.serverError().build();
                 }
             }
         } else {
