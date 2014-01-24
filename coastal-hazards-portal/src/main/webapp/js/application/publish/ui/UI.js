@@ -83,6 +83,7 @@ CCH.Objects.UI = function () {
         $name.attr('disabled', 'disabled');
 		$displayedChildrenSb.attr('disabled', 'disabled');
         $wfsImportButton.attr('disabled', 'disabled');
+        $keywordGroup.find('input').attr('disabled', 'disabled');
         $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').attr('disabled', 'disabled');
         $itemIdInput.val('');
         $titleFullTextArea.val('');
@@ -99,7 +100,7 @@ CCH.Objects.UI = function () {
         $itemEnabledField.val('');
         $attributeSelect.val('');
         $('.form-group-keyword').not(':first').remove();
-        $('.form-group-keyword button:nth-child(2)').removeClass('hidden');
+        $('.form-group-keyword button:nth-child(2)').addClass('hidden');
         $('.form-group-keyword input').val('');
         $cswServiceInput.val('');
         $srcWfsServiceInput.val('');
@@ -157,6 +158,7 @@ CCH.Objects.UI = function () {
         $uploaderDummy.removeClass('hidden');
         $metadataDropdownGroup.removeClass('hidden');
         $itemEnabledField.val('false');
+        $keywordGroup.find('input').removeAttr('disabled');
     };
 
     me.enableNewAggregationForm = function () {
@@ -189,6 +191,7 @@ CCH.Objects.UI = function () {
 		$displayedChildrenSb.removeAttr('disabled');
         $uploaderDummy.empty().addClass('hidden');
         $itemEnabledField.val('false');
+        $keywordGroup.find('input').removeAttr('disabled');
     };
     
     me.validateForm = function () {
@@ -502,12 +505,13 @@ CCH.Objects.UI = function () {
 
         if (!keywordExists) {
             $keywordGroupLocal = $keywordGroupClone.clone();
-            $keywordGroupLocal.find('input').removeAttr('disabled');
             $keywordGroupLocal.find('button:nth-child(1)').addClass('hidden');
             $keywordGroupLocal.find('button').removeAttr('disabled');
             $keywordGroupLocal.
                     find('input').
-                    attr('value', keyword);
+                    attr('value', keyword).
+                    removeAttr('disabled').
+                    val(keyword);
             me.bindKeywordGroup($keywordGroupLocal);
             $keywordGroup.after($keywordGroupLocal);
         }
@@ -766,14 +770,7 @@ CCH.Objects.UI = function () {
             keywords = summary.keywords.split('|');
             isItemEnabled = item.enabled;
 
-            // Fill out services
-            item.services.each(function (service) {
-                services[service.type] = {};
-                services[service.type].endpoint = service.endpoint;
-                services[service.type].serviceParameter = service.serviceParameter;
-            });
-
-            // Hidden field. Should be changed implicitly
+            // Hidden field - item type
             $itemType.val(item.itemType);
             
             if (item.itemType === 'aggregation') {
@@ -792,21 +789,118 @@ CCH.Objects.UI = function () {
                 $showChildrenCb.
                     prop('checked', item.showChildren).
                     removeAttr('disabled');
+                    
+                // Select children
+                item.children.each(function (child) {
+                    $childrenSb.
+                        find('option[value="'+child.id+'"]').
+                        prop('selected', 'selected');
+                });
+                item.displayedChildren.each(function (child) {
+                    $displayedChildrenSb.
+                        find('option[value="' + child + '"]').
+                        prop('selected', 'selected');
+                });
+                $childrenSb.removeAttr('disabled');
+                $displayedChildrenSb.removeAttr('disabled');
+
             } else {
                 $childrenSb.empty();
                 $displayedChildrenSb.empty();
+                
                 // Show Children
                 $showChildrenCb.
                     prop('checked', false).
                     attr('disabled', 'disabled');
+                
+                // Fill out services array
+                item.services.each(function (service) {
+                    services[service.type] = {};
+                    services[service.type].endpoint = service.endpoint;
+                    services[service.type].serviceParameter = service.serviceParameter;
+                });
+                if (item.services.length > 0) {
+                    // Fill out attribute selectbox by making a call to the WFS
+                    CCH.ows.describeFeatureType({
+                        layerName : services.proxy_wfs.serviceParameter,
+                        callbacks : {
+                            success : [function (responseObject) {
+                                    me.updateSelectAttribtue(responseObject);
+                                    $attributeSelect.
+                                        val(item.attr).
+                                        removeAttr('disabled');
+
+                            }],
+                            error : [
+                                function(data) {
+                                    var errorText = data.firstChild.textContent.trim();
+                                    if (errorText.indexOf('not find')) {
+                                        $srcWfsServiceInput.empty();
+                                        $srcWfsServiceParamInput.empty();
+                                        $srcWmsServiceInput.empty();
+                                        $srcWmsServiceParamInput.empty();
+                                        $alertModalTitle.html('Proxy Layer Could Not Be Found');
+                                        $alertModalBody.html('The proxy layer could not be found on our server.' + 
+                                            ' You may want to try re-importing it');
+                                        $alertModal.modal('show');
+                                    }
+                                }
+                            ]
+                        }
+                    });
+
+                    // Fill out services panel
+                    $cswServiceInput.
+                        val(services.csw.endpoint).
+                        removeAttr('disabled');
+                    $srcWfsServiceInput.
+                        val(services.source_wfs.endpoint).
+                        removeAttr('disabled');
+                    $srcWfsServiceParamInput.
+                        val(services.source_wfs.serviceParameter).
+                        removeAttr('disabled').
+                        keyup(function (evt) {
+                            if ($srcWfsServiceInput.val().trim() !== '' &&
+                                    $(evt.target).val().trim() !== '') {
+                                $wfsImportButton.removeAttr('disabled');
+                            } else {
+                                $wfsImportButton.attr('disabled', 'disabled');
+                            }
+                    });
+                    $srcWmsServiceInput.
+                        val(services.source_wms.endpoint).
+                        removeAttr('disabled');
+                    $srcWmsServiceParamInput.
+                        val(services.source_wms.serviceParameter).
+                        removeAttr('disabled');
+                    $proxyWfsServiceInput.
+                        val(services.proxy_wfs.endpoint).
+                        removeAttr('disabled');
+                    $proxyWfsServiceParamInput.
+                        val(services.proxy_wfs.serviceParameter).
+                        removeAttr('disabled');
+                    $proxyWmsServiceInput.
+                        val(services.proxy_wms.endpoint).
+                        removeAttr('disabled');
+                    $proxyWmsServiceParamInput.
+                        val(services.proxy_wms.serviceParameter).
+                        removeAttr('disabled');
+                }
+                
+                if ($srcWfsServiceInput.val().trim() !== '' && $srcWfsServiceParamInput.val().trim() !== '') {
+                    $wfsImportButton.removeAttr('disabled');
+                } else {
+                    $wfsImportButton.attr('disabled', 'disabled');
+                }
             }
             
+            // Item ID
+            $itemIdInput.val(id);
+
+            // Item Name
             $name.
                 val(item.name).
                 removeAttr('disabled');
-
-            // Add Item ID
-            $itemIdInput.val(id);
 
             $metadataSummaryField.val(summary.version || 'unknown');
 
@@ -853,98 +947,12 @@ CCH.Objects.UI = function () {
 
             // Fill out item type
             $type.val(item.type).removeAttr('disabled');
-
-            if (item.services.length > 0) {
-                // Fill out attribute selectbox by making a call to the WFS
-                CCH.ows.describeFeatureType({
-                    layerName : services.proxy_wfs.serviceParameter,
-                    callbacks : {
-                        success : [function (responseObject) {
-                                me.updateSelectAttribtue(responseObject);
-                                $attributeSelect.
-                                    val(item.attr).
-                                    removeAttr('disabled');
-							
-                        }],
-						error : [
-							function(data) {
-								var errorText = data.firstChild.textContent.trim();
-								if (errorText.indexOf('not find')) {
-									$srcWfsServiceInput.empty();
-									$srcWfsServiceParamInput.empty();
-									$srcWmsServiceInput.empty();
-									$srcWmsServiceParamInput.empty();
-									$alertModalTitle.html('Proxy Layer Could Not Be Found');
-									$alertModalBody.html('The proxy layer could not be found on our server.' + 
-										' You may want to try re-importing it');
-									$alertModal.modal('show');
-								}
-							}
-						]
-                    }
-                });
-                
-                // Fill out services panel
-                $cswServiceInput.
-                    val(services.csw.endpoint).
-                    removeAttr('disabled');
-                $srcWfsServiceInput.
-                    val(services.source_wfs.endpoint).
-                    removeAttr('disabled');
-                $srcWfsServiceParamInput.
-                    val(services.source_wfs.serviceParameter).
-                    removeAttr('disabled').
-                    keyup(function (evt) {
-                        if ($srcWfsServiceInput.val().trim() !== '' &&
-                                $(evt.target).val().trim() !== '') {
-                            $wfsImportButton.removeAttr('disabled');
-                        } else {
-                            $wfsImportButton.attr('disabled', 'disabled');
-                        }
-                });
-                $srcWmsServiceInput.
-                    val(services.source_wms.endpoint).
-                    removeAttr('disabled');
-                $srcWmsServiceParamInput.
-                    val(services.source_wms.serviceParameter).
-                    removeAttr('disabled');
-                $proxyWfsServiceInput.
-                    val(services.proxy_wfs.endpoint).
-                    removeAttr('disabled');
-                $proxyWfsServiceParamInput.
-                    val(services.proxy_wfs.serviceParameter).
-                    removeAttr('disabled');
-                $proxyWmsServiceInput.
-                    val(services.proxy_wms.endpoint).
-                    removeAttr('disabled');
-                $proxyWmsServiceParamInput.
-                    val(services.proxy_wms.serviceParameter).
-                    removeAttr('disabled');
-            }
-            
-            if ($srcWfsServiceInput.val().trim() !== '' && $srcWfsServiceParamInput.val().trim() !== '') {
-                $wfsImportButton.removeAttr('disabled');
-            } else {
-                $wfsImportButton.attr('disabled', 'disabled');
-            }
             
             // Ribbonable
             $ribbonableCb.
                 prop('checked', item.ribbonable).
                 removeAttr('disabled');
-        
-            // Select children
-            item.children.each(function (child) {
-                $childrenSb.
-                    find('option[value="'+child.id+'"]').
-                    prop('selected', 'selected');
-            });
-			item.displayedChildren.each(function (child) {
-				$displayedChildrenSb.
-					find('option[value="' + child + '"]').
-					prop('selected', 'selected');
-			});
-            
+
             // Publications
             $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled', 'disabled');
             Object.keys(item.summary.full.publications, function (type) {
@@ -953,8 +961,6 @@ CCH.Objects.UI = function () {
                 });
             });
 
-            $childrenSb.removeAttr('disabled');
-			$displayedChildrenSb.removeAttr('disabled');
             $itemEnabledField.val(isItemEnabled);
             $metadataDropdownGroup.removeClass('hidden');
             
@@ -1341,6 +1347,8 @@ CCH.Objects.UI = function () {
             $alertModal.modal('show');
         }
     });
+    
+    me.clearForm();
     
     CCH.ows.requestCSWRecords({
         callbacks : {
