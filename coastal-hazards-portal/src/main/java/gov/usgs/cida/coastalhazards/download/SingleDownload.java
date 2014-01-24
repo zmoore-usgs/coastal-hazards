@@ -1,10 +1,10 @@
 package gov.usgs.cida.coastalhazards.download;
 
 import gov.usgs.cida.coastalhazards.export.FeatureCollectionExport;
-import gov.usgs.cida.coastalhazards.export.WFSExportClient;
+import gov.usgs.cida.coastalhazards.export.HttpComponentsWFSClient;
+import gov.usgs.cida.coastalhazards.export.WFSClientInterface;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.opengis.filter.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,13 +47,11 @@ public class SingleDownload {
      * @throws IOException usually means cannot contact server
      */
     public void stage(File stagingDir, List<String> missing) throws IOException {
-        WFSExportClient wfsClient = new WFSExportClient();
-        wfsClient.setupDatastoreFromEndpoint(wfs.getEndpoint());
-        String[] typeNames = wfsClient.getTypeNames();
-        if (!ArrayUtils.contains(typeNames, wfs.getTypeName())) {
-            missing.add(name);
-        } else {
-            SimpleFeatureCollection featureCollection = wfsClient.getFeatureCollection(wfs.getTypeName());
+        try (WFSClientInterface wfsClient = new HttpComponentsWFSClient()) {
+            wfsClient.setupDatastoreFromEndpoint(wfs.getEndpoint());
+
+            Filter nonFilter = null;
+            SimpleFeatureCollection featureCollection = wfsClient.getFeatureCollection(wfs.getTypeName(), nonFilter);
             FeatureCollectionExport export = new FeatureCollectionExport(featureCollection, stagingDir, name);
             for (String attr : attrs) {
                 export.addAttribute(attr);
@@ -61,19 +59,21 @@ public class SingleDownload {
 
             try {
                 export.writeToShapefile();
-            } catch (Exception ex) {
+            } catch (IOException ex) {
                 LOG.error("Unable to write shapefile {}", name);
                 missing.add(name);
             }
-            
-            String metadataName = name + ".shp.xml";
-            try {
-                MetadataDownload metaExport = new MetadataDownload(metadata, new File(stagingDir, metadataName));
-                metaExport.stage();
-            } catch (Exception ex) {
-                LOG.error("Unable to add metadata named {} from {}", metadataName, metadata);
-                missing.add(metadataName);
-            }
+        } catch (Exception ex) {
+            LOG.debug("Exception while using or closing wfsClient");
+        }
+        
+        String metadataName = name + ".shp.xml";
+        try {
+            MetadataDownload metaExport = new MetadataDownload(metadata, new File(stagingDir, metadataName));
+            metaExport.stage();
+        } catch (Exception ex) {
+            LOG.error("Unable to add metadata named {} from {}", metadataName, metadata);
+            missing.add(metadataName);
         }
     }
 
@@ -90,7 +90,7 @@ public class SingleDownload {
     }
 
     public void addAttr(String attr) {
-        if (!this.attrs.contains(wfs)) {
+        if (!this.attrs.contains(attr)) {
             this.attrs.add(attr);
         }
     }
