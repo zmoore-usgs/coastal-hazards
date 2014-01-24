@@ -5,8 +5,9 @@
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page import="java.util.Map" %>
 
-<%!	
+<%!
     protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
+
     {
         try {
             props = props.addJNDIContexts(new String[0]);
@@ -18,51 +19,48 @@
 <%
     boolean development = Boolean.parseBoolean(props.getProperty("development"));
     String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
-    String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
-    String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
 
     // Figure out the path based on the ID passed in, if any
-    Map<String, String>  attributeMap = (Map<String, String>) pageContext.findAttribute("it");
+    Map<String, String> attributeMap = (Map<String, String>) pageContext.findAttribute("it");
     String id = attributeMap.get("id");
     String path = "../../../../";
     String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
     String jsURI = path + "js/third-party/jsuri/jsuri.jsp";
     String fineUploader = path + "js/fineuploader/fineuploader.jsp";
     String log4js = path + "js/log4javascript/log4javascript.jsp";
-	String configration = path + "WEB-INF/jsp/components/common/config.jsp";
+    String configration = path + "WEB-INF/jsp/components/common/config.jsp";
 %>
 <!DOCTYPE html>
 <html>
     <head>
         <jsp:include page="<%=metaTags%>"></jsp:include>
-        <title>USGS Coastal Change Hazards Portal - Publish</title>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
+            <title>USGS Coastal Change Hazards Portal - Publish</title>
+            <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
-		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/publish/publish.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/publish/publish.css" />
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <jsp:include page="<%= jsURI%>">
             <jsp:param name="relPath" value="../../" />
         </jsp:include>
-        <jsp:include page="<%= log4js %>">
+        <jsp:include page="<%= log4js%>">
             <jsp:param name="relPath" value="../../" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-		<jsp:include page="<%= fineUploader%>">
+        <jsp:include page="<%= fineUploader%>">
             <jsp:param name="relPath" value="../../" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-		<jsp:include page="<%= configration%>"></jsp:include>
-        <script type="text/javascript">
-			CCH.itemid = '<%= id %>';
-		</script>
+        <jsp:include page="<%= configration%>"></jsp:include>
+            <script type="text/javascript">
+            CCH.itemid = '<%= id%>';
+        </script>
     </head>
     <body>
-        
+
         <div class="container">
-            
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title"></h3>
@@ -84,13 +82,23 @@
                                 <li><a id="publish-button-create-aggregation-option" href="#">Aggregation</a></li>
                             </ul>
                         </div>
+                        <div id="publish-button-edit-metadata-existing-grp" class="btn-group hidden">
+                            <button type="button" id="publish-button-edit-metadata-existing" class="btn btn-lg btn-success dropdown-toggle" data-toggle="dropdown">
+                                Select Metadata <span class="caret"></span>
+                            </button>
+                            <ul id="publish-list-edit-metadata-existing" class="dropdown-menu" role="menu"></ul>
+                        </div>
                         <div id="qq-uploader-dummy"></div>
                     </div>
                     <form class="form-inline" role="form">
+
                         <input type="hidden" id="form-publish-info-item-itemtype" />
+                        <input type="hidden" id="form-publish-info-item-summary-version" />
+                        <input type="hidden" id="form-publish-info-item-enabled" />
+
                         <%-- 2 column layout --%>
                         <div class="col-md-6">
-                            
+
                             <%-- ITEM ID --%>
                             <div id="form-publish-info-item-id" class="row row-id">
                                 <div class="form-group">
@@ -98,7 +106,7 @@
                                     <input type="text" class="form-control" id="form-publish-item-id" disabled="disabled" />
                                 </div>
                             </div>
-                            
+
                             <%-- ITEM TITLE --%>
                             <div id="form-publish-info-item-title-full" class="row row-title">
                                 <div class="form-group">
@@ -118,7 +126,7 @@
                                     <textarea class="form-control" rows="2" id="form-publish-item-title-tiny" disabled="disabled"></textarea>
                                 </div>
                             </div>
-                            
+
                             <%-- ITEM DESCRIPTION --%>
                             <div id="form-publish-info-item-description-full" class="row row-description">
                                 <div class="form-group">
@@ -138,7 +146,7 @@
                                     <textarea class="form-control" rows="2" id="form-publish-item-description-tiny" disabled="disabled"></textarea>
                                 </div>
                             </div>
-                            
+
                             <%-- KEYWORDS --%>
                             <div id="form-publish-info-item-keywords" class="row row-keywords">
                                 <div><h3>Keywords</h3></div>
@@ -150,8 +158,8 @@
                                     </span>
                                 </div>
                             </div>
-							
-							 <%-- Services --%>
+
+                            <%-- Services --%>
                             <div id="services-panel" class="panel panel-default">
                                 <div class="panel-heading">
                                     <h3 class="panel-title">Services</h3>
@@ -203,11 +211,11 @@
                                 </div>
                             </div>
                         </div>
-                            
-                            
+
+
                         <%-- COLUMN TWO --%>
                         <div class="col-md-6">
-                            
+
                             <%-- ITEM TYPE --%>
                             <div id="form-publish-info-item-type" class="row row-type">
                                 <div class="form-group">
@@ -220,7 +228,7 @@
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <%-- NAME --%>
                             <div id="form-publish-info-item-name" class="row row-name">
                                 <div class="form-group">
@@ -228,7 +236,7 @@
                                     <input type="text" class="form-control" id="form-publish-item-name" disabled="disabled" />
                                 </div>
                             </div>
-                            
+
                             <%-- BBOX --%>
                             <div id="form-publish-info-item-bbox" class="row row-bbox">
                                 <div><h5>Bounding Box</h5></div>
@@ -262,7 +270,7 @@
                                     </tr>
                                 </table>
                             </div>
-                            
+
                             <%-- Publications --%>
                             <div id="publications-panel" class="panel panel-default">
                                 <div class="panel-heading">
@@ -273,7 +281,7 @@
                                     <%-- Added programatically --%>
                                 </div>
                             </div>
-                            
+
                             <%-- Attribute --%>
                             <div class="row row-attribute">
                                 <div class="form-group">
@@ -281,7 +289,7 @@
                                     <select class="form-control" id="form-publish-item-attribute" disabled="disabled"></select>
                                 </div>
                             </div>
-                            
+
                             <%-- Children --%>
                             <div id="form-publish-info-item-children" class="row row-children">
                                 <div class="form-group">
@@ -289,25 +297,40 @@
                                     <select class="form-control" multiple id="form-publish-item-children" disabled="disabled"></select>
                                 </div>
                             </div>
-							<div id="form-publish-info-item-displayed-children" class="row row-displayed-children">
+                            <div id="form-publish-info-item-displayed-children" class="row row-displayed-children">
                                 <div class="form-group">
                                     <label for="form-publish-item-displayed-children">Displayed Children</label>
                                     <select class="form-control" multiple id="form-publish-item-displayed-children" disabled="disabled"></select>
                                 </div>
                             </div>
-                            
+
                             <%-- Ribbonable --%>
                             <div class="row row-ribbonable">
                                 <div class="form-group">
                                     <div class="checkbox">
                                         <input id="form-publish-item-ribbonable" type="checkbox" disabled="disabled">
-                                        <label for="fform-publish-item-ribbonable">Ribbonable</label>
+                                        <label for="form-publish-item-ribbonable">Ribbonable</label>
                                     </div>
                                 </div>
                             </div>
-                            
+                            <div class="row row-showchildren">
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <input id="form-publish-item-showchildren" type="checkbox" disabled="disabled">
+                                        <label for="form-publish-item-showchildren">Show Children</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </form>
+                </div>
+                <div id="row-controls-save" class="row clear">
+                    <button type="button" id="publish-button-save" class="btn btn-lg btn-success">
+                        Save
+                    </button>
+                    <button type="button" id="publish-button-publish" class="btn btn-lg btn-success">
+                        Publish
+                    </button>
                 </div>
             </div>
         </div>
@@ -319,19 +342,19 @@
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/OnReady.js"></script>
 
-		<div id="alert-modal" class="modal fade">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title"></h4>
-					</div>
-					<div class="modal-body"></div>
-					<div class="modal-footer">
-						<button id="alert-modal-close-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</body>
+        <div id="alert-modal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body"></div>
+                    <div class="modal-footer">
+                        <button id="alert-modal-close-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

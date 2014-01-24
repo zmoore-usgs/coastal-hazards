@@ -12,9 +12,9 @@ $(document).ready(function () {
     });
     CCH.LOG = LOG;
 
-    CCH.ui = new CCH.Objects.UI();
+     CCH.ows = new CCH.Objects.OWS().init();
 
-    CCH.ows = new CCH.Objects.OWS().init();
+    CCH.ui = new CCH.Objects.UI();
 
     CCH.ui.addUserInformationToForm({
         data : CCH.CONFIG.user
