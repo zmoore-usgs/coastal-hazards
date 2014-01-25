@@ -157,11 +157,29 @@
         position: absolute;
         z-index: 1006; /* 1005 is highest on map */
         height: 98%;
+        overflow: hidden;
     }
 
         #application-slide-items-container > div:nth-child(2) > div {
             padding: 10px 5px 10px 5px;
+            overflow-y: hidden;
+            background-color: #F5F5F5;
+            height: 100%;
+            border-left: 2px solid #E3E3E3;
+            border-top: 2px solid #E3E3E3;
+            border-bottom: 2px solid #E3E3E3;
+            border-top-left-radius: 10px 10px;
+            -webkit-border-top-left-radius: 10px 10px;
+            border-bottom-left-radius: 10px 10px;
+            -webkit-border-bottom-left-radius: 10px 10px;
         }
+        
+        /* Scrollable inner container */
+        #application-slide-items-container > div:nth-child(2) > div > div:nth-child(2) {
+            overflow-y: scroll;
+            height: 95%;
+        }
+        
         #application-slide-items-container > div:nth-child(2) > div > div:first-child {
             margin-bottom: 10px;
         }
@@ -176,19 +194,6 @@
     #application-slide-items-content {
         height: 100%;
         float:right;
-    }
-
-    #application-slide-items-content-container {
-        overflow: auto;
-        background-color: #F5F5F5;
-        height: 100%;
-        border-left: 2px solid #E3E3E3;
-        border-top: 2px solid #E3E3E3;
-        border-bottom: 2px solid #E3E3E3;
-        border-top-left-radius: 10px 10px;
-        -webkit-border-top-left-radius: 10px 10px;
-        border-bottom-left-radius: 10px 10px;
-        -webkit-border-bottom-left-radius: 10px 10px;
     }
 
     #application-slide-items-tab {
