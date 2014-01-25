@@ -34,8 +34,10 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                 // aggregationId_itemId
                 // itemId
                 splitName = name.split('_');
-                if (splitName.length > 2) {
+                if (splitName.length > 3) {
                     return splitName[1];
+                } else if (splitName.length > 2) {
+                    return splitName[0];
                 }
                 return splitName.last();
             };
