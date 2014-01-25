@@ -117,11 +117,12 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     buildLegend,
                     $popupHtml = $(popup.contentHTML),
                     $table = $popupHtml.find('table'),
-                    $theadRow = $('<tr />').append(
+                    $theadRow = $('<thead />').append(
+                    $('<tr />').append(
                         $('<td />').html('Layer'),
                         $('<td />').html('Color'),
                         $('<td />').html('Value')
-                    ),
+                    )),
                     buildLegend = function (args) {
                         args = args || {}
                         var binIdx = 0,
@@ -142,6 +143,11 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             ub,
                             width,
                             height;
+                    
+                        $table.find('#loading-info-row').remove();
+                        if ($table.find('thead').length === 0) {
+                            $table.append($theadRow);
+                        }
                         for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
                             lb = bins[binIdx].lowerBound;
                             ub = bins[binIdx].upperBound;
@@ -161,7 +167,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             }
                         }
 
-                        $table.find('#loading-info-row').remove();
                         $titleContainer.html(title);
                         $colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
 
@@ -203,14 +208,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 
                 // Average them out
                 attrAvg /= incomingFeatures.length;
-
-                // I've got enough information to build
-                // a legend
-                
-
-                if ($table.find('tr:not(#loading-info-row)').length === 0) {
-                    $table.append($theadRow);
-                }
 
                 if (item.type.toLowerCase() === 'vulnerability') {
                     if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(attr.toUpperCase()) !== -1) {
