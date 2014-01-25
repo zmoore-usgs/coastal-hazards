@@ -115,13 +115,12 @@ CCH.Objects.UI = function (args) {
             titleContainerSiblingsWidth = 0,
             headerHeight = $headerRow.outerHeight(true),
             footerHeight = $footerRow.outerHeight(true),
-            windowHeight = $(window).height(),
             tHeight,
             contentRowHeight;
 
         $(window).trigger('cch.ui.resizing', isSmall);
 
-        contentRowHeight = windowHeight - (headerHeight + footerHeight);
+        contentRowHeight = $('body').height() - (headerHeight + footerHeight);
 
         // This is an issue that happens with IE9. I've still not figured out why
         // but the height numbers seem to switch. It's probably an IE9 event
@@ -143,7 +142,7 @@ CCH.Objects.UI = function (args) {
             });
             $titleContainer.css('width', ($headerRow.innerWidth() - titleContainerSiblingsWidth - 25) + 'px');
         } else {
-             $titleContainer.css('width', '');
+            $titleContainer.css('width', '');
         }
 
         $contentRow.height(contentRowHeight - 1);

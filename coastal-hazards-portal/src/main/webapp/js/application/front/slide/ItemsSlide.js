@@ -36,6 +36,7 @@ CCH.Objects.ItemsSlide = function (args) {
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-items-content-container';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
     me.FOOTER_ROW_ID = args.footerRowId || 'footer-row';
+    me.SMALL_BELLOW_CONTAINER_ID = 'application-slide-items-content-container-inner-scrollable';
     me.bucket = args.bucket;
     me.isSmall = args.isSmall;
     me.borderWidth = 2;
@@ -161,7 +162,7 @@ CCH.Objects.ItemsSlide = function (args) {
             // Move the Search bar from the header to my slider
             $searchContainer.prependTo($slideContainer);
         } else {
-            $searchContainer =  $slideContainer.find('> div:first-child');
+            $searchContainer =  $slideContainer.find('> div:first-child:not(#application-slide-items-content-container-inner-scrollable)');
             
             $slideItemsContainer.addClass('col-lg-3 col-md-4');
             
@@ -306,7 +307,7 @@ CCH.Objects.ItemsSlide = function (args) {
                 }
                 $this.data('scrollTimeout', setTimeout(callback, 1, self));
             });
-        }
+        };
         $('#' + me.SLIDE_CONTENT_CONTAINER).scrollStopped(function(element) {
             setTimeout(function(element) {
                 $(element).height($(element).height() - 1);

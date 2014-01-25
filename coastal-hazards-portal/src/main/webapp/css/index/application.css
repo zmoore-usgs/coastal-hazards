@@ -69,7 +69,6 @@ html, body {
 #feature-identification-popup_contentDiv table tr {
     font-size: 1.2em;
     vertical-align: middle;
-    height: 50px;
     margin-bottom: 5px;
 }
 #feature-identification-popup_contentDiv table tr > td:nth-child(2) > span {

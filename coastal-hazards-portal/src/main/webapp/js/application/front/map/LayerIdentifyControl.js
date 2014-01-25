@@ -34,8 +34,10 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                 // aggregationId_itemId
                 // itemId
                 splitName = name.split('_');
-                if (splitName.length > 2) {
+                if (splitName.length > 3) {
                     return splitName[1];
+                } else if (splitName.length > 2) {
+                    return splitName[0];
                 }
                 return splitName.last();
             };
@@ -100,11 +102,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                 null);
 
             // Close any other layer identification widgets on the map
-            if (CCH.map.getMap().popups.length) {
-                CCH.map.getMap().popups.each(function (popup) {
-                    popup.closeDiv.click();
-                });
-            }
+            CCH.map.removeAllPopups();
             CCH.map.getMap().addPopup(popup, true);
 
             sldResponseHandler = function (sld) {
@@ -121,11 +119,12 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     buildLegend,
                     $popupHtml = $(popup.contentHTML),
                     $table = $popupHtml.find('table'),
-                    $theadRow = $('<tr />').append(
+                    $theadRow = $('<thead />').append(
+                    $('<tr />').append(
                         $('<td />').html('Layer'),
                         $('<td />').html('Color'),
                         $('<td />').html('Value')
-                    ),
+                    )),
                     buildLegend = function (args) {
                         args = args || {}
                         var binIdx = 0,
@@ -143,7 +142,14 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             $legendRow = $('<tr>'),
                             item = args.item,
                             lb,
-                            ub;
+                            ub,
+                            width,
+                            height;
+                    
+                        $table.find('#loading-info-row').remove();
+                        if ($table.find('thead').length === 0) {
+                            $table.append($theadRow);
+                        }
                         for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
                             lb = bins[binIdx].lowerBound;
                             ub = bins[binIdx].upperBound;
@@ -163,7 +169,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             }
                         }
 
-                        $table.find('#loading-info-row').remove();
                         $titleContainer.html(title);
                         $colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
 
@@ -178,11 +183,19 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                         $table.append($legendRow);
                         $popupHtml.append($table);
                         popup.setContentHTML($popupHtml.clone().wrap('<div/>').parent().html());
-                        // Set the size of the popup to be 
-                        // 1/3rd of the map's width and add
-                        // 60 pixels for each row
-                        popup.setSize(new OpenLayers.Size($('#feature-identification-popup div.col-md-12 > table').width(), $('#feature-identification-popup div.col-md-12 > table').height()));
+                        width = new OpenLayers.Size($('#feature-identification-popup div.col-md-12 > table').width());
+                        height = function () {
+                            var cHeight = 0;
+                            $('#feature-identification-popup div.col-md-12 > table tr').each(function (ind, item) {
+                                cHeight += $(item).height();
+                            })
+                            return cHeight;
+                        };
+                        popup.setSize(new OpenLayers.Size(width, height() + 5));
                         popup.panIntoView();
+                        $(window).on('cch.ui.redimensioned', function () {
+                            popup.setSize(new OpenLayers.Size(width, height() + 5));
+                        });
                     };
 
 
@@ -197,14 +210,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 
                 // Average them out
                 attrAvg /= incomingFeatures.length;
-
-                // I've got enough information to build
-                // a legend
-                
-
-                if ($table.find('tr:not(#loading-info-row)').length === 0) {
-                    $table.append($theadRow);
-                }
 
                 if (item.type.toLowerCase() === 'vulnerability') {
                     if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(attr.toUpperCase()) !== -1) {
