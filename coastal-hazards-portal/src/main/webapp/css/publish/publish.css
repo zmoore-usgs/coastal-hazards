@@ -110,6 +110,11 @@
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     text-align: center;
+    background-color: #FFFFFF;
+    margin: 5px;
+}
+form-publish-info-item-panel-children .panel-body {
+    background-color: #EEE;
 }
 #form-publish-info-item-children-sortable-ul li span > i:first-child {
     float: left;

@@ -21,7 +21,7 @@ CCH.Objects.UI = function () {
         $bboxWest = $form.find('#form-publish-item-bbox-input-west'),
         $bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
         $bboxEast = $form.find('#form-publish-item-bbox-input-east'),
-        $type = $form.find('#form-publish-info-item-type'),
+        $type = $form.find('#form-publish-item-type'),
         $attributeSelect = $form.find('#form-publish-item-attribute'),
         $keywordGroup = $form.find('.form-group-keyword'),
         $cswServiceInput = $form.find('#form-publish-item-service-csw'),
@@ -140,7 +140,7 @@ CCH.Objects.UI = function () {
         $proxyWmsServiceInput.removeAttr('disabled');
         $proxyWmsServiceParamInput.removeAttr('disabled');
         $ribbonableCb.removeAttr('disabled');
-        $showChildrenCb.prop('checked', true);
+        $showChildrenCb.prop('checked', false);
         $name.removeAttr('disabled');
         $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled');
         $uploaderDummy.removeClass('hidden');
@@ -346,43 +346,38 @@ CCH.Objects.UI = function () {
         item.summary.keywords = keywordsArray.join('|');
 
         services.push({
-            id : 0,
             type : 'csw',
             endpoint : $cswServiceInput.val().trim(),
             serviceParameter : ''
         });
         services.push({
-            id : 1,
             type : 'source_wfs',
             endpoint : $srcWfsServiceInput.val().trim(),
             serviceParameter : $srcWfsServiceParamInput.val().trim()
         });
         services.push({
-            id : 2,
             type : 'source_wms',
             endpoint : $srcWmsServiceInput.val().trim(),
             serviceParameter : $srcWmsServiceParamInput.val().trim()
         });
         services.push({
-            id : 3,
             type : 'proxy_wfs',
             endpoint : $proxyWfsServiceInput.val().trim(),
             serviceParameter : $proxyWfsServiceParamInput.val().trim()
         });
         services.push({
-            id : 4,
             type : 'proxy_wms',
             endpoint : $proxyWmsServiceInput.val().trim(),
             serviceParameter : $proxyWmsServiceParamInput.val().trim()
         });
-        
+
         $childrenSortableList.find('li > span > div > button:nth-child(1).active').each(function (ind, btn) {
             var $li = $(btn).parent().parent().parent(),
                 childId = $li.attr('id').substring(11),
                 child = CCH.items.find(function (item) {
                     return item.id === childId;
                 });
-                
+
             if (child) {
                 children.push(child);
             }

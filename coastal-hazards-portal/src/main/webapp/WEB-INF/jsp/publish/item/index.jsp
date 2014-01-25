@@ -43,7 +43,7 @@
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
-        
+
         <jsp:include page="<%= jsURI%>">
             <jsp:param name="relPath" value="../../" />
         </jsp:include>
@@ -57,7 +57,7 @@
         </jsp:include>
         <jsp:include page="<%= configration%>"></jsp:include>
             <script type="text/javascript">
-            CCH.itemid = '<%= id%>';
+                CCH.itemid = '<%= id%>';
         </script>
     </head>
     <body>
@@ -108,7 +108,7 @@
                                     <input type="text" class="form-control" id="form-publish-item-id" disabled="disabled" />
                                 </div>
                             </div>
-                            
+
                             <%-- ITEM IMAGE --%>
                             <div id="form-publish-info-item-id" class="row row-id">
                                 <img id="form-publish-info-item-image" src="" /> 
@@ -148,7 +148,6 @@
                                 </div>
                             </div>
 
-                            <%-- KEYWORDS --%>
                             <div id="form-publish-info-item-keywords" class="row row-keywords">
                                 <div><h3>Keywords</h3></div>
                                 <div class="input-group form-group-keyword">
@@ -229,7 +228,15 @@
                                     </select>
                                 </div>
                             </div>
-
+                            
+                            <%-- Attribute --%>
+                            <div class="row row-attribute">
+                                <div class="form-group">
+                                    <label for="form-publish-item-attribute">Attribute</label>
+                                    <select class="form-control" id="form-publish-item-attribute" disabled="disabled"></select>
+                                </div>
+                            </div>
+                            
                             <%-- NAME --%>
                             <div id="form-publish-info-item-name" class="row row-name">
                                 <div class="form-group">
@@ -283,21 +290,22 @@
                                 </div>
                             </div>
 
-                            <%-- Attribute --%>
-                            <div class="row row-attribute">
-                                <div class="form-group">
-                                    <label for="form-publish-item-attribute">Attribute</label>
-                                    <select class="form-control" id="form-publish-item-attribute" disabled="disabled"></select>
+                            
+                            <%-- Children --%>
+                            <div id="form-publish-info-item-panel-children" class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Children</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="form-publish-info-item-children-sortable-row" class="row row-children">
+                                        <div class="form-group">
+                                            <ul id="form-publish-info-item-children-sortable-ul"></ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <%-- Children --%>
-                            <div id="form-publish-info-item-children-sortable-row" class="row row-children">
-                                <div class="form-group">
-                                    <ul id="form-publish-info-item-children-sortable-ul"></ul>
-                                </div>
-                            </div>
-                            
+
                             <%-- Ribbonable --%>
                             <div class="row row-ribbonable">
                                 <div class="form-group">
