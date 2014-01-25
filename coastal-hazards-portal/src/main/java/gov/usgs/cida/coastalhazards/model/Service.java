@@ -22,7 +22,7 @@ public class Service implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-    private int id;
+    private transient int id;
     private ServiceType type;
     private transient String itemId;
     private String endpoint;

@@ -24,17 +24,18 @@ public class SLDResource {
 	public Response getSLD(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon) {
 		Response response = null;
 
-		ItemManager manager = new ItemManager();
-		Item item = manager.loadItem(id);
-		if (item == null) {
-			response = Response.status(Response.Status.NOT_FOUND).build();
-		} else {
-            SLDGenerator generator = SLDGenerator.getGenerator(item, ribbon);
-            if (generator != null) {
-                response = generator.generateSLD();
+		try (ItemManager manager = new ItemManager()) {
+            Item item = manager.load(id);
+            if (item == null) {
+                response = Response.status(Response.Status.NOT_FOUND).build();
+            } else {
+                SLDGenerator generator = SLDGenerator.getGenerator(item, ribbon);
+                if (generator != null) {
+                    response = generator.generateSLD();
+                }
             }
-		}
-
+        }
+        
 		return response;
 	}
 
@@ -44,18 +45,19 @@ public class SLDResource {
 	public Response getSLDInfo(@PathParam("id") String id, @QueryParam("ribbon") Integer ribbon) {
 		Response response;
 
-		ItemManager manager = new ItemManager();
-		Item item = manager.loadItem(id);
-		if (item == null) {
-			response = Response.status(Response.Status.NOT_FOUND).build();
-		} else {
-            SLDGenerator generator = SLDGenerator.getGenerator(item, ribbon);
-            if (generator == null) {
+		try (ItemManager manager = new ItemManager()) {
+            Item item = manager.load(id);
+            if (item == null) {
                 response = Response.status(Response.Status.NOT_FOUND).build();
             } else {
-                response = generator.generateSLDInfo();
+                SLDGenerator generator = SLDGenerator.getGenerator(item, ribbon);
+                if (generator == null) {
+                    response = Response.status(Response.Status.NOT_FOUND).build();
+                } else {
+                    response = generator.generateSLDInfo();
+                }
             }
-		}
+        }
 
 		return response;
 	}

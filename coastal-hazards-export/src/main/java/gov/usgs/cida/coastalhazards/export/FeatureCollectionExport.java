@@ -10,14 +10,18 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.geotools.data.FeatureWriter;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FileDataStoreFactorySpi;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -25,6 +29,7 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -61,11 +66,12 @@ public class FeatureCollectionExport {
     }
     
     public void setCRS(CoordinateReferenceSystem crs) {
-        this.crs = crs;
+        throw new UnsupportedOperationException("Removing this option for now, will be able to reproject in future");
+        //this.crs = crs;
     }
     
     public void writeToShapefile() throws MalformedURLException, IOException {
-        SimpleFeatureIterator features = simpleFeatureCollection.features();
+        //SimpleFeatureIterator features = simpleFeatureCollection.features();
         SimpleFeatureType type = buildFeatureType();
         FileDataStoreFactorySpi factory = FileDataStoreFinder.getDataStoreFactory("shp");
         File shpFile = checkAndCreateFile();
@@ -74,27 +80,35 @@ public class FeatureCollectionExport {
         ShapefileDataStore shpfileDataStore = (ShapefileDataStore)factory.createNewDataStore(datastoreConfig);
         shpfileDataStore.createSchema(type);
         shpfileDataStore.forceSchemaCRS(this.crs);
-        
-        FeatureWriter<SimpleFeatureType, SimpleFeature> featureWriter = shpfileDataStore.getFeatureWriter(namePrefix, Transaction.AUTO_COMMIT);
-        try {
-            while (features.hasNext()) {
-                SimpleFeature srcFeature = features.next();
-                SimpleFeature next = featureWriter.next();
-                next.setDefaultGeometry(srcFeature.getDefaultGeometry());
-                for (String name : attributes) {
-                    next.setAttribute(name, srcFeature.getAttribute(name));
+        //DataStore dataStore = factory.createNewDataStore(datastoreConfig);
+        SimpleFeatureStore featureStore = (SimpleFeatureStore) shpfileDataStore.getFeatureSource(type.getName());
+        Transaction t = new DefaultTransaction();
+        SimpleFeatureIterator fi = null;
+        try { 
+            // Copied directly from Import process
+            featureStore.setTransaction(t);
+            fi = simpleFeatureCollection.features();
+            SimpleFeatureBuilder fb = new SimpleFeatureBuilder(type);
+            while (fi.hasNext()) {
+                SimpleFeature source = fi.next();
+                fb.reset();
+                for (AttributeDescriptor desc : type.getAttributeDescriptors()) {
+                    fb.set(desc.getName(), source.getAttribute(desc.getName()));
                 }
-                featureWriter.write();
+                SimpleFeature target = fb.buildFeature(null);
+                featureStore.addFeatures(DataUtilities.collection(target));
             }
         } finally {
-            IOUtils.closeQuietly(featureWriter);
-            IOUtils.closeQuietly(features);
+            t.commit();
+            t.close();
+            IOUtils.closeQuietly(fi);
         }
     }
     
     private SimpleFeatureType buildFeatureType() {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName(namePrefix);
+        builder.setCRS(this.crs);
         builder.add(getGeometryDescriptor());
         for (String name : attributes) {
             AttributeDescriptor descriptor = getDescriptorFromPrototype(name);

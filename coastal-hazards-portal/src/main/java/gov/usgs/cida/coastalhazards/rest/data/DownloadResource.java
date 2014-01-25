@@ -27,7 +27,6 @@ import javax.ws.rs.core.Response;
 @Path("download")
 public class DownloadResource {
 
-    private static final ItemManager itemManager = new ItemManager();
     private static final SessionManager sessionManager = new SessionManager();
 
     /**
@@ -36,39 +35,41 @@ public class DownloadResource {
      *
      * @param id identifier of requested item
      * @return JSON representation of the item(s)
+     * @throws java.io.IOException
      */
     @GET
     @Path("item/{id}")
     @Produces("application/zip")
     public Response getCard(@PathParam("id") String id) throws IOException {
         Response response = null;
-
-        Item item = itemManager.loadItem(id);
-        if (item == null) {
-            response = Response.status(Response.Status.NOT_FOUND).build();
-        } else {
-            File zipFile = null;
-            DownloadManager manager = new DownloadManager();
-            try {
-                if (manager.isPersisted(id)) {
-                    Download persistedDownload = manager.load(id);
-                    // if we switch this to external file server or S3,
-                    // redirect to this uri as a url
-                    zipFile = new File(new URI(persistedDownload.getPersistanceURI()));
-                } else {
-                    throw new FileNotFoundException();
+        try (ItemManager itemManager = new ItemManager()) {
+            Item item = itemManager.load(id);
+            if (item == null) {
+                response = Response.status(Response.Status.NOT_FOUND).build();
+            } else {
+                File zipFile = null;
+                DownloadManager manager = new DownloadManager();
+                try {
+                    if (manager.isPersisted(id)) {
+                        Download persistedDownload = manager.load(id);
+                        // if we switch this to external file server or S3,
+                        // redirect to this uri as a url
+                        zipFile = new File(new URI(persistedDownload.getPersistanceURI()));
+                    } else {
+                        throw new FileNotFoundException();
+                    }
+                } catch (FileNotFoundException | URISyntaxException ex) {
+                    File stagingDir = DownloadUtility.createDownloadStagingArea();
+                    DownloadUtility.stageItemDownload(item, stagingDir);
+                    zipFile = DownloadUtility.zipStagingAreaForDownload(stagingDir);
+                } finally {
+                    Download download = new Download();
+                    download.setItemId(id);
+                    download.setPersistanceURI(zipFile.toURI().toString());
+                    manager.save(download);
                 }
-            } catch (FileNotFoundException | URISyntaxException ex) {
-                File stagingDir = DownloadUtility.createDownloadStagingArea();
-                DownloadUtility.stageItemDownload(item, stagingDir);
-                zipFile = DownloadUtility.zipStagingAreaForDownload(stagingDir);
-            } finally {
-                Download download = new Download();
-                download.setItemId(id);
-                download.setPersistanceURI(zipFile.toURI().toString());
-                manager.save(download);
+                response = Response.ok(zipFile, "application/zip").build();
             }
-            response = Response.ok(zipFile, "application/zip").build();
         }
         return response;
     }
