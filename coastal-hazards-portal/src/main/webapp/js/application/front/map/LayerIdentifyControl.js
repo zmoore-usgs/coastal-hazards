@@ -100,11 +100,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                 null);
 
             // Close any other layer identification widgets on the map
-            if (CCH.map.getMap().popups.length) {
-                CCH.map.getMap().popups.each(function (popup) {
-                    popup.closeDiv.click();
-                });
-            }
+            CCH.map.removeAllPopups();
             CCH.map.getMap().addPopup(popup, true);
 
             sldResponseHandler = function (sld) {
