@@ -99,16 +99,6 @@ CCH.Objects.Accordion = function (args) {
         return bellow;
     };
 
-    me.redimensioned = function (evt, isSmall) {
-//        $('#' + me.CONTAINER_ID).
-//            find('.panel a.accordion-toggle').
-//            attr({
-//                'data-parent' : isSmall ?
-//                        '#' + me.SCROLLABLE_BELLOW_CONTAINER_ID :
-//                        '#' + me.CONTAINER_ID
-//            });
-    };
-
     me.createBellow = function (args) {
         args = args || {};
 
@@ -212,8 +202,7 @@ CCH.Objects.Accordion = function (args) {
     $(window).on({
         'cch.slide.search.button.click.explore' : function (evt, args) {
             me.explore(evt, args);
-        },
-        'cch.ui.redimensioned' : me.redimensioned,
+        }
     });
 
     me.explore = function (evt, args) {
