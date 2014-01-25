@@ -60,7 +60,6 @@ CCH.Objects.Accordion = function (args) {
         var card = args.card,
             item = args.item,
             index = args.index,
-            $accordion = me.getAccordion(),
             $scrollContainer = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID),
             isSmall = CCH.ui.isSmall(),
             child,
@@ -82,32 +81,17 @@ CCH.Objects.Accordion = function (args) {
         // I want to insert the card into the accordion at a specified index if 
         // one was specified. This fixes a race condition in the pulling of the 
         // data for these cards 
-        if (isSmall) {
-            // I expect to find a container to place these bellows into in a small
-            // form factor
-            if (index === undefined || index === 0) {
-                $scrollContainer.append(bellow);
+        if (index === undefined || $scrollContainer.children().length === 0) {
+            $scrollContainer.append(bellow);
+        } else {
+            if (index === 0) {
+                $scrollContainer.prepend(bellow);
             } else {
-                child = $scrollContainer.children().get(index);
+                var child = $scrollContainer.children().get(index - 1);
                 if (child) {
                     bellow.insertAfter(child);
                 } else {
                     $scrollContainer.append(bellow);
-                }
-            }
-        } else {
-            if (index === undefined || $scrollContainer.children().length === 0) {
-                $scrollContainer.append(bellow);
-            } else {
-                if (index === 0) {
-                    $scrollContainer.prepend(bellow);
-                } else {
-                    var child = $scrollContainer.children().get(index - 1);
-                    if (child) {
-                        bellow.insertAfter(child);
-                    } else {
-                        $scrollContainer.append(bellow);
-                    }
                 }
             }
         }
