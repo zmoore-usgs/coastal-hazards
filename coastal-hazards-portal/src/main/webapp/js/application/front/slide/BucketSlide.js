@@ -181,6 +181,14 @@ CCH.Objects.BucketSlide = function (args) {
             }
         }
     };
+    
+    me.redimensioned = function (evt, isSmall) {
+        if (me.isSmall) {
+            if (!me.isClosed) {
+                me.toggle();
+            }
+        }
+    }
 
     me.resized = function () {
         var extents = me.getExtents(),
@@ -212,7 +220,7 @@ CCH.Objects.BucketSlide = function (args) {
                     left: toExtent.left
                 });
             }
-            $slideContainer.height(windowHeight - toExtent.top - 1);
+            $slideContainer.height($('body').height() - toExtent.top - 1);
             $slideContainer.width(windowWidth - toExtent.left);
             $slideContent.width($slideContainer.outerWidth() - me.borderWidth);
             $slideContent.height($slideContainer.innerHeight() - me.$SLIDE_CONTROLSET.outerHeight() - me.borderWidth);
@@ -228,7 +236,7 @@ CCH.Objects.BucketSlide = function (args) {
             $slideContainer.width(windowWidth - toExtent.left);
             $slideContainer.height($('#' + me.MAP_DIV_ID).outerHeight() - me.borderWidth);
             $slideContent.width($slideContainer.outerWidth() - me.borderWidth);
-            $slideContent.height($slideContainer - me.borderWidth);
+            $slideContent.height($slideContainer.height() - me.borderWidth);
         }
     };
 
@@ -545,12 +553,12 @@ CCH.Objects.BucketSlide = function (args) {
                 me.layerAppendRemoveHandler({
                     namespace: 'show.layer.map'
                 },
-                {
-                    layer: {
-                        name: id,
-                        itemid: id
-                    }
-                });
+                    {
+                        layer: {
+                            name: id,
+                            itemid: id
+                        }
+                    });
                 CCH.session.getItemById(item.id).visible = true;
             }
 
@@ -636,6 +644,7 @@ CCH.Objects.BucketSlide = function (args) {
 
     $(window).on({
         'cch.ui.resized' : me.resized,
+        'cch.ui.redimensioned' : me.redimensioned,
         'cch.slide.search.button.click.explore' : me.close,
         'app-navbar-button-clicked' : me.toggle,
         'cch.slide.items.closing' : function () {
