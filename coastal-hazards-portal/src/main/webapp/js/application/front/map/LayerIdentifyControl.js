@@ -143,7 +143,9 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             $legendRow = $('<tr>'),
                             item = args.item,
                             lb,
-                            ub;
+                            ub,
+                            width,
+                            height;
                         for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
                             lb = bins[binIdx].lowerBound;
                             ub = bins[binIdx].upperBound;
@@ -178,11 +180,19 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                         $table.append($legendRow);
                         $popupHtml.append($table);
                         popup.setContentHTML($popupHtml.clone().wrap('<div/>').parent().html());
-                        // Set the size of the popup to be 
-                        // 1/3rd of the map's width and add
-                        // 60 pixels for each row
-                        popup.setSize(new OpenLayers.Size($('#feature-identification-popup div.col-md-12 > table').width(), $('#feature-identification-popup div.col-md-12 > table').height()));
+                        width = new OpenLayers.Size($('#feature-identification-popup div.col-md-12 > table').width());
+                        height = function () {
+                            var cHeight = 0;
+                            $('#feature-identification-popup div.col-md-12 > table tr').each(function (ind, item) {
+                                cHeight += $(item).height();
+                            })
+                            return cHeight;
+                        };
+                        popup.setSize(new OpenLayers.Size(width, height() + 5));
                         popup.panIntoView();
+                        $(window).on('cch.ui.redimensioned', function () {
+                            popup.setSize(new OpenLayers.Size(width, height() + 5));
+                        });
                     };
 
 
