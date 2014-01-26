@@ -148,6 +148,7 @@ CCH.Objects.ItemsSlide = function (args) {
     me.redimensioned = function (evt, isSmall) {
         var $slideContainer = $('#' + me.SLIDE_CONTENT_CONTAINER),
             $slideItemsContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
+            $slideTab = $('#' + me.SLIDE_TAB_ID),
             $searchContainer;
     
         if (isSmall) {
@@ -159,6 +160,12 @@ CCH.Objects.ItemsSlide = function (args) {
             
             // Move the Search bar from the header to my slider
             $searchContainer.prependTo($slideContainer);
+            
+            if (me.isClosed) {
+                $slideTab.find('i').removeClass('fa-chevron-right').addClass('fa-chevron-left');
+            } else {
+                $slideTab.find('i').removeClass('fa-chevron-left').addClass('fa-chevron-right');
+            }
         } else {
             $searchContainer =  $slideContainer.find('> div:first-child:not(#application-slide-items-content-container-inner-scrollable)');
             
