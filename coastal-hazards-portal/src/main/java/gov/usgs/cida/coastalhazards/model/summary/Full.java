@@ -58,7 +58,7 @@ public class Full implements Serializable {
     }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    @JoinColumn(name = "full_id")
+    @JoinColumn(name = "full_id", referencedColumnName = "id")
     @IndexColumn(name = "list_index")
     public List<Publication> getPublications() {
         return publications;

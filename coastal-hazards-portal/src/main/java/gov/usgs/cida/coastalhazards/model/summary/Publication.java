@@ -1,10 +1,8 @@
 package gov.usgs.cida.coastalhazards.model.summary;
 
 import java.io.Serializable;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,7 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import org.hibernate.annotations.ForeignKey;
+import javax.persistence.Table;
 
 /**
  * Name full_publications is holdout from when this was embedded, didn't want to
@@ -20,7 +18,8 @@ import org.hibernate.annotations.ForeignKey;
  * 
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Entity(name = "full_publications")
+@Entity
+@Table(name = "full_publications")
 public class Publication implements Serializable {
     
     public enum PublicationType {
