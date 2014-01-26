@@ -58,7 +58,7 @@ CCH.Objects.BucketSlide = function (args) {
         $slideContainer.css({
             display: ''
         });
-
+        
         me.reorderLayers();
 
         $slideContainer.animate({
@@ -73,28 +73,40 @@ CCH.Objects.BucketSlide = function (args) {
             $(window).trigger('cch.slide.bucket.opened');
         });
     };
+    
+    me.bindItemSlideOpen = function () {
+        $(window).off('cch.slide.items.opened', me.bindItemSlideOpen);
+        me.resized();
+        me.openSlide();
+    };
 
     me.open = function () {
         if (me.isClosed) {
             if (me.isSmall()) {
-                $(window).on('cch.slide.items.opened', function () {
-                    me.resized();
-                    me.openSlide();
-                });
+                $(window).on('cch.slide.items.opened', me.bindItemSlideOpen);
+                $(window).trigger('cch.slide.bucket.opening');
             } else {
                 me.openSlide();
             }
 
-            $(window).trigger('cch.slide.bucket.opening');
+            
         } else {
             me.reorderLayers();
             $(window).trigger('cch.slide.bucket.opened');
         }
     };
 
-    me.close = function () {
+    me.close = function (dontEmoteClosing, bindItemsOpening) {
         var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
-        $(window).trigger('cch.slide.bucket.closing');
+            
+        if (bindItemsOpening === true) {
+             $(window).on('cch.slide.items.opened', me.bindItemSlideOpen);
+        }
+        
+        if (!dontEmoteClosing === true) {
+            $(window).trigger('cch.slide.bucket.closing');
+        }
+        
         if (!me.isClosed) {
             $('body').css({
                 overflow : 'hidden'
@@ -649,7 +661,7 @@ CCH.Objects.BucketSlide = function (args) {
         'app-navbar-button-clicked' : me.toggle,
         'cch.slide.items.closing' : function () {
             if (me.isSmall()) {
-                me.close();
+                me.close(true, !me.isClosed);
             }
         }
     });

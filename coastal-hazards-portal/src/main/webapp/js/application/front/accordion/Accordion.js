@@ -61,7 +61,6 @@ CCH.Objects.Accordion = function (args) {
             item = args.item,
             index = args.index,
             $scrollContainer = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID),
-            isSmall = CCH.ui.isSmall(),
             child,
             bellow;
 
@@ -87,7 +86,7 @@ CCH.Objects.Accordion = function (args) {
             if (index === 0) {
                 $scrollContainer.prepend(bellow);
             } else {
-                var child = $scrollContainer.children().get(index - 1);
+                child =  $scrollContainer.children().get(index - 1);
                 if (child) {
                     bellow.insertAfter(child);
                 } else {
@@ -279,7 +278,7 @@ CCH.Objects.Accordion = function (args) {
         var currentCard = me.getBellows().find('.in > div > div:last-child');
 
         if (currentCard.length > 0) {
-            currentCard.data()['card'].show();
+            currentCard.data().card.show();
         }
     };
 

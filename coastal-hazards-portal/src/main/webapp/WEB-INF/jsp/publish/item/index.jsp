@@ -333,6 +333,9 @@
                     <button type="button" id="publish-button-publish" class="btn btn-lg btn-success">
                         Publish
                     </button>
+                    <button type="button" id="publish-button-delete" class="btn btn-lg btn-success">
+                        Delete
+                    </button>
                 </div>
             </div>
         </div>

@@ -52,7 +52,8 @@ CCH.Objects.UI = function () {
         $itemEnabledField = $('#form-publish-info-item-enabled'),
         $itemImage = $form.find('#form-publish-info-item-image'),
         $buttonSave = $('#publish-button-save'),
-        $buttonPublish = $('#publish-button-publish');
+        $buttonPublish = $('#publish-button-publish'),
+        $buttonDelete = $('#publish-button-delete');
 
     me.clearForm = function() {
         $titleFullTextArea.attr('disabled', 'disabled');
@@ -621,15 +622,15 @@ CCH.Objects.UI = function () {
 
         $panetTitle.append('Welcome, ', firstName, lastName, email, '.');
     };
-    
+
     me.updateSelectAttribtue = function (responseObject) {
         var featureTypes = responseObject.featureTypes,
-                $option,
-                ftName,
-                ftNameLower;
-        
+            $option,
+            ftName,
+            ftNameLower;
+
         $attributeSelect.empty();
-        
+
         if (featureTypes) {
             featureTypes = featureTypes[0];
             featureTypes.properties.each(function(ft) {
@@ -706,19 +707,34 @@ CCH.Objects.UI = function () {
             $typeRow.append($typeSelect);
             $typeSelect.val(type);
             
-        $closeButton.
-            on('click', function () {
-                 $smallWell.remove();   
-            });
+        var exists = false;
+        $('#publications-panel .well').each(function (i, pubPanel) {
+            var pTitle = $(pubPanel).find('>row:nth-child(1) input').val() || '',
+                pLink = $(pubPanel).find('>row:nth-child(2) input').val() || '',
+                pType = $(pubPanel).find('>row:nth-child(3) select').val() || '';
+                
+            if (pTitle.toLowerCase().trim() === title &&
+                    pLink.toLowerCase().trim() === link &&
+                    pType.toLowerCase().trim() === type) {
+                exists = true;
+            }
+        });
         
-        $closeButtonRow.append($closeButton);
-        
-        $linkRow.append($linkLabel, $linkInput);
-        $titleRow.append($titleLabel, $titleInput);
-            
-        $smallWell.append($closeButtonRow, $titleRow, $linkRow, $typeRow);
-        
-        $panelBody.append($smallWell);
+        if (!exists) {
+            $closeButton.
+                on('click', function () {
+                     $smallWell.remove();   
+                });
+
+            $closeButtonRow.append($closeButton);
+
+            $linkRow.append($linkLabel, $linkInput);
+            $titleRow.append($titleLabel, $titleInput);
+
+            $smallWell.append($closeButtonRow, $titleRow, $linkRow, $typeRow);
+
+            $panelBody.append($smallWell);
+        }
     };
     
     me.addItemToForm = function (args) {
@@ -1007,8 +1023,55 @@ CCH.Objects.UI = function () {
             $li.append($span);
 
             $childrenSortableList.append($li);
+            $activeButton.on('click', function (evt) {
+                setTimeout(function () {
+                    me.buildKeywordsFromChildren();
+                    me.buildPublicationsFromChildren();
+                }, 100);
+                
+            });
         });
         $childrenSortableList.sortable();
+    };
+    
+    me.buildKeywordsFromChildren = function () {
+        $('.form-publish-info-item-children-sortable-li button:first-child().active').each(function (i, o) {
+            var itemId = $(o).parent().parent().parent().attr('id').substring(11),
+                item = CCH.items.find(function (i) {
+                    return i.id === itemId;
+                }),
+                keywords = item.summary.keywords.split('|');
+
+            keywords.each(function (keyword) {
+                $('.form-publish-item-keyword').not(':first').each(function (i, o) {
+                    var oKeyword = $(o).val().trim();
+                    keywords.push(oKeyword);
+                });
+            });
+
+            keywords.unique(function(k) {
+                return k.toLowerCase().trim();
+            })
+                    .each(function (keyword) {
+                me.addKeywordGroup(keyword);
+            });
+        });
+    };
+    
+    me.buildPublicationsFromChildren = function () {
+        $('.form-publish-info-item-children-sortable-li button:first-child().active').each(function (i, o) {
+            var itemId = $(o).parent().parent().parent().attr('id').substring(11),
+                item = CCH.items.find(function (i) {
+                    return i.id === itemId;
+                }),
+                publications = item.summary.full.publications;
+                
+            ['data','publications','resources'].each(function(type) {
+                publications[type].each(function (pub) {
+                    me.createPublicationRow(pub.link, pub.title, type);
+                });
+            });
+        });
     };
     
     me.wfsInfoUpdated = function() {
@@ -1151,6 +1214,47 @@ CCH.Objects.UI = function () {
             $bboxEast.val('');
             $bboxNorth.val('');
         }
+    };
+    
+    me.deleteItem = function (id) {
+        var $deleteButton = $('<button />').
+                attr({
+                    type : 'button',
+                    'data-dismiss' : 'modal'
+                }).
+                addClass('btn btn-danger').
+                html('Delete').
+                on('click', function () {
+                    $.ajax({
+                        url : CCH.CONFIG.contextPath + '/data/item/' + id,
+                        method : 'DELETE',
+                        success : function () {
+                            window.location = window.location.origin + CCH.CONFIG.contextPath + '/publish/item/';
+                        },
+                        error : function (jqXHR, err, errTxt) {
+                            if (errTxt.indexOf('Unauthorized')) {
+                                $alertModal.modal('hide');
+                                $alertModalTitle.html('Item Could Not Be Deleted');
+                                $alertModalBody.html('It looks like your session has expired.' +
+                                    'You should try reloading the page to continue.');
+                                $alertModal.modal('show');
+                            } else {
+                                $alertModal.modal('hide');
+                                $alertModalTitle.html('Item Could Not Be Deleted');
+                                $alertModalBody.html('Unfortunately the item you\'re ' + 
+                                        'trying to delete couldn\'t be deleted. ' + 
+                                        'You may need to contact the system administrator ' + 
+                                        'to manually remove it in order to continue');
+                                $alertModal.modal('show');
+                            }
+                        }
+                    });
+                });
+        $alertModal.modal('hide');
+        $alertModalTitle.html('Delete Item?');
+        $alertModalBody.html('<h2>WARNING: This action cannot be undone</h2>');
+        $alertModalFooter.append($deleteButton);
+        $alertModal.modal('show');
     };
     
     $wfsImportButton.on('click', function () {
@@ -1413,6 +1517,13 @@ CCH.Objects.UI = function () {
             $alertModalTitle.html('Errors Found In Publish Form');
             $alertModalBody.html($ul);
             $alertModal.modal('show');
+        }
+    });
+    
+    $buttonDelete.on('click', function () {
+        var id = $itemIdInput.val();
+        if (id !== '') {
+            me.deleteItem(id);
         }
     });
     

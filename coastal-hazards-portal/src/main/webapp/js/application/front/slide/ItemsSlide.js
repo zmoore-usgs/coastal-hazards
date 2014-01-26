@@ -51,7 +51,7 @@ CCH.Objects.ItemsSlide = function (args) {
     me.open = function () {
         var slideContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
             slideContent = $('#' + me.$SLIDE_CONTENT_ID),
-            slideTab = $('#' + me.SLIDE_TAB_ID),
+            $slideTab = $('#' + me.SLIDE_TAB_ID),
             extents = me.getExtents(),
             windowWidth = $(window).outerWidth(),
             toExtent = extents.small;
@@ -69,12 +69,13 @@ CCH.Objects.ItemsSlide = function (args) {
             $('body').css({
                 overflow : 'hidden'
             });
+            $slideTab.find('i').removeClass('fa-chevron-left').addClass('fa-chevron-right');
             slideContainer.css({
                 width : windowWidth - toExtent.left
             });
             slideContent.css({
                 display : '',
-                width : slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth
+                width : slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth
             });
             slideContent.offset({
                 left : windowWidth - me.borderWidth
@@ -95,7 +96,7 @@ CCH.Objects.ItemsSlide = function (args) {
 
     me.close = function () {
         var container = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
-            slideTab = $('#' + me.SLIDE_TAB_ID),
+            $slideTab = $('#' + me.SLIDE_TAB_ID),
             slideContent = $('#' + me.$SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth();
 
@@ -110,19 +111,16 @@ CCH.Objects.ItemsSlide = function (args) {
             $('body').css({
                 overflow : 'hidden'
             });
+            $slideTab.find('i').removeClass('fa-chevron-right').addClass('fa-chevron-left');
             container.animate({
-                left: windowWidth - slideTab.outerWidth() - (me.borderWidth * 2)
+                left: windowWidth - $slideTab.outerWidth() - (me.borderWidth * 2)
             }, me.animationTime, function () {
                 me.isClosed = true;
 
                 slideContent.css({
                     display : 'none'
                 });
-
-                container.css({
-                    width : slideTab.outerWidth()
-                });
-
+                
                 $('body').css({
                     overflow : ''
                 });
