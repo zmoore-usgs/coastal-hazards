@@ -11,8 +11,8 @@ $(document).ready(function () {
         LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
     });
     CCH.LOG = LOG;
-
-     CCH.ows = new CCH.Objects.OWS().init();
+    
+    CCH.ows = new CCH.Objects.OWS().init();
 
     CCH.ui = new CCH.Objects.UI();
 
