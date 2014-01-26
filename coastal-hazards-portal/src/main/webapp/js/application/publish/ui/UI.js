@@ -621,15 +621,15 @@ CCH.Objects.UI = function () {
 
         $panetTitle.append('Welcome, ', firstName, lastName, email, '.');
     };
-    
+
     me.updateSelectAttribtue = function (responseObject) {
         var featureTypes = responseObject.featureTypes,
-                $option,
-                ftName,
-                ftNameLower;
-        
+            $option,
+            ftName,
+            ftNameLower;
+
         $attributeSelect.empty();
-        
+
         if (featureTypes) {
             featureTypes = featureTypes[0];
             featureTypes.properties.each(function(ft) {
@@ -706,19 +706,34 @@ CCH.Objects.UI = function () {
             $typeRow.append($typeSelect);
             $typeSelect.val(type);
             
-        $closeButton.
-            on('click', function () {
-                 $smallWell.remove();   
-            });
+        var exists = false;
+        $('#publications-panel .well').each(function (i, pubPanel) {
+            var pTitle = $(pubPanel).find('>row:nth-child(1) input').val() || '',
+                pLink = $(pubPanel).find('>row:nth-child(2) input').val() || '',
+                pType = $(pubPanel).find('>row:nth-child(3) select').val() || '';
+                
+            if (pTitle.toLowerCase().trim() === title &&
+                    pLink.toLowerCase().trim() === link &&
+                    pType.toLowerCase().trim() === type) {
+                exists = true;
+            }
+        });
         
-        $closeButtonRow.append($closeButton);
-        
-        $linkRow.append($linkLabel, $linkInput);
-        $titleRow.append($titleLabel, $titleInput);
-            
-        $smallWell.append($closeButtonRow, $titleRow, $linkRow, $typeRow);
-        
-        $panelBody.append($smallWell);
+        if (!exists) {
+            $closeButton.
+                on('click', function () {
+                     $smallWell.remove();   
+                });
+
+            $closeButtonRow.append($closeButton);
+
+            $linkRow.append($linkLabel, $linkInput);
+            $titleRow.append($titleLabel, $titleInput);
+
+            $smallWell.append($closeButtonRow, $titleRow, $linkRow, $typeRow);
+
+            $panelBody.append($smallWell);
+        }
     };
     
     me.addItemToForm = function (args) {
@@ -1007,8 +1022,55 @@ CCH.Objects.UI = function () {
             $li.append($span);
 
             $childrenSortableList.append($li);
+            $activeButton.on('click', function (evt) {
+                setTimeout(function () {
+                    me.buildKeywordsFromChildren();
+                    me.buildPublicationsFromChildren();
+                }, 100);
+                
+            });
         });
         $childrenSortableList.sortable();
+    };
+    
+    me.buildKeywordsFromChildren = function () {
+        $('.form-publish-info-item-children-sortable-li button:first-child().active').each(function (i, o) {
+            var itemId = $(o).parent().parent().parent().attr('id').substring(11),
+                item = CCH.items.find(function (i) {
+                    return i.id === itemId;
+                }),
+                keywords = item.summary.keywords.split('|');
+
+            keywords.each(function (keyword) {
+                $('.form-publish-item-keyword').not(':first').each(function (i, o) {
+                    var oKeyword = $(o).val().trim();
+                    keywords.push(oKeyword);
+                });
+            });
+
+            keywords.unique(function(k) {
+                return k.toLowerCase().trim();
+            })
+                    .each(function (keyword) {
+                me.addKeywordGroup(keyword);
+            });
+        });
+    };
+    
+    me.buildPublicationsFromChildren = function () {
+        $('.form-publish-info-item-children-sortable-li button:first-child().active').each(function (i, o) {
+            var itemId = $(o).parent().parent().parent().attr('id').substring(11),
+                item = CCH.items.find(function (i) {
+                    return i.id === itemId;
+                }),
+                publications = item.summary.full.publications;
+                
+            ['data','publications','resources'].each(function(type) {
+                publications[type].each(function (pub) {
+                    me.createPublicationRow(pub.link, pub.title, type);
+                });
+            });
+        });
     };
     
     me.wfsInfoUpdated = function() {
