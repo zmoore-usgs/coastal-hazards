@@ -52,7 +52,8 @@ CCH.Objects.UI = function () {
         $itemEnabledField = $('#form-publish-info-item-enabled'),
         $itemImage = $form.find('#form-publish-info-item-image'),
         $buttonSave = $('#publish-button-save'),
-        $buttonPublish = $('#publish-button-publish');
+        $buttonPublish = $('#publish-button-publish'),
+        $buttonDelete = $('#publish-button-delete');
 
     me.clearForm = function() {
         $titleFullTextArea.attr('disabled', 'disabled');
@@ -1215,6 +1216,47 @@ CCH.Objects.UI = function () {
         }
     };
     
+    me.deleteItem = function (id) {
+        var $deleteButton = $('<button />').
+                attr({
+                    type : 'button',
+                    'data-dismiss' : 'modal'
+                }).
+                addClass('btn btn-danger').
+                html('Delete').
+                on('click', function () {
+                    $.ajax({
+                        url : CCH.CONFIG.contextPath + '/data/item/' + id,
+                        method : 'DELETE',
+                        success : function () {
+                            window.location = window.location.origin + CCH.CONFIG.contextPath + '/publish/item/';
+                        },
+                        error : function (jqXHR, err, errTxt) {
+                            if (errTxt.indexOf('Unauthorized')) {
+                                $alertModal.modal('hide');
+                                $alertModalTitle.html('Item Could Not Be Deleted');
+                                $alertModalBody.html('It looks like your session has expired.' +
+                                    'You should try reloading the page to continue.');
+                                $alertModal.modal('show');
+                            } else {
+                                $alertModal.modal('hide');
+                                $alertModalTitle.html('Item Could Not Be Deleted');
+                                $alertModalBody.html('Unfortunately the item you\'re ' + 
+                                        'trying to delete couldn\'t be deleted. ' + 
+                                        'You may need to contact the system administrator ' + 
+                                        'to manually remove it in order to continue');
+                                $alertModal.modal('show');
+                            }
+                        }
+                    });
+                });
+        $alertModal.modal('hide');
+        $alertModalTitle.html('Delete Item?');
+        $alertModalBody.html('<h2>WARNING: This action cannot be undone</h2>');
+        $alertModalFooter.append($deleteButton);
+        $alertModal.modal('show');
+    };
+    
     $wfsImportButton.on('click', function () {
 		var importCall = function () {
 			CCH.ows.importWfsLayer({
@@ -1475,6 +1517,13 @@ CCH.Objects.UI = function () {
             $alertModalTitle.html('Errors Found In Publish Form');
             $alertModalBody.html($ul);
             $alertModal.modal('show');
+        }
+    });
+    
+    $buttonDelete.on('click', function () {
+        var id = $itemIdInput.val();
+        if (id !== '') {
+            me.deleteItem(id);
         }
     });
     
