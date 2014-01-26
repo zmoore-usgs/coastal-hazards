@@ -1,5 +1,5 @@
 "id","item_id","service_type","service_endpoint","service_parameter","list_index"
-"0","C67kPYv","csw","http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&typeNames=fgdc:metadata&id=urn:uuid:1b4aa94e-ecb3-11e2-8a16-0050569544e0&outputSchema=http://www.opengis.net/cat/csw/csdgm&elementSetName=full","","0"
+"100","C67kPYv","csw","http://cida.usgs.gov/qa/coastalhazards/csw/?service=CSW&request=GetRecordById&version=2.0.2&typeNames=fgdc:metadata&id=urn:uuid:1b4aa94e-ecb3-11e2-8a16-0050569544e0&outputSchema=http://www.opengis.net/cat/csw/csdgm&elementSetName=full","","0"
 "1","C67kPYv","source_wfs","http://olga.er.usgs.gov/stpgis/services/Sandy/Sandy_potential_erosion_hazards/MapServer/WFSServer","Sandy_Sandy_potential_erosion_hazards:Hurricane_Sandy_Potential_Erosion_Hazards","1"
 "2","C67kPYv","source_wms","http://olga.er.usgs.gov/stpgis/services/Sandy/Sandy_potential_erosion_hazards/MapServer/WMSServer","0","2"
 "3","C67kPYv","proxy_wfs","http://cida-test.er.usgs.gov/coastalchangehazardsportal/geoserver/proxied/wfs","proxied:Hurricane_Sandy_Potential_Erosion_Hazards","3"
