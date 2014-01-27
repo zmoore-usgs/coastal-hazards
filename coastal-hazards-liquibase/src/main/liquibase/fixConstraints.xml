@@ -10,4 +10,9 @@
         <dropForeignKeyConstraint baseTableName="item" constraintName="fk_item_bbox" />
         <addForeignKeyConstraint baseColumnNames="bbox_id" baseTableName="item" constraintName="fk_item_bbox" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="bbox" />
     </changeSet>
+    <changeSet author="jiwalker" id="remove_full_foreign_key">
+        <comment>This foreign key prevents the publications from being inserted,
+            hibernate is doing it in an odd way as far as I can tell</comment>
+            <dropForeignKeyConstraint baseTableName="full_publications" constraintName="fk_jbq09el4j5pm4j56emfcag2uq" />
+    </changeSet>
 </databaseChangeLog>
