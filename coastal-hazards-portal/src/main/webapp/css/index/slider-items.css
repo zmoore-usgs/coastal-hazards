@@ -164,7 +164,7 @@
     }
 
         #application-slide-items-container > div:nth-child(2) > div {
-            padding: 10px 5px 10px 5px;
+            padding: 5px 5px 10px 5px;
             overflow-y: hidden;
             background-color: #F5F5F5;
             height: 100%;
