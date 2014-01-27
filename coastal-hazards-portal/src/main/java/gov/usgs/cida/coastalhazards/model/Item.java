@@ -264,7 +264,7 @@ public class Item implements Serializable {
         Gson gson = GsonUtil.getSubtreeGson();
 
         node = gson.fromJson(json, Item.class);
-        if (node.getId() == null) {
+        if (node.getId() == null || StringUtils.isBlank(node.getId())) {
             node.setId(IdGenerator.generate());
         }
         return node;
