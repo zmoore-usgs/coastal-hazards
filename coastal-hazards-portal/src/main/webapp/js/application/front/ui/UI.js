@@ -11,18 +11,6 @@
 /**
  *  Central control object for the user interface
  * 
- * 
- *  Events Emitted:
- *  window: 'cch.ui.resized'
- *  window: 'cch.ui.redimensioned'
- *  window: 'cch.ui.initialized'
- *  window: 'cch.ui.overlay.removed'
-
- *  Events Listened To:
- *  this.combinedSearch: 'combined-searchbar-search-performing'
- *  this.combinedSearch : 'combined-searchbar-search-performed'
- *  window : 'button-click-bucket-add'
- *  
  * @param {type} args
  * @returns {CCH.Objects.UI.Anonym$22}
  */
