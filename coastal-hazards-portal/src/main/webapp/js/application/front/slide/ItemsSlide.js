@@ -36,6 +36,7 @@ CCH.Objects.ItemsSlide = function (args) {
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-items-content-container';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
     me.FOOTER_ROW_ID = args.footerRowId || 'footer-row';
+    me.SMALL_BELLOW_CONTAINER_ID = 'application-slide-items-content-container-inner-scrollable';
     me.bucket = args.bucket;
     me.isSmall = args.isSmall;
     me.borderWidth = 2;
@@ -50,7 +51,7 @@ CCH.Objects.ItemsSlide = function (args) {
     me.open = function () {
         var slideContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
             slideContent = $('#' + me.$SLIDE_CONTENT_ID),
-            slideTab = $('#' + me.SLIDE_TAB_ID),
+            $slideTab = $('#' + me.SLIDE_TAB_ID),
             extents = me.getExtents(),
             windowWidth = $(window).outerWidth(),
             toExtent = extents.small;
@@ -68,12 +69,13 @@ CCH.Objects.ItemsSlide = function (args) {
             $('body').css({
                 overflow : 'hidden'
             });
+            $slideTab.find('i').removeClass('fa-chevron-left').addClass('fa-chevron-right');
             slideContainer.css({
                 width : windowWidth - toExtent.left
             });
             slideContent.css({
                 display : '',
-                width : slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth
+                width : slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth
             });
             slideContent.offset({
                 left : windowWidth - me.borderWidth
@@ -94,7 +96,7 @@ CCH.Objects.ItemsSlide = function (args) {
 
     me.close = function () {
         var container = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
-            slideTab = $('#' + me.SLIDE_TAB_ID),
+            $slideTab = $('#' + me.SLIDE_TAB_ID),
             slideContent = $('#' + me.$SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth();
 
@@ -109,19 +111,16 @@ CCH.Objects.ItemsSlide = function (args) {
             $('body').css({
                 overflow : 'hidden'
             });
+            $slideTab.find('i').removeClass('fa-chevron-right').addClass('fa-chevron-left');
             container.animate({
-                left: windowWidth - slideTab.outerWidth() - (me.borderWidth * 2)
+                left: windowWidth - $slideTab.outerWidth() - (me.borderWidth * 2)
             }, me.animationTime, function () {
                 me.isClosed = true;
 
                 slideContent.css({
                     display : 'none'
                 });
-
-                container.css({
-                    width : slideTab.outerWidth()
-                });
-
+                
                 $('body').css({
                     overflow : ''
                 });
@@ -149,6 +148,7 @@ CCH.Objects.ItemsSlide = function (args) {
     me.redimensioned = function (evt, isSmall) {
         var $slideContainer = $('#' + me.SLIDE_CONTENT_CONTAINER),
             $slideItemsContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
+            $slideTab = $('#' + me.SLIDE_TAB_ID),
             $searchContainer;
     
         if (isSmall) {
@@ -160,8 +160,14 @@ CCH.Objects.ItemsSlide = function (args) {
             
             // Move the Search bar from the header to my slider
             $searchContainer.prependTo($slideContainer);
+            
+            if (me.isClosed) {
+                $slideTab.find('i').removeClass('fa-chevron-right').addClass('fa-chevron-left');
+            } else {
+                $slideTab.find('i').removeClass('fa-chevron-left').addClass('fa-chevron-right');
+            }
         } else {
-            $searchContainer =  $slideContainer.find('> div:first-child');
+            $searchContainer =  $slideContainer.find('> div:first-child:not(#application-slide-items-content-container-inner-scrollable)');
             
             $slideItemsContainer.addClass('col-lg-3 col-md-4');
             
@@ -306,7 +312,7 @@ CCH.Objects.ItemsSlide = function (args) {
                 }
                 $this.data('scrollTimeout', setTimeout(callback, 1, self));
             });
-        }
+        };
         $('#' + me.SLIDE_CONTENT_CONTAINER).scrollStopped(function(element) {
             setTimeout(function(element) {
                 $(element).height($(element).height() - 1);

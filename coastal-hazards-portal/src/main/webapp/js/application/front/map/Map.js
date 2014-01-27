@@ -77,6 +77,14 @@ CCH.Objects.Map = function (args) {
             layer : layer
         });
     };
+    
+    me.removeAllPopups = function () {
+        if (CCH.map.getMap().popups.length) {
+            CCH.map.getMap().popups.each(function (popup) {
+                popup.closeDiv.click();
+            });
+        }
+    };
 
     return $.extend(me, {
         init: function () {
@@ -135,6 +143,7 @@ CCH.Objects.Map = function (args) {
                 },
                 'cch.ui.resized': function () {
                     $(me.$MAP_DIV.height($('#content-row').height()));
+                    me.removeAllPopups();
                     me.map.updateSize();
                 }
             });

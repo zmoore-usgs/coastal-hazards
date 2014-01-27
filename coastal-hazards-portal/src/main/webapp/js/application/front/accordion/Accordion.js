@@ -14,6 +14,7 @@ CCH.Objects.Accordion = function (args) {
     args = args || {};
 
     me.CONTAINER_ID = args.containerId || 'application-slide-items-content-container';
+    me.SCROLLABLE_BELLOW_CONTAINER_ID = 'application-slide-items-content-container-inner-scrollable';
     me.isStopped = true;
 
     container = $('#' + me.CONTAINER_ID);
@@ -59,8 +60,8 @@ CCH.Objects.Accordion = function (args) {
         var card = args.card,
             item = args.item,
             index = args.index,
-            $accordion = me.getAccordion(),
-            isSmall = CCH.ui.isSmall(),
+            $scrollContainer = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID),
+            child,
             bellow;
 
         // If we are passed a product, that means we were not passed a card
@@ -79,37 +80,20 @@ CCH.Objects.Accordion = function (args) {
         // I want to insert the card into the accordion at a specified index if 
         // one was specified. This fixes a race condition in the pulling of the 
         // data for these cards 
-        if (isSmall) {
-            // I expect to find the search container inside the accordion
-            // in a small form factor
-            if (index === undefined || index === 0) {
-                $('#app-navbar-search-container').after(bellow);
+        if (index === undefined || $scrollContainer.children().length === 0) {
+            $scrollContainer.append(bellow);
+        } else {
+            if (index === 0) {
+                $scrollContainer.prepend(bellow);
             } else {
-                var child = $accordion.children().get(index);
+                child =  $scrollContainer.children().get(index - 1);
                 if (child) {
                     bellow.insertAfter(child);
                 } else {
-                    $accordion.append(bellow);
-                }
-                
-            }
-        } else {
-            if (index === undefined || $accordion.children().length === 0) {
-                $accordion.append(bellow);
-            } else {
-                if (index === 0) {
-                    $accordion.prepend(bellow);
-                } else {
-                    var child = $accordion.children().get(index - 1);
-                    if (child) {
-                        bellow.insertAfter(child);
-                    } else {
-                        $accordion.append(bellow);
-                    }
+                    $scrollContainer.append(bellow);
                 }
             }
         }
-        
 
         return bellow;
     };
@@ -142,7 +126,7 @@ CCH.Objects.Accordion = function (args) {
         toggleTarget.append(
             $('<span />').addClass('accordion-toggle-title-medium').html(titleMedium)
         ).attr({
-            'data-parent' : '#' + me.CONTAINER_ID,
+            'data-parent' : '#' + me.SCROLLABLE_BELLOW_CONTAINER_ID,
             'href' : '#' + accordionBodyId,
             'data-toggle' : 'collapse',
             'onclick' : 'javascript:return false;' // Yes, this isn't ideal but
@@ -214,8 +198,10 @@ CCH.Objects.Accordion = function (args) {
         return $('#' + me.CONTAINER_ID + ' .panel');
     };
 
-    $(window).on('cch.slide.search.button.click.explore', function (evt, args) {
-        me.explore(evt, args);
+    $(window).on({
+        'cch.slide.search.button.click.explore' : function (evt, args) {
+            me.explore(evt, args);
+        }
     });
 
     me.explore = function (evt, args) {
@@ -292,7 +278,7 @@ CCH.Objects.Accordion = function (args) {
         var currentCard = me.getBellows().find('.in > div > div:last-child');
 
         if (currentCard.length > 0) {
-            currentCard.data()['card'].show();
+            currentCard.data().card.show();
         }
     };
 

@@ -57,21 +57,21 @@ CCH.Objects.Bucket = function (args) {
             bucketContainer.addClass(me.BUCKET_UNPOPULATED_CLASS);
         }
 
-        if (count > 0 && currentMargin !== originalMargin) {
+        if (count >= 0 && count < 10) {
             $('#' + me.BUCKET_COUNT_CONTAINER_ID).css({
-                'marginLeft' : originalMargin + 'px'
+                'marginLeft' : '17px'
             });
         }
 
-        if (count > 9 && currentMargin !== originalMargin - me.MARGIN_WIDTH) {
+        if (count >= 10 && count < 100) {
             $('#' + me.BUCKET_COUNT_CONTAINER_ID).css({
-                'marginLeft' : (originalMargin - me.MARGIN_WIDTH) + 'px'
+                'marginLeft' : '12px'
             });
         }
 
-        if (count > 99 && currentMargin !== originalMargin - me.MARGIN_WIDTH * 2) {
+        if (count >= 100) {
             $('#' + me.BUCKET_COUNT_CONTAINER_ID).css({
-                'marginLeft' : (originalMargin - me.MARGIN_WIDTH * 2) + 'px'
+                'marginLeft' : '7px'
             });
         }
         CCH.LOG.debug('CCH.Objects.Bucket::countChanged: Bucket count changed. Current count: ' + count);
@@ -206,10 +206,10 @@ CCH.Objects.Bucket = function (args) {
         setCount: function (args) {
             args = args || {};
             var count = parseInt(args.count, 10),
-                bucketContainer = $('#' + me.BUCKET_COUNT_CONTAINER_ID);
+                $countContainer = $('#' + me.BUCKET_COUNT_CONTAINER_ID)
             if (!isNaN(count) && count % 1 === 0) {
                 if (count !== undefined && !isNaN(count)) {
-                    bucketContainer.html(count);
+                    $countContainer.html(count);
                 }
             } else {
                 throw 'setCount called with a double. Only integers allowed';

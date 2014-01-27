@@ -384,7 +384,6 @@ CCH.Objects.Card = function (args) {
                     append($('<a />').
                         html('More Info').
                         attr({
-                            'target' : '_portal_info_window',
                             'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
                         })),
                 zoomToBadge = $('<span />').

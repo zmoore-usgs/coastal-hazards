@@ -14,7 +14,6 @@ CCH.Objects.UI = function () {
         $itemIdInput = $form.find('#form-publish-item-id'),
         $titleFullTextArea = $form.find('#form-publish-item-title-full'),
         $titleMediumTextArea = $form.find('#form-publish-item-title-medium'),
-        $titleTinyTextArea = $form.find('#form-publish-item-title-tiny'),
         $descriptionFullTextArea = $form.find('#form-publish-item-description-full'),
         $descriptionMediumTextArea = $form.find('#form-publish-item-description-medium'),
         $descriptionTinyTextArea = $form.find('#form-publish-item-description-tiny'),
@@ -22,7 +21,7 @@ CCH.Objects.UI = function () {
         $bboxWest = $form.find('#form-publish-item-bbox-input-west'),
         $bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
         $bboxEast = $form.find('#form-publish-item-bbox-input-east'),
-        $type = $form.find('#form-publish-info-item-type'),
+        $type = $form.find('#form-publish-item-type'),
         $attributeSelect = $form.find('#form-publish-item-attribute'),
         $keywordGroup = $form.find('.form-group-keyword'),
         $cswServiceInput = $form.find('#form-publish-item-service-csw'),
@@ -39,26 +38,26 @@ CCH.Objects.UI = function () {
         $showChildrenCb = $form.find('#form-publish-item-showchildren'),
         $itemType = $form.find('#form-publish-info-item-itemtype'),
         $name = $form.find('#form-publish-item-name'),
-		$displayedChildrenSb = $form.find('#form-publish-item-displayed-children'),
         $wfsImportButton = $form.find('#form-publish-item-service-source-wfs-import-button'),
         $keywordGroupClone = $keywordGroup.clone(),
-        $childrenSb = $form.find('#form-publish-item-children'),
-		$alertModal = $('#alert-modal'),
-		$alertModalTitle = $alertModal.find('.modal-title'),
-		$alertModalBody = $alertModal.find('.modal-body'),
-		$alertModalFooter = $alertModal.find('.modal-footer'),
+        $childrenSortableList = $form.find('#form-publish-info-item-children-sortable-ul'),
+        $alertModal = $('#alert-modal'),
+        $alertModalTitle = $alertModal.find('.modal-title'),
+        $alertModalBody = $alertModal.find('.modal-body'),
+        $alertModalFooter = $alertModal.find('.modal-footer'),
         $metadataDropdownGroup = $('#publish-button-edit-metadata-existing-grp'),
         $metadataDropdownList = $('#publish-list-edit-metadata-existing'),
         $metadataSummaryField = $('#form-publish-info-item-summary-version'),
         $uploaderDummy = $('#qq-uploader-dummy'),
         $itemEnabledField = $('#form-publish-info-item-enabled'),
+        $itemImage = $form.find('#form-publish-info-item-image'),
         $buttonSave = $('#publish-button-save'),
-        $buttonPublish = $('#publish-button-publish');
+        $buttonPublish = $('#publish-button-publish'),
+        $buttonDelete = $('#publish-button-delete');
 
     me.clearForm = function () {
         $titleFullTextArea.attr('disabled', 'disabled');
         $titleMediumTextArea.attr('disabled', 'disabled');
-        $titleTinyTextArea.attr('disabled', 'disabled');
         $descriptionFullTextArea.attr('disabled', 'disabled');
         $descriptionMediumTextArea.attr('disabled', 'disabled');
         $descriptionTinyTextArea.attr('disabled', 'disabled');
@@ -81,13 +80,12 @@ CCH.Objects.UI = function () {
         $showChildrenCb.attr('disabled', 'disabled');
         $itemType.attr('disabled', 'disabled');
         $name.attr('disabled', 'disabled');
-		$displayedChildrenSb.attr('disabled', 'disabled');
         $wfsImportButton.attr('disabled', 'disabled');
+        $keywordGroup.find('input').attr('disabled', 'disabled');
         $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').attr('disabled', 'disabled');
         $itemIdInput.val('');
         $titleFullTextArea.val('');
         $titleMediumTextArea.val('');
-        $titleTinyTextArea.val('');
         $descriptionFullTextArea.val('');
         $descriptionMediumTextArea.val('');
         $descriptionTinyTextArea.val('');
@@ -99,7 +97,7 @@ CCH.Objects.UI = function () {
         $itemEnabledField.val('');
         $attributeSelect.val('');
         $('.form-group-keyword').not(':first').remove();
-        $('.form-group-keyword button:nth-child(2)').removeClass('hidden');
+        $('.form-group-keyword button:nth-child(2)').addClass('hidden');
         $('.form-group-keyword input').val('');
         $cswServiceInput.val('');
         $srcWfsServiceInput.val('');
@@ -116,22 +114,14 @@ CCH.Objects.UI = function () {
         $showChildrenCb.prop('checked', false);
         $itemType.val('');
         $name.val('');
-        $childrenSb.empty();
-		$displayedChildrenSb.empty();
+        $childrenSortableList.empty();
         $metadataDropdownGroup.addClass('hidden');
-        CCH.items.each(function (cchItem) {
-            var option = $('<option />').
-                attr('value', cchItem.id).
-                html(cchItem.summary.tiny.text);
-            $childrenSb.append(option);
-        });
     };
 
     me.enableNewItemForm = function () {
         $itemType.val('data');
         $titleFullTextArea.removeAttr('disabled');
         $titleMediumTextArea.removeAttr('disabled');
-        $titleTinyTextArea.removeAttr('disabled');
         $descriptionFullTextArea.removeAttr('disabled');
         $descriptionMediumTextArea.removeAttr('disabled');
         $descriptionTinyTextArea.removeAttr('disabled');
@@ -151,19 +141,20 @@ CCH.Objects.UI = function () {
         $proxyWmsServiceInput.removeAttr('disabled');
         $proxyWmsServiceParamInput.removeAttr('disabled');
         $ribbonableCb.removeAttr('disabled');
-        $showChildrenCb.prop('checked', true);
+        $showChildrenCb.prop('checked', false);
         $name.removeAttr('disabled');
         $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled');
         $uploaderDummy.removeClass('hidden');
         $metadataDropdownGroup.removeClass('hidden');
         $itemEnabledField.val('false');
+        $keywordGroup.find('input').removeAttr('disabled');
+        $childrenSortableList.empty();
     };
 
     me.enableNewAggregationForm = function () {
         $itemType.val('aggregation');
         $titleFullTextArea.removeAttr('disabled');
         $titleMediumTextArea.removeAttr('disabled');
-        $titleTinyTextArea.removeAttr('disabled');
         $descriptionFullTextArea.removeAttr('disabled');
         $descriptionMediumTextArea.removeAttr('disabled');
         $descriptionTinyTextArea.removeAttr('disabled');
@@ -185,18 +176,19 @@ CCH.Objects.UI = function () {
         $showChildrenCb.removeAttr('disabled');
         $name.removeAttr('disabled');
         $publicationsPanel.removeAttr('disabled');
-        $childrenSb.removeAttr('disabled');
-		$displayedChildrenSb.removeAttr('disabled');
+        $childrenSortableList.removeAttr('disabled');
         $uploaderDummy.empty().addClass('hidden');
         $itemEnabledField.val('false');
+        $keywordGroup.find('input').removeAttr('disabled');
+        me.createSortableChildren();
     };
-    
+
     me.validateForm = function () {
         var type = $itemType.val(),
             errors = [];
         if (type) {
             if ('data' === type) {
-                if (!$attributeSelect.val().trim()) {
+                if (!$attributeSelect.val()) {
                     errors.push('An attribute was not selected');
                 }
                 if (!$cswServiceInput.val()) {
@@ -227,35 +219,31 @@ CCH.Objects.UI = function () {
                     errors.push('Proxy WMS parameter not provided');
                 }
             } else if ('aggregation' === type) {
-                if ($childrenSb.find('option:selected').length === 0) {
+                if ($childrenSortableList.find('li > span > div > button:first-child.active').length === 0) {
                     errors.push('Aggregations require at least one child');
                 }
             }
-            
+
             if (!$titleFullTextArea.val().trim()) {
                 errors.push('Full title not provided');
             }
-            
+
             if (!$titleMediumTextArea.val().trim()) {
                 errors.push('Full medium not provided');
             }
-            
-            if (!$titleTinyTextArea.val().trim()) {
-                errors.push('Tiny title not provided');
-            }
-            
+
             if (!$descriptionFullTextArea.val().trim()) {
                 errors.push('Full description not provided');
             }
-            
+
             if (!$descriptionMediumTextArea.val().trim()) {
                 errors.push('Medium description not provided');
             }
-            
+
             if (!$descriptionTinyTextArea.val().trim()) {
                 errors.push('Tiny description not provided');
             }
-            
+
             if (!$bboxNorth.val().trim()) {
                 errors.push('Bounding box north is not provided');
             }
@@ -268,34 +256,33 @@ CCH.Objects.UI = function () {
             if (!$bboxEast.val().trim()) {
                 errors.push('Bounding box east is not provided');
             }
-            
+
             if ($('.form-group-keyword').length === 1) {
                 errors.push('No keywords provided');
             }
-            
+
             if (!$name.val()) {
-                errors.push('Name was not provided')
+                errors.push('Name was not provided');
             }
-            
+
             if (!$type.val()) {
                 errors.push('Item type not provided');
             }
-            
+
         } else {
             errors.push('Form does not contain an item type');
         }
         return errors;
-    }
+    };
 
     me.buildItemFromForm = function () {
         var id = $itemIdInput.val(),
             itemType = $itemType.val(),
             summary = {},
             keywordsArray = [],
-            keywords = '',
             name = $name.val(),
             type = $type.val(),
-            attr = $attributeSelect.val(),
+            attr = $attributeSelect.val() || '',
             ribbonable = $ribbonableCb.prop('checked'),
             showChildren = $showChildrenCb.prop('checked'),
             enabled = $itemEnabledField.val() === 'true' ? true : false,
@@ -303,10 +290,10 @@ CCH.Objects.UI = function () {
             children = [],
             displayedChildren = [],
             bbox = [
-                $bboxNorth.val(),
                 $bboxWest.val(),
                 $bboxSouth.val(),
-                $bboxEast.val()
+                $bboxEast.val(),
+                $bboxNorth.val()
             ],
             item = {
                 id : id,
@@ -322,11 +309,10 @@ CCH.Objects.UI = function () {
                 services : services,
                 children : children,
                 displayedChildren : displayedChildren
-            }
-            
+            };
+
         summary.version = $metadataSummaryField.val();
         summary.tiny = {
-            title : $titleTinyTextArea.val().trim(),
             text : $descriptionTinyTextArea.val().trim()
         };
         summary.medium = {
@@ -345,69 +331,66 @@ CCH.Objects.UI = function () {
         $publicationsPanel.find('> div:nth-child(2) > div').each(function (idx, panel) {
             var $panel = $(panel),
                 title = $panel.find('>div:nth-child(2) input').val().trim(),
-                link = $panel.find('>div:nth-child(3) input').val().trim();
-                type = $panel.find('>div:nth-child(4) select').val().trim();
-            
-            summary.full.publications[type].push({
+                link = $panel.find('>div:nth-child(3) input').val().trim(),
+                pubType = $panel.find('>div:nth-child(4) select').val().trim();
+
+            summary.full.publications[pubType].push({
                 title : title,
                 link : link,
-                type : type
+                type : pubType
             });
         });
-        
+
         $('.form-group-keyword').not(':first').find('input').each(function (ind, input) {
             keywordsArray.push($(input).val().trim());
         });
         item.summary.keywords = keywordsArray.join('|');
-        
+
         services.push({
-            id : 0,
             type : 'csw',
             endpoint : $cswServiceInput.val().trim(),
             serviceParameter : ''
         });
         services.push({
-            id : 1,
             type : 'source_wfs',
             endpoint : $srcWfsServiceInput.val().trim(),
             serviceParameter : $srcWfsServiceParamInput.val().trim()
         });
         services.push({
-            id : 2,
             type : 'source_wms',
             endpoint : $srcWmsServiceInput.val().trim(),
             serviceParameter : $srcWmsServiceParamInput.val().trim()
         });
         services.push({
-            id : 3,
             type : 'proxy_wfs',
             endpoint : $proxyWfsServiceInput.val().trim(),
             serviceParameter : $proxyWfsServiceParamInput.val().trim()
         });
         services.push({
-            id : 4,
             type : 'proxy_wms',
             endpoint : $proxyWmsServiceInput.val().trim(),
             serviceParameter : $proxyWmsServiceParamInput.val().trim()
         });
-        
-        $childrenSb.find('option:selected').each(function (ind, cOpt) {
-            var childId = $(cOpt).attr('val'),
+
+        $childrenSortableList.find('li > span > div > button:nth-child(1).active').each(function (ind, btn) {
+            var $li = $(btn).parent().parent().parent(),
+                childId = $li.attr('id').substring(11),
                 child = CCH.items.find(function (item) {
-                        return item.id === childId;
-                    });
-                
+                    return item.id === childId;
+                });
+
             if (child) {
-                children.push(child);
+                children.push(child.id);
             }
         });
-        
-        $displayedChildrenSb.find('option:selected').each(function (ind, cOpt) {
-            displayedChildren.push(cOpt);
+
+        $childrenSortableList.find('li > span > div > button:nth-child(2).active').each(function (ind, btn) {
+            var $li = $(btn).parent().parent().parent(),
+                childId = $li.attr('id').substring(11);
+            displayedChildren.push(childId);
         });
-        
+
         return item;
-        
     };
 
     me.initUploader = function (args) {
@@ -462,8 +445,6 @@ CCH.Objects.UI = function () {
     };
 
     me.createUploader = function (args) {
-        // Set the URL to not have an item ID in it
-        history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
         me.initUploader({
             button : document.getElementById('qq-uploader-dummy'),
             callbacks : args.callbacks
@@ -502,17 +483,18 @@ CCH.Objects.UI = function () {
 
         if (!keywordExists) {
             $keywordGroupLocal = $keywordGroupClone.clone();
-            $keywordGroupLocal.find('input').removeAttr('disabled');
             $keywordGroupLocal.find('button:nth-child(1)').addClass('hidden');
             $keywordGroupLocal.find('button').removeAttr('disabled');
             $keywordGroupLocal.
                     find('input').
-                    attr('value', keyword);
+                    attr('value', keyword).
+                    removeAttr('disabled').
+                    val(keyword);
             me.bindKeywordGroup($keywordGroupLocal);
             $keywordGroup.after($keywordGroupLocal);
         }
     };
-    
+
     me.updateFormWithNewCSWInfo = function (responseObject, textStatus) {
         if (textStatus === 'success') {
             var cswNodes = responseObject.children,
@@ -560,8 +542,11 @@ CCH.Objects.UI = function () {
             callbacks : {
                 success : [me.updateFormWithNewCSWInfo],
                 error : [
-                    function () {
-                        debugger;
+                    function (response) {
+                        $alertModal.modal('hide');
+                        $alertModalTitle.html('CSW Record Could Not Be Attained');
+                        $alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
+                        $alertModal.modal('show');
                     }
                 ]
             }
@@ -637,15 +622,15 @@ CCH.Objects.UI = function () {
 
         $panetTitle.append('Welcome, ', firstName, lastName, email, '.');
     };
-    
+
     me.updateSelectAttribtue = function (responseObject) {
         var featureTypes = responseObject.featureTypes,
-                $option,
-                ftName,
-                ftNameLower;
-        
+            $option,
+            ftName,
+            ftNameLower;
+
         $attributeSelect.empty();
-        
+
         if (featureTypes) {
             featureTypes = featureTypes[0];
             featureTypes.properties.each(function(ft) {
@@ -677,7 +662,10 @@ CCH.Objects.UI = function () {
                     success : [me.updateFormWithNewCSWInfo],
                     error : [
                         function () {
-                            debugger;
+                            $alertModal.modal('hide');
+                            $alertModalTitle.html('CSW Record Could Not Be Attained');
+                            $alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
+                            $alertModal.modal('show');
                         }
                     ]
                 }
@@ -722,19 +710,34 @@ CCH.Objects.UI = function () {
             $typeRow.append($typeSelect);
             $typeSelect.val(type);
             
-        $closeButton.
-            on('click', function () {
-                 $smallWell.remove();   
-            });
+        var exists = false;
+        $('#publications-panel .well').each(function (i, pubPanel) {
+            var pTitle = $(pubPanel).find('>.row:nth-child(2) input').val() || '',
+                pLink = $(pubPanel).find('>.row:nth-child(3) input').val() || '',
+                pType = $(pubPanel).find('>.row:nth-child(4) select').val() || '';
+                
+            if (pTitle.toLowerCase().trim() === title.toLowerCase().trim() &&
+                    pLink.toLowerCase().trim() === link.toLowerCase().trim() &&
+                    pType.toLowerCase().trim() === type.toLowerCase().trim()) {
+                exists = true;
+            }
+        });
         
-        $closeButtonRow.append($closeButton);
-        
-        $linkRow.append($linkLabel, $linkInput);
-        $titleRow.append($titleLabel, $titleInput);
-            
-        $smallWell.append($closeButtonRow, $titleRow, $linkRow, $typeRow);
-        
-        $panelBody.append($smallWell);
+        if (!exists) {
+            $closeButton.
+                on('click', function () {
+                     $smallWell.remove();   
+                });
+
+            $closeButtonRow.append($closeButton);
+
+            $linkRow.append($linkLabel, $linkInput);
+            $titleRow.append($titleLabel, $titleInput);
+
+            $smallWell.append($closeButtonRow, $titleRow, $linkRow, $typeRow);
+
+            $panelBody.append($smallWell);
+        }
     };
     
     me.addItemToForm = function (args) {
@@ -766,70 +769,190 @@ CCH.Objects.UI = function () {
             keywords = summary.keywords.split('|');
             isItemEnabled = item.enabled;
 
-            // Fill out services
-            item.services.each(function (service) {
-                services[service.type] = {};
-                services[service.type].endpoint = service.endpoint;
-                services[service.type].serviceParameter = service.serviceParameter;
-            });
-
-            // Hidden field. Should be changed implicitly
+            // Hidden field - item type
             $itemType.val(item.itemType);
             
             if (item.itemType === 'aggregation') {
                 // Populate children
-                CCH.items.each(function (cchItem) {
-                    if (!item || item.id !== cchItem.id) {
-                        var option = $('<option />').
-                            attr('value', cchItem.id).
-                            html(cchItem.summary.tiny.text);
-                        $childrenSb.append(option);
-                        $displayedChildrenSb.append(option.clone());
-                    }
-                });
+                me.createSortableChildren();
                 
                 // Show Children
                 $showChildrenCb.
                     prop('checked', item.showChildren).
                     removeAttr('disabled');
+                    
+                // Select children
+                item.children.each(function (child) {
+                    var $button = $childrenSortableList.
+                        find('li#child-item-' + child.id).
+                        find('div > button:nth-child(1)');
+                
+                    if (!$button.hasClass('active')) {
+                        $button.click()
+                    }
+                });
+                
+                item.displayedChildren.each(function (child) {
+                    var $button = $childrenSortableList.
+                        find('li#child-item-' + child).
+                        find('div > button:nth-child(2)');
+                
+                    if (!$button.hasClass('active')) {
+                        $button.click()
+                    }
+                });
+                
+                $uploaderDummy.empty().addClass('hidden');
+                $metadataDropdownGroup.addClass('hidden');
             } else {
-                $childrenSb.empty();
-                $displayedChildrenSb.empty();
+                $childrenSortableList.empty();
+                
                 // Show Children
                 $showChildrenCb.
                     prop('checked', false).
                     attr('disabled', 'disabled');
+                
+                // Fill out services array
+                item.services.each(function (service) {
+                    services[service.type] = {};
+                    services[service.type].endpoint = service.endpoint;
+                    services[service.type].serviceParameter = service.serviceParameter;
+                });
+                if (item.services.length > 0) {
+                    // Fill out attribute selectbox by making a call to the WFS
+                    CCH.ows.describeFeatureType({
+                        layerName : services.proxy_wfs.serviceParameter,
+                        callbacks : {
+                            success : [function (responseObject) {
+                                    me.updateSelectAttribtue(responseObject);
+                                    $attributeSelect.
+                                        val(item.attr).
+                                        removeAttr('disabled');
+
+                            }],
+                            error : [
+                                function(data) {
+                                    var errorText = data.firstChild.textContent.trim();
+                                    if (errorText.indexOf('not find')) {
+                                        $srcWfsServiceInput.empty();
+                                        $srcWfsServiceParamInput.empty();
+                                        $srcWmsServiceInput.empty();
+                                        $srcWmsServiceParamInput.empty();
+                                        $alertModalTitle.html('Proxy Layer Could Not Be Found');
+                                        $alertModalBody.html('The proxy layer could not be found on our server.' + 
+                                            ' You may want to try re-importing it');
+                                        $alertModal.modal('show');
+                                    }
+                                }
+                            ]
+                        }
+                    });
+
+                    // Fill out services panel
+                    $cswServiceInput.
+                        val(services.csw.endpoint).
+                        removeAttr('disabled');
+                    $srcWfsServiceInput.
+                        val(services.source_wfs.endpoint).
+                        removeAttr('disabled');
+                    $srcWfsServiceParamInput.
+                        val(services.source_wfs.serviceParameter).
+                        removeAttr('disabled').
+                        keyup(function (evt) {
+                            if ($srcWfsServiceInput.val().trim() !== '' &&
+                                    $(evt.target).val().trim() !== '') {
+                                $wfsImportButton.removeAttr('disabled');
+                            } else {
+                                $wfsImportButton.attr('disabled', 'disabled');
+                            }
+                    });
+                    $srcWmsServiceInput.
+                        val(services.source_wms.endpoint).
+                        removeAttr('disabled');
+                    $srcWmsServiceParamInput.
+                        val(services.source_wms.serviceParameter).
+                        removeAttr('disabled');
+                    $proxyWfsServiceInput.
+                        val(services.proxy_wfs.endpoint).
+                        removeAttr('disabled');
+                    $proxyWfsServiceParamInput.
+                        val(services.proxy_wfs.serviceParameter).
+                        removeAttr('disabled');
+                    $proxyWmsServiceInput.
+                        val(services.proxy_wms.endpoint).
+                        removeAttr('disabled');
+                    $proxyWmsServiceParamInput.
+                        val(services.proxy_wms.serviceParameter).
+                        removeAttr('disabled');
+                }
+                
+                if ($srcWfsServiceInput.val().trim() !== '' && $srcWfsServiceParamInput.val().trim() !== '') {
+                    $wfsImportButton.removeAttr('disabled');
+                } else {
+                    $wfsImportButton.attr('disabled', 'disabled');
+                }
+                
+                $metadataDropdownGroup.removeClass('hidden');
+                $uploaderDummy.empty().removeClass('hidden');
+                me.createUploader({
+                    callbacks : {
+                        success : [
+                            function (args) {
+                                if (args.responseJSON && args.responseJSON.success === 'true') {
+                                    me.publishMetadata({
+                                        token : args.token,
+                                        callbacks : {
+                                            success : [me.metadataPublishCallback],
+                                            error : [
+                                                function () {
+                                                    $alertModal.modal('hide');
+                                                    $alertModalTitle.html('Metadata Could Not Be Saved');
+                                                    $alertModalBody.html('Unfortunately your metadata could not be saved.');
+                                                    $alertModal.modal('show');
+                                                }
+                                            ]
+                                        }
+                                    });
+                                }
+                            }
+                        ],
+                        error : [
+                            function () {
+                                $alertModal.modal('hide');
+                                $alertModalTitle.html('Unable to initialize uploading functionality');
+                                $alertModalBody.html('Unfortunately you may not be able to upload metadata.');
+                                $alertModal.modal('show');
+                            }
+                        ]
+                    }
+                });
             }
             
-            $name.
-                val(item.name).
-                removeAttr('disabled');
-
-            // Add Item ID
+            // Item ID
             $itemIdInput.val(id);
+
+            // Item Name
+            $name.val(item.name).removeAttr('disabled');
 
             $metadataSummaryField.val(summary.version || 'unknown');
 
             // Add Item Text
             $titleFullTextArea.
-                html(titleFull).
+                val(titleFull).
                 removeAttr('disabled');
             $titleMediumTextArea.
-                html(titleMedium).
-                removeAttr('disabled');
-            $titleTinyTextArea.
-                html(titleTiny).
+                val(titleMedium).
                 removeAttr('disabled');
 
             // Add Description Text
             $descriptionFullTextArea.
-                html(descriptionFull).
+                val(descriptionFull).
                 removeAttr('disabled');
             $descriptionMediumTextArea.
-                html(descriptionMedium).
+                val(descriptionMedium).
                 removeAttr('disabled');
             $descriptionTinyTextArea.
-                html(descriptionTiny).
+                val(descriptionTiny).
                 removeAttr('disabled');
 
             // Add keywords
@@ -846,105 +969,19 @@ CCH.Objects.UI = function () {
             });
 
             // Fill out bbox
-            $bboxNorth.val(item.bbox[0]).removeAttr('disabled');
-            $bboxWest.val(item.bbox[1]).removeAttr('disabled');
-            $bboxSouth.val(item.bbox[2]).removeAttr('disabled');
-            $bboxEast.val(item.bbox[3]).removeAttr('disabled');
+            $bboxWest.val(item.bbox[0]).removeAttr('disabled');
+            $bboxSouth.val(item.bbox[1]).removeAttr('disabled');
+            $bboxEast.val(item.bbox[2]).removeAttr('disabled');
+            $bboxNorth.val(item.bbox[3]).removeAttr('disabled');
 
             // Fill out item type
             $type.val(item.type).removeAttr('disabled');
-
-            if (item.services.length > 0) {
-                // Fill out attribute selectbox by making a call to the WFS
-                CCH.ows.describeFeatureType({
-                    layerName : services.proxy_wfs.serviceParameter,
-                    callbacks : {
-                        success : [function (responseObject) {
-                                me.updateSelectAttribtue(responseObject);
-                                $attributeSelect.
-                                    val(item.attr).
-                                    removeAttr('disabled');
-							
-                        }],
-						error : [
-							function(data) {
-								var errorText = data.firstChild.textContent.trim();
-								if (errorText.indexOf('not find')) {
-									$srcWfsServiceInput.empty();
-									$srcWfsServiceParamInput.empty();
-									$srcWmsServiceInput.empty();
-									$srcWmsServiceParamInput.empty();
-									$alertModalTitle.html('Proxy Layer Could Not Be Found');
-									$alertModalBody.html('The proxy layer could not be found on our server.' + 
-										' You may want to try re-importing it');
-									$alertModal.modal('show');
-								}
-							}
-						]
-                    }
-                });
-                
-                // Fill out services panel
-                $cswServiceInput.
-                    val(services.csw.endpoint).
-                    removeAttr('disabled');
-                $srcWfsServiceInput.
-                    val(services.source_wfs.endpoint).
-                    removeAttr('disabled');
-                $srcWfsServiceParamInput.
-                    val(services.source_wfs.serviceParameter).
-                    removeAttr('disabled').
-                    keyup(function (evt) {
-                        if ($srcWfsServiceInput.val().trim() !== '' &&
-                                $(evt.target).val().trim() !== '') {
-                            $wfsImportButton.removeAttr('disabled');
-                        } else {
-                            $wfsImportButton.attr('disabled', 'disabled');
-                        }
-                });
-                $srcWmsServiceInput.
-                    val(services.source_wms.endpoint).
-                    removeAttr('disabled');
-                $srcWmsServiceParamInput.
-                    val(services.source_wms.serviceParameter).
-                    removeAttr('disabled');
-                $proxyWfsServiceInput.
-                    val(services.proxy_wfs.endpoint).
-                    removeAttr('disabled');
-                $proxyWfsServiceParamInput.
-                    val(services.proxy_wfs.serviceParameter).
-                    removeAttr('disabled');
-                $proxyWmsServiceInput.
-                    val(services.proxy_wms.endpoint).
-                    removeAttr('disabled');
-                $proxyWmsServiceParamInput.
-                    val(services.proxy_wms.serviceParameter).
-                    removeAttr('disabled');
-            }
-            
-            if ($srcWfsServiceInput.val().trim() !== '' && $srcWfsServiceParamInput.val().trim() !== '') {
-                $wfsImportButton.removeAttr('disabled');
-            } else {
-                $wfsImportButton.attr('disabled', 'disabled');
-            }
             
             // Ribbonable
             $ribbonableCb.
                 prop('checked', item.ribbonable).
                 removeAttr('disabled');
-        
-            // Select children
-            item.children.each(function (child) {
-                $childrenSb.
-                    find('option[value="'+child.id+'"]').
-                    prop('selected', 'selected');
-            });
-			item.displayedChildren.each(function (child) {
-				$displayedChildrenSb.
-					find('option[value="' + child + '"]').
-					prop('selected', 'selected');
-			});
-            
+
             // Publications
             $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled', 'disabled');
             Object.keys(item.summary.full.publications, function (type) {
@@ -953,41 +990,98 @@ CCH.Objects.UI = function () {
                 });
             });
 
-            $childrenSb.removeAttr('disabled');
-			$displayedChildrenSb.removeAttr('disabled');
             $itemEnabledField.val(isItemEnabled);
-            $metadataDropdownGroup.removeClass('hidden');
-            
-            $('#qq-uploader-dummy').removeClass('hidden');
-            me.createUploader({
-                callbacks : {
-                    success : [
-                        function (args) {
-                            if (args.responseJSON && args.responseJSON.success === 'true') {
-                                me.publishMetadata({
-                                    token : args.token,
-                                    callbacks : {
-                                        success : [me.metadataPublishCallback],
-                                        error : [
-                                            function () {
-                                                debugger;
-                                            }
-                                        ]
-                                    }
-                                });
-                            }
-                        }
-                    ],
-                    error : [
-                        function () {
-                            debugger;
-                        }
-                    ]
-                }
-            });
         } else {
             CCH.LOG.warn('UI.js::putItemOnForm: function was called with no item');
         }
+    };
+    
+    me.createSortableChildren = function() {
+        $childrenSortableList.empty();
+        CCH.items.each(function (item) {
+            var $li = $('<li />').
+                    addClass('ui-state-default form-publish-info-item-children-sortable-li').
+                    attr('id', 'child-item-' + item.id),
+                $span = $('<span />').addClass('form-publish-info-item-children-sortable-li-span'),
+                $buttonDiv = $('<div />'),
+                $activeButton = $('<button />').
+                    addClass('btn btn-xs btn-default btn-child-active').
+                    attr({
+                        'type' : 'button',
+                        'data-toggle' : 'button'
+                    }),
+                $viewButton = $('<button />').
+                    addClass('btn btn-xs btn-default btn-child-visible').
+                    attr({
+                        'type' : 'button',
+                        'data-toggle' : 'button'
+                    });
+
+            $activeButton.append($('<i />').addClass('fa fa-check'));
+            $viewButton.append($('<i />').addClass('fa fa-eye'));
+
+            $buttonDiv.append($activeButton, $viewButton);
+
+            $span.
+                append(
+                $('<i />').addClass("fa fa-arrows-v"),
+                ' ' + item.summary.medium.title + ' ',
+                $buttonDiv
+            );
+
+            $li.append($span);
+
+            $childrenSortableList.append($li);
+            $activeButton.on('click', function (evt) {
+                setTimeout(function () {
+                    me.buildKeywordsFromChildren();
+                    me.buildPublicationsFromChildren();
+                    me.updateBoundingBox();
+                }, 100);
+                
+            });
+        });
+        $childrenSortableList.sortable();
+    };
+    
+    me.buildKeywordsFromChildren = function () {
+        $('.form-publish-info-item-children-sortable-li button:first-child().active').each(function (i, o) {
+            var itemId = $(o).parent().parent().parent().attr('id').substring(11),
+                item = CCH.items.find(function (i) {
+                    return i.id === itemId;
+                }),
+                keywords = item.summary.keywords.split('|');
+
+            keywords.each(function (keyword) {
+                $('.form-publish-item-keyword').not(':first').each(function (i, o) {
+                    var oKeyword = $(o).val().trim();
+                    keywords.push(oKeyword);
+                });
+            });
+
+            keywords.unique(function(k) {
+                return k.toLowerCase().trim();
+            })
+                    .each(function (keyword) {
+                me.addKeywordGroup(keyword);
+            });
+        });
+    };
+    
+    me.buildPublicationsFromChildren = function () {
+        $('.form-publish-info-item-children-sortable-li button:first-child().active').each(function (i, o) {
+            var itemId = $(o).parent().parent().parent().attr('id').substring(11),
+                item = CCH.items.find(function (i) {
+                    return i.id === itemId;
+                }),
+                publications = item.summary.full.publications;
+                
+            ['data','publications','resources'].each(function(type) {
+                publications[type].each(function (pub) {
+                    me.createPublicationRow(pub.link, pub.title, type);
+                });
+            });
+        });
     };
     
     me.wfsInfoUpdated = function() {
@@ -1079,7 +1173,99 @@ CCH.Objects.UI = function () {
 				}
 			});
         }
-    }
+    };
+    
+    me.updateBoundingBox = function () {
+        var children = $childrenSortableList.find('li > span > div > button:first-child.active');
+        
+        if (children.length !== 0) {
+        $childrenSortableList.find('li > span > div > button:first-child.active').each(function (idx, btn) {
+                var $li = $(btn).parent().parent().parent(),
+                    id = $li.attr('id').substring(11),
+                    item = CCH.items.find(function (item) {
+                        return item.id === id;
+                    });
+                
+                if ($bboxWest.val()) {
+                    if (item.bbox[0] < parseFloat($bboxWest.val())) {
+                        $bboxWest.val(item.bbox[0]);
+                    }
+                } else {
+                    $bboxWest.val(item.bbox[0]);
+                }
+                
+                if ($bboxSouth.val()) {
+                    if (item.bbox[1] < parseFloat($bboxSouth.val())) {
+                        $bboxSouth.val(item.bbox[1]);
+                    }
+                } else {
+                   $bboxSouth.val(item.bbox[1]); 
+                }
+                
+                if ($bboxEast.val()) {
+                    if (item.bbox[2] > parseFloat($bboxEast.val())) {
+                        $bboxEast.val(item.bbox[2]);
+                    }
+                } else {
+                    $bboxEast.val(item.bbox[2]);
+                }
+                
+                if ($bboxNorth.val()) {
+                    if (item.bbox[3] > parseFloat($bboxNorth.val())) {
+                        $bboxNorth.val(item.bbox[3]);
+                    }
+                } else {
+                    $bboxNorth.val(item.bbox[3]);
+                }
+            });
+        } else {
+            $bboxWest.val('');
+            $bboxSouth.val('');
+            $bboxEast.val('');
+            $bboxNorth.val('');
+        }
+    };
+    
+    me.deleteItem = function (id) {
+        var $deleteButton = $('<button />').
+                attr({
+                    type : 'button',
+                    'data-dismiss' : 'modal'
+                }).
+                addClass('btn btn-danger').
+                html('Delete').
+                on('click', function () {
+                    $.ajax({
+                        url : CCH.CONFIG.contextPath + '/data/item/' + id,
+                        method : 'DELETE',
+                        success : function () {
+                            window.location = window.location.origin + CCH.CONFIG.contextPath + '/publish/item/';
+                        },
+                        error : function (jqXHR, err, errTxt) {
+                            if (errTxt.indexOf('Unauthorized')) {
+                                $alertModal.modal('hide');
+                                $alertModalTitle.html('Item Could Not Be Deleted');
+                                $alertModalBody.html('It looks like your session has expired.' +
+                                    'You should try reloading the page to continue.');
+                                $alertModal.modal('show');
+                            } else {
+                                $alertModal.modal('hide');
+                                $alertModalTitle.html('Item Could Not Be Deleted');
+                                $alertModalBody.html('Unfortunately the item you\'re ' + 
+                                        'trying to delete couldn\'t be deleted. ' + 
+                                        'You may need to contact the system administrator ' + 
+                                        'to manually remove it in order to continue');
+                                $alertModal.modal('show');
+                            }
+                        }
+                    });
+                });
+        $alertModal.modal('hide');
+        $alertModalTitle.html('Delete Item?');
+        $alertModalBody.html('<h2>WARNING: This action cannot be undone</h2>');
+        $alertModalFooter.append($deleteButton);
+        $alertModal.modal('show');
+    };
     
     $wfsImportButton.on('click', function () {
 		var importCall = function () {
@@ -1191,14 +1377,13 @@ CCH.Objects.UI = function () {
         }
     });
     
-    $srcWfsServiceParamInput.
-        keyup(function (evt) {
-            if ($srcWfsServiceInput.val().trim() !== '' &&
-                    $(evt.target).val().trim() !== '') {
-                $wfsImportButton.removeAttr('disabled');
-            } else {
-                $wfsImportButton.attr('disabled', 'disabled');
-            }
+    $srcWfsServiceParamInput.keyup(function (evt) {
+        if ($srcWfsServiceInput.val().trim() !== '' &&
+                $(evt.target).val().trim() !== '') {
+            $wfsImportButton.removeAttr('disabled');
+        } else {
+            $wfsImportButton.attr('disabled', 'disabled');
+        }
     });
     
     $('#form-publish-info-item-panel-publications-button-add').on('click', function () {
@@ -1211,6 +1396,7 @@ CCH.Objects.UI = function () {
     });
 
     $('#publish-button-create-item-option').on('click', function () {
+        history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
         me.clearForm();
         $uploaderDummy.removeClass('hidden');
         $metadataDropdownGroup.removeClass('hidden');
@@ -1241,7 +1427,10 @@ CCH.Objects.UI = function () {
                                     ],
                                     error : [
                                         function () {
-                                            debugger;
+                                            $alertModal.modal('hide');
+                                            $alertModalTitle.html('Metadata Could Not Be Uploaded');
+                                            $alertModalBody.html('Please try again or contact a system administrator');
+                                            $alertModal.modal('show');
                                         }
                                     ]
                                 }
@@ -1251,7 +1440,10 @@ CCH.Objects.UI = function () {
                 ],
                 error : [
                     function () {
-                        debugger;
+                        $alertModal.modal('hide');
+                        $alertModalTitle.html('Uploader Not Created');
+                        $alertModalBody.html('There was a problem creating the uploader. Metadata Uploads may not be possible.');
+                        $alertModal.modal('show');
                     }
                 ]
             }
@@ -1282,7 +1474,6 @@ CCH.Objects.UI = function () {
                         $titleMediumTextArea.val(response.medium.title || '');
                         $descriptionMediumTextArea.val(response.medium.text || '');
                         
-                        $titleTinyTextArea.val(response.tiny.title || '');
                         $descriptionTinyTextArea.val(response.tiny.text || '');
                         
                         $publicationsPanel.find('>div:nth-child(2)').empty();
@@ -1300,32 +1491,39 @@ CCH.Objects.UI = function () {
                     }
                 ],
                 error : [
-                    function (errorText) {
-                        debugger;
+                    function (err) {
+                        $alertModal.modal('hide');
+                        $alertModalTitle.html('Unable To Load Attribute Information');
+                        $alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
+                        $alertModal.modal('show');
                     }
                 ]
             }
         })
 	});
     
-    $buttonSave.on('click', function () {
+    $buttonPublish.on('click', function () {
         var errors = me.validateForm.call(this),
             $ul = $('<ul />'),
             $li,
             item;
         if (errors.length === 0) {
             item = me.buildItemFromForm();
+            item.enabled = true;
             me.saveItem({
                 item : item,
                 callbacks : {
                     success : [
-                        function (err) {
-                            debugger;
+                        function () {
+                            location.reload();
                         }
                     ],
                     error  : [
                         function (err) {
-                            debugger;
+                            $alertModal.modal('hide');
+                            $alertModalTitle.html('Unable To Publish Item');
+                            $alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
+                            $alertModal.modal('show');
                         }
                     ]
                 }
@@ -1342,35 +1540,81 @@ CCH.Objects.UI = function () {
         }
     });
     
+    $buttonSave.on('click', function () {
+        var errors = me.validateForm.call(this),
+            $ul = $('<ul />'),
+            $li,
+            item;
+        if (errors.length === 0) {
+            item = me.buildItemFromForm();
+            me.saveItem({
+                item : item,
+                callbacks : {
+                    success : [
+                        function () {
+                            location.reload();
+                        }
+                    ],
+                    error  : [
+                        function (err) {
+                            $alertModal.modal('hide');
+                            $alertModalTitle.html('Unable To Save Item');
+                            $alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
+                            $alertModal.modal('show');
+                        }
+                    ]
+                }
+            });
+        } else {
+            errors.each(function (error) {
+                $li = $('<li />').html(error);
+                $ul.append($li);
+            });
+            $alertModal.modal('hide');
+            $alertModalTitle.html('Errors Found In Publish Form');
+            $alertModalBody.html($ul);
+            $alertModal.modal('show');
+        }
+    });
+    
+    $buttonDelete.on('click', function () {
+        var id = $itemIdInput.val();
+        if (id !== '') {
+            me.deleteItem(id);
+        }
+    });
+    
+    me.clearForm();
+    
     CCH.ows.requestCSWRecords({
-        callbacks : {
-            success : [
+        callbacks: {
+            success: [
                 function (response) {
                     response.children.each(function (responseChild) {
                         if (responseChild.tag === "csw:SearchResults") {
                             var id,
-                                title,
-                                $li,
-                                $a;
+                                    title,
+                                    $li,
+                                    $a;
 
                             responseChild.children.each(function (recordSummary) {
-                                recordSummary.children.each(function (recordAttribute) {
+                                recordSummary.children.each(function(recordAttribute) {
                                     if (recordAttribute.tag === "dc:identifier") {
                                         id = recordAttribute.text;
                                     } else if (recordAttribute.tag === "dc:title") {
                                         title = recordAttribute.text;
                                     }
                                 })
-                                
+
                                 if (id && title) {
                                     $li = $('<li />');
                                     $a = $('<a />').
-                                        attr('href', '#').
-                                        html(title);
+                                            attr('href', '#').
+                                            html(title);
                                     $li.append($a);
                                     $metadataDropdownList.append($li);
-                                    
-                                    $a.on('click', function (evt) {
+
+                                    $a.on('click', function(evt) {
                                         var endpoint = CCH.CONFIG.publicUrl;
                                         endpoint += '/csw/?';
                                         endpoint += 'service=CSW';
@@ -1381,7 +1625,7 @@ CCH.Objects.UI = function () {
                                         endpoint += '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
                                         endpoint += '&elementSetName=full';
                                         $cswServiceInput.val(endpoint);
-                                        
+
                                     });
                                 }
                             });
@@ -1389,9 +1633,12 @@ CCH.Objects.UI = function () {
                     });
                 }
             ],
-            error : [
-                function (response) {
-                    debugger;
+            error: [
+                function(response) {
+                    $alertModal.modal('hide');
+                    $alertModalTitle.html('CSW Record Could Not Be Attained');
+                    $alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
+                    $alertModal.modal('show');
                 }
             ]
         }
