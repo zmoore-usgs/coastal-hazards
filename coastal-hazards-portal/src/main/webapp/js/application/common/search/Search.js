@@ -84,7 +84,8 @@ CCH.Objects.Search = function (args) {
                 sortBy: sortBy,
                 query: criteria,
                 type: types,
-                subtree : args.subtree || false
+                subtree : args.subtree || false,
+                showDisabled : args.showDisabled || false
             },
             url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.item.endpoint,
             displayNotification = args.displayNotification === false ? false : true;

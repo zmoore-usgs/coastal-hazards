@@ -39,10 +39,10 @@
                 </div>
             </div>
         </div>
+        <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
+            <i class="fa fa-times"></i>
+        </button>
         <div>
-            <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
-                <i class="fa fa-times"></i>
-            </button>
             <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
                 <i class="fa fa-caret-up"></i>
             </button>

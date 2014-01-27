@@ -18,3 +18,11 @@
 #app-navbar-search-container > div > div:first-child > button > span {
     margin-left: 5px;
 }
+
+@media (max-width: 991px) {
+    #app-navbar-search-container {
+        margin-right: 5px; 
+        margin-top: 0px;
+        width: 20%; // This will change in js
+    }
+}
