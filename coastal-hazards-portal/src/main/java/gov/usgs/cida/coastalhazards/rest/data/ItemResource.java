@@ -77,11 +77,12 @@ public class ItemResource {
 			@DefaultValue("popularity") @QueryParam("sortBy") String sortBy,
 			@DefaultValue("-1") @QueryParam("count") int count,
 			@DefaultValue("") @QueryParam("bbox") String bbox,
-            @DefaultValue("false") @QueryParam("subtree") boolean subtree) {
+            @DefaultValue("false") @QueryParam("subtree") boolean subtree,
+            @DefaultValue("false") @QueryParam("showDisabled") boolean showDisabled) {
 		// need to figure out how to search popularity and bbox yet
         Response response = null;
         try (ItemManager itemManager = new ItemManager()) {
-            String jsonResult = itemManager.query(query, type, sortBy, count, bbox, subtree);
+            String jsonResult = itemManager.query(query, type, sortBy, count, bbox, subtree, showDisabled);
             response = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).build();
         }
         return response;
