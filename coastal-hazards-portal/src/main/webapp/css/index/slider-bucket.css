@@ -71,10 +71,13 @@
         /* Card Navigation Column Div */
         #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(3) {
             display: inline-block;
-            width: 20%;
+            width: 10%;
             vertical-align: top;
             text-align: center;
         }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(3) button {
+                clear: both;
+            }
             #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(3) img {
                 max-width: 100%;
             }

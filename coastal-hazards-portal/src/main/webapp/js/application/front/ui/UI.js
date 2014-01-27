@@ -11,18 +11,6 @@
 /**
  *  Central control object for the user interface
  * 
- * 
- *  Events Emitted:
- *  window: 'cch.ui.resized'
- *  window: 'cch.ui.redimensioned'
- *  window: 'cch.ui.initialized'
- *  window: 'cch.ui.overlay.removed'
-
- *  Events Listened To:
- *  this.combinedSearch: 'combined-searchbar-search-performing'
- *  this.combinedSearch : 'combined-searchbar-search-performed'
- *  window : 'button-click-bucket-add'
- *  
  * @param {type} args
  * @returns {CCH.Objects.UI.Anonym$22}
  */
@@ -38,10 +26,6 @@ CCH.Objects.UI = function (args) {
                 textStatus : textStatus
             });
         };
-
-    // This window name is used for the info window to launch into when 
-    // a user chooses to go back to the portal
-    window.name = "portal_main_window";
 
     me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';

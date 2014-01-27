@@ -61,6 +61,9 @@ html, body {
     min-height : 150px;
     height: 100%;
 }
+#OpenLayers_Control_MaximizeDiv {
+    z-index: 9999;
+}
 
 /* Deals with layer identification on-click */
 #feature-identification-popup_contentDiv table {

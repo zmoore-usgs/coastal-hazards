@@ -90,6 +90,9 @@
 #application-slide-items-content-container .panel-heading {
     text-align: center;
 }
+#application-slide-items-content-container .panel-heading:hover {
+    cursor: pointer;
+}
 
 #application-slide-items-content-container .panel-title {
     font-size: 1.9em;
