@@ -1487,6 +1487,44 @@ CCH.Objects.UI = function () {
         })
 	});
     
+    $buttonPublish.on('click', function () {
+        var errors = me.validateForm.call(this),
+            $ul = $('<ul />'),
+            $li,
+            item;
+        if (errors.length === 0) {
+            item = me.buildItemFromForm();
+            item.enabled = true;
+            me.saveItem({
+                item : item,
+                callbacks : {
+                    success : [
+                        function () {
+                            location.reload();
+                        }
+                    ],
+                    error  : [
+                        function (err) {
+                            $alertModal.modal('hide');
+                            $alertModalTitle.html('Unable To Publish Item');
+                            $alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
+                            $alertModal.modal('show');
+                        }
+                    ]
+                }
+            });
+        } else {
+            errors.each(function (error) {
+                $li = $('<li />').html(error);
+                $ul.append($li);
+            });
+            $alertModal.modal('hide');
+            $alertModalTitle.html('Errors Found In Publish Form');
+            $alertModalBody.html($ul);
+            $alertModal.modal('show');
+        }
+    });
+    
     $buttonSave.on('click', function () {
         var errors = me.validateForm.call(this),
             $ul = $('<ul />'),
