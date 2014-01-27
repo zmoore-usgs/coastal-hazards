@@ -55,7 +55,7 @@ CCH.Objects.UI = function () {
         $buttonPublish = $('#publish-button-publish'),
         $buttonDelete = $('#publish-button-delete');
 
-    me.clearForm = function() {
+    me.clearForm = function () {
         $titleFullTextArea.attr('disabled', 'disabled');
         $titleMediumTextArea.attr('disabled', 'disabled');
         $descriptionFullTextArea.attr('disabled', 'disabled');
@@ -182,7 +182,7 @@ CCH.Objects.UI = function () {
         $keywordGroup.find('input').removeAttr('disabled');
         me.createSortableChildren();
     };
-    
+
     me.validateForm = function () {
         var type = $itemType.val(),
             errors = [];
@@ -256,7 +256,7 @@ CCH.Objects.UI = function () {
             if (!$bboxEast.val().trim()) {
                 errors.push('Bounding box east is not provided');
             }
-            
+
             if ($('.form-group-keyword').length === 1) {
                 errors.push('No keywords provided');
             }
@@ -380,18 +380,17 @@ CCH.Objects.UI = function () {
                 });
 
             if (child) {
-                children.push(child);
+                children.push(child.id);
             }
         });
-        
+
         $childrenSortableList.find('li > span > div > button:nth-child(2).active').each(function (ind, btn) {
             var $li = $(btn).parent().parent().parent(),
                 childId = $li.attr('id').substring(11);
             displayedChildren.push(childId);
         });
-        
+
         return item;
-        
     };
 
     me.initUploader = function (args) {
@@ -446,8 +445,6 @@ CCH.Objects.UI = function () {
     };
 
     me.createUploader = function (args) {
-        // Set the URL to not have an item ID in it
-//        history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
         me.initUploader({
             button : document.getElementById('qq-uploader-dummy'),
             callbacks : args.callbacks
@@ -497,7 +494,7 @@ CCH.Objects.UI = function () {
             $keywordGroup.after($keywordGroupLocal);
         }
     };
-    
+
     me.updateFormWithNewCSWInfo = function (responseObject, textStatus) {
         if (textStatus === 'success') {
             var cswNodes = responseObject.children,
@@ -545,8 +542,11 @@ CCH.Objects.UI = function () {
             callbacks : {
                 success : [me.updateFormWithNewCSWInfo],
                 error : [
-                    function () {
-                        debugger;
+                    function (response) {
+                        $alertModal.modal('hide');
+                        $alertModalTitle.html('CSW Record Could Not Be Attained');
+                        $alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
+                        $alertModal.modal('show');
                     }
                 ]
             }
@@ -662,7 +662,10 @@ CCH.Objects.UI = function () {
                     success : [me.updateFormWithNewCSWInfo],
                     error : [
                         function () {
-                            debugger;
+                            $alertModal.modal('hide');
+                            $alertModalTitle.html('CSW Record Could Not Be Attained');
+                            $alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
+                            $alertModal.modal('show');
                         }
                     ]
                 }
@@ -709,13 +712,13 @@ CCH.Objects.UI = function () {
             
         var exists = false;
         $('#publications-panel .well').each(function (i, pubPanel) {
-            var pTitle = $(pubPanel).find('>row:nth-child(1) input').val() || '',
-                pLink = $(pubPanel).find('>row:nth-child(2) input').val() || '',
-                pType = $(pubPanel).find('>row:nth-child(3) select').val() || '';
+            var pTitle = $(pubPanel).find('>.row:nth-child(2) input').val() || '',
+                pLink = $(pubPanel).find('>.row:nth-child(3) input').val() || '',
+                pType = $(pubPanel).find('>.row:nth-child(4) select').val() || '';
                 
-            if (pTitle.toLowerCase().trim() === title &&
-                    pLink.toLowerCase().trim() === link &&
-                    pType.toLowerCase().trim() === type) {
+            if (pTitle.toLowerCase().trim() === title.toLowerCase().trim() &&
+                    pLink.toLowerCase().trim() === link.toLowerCase().trim() &&
+                    pType.toLowerCase().trim() === type.toLowerCase().trim()) {
                 exists = true;
             }
         });
@@ -902,7 +905,10 @@ CCH.Objects.UI = function () {
                                             success : [me.metadataPublishCallback],
                                             error : [
                                                 function () {
-                                                    debugger;
+                                                    $alertModal.modal('hide');
+                                                    $alertModalTitle.html('Metadata Could Not Be Saved');
+                                                    $alertModalBody.html('Unfortunately your metadata could not be saved.');
+                                                    $alertModal.modal('show');
                                                 }
                                             ]
                                         }
@@ -912,7 +918,10 @@ CCH.Objects.UI = function () {
                         ],
                         error : [
                             function () {
-                                debugger;
+                                $alertModal.modal('hide');
+                                $alertModalTitle.html('Unable to initialize uploading functionality');
+                                $alertModalBody.html('Unfortunately you may not be able to upload metadata.');
+                                $alertModal.modal('show');
                             }
                         ]
                     }
@@ -1027,6 +1036,7 @@ CCH.Objects.UI = function () {
                 setTimeout(function () {
                     me.buildKeywordsFromChildren();
                     me.buildPublicationsFromChildren();
+                    me.updateBoundingBox();
                 }, 100);
                 
             });
@@ -1417,7 +1427,10 @@ CCH.Objects.UI = function () {
                                     ],
                                     error : [
                                         function () {
-                                            debugger;
+                                            $alertModal.modal('hide');
+                                            $alertModalTitle.html('Metadata Could Not Be Uploaded');
+                                            $alertModalBody.html('Please try again or contact a system administrator');
+                                            $alertModal.modal('show');
                                         }
                                     ]
                                 }
@@ -1427,7 +1440,10 @@ CCH.Objects.UI = function () {
                 ],
                 error : [
                     function () {
-                        debugger;
+                        $alertModal.modal('hide');
+                        $alertModalTitle.html('Uploader Not Created');
+                        $alertModalBody.html('There was a problem creating the uploader. Metadata Uploads may not be possible.');
+                        $alertModal.modal('show');
                     }
                 ]
             }
@@ -1475,13 +1491,54 @@ CCH.Objects.UI = function () {
                     }
                 ],
                 error : [
-                    function (errorText) {
-                        debugger;
+                    function (err) {
+                        $alertModal.modal('hide');
+                        $alertModalTitle.html('Unable To Load Attribute Information');
+                        $alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
+                        $alertModal.modal('show');
                     }
                 ]
             }
         })
 	});
+    
+    $buttonPublish.on('click', function () {
+        var errors = me.validateForm.call(this),
+            $ul = $('<ul />'),
+            $li,
+            item;
+        if (errors.length === 0) {
+            item = me.buildItemFromForm();
+            item.enabled = true;
+            me.saveItem({
+                item : item,
+                callbacks : {
+                    success : [
+                        function () {
+                            location.reload();
+                        }
+                    ],
+                    error  : [
+                        function (err) {
+                            $alertModal.modal('hide');
+                            $alertModalTitle.html('Unable To Publish Item');
+                            $alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
+                            $alertModal.modal('show');
+                        }
+                    ]
+                }
+            });
+        } else {
+            errors.each(function (error) {
+                $li = $('<li />').html(error);
+                $ul.append($li);
+            });
+            $alertModal.modal('hide');
+            $alertModalTitle.html('Errors Found In Publish Form');
+            $alertModalBody.html($ul);
+            $alertModal.modal('show');
+        }
+    });
     
     $buttonSave.on('click', function () {
         var errors = me.validateForm.call(this),
@@ -1494,8 +1551,8 @@ CCH.Objects.UI = function () {
                 item : item,
                 callbacks : {
                     success : [
-                        function (err) {
-                            debugger;
+                        function () {
+                            location.reload();
                         }
                     ],
                     error  : [
@@ -1578,7 +1635,10 @@ CCH.Objects.UI = function () {
             ],
             error: [
                 function(response) {
-                    debugger;
+                    $alertModal.modal('hide');
+                    $alertModalTitle.html('CSW Record Could Not Be Attained');
+                    $alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
+                    $alertModal.modal('show');
                 }
             ]
         }

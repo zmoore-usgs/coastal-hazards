@@ -58,6 +58,9 @@ CCH.Objects.CombinedSearch = function (args) {
             
             if (isSmall) {
                 idealInputWidth = '100%';
+                $('#app-navbar-search-container > div > div:first-child > button').height(30);
+                $('#app-navbar-search-container > div > input').height(30);
+                $('#app-navbar-search-container > div > div:last-child > button').height(30);
             } else {
                 // Get all visible, non-modal children of the parent that are also not my container
                 parentContainerVisibleItems = $parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
@@ -67,6 +70,9 @@ CCH.Objects.CombinedSearch = function (args) {
                 }),
                 containerMarginRight = 15, // TODO- This is problematic between IE9 and others
                 idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
+                $('#app-navbar-search-container > div > div:first-child > button').height(20);
+                $('#app-navbar-search-container > div > input').height(20);
+                $('#app-navbar-search-container > div > div:last-child > button').height(20);
             }
             
         $container.css({width : idealInputWidth});

@@ -11,8 +11,8 @@ $(document).ready(function () {
         LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
     });
     CCH.LOG = LOG;
-
-     CCH.ows = new CCH.Objects.OWS().init();
+    
+    CCH.ows = new CCH.Objects.OWS().init();
 
     CCH.ui = new CCH.Objects.UI();
 
@@ -38,9 +38,11 @@ $(document).ready(function () {
                             })) {
                                 CCH.items.push(item);
                             }
-                            item.children.each(function (child) {
-                                rootOutChildren(child);
-                            })
+                            if (item.children) {
+                                item.children.each(function (child) {
+                                    rootOutChildren(child);
+                                });
+                            }
                         } else {
                             if (!CCH.items.find(function (itemsItem) {
                                 return item.id === itemsItem.id;
