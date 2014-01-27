@@ -74,17 +74,12 @@ CCH.Objects.BucketSlide = function (args) {
         });
     };
     
-    me.bindItemSlideOpen = function () {
-        $(window).off('cch.slide.items.opened', me.bindItemSlideOpen);
-        me.resized();
-        me.openSlide();
-    };
-
     me.open = function () {
         if (me.isClosed) {
             if (me.isSmall()) {
-                $(window).on('cch.slide.items.opened', me.bindItemSlideOpen);
                 $(window).trigger('cch.slide.bucket.opening');
+               me.resized();
+            me.openSlide();
             } else {
                 me.openSlide();
             }
@@ -98,9 +93,15 @@ CCH.Objects.BucketSlide = function (args) {
 
     me.close = function (dontEmoteClosing, bindItemsOpening) {
         var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
-            
+        var itemSliderBinding = function () {
+            $(window).off('cch.slide.items.opening', itemSliderBinding);
+            setTimeout(function () {
+                me.resized();
+                me.openSlide();
+            }, 50);
+        }
         if (bindItemsOpening === true) {
-             $(window).on('cch.slide.items.opened', me.bindItemSlideOpen);
+             $(window).on('cch.slide.items.opening', itemSliderBinding);
         }
         
         if (!dontEmoteClosing === true) {
@@ -208,8 +209,7 @@ CCH.Objects.BucketSlide = function (args) {
             toExtent = me.isSmall() ? extents.small : extents.large,
             $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             $slideContent = $('#' + me.SLIDE_CONTENT_ID),
-            windowWidth = $(window).outerWidth(),
-            windowHeight = $(window).outerHeight();
+            windowWidth = $(window).outerWidth();
 
         if (me.isClosed) {
             $slideContainer.css({
@@ -264,7 +264,7 @@ CCH.Objects.BucketSlide = function (args) {
                 },
                 small: {
                     top: $firstAggregationBellow.offset() ? $firstAggregationBellow.offset().top - 1 : 0,
-                    left: $slideContainer.offset().left
+                    left: 50
                 }
             };
 
