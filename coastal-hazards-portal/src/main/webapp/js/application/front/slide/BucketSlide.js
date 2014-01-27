@@ -198,6 +198,7 @@ CCH.Objects.BucketSlide = function (args) {
         if (me.isSmall) {
             if (!me.isClosed) {
                 me.toggle();
+                me.resized();
             }
         }
     }
