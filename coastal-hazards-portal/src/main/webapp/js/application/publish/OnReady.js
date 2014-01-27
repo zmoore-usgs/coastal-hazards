@@ -26,6 +26,7 @@ $(document).ready(function () {
     // TODO This might prove to be an inefficient way of loading items.
     CCH.search.submitItemSearch({
         subtree : true,
+        showDisabled : true,
         callbacks : {
             success : [
                 function (itemsJSON) {
