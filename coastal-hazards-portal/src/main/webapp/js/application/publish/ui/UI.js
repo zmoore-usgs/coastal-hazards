@@ -782,8 +782,14 @@ CCH.Objects.UI = function () {
 
                 // Select children
                 item.children.each(function (child) {
+                    var id;
+                    if (typeof child === 'string') {
+                        id = child;
+                    } else {
+                        id = child.id;
+                    }
                     var $button = $childrenSortableList.
-                        find('li#child-item-' + child.id).
+                        find('li#child-item-' + id).
                         find('div > button:nth-child(1)');
 
                     if (!$button.hasClass('active')) {
@@ -1637,7 +1643,7 @@ CCH.Objects.UI = function () {
                 }
             ],
             error: [
-                function(response) {
+                function (response) {
                     $alertModal.modal('hide');
                     $alertModalTitle.html('CSW Record Could Not Be Attained');
                     $alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
