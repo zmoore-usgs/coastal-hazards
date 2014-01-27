@@ -113,13 +113,19 @@ public class ItemManager implements AutoCloseable {
      * @param count max items to return (TODO paging)
      * @param bbox search bounding box (TODO fix this)
      * @param subtree whether to return entire subtree for aggregated items
+     * @param showDisabled whether to include disabled items in the search
      * @return JSON result of items
      */
-    public String query(List<String> queryText, List<String> types, String sortBy, int count, String bbox, boolean subtree) {
+    public String query(List<String> queryText, List<String> types, String sortBy,
+            int count, String bbox, boolean subtree, boolean showDisabled) {
         StringBuilder builder = new StringBuilder();
         List<String> queryParams = new LinkedList<>();
         int paramIndex = 1;
-        builder.append("select i from Item i where i.enabled = true");
+        builder.append("select i from Item i where 1=1");
+        // show disabled means return enable == true and false, so 1=1, narrow it down if !showDisabled
+        if (!showDisabled) {
+            builder.append(" and i.enabled = true");
+        }
         boolean hasQueryText = isEmpty(queryText);
         boolean hasType = isEmpty(types);
         List<Item.Type> typesList = new LinkedList<>();
