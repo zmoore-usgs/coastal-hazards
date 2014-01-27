@@ -55,7 +55,7 @@ CCH.Objects.UI = function () {
         $buttonPublish = $('#publish-button-publish'),
         $buttonDelete = $('#publish-button-delete');
 
-    me.clearForm = function() {
+    me.clearForm = function () {
         $titleFullTextArea.attr('disabled', 'disabled');
         $titleMediumTextArea.attr('disabled', 'disabled');
         $descriptionFullTextArea.attr('disabled', 'disabled');
@@ -182,7 +182,7 @@ CCH.Objects.UI = function () {
         $keywordGroup.find('input').removeAttr('disabled');
         me.createSortableChildren();
     };
-    
+
     me.validateForm = function () {
         var type = $itemType.val(),
             errors = [];
@@ -256,7 +256,7 @@ CCH.Objects.UI = function () {
             if (!$bboxEast.val().trim()) {
                 errors.push('Bounding box east is not provided');
             }
-            
+
             if ($('.form-group-keyword').length === 1) {
                 errors.push('No keywords provided');
             }
@@ -380,7 +380,7 @@ CCH.Objects.UI = function () {
                 });
 
             if (child) {
-                children.push(child);
+                children.push(child.id);
             }
         });
         
@@ -709,13 +709,13 @@ CCH.Objects.UI = function () {
             
         var exists = false;
         $('#publications-panel .well').each(function (i, pubPanel) {
-            var pTitle = $(pubPanel).find('>row:nth-child(1) input').val() || '',
-                pLink = $(pubPanel).find('>row:nth-child(2) input').val() || '',
-                pType = $(pubPanel).find('>row:nth-child(3) select').val() || '';
+            var pTitle = $(pubPanel).find('>.row:nth-child(2) input').val() || '',
+                pLink = $(pubPanel).find('>.row:nth-child(3) input').val() || '',
+                pType = $(pubPanel).find('>.row:nth-child(4) select').val() || '';
                 
-            if (pTitle.toLowerCase().trim() === title &&
-                    pLink.toLowerCase().trim() === link &&
-                    pType.toLowerCase().trim() === type) {
+            if (pTitle.toLowerCase().trim() === title.toLowerCase().trim() &&
+                    pLink.toLowerCase().trim() === link.toLowerCase().trim() &&
+                    pType.toLowerCase().trim() === type.toLowerCase().trim()) {
                 exists = true;
             }
         });
@@ -1027,6 +1027,7 @@ CCH.Objects.UI = function () {
                 setTimeout(function () {
                     me.buildKeywordsFromChildren();
                     me.buildPublicationsFromChildren();
+                    me.updateBoundingBox();
                 }, 100);
                 
             });
@@ -1475,8 +1476,11 @@ CCH.Objects.UI = function () {
                     }
                 ],
                 error : [
-                    function (errorText) {
-                        debugger;
+                    function (err) {
+                        $alertModal.modal('hide');
+                        $alertModalTitle.html('Unable To Load Attribute Information');
+                        $alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
+                        $alertModal.modal('show');
                     }
                 ]
             }

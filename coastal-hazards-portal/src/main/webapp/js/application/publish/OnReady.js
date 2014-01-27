@@ -38,9 +38,11 @@ $(document).ready(function () {
                             })) {
                                 CCH.items.push(item);
                             }
-                            item.children.each(function (child) {
-                                rootOutChildren(child);
-                            })
+                            if (item.children) {
+                                item.children.each(function (child) {
+                                    rootOutChildren(child);
+                                });
+                            }
                         } else {
                             if (!CCH.items.find(function (itemsItem) {
                                 return item.id === itemsItem.id;
