@@ -633,15 +633,15 @@ CCH.Objects.UI = function () {
 
         if (featureTypes) {
             featureTypes = featureTypes[0];
-            featureTypes.properties.each(function(ft) {
-                ftName = ft.name,
-                        ftNameLower = ftName.toLowerCase();
+            featureTypes.properties.each(function (ft) {
+                ftName = ft.name;
+                ftNameLower = ftName.toLowerCase();
                 if (ftNameLower !== 'objectid' &&
                         ftNameLower !== 'shape' &&
                         ftNameLower !== 'shape.len' &&
-						ftNameLower !== 'the_geom' &&
-						ftNameLower !== 'descriptio' &&
-						ftNameLower !== 'name') {
+                        ftNameLower !== 'the_geom' &&
+                        ftNameLower !== 'descriptio' &&
+                        ftNameLower !== 'name') {
                     $option = $('<option>').
                             attr('value', ft.name).
                             html(ft.name);
@@ -650,18 +650,19 @@ CCH.Objects.UI = function () {
             });
         }
         $attributeSelect.removeAttr('disabled');
+        $attributeSelect.trigger('change');
     };
-    
+
     me.metadataPublishCallback = function (mdObject, status) {
         if (status === 'success') {
             $itemType.val('data');
             $('#form-publish-item-service-csw').val(mdObject.metadata);
-             me.getCSWInfo({
+            me.getCSWInfo({
                 url : mdObject.metadata,
                 callbacks : {
                     success : [me.updateFormWithNewCSWInfo],
                     error : [
-                        function () {
+                        function (response) {
                             $alertModal.modal('hide');
                             $alertModalTitle.html('CSW Record Could Not Be Attained');
                             $alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
@@ -672,9 +673,10 @@ CCH.Objects.UI = function () {
             });
         }
     };
-    
+
     me.createPublicationRow = function(link, title, type) {
-        var $panelBody = $publicationsPanel.find('>div:nth-child(2)'),
+        var exists = false,
+            $panelBody = $publicationsPanel.find('>div:nth-child(2)'),
             $closeButtonRow = $('<div />').addClass('pull-right'),
             $closeButton = $('<i />').addClass('fa fa-times'),
             $smallWell = $('<div />').addClass('well well-small'),
@@ -707,26 +709,25 @@ CCH.Objects.UI = function () {
             $typeSelect = $('<select />').
                 addClass('form-control').
                 append($dataOption, $publicationOption, $resourceOption);
-            $typeRow.append($typeSelect);
-            $typeSelect.val(type);
-            
-        var exists = false;
+        $typeRow.append($typeSelect);
+        $typeSelect.val(type);
+
         $('#publications-panel .well').each(function (i, pubPanel) {
             var pTitle = $(pubPanel).find('>.row:nth-child(2) input').val() || '',
                 pLink = $(pubPanel).find('>.row:nth-child(3) input').val() || '',
                 pType = $(pubPanel).find('>.row:nth-child(4) select').val() || '';
-                
+
             if (pTitle.toLowerCase().trim() === title.toLowerCase().trim() &&
                     pLink.toLowerCase().trim() === link.toLowerCase().trim() &&
                     pType.toLowerCase().trim() === type.toLowerCase().trim()) {
                 exists = true;
             }
         });
-        
+
         if (!exists) {
             $closeButton.
                 on('click', function () {
-                     $smallWell.remove();   
+                    $smallWell.remove();
                 });
 
             $closeButtonRow.append($closeButton);
@@ -739,7 +740,7 @@ CCH.Objects.UI = function () {
             $panelBody.append($smallWell);
         }
     };
-    
+
     me.addItemToForm = function (args) {
         CCH.LOG.info('UI.js::putItemOnForm: Adding item to form.');
         args = args || {};
@@ -748,21 +749,19 @@ CCH.Objects.UI = function () {
             summary,
             titleFull,
             titleMedium,
-            titleTiny,
             descriptionFull,
             descriptionMedium,
             descriptionTiny,
             keywords = [],
             services = {},
             isItemEnabled = false;
-            
+
         if (item) {
             item.children = item.children || [];
             id = item.id;
             summary = item.summary;
             titleFull = summary.full.title;
             titleMedium = summary.medium.title;
-            titleTiny = summary.tiny.title;
             descriptionFull = summary.full.text;
             descriptionMedium = summary.medium.text;
             descriptionTiny = summary.tiny.text;
@@ -771,47 +770,47 @@ CCH.Objects.UI = function () {
 
             // Hidden field - item type
             $itemType.val(item.itemType);
-            
+
             if (item.itemType === 'aggregation') {
                 // Populate children
                 me.createSortableChildren();
-                
+
                 // Show Children
                 $showChildrenCb.
                     prop('checked', item.showChildren).
                     removeAttr('disabled');
-                    
+
                 // Select children
                 item.children.each(function (child) {
                     var $button = $childrenSortableList.
                         find('li#child-item-' + child.id).
                         find('div > button:nth-child(1)');
-                
+
                     if (!$button.hasClass('active')) {
-                        $button.click()
+                        $button.click();
                     }
                 });
-                
+
                 item.displayedChildren.each(function (child) {
                     var $button = $childrenSortableList.
                         find('li#child-item-' + child).
                         find('div > button:nth-child(2)');
-                
+
                     if (!$button.hasClass('active')) {
-                        $button.click()
+                        $button.click();
                     }
                 });
-                
+
                 $uploaderDummy.empty().addClass('hidden');
                 $metadataDropdownGroup.addClass('hidden');
             } else {
                 $childrenSortableList.empty();
-                
+
                 // Show Children
                 $showChildrenCb.
                     prop('checked', false).
                     attr('disabled', 'disabled');
-                
+
                 // Fill out services array
                 item.services.each(function (service) {
                     services[service.type] = {};
@@ -824,22 +823,22 @@ CCH.Objects.UI = function () {
                         layerName : services.proxy_wfs.serviceParameter,
                         callbacks : {
                             success : [function (responseObject) {
-                                    me.updateSelectAttribtue(responseObject);
-                                    $attributeSelect.
-                                        val(item.attr).
-                                        removeAttr('disabled');
+                                me.updateSelectAttribtue(responseObject);
+                                $attributeSelect.
+                                    val(item.attr).
+                                    removeAttr('disabled');
 
                             }],
                             error : [
-                                function(data) {
+                                function (data) {
                                     var errorText = data.firstChild.textContent.trim();
-                                    if (errorText.indexOf('not find')) {
+                                    if (errorText.indexOf('not find') !== -1) {
                                         $srcWfsServiceInput.empty();
                                         $srcWfsServiceParamInput.empty();
                                         $srcWmsServiceInput.empty();
                                         $srcWmsServiceParamInput.empty();
                                         $alertModalTitle.html('Proxy Layer Could Not Be Found');
-                                        $alertModalBody.html('The proxy layer could not be found on our server.' + 
+                                        $alertModalBody.html('The proxy layer could not be found on our server.' +
                                             ' You may want to try re-importing it');
                                         $alertModal.modal('show');
                                     }
@@ -865,7 +864,7 @@ CCH.Objects.UI = function () {
                             } else {
                                 $wfsImportButton.attr('disabled', 'disabled');
                             }
-                    });
+                        });
                     $srcWmsServiceInput.
                         val(services.source_wms.endpoint).
                         removeAttr('disabled');
@@ -885,13 +884,13 @@ CCH.Objects.UI = function () {
                         val(services.proxy_wms.serviceParameter).
                         removeAttr('disabled');
                 }
-                
+
                 if ($srcWfsServiceInput.val().trim() !== '' && $srcWfsServiceParamInput.val().trim() !== '') {
                     $wfsImportButton.removeAttr('disabled');
                 } else {
                     $wfsImportButton.attr('disabled', 'disabled');
                 }
-                
+
                 $metadataDropdownGroup.removeClass('hidden');
                 $uploaderDummy.empty().removeClass('hidden');
                 me.createUploader({
@@ -927,7 +926,7 @@ CCH.Objects.UI = function () {
                     }
                 });
             }
-            
+
             // Item ID
             $itemIdInput.val(id);
 
@@ -976,7 +975,7 @@ CCH.Objects.UI = function () {
 
             // Fill out item type
             $type.val(item.type).removeAttr('disabled');
-            
+
             // Ribbonable
             $ribbonableCb.
                 prop('checked', item.ribbonable).
@@ -995,8 +994,8 @@ CCH.Objects.UI = function () {
             CCH.LOG.warn('UI.js::putItemOnForm: function was called with no item');
         }
     };
-    
-    me.createSortableChildren = function() {
+
+    me.createSortableChildren = function () {
         $childrenSortableList.empty();
         CCH.items.each(function (item) {
             var $li = $('<li />').
@@ -1024,26 +1023,25 @@ CCH.Objects.UI = function () {
 
             $span.
                 append(
-                $('<i />').addClass("fa fa-arrows-v"),
-                ' ' + item.summary.medium.title + ' ',
-                $buttonDiv
-            );
+                    $('<i />').addClass("fa fa-arrows-v"),
+                    ' ' + item.summary.medium.title + ' ',
+                    $buttonDiv
+                );
 
             $li.append($span);
 
             $childrenSortableList.append($li);
-            $activeButton.on('click', function (evt) {
+            $activeButton.on('click', function () {
                 setTimeout(function () {
                     me.buildKeywordsFromChildren();
                     me.buildPublicationsFromChildren();
                     me.updateBoundingBox();
                 }, 100);
-                
             });
         });
         $childrenSortableList.sortable();
     };
-    
+
     me.buildKeywordsFromChildren = function () {
         $('.form-publish-info-item-children-sortable-li button:first-child().active').each(function (i, o) {
             var itemId = $(o).parent().parent().parent().attr('id').substring(11),
@@ -1052,22 +1050,19 @@ CCH.Objects.UI = function () {
                 }),
                 keywords = item.summary.keywords.split('|');
 
-            keywords.each(function (keyword) {
-                $('.form-publish-item-keyword').not(':first').each(function (i, o) {
-                    var oKeyword = $(o).val().trim();
-                    keywords.push(oKeyword);
-                });
+            $('.form-publish-item-keyword').not(':first').each(function (i, o) {
+                var oKeyword = $(o).val().trim();
+                keywords.push(oKeyword);
             });
 
-            keywords.unique(function(k) {
+            keywords.unique(function (k) {
                 return k.toLowerCase().trim();
-            })
-                    .each(function (keyword) {
+            }).each(function (keyword) {
                 me.addKeywordGroup(keyword);
             });
         });
     };
-    
+
     me.buildPublicationsFromChildren = function () {
         $('.form-publish-info-item-children-sortable-li button:first-child().active').each(function (i, o) {
             var itemId = $(o).parent().parent().parent().attr('id').substring(11),
@@ -1075,19 +1070,19 @@ CCH.Objects.UI = function () {
                     return i.id === itemId;
                 }),
                 publications = item.summary.full.publications;
-                
-            ['data','publications','resources'].each(function(type) {
+
+            ['data', 'publications', 'resources'].each(function (type) {
                 publications[type].each(function (pub) {
                     me.createPublicationRow(pub.link, pub.title, type);
                 });
             });
         });
     };
-    
-    me.wfsInfoUpdated = function() {
+
+    me.wfsInfoUpdated = function () {
         var service = $proxyWfsServiceInput.val().trim(),
             param = $proxyWfsServiceParamInput.val().trim();
-            
+
         me.updateAttributedUsingDescribeFeaturetype({
             service : service,
             param : param,
@@ -1105,10 +1100,10 @@ CCH.Objects.UI = function () {
             }
         });
     };
-    
+
     me.saveItem = function (args) {
         args = args || {};
-        
+
         var item = args.item,
             callbacks = args.callbacks || {
                 success : [],
@@ -1116,19 +1111,20 @@ CCH.Objects.UI = function () {
             },
             method,
             url = CCH.CONFIG.contextPath + '/data/item/';
-            
+
         if (item.id) {
             method = 'PUT';
             url += item.id;
         } else {
+            delete item.id;
             method = 'POST';
         }
-        
+
         $.ajax({
             url : url,
             method : method,
             data : JSON.stringify(item),
-            contentType:"application/json; charset=utf-8",
+            contentType: "application/json; charset=utf-8",
             success : function (obj) {
                 callbacks.success.each(function (cb) {
                     cb(obj);
@@ -1140,52 +1136,52 @@ CCH.Objects.UI = function () {
                 });
             }
         });
-    }
-    
+    };
+
     me.updateAttributedUsingDescribeFeaturetype = function (args) {
         args = args || {};
-        
+
         var service = args.service,
             param = args.param,
             callbacks = args.callbacks || {
                 success : [],
                 error : []
-            }
-            
+            };
+
         if (service && param) {
             CCH.ows.describeFeatureType({
-				layerName : param,
-				callbacks : {
-					success : [
-						function (featureDescription) {
-                            callbacks.success.each(function(cb) {
+                layerName: param,
+                callbacks: {
+                    success: [
+                        function (featureDescription) {
+                            callbacks.success.each(function (cb) {
                                 cb(featureDescription);
-                            })
-						}
-					],
-					error : [
-						function (error) {
-							callbacks.error.each(function(cb) {
+                            });
+                        }
+                    ],
+                    error: [
+                        function (error) {
+                            callbacks.error.each(function (cb) {
                                 cb(error);
-                            })
-						}
-					]
-				}
-			});
+                            });
+                        }
+                    ]
+                }
+            });
         }
     };
-    
+
     me.updateBoundingBox = function () {
         var children = $childrenSortableList.find('li > span > div > button:first-child.active');
-        
+
         if (children.length !== 0) {
-        $childrenSortableList.find('li > span > div > button:first-child.active').each(function (idx, btn) {
+            $childrenSortableList.find('li > span > div > button:first-child.active').each(function (idx, btn) {
                 var $li = $(btn).parent().parent().parent(),
                     id = $li.attr('id').substring(11),
                     item = CCH.items.find(function (item) {
                         return item.id === id;
                     });
-                
+
                 if ($bboxWest.val()) {
                     if (item.bbox[0] < parseFloat($bboxWest.val())) {
                         $bboxWest.val(item.bbox[0]);
@@ -1193,15 +1189,15 @@ CCH.Objects.UI = function () {
                 } else {
                     $bboxWest.val(item.bbox[0]);
                 }
-                
+
                 if ($bboxSouth.val()) {
                     if (item.bbox[1] < parseFloat($bboxSouth.val())) {
                         $bboxSouth.val(item.bbox[1]);
                     }
                 } else {
-                   $bboxSouth.val(item.bbox[1]); 
+                    $bboxSouth.val(item.bbox[1]);
                 }
-                
+
                 if ($bboxEast.val()) {
                     if (item.bbox[2] > parseFloat($bboxEast.val())) {
                         $bboxEast.val(item.bbox[2]);
@@ -1209,7 +1205,7 @@ CCH.Objects.UI = function () {
                 } else {
                     $bboxEast.val(item.bbox[2]);
                 }
-                
+
                 if ($bboxNorth.val()) {
                     if (item.bbox[3] > parseFloat($bboxNorth.val())) {
                         $bboxNorth.val(item.bbox[3]);
@@ -1225,7 +1221,7 @@ CCH.Objects.UI = function () {
             $bboxNorth.val('');
         }
     };
-    
+
     me.deleteItem = function (id) {
         var $deleteButton = $('<button />').
                 attr({
@@ -1242,7 +1238,7 @@ CCH.Objects.UI = function () {
                             window.location = window.location.origin + CCH.CONFIG.contextPath + '/publish/item/';
                         },
                         error : function (jqXHR, err, errTxt) {
-                            if (errTxt.indexOf('Unauthorized')) {
+                            if (errTxt.indexOf('Unauthorized') !== -1) {
                                 $alertModal.modal('hide');
                                 $alertModalTitle.html('Item Could Not Be Deleted');
                                 $alertModalBody.html('It looks like your session has expired.' +
@@ -1251,9 +1247,9 @@ CCH.Objects.UI = function () {
                             } else {
                                 $alertModal.modal('hide');
                                 $alertModalTitle.html('Item Could Not Be Deleted');
-                                $alertModalBody.html('Unfortunately the item you\'re ' + 
-                                        'trying to delete couldn\'t be deleted. ' + 
-                                        'You may need to contact the system administrator ' + 
+                                $alertModalBody.html('Unfortunately the item you\'re ' +
+                                        'trying to delete couldn\'t be deleted. ' +
+                                        'You may need to contact the system administrator ' +
                                         'to manually remove it in order to continue');
                                 $alertModal.modal('show');
                             }
@@ -1266,108 +1262,108 @@ CCH.Objects.UI = function () {
         $alertModalFooter.append($deleteButton);
         $alertModal.modal('show');
     };
-    
+
     $wfsImportButton.on('click', function () {
-		var importCall = function () {
-			CCH.ows.importWfsLayer({
-				endpoint : $srcWfsServiceInput.val(),
-				param : $srcWfsServiceParamInput.val(),
-				callbacks : {
-					success : [ successCallback ],
-					error : [ errorCallback ]
-				}
-			});
-		};
-		
-		var successCallback = function (responseObject) {
-			var responseText = responseObject.responseText,
-				baseUrl = CCH.CONFIG.publicUrl,
-                baseService = baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/',
-                wfsServiceVal = baseService + 'wfs',
-                wmsServiceVal = baseService + 'wms';
+        var importCall,
+            successCallback = function (responseObject) {
+                var responseText = responseObject.responseText,
+                    baseUrl = CCH.CONFIG.publicUrl,
+                    baseService = baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/',
+                    wfsServiceVal = baseService + 'wfs',
+                    wmsServiceVal = baseService + 'wms';
 
-			if (baseUrl.lastIndexOf('/') !== baseUrl.length - 1) {
-				baseUrl += '/';
-			}
+                if (baseUrl.lastIndexOf('/') !== baseUrl.length - 1) {
+                    baseUrl += '/';
+                }
 
-			$proxyWfsServiceInput.val(wfsServiceVal);
-			$proxyWmsServiceInput.val(wmsServiceVal);
-			$proxyWfsServiceParamInput.val(responseText);
-			$proxyWmsServiceParamInput.val(responseText);
+                $proxyWfsServiceInput.val(wfsServiceVal);
+                $proxyWmsServiceInput.val(wmsServiceVal);
+                $proxyWfsServiceParamInput.val(responseText);
+                $proxyWmsServiceParamInput.val(responseText);
 
-            me.updateAttributedUsingDescribeFeaturetype({
-                service : $proxyWfsServiceInput,
-                param : responseText,
-                callbacks : {
-                    success : [
-                        function (featureDescription) {
-                            me.updateSelectAttribtue(featureDescription);
-                        }
-                    ],
-                    error : [
-                        function (error) {
-                            CCH.LOG.warn('Error pulling describe feature: ' + error);
-                        }
-                    ]
+                me.updateAttributedUsingDescribeFeaturetype({
+                    service : $proxyWfsServiceInput,
+                    param : responseText,
+                    callbacks : {
+                        success : [
+                            function (featureDescription) {
+                                me.updateSelectAttribtue(featureDescription);
+                            }
+                        ],
+                        error : [
+                            function (error) {
+                                CCH.LOG.warn('Error pulling describe feature: ' + error);
+                            }
+                        ]
+                    }
+                });
+            },
+            errorCallback =  function (errorText) {
+                if (errorText.indexOf('already exists') !== -1) {
+                    var $overwriteButton = $('<button />').
+                        attr({
+                            type : 'button',
+                            'data-dismiss' : 'modal'
+                        }).
+                        addClass('btn btn-primary').
+                        html('Overwrite').
+                        on('click', function () {
+                            $alertModal.modal('hide');
+
+                            var deleteCall = function () {
+                                $alertModal.off('hidden.bs.modal', deleteCall);
+                                var updatedLayerName = $srcWfsServiceParamInput.val().split(':')[1];
+
+                                $.ajax({
+                                    url : CCH.CONFIG.contextPath +  '/data/layer/' +  encodeURIComponent(updatedLayerName),
+                                    method : 'DELETE',
+                                    success : function () {
+                                        importCall();
+                                    },
+                                    error : function (jqXHR, err, errTxt) {
+                                        if (errTxt.indexOf('Unauthorized') !== -1) {
+                                            $alertModalTitle.html('Layer Could Not Be Removed');
+                                            $alertModalBody.html('It looks like your session has expired.' +
+                                                'You should try reloading the page to continue.');
+                                            $alertModal.modal('show');
+                                        }
+                                        $alertModalTitle.html('Layer Could Not Be Removed');
+                                        $alertModalBody.html('Unfortunately the layer you\'re ' +
+                                                'trying to import could not be overwritten. ' +
+                                                'You may need to contact the system administrator ' +
+                                                'to manually remove it in order to continue');
+                                        $alertModal.modal('show');
+                                    }
+                                });
+                            };
+
+                            $alertModal.on('hidden.bs.modal', deleteCall);
+                        });
+                    $alertModalTitle.html('Layer Could Not Be Imported');
+                    $alertModalBody.html('Layer Already Exists On Server. Overwrite?');
+                    $alertModalFooter.append($overwriteButton);
+                    $alertModal.modal('show');
+                } else {
+                    $alertModalTitle.html('Layer Could Not Be Imported');
+                    $alertModalBody.html('Layer could not be created. Error: ' + errorText);
+                    $alertModal.modal('show');
+                }
+            };
+
+        importCall = function () {
+            CCH.ows.importWfsLayer({
+                endpoint: $srcWfsServiceInput.val(),
+                param: $srcWfsServiceParamInput.val(),
+                callbacks: {
+                    success: [successCallback],
+                    error: [errorCallback]
                 }
             });
-		};
-		
-		var errorCallback =  function (errorText) {
-			if (errorText.indexOf('already exists') !== -1) {
-				var $overwriteButton = $('<button />').
-					attr({
-						type : 'button',
-						'data-dismiss' : 'modal'
-					}).
-					addClass('btn btn-primary').
-					html('Overwrite').
-					on('click', function () {
-						$alertModal.modal('hide');
-						
-						var deleteCall = function () {
-							$alertModal.off('hidden.bs.modal', deleteCall);
-							var updatedLayerName = $srcWfsServiceParamInput.val().split(':')[1];
-							
-							$.ajax({
-								url : CCH.CONFIG.contextPath +  '/data/layer/' +  encodeURIComponent(updatedLayerName),
-								method : 'DELETE',
-								success : function () {
-									importCall();
-								},
-								error : function (jqXHR, err, errTxt) {
-									if (errTxt.indexOf('Unauthorized')) {
-										$alertModalTitle.html('Layer Could Not Be Removed');
-										$alertModalBody.html('It looks like your session has expired.' +
-											'You should try reloading the page to continue.');
-										$alertModal.modal('show');
-									}
-									$alertModalTitle.html('Layer Could Not Be Removed');
-									$alertModalBody.html('Unfortunately the layer you\'re ' + 
-											'trying to import could not be overwritten. ' + 
-											'You may need to contact the system administrator ' + 
-											'to manually remove it in order to continue');
-									$alertModal.modal('show');
-								}
-							});
-						}
-						
-						$alertModal.on('hidden.bs.modal', deleteCall);
-					});
-				$alertModalTitle.html('Layer Could Not Be Imported');
-				$alertModalBody.html('Layer Already Exists On Server. Overwrite?');
-				$alertModalFooter.append($overwriteButton);
-				$alertModal.modal('show');
-			} else {
-				$alertModalTitle.html('Layer Could Not Be Imported');
-				$alertModalBody.html('Layer could not be created. Error: ' + errorText);
-				$alertModalFooter.append($overwriteButton);
-				$alertModal.modal('show');
-			}
-		};
+        };
+
         importCall();
     });
-    
+
     $keywordGroup.find('input').removeAttr('disabled');
     $keywordGroup.find('button:nth-child(2)').addClass('hidden');
     $keywordGroup.find('button').removeAttr('disabled');
@@ -1376,7 +1372,7 @@ CCH.Objects.UI = function () {
             me.addKeywordGroup($keywordGroup.find('input').val());
         }
     });
-    
+
     $srcWfsServiceParamInput.keyup(function (evt) {
         if ($srcWfsServiceInput.val().trim() !== '' &&
                 $(evt.target).val().trim() !== '') {
@@ -1385,9 +1381,9 @@ CCH.Objects.UI = function () {
             $wfsImportButton.attr('disabled', 'disabled');
         }
     });
-    
+
     $('#form-publish-info-item-panel-publications-button-add').on('click', function () {
-        me.createPublicationRow('','');
+        me.createPublicationRow('', '');
     });
 
     $('#publish-button-create-aggregation-option').on('click', function () {
@@ -1400,14 +1396,14 @@ CCH.Objects.UI = function () {
         me.clearForm();
         $uploaderDummy.removeClass('hidden');
         $metadataDropdownGroup.removeClass('hidden');
-        
+
         var mdgClickHandler = function (evt) {
             $(evt.target).off('click', mdgClickHandler);
             me.initNewItemForm();
-            
-        }
+        };
+
         $metadataDropdownGroup.find('a').on('click', mdgClickHandler);
-        
+
         me.createUploader({
             callbacks : {
                 success : [
@@ -1449,49 +1445,48 @@ CCH.Objects.UI = function () {
             }
         });
     });
-    
-	$proxyWfsServiceInput.on('blur', me.wfsInfoUpdated);
-	$proxyWfsServiceParamInput.on('blur', me.wfsInfoUpdated);
-    
-	$alertModal.on('hidden.bs.modal', function () {
-		$alertModalTitle.empty();
-		$alertModalBody.empty();
-		$alertModalFooter.find('button').not('#alert-modal-close-button').remove();
-	});
-	
-	$attributeSelect.on('change', function (evt) {
-		var attribute = $(evt.target).val();
+
+    $proxyWfsServiceInput.on('blur', me.wfsInfoUpdated);
+    $proxyWfsServiceParamInput.on('blur', me.wfsInfoUpdated);
+
+    $alertModal.on('hidden.bs.modal', function () {
+        $alertModalTitle.empty();
+        $alertModalBody.empty();
+        $alertModalFooter.find('button').not('#alert-modal-close-button').remove();
+    });
+
+    $attributeSelect.on('change', function(evt) {
+        var attribute = $(evt.target).val();
 
         CCH.ows.requestSummaryByAttribute({
-            url : $('#form-publish-item-service-csw').val(),
-            attribute : attribute,
-            callbacks : {
-                success : [
+            url: $('#form-publish-item-service-csw').val(),
+            attribute: attribute,
+            callbacks: {
+                success: [
                     function (response) {
                         $titleFullTextArea.val(response.full.title || '');
                         $descriptionFullTextArea.val(response.full.text || '');
-                        
+
                         $titleMediumTextArea.val(response.medium.title || '');
                         $descriptionMediumTextArea.val(response.medium.text || '');
-                        
+
                         $descriptionTinyTextArea.val(response.tiny.text || '');
-                        
+
                         $publicationsPanel.find('>div:nth-child(2)').empty();
                         $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled', 'disabled');
-                        Object.keys(response.full.publications, function (type) {
-                            response.full.publications[type].each(function (publication) {
+                        Object.keys(response.full.publications, function(type) {
+                            response.full.publications[type].each(function(publication) {
                                 me.createPublicationRow(publication.link, publication.title, type);
                             });
                         });
-                        
-                        response.keywords.split('|').each(function (keyword) {
+
+                        response.keywords.split('|').each(function(keyword) {
                             me.addKeywordGroup(keyword);
                         });
-                        
                     }
                 ],
-                error : [
-                    function (err) {
+                error: [
+                    function(err) {
                         $alertModal.modal('hide');
                         $alertModalTitle.html('Unable To Load Attribute Information');
                         $alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
@@ -1499,9 +1494,9 @@ CCH.Objects.UI = function () {
                     }
                 ]
             }
-        })
-	});
-    
+        });
+    });
+
     $buttonPublish.on('click', function () {
         var errors = me.validateForm.call(this),
             $ul = $('<ul />'),
@@ -1514,8 +1509,12 @@ CCH.Objects.UI = function () {
                 item : item,
                 callbacks : {
                     success : [
-                        function () {
-                            location.reload();
+                        function (obj) {
+                            var id = obj.id;
+                            if (!id) {
+                                id = $itemIdInput.val();
+                            }
+                            window.location = window.location.origin + CCH.CONFIG.contextPath + '/publish/item/' + id;
                         }
                     ],
                     error  : [
@@ -1539,7 +1538,7 @@ CCH.Objects.UI = function () {
             $alertModal.modal('show');
         }
     });
-    
+
     $buttonSave.on('click', function () {
         var errors = me.validateForm.call(this),
             $ul = $('<ul />'),
@@ -1551,8 +1550,12 @@ CCH.Objects.UI = function () {
                 item : item,
                 callbacks : {
                     success : [
-                        function () {
-                            location.reload();
+                        function (obj) {
+                            var id = obj.id;
+                            if (!id) {
+                                id = $itemIdInput.val();
+                            }
+                            window.location = window.location.origin + CCH.CONFIG.contextPath + '/publish/item/' + id;
                         }
                     ],
                     error  : [
@@ -1576,16 +1579,16 @@ CCH.Objects.UI = function () {
             $alertModal.modal('show');
         }
     });
-    
+
     $buttonDelete.on('click', function () {
         var id = $itemIdInput.val();
         if (id !== '') {
             me.deleteItem(id);
         }
     });
-    
+
     me.clearForm();
-    
+
     CCH.ows.requestCSWRecords({
         callbacks: {
             success: [
@@ -1593,9 +1596,9 @@ CCH.Objects.UI = function () {
                     response.children.each(function (responseChild) {
                         if (responseChild.tag === "csw:SearchResults") {
                             var id,
-                                    title,
-                                    $li,
-                                    $a;
+                                title,
+                                $li,
+                                $a;
 
                             responseChild.children.each(function (recordSummary) {
                                 recordSummary.children.each(function(recordAttribute) {
@@ -1604,7 +1607,7 @@ CCH.Objects.UI = function () {
                                     } else if (recordAttribute.tag === "dc:title") {
                                         title = recordAttribute.text;
                                     }
-                                })
+                                });
 
                                 if (id && title) {
                                     $li = $('<li />');
