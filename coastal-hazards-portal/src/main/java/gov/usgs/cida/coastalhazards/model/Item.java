@@ -204,7 +204,7 @@ public class Item implements Serializable {
         return wmsService;
     }
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @JoinTable(
             name = "aggregation_children",
@@ -264,7 +264,7 @@ public class Item implements Serializable {
         Gson gson = GsonUtil.getSubtreeGson();
 
         node = gson.fromJson(json, Item.class);
-        if (node.getId() == null) {
+        if (node.getId() == null || StringUtils.isBlank(node.getId())) {
             node.setId(IdGenerator.generate());
         }
         return node;

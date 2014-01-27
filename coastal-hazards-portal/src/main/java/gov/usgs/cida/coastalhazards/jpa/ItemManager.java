@@ -29,6 +29,14 @@ public class ItemManager implements AutoCloseable {
     public Item load(String itemId) {
         Item item = null;
         item = em.find(Item.class, itemId);
+        List<Item> children = item.getChildren();
+        List<Item> replaceList = new LinkedList<>();
+        if (children != null) {
+            for (Item child : children) {
+                replaceList.add(load(child.getId()));
+            }
+            item.setChildren(replaceList);
+        }
         return item;
     }
 
@@ -39,6 +47,14 @@ public class ItemManager implements AutoCloseable {
 		try {
 			transaction.begin();
 			Item itemObj = Item.fromJSON(item);
+            List<Item> children = itemObj.getChildren();
+            List<Item> replaceList = new LinkedList<>();
+            if (children != null) {
+                for (Item child : children) {
+                    replaceList.add(load(child.getId()));
+                }
+                itemObj.setChildren(replaceList);
+            }
 			em.persist(itemObj);
 			id = itemObj.getId();
 			transaction.commit();

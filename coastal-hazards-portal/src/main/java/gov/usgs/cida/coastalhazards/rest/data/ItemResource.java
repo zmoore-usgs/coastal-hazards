@@ -152,7 +152,7 @@ public class ItemResource {
     
     @DELETE
     @Path("{id}")
-    public Response updateItem(@Context HttpServletRequest request, @PathParam("id") String id) {
+    public Response deleteItem(@Context HttpServletRequest request, @PathParam("id") String id) {
         Response response = null;
         if (SessionResource.isValidSession(request)) {
             try (ItemManager itemManager = new ItemManager()) {
