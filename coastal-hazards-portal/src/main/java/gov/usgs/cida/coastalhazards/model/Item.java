@@ -204,7 +204,7 @@ public class Item implements Serializable {
         return wmsService;
     }
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @JoinTable(
             name = "aggregation_children",

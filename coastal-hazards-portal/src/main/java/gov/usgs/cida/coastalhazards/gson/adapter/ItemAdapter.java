@@ -14,12 +14,16 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class ItemAdapter implements JsonSerializer<Item>, JsonDeserializer<Item> {
+    
+    private static final Logger log = LoggerFactory.getLogger(ItemAdapter.class);
 
     @Override
     public JsonElement serialize(Item src, Type typeOfSrc, JsonSerializationContext context) {
@@ -57,10 +61,18 @@ public class ItemAdapter implements JsonSerializer<Item>, JsonDeserializer<Item>
                     while (iterator.hasNext()) {
                         JsonElement childItem = iterator.next();
                         try {
-                            Item childItemObj = (Item)context.deserialize(childItem, Item.class);
+                            Item childItemObj = null;
+                            if (childItem.isJsonPrimitive()) {
+                                childItemObj = new Item();
+                                childItemObj.setId(childItem.getAsString());
+                            } else if (childItem.isJsonObject()) {
+                                childItemObj = (Item)context.deserialize(childItem, Item.class);
+                            } else {
+                                throw new JsonParseException("Need a list of primatives or objects");
+                            }
                             childrenList.add(childItemObj);
                         } catch (JsonParseException ex) {
-                            // Unable to deserialize when Item isn't in children
+                            log.debug("Problem deserializing children", ex);
                         }
                     }
                     result.setChildren(childrenList);
