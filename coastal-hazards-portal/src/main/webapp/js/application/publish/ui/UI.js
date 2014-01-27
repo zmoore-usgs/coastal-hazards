@@ -1494,8 +1494,8 @@ CCH.Objects.UI = function () {
                 item : item,
                 callbacks : {
                     success : [
-                        function (err) {
-                            debugger;
+                        function () {
+                            location.reload();
                         }
                     ],
                     error  : [
