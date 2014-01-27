@@ -383,15 +383,14 @@ CCH.Objects.UI = function () {
                 children.push(child.id);
             }
         });
-        
+
         $childrenSortableList.find('li > span > div > button:nth-child(2).active').each(function (ind, btn) {
             var $li = $(btn).parent().parent().parent(),
                 childId = $li.attr('id').substring(11);
             displayedChildren.push(childId);
         });
-        
+
         return item;
-        
     };
 
     me.initUploader = function (args) {
@@ -446,8 +445,6 @@ CCH.Objects.UI = function () {
     };
 
     me.createUploader = function (args) {
-        // Set the URL to not have an item ID in it
-//        history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
         me.initUploader({
             button : document.getElementById('qq-uploader-dummy'),
             callbacks : args.callbacks
@@ -497,7 +494,7 @@ CCH.Objects.UI = function () {
             $keywordGroup.after($keywordGroupLocal);
         }
     };
-    
+
     me.updateFormWithNewCSWInfo = function (responseObject, textStatus) {
         if (textStatus === 'success') {
             var cswNodes = responseObject.children,
@@ -545,8 +542,11 @@ CCH.Objects.UI = function () {
             callbacks : {
                 success : [me.updateFormWithNewCSWInfo],
                 error : [
-                    function () {
-                        debugger;
+                    function (response) {
+                        $alertModal.modal('hide');
+                        $alertModalTitle.html('CSW Record Could Not Be Attained');
+                        $alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
+                        $alertModal.modal('show');
                     }
                 ]
             }
@@ -662,7 +662,10 @@ CCH.Objects.UI = function () {
                     success : [me.updateFormWithNewCSWInfo],
                     error : [
                         function () {
-                            debugger;
+                            $alertModal.modal('hide');
+                            $alertModalTitle.html('CSW Record Could Not Be Attained');
+                            $alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
+                            $alertModal.modal('show');
                         }
                     ]
                 }
@@ -902,7 +905,10 @@ CCH.Objects.UI = function () {
                                             success : [me.metadataPublishCallback],
                                             error : [
                                                 function () {
-                                                    debugger;
+                                                    $alertModal.modal('hide');
+                                                    $alertModalTitle.html('Metadata Could Not Be Saved');
+                                                    $alertModalBody.html('Unfortunately your metadata could not be saved.');
+                                                    $alertModal.modal('show');
                                                 }
                                             ]
                                         }
@@ -912,7 +918,10 @@ CCH.Objects.UI = function () {
                         ],
                         error : [
                             function () {
-                                debugger;
+                                $alertModal.modal('hide');
+                                $alertModalTitle.html('Unable to initialize uploading functionality');
+                                $alertModalBody.html('Unfortunately you may not be able to upload metadata.');
+                                $alertModal.modal('show');
                             }
                         ]
                     }
@@ -1418,7 +1427,10 @@ CCH.Objects.UI = function () {
                                     ],
                                     error : [
                                         function () {
-                                            debugger;
+                                            $alertModal.modal('hide');
+                                            $alertModalTitle.html('Metadata Could Not Be Uploaded');
+                                            $alertModalBody.html('Please try again or contact a system administrator');
+                                            $alertModal.modal('show');
                                         }
                                     ]
                                 }
@@ -1428,7 +1440,10 @@ CCH.Objects.UI = function () {
                 ],
                 error : [
                     function () {
-                        debugger;
+                        $alertModal.modal('hide');
+                        $alertModalTitle.html('Uploader Not Created');
+                        $alertModalBody.html('There was a problem creating the uploader. Metadata Uploads may not be possible.');
+                        $alertModal.modal('show');
                     }
                 ]
             }
@@ -1620,7 +1635,10 @@ CCH.Objects.UI = function () {
             ],
             error: [
                 function(response) {
-                    debugger;
+                    $alertModal.modal('hide');
+                    $alertModalTitle.html('CSW Record Could Not Be Attained');
+                    $alertModalBody.html('There was a problem retrieving a metadata record. ' + response);
+                    $alertModal.modal('show');
                 }
             ]
         }
