@@ -39,10 +39,6 @@ CCH.Objects.UI = function (args) {
             });
         };
 
-    // This window name is used for the info window to launch into when 
-    // a user chooses to go back to the portal
-    window.name = "portal_main_window";
-
     me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
     me.FOOTER_ROW_ID = args.footerRowId || 'footer-row';

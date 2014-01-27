@@ -114,7 +114,7 @@
         <div id="info-content" class="container">
             <div id="header-row" class="row">
                 <%-- Logo --%>
-                <a href="<%=baseUrl%>/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container"  target="portal_main_window">
+                <a href="<%=baseUrl%>/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
                     <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
                 </a>
                 <%-- Application Title --%>
