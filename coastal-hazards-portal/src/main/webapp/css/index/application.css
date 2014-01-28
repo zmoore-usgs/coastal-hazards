@@ -85,9 +85,18 @@ html, body {
     top: 80px !important;
     margin-left: 0px !important;
 }
+.olControlLayerSwitcher .layersDiv {
+    background-color: #003366 !important;
+}
 .olControlLayerSwitcher .maximizeDiv img{
     height: 25px;
     left: 15px;
+}
+.olControlZoom a {
+    background: rgba(0, 51, 102, 0.7) !important;
+}
+.olControlZoom a:hover {
+    background: rgba(0, 51, 102, 0.7) !important;
 }
 
 

@@ -133,7 +133,7 @@ CCH.Objects.Map = function (args) {
 
             CCH.LOG.debug('Map.js::init():Replacing map graphics');
             $('#OpenLayers_Control_MaximizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/tall-medium-arrow-right.svg');
-            $('#OpenLayers_Control_MinimizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-minimize.png');
+            $('#OpenLayers_Control_MinimizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/cch-layer-switcher-maximize.png');
 
             // Bind application event handlers
             $(window).on({
