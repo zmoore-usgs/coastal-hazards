@@ -395,8 +395,8 @@ CCH.Objects.BucketSlide = function (args) {
         me.getContainer().find('>div:not(#application-slide-bucket-content-empty)').each(function (idx, card) {
             id = $(card).data('id');
             index = me.getCardIndex(id);
-            $cardUpArrow = $(card).find('> div:nth-child(3) > button:nth-child(2)');
-            $cardDownArrow = $(card).find('> div:nth-child(3) > button:nth-child(3)');
+            $cardUpArrow = $(card).find('> div:nth-child(4) > button:nth-child(1)');
+            $cardDownArrow = $(card).find('> div:nth-child(4)> button:nth-child(2)');
 
             if (cardsLength === 1) {
                 // If I am the only card
@@ -484,13 +484,13 @@ CCH.Objects.BucketSlide = function (args) {
             $titleContainer = $card.find('.' + titleContainerClass),
             $titleContainerPNode = $card.find('.' + titleContainerClass + ' p'),
             $imageContainer = $card.find('> div:first-child img').first(),
-            $viewButton = $card.find('> div:nth-child(4) > div:nth-child(1)'),
-            $shareButton = $card.find('> div:nth-child(4) > button:nth-child(2)'),
-            $downloadButton = $card.find('> div:nth-child(4) > button:nth-child(3)'),
-            $infoButton = $card.find('> div:nth-child(4) > button:nth-child(4)'),
-            $removeButton = $card.find('> div:nth-child(3) > button:nth-child(1)'),
-            $upButton = $card.find('> div:nth-child(3) > button:nth-child(2)'),
-            $downButton = $card.find('> div:nth-child(3)> button:nth-child(3)'),
+            $viewButton = $card.find('> div:nth-child(5) > div:nth-child(1)'),
+            $shareButton = $card.find('> div:nth-child(5) > button:nth-child(2)'),
+            $downloadButton = $card.find('> div:nth-child(5) > button:nth-child(3)'),
+            $infoButton = $card.find('> div:nth-child(5) > button:nth-child(4)'),
+            $removeButton = $card.find('>button'),
+            $upButton = $card.find('> div:nth-child(4) > button:nth-child(1)'),
+            $downButton = $card.find('> div:nth-child(4)> button:nth-child(2)'),
             layerArray;
 
         $card.attr('id', 'application-slide-bucket-container-card-' + id);
