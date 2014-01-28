@@ -616,11 +616,10 @@ CCH.Objects.BucketSlide = function (args) {
             $(window).trigger('slide.bucket.button.click.info', {
                 'id' : id
             });
-            window.open(window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_portal_info_window');
+            window.open(window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_self');
         });
 
         $infoButton.attr({
-            'target' : '_portal_info_window',
             'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
         });
 
