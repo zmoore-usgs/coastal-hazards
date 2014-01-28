@@ -30,7 +30,7 @@ html, body {
 }
 
 #application-container > div.row:nth-child(1) {
-    background-color: #345280 !important;
+    background-color: #003366 !important;
     z-index: 1005;
     margin-bottom: 4px;
     height: 55px;
@@ -42,7 +42,7 @@ html, body {
 }
 
 #application-container > div.row:nth-child(3) > div {
-    background-color: #345280 !important;
+    background-color: #003366 !important;
     height: 20px;
     margin-top: 5px;
 }
