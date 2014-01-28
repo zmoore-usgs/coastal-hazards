@@ -202,12 +202,14 @@ CCH.Objects.Accordion = function (args) {
         'cch.slide.search.button.click.explore' : function (evt, args) {
             me.explore(evt, args);
         },
-        'card-display-toggle' : function () {
-            var $container = $('#' + me.CONTAINER_ID);
-            
-            $container.animate({
-                scrollTop : $container[0].scrollHeight
-            }, 1000);
+        'card-display-toggle' : function (evt, obj) {
+            if (obj.display === true) {
+                var $container = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID);
+
+                $container.animate({
+                    scrollTop : $container[0].scrollHeight
+                }, 1000);
+            }
         }
     });
     me.explore = function (evt, args) {

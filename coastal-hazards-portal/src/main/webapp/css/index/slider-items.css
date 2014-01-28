@@ -153,6 +153,12 @@
     #content-column {
         height: 100%;
     }
+    
+    /* Scrollable inner container */
+    #application-slide-items-container > div:nth-child(2) > div > div {
+        overflow-y: auto;
+        height: 100%;
+    }
 }
 
 @media (max-width: 991px) {
