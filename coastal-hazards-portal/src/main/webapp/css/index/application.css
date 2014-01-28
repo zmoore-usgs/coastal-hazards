@@ -61,9 +61,6 @@ html, body {
     min-height : 150px;
     height: 100%;
 }
-#OpenLayers_Control_MaximizeDiv {
-    z-index: 9999;
-}
 
 /* Deals with layer identification on-click */
 #feature-identification-popup_contentDiv table {
@@ -83,13 +80,16 @@ html, body {
     text-align: right;
 }
 
-
-
-@media (min-width: 1200px) {
-    #application-container {
-        width: 100%;
-    }
+.olControlLayerSwitcher {
+    right: inherit !important;
+    top: 80px !important;
+    margin-left: 0px !important;
 }
+.olControlLayerSwitcher .maximizeDiv img{
+    height: 25px;
+    left: 15px;
+}
+
 
 @media (min-width: 992px) {
     #application-container {
@@ -112,7 +112,7 @@ html, body {
         padding-left: 0px;
         padding-right:  0px;
     }
-    
+
     /* Set the content row to not have any margins, overriding bootstrap's
         15px margins on left/right */
     #application-container > div:nth-child(2) {
@@ -129,7 +129,7 @@ html, body {
     #application-container > div.row:nth-child(3) {
         display: none;
     }
-    
+
     .application-slide-controlset {
         margin-top: 10px;
     }
@@ -139,11 +139,10 @@ html, body {
     .application-slide-controlset div.pull-left > i:hover {
         cursor: pointer;
     }
-    
+
     #map #feature-identification-popup table tr {
         font-size: 12px;
     }
-    
 }
 
 @media (max-width: 440px) {
