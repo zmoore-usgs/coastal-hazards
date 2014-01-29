@@ -125,10 +125,10 @@ public class ItemManager implements AutoCloseable {
         StringBuilder builder = new StringBuilder();
         List<String> queryParams = new LinkedList<>();
         int paramIndex = 1;
-        builder.append("select i from Item i where 1=1");
+        builder.append("select i from Item i where i.enabled = true");
         // show disabled means return enable == true and false, so 1=1, narrow it down if !showDisabled
-        if (!showDisabled) {
-            builder.append(" and i.enabled = true");
+        if (showDisabled) {
+            builder.append(" and i.enabled = false");
         }
         boolean hasQueryText = isEmpty(queryText);
         boolean hasType = isEmpty(types);
@@ -136,7 +136,7 @@ public class ItemManager implements AutoCloseable {
         if (hasQueryText || hasType) {
             if (hasQueryText) {
                 builder.append(" and ");
-				List<String> likes = new ArrayList<String>();
+				List<String> likes = new ArrayList<>();
 				for (String keyword : queryText) {
 					if (StringUtils.isNotBlank(keyword)) {
                         queryParams.add('%' + keyword + "%");
@@ -196,8 +196,7 @@ public class ItemManager implements AutoCloseable {
     
     /**
      * Run this after inserting, updating or deleting
-     * @param t this must be called within a transaction, prove there is one
-     * @return number of items updated from query
+     * @param* @return number of items updated from query
      */
     public int fixEnabledStatus() {
         int status = -1;
@@ -222,7 +221,7 @@ public class ItemManager implements AutoCloseable {
             status = update.executeUpdate();
             transaction.commit();
         } catch (Exception ex) {
-            log.debug("Transaction failed on delete", ex);
+            log.debug("Transaction failed on update enabled", ex);
             if (transaction.isActive()) {
                 transaction.rollback();
             }
