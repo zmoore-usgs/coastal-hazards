@@ -76,7 +76,13 @@ CCH.Objects.Card = function (args) {
             direction : 'up',
             complete : complete
         });
-
+        
+        setTimeout(function () {
+            $(window).trigger('card-display-toggle', {
+                'display' : true
+            });
+        }, duration);
+        
         if (me.parent) {
             me.parent.hideLayer();
         }
@@ -88,10 +94,7 @@ CCH.Objects.Card = function (args) {
         }
 
         me.isOpen = true;
-
-        $(me).trigger('card-display-toggle', {
-            'display' : true
-        });
+        
 
         CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was shown');
     };
@@ -117,6 +120,12 @@ CCH.Objects.Card = function (args) {
             direction : 'up',
             complete : complete
         });
+        
+        setTimeout(function () {
+            $(window).trigger('card-display-toggle', {
+                'display' : false
+            });
+        }, duration)
 
         if (me.child) {
             me.child.hide();
@@ -127,10 +136,6 @@ CCH.Objects.Card = function (args) {
         if (me.parent) {
             me.parent.showLayer();
         }
-
-        $(me).trigger('card-display-toggle', {
-            'display' : false
-        });
 
         CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was hidden');
     };

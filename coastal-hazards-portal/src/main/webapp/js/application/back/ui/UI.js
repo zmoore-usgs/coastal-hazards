@@ -419,11 +419,11 @@ CCH.Objects.UI = function (args) {
     $('#metadata-link').append($metadataLink);
     $('#download-full-link').append($downloadFull);
     
-    // Create a "View in Portal" link to let the user view this in the portal
+    // Create a "Back To Portal" link to let the user view this in the portal
     $applicationLink = $('<a />').attr({
         'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId,
         'role': 'button'
-    }).addClass('btn btn-default').html('<i class="fa fa-eye"></i> View In Portal');
+    }).addClass('btn btn-default').html('<i class="fa fa-eye"></i> Back To Portal');
     $('#application-link').append($applicationLink);
     
     // Build the publications list for the item

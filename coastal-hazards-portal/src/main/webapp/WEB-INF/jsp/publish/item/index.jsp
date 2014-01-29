@@ -240,7 +240,7 @@
                             <%-- NAME --%>
                             <div id="form-publish-info-item-name" class="row row-name">
                                 <div class="form-group">
-                                    <label for="form-publish-item-name">Name</label>
+                                    <label for="form-publish-item-name">Download File Name</label>
                                     <input type="text" class="form-control" id="form-publish-item-name" disabled="disabled" />
                                 </div>
                             </div>

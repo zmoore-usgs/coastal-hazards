@@ -35,7 +35,7 @@ html, body {
 
 /* Header Row */
 .container > div.row:first-child {
-    background-color: #345280 !important;
+    background-color: #003366 !important;
     z-index: 1005;
     margin-bottom: 4px;
     height: 55px;

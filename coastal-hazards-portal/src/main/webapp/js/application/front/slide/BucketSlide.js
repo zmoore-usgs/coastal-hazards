@@ -29,7 +29,7 @@ CCH.Objects.BucketSlide = function (args) {
     me.$SLIDE_CONTROLSET = me.$SLIDE_CONTAINER.find('> div > div:first-child');
     me.$DROPDOWN_CONTAINER = me.$SLIDE_CONTROLSET.find('> div > div:nth-child(2)');
     me.SLIDE_CONTENT_ID = me.$SLIDE_CONTAINER.find(' .application-slide-content').attr('id');
-    me.$CLOSE_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset');
+    me.$CLOSE_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset > div > div:first-child > i');
     me.$TOP_LEVEL_DROPDOWN_TRIGGER = me.$DROPDOWN_CONTAINER.find('button:first-child');
     me.$TOP_LEVEL_LIST = me.$DROPDOWN_CONTAINER.find('ul');
     me.$TOP_LEVEL_CLEAR = me.$TOP_LEVEL_LIST.find('> li:nth-child(1)');
@@ -74,17 +74,12 @@ CCH.Objects.BucketSlide = function (args) {
         });
     };
     
-    me.bindItemSlideOpen = function () {
-        $(window).off('cch.slide.items.opened', me.bindItemSlideOpen);
-        me.resized();
-        me.openSlide();
-    };
-
     me.open = function () {
         if (me.isClosed) {
             if (me.isSmall()) {
-                $(window).on('cch.slide.items.opened', me.bindItemSlideOpen);
                 $(window).trigger('cch.slide.bucket.opening');
+               me.resized();
+            me.openSlide();
             } else {
                 me.openSlide();
             }
@@ -98,9 +93,15 @@ CCH.Objects.BucketSlide = function (args) {
 
     me.close = function (dontEmoteClosing, bindItemsOpening) {
         var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
-            
+        var itemSliderBinding = function () {
+            $(window).off('cch.slide.items.opening', itemSliderBinding);
+            setTimeout(function () {
+                me.resized();
+                me.openSlide();
+            }, 1);
+        }
         if (bindItemsOpening === true) {
-             $(window).on('cch.slide.items.opened', me.bindItemSlideOpen);
+             $(window).on('cch.slide.items.opening', itemSliderBinding);
         }
         
         if (!dontEmoteClosing === true) {
@@ -208,8 +209,7 @@ CCH.Objects.BucketSlide = function (args) {
             toExtent = me.isSmall() ? extents.small : extents.large,
             $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             $slideContent = $('#' + me.SLIDE_CONTENT_ID),
-            windowWidth = $(window).outerWidth(),
-            windowHeight = $(window).outerHeight();
+            windowWidth = $(window).outerWidth();
 
         if (me.isClosed) {
             $slideContainer.css({
@@ -264,7 +264,7 @@ CCH.Objects.BucketSlide = function (args) {
                 },
                 small: {
                     top: $firstAggregationBellow.offset() ? $firstAggregationBellow.offset().top - 1 : 0,
-                    left: $slideContainer.offset().left
+                    left: 50
                 }
             };
 
@@ -395,8 +395,8 @@ CCH.Objects.BucketSlide = function (args) {
         me.getContainer().find('>div:not(#application-slide-bucket-content-empty)').each(function (idx, card) {
             id = $(card).data('id');
             index = me.getCardIndex(id);
-            $cardUpArrow = $(card).find('> div:nth-child(3) > button:nth-child(2)');
-            $cardDownArrow = $(card).find('> div:nth-child(3) > button:nth-child(3)');
+            $cardUpArrow = $(card).find('> div:nth-child(4) > button:nth-child(1)');
+            $cardDownArrow = $(card).find('> div:nth-child(4)> button:nth-child(2)');
 
             if (cardsLength === 1) {
                 // If I am the only card
@@ -484,23 +484,24 @@ CCH.Objects.BucketSlide = function (args) {
             $titleContainer = $card.find('.' + titleContainerClass),
             $titleContainerPNode = $card.find('.' + titleContainerClass + ' p'),
             $imageContainer = $card.find('> div:first-child img').first(),
-            $viewButton = $card.find('> div:nth-child(4) > div:nth-child(1)'),
-            $shareButton = $card.find('> div:nth-child(4) > button:nth-child(2)'),
-            $downloadButton = $card.find('> div:nth-child(4) > button:nth-child(3)'),
-            $infoButton = $card.find('> div:nth-child(4) > button:nth-child(4)'),
-            $removeButton = $card.find('> div:nth-child(3) > button:nth-child(1)'),
-            $upButton = $card.find('> div:nth-child(3) > button:nth-child(2)'),
-            $downButton = $card.find('> div:nth-child(3)> button:nth-child(3)'),
+            $viewButton = $card.find('> div:nth-child(5) > div:nth-child(1)'),
+            $shareButton = $card.find('> div:nth-child(5) > button:nth-child(2)'),
+            $downloadButton = $card.find('> div:nth-child(5) > button:nth-child(3)'),
+            $infoButton = $card.find('> div:nth-child(5) > button:nth-child(4)'),
+            $removeButton = $card.find('>button'),
+            $upButton = $card.find('> div:nth-child(4) > button:nth-child(1)'),
+            $downButton = $card.find('> div:nth-child(4)> button:nth-child(2)'),
             layerArray;
 
         $card.attr('id', 'application-slide-bucket-container-card-' + id);
         $imageContainer.
                 attr('src', 'images/thumbnail/thumb_' + id + '.png').
                 on('click', function () {
-                CCH.map.zoomToBoundingBox({
-                    bbox: item.bbox,
-                    fromProjection: new OpenLayers.Projection('EPSG:4326')
-                });
+                    $(window).trigger('cch.slide.bucket.item.thumbnail.click')
+                    CCH.map.zoomToBoundingBox({
+                        bbox: item.bbox,
+                        fromProjection: new OpenLayers.Projection('EPSG:4326')
+                    });
             });
         $titleContainer.attr('id', titleContainerClass + '-' + id);
         $titleContainerPNode.html(title);
@@ -616,11 +617,10 @@ CCH.Objects.BucketSlide = function (args) {
             $(window).trigger('slide.bucket.button.click.info', {
                 'id' : id
             });
-            window.open(window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_portal_info_window');
+            window.open(window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_self');
         });
 
         $infoButton.attr({
-            'target' : '_portal_info_window',
             'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
         });
 

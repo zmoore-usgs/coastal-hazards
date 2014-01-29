@@ -295,6 +295,11 @@ CCH.Objects.ItemsSlide = function (args) {
             if (me.isSmall()) {
                 me.open();
             }
+        },
+        'cch.slide.bucket.item.thumbnail.click' : function () {
+            if (me.isSmall()) {
+                me.toggle();
+            }
         }
     });
     
