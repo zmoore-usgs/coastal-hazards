@@ -93,7 +93,7 @@ CCH.Objects.UI = function (args) {
             $footerRow = $('#' + me.FOOTER_ROW_ID),
             $contentRow = $('#' + me.CONTENT_ROW_ID),
             $titleContainer = $headerRow.find('> div:nth-child(2)'),
-            $titleContainerSiblings = $headerRow.find('>:not(:nth-child(2)):not(.modal)'),
+            $titleContainerSiblings,
             titleContainerSiblingsWidth = 0,
             headerHeight = $headerRow.outerHeight(true),
             footerHeight = $footerRow.outerHeight(true),
@@ -117,8 +117,8 @@ CCH.Objects.UI = function (args) {
         contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
 
         if (isSmall) {
-            // Adjust for footer size
             contentRowHeight += footerHeight;
+            $titleContainerSiblings = $headerRow.find('>:not(:nth-child(2)):not(.modal)')
             $titleContainerSiblings.each(function (ind, obj){
                 titleContainerSiblingsWidth += $(obj).outerWidth();
             });
