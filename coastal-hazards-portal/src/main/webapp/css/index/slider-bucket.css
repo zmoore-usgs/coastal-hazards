@@ -28,6 +28,9 @@
             #application-slide-bucket-container > div > div:first-child > div > div:first-child {
                 width: 10%;
             }
+            #application-slide-bucket-container > div > div:first-child > div > div:first-child i:hover {
+                cursor: pointer;
+            }
             #application-slide-bucket-container > div > div:first-child > div > div:nth-child(2) li {
                 color: #262626;
                 padding: 5px 5px 5px 10px;
@@ -135,7 +138,7 @@
     
 
 #application-slide-bucket-container .more-info-badge {
-    background-color: #345280;
+    background-color: #003366;
     margin-left: 5px;
 }
 

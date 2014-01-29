@@ -52,7 +52,7 @@
 }
 
 .application-card-container .zoom-to-badge {
-    background-color: #345280;
+    background-color: #003366;
     margin-left: 5px;
 }
 .application-card-container .zoom-to-badge:hover {
@@ -60,7 +60,7 @@
 }
 
 .application-card-container .more-info-badge {
-    background-color: #345280;
+    background-color: #003366;
     margin-left: 5px;
 }
     .application-card-container .more-info-badge a {
@@ -151,6 +151,12 @@
     }
 
     #content-column {
+        height: 100%;
+    }
+    
+    /* Scrollable inner container */
+    #application-slide-items-container > div:nth-child(2) > div > div {
+        overflow-y: auto;
         height: 100%;
     }
 }

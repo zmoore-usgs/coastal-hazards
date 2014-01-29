@@ -37,8 +37,6 @@ CCH.Objects.UI = function (args) {
     me.SHARE_URL_BUTTON_ID = args.shareUrlButtonId || 'modal-share-summary-url-button';
     me.SHARE_INPUT_ID = args.shareInputId || 'modal-share-summary-url-inputbox';
     me.SHARE_TWITTER_BUTTON_ID = args.shareTwitterBtnId || 'multi-card-twitter-button';
-    me.HELP_MODAL_ID = args.helpModalId || 'helpModal';
-    me.HELP_MODAL_BODY_ID = args.helpModalBodyId || 'help-modal-body';
     me.ITEMS_SLIDE_CONTAINER_ID = args.slideItemsContainerId || 'application-slide-items-container';
     me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId || 'application-slide-bucket-container';
     me.SEARCH_SLIDE_CONTAINER_ID = args.slideSearchContainerId || 'application-slide-search-container';
@@ -248,10 +246,6 @@ CCH.Objects.UI = function (args) {
         }
     };
 
-    me.helpModalDisplayHandler = function () {
-        $('#' + me.HELP_MODAL_BODY_ID).css('max-height', window.innerHeight - window.innerHeight * 0.2);
-    };
-
     me.removeOverlay = function () {
         // Make sure that the overlay is still around
         if ($('#' + me.APPLICATION_OVERLAY_ID).length) {
@@ -357,13 +351,6 @@ CCH.Objects.UI = function (args) {
     };
 
     // Do Bindings
-    // 
-    // Move the help modal container to the content row. It originally is in
-    // the header row but because that's not always visible, we need to move
-    // it during application initialization.
-    $('#' + me.HELP_MODAL_ID).
-        appendTo($('#' + me.CONTENT_ROW_ID)).
-        on('show', me.helpModalDisplayHandler);
     $(window).on({
         'resize': me.windowResizeHandler,
         'cch.data.items.searched': me.itemsSearchedHandler,

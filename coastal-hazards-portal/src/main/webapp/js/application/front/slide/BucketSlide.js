@@ -29,7 +29,7 @@ CCH.Objects.BucketSlide = function (args) {
     me.$SLIDE_CONTROLSET = me.$SLIDE_CONTAINER.find('> div > div:first-child');
     me.$DROPDOWN_CONTAINER = me.$SLIDE_CONTROLSET.find('> div > div:nth-child(2)');
     me.SLIDE_CONTENT_ID = me.$SLIDE_CONTAINER.find(' .application-slide-content').attr('id');
-    me.$CLOSE_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset');
+    me.$CLOSE_BUTTON = me.$SLIDE_CONTAINER.find('> div > div.application-slide-controlset > div > div:first-child > i');
     me.$TOP_LEVEL_DROPDOWN_TRIGGER = me.$DROPDOWN_CONTAINER.find('button:first-child');
     me.$TOP_LEVEL_LIST = me.$DROPDOWN_CONTAINER.find('ul');
     me.$TOP_LEVEL_CLEAR = me.$TOP_LEVEL_LIST.find('> li:nth-child(1)');
@@ -98,7 +98,7 @@ CCH.Objects.BucketSlide = function (args) {
             setTimeout(function () {
                 me.resized();
                 me.openSlide();
-            }, 50);
+            }, 1);
         }
         if (bindItemsOpening === true) {
              $(window).on('cch.slide.items.opening', itemSliderBinding);
@@ -497,10 +497,11 @@ CCH.Objects.BucketSlide = function (args) {
         $imageContainer.
                 attr('src', 'images/thumbnail/thumb_' + id + '.png').
                 on('click', function () {
-                CCH.map.zoomToBoundingBox({
-                    bbox: item.bbox,
-                    fromProjection: new OpenLayers.Projection('EPSG:4326')
-                });
+                    $(window).trigger('cch.slide.bucket.item.thumbnail.click')
+                    CCH.map.zoomToBoundingBox({
+                        bbox: item.bbox,
+                        fromProjection: new OpenLayers.Projection('EPSG:4326')
+                    });
             });
         $titleContainer.attr('id', titleContainerClass + '-' + id);
         $titleContainerPNode.html(title);
@@ -616,11 +617,10 @@ CCH.Objects.BucketSlide = function (args) {
             $(window).trigger('slide.bucket.button.click.info', {
                 'id' : id
             });
-            window.open(window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_portal_info_window');
+            window.open(window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_self');
         });
 
         $infoButton.attr({
-            'target' : '_portal_info_window',
             'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
         });
 

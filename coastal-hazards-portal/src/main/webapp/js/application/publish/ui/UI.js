@@ -311,7 +311,7 @@ CCH.Objects.UI = function () {
                 displayedChildren : displayedChildren
             };
 
-        summary.version = $metadataSummaryField.val();
+        summary.version = 'manual';
         summary.tiny = {
             text : $descriptionTinyTextArea.val().trim()
         };
