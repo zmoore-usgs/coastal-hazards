@@ -146,21 +146,28 @@ CCH.Objects.BucketSlide = function (args) {
             layer,
             layers = [],
             item,
+            layerNames,
             sessionItem;
 
         me.cards.each(function ($cardClone) {
             id = $cardClone.data('id');
             item = CCH.items.getById({id : id});
+            layerNames = item.getLayerList();
             sessionItem = CCH.session.getItemById(id);
             layer = CCH.map.getLayersByName(id);
 
-            if (layer.length) {
-                layers.push(layer[0]);
-            } else {
-                layers = layers.concat(item.showLayer({
-                    visible : sessionItem.visible
-                }));
-            }
+            layerNames.each(function(layerName) {
+                layer = CCH.map.getLayersByName(layerName);
+                if (layer.length) {
+                    layer = layer[0];
+                    layer.setVisibility(sessionItem.visibility);
+                    layers.push(layer);
+                } else {
+                    layers = layers.concat(item.showLayer({
+                        visible : sessionItem.visibility || false
+                    }));
+                }
+            });
         });
 
         layers.reverse().each(function (layer) {
@@ -174,7 +181,7 @@ CCH.Objects.BucketSlide = function (args) {
             $myCard,
             evtType = evt.namespace === 'hid.layer.map' ? 'remove' : 'add',
             findImage = function ($cardItem) {
-                return $cardItem.find('> div:nth-child(4) > div:first-child > img');
+                return $cardItem.find('> div:nth-child(5) > div:first-child > img');
             };
 
         if ($card.length) {
@@ -184,13 +191,13 @@ CCH.Objects.BucketSlide = function (args) {
                     [$card, $myCard].each(function (card) {
                         findImage(card).attr('src', 'images/bucket/layer_off.svg');
                     });
-                }, 200);
+                }, 50);
             } else if (evtType === 'add') {
                 setTimeout(function () {
                     [$card, $myCard].each(function (card) {
                         findImage(card).attr('src', 'images/bucket/layer_on.svg');
                     });
-                }, 200);
+                }, 50);
             }
         }
     };
@@ -305,7 +312,7 @@ CCH.Objects.BucketSlide = function (args) {
             $(me.$DROPDOWN_CONTAINER).removeClass('hidden');
             $card = me.createCard({
                 item : item,
-                visible : args.visible
+                visibility : args.visibility
             });
             me.cards.push($card);
             me.append($card);
@@ -477,17 +484,18 @@ CCH.Objects.BucketSlide = function (args) {
         var item = args.item,
             layerCurrentlyInMap = false,
             id = item.id || new Date().getMilliseconds(),
-            visible = args.visible,
+            visibility = args.visibility,
             title = item.summary.tiny.text || 'Title Not Provided',
             titleContainerClass = 'application-slide-bucket-container-card-title',
             $card = $('#' + me.CARD_TEMPLATE_ID).children().clone(true),
             $titleContainer = $card.find('.' + titleContainerClass),
             $titleContainerPNode = $card.find('.' + titleContainerClass + ' p'),
             $imageContainer = $card.find('> div:first-child img').first(),
-            $viewButton = $card.find('> div:nth-child(5) > div:nth-child(1)'),
-            $shareButton = $card.find('> div:nth-child(5) > button:nth-child(2)'),
-            $downloadButton = $card.find('> div:nth-child(5) > button:nth-child(3)'),
-            $infoButton = $card.find('> div:nth-child(5) > button:nth-child(4)'),
+            $bottomControlRow = $card.find('> div:nth-child(5)'),
+            $viewButton = $bottomControlRow.find('> div:nth-child(1)'),
+            $shareButton = $bottomControlRow.find('> button:nth-child(2)'),
+            $downloadButton = $bottomControlRow.find('> button:nth-child(3)'),
+            $infoButton = $bottomControlRow.find('> button:nth-child(4)'),
             $removeButton = $card.find('>button'),
             $upButton = $card.find('> div:nth-child(4) > button:nth-child(1)'),
             $downButton = $card.find('> div:nth-child(4)> button:nth-child(2)'),
@@ -513,13 +521,13 @@ CCH.Objects.BucketSlide = function (args) {
             return layerArray.length > 0 && layerArray[0].getVisibility();
         });
 
-        if (visible === true && !layerCurrentlyInMap) {
+        if (visibility === true && !layerCurrentlyInMap) {
             item.showLayer({
                 visible : false
             });
         }
 
-        if (layerCurrentlyInMap || visible === true) {
+        if (layerCurrentlyInMap || visibility === true) {
             $viewButton.find('> img').attr('src', 'images/bucket/layer_on.svg');
         } else {
             $viewButton.find('> img').attr('src', 'images/bucket/layer_off.svg');
@@ -561,7 +569,7 @@ CCH.Objects.BucketSlide = function (args) {
                         itemid : id
                     }}
                 );
-                CCH.session.getItemById(item.id).visible = false;
+                CCH.session.getItemById(item.id).visibility = false;
             } else {
                 item.showLayer();
                 me.layerAppendRemoveHandler({
@@ -573,7 +581,7 @@ CCH.Objects.BucketSlide = function (args) {
                             itemid: id
                         }
                     });
-                CCH.session.getItemById(item.id).visible = true;
+                CCH.session.getItemById(item.id).visibility = true;
             }
 
             // Regular layers will properly update a session, but because 

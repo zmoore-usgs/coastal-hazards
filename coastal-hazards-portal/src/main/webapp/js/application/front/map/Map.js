@@ -303,7 +303,7 @@ CCH.Objects.Map = function (args) {
             });
             CCH.session.updateSession({
                 itemid : layer.itemid,
-                visibility : layer.visbility
+                visibility : layer.visibility
             });
         },
         getLayersBy : function (attr, value) {

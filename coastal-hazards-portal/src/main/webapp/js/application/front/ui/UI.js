@@ -412,7 +412,7 @@ CCH.Objects.UI = function (args) {
                         item : CCH.items.getById({
                             id : loadedItemId
                         }),
-                        visible : item.visible
+                        visibility : item.visibility
                     });
                 };
                 $(window).on('cch.item.loaded', function (evt, args) {
