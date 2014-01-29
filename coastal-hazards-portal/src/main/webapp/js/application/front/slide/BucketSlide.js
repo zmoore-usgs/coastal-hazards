@@ -690,6 +690,7 @@ CCH.Objects.BucketSlide = function (args) {
         moveCard : me.moveCard,
         isClosed : me.isClosed,
         cards : me.cards,
+        rebuild : me.rebuild,
         reorderLayers : me.reorderLayers,
         CLASS_NAME : 'CCH.Objects.BucketSlide'
     };

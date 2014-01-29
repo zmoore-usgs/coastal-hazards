@@ -44,10 +44,7 @@ CCH.Objects.Bucket = function (args) {
 
     me.countChanged = function () {
         var count = me.getCount(),
-            bucketContainer = $('#' + me.BUCKET_CONTAINER_ID),
-            currentMarginString = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left'),
-            currentMargin = parseInt(currentMarginString.substring(0, currentMarginString.indexOf('px')), 10),
-            originalMargin = parseInt(me.INITIAL_BUCKET_COUNT_MARGIN_LEFT.substring(0, me.INITIAL_BUCKET_COUNT_MARGIN_LEFT.indexOf('px')), 10);
+            bucketContainer = $('#' + me.BUCKET_CONTAINER_ID);
         
         if (count > 0) {
             if (!bucketContainer.hasClass(me.BUCKET_POPULATED_CLASS)) {
@@ -185,6 +182,7 @@ CCH.Objects.Bucket = function (args) {
                 });
             });
         },
+        bucket : me.bucket,
         getItems : function () {
             return me.bucket;
         },
