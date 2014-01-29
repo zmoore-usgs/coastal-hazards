@@ -1,4 +1,3 @@
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page import="org.apache.commons.lang.StringUtils"%>
@@ -29,6 +28,7 @@
 <html>
     <head>
         <jsp:include page="<%=metaTags%>"></jsp:include>
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
         <title>USGS Coastal Change Hazards Portal</title>
     </head>
     <body>

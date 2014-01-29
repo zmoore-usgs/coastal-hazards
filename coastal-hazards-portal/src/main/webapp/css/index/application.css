@@ -41,6 +41,11 @@ html, body {
     padding-right: 0px;
 }
 
+/* Footer Row */
+#application-container > div.row:nth-child(3) {
+    height: 25px;
+}
+
 #application-container > div.row:nth-child(3) > div {
     background-color: #003366 !important;
     height: 20px;
