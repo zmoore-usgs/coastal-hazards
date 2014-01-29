@@ -58,6 +58,8 @@ public class ItemManager implements AutoCloseable {
 			em.persist(itemObj);
 			id = itemObj.getId();
 			transaction.commit();
+            fixEnabledStatus();
+
 		} catch (Exception ex) {
             log.debug("Exception during save", ex);
             if (transaction.isActive()) {
@@ -76,6 +78,7 @@ public class ItemManager implements AutoCloseable {
             em.merge(item);
             id = item.getId();
             transaction.commit();
+            fixEnabledStatus();
         } catch (Exception ex) {
             log.debug("Transaction failed on merge", ex);
             if (transaction.isActive()) {
@@ -94,6 +97,7 @@ public class ItemManager implements AutoCloseable {
             Item item = em.find(Item.class, itemId);
             em.remove(item);
             transaction.commit();
+            fixEnabledStatus();
             deleted = true;
         } catch (Exception ex) {
             log.debug("Transaction failed on delete", ex);
@@ -121,10 +125,10 @@ public class ItemManager implements AutoCloseable {
         StringBuilder builder = new StringBuilder();
         List<String> queryParams = new LinkedList<>();
         int paramIndex = 1;
-        builder.append("select i from Item i where 1=1");
+        builder.append("select i from Item i where i.enabled = true");
         // show disabled means return enable == true and false, so 1=1, narrow it down if !showDisabled
-        if (!showDisabled) {
-            builder.append(" and i.enabled = true");
+        if (showDisabled) {
+            builder.append(" and i.enabled = false");
         }
         boolean hasQueryText = isEmpty(queryText);
         boolean hasType = isEmpty(types);
@@ -132,7 +136,7 @@ public class ItemManager implements AutoCloseable {
         if (hasQueryText || hasType) {
             if (hasQueryText) {
                 builder.append(" and ");
-				List<String> likes = new ArrayList<String>();
+				List<String> likes = new ArrayList<>();
 				for (String keyword : queryText) {
 					if (StringUtils.isNotBlank(keyword)) {
                         queryParams.add('%' + keyword + "%");
@@ -188,6 +192,41 @@ public class ItemManager implements AutoCloseable {
         }
 
         return jsonResult;
+    }
+    
+    /**
+     * Run this after inserting, updating or deleting
+     * @param* @return number of items updated from query
+     */
+    public int fixEnabledStatus() {
+        int status = -1;
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+            Query update = em.createNativeQuery("UPDATE item SET enabled=\n" +
+                    "CASE \n" +
+                    "	WHEN item.id IN(WITH RECURSIVE subtree(id, child, depth) AS (\n" +
+                    "			SELECT a.aggregation_id, a.item_id, 1\n" +
+                    "			FROM aggregation_children a\n" +
+                    "			WHERE a.aggregation_id=(SELECT item.id FROM item WHERE item.item_type = 'uber')\n" +
+                    "		UNION ALL\n" +
+                    "			SELECT a.aggregation_id, a.item_id, s.depth+1\n" +
+                    "			FROM aggregation_children a, subtree s\n" +
+                    "			WHERE a.aggregation_id = s.child\n" +
+                    "		)\n" +
+                    "			SELECT DISTINCT(foo.child) FROM (SELECT * FROM subtree) AS foo UNION (SELECT item.id as child FROM item WHERE item.item_type = 'uber'))\n" +
+                    "		THEN TRUE\n" +
+                    "	ELSE FALSE\n" +
+                    "END");
+            status = update.executeUpdate();
+            transaction.commit();
+        } catch (Exception ex) {
+            log.debug("Transaction failed on update enabled", ex);
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+        }
+        return status;
     }
 
     private boolean isEmpty(List<String> args) {
