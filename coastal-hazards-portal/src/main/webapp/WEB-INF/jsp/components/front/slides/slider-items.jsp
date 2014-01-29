@@ -44,7 +44,7 @@
             <%-- Control Row --%>
             <div class="application-card-control-row row">
                 <div class="col-md-12">
-                    <button class="btn btn-link item-control-button">
+                    <button class="btn btn-link item-control-button hidden">
                         <img src="images/cards/item-space.svg" alt="Space Aggregation Image"/>
                     </button>
                     <button class="btn btn-link item-control-button">
