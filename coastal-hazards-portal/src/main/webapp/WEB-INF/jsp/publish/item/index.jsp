@@ -33,6 +33,11 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <script type="text/javascript">
+            if (window.location.pathname.indexOf("/item/") === -1) {
+                window.location = window.location.href + "/";
+            }
+        </script>
         <jsp:include page="<%=metaTags%>"></jsp:include>
             <title>USGS Coastal Change Hazards Portal - Publish</title>
             <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
