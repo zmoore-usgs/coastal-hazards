@@ -408,9 +408,11 @@ CCH.Objects.UI = function (args) {
             items.each(function (item, ind) {
                 var loadedHandler = function (evt, args) {
                     var loadedItemId = args.id,
-                        addIndex = CCH.session.getSession().items.findIndex(function(i) {
+                        sessionItems = CCH.session.getSession().items,
+                        addIndex = sessionItems.findIndex(function(i) {
                             return i.itemId === args.id;
                         }),
+                        sessionItem = sessionItems[addIndex],
                         item = CCH.items.getById({
                             id : loadedItemId
                         });
@@ -420,7 +422,7 @@ CCH.Objects.UI = function (args) {
                     item.addAtIndex = addIndex;
                     me.bucket.add({
                         item : item,
-                        visibility : item.visibility
+                        visibility : sessionItem.visibility
                     });
                     me.bucket.bucket = me.bucket.getItems().sortBy(function(i) {
                         return i.addAtIndex;
