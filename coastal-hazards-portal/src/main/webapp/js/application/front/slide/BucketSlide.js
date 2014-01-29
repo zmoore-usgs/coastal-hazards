@@ -497,10 +497,11 @@ CCH.Objects.BucketSlide = function (args) {
         $imageContainer.
                 attr('src', 'images/thumbnail/thumb_' + id + '.png').
                 on('click', function () {
-                CCH.map.zoomToBoundingBox({
-                    bbox: item.bbox,
-                    fromProjection: new OpenLayers.Projection('EPSG:4326')
-                });
+                    $(window).trigger('cch.slide.bucket.item.thumbnail.click')
+                    CCH.map.zoomToBoundingBox({
+                        bbox: item.bbox,
+                        fromProjection: new OpenLayers.Projection('EPSG:4326')
+                    });
             });
         $titleContainer.attr('id', titleContainerClass + '-' + id);
         $titleContainerPNode.html(title);
