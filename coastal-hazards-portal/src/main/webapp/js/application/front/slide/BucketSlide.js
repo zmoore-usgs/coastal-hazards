@@ -98,7 +98,7 @@ CCH.Objects.BucketSlide = function (args) {
             setTimeout(function () {
                 me.resized();
                 me.openSlide();
-            }, 50);
+            }, 1);
         }
         if (bindItemsOpening === true) {
              $(window).on('cch.slide.items.opening', itemSliderBinding);
