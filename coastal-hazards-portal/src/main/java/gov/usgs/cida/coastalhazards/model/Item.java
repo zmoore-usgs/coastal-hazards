@@ -68,9 +68,8 @@ public class Item implements Serializable {
     public static final String AGGREGATION_TYPE = "aggregation";
     private String id;
     private ItemType itemType;
-    private Bbox bbox;
-    private Summary summary;
     private String name;
+    private Bbox bbox;
     /**
      * @deprecated or rename to theme
      */
@@ -82,7 +81,8 @@ public class Item implements Serializable {
     /* Whether to show children in navigation menu */
     private boolean showChildren;
     /* Whether to show this item at all, used in mediation */
-    private boolean enabled;
+    private transient boolean enabled;
+    private Summary summary;
     private List<Service> services;
     private transient List<Item> children;
     /* Show only a subset of children */
@@ -115,16 +115,6 @@ public class Item implements Serializable {
 
     public void setBbox(Bbox bbox) {
         this.bbox = bbox;
-    }
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(columnDefinition = "summary_id")
-    public Summary getSummary() {
-        return summary;
-    }
-
-    public void setSummary(Summary summary) {
-        this.summary = summary;
     }
 
     public String getName() {
@@ -177,6 +167,16 @@ public class Item implements Serializable {
         this.enabled = enabled;
     }
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(columnDefinition = "summary_id")
+    public Summary getSummary() {
+        return summary;
+    }
+
+    public void setSummary(Summary summary) {
+        this.summary = summary;
+    }
+    
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "item_id", referencedColumnName = "id")
     @IndexColumn(name = "list_index")
@@ -237,7 +237,8 @@ public class Item implements Serializable {
     }
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "displayed_children", joinColumns = @JoinColumn(name = "item_id"))
+    @CollectionTable(name = "displayed_children",
+            joinColumns = @JoinColumn(name = "item_id"))
     @IndexColumn(name = "list_index")
     @Column(name = "child_id")
     public List<String> getDisplayedChildren() {
