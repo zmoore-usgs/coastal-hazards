@@ -527,7 +527,7 @@ CCH.Objects.BucketSlide = function (args) {
             });
         }
 
-        if (layerCurrentlyInMap || visibility === true) {
+        if (visibility === true) {
             $viewButton.find('> img').attr('src', 'images/bucket/layer_on.svg');
         } else {
             $viewButton.find('> img').attr('src', 'images/bucket/layer_off.svg');

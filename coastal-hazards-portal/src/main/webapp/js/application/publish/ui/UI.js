@@ -21,7 +21,7 @@ CCH.Objects.UI = function () {
         $bboxWest = $form.find('#form-publish-item-bbox-input-west'),
         $bboxSouth = $form.find('#form-publish-item-bbox-input-south'),
         $bboxEast = $form.find('#form-publish-item-bbox-input-east'),
-        $type = $form.find('#form-publish-item-type'),
+        $typeSb = $form.find('#form-publish-item-type'),
         $attributeSelect = $form.find('#form-publish-item-attribute'),
         $keywordGroup = $form.find('.form-group-keyword'),
         $cswServiceInput = $form.find('#form-publish-item-service-csw'),
@@ -65,7 +65,7 @@ CCH.Objects.UI = function () {
         $bboxWest.attr('disabled', 'disabled');
         $bboxSouth.attr('disabled', 'disabled');
         $bboxEast.attr('disabled', 'disabled');
-        $type.attr('disabled', 'disabled');
+        $typeSb.attr('disabled', 'disabled');
         $attributeSelect.attr('disabled', 'disabled');
         $('.form-group-keyword input').attr('disabled', 'disabled');
         $srcWfsServiceInput.attr('disabled', 'disabled');
@@ -93,7 +93,7 @@ CCH.Objects.UI = function () {
         $bboxWest.val('');
         $bboxSouth.val('');
         $bboxEast.val('');
-        $type.val('');
+        $typeSb.val('');
         $itemEnabledField.val('');
         $attributeSelect.val('');
         $('.form-group-keyword').not(':first').remove();
@@ -129,7 +129,7 @@ CCH.Objects.UI = function () {
         $bboxWest.removeAttr('disabled');
         $bboxSouth.removeAttr('disabled');
         $bboxEast.removeAttr('disabled');
-        $type.removeAttr('disabled');
+        $typeSb.removeAttr('disabled');
         $attributeSelect.removeAttr('disabled');
         $('.form-group-keyword input').removeAttr('disabled');
         $srcWfsServiceInput.removeAttr('disabled');
@@ -170,7 +170,7 @@ CCH.Objects.UI = function () {
         $proxyWfsServiceParamInput.attr('disabled', 'disabled');
         $proxyWmsServiceInput.attr('disabled', 'disabled');
         $proxyWmsServiceParamInput.attr('disabled', 'disabled');
-        $type.removeAttr('disabled');
+        $typeSb.removeAttr('disabled');
         $('.form-group-keyword input').find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled');
         $ribbonableCb.removeAttr('disabled');
         $showChildrenCb.removeAttr('disabled');
@@ -265,7 +265,7 @@ CCH.Objects.UI = function () {
                 errors.push('Name was not provided');
             }
 
-            if (!$type.val()) {
+            if (!$typeSb.val()) {
                 errors.push('Item type not provided');
             }
 
@@ -281,7 +281,7 @@ CCH.Objects.UI = function () {
             summary = {},
             keywordsArray = [],
             name = $name.val(),
-            type = $type.val(),
+            type = $typeSb.val(),
             attr = $attributeSelect.val() || '',
             ribbonable = $ribbonableCb.prop('checked'),
             showChildren = $showChildrenCb.prop('checked'),
@@ -755,7 +755,7 @@ CCH.Objects.UI = function () {
             keywords = [],
             services = {},
             isItemEnabled = false;
-
+    
         if (item) {
             item.children = item.children || [];
             id = item.id;
@@ -768,9 +768,14 @@ CCH.Objects.UI = function () {
             keywords = summary.keywords.split('|');
             isItemEnabled = item.enabled;
 
+            me.loadItemImage(id);
+
             // Hidden field - item type
             $itemType.val(item.itemType);
-
+            
+            // Item ID
+            $itemIdInput.val(id);
+            
             if (item.itemType === 'aggregation') {
                 // Populate children
                 me.createSortableChildren();
@@ -933,9 +938,6 @@ CCH.Objects.UI = function () {
                 });
             }
 
-            // Item ID
-            $itemIdInput.val(id);
-
             // Item Name
             $name.val(item.name).removeAttr('disabled');
 
@@ -980,7 +982,12 @@ CCH.Objects.UI = function () {
             $bboxNorth.val(item.bbox[3]).removeAttr('disabled');
 
             // Fill out item type
-            $type.val(item.type).removeAttr('disabled');
+            $typeSb.
+                val(item.type).
+                removeAttr('disabled').
+                on('change', me.createSortableChildren).
+                trigger('change');
+            
 
             // Ribbonable
             $ribbonableCb.
@@ -1003,47 +1010,61 @@ CCH.Objects.UI = function () {
 
     me.createSortableChildren = function () {
         $childrenSortableList.empty();
+        var type = $typeSb.val() || '',
+            currentAggregationId = $itemIdInput.val() || '',
+            itemId,
+            isOfType = function (item) {
+                if (!type) {
+                    return true;
+                } else {
+                    return item.type.toLowerCase().trim() === type.toLowerCase().trim();
+                }
+            };
         CCH.items.each(function (item) {
-            var $li = $('<li />').
+            itemId = item.id;
+            if (itemId !== 'uber' && itemId !== currentAggregationId && isOfType(item)) {
+                var $li = $('<li />').
                     addClass('ui-state-default form-publish-info-item-children-sortable-li').
                     attr('id', 'child-item-' + item.id),
-                $span = $('<span />').addClass('form-publish-info-item-children-sortable-li-span'),
-                $buttonDiv = $('<div />'),
-                $activeButton = $('<button />').
-                    addClass('btn btn-xs btn-default btn-child-active').
-                    attr({
-                        'type' : 'button',
-                        'data-toggle' : 'button'
-                    }),
-                $viewButton = $('<button />').
-                    addClass('btn btn-xs btn-default btn-child-visible').
-                    attr({
-                        'type' : 'button',
-                        'data-toggle' : 'button'
-                    });
+                    $span = $('<span />').addClass('form-publish-info-item-children-sortable-li-span'),
+                    $buttonDiv = $('<div />'),
+                    $activeButton = $('<button />').
+                        addClass('btn btn-xs btn-default btn-child-active').
+                        attr({
+                            'type' : 'button',
+                            'data-toggle' : 'button'
+                        }),
+                    $viewButton = $('<button />').
+                        addClass('btn btn-xs btn-default btn-child-visible').
+                        attr({
+                            'type' : 'button',
+                            'data-toggle' : 'button'
+                        });
 
-            $activeButton.append($('<i />').addClass('fa fa-check'));
-            $viewButton.append($('<i />').addClass('fa fa-eye'));
+                $activeButton.append($('<i />').addClass('fa fa-check'));
+                $viewButton.append($('<i />').addClass('fa fa-eye'));
 
-            $buttonDiv.append($activeButton, $viewButton);
+                $buttonDiv.append($activeButton, $viewButton);
 
-            $span.
-                append(
-                    $('<i />').addClass("fa fa-arrows-v"),
-                    ' ' + item.summary.medium.title + ' ',
-                    $buttonDiv
-                );
+                $span.
+                    append(
+                        $('<i />').addClass("fa fa-arrows-v"),
+                        ' ' + item.summary.medium.title + ' ',
+                        $buttonDiv
+                    );
 
-            $li.append($span);
+                $li.append($span);
 
-            $childrenSortableList.append($li);
-            $activeButton.on('click', function () {
-                setTimeout(function () {
-                    me.buildKeywordsFromChildren();
-                    me.buildPublicationsFromChildren();
-                    me.updateBoundingBox();
-                }, 100);
-            });
+                $childrenSortableList.append($li);
+                $activeButton.on('click', function () {
+                    setTimeout(function () {
+                        me.buildKeywordsFromChildren();
+                        me.buildPublicationsFromChildren();
+                        me.updateBoundingBox();
+                    }, 100);
+                });
+            }
+            
         });
         $childrenSortableList.sortable();
     };
@@ -1268,6 +1289,53 @@ CCH.Objects.UI = function () {
         $alertModalFooter.append($deleteButton);
         $alertModal.modal('show');
     };
+    
+    me.loadItemImage = function (id) {
+        if (id) {
+            var imageEndpoint = CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id;
+            $.ajax({
+                url : imageEndpoint,
+                success : function () {
+                    $itemImage.attr('src', imageEndpoint);
+                },
+                error : function (err) {
+                    CCH.ows.generateThumbnail({
+                        id : id,
+                        callbacks : {
+                            success : [
+                                function (base64Image) {
+                                    $.ajax({
+                                        url: imageEndpoint,
+                                        method: 'PUT',
+                                        data : base64Image,
+                                        contentType: 'text/plain',
+                                        success : function () {
+                                            me.loadItemImage(id);
+                                        },
+                                        error : function (err) {
+                                            $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+                                        }
+                                    })
+                                }
+                            ],
+                            error : [
+                                function () {
+                                    $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+                                }
+                            ]
+                        }
+                    });
+//                    if (err.status === 404) {
+//                        me.generateImage(id);
+//                    } else {
+//                        $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+//                    }
+                }
+            });
+        }
+    };
+    
+    
 
     $wfsImportButton.on('click', function () {
         var importCall,
