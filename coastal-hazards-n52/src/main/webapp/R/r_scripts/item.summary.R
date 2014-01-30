@@ -7,7 +7,7 @@
 library(itemSummaryService)
 library(RCurl)
 
-metadata <- getURL(url=input,opts=curlOptions(followlocation=TRUE))
+metadata <- getURL(url=input, .opts=curlOptions(followlocation=TRUE))
 
 attr <- tolower(attr)
 themeNames	<-	names(attrMap)
