@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="jiwalker" id="create_subtree_procedure">
+        <createProcedure>
+            CREATE FUNCTION get_subtree(item_id VARCHAR(10)) RETURNS TABLE (id VARCHAR(10), level INT) AS $BODY$
+                WITH RECURSIVE subtree(id, child, depth) AS (
+                    SELECT a.aggregation_id, a.item_id, 1
+                        FROM aggregation_children a
+                        WHERE a.aggregation_id=(SELECT item.id FROM item WHERE item.id = $1)
+                    UNION ALL
+                        SELECT a.aggregation_id, a.item_id, s.depth+1
+                        FROM aggregation_children a, subtree s
+                    WHERE a.aggregation_id = s.child
+                )
+                SELECT DISTINCT(subtree_tbl.child), subtree_tbl.depth FROM (SELECT * FROM subtree) AS subtree_tbl UNION (SELECT item.id as child, 0 FROM item WHERE item.id = $1)
+            $BODY$ LANGUAGE sql;
+        </createProcedure>
+        <rollback>DROP FUNCTION get_subtree(item_id VARCHAR(10));</rollback>
+    </changeSet>
+</databaseChangeLog>
