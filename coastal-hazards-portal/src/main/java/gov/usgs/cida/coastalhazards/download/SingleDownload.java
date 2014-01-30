@@ -44,9 +44,11 @@ public class SingleDownload {
      * Currently only supports WGS84 output
      * @param stagingDir temporary staging directory
      * @param missing handle to MISSING file writer
+     * @return whether this download was staged properly
      * @throws IOException usually means cannot contact server
      */
-    public void stage(File stagingDir, List<String> missing) throws IOException {
+    public boolean stage(File stagingDir, List<String> missing) throws IOException {
+        boolean properlyStaged = false;
         try (WFSClientInterface wfsClient = new HttpComponentsWFSClient()) {
             wfsClient.setupDatastoreFromEndpoint(wfs.getEndpoint());
 
@@ -58,13 +60,14 @@ public class SingleDownload {
             }
 
             try {
-                export.writeToShapefile();
+                properlyStaged = export.writeToShapefile();
             } catch (IOException ex) {
                 LOG.error("Unable to write shapefile {}", name);
                 missing.add(name);
             }
         } catch (Exception ex) {
             LOG.debug("Exception while using or closing wfsClient");
+            missing.add(name);
         }
         
         String metadataName = name + ".shp.xml";
@@ -75,6 +78,7 @@ public class SingleDownload {
             LOG.error("Unable to add metadata named {} from {}", metadataName, metadata);
             missing.add(metadataName);
         }
+        return properlyStaged;
     }
 
     public WFSService getWfs() {
