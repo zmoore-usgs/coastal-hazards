@@ -218,7 +218,7 @@ CCH.Objects.UI = function () {
                 if (!$proxyWmsServiceParamInput.val()) {
                     errors.push('Proxy WMS parameter not provided');
                 }
-            } else if ('aggregation' === type) {
+            } else if ('aggregation' === type || 'uber' === type) {
                 if ($childrenSortableList.find('li > span > div > button:first-child.active').length === 0) {
                     errors.push('Aggregations require at least one child');
                 }
@@ -754,11 +754,13 @@ CCH.Objects.UI = function () {
             descriptionTiny,
             keywords = [],
             services = {},
+            type,
             isItemEnabled = false;
     
         if (item) {
             item.children = item.children || [];
             id = item.id;
+            type = item.itemType,
             summary = item.summary;
             titleFull = summary.full.title;
             titleMedium = summary.medium.title;
@@ -771,12 +773,12 @@ CCH.Objects.UI = function () {
             me.loadItemImage(id);
 
             // Hidden field - item type
-            $itemType.val(item.itemType);
+            $itemType.val(type);
             
             // Item ID
             $itemIdInput.val(id);
             
-            if (item.itemType === 'aggregation') {
+            if (type === 'aggregation' || type === 'uber') {
                 // Populate children
                 me.createSortableChildren();
 
@@ -1017,12 +1019,12 @@ CCH.Objects.UI = function () {
                 if (!type) {
                     return true;
                 } else {
-                    return item.type.toLowerCase().trim() === type.toLowerCase().trim();
+                    return type === 'mixed' || item.type.toLowerCase().trim() === type.toLowerCase().trim();
                 }
             };
         CCH.items.each(function (item) {
             itemId = item.id;
-            if (itemId !== 'uber' && itemId !== currentAggregationId && isOfType(item)) {
+            if (itemId !== currentAggregationId && isOfType(item)) {
                 var $li = $('<li />').
                     addClass('ui-state-default form-publish-info-item-children-sortable-li').
                     attr('id', 'child-item-' + item.id),
