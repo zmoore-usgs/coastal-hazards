@@ -30,13 +30,15 @@ public class ItemManager implements AutoCloseable {
     public Item load(String itemId) {
         Item item = null;
         item = em.find(Item.class, itemId);
-        List<Item> children = item.getChildren();
-        List<Item> replaceList = new LinkedList<>();
-        if (children != null) {
-            for (Item child : children) {
-                replaceList.add(load(child.getId()));
+        if (item != null) {
+            List<Item> children = item.getChildren();
+            List<Item> replaceList = new LinkedList<>();
+            if (children != null) {
+                for (Item child : children) {
+                    replaceList.add(load(child.getId()));
+                }
+                item.setChildren(replaceList);
             }
-            item.setChildren(replaceList);
         }
         return item;
     }

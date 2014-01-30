@@ -86,10 +86,11 @@ public class DownloadUtility {
      *
      * @param stageThis
      * @param stagingDir
+     * @return considered successful if it was able to get some data at all
      * @throws java.io.IOException
      */
-    public static void stageItemDownload(Item stageThis, File stagingDir) throws IOException, ConcurrentModificationException {
-
+    public static boolean stageItemDownload(Item stageThis, File stagingDir) throws IOException, ConcurrentModificationException {
+        boolean success = false;
         lock(stagingDir);
 
         List<String> missing = new LinkedList<>();
@@ -107,7 +108,8 @@ public class DownloadUtility {
 
                 // TODO try/catch this to isolate/retry problem downloads
                 try {
-                    stagedDownload.stage(stagingDir, missing);
+                    boolean staged = stagedDownload.stage(stagingDir, missing);
+                    success = success || staged;
                 }
                 catch (Exception ex) {
                     LOG.error("unable to stage {} for download", stagedDownload.getName());
@@ -119,6 +121,7 @@ public class DownloadUtility {
             writeReadmeFile(stagingDir);
             unlock(stagingDir);
         }
+        return success;
     }
 
     /**
@@ -127,9 +130,10 @@ public class DownloadUtility {
      * @param stageThis
      * @param stagingDir
      */
-    public static void stageSessionDownload(Session stageThis, File stagingDir) throws IOException, ConcurrentModificationException {
+    public static boolean stageSessionDownload(Session stageThis, File stagingDir) throws IOException, ConcurrentModificationException {
+        boolean success = false;
         lock(stagingDir);
-
+        
         List<String> missing = new LinkedList<>();
 
         try (ItemManager itemManager = new ItemManager()) {
@@ -145,9 +149,10 @@ public class DownloadUtility {
                     stagedDownload.incrementName();
                 }
                 namesUsed.add(stagedDownload.getName());
-
-                // TODO try/catch this to isolate/retry problem downloads
-                stagedDownload.stage(stagingDir, missing);
+                
+                // TODO try/catch this to isolate/retry problem downloads?
+                boolean stage = stagedDownload.stage(stagingDir, missing);
+                success = success || stage;
             }
         }
         finally {
@@ -155,6 +160,7 @@ public class DownloadUtility {
             writeReadmeFile(stagingDir);
             unlock(stagingDir);
         }
+        return success;
     }
 
     /**

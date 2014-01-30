@@ -60,7 +60,9 @@ public class HttpComponentsWFSClient implements WFSClientInterface {
         if (filter != null) {
             try {
                 FilterTransformer transformer = new FilterTransformer();
-                filterXml = transformer.transform(filter);
+                transformer.setOmitXMLDeclaration(true);
+                transformer.setNamespaceDeclarationEnabled(false);
+                filterXml = "<ogc:Filter>" + transformer.transform(filter) + "</ogc:Filter>";
             } catch (TransformerException ex) {
                 throw new RuntimeException("Specified filter cannot be transformed", ex);
             }
@@ -111,7 +113,7 @@ public class HttpComponentsWFSClient implements WFSClientInterface {
     // also may need to create special namespace for GetFeature request
     private static final String wfsXMLTemplate = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 "<wfs:GetFeature service=\"WFS\" outputFormat=\"text/xml; subtype=gml/3.1.1\" version=\"1.1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd\">" +
-"   <wfs:Query typeName=\"%s\" srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">" +
+"   <wfs:Query typeName=\"%s\" srsName=\"EPSG:4326\">" +
 "       %s" +
 "   </wfs:Query>" +
 "</wfs:GetFeature>";
