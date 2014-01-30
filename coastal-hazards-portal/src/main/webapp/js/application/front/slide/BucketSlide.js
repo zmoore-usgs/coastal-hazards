@@ -503,7 +503,7 @@ CCH.Objects.BucketSlide = function (args) {
 
         $card.attr('id', 'application-slide-bucket-container-card-' + id);
         $imageContainer.
-                attr('src', 'images/thumbnail/thumb_' + id + '.png').
+                attr('src', CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id).
                 on('click', function () {
                     $(window).trigger('cch.slide.bucket.item.thumbnail.click')
                     CCH.map.zoomToBoundingBox({
