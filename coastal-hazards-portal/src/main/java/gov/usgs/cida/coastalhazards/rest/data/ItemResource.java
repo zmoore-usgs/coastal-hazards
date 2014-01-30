@@ -102,22 +102,27 @@ public class ItemResource {
         Response response;
         if (SessionResource.isValidSession(request)) {
             try (ItemManager itemManager = new ItemManager()) {
-                final String id = itemManager.persist(content);
-
-                if (null == id) {
-                    response = Response.status(Response.Status.BAD_REQUEST).build();
+                Item item = Item.fromJSON(content);
+                if (!itemManager.anyCycles(item)) {
+                    final String id = itemManager.persist(item);
+                    if (null == id) {
+                        response = Response.status(Response.Status.BAD_REQUEST).build();
+                    } else {
+                        Map<String, Object> ok = new HashMap<String, Object>() {
+                            private static final long serialVersionUID = 2398472L;
+                            {
+                                put("id", id);
+                            }
+                        };
+                        response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+                    }
                 } else {
-                    Map<String, Object> ok = new HashMap<String, Object>() {
-                        private static final long serialVersionUID = 2398472L;
-                        {
-                            put("id", id);
-                        }
-                    };
-                    response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
+                    response = Response.status(Status.CONFLICT).entity("{\"status\":\"Cannot introduce cycles\"}")
+                            .type(MediaType.APPLICATION_JSON_TYPE).build();
                 }
             }
         } else {
-            response = Response.status(Response.Status.UNAUTHORIZED).build();
+            response = Response.status(Status.UNAUTHORIZED).build();
         }
 		return response;
 	}
@@ -137,12 +142,17 @@ public class ItemResource {
             try (ItemManager itemManager = new ItemManager()) {
                 Item dbItem = itemManager.load(id);
                 Item updatedItem = Item.fromJSON(content);
-                Item mergedItem = Item.copyValues(updatedItem, dbItem);
-                final String mergedId = itemManager.merge(mergedItem);
-                if (null != mergedId) {
-                    response = Response.ok().build();
+                if (!itemManager.anyCycles(updatedItem)) {
+                    Item mergedItem = Item.copyValues(updatedItem, dbItem);
+                    final String mergedId = itemManager.merge(mergedItem);
+                    if (null != mergedId) {
+                        response = Response.ok().build();
+                    } else {
+                        response = Response.status(Response.Status.BAD_REQUEST).build();
+                    }
                 } else {
-                    response = Response.status(Response.Status.BAD_REQUEST).build();
+                    response = Response.status(Status.CONFLICT).entity("{\"status\":\"Cannot introduce cycles\"}")
+                            .type(MediaType.APPLICATION_JSON_TYPE).build();
                 }
             }
         } else {
@@ -165,6 +175,17 @@ public class ItemResource {
             }
         } else {
             response = Response.status(Status.UNAUTHORIZED).build();
+        }
+        return response;
+    }
+    
+    @GET
+    @Path("cycle/{parentId}/{childId}")
+    public Response checkForCycle(@PathParam("parentId") String parentId, @PathParam("childId") String childId) {
+        Response response = null;
+        try (ItemManager itemManager = new ItemManager()) {
+            boolean cycle = itemManager.isCycle(parentId, childId);
+            response = Response.ok("{\"cycle\": " + cycle + "}", MediaType.APPLICATION_JSON_TYPE).build();
         }
         return response;
     }
