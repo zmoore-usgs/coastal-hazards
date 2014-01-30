@@ -115,8 +115,8 @@
                             </div>
 
                             <%-- ITEM IMAGE --%>
-                            <div id="form-publish-info-item-id" class="row row-id">
-                                <img id="form-publish-info-item-image" src="" /> 
+                            <div class="row row-id">
+                                <img alt="Item Thumbnail" id="form-publish-info-item-image" src="" /> 
                             </div>
 
                             <%-- ITEM TITLE --%>

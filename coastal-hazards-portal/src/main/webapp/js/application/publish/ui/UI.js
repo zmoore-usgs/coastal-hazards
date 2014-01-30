@@ -768,12 +768,14 @@ CCH.Objects.UI = function () {
             keywords = summary.keywords.split('|');
             isItemEnabled = item.enabled;
 
+            me.loadItemImage(id);
+
             // Hidden field - item type
             $itemType.val(item.itemType);
             
             // Item ID
             $itemIdInput.val(id);
-
+            
             if (item.itemType === 'aggregation') {
                 // Populate children
                 me.createSortableChildren();
@@ -1287,6 +1289,53 @@ CCH.Objects.UI = function () {
         $alertModalFooter.append($deleteButton);
         $alertModal.modal('show');
     };
+    
+    me.loadItemImage = function (id) {
+        if (id) {
+            var imageEndpoint = CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id;
+            $.ajax({
+                url : imageEndpoint,
+                success : function () {
+                    $itemImage.attr('src', imageEndpoint);
+                },
+                error : function (err) {
+                    CCH.ows.generateThumbnail({
+                        id : id,
+                        callbacks : {
+                            success : [
+                                function (base64Image) {
+                                    $.ajax({
+                                        url: imageEndpoint,
+                                        method: 'PUT',
+                                        data : base64Image,
+                                        contentType: 'text/plain',
+                                        success : function () {
+                                            me.loadItemImage(id);
+                                        },
+                                        error : function (err) {
+                                            $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+                                        }
+                                    })
+                                }
+                            ],
+                            error : [
+                                function () {
+                                    $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+                                }
+                            ]
+                        }
+                    });
+//                    if (err.status === 404) {
+//                        me.generateImage(id);
+//                    } else {
+//                        $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+//                    }
+                }
+            });
+        }
+    };
+    
+    
 
     $wfsImportButton.on('click', function () {
         var importCall,

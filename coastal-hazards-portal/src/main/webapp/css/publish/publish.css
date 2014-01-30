@@ -88,6 +88,11 @@
 	display: none;
 }
 
+#form-publish-info-item-image {
+    height: 150px;
+    width: 150px;
+}
+
 #publications-panel .panel-heading button {
 	margin-top: -5px;
 }

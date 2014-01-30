@@ -121,6 +121,50 @@ CCH.Objects.OWS = function() {
                 }
             });
         },
+        generateThumbnail : function(args) {
+            args = args || {};
+            var id = args.id,
+                callbacks = args.callbacks || {
+                    success : [],
+                    error : []
+                },
+                wpsFormat = new OpenLayers.Format.WPSExecute(),
+                doc = wpsFormat.write({
+                    identifier: "org.n52.wps.server.r.thumbnail.service",
+                    dataInputs: [{
+                        identifier: "url",
+                        data: {
+                            literalData: {
+                                value: CCH.CONFIG.publicUrl + '/data/item/' + id
+                            }
+                        }
+                    }],
+                    responseForm: {
+                        rawDataOutput: {
+                            encoding: "base64",
+                            identifier: "output"
+                        }
+                    }
+                });
+                
+            OpenLayers.Request.POST({
+                url: CCH.CONFIG.contextPath + '/52n/WebProcessingService',
+                data:doc,
+                success:function(response){
+                    var trimmedResponse = response.responseText.trim();
+                    if (trimmedResponse.indexOf('ExceptionText') !== -1) {
+                        var errorText = $(trimmedResponse).find('ows\\:ExceptionText');
+                        callbacks.error.each(function (cb) {
+                            cb(errorText.text());
+                        });
+                    } else {
+                        callbacks.success.each(function (cb) {
+                            cb(trimmedResponse);
+                        });
+                    }
+                }
+            });
+        },
         describeFeatureType : function(args) {
             args = args || {};
             var callbacks = args.callbacks || {
