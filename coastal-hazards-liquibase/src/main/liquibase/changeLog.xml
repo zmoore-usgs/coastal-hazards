@@ -20,4 +20,5 @@
     <include file="addPublicationType.xml" relativeToChangelogFile="true" />
     <include file="sessionItemAttributes.xml" relativeToChangelogFile="true" />
     <include file="fixConstraints.xml" relativeToChangelogFile="true" />
+    <include file="subtreeFunction.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

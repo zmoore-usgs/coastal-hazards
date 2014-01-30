@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
+import gov.usgs.cida.coastalhazards.exception.CycleIntroductionException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Item;
 import java.util.ArrayList;
@@ -40,23 +41,24 @@ public class ItemManager implements AutoCloseable {
         return item;
     }
 
-    public synchronized String persist(String item) {
+    public synchronized String persist(Item item) throws CycleIntroductionException {
         String id = null;
-
+        if (anyCycles(item)) {
+            throw new CycleIntroductionException();
+        }
         EntityTransaction transaction = em.getTransaction();
 		try {
 			transaction.begin();
-			Item itemObj = Item.fromJSON(item);
-            List<Item> children = itemObj.getChildren();
+            List<Item> children = item.getChildren();
             List<Item> replaceList = new LinkedList<>();
             if (children != null) {
                 for (Item child : children) {
                     replaceList.add(load(child.getId()));
                 }
-                itemObj.setChildren(replaceList);
+                item.setChildren(replaceList);
             }
-			em.persist(itemObj);
-			id = itemObj.getId();
+			em.persist(item);
+			id = item.getId();
 			transaction.commit();
             fixEnabledStatus();
 
@@ -70,8 +72,11 @@ public class ItemManager implements AutoCloseable {
         return id;
     }
 
-    public synchronized String merge(Item item) {
+    public synchronized String merge(Item item) throws CycleIntroductionException {
         String id = null;
+        if (anyCycles(item)) {
+            throw new CycleIntroductionException();
+        }
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
@@ -128,7 +133,7 @@ public class ItemManager implements AutoCloseable {
         builder.append("select i from Item i where i.enabled = true");
         // show disabled means return enable == true and false, so 1=1, narrow it down if !showDisabled
         if (showDisabled) {
-            builder.append(" and i.enabled = false");
+            builder.append(" or i.enabled = false");
         }
         boolean hasQueryText = isEmpty(queryText);
         boolean hasType = isEmpty(types);
@@ -208,20 +213,11 @@ public class ItemManager implements AutoCloseable {
         try {
             transaction.begin();
             Query update = em.createNativeQuery("UPDATE item SET enabled=\n" +
-                    "CASE \n" +
-                    "	WHEN item.id IN(WITH RECURSIVE subtree(id, child, depth) AS (\n" +
-                    "			SELECT a.aggregation_id, a.item_id, 1\n" +
-                    "			FROM aggregation_children a\n" +
-                    "			WHERE a.aggregation_id=(SELECT item.id FROM item WHERE item.item_type = 'uber')\n" +
-                    "		UNION ALL\n" +
-                    "			SELECT a.aggregation_id, a.item_id, s.depth+1\n" +
-                    "			FROM aggregation_children a, subtree s\n" +
-                    "			WHERE a.aggregation_id = s.child\n" +
-                    "		)\n" +
-                    "			SELECT DISTINCT(foo.child) FROM (SELECT * FROM subtree) AS foo UNION (SELECT item.id as child FROM item WHERE item.item_type = 'uber'))\n" +
-                    "		THEN TRUE\n" +
-                    "	ELSE FALSE\n" +
+                    "CASE WHEN item.id IN(SELECT id FROM get_subtree(:id))\n" +
+                        "THEN TRUE\n" +
+                        "ELSE FALSE\n" +
                     "END");
+            update.setParameter("id", Item.UBER_ID);
             status = update.executeUpdate();
             transaction.commit();
         } catch (Exception ex) {
@@ -231,6 +227,44 @@ public class ItemManager implements AutoCloseable {
             }
         }
         return status;
+    }
+    
+    public boolean anyCycles(Item item) {
+        boolean cycles = false;
+        for (Item child : item.getChildren()) {
+            if (isCycle(item.getId(), child.getId())) {
+                cycles = true;
+            }
+        }
+        return cycles;
+    }
+    
+    /**
+     * True is bad, don't want cycles
+     * @param parentId parent wanting to add child to
+     * @param childId child to check cycle on
+     * @return whether there is a cycle
+     */
+    public boolean isCycle(String parentId, String childId) {
+        if (StringUtils.isBlank(parentId) || StringUtils.isBlank(childId)) {
+            throw new IllegalArgumentException("Parent and child must be valid IDs");
+        }
+        
+        boolean cycle = false;
+        Query subtree = em.createNativeQuery("SELECT id FROM get_subtree(:childId)");
+        subtree.setParameter("childId", childId);
+        List<Object> resultList = subtree.getResultList();
+        for (Object result : resultList) {
+//            if (result.length != 1) {
+//                throw new IllegalStateException("Something went wrong with the query");
+//            }
+            String id = (String)result;
+            //int level = (int)result[1];
+            if (parentId.equals(id)) {
+                cycle = true;
+            }
+        }
+        return cycle;
     }
 
     private boolean isEmpty(List<String> args) {
