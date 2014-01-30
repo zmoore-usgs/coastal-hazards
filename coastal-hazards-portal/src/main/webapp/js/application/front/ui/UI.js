@@ -405,15 +405,30 @@ CCH.Objects.UI = function (args) {
             items = items || [];
             // Wait for each item in the session to be loaded 
             // before adding it to the bucket
-            items.each(function (item) {
+            items.each(function (item, ind) {
                 var loadedHandler = function (evt, args) {
-                    var loadedItemId = args.id;
-                    me.bucket.add({
-                        item : CCH.items.getById({
-                            id : loadedItemId
+                    var loadedItemId = args.id,
+                        addIndex = CCH.session.getSession().items.findIndex(function(i) {
+                            return i.itemId === args.id;
                         }),
-                        visible : item.visible
+                        item = CCH.items.getById({
+                            id : loadedItemId
+                        });
+                        
+                    // The following is done to add the items to the bucket and 
+                    // bucket slider in a specific order
+                    item.addAtIndex = addIndex;
+                    me.bucket.add({
+                        item : item,
+                        visibility : item.visibility
                     });
+                    me.bucket.bucket = me.bucket.getItems().sortBy(function(i) {
+                        return i.addAtIndex;
+                    });
+                    me.bucketSlide.cards = me.bucketSlide.cards.sort(function(card) {
+                        return me.bucket.getItemById($(card).data('id')).addAtIndex || -1;
+                    });
+                    me.bucketSlide.rebuild();
                 };
                 $(window).on('cch.item.loaded', function (evt, args) {
                     if (args.id === item.itemId) {

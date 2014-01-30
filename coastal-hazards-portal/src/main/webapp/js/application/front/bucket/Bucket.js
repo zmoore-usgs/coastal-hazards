@@ -20,11 +20,13 @@ CCH.Objects.Bucket = function (args) {
     
     me.bucketAddClickHandler = function (evt, args) {
         args = args || {};
-        var item = args.item;
+        var item = args.item,
+            visibility = args.visibility || false;
 
         if (item) {
             me.add({
-                item: item
+                item: item,
+                visibility : visibility
             });
         }
     };
@@ -42,10 +44,7 @@ CCH.Objects.Bucket = function (args) {
 
     me.countChanged = function () {
         var count = me.getCount(),
-            bucketContainer = $('#' + me.BUCKET_CONTAINER_ID),
-            currentMarginString = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left'),
-            currentMargin = parseInt(currentMarginString.substring(0, currentMarginString.indexOf('px')), 10),
-            originalMargin = parseInt(me.INITIAL_BUCKET_COUNT_MARGIN_LEFT.substring(0, me.INITIAL_BUCKET_COUNT_MARGIN_LEFT.indexOf('px')), 10);
+            bucketContainer = $('#' + me.BUCKET_CONTAINER_ID);
         
         if (count > 0) {
             if (!bucketContainer.hasClass(me.BUCKET_POPULATED_CLASS)) {
@@ -110,7 +109,7 @@ CCH.Objects.Bucket = function (args) {
 
             var item = args.item,
                 id = item.id,
-                visible = args.visible;
+                visibility = args.visibility;
         
             if (!me.getItemById(id)) {
                 // Add the item to my personal bucket array
@@ -119,11 +118,14 @@ CCH.Objects.Bucket = function (args) {
                 // Add the item to the bucket slide
                 me.slide.add({
                     item : item,
-                    visible : visible
+                    visibility : visibility
                 });
                 
                 // Add the item to the session
-                CCH.session.addItem(item);
+                CCH.session.addItem({
+                    item : item,
+                    visibility : visibility
+                });
                 
                 // Increase the bucket count visually
                 me.increaseCount();
@@ -180,6 +182,7 @@ CCH.Objects.Bucket = function (args) {
                 });
             });
         },
+        bucket : me.bucket,
         getItems : function () {
             return me.bucket;
         },

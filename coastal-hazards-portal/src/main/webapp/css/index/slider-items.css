@@ -21,7 +21,7 @@
     color: #BBBBBB;
 }
 
-.application-card-control-row {
+.application-card-control-row > div {
     text-align: center;
 }
 

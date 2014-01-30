@@ -192,7 +192,8 @@ CCH.Objects.Card = function (args) {
             add = function () {
                 // User pressed bucket button in and wants to add me to a bucket
                 $(window).trigger('cch.card.bucket.add', {
-                    item : me.item
+                    item : me.item,
+                    visibility : true
                 });
             },
             // This is not currently being used - keep this functionality around

@@ -164,6 +164,65 @@ CCH.Objects.Session = function(args) {
         }
         return item;
     };
+    
+    me.getItemIndex = function (item) {
+        return me.session.items.findIndex(function(i) {
+            return i.itemId === item.id;
+        });
+    };
+    
+    me.addItem = function (args) {
+        var item = args.item,
+            visibility = args.visibility || false,
+            index = me.getItemIndex(item),
+            cookie;
+
+        if (index === -1) {
+            me.session.items.push({
+                itemId : item.id,
+                visibility : visibility
+            });
+        }
+
+        cookie = $.cookie('cch');
+        cookie.items = me.session.items;
+        $.cookie('cch', cookie);
+
+        return me.session;
+    };
+    
+    me.removeItem = function (item) {
+        var index = me.getItemIndex(item),
+            cookie;
+
+        if (index !== -1) {
+            me.session.items.removeAt(index);
+        }
+
+        cookie = $.cookie('cch');
+        cookie.items = me.session.items;
+        $.cookie('cch', cookie);
+        return me.session;
+    };
+    
+    // Cookie handling
+    $.cookie.json = true;
+    if ($.cookie('cch') === undefined) {
+        $.cookie('cch', {
+            'items' : me.session.items
+        },
+        {
+            path: '/'
+        });
+    }
+    $.cookie('cch').items.each(function(item) {
+        me.addItem({
+            item : {
+                id : item.itemId
+            },
+            visibility : item.visibility
+        })
+    });
 
     return $.extend(me, {
         toString: me.toString,
@@ -173,40 +232,8 @@ CCH.Objects.Session = function(args) {
         writeSession: me.write,
         updateSession : me.update,
         getItemById : me.getItemById,
-        getItemIndex : function (item) {
-            return me.session.items.findIndex(function(i) {
-                return i.itemId === item.id;
-            });
-        },
-        addItem : function (item) {
-            var index = me.getItemIndex(item),
-                cookie;
-            
-            if (index === -1) {
-                me.session.items.push({
-                    itemId : item.id,
-                    visibility : true
-                });
-            }
-            
-            cookie = $.cookie('cch');
-            cookie.items = me.session.items;
-            $.cookie('cch', cookie);
-            
-            return me.session;
-        },
-        removeItem : function (item) {
-            var index = me.getItemIndex(item),
-                cookie;
-            
-            if (index !== -1) {
-                me.session.items.removeAt(index);
-            }
-            
-            cookie = $.cookie('cch');
-            cookie.items = me.session.items;
-            $.cookie('cch', cookie);
-            return me.session;
-        }
+        getItemIndex : me.getItemIndex,
+        addItem : me.addItem,
+        removeItem : me.removeItem
     });
 };
