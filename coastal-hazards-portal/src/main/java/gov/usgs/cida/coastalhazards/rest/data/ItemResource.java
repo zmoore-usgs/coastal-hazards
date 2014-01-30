@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
+import gov.usgs.cida.coastalhazards.exception.CycleIntroductionException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
@@ -103,23 +104,21 @@ public class ItemResource {
         if (SessionResource.isValidSession(request)) {
             try (ItemManager itemManager = new ItemManager()) {
                 Item item = Item.fromJSON(content);
-                if (!itemManager.anyCycles(item)) {
-                    final String id = itemManager.persist(item);
-                    if (null == id) {
-                        response = Response.status(Response.Status.BAD_REQUEST).build();
-                    } else {
-                        Map<String, Object> ok = new HashMap<String, Object>() {
-                            private static final long serialVersionUID = 2398472L;
-                            {
-                                put("id", id);
-                            }
-                        };
-                        response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
-                    }
+                final String id = itemManager.persist(item);
+                if (null == id) {
+                    response = Response.status(Response.Status.BAD_REQUEST).build();
                 } else {
-                    response = Response.status(Status.CONFLICT).entity("{\"status\":\"Cannot introduce cycles\"}")
-                            .type(MediaType.APPLICATION_JSON_TYPE).build();
+                    Map<String, Object> ok = new HashMap<String, Object>() {
+                        private static final long serialVersionUID = 2398472L;
+                        {
+                            put("id", id);
+                        }
+                    };
+                    response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
                 }
+            } catch (CycleIntroductionException ex) {
+                response = Response.status(Status.CONFLICT).entity("{\"status\":\"" + ex.getMessage() + "\"}")
+                        .type(MediaType.APPLICATION_JSON_TYPE).build();
             }
         } else {
             response = Response.status(Status.UNAUTHORIZED).build();
@@ -142,18 +141,16 @@ public class ItemResource {
             try (ItemManager itemManager = new ItemManager()) {
                 Item dbItem = itemManager.load(id);
                 Item updatedItem = Item.fromJSON(content);
-                if (!itemManager.anyCycles(updatedItem)) {
-                    Item mergedItem = Item.copyValues(updatedItem, dbItem);
-                    final String mergedId = itemManager.merge(mergedItem);
-                    if (null != mergedId) {
-                        response = Response.ok().build();
-                    } else {
-                        response = Response.status(Response.Status.BAD_REQUEST).build();
-                    }
+                Item mergedItem = Item.copyValues(updatedItem, dbItem);
+                final String mergedId = itemManager.merge(mergedItem);
+                if (null != mergedId) {
+                    response = Response.ok().build();
                 } else {
-                    response = Response.status(Status.CONFLICT).entity("{\"status\":\"Cannot introduce cycles\"}")
-                            .type(MediaType.APPLICATION_JSON_TYPE).build();
+                    response = Response.status(Response.Status.BAD_REQUEST).build();
                 }
+            } catch (CycleIntroductionException ex) {
+                response = Response.status(Status.CONFLICT).entity("{\"status\":\"" + ex.getMessage() + "\"}")
+                        .type(MediaType.APPLICATION_JSON_TYPE).build();
             }
         } else {
             response = Response.status(Status.UNAUTHORIZED).build();

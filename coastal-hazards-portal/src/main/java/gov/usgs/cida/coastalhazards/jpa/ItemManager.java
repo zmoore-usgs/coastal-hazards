@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
+import gov.usgs.cida.coastalhazards.exception.CycleIntroductionException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Item;
 import java.util.ArrayList;
@@ -40,9 +41,11 @@ public class ItemManager implements AutoCloseable {
         return item;
     }
 
-    public synchronized String persist(Item item) {
+    public synchronized String persist(Item item) throws CycleIntroductionException {
         String id = null;
-
+        if (anyCycles(item)) {
+            throw new CycleIntroductionException();
+        }
         EntityTransaction transaction = em.getTransaction();
 		try {
 			transaction.begin();
@@ -69,8 +72,11 @@ public class ItemManager implements AutoCloseable {
         return id;
     }
 
-    public synchronized String merge(Item item) {
+    public synchronized String merge(Item item) throws CycleIntroductionException {
         String id = null;
+        if (anyCycles(item)) {
+            throw new CycleIntroductionException();
+        }
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
