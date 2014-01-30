@@ -142,9 +142,13 @@ public class ItemManager implements AutoCloseable {
                         queryParams.add('%' + keyword + "%");
                         StringBuilder likeBuilder = new StringBuilder();
                         likeBuilder.append(" lower(i.summary.keywords) like lower(?")
-                                .append(paramIndex++)
+                                .append(paramIndex)
+                                .append(")");
+                        likeBuilder.append(" or lower(i.summary.full.title) like lower(?")
+                                .append(paramIndex)
                                 .append(")");
                         likes.add(likeBuilder.toString());
+                        paramIndex++;
                     }
                 }
                 builder.append(StringUtils.join(likes, " or"));
@@ -196,7 +200,7 @@ public class ItemManager implements AutoCloseable {
     
     /**
      * Run this after inserting, updating or deleting
-     * @param* @return number of items updated from query
+     * @param @return number of items updated from query
      */
     public int fixEnabledStatus() {
         int status = -1;
