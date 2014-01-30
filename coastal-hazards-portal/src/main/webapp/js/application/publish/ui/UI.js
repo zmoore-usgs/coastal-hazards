@@ -980,7 +980,12 @@ CCH.Objects.UI = function () {
             $bboxNorth.val(item.bbox[3]).removeAttr('disabled');
 
             // Fill out item type
-            $typeSb.val(item.type).removeAttr('disabled');
+            $typeSb.
+                val(item.type).
+                removeAttr('disabled').
+                on('change', me.createSortableChildren).
+                trigger('change');
+            
 
             // Ribbonable
             $ribbonableCb.
@@ -1005,10 +1010,17 @@ CCH.Objects.UI = function () {
         $childrenSortableList.empty();
         var type = $typeSb.val() || '',
             currentAggregationId = $itemIdInput.val() || '',
-            itemId;
+            itemId,
+            isOfType = function (item) {
+                if (!type) {
+                    return true;
+                } else {
+                    return item.type.toLowerCase().trim() === type.toLowerCase().trim();
+                }
+            };
         CCH.items.each(function (item) {
             itemId = item.id;
-            if (itemId !== 'uber' && itemId !== currentAggregationId) {
+            if (itemId !== 'uber' && itemId !== currentAggregationId && isOfType(item)) {
                 var $li = $('<li />').
                     addClass('ui-state-default form-publish-info-item-children-sortable-li').
                     attr('id', 'child-item-' + item.id),
