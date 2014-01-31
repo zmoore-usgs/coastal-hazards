@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
+import com.sun.jersey.api.NotFoundException;
 import gov.usgs.cida.coastalhazards.download.DownloadUtility;
 import gov.usgs.cida.coastalhazards.exception.DownloadStagingUnsuccessfulException;
 import gov.usgs.cida.coastalhazards.jpa.DownloadManager;
@@ -47,7 +48,7 @@ public class DownloadResource {
         try (ItemManager itemManager = new ItemManager()) {
             Item item = itemManager.load(id);
             if (item == null) {
-                response = Response.status(Response.Status.NOT_FOUND).build();
+                throw new NotFoundException();
             } else {
                 File zipFile = null;
                 DownloadManager manager = new DownloadManager();
@@ -79,8 +80,6 @@ public class DownloadResource {
                 String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
                 response = Response.ok(zipFile, "application/zip").header("Content-Disposition",  contentDisposition).build();
             }
-        } catch (DownloadStagingUnsuccessfulException ex) {
-            response = Response.status(Status.SERVICE_UNAVAILABLE).entity(ex).build();
         }
         return response;
     }
@@ -96,46 +95,40 @@ public class DownloadResource {
     @GET
     @Path("view/{id}")
     @Produces("application/zip")
-    public Response getSession(@PathParam("id") String id) throws IOException {
+    public Response getSession(@PathParam("id") String id) throws IOException, NoSuchAlgorithmException {
         Response response = null;
-        try {
-            String sessionJSON = sessionManager.load(id);
-            if (sessionJSON == null) {
-                response = Response.status(Response.Status.NOT_FOUND).build();
-            } else {
-                DownloadManager manager = new DownloadManager();
-                File zipFile = null;
-                try {
-                    if (manager.isPersisted(id)) {
-                        Download download = manager.load(id);
-                        zipFile = new File(new URI(download.getPersistanceURI()));
-                        if (zipFile == null || !zipFile.exists()) {
-                            throw new FileNotFoundException();
-                        }
-                    } else {
+        String sessionJSON = sessionManager.load(id);
+        if (sessionJSON == null) {
+            throw new NotFoundException();
+        } else {
+            DownloadManager manager = new DownloadManager();
+            File zipFile = null;
+            try {
+                if (manager.isPersisted(id)) {
+                    Download download = manager.load(id);
+                    zipFile = new File(new URI(download.getPersistanceURI()));
+                    if (zipFile == null || !zipFile.exists()) {
                         throw new FileNotFoundException();
                     }
-                } catch (FileNotFoundException| URISyntaxException ex) {
-                    Session session = Session.fromJSON(sessionJSON);
-                    File stagingDir = DownloadUtility.createDownloadStagingArea();
-                    boolean staged = DownloadUtility.stageSessionDownload(session, stagingDir);
-                    if (staged) {
-                        zipFile = DownloadUtility.zipStagingAreaForDownload(stagingDir);
-                        Download download = new Download();
-                        download.setSessionId(id);
-                        download.setPersistanceURI(zipFile.toURI().toString());
-                        manager.save(download);
-                    } else {
-                        throw new DownloadStagingUnsuccessfulException();
-                    }
+                } else {
+                    throw new FileNotFoundException();
                 }
-                String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
-                response = Response.ok(zipFile, "application/zip").header("Content-Disposition",  contentDisposition).build();
+            } catch (FileNotFoundException| URISyntaxException ex) {
+                Session session = Session.fromJSON(sessionJSON);
+                File stagingDir = DownloadUtility.createDownloadStagingArea();
+                boolean staged = DownloadUtility.stageSessionDownload(session, stagingDir);
+                if (staged) {
+                    zipFile = DownloadUtility.zipStagingAreaForDownload(stagingDir);
+                    Download download = new Download();
+                    download.setSessionId(id);
+                    download.setPersistanceURI(zipFile.toURI().toString());
+                    manager.save(download);
+                } else {
+                    throw new DownloadStagingUnsuccessfulException();
+                }
             }
-        } catch (NoSuchAlgorithmException | SessionIOException ex) {
-            response = Response.serverError().entity(ex).build();
-        }  catch (DownloadStagingUnsuccessfulException ex) {
-            response = Response.status(Status.SERVICE_UNAVAILABLE).entity(ex).build();
+            String contentDisposition = "attachment; filename=\"" + id + ".zip\"";
+            response = Response.ok(zipFile, "application/zip").header("Content-Disposition",  contentDisposition).build();
         }
         return response;
     }

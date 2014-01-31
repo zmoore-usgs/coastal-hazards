@@ -1,6 +1,9 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
+import com.sun.jersey.api.NotFoundException;
+import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.exception.CycleIntroductionException;
+import gov.usgs.cida.coastalhazards.exception.UnauthorizedException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
@@ -48,7 +51,7 @@ public class ItemResource {
         try (ItemManager itemManager = new ItemManager()) {
             Item item = itemManager.load(id);
             if (item == null) {
-                response = Response.status(Response.Status.NOT_FOUND).build();
+                throw new NotFoundException();
             } else {
                 String jsonResult = item.toJSON(subtree);
                 response = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).build();
@@ -106,7 +109,7 @@ public class ItemResource {
                 Item item = Item.fromJSON(content);
                 final String id = itemManager.persist(item);
                 if (null == id) {
-                    response = Response.status(Response.Status.BAD_REQUEST).build();
+                    throw new BadRequestException();
                 } else {
                     Map<String, Object> ok = new HashMap<String, Object>() {
                         private static final long serialVersionUID = 2398472L;
@@ -116,12 +119,9 @@ public class ItemResource {
                     };
                     response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
                 }
-            } catch (CycleIntroductionException ex) {
-                response = Response.status(Status.CONFLICT).entity("{\"status\":\"" + ex.getMessage() + "\"}")
-                        .type(MediaType.APPLICATION_JSON_TYPE).build();
             }
         } else {
-            response = Response.status(Status.UNAUTHORIZED).build();
+            throw new UnauthorizedException();
         }
 		return response;
 	}
@@ -146,14 +146,11 @@ public class ItemResource {
                 if (null != mergedId) {
                     response = Response.ok().build();
                 } else {
-                    response = Response.status(Response.Status.BAD_REQUEST).build();
+                    throw new BadRequestException();
                 }
-            } catch (CycleIntroductionException ex) {
-                response = Response.status(Status.CONFLICT).entity("{\"status\":\"" + ex.getMessage() + "\"}")
-                        .type(MediaType.APPLICATION_JSON_TYPE).build();
             }
         } else {
-            response = Response.status(Status.UNAUTHORIZED).build();
+            throw new UnauthorizedException();
         }
         return response;
     }
@@ -167,11 +164,11 @@ public class ItemResource {
                 if (itemManager.delete(id)) {
                     response = Response.ok().build();
                 } else {
-                    response = Response.serverError().build();
+                    throw new Error();
                 }
             }
         } else {
-            response = Response.status(Status.UNAUTHORIZED).build();
+            throw new UnauthorizedException();
         }
         return response;
     }
