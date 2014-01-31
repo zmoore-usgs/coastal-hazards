@@ -3,7 +3,6 @@ package gov.usgs.cida.coastalhazards.model.summary;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.validation.constraints.Size;
 
 /**
  *
@@ -16,12 +15,15 @@ public class Tiny implements Serializable {
     
     private String text;
     
-    @Column(name="tiny_text", length = 105)
+    @Column(name="tiny_text", length = MAX_LENGTH)
     public String getText() {
         return text;
     }
 
-    public void setText(@Size(max = MAX_LENGTH) String text) {
+    public void setText(String text) {
+        if (null == text || text.length() > MAX_LENGTH) {
+            throw new IllegalArgumentException("Max length is " + MAX_LENGTH);
+        }
         this.text = text;
     }
     
