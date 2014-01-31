@@ -770,7 +770,11 @@ CCH.Objects.UI = function () {
             keywords = summary.keywords.split('|');
             isItemEnabled = item.enabled;
 
-            me.loadItemImage(id);
+            if (id !== 'uber') {
+                me.loadItemImage(id);
+            } else {
+                $itemImage.remove();
+            }
 
             // Hidden field - item type
             $itemType.val(type);
@@ -778,10 +782,17 @@ CCH.Objects.UI = function () {
             // Item ID
             $itemIdInput.val(id);
             
+            // Fill out item type
+            $typeSb.
+                val(item.type).
+                removeAttr('disabled').
+                on('change', me.createSortableChildren).
+                trigger('change');
+            
             if (type === 'aggregation' || type === 'uber') {
                 // Populate children
                 me.createSortableChildren();
-
+                
                 // Show Children
                 $showChildrenCb.
                     prop('checked', item.showChildren).
@@ -983,13 +994,6 @@ CCH.Objects.UI = function () {
             $bboxEast.val(item.bbox[2]).removeAttr('disabled');
             $bboxNorth.val(item.bbox[3]).removeAttr('disabled');
 
-            // Fill out item type
-            $typeSb.
-                val(item.type).
-                removeAttr('disabled').
-                on('change', me.createSortableChildren).
-                trigger('change');
-            
 
             // Ribbonable
             $ribbonableCb.
@@ -1056,14 +1060,54 @@ CCH.Objects.UI = function () {
                     );
 
                 $li.append($span);
-
+                
                 $childrenSortableList.append($li);
-                $activeButton.on('click', function () {
-                    setTimeout(function () {
-                        me.buildKeywordsFromChildren();
-                        me.buildPublicationsFromChildren();
-                        me.updateBoundingBox();
-                    }, 100);
+                $activeButton.on('click', function (evt) {
+                    var currentAggregationId = $itemIdInput.val() || '',
+                    $button = evt.target.tagName === 'I' ? $(evt.target).parent() : $(evt.target),
+                    $container = $button.parent().parent().parent(),
+                    itemId = $container.attr('id').substring(11),
+                    $overrideButton = $('<button />').attr('type', 'button').addClass('btn btn-warning'),
+                    processChildren = function () {
+                        setTimeout(function () {
+                            me.buildKeywordsFromChildren();
+                            me.buildPublicationsFromChildren();
+                            me.updateBoundingBox();
+                        }, 100);
+                    };
+
+                    if (currentAggregationId !== '' && !$button.hasClass('active')) {
+                        $.ajax({
+                            url: CCH.CONFIG.contextPath + '/data/item/cycle/' + currentAggregationId + '/' + itemId,
+                            success : function (response) {
+                                if (response.cycle === true) {
+                                    $button.removeClass('active');
+                                    $overrideButton.on('click', function () {
+                                        $button.addClass('active');
+                                        processChildren();
+                                    }),
+                                    $alertModal.modal('hide');
+                                    $alertModalTitle.html('Cyclic Relationship Found');
+                                    $alertModalBody.html('There was a cyclic relationship found ' +
+                                        'between parent ' + currentAggregationId +
+                                        'and child ' + itemId + '. You can override ' + 
+                                        'this warning and add this child to the ' + 
+                                        'aggregation but you should only do so if you ' +
+                                        'really know what you are doing.');
+                                    $alertModal.modal('show');
+                                } else {
+                                    processChildren();
+                                }
+                            },
+                            error : function () {
+                                CCH.LOG.warn('An error occurred while trying to ' + 
+                                    'get parent/child cycle info. This could cause ' +
+                                    'huge problems if this child is added and a ' +
+                                    'cycle occurs.');
+                                processChildren();
+                            }
+                        });
+                    }
                 });
             }
             
@@ -1301,37 +1345,36 @@ CCH.Objects.UI = function () {
                     $itemImage.attr('src', imageEndpoint);
                 },
                 error : function (err) {
-                    CCH.ows.generateThumbnail({
-                        id : id,
-                        callbacks : {
-                            success : [
-                                function (base64Image) {
-                                    $.ajax({
-                                        url: imageEndpoint,
-                                        method: 'PUT',
-                                        data : base64Image,
-                                        contentType: 'text/plain',
-                                        success : function () {
-                                            me.loadItemImage(id);
-                                        },
-                                        error : function (err) {
-                                            $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
-                                        }
-                                    })
-                                }
-                            ],
-                            error : [
-                                function () {
-                                    $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
-                                }
-                            ]
-                        }
-                    });
-//                    if (err.status === 404) {
-//                        me.generateImage(id);
-//                    } else {
-//                        $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
-//                    }
+                    if (err.status === 404) {
+                        CCH.ows.generateThumbnail({
+                            id : id,
+                            callbacks : {
+                                success : [
+                                    function (base64Image) {
+                                        $.ajax({
+                                            url: imageEndpoint,
+                                            method: 'PUT',
+                                            data : base64Image,
+                                            contentType: 'text/plain',
+                                            success : function () {
+                                                me.loadItemImage(id);
+                                            },
+                                            error : function (err) {
+                                                $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+                                            }
+                                        })
+                                    }
+                                ],
+                                error : [
+                                    function () {
+                                        $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+                                    }
+                                ]
+                            }
+                        });
+                    } else {
+                        $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+                    }
                 }
             });
         }
@@ -1420,6 +1463,7 @@ CCH.Objects.UI = function () {
                     $alertModalFooter.append($overwriteButton);
                     $alertModal.modal('show');
                 } else {
+                    $alertModal.modal('hide');
                     $alertModalTitle.html('Layer Could Not Be Imported');
                     $alertModalBody.html('Layer could not be created. Error: ' + errorText);
                     $alertModal.modal('show');
@@ -1615,6 +1659,32 @@ CCH.Objects.UI = function () {
         }
     });
 
+//
+//CCH.items.each(function (item) {
+//                var itemId = item.id;
+//                if ($itemType.val() === 'aggregation' && item.id !== '') {
+//                    $.ajax({
+//                        url: CCH.CONFIG.contextPath + '/data/item/cycle/' + currentAggregationId + '/' + itemId,
+//                        success : function (response) {
+//                            if (response.cycle === true) {
+//                                CCH.LOG.warn('Found cyclic relationship between parent ' +
+//                                    currentAggregationId + ' and child ' + itemId +
+//                                    '. Removing child from list.');
+//                                $li.remove();
+//                            }
+//                        },
+//                        error : function () {
+//                            CCH.LOG.warn('An error occurred while trying to ' + 
+//                                'get parent/child cycle info. This could cause ' +
+//                                'huge problems if this child is added and a ' +
+//                                'cycle occurs.');
+//                        }
+//                    }); 
+//                } else {
+//                    save()
+//                }
+//            });
+
     $buttonSave.on('click', function () {
         var errors = me.validateForm.call(this),
             $ul = $('<ul />'),
@@ -1622,28 +1692,28 @@ CCH.Objects.UI = function () {
             item;
         if (errors.length === 0) {
             item = me.buildItemFromForm();
-            me.saveItem({
-                item : item,
-                callbacks : {
-                    success : [
-                        function (obj) {
-                            var id = obj.id;
-                            if (!id) {
-                                id = $itemIdInput.val();
+                me.saveItem({
+                    item : item,
+                    callbacks : {
+                        success : [
+                            function (obj) {
+                                var id = obj.id;
+                                if (!id) {
+                                    id = $itemIdInput.val();
+                                }
+                                window.location = window.location.origin + CCH.CONFIG.contextPath + '/publish/item/' + id;
                             }
-                            window.location = window.location.origin + CCH.CONFIG.contextPath + '/publish/item/' + id;
-                        }
-                    ],
-                    error  : [
-                        function (err) {
-                            $alertModal.modal('hide');
-                            $alertModalTitle.html('Unable To Save Item');
-                            $alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
-                            $alertModal.modal('show');
-                        }
-                    ]
-                }
-            });
+                        ],
+                        error  : [
+                            function (err) {
+                                $alertModal.modal('hide');
+                                $alertModalTitle.html('Unable To Save Item');
+                                $alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
+                                $alertModal.modal('show');
+                            }
+                        ]
+                    }
+                });
         } else {
             errors.each(function (error) {
                 $li = $('<li />').html(error);
