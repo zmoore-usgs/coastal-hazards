@@ -1,9 +1,9 @@
 package gov.usgs.cida.coastalhazards.model.summary;
 
-import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -12,19 +12,16 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Tiny implements Serializable {
 
+    public static final int MAX_LENGTH = 105;
+    
     private String text;
-    private static final String MAX_LENGTH_KEY = "twitter.maxlength";
-    public static final int MAX_LENGTH = Integer.parseInt(JNDISingleton.getInstance().getProperty(MAX_LENGTH_KEY, "140"));;
-
-    @Column(name="tiny_text", length = 512)
+    
+    @Column(name="tiny_text", length = 105)
     public String getText() {
         return text;
     }
 
-    public void setText(String text) {
-        if (null == text || text.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("Max length exceeded");
-        }
+    public void setText(@Size(max = MAX_LENGTH) String text) {
         this.text = text;
     }
     

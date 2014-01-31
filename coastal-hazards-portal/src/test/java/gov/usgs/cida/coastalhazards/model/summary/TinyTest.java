@@ -22,7 +22,7 @@ public class TinyTest {
         assertThat("test", is(equalTo(tiny.getText())));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = AssertionError.class)
     public void testSetTextTooBig() {
         Tiny tiny = new Tiny();
         // String is 110 chars long
