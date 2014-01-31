@@ -59,19 +59,6 @@ public class ItemResource {
         }
         return response;
     }
-    
-    /**
-	 * Retrieves the "uber" item which acts as the root of the tree
-	 *
-     * @param subtree whether to return the entire subtree (may be very large)
-	 * @return JSON representation of items
-	 */
-	@GET
-	@Path("uber")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getUberItem(@DefaultValue("false") @QueryParam("subtree") boolean subtree) {
-        return getItem(Item.UBER_ID, subtree);
-	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
