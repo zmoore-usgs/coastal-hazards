@@ -70,7 +70,8 @@ public class FeatureCollectionExport {
         //this.crs = crs;
     }
     
-    public void writeToShapefile() throws MalformedURLException, IOException {
+    public boolean writeToShapefile() throws MalformedURLException, IOException {
+        boolean success = false;
         //SimpleFeatureIterator features = simpleFeatureCollection.features();
         SimpleFeatureType type = buildFeatureType();
         FileDataStoreFactorySpi factory = FileDataStoreFinder.getDataStoreFactory("shp");
@@ -98,11 +99,14 @@ public class FeatureCollectionExport {
                 SimpleFeature target = fb.buildFeature(null);
                 featureStore.addFeatures(DataUtilities.collection(target));
             }
+            // successful if it made it this far
+            success = true;
         } finally {
             t.commit();
             t.close();
             IOUtils.closeQuietly(fi);
         }
+        return success;
     }
     
     private SimpleFeatureType buildFeatureType() {
