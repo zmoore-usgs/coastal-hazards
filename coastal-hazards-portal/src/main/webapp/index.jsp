@@ -22,7 +22,7 @@
     <head>
         <jsp:include page="/WEB-INF/jsp/components/common/meta-tags.jsp"></jsp:include>
         <title>USGS Coastal Change Hazards Portal</title>
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery.ui<%= development ? ".all" : ".min"%>.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery<%= development ? "." : "-"%>ui<%= development ? ".all" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
@@ -54,6 +54,7 @@
             <jsp:param name="application-overlay-background-image" value="images/splash/splash.svg" />
             <jsp:param name="base-url" value="<%=baseUrl%>" />
             <jsp:param name="version" value="<%=version%>" />
+            <jsp:param name="debug-qualifier" value="<%=development%>" />
         </jsp:include>
 
         <div id="application-container" class="container">

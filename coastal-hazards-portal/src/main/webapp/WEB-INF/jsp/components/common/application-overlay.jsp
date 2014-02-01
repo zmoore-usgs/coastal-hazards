@@ -1,4 +1,7 @@
-<link type="text/css" rel="stylesheet" href="<%=request.getParameter("base-url")%>/css/application-overlay/application-overlay.css" />
+<%
+    Boolean development = Boolean.parseBoolean(request.getParameter("debug-qualifier"));
+%>
+<link type="text/css" rel="stylesheet" href="<%=request.getParameter("base-url")%>/css/application-overlay/application-overlay<%= development ? "" : "-min"%>.css" />
 <div id="application-overlay">
         <div>
             <img src="<%=request.getParameter("base-url")%>/images/splash/usgs.svg" alt="USGS Logo"/>

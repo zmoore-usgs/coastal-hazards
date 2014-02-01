@@ -209,7 +209,9 @@
                 </executions>
                 <configuration>
                     <excludes>
-                        <exclude>${basedir}/src/main/webapp/js/third-party</exclude>
+                        <exclude>**/js/third-party/</exclude>
+                        <exclude>**/custom-min.css</exclude>
+                        <exclude>**/custom.css</exclude>
                     </excludes>
                 </configuration>  
             </plugin>
