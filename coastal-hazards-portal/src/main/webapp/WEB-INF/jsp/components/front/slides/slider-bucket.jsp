@@ -43,10 +43,11 @@
             <i class="fa fa-times"></i>
         </button>
         <div>
-            <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
+            <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-up" type="button">
                 <i class="fa fa-caret-up"></i>
             </button>
-            <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
+            <div>Order</div>
+            <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-down" type="button">
                 <i class="fa fa-caret-down"></i>
             </button>
         </div>

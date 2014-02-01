@@ -353,8 +353,9 @@ CCH.Objects.BucketSlide = function (args) {
             });
 
             me.getContainer().find('>div:not(:first-child())').each(function (idx, card) {
-                if ($(card).data('id') === id) {
-                    $(card).remove();
+                var $card = $(card);
+                if ($card.data('id') === id) {
+                    $card.remove();
                 }
             });
 
@@ -403,7 +404,7 @@ CCH.Objects.BucketSlide = function (args) {
             id = $(card).data('id');
             index = me.getCardIndex(id);
             $cardUpArrow = $(card).find('> div:nth-child(4) > button:nth-child(1)');
-            $cardDownArrow = $(card).find('> div:nth-child(4)> button:nth-child(2)');
+            $cardDownArrow = $(card).find('> div:nth-child(4)> button:nth-child(3)');
 
             if (cardsLength === 1) {
                 // If I am the only card
@@ -501,10 +502,9 @@ CCH.Objects.BucketSlide = function (args) {
             $infoButton = $bottomControlRow.find('> button:nth-child(4)'),
             $removeButton = $card.find('>button'),
             $upButton = $card.find('> div:nth-child(4) > button:nth-child(1)'),
-            $downButton = $card.find('> div:nth-child(4)> button:nth-child(2)'),
+            $downButton = $card.find('> div:nth-child(4)> button:nth-child(3)'),
             layerArray,
             defaultPopoverObject = {
-                'data-container' : 'body',
                 'data-toggle' : 'popover',
                 'data-trigger' : 'hover',
                 'data-placement' : 'auto',
