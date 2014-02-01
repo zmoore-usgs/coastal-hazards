@@ -181,7 +181,7 @@ CCH.Objects.BucketSlide = function (args) {
             $myCard,
             evtType = evt.namespace === 'hid.layer.map' ? 'remove' : 'add',
             findImage = function ($cardItem) {
-                return $cardItem.find('> div:nth-child(5) > div:first-child > img');
+                return $cardItem.find('> div:nth-child(5) > div:first-child > i');
             };
 
         if ($card.length) {
@@ -189,13 +189,13 @@ CCH.Objects.BucketSlide = function (args) {
             if (evtType === 'remove') {
                 setTimeout(function () {
                     [$card, $myCard].each(function (card) {
-                        findImage(card).attr('src', 'images/bucket/layer_off.svg');
+                        findImage(card).removeClass('fa-eye').addClass('fa-eye-slash');
                     });
                 }, 50);
             } else if (evtType === 'add') {
                 setTimeout(function () {
                     [$card, $myCard].each(function (card) {
-                        findImage(card).attr('src', 'images/bucket/layer_on.svg');
+                        findImage(card).removeClass('fa-eye-slash').addClass('fa-eye');
                     });
                 }, 50);
             }
@@ -503,7 +503,7 @@ CCH.Objects.BucketSlide = function (args) {
 
         $card.attr('id', 'application-slide-bucket-container-card-' + id);
         $imageContainer.
-                attr('src', 'images/thumbnail/thumb_' + id + '.png').
+                attr('src', CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id).
                 on('click', function () {
                     $(window).trigger('cch.slide.bucket.item.thumbnail.click')
                     CCH.map.zoomToBoundingBox({
@@ -528,9 +528,9 @@ CCH.Objects.BucketSlide = function (args) {
         }
 
         if (visibility === true) {
-            $viewButton.find('> img').attr('src', 'images/bucket/layer_on.svg');
+            $viewButton.find('> i').removeClass('fa-eye-slash').addClass('fa-eye');
         } else {
-            $viewButton.find('> img').attr('src', 'images/bucket/layer_off.svg');
+            $viewButton.find('> i').removeClass('fa-eye').addClass('fa-eye-slash');
         }
 
         $removeButton.on('click', function ($evt) {

@@ -52,13 +52,13 @@
         </div>
         <div>
             <div class="application-slide-bucket-container-card-button-layer application-slide-bucket-container-card-template-button active">
-                <img alt="Layer Off Icon" src="images/bucket/layer_off.svg"/>
+                <i class="fa fa-eye-slash"></i>
             </div>
             <button class="application-slide-bucket-container-card-button-shareapplication-slide-bucket-container-card-template-button btn btn-link " type="button">
                 <img alt="Share Icon" src="images/bucket/share.svg"/>
             </button>
             <button class="application-slide-bucket-container-card-button-download application-slide-bucket-container-card-template-button btn btn-link " type="button">
-                <img alt="Download Icon" src="images/bucket/download.svg"/>
+                <i class="fa fa-cloud-download"></i>
             </button>
             <button class="application-slide-bucket-container-card-button-info application-slide-bucket-container-card-template-button btn btn-link " type="button">
                 <i class="fa fa-info"></i>

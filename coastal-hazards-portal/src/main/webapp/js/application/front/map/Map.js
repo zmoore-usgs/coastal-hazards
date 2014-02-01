@@ -127,6 +127,22 @@ CCH.Objects.Map = function (args) {
                 'zoomend': me.zoomendCallback,
                 'moveend': me.moveendCallback,
                 'removelayer': me.removeLayerCallback,
+                'preaddlayer': function (evt) {
+                    var layer = evt.layer;
+                    
+                    layer.events.register('loadstart', layer, function (evt) {
+                        document.body.style.cursor = 'wait';
+                        $('div.olMap').css('cursor', 'wait');
+                    });
+                    layer.events.register('loadend', layer, function (evt) {
+                        if (CCH.map.getMap().layers.findIndex(function(l) {
+                            return l.numLoadingTiles !== 0;
+                        }) === -1) {
+                            document.body.style.cursor = 'default';
+                            $('div.olMap').css('cursor', 'default');
+                        }
+                    })
+                },
                 'addlayer': me.addLayerCallback,
                 'changelayer': me.changelayerCallback
             });

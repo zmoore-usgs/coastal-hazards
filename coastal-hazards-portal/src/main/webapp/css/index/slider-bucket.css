@@ -81,7 +81,7 @@
             float: right;
         }
             #application-slide-bucket-container > div > div:nth-child(2) > div.well > button > i {
-                color: #1C3664;
+                color: #003366;
             }
             
         /* Card Navigation Column Div */
@@ -97,8 +97,8 @@
                 padding: 0px;
             }
             #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) i {
-                font-size: 20px;
-                color: #1C3664;
+                font-size: 30px;
+                color: #003366;
             }
             
         /* Card Control Row Div */
@@ -116,8 +116,8 @@
                 height: 20px;
             }
             #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(5) > button > i {
-                font-size: 20px;
-                color: #1C3664;
+                font-size: 30px;
+                color: #003366;
             }
             #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(5) > div {
                 width: 22%;
@@ -125,6 +125,10 @@
                 padding: 6px 12px;
                 margin-bottom: 0;
                 vertical-align: middle;
+            }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(5) > div > i {
+                font-size: 30px;
+                color: #003366;
             }
             #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(5) > div > img{
                 height: 20px;
