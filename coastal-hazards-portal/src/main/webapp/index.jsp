@@ -22,11 +22,11 @@
     <head>
         <jsp:include page="/WEB-INF/jsp/components/common/meta-tags.jsp"></jsp:include>
         <title>USGS Coastal Change Hazards Portal</title>
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery.ui<%= development ? ".all" : ".min"%>.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery<%= development ? "." : "-"%>ui<%= development ? ".all" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common.css" />
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/index/custom.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/index/custom<%= development ? "" : "-min"%>.css" />
         <script>
             (function(i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
@@ -54,6 +54,7 @@
             <jsp:param name="application-overlay-background-image" value="images/splash/splash.svg" />
             <jsp:param name="base-url" value="<%=baseUrl%>" />
             <jsp:param name="version" value="<%=version%>" />
+            <jsp:param name="debug-qualifier" value="<%=development%>" />
         </jsp:include>
 
         <div id="application-container" class="container">
@@ -98,25 +99,25 @@
             <jsp:param name="relPath" value="<%=baseUrl%>" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        <script type="text/javascript" src="js/third-party/openlayers/FixedTileManager.js"></script>
-        <script type="text/javascript" src="js/application/common/items/Item.js"></script>
-        <script type="text/javascript" src="js/application/front/slide/ItemsSlide.js"></script>
-        <script type="text/javascript" src="js/application/front/slide/BucketSlide.js"></script>
-        <script type="text/javascript" src="js/application/front/slide/SearchSlide.js"></script>
-        <script type="text/javascript" src="js/application/common/util/Util.js"></script>
-        <script type="text/javascript" src="js/application/front/accordion/Accordion.js"></script>
-        <script type="text/javascript" src="js/application/common/search/Search.js"></script>
-        <script type="text/javascript" src="js/application/front/session/Session.js"></script>
-        <script type="text/javascript" src="js/application/front/map/LayerIdentifyControl.js"></script>
-        <script type="text/javascript" src="js/application/front/map/Map.js"></script>
-        <script type="text/javascript" src="js/application/front/card/Card.js"></script>
-        <script type="text/javascript" src="js/application/common/items/Items.js"></script>
-        <script type="text/javascript" src="js/application/front/popularity/Popularity.js"></script>
-        <script type="text/javascript" src="js/application/common/ows/OWS.js"></script>
-        <script type="text/javascript" src="js/application/front/bucket/Bucket.js"></script>
-        <script type="text/javascript" src="js/application/front/search/combined-searchbar.js"></script>
-        <script type="text/javascript" src="js/application/front/ui/UI.js"></script>
-        <script type="text/javascript" src="js/application/front/OnReady.js"></script>
+        <script type="text/javascript" src="js/application/common/items/Item<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/slide/ItemsSlide<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/slide/BucketSlide<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/slide/SearchSlide<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/common/util/Util<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/accordion/Accordion<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/common/search/Search<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/session/Session<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/map/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/map/LayerIdentifyControl<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/map/Map<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/card/Card<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/common/items/Items<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/popularity/Popularity<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/common/ows/OWS<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/bucket/Bucket<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/search/combined-searchbar<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/ui/UI<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/OnReady<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
         <jsp:include page="WEB-INF/jsp/components/front/image-preload.jsp">

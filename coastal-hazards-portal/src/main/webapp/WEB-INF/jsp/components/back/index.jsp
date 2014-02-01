@@ -68,21 +68,21 @@
 				window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
 			}
         </script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search<%= development ? "" : "-min"%>.js"></script>
         <jsp:include page="<%= log4js %>">
             <jsp:param name="relPath" value="../../" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        <script type="text/javascript" src="js/third-party/openlayers/FixedTileManager.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/ows/OWS.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/back/map/map.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/back/ui/UI.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Items.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/util/Util.js"></script>
-        <script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady.js'></script>
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common.css" />
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/back/back.css" />
+        <script type="text/javascript" src="js/third-party/openlayers/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/ows/OWS<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/back/map/map<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/back/ui/UI<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Items<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/util/Util<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= development ? "" : "-min"%>.js'></script>
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />
 		<script>
 			(function(i, s, o, g, r, a, m) {
 				i['GoogleAnalyticsObject'] = r;

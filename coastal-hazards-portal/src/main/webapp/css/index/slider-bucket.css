@@ -2,6 +2,10 @@
     position: absolute;
     z-index: 1008;
 }
+#application-slide-bucket-container .popover {
+    /*max-width: none;*/
+    z-index: 9999;
+}
     #application-slide-bucket-container > div {
         background-color: #F5F5F5;
         border-bottom: 2px solid #E3E3E3;
@@ -92,11 +96,21 @@
             text-align: center;
             float:right;
         }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) > div {
+                color: #003366;
+                font-weight: bold;
+                font-size: 12px;
+            }
             #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) button {
                 width: 100%;
                 padding: 0px;
             }
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) button.application-slide-bucket-container-card-template-button-up {
+                margin-bottom: -7px;
+                vertical-align: bottom;
+            }
             #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(4) i {
+                line-height: 0px !important;
                 font-size: 30px;
                 color: #003366;
             }
@@ -119,7 +133,7 @@
                 font-size: 30px;
                 color: #003366;
             }
-            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(5) > div {
+            #application-slide-bucket-container > div > div:nth-child(2) > div.well > div:nth-child(5) > div:not(.popover) {
                 width: 22%;
                 display: inline-block;
                 padding: 6px 12px;

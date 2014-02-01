@@ -381,6 +381,8 @@ CCH.Objects.SearchSlide = function (args) {
                     $slideContainer.append(cards);
 
                     $slideContainer.find('>div:not(.search-result-item-page-1)').addClass('hidden');
+                    $slideContainer.find('*[data-toggle="popover"]').popover();
+                    
 
                     me.createPaging({
                         container : $contentContainer,
@@ -592,13 +594,20 @@ CCH.Objects.SearchSlide = function (args) {
                     $(window).trigger('cch.slide.search.button.bucket.add', {
                         item : item
                     });
+                },
+                defaultPopoverObject = {
+                    'data-toggle' : 'popover',
+                    'data-trigger' : 'hover',
+                    'data-placement' : 'auto',
+                    'data-delay' : '200'
                 };
 
             $newItem.attr('id', 'application-slide-search-product-card-' + id);
-            $imageContainer.attr({
+            $imageContainer.attr($.extend({}, defaultPopoverObject, {
                 'id' : imageContainerClass + '-' + id,
-                'src' : 'images/thumbnail/thumb_' + id + '.png'
-            }).on('click', function () {
+                'src' : 'images/thumbnail/thumb_' + id + '.png',
+                'data-content' : 'Explore this dataset'
+            })).on('click', function () {
                 $exploreControl.trigger('click');
             });
             $titleContainer.attr('id', titleContainerClass + '-' + id);
@@ -625,12 +634,16 @@ CCH.Objects.SearchSlide = function (args) {
                     }
                 }
             });
-            $exploreControl.on('click', function () {
-                $(window).trigger('cch.slide.search.button.click.explore', {
-                    'id' : id
-                });
-                me.close();
-            });
+            $exploreControl.
+                on('click', function () {
+                    $(window).trigger('cch.slide.search.button.click.explore', {
+                        'id' : id
+                    });
+                    me.close();
+                }).
+                attr($.extend({}, defaultPopoverObject, {
+                    'data-content' : 'Explore this dataset'
+                }));
             return $newItem;
         }
     };

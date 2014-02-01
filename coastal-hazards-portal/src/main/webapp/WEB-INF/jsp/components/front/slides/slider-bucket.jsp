@@ -43,10 +43,11 @@
             <i class="fa fa-times"></i>
         </button>
         <div>
-            <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
+            <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-up" type="button">
                 <i class="fa fa-caret-up"></i>
             </button>
-            <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
+            <div>Order</div>
+            <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-down" type="button">
                 <i class="fa fa-caret-down"></i>
             </button>
         </div>
@@ -54,14 +55,14 @@
             <div class="application-slide-bucket-container-card-button-layer application-slide-bucket-container-card-template-button active">
                 <i class="fa fa-eye-slash"></i>
             </div>
-            <button class="application-slide-bucket-container-card-button-shareapplication-slide-bucket-container-card-template-button btn btn-link " type="button">
-                <img alt="Share Icon" src="images/bucket/share.svg"/>
-            </button>
             <button class="application-slide-bucket-container-card-button-download application-slide-bucket-container-card-template-button btn btn-link " type="button">
                 <i class="fa fa-cloud-download"></i>
             </button>
             <button class="application-slide-bucket-container-card-button-info application-slide-bucket-container-card-template-button btn btn-link " type="button">
                 <i class="fa fa-info"></i>
+            </button>
+            <button class="application-slide-bucket-container-card-button-shareapplication-slide-bucket-container-card-template-button btn btn-link " type="button">
+                <img alt="Share Icon" src="images/bucket/share.svg"/>
             </button>
         </div>
     </div>

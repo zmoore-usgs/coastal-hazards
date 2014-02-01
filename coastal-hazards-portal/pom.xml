@@ -196,6 +196,25 @@
                     <goal>process-resources</goal>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>yuicompressor-maven-plugin</artifactId>
+                <version>1.3.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compress</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>**/js/third-party/</exclude>
+                        <exclude>**/custom-min.css</exclude>
+                        <exclude>**/custom.css</exclude>
+                    </excludes>
+                </configuration>  
+            </plugin>
         </plugins>
         <resources>
             <resource>

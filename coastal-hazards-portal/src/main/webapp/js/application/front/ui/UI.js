@@ -515,6 +515,9 @@ CCH.Objects.UI = function (args) {
         });
     }
     $(window).trigger('cch.ui.initialized');
+    
+    $('#app-navbar-bucket-button-container').popover();
+    $('#app-navbar-help-container').popover();
 
     CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 
