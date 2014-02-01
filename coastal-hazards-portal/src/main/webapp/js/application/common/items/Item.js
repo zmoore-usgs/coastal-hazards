@@ -155,7 +155,7 @@ CCH.Objects.Item = function (args) {
                     type: 'cch'// CCH specific setting
                 }
             );
-
+        
         return layer;
     };
 
