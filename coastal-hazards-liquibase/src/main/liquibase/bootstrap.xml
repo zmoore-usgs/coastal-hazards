@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="jiwalker" id="bootstrap_database" context="bootstrap">
+        <loadData tableName="bbox" file="bootstrap/bbox.csv" encoding="UTF-8" quotchar="&quot;" separator=",">
+            <column header="id" name="id" type="NUMERIC"/>
+            <column header="minx" name="minx" type="NUMERIC"/>
+            <column header="miny" name="miny" type="NUMERIC"/>
+            <column header="maxx" name="maxx" type="NUMERIC"/>
+            <column header="maxy" name="maxy" type="NUMERIC"/>
+        </loadData>
+        <loadData encoding="UTF-8" file="bootstrap/full_summary.csv" quotchar="&quot;" separator="," tableName="full_summary">
+            <column header="id" name="id" type="NUMERIC"/>
+            <column header="text" name="text" type="STRING"/>
+            <column header="title" name="title" type="STRING"/>
+        </loadData>
+        <loadData encoding="UTF-8" file="bootstrap/summary.csv" quotchar="&quot;" separator="," tableName="summary">
+            <column header="id" name="id" type="NUMERIC"/>
+            <column header="medium_text" name="medium_text" type="STRING"/>
+            <column header="medium_title" name="medium_title" type="STRING"/>
+            <column header="tiny_text" name="tiny_text" type="STRING"/>
+            <column header="full_id" name="full_id" type="NUMERIC"/>
+            <column header="keywords" name="keywords" type="STRING"/>
+        </loadData>
+        <loadData encoding="UTF-8" file="bootstrap/item.csv" quotchar="&quot;" separator="," tableName="item">
+            <column header="id" name="id" type="STRING"/>
+            <column header="bbox_id" name="bbox_id" type="STRING"/>
+            <column header="item_type" name="item_type" type="STRING"/>
+            <column header="summary_id" name="summary_id" type="STRING"/>
+            <column header="attr" name="attr" type="STRING"/>
+            <column header="name" name="name" type="STRING"/>
+            <column header="type" name="type" type="STRING"/>
+            <column header="ribbonable" name="ribbonable" type="BOOLEAN" />
+            <column header="show_children" name="show_children" type="BOOLEAN" />
+            <column header="enabled" name="enabled" type="BOOLEAN" />
+        </loadData>
+        <rollback>
+            <comment>There is no rollback, remove the data</comment>
+        </rollback>
+    </changeSet>
+    <changeSet author="jiwalker" id="start_sequence_after_bootstrap" context="bootstrap">
+        <dropSequence sequenceName="hibernate_sequence" />
+        <createSequence sequenceName="hibernate_sequence" startValue="2" />
+        <rollback>
+            <comment>Again, no rollback, running this on non-empty database will have real issues</comment>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
