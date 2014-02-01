@@ -206,7 +206,12 @@
                             <goal>compress</goal>
                         </goals>
                     </execution>
-                </executions>  
+                </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>${basedir}/src/main/webapp/js/third-party</exclude>
+                    </excludes>
+                </configuration>  
             </plugin>
         </plugins>
         <resources>

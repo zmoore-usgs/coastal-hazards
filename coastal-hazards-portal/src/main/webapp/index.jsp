@@ -98,7 +98,6 @@
             <jsp:param name="relPath" value="<%=baseUrl%>" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        <script type="text/javascript" src="js/third-party/openlayers/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/common/items/Item<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/slide/ItemsSlide<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/slide/BucketSlide<%= development ? "" : "-min"%>.js"></script>
@@ -107,6 +106,7 @@
         <script type="text/javascript" src="js/application/front/accordion/Accordion<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/common/search/Search<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/session/Session<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/map/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/map/LayerIdentifyControl<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/map/Map<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/card/Card<%= development ? "" : "-min"%>.js"></script>
