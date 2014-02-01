@@ -14,7 +14,7 @@
             System.out.println("Could not find JNDI - Application will probably not function correctly");
         }
     }
-    boolean development = true;//Boolean.parseBoolean(props.getProperty("development"));
+    boolean development = Boolean.parseBoolean(props.getProperty("development"));
     String version = props.getProperty("application.version");
 %>
 <% String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");%>
@@ -118,7 +118,7 @@
         <script type="text/javascript" src="js/application/front/ui/UI<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/OnReady<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
-        <script type="text/javascript" src="//platform.twitter.com/widgets<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
         <jsp:include page="WEB-INF/jsp/components/front/image-preload.jsp">
             <jsp:param name="relPath" value="<%=baseUrl%>" />
         </jsp:include>
