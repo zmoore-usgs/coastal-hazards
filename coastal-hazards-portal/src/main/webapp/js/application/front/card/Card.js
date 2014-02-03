@@ -49,6 +49,12 @@ CCH.Objects.Card = function (args) {
     me.child = args.child;
     me.layer = me.item.getWmsLayer();
     me.isOpen = false;
+    me.defaultPopoverObject = {
+        'data-toggle' : 'popover',
+        'data-trigger' : 'hover',
+        'data-placement' : 'auto',
+        'data-delay' : CCH.CONFIG.ui['tooltip-delay']
+    };
 
     if (me.wmsService) {
         me.wmsEndpoint = me.wmsService.endpoint;
@@ -78,7 +84,10 @@ CCH.Objects.Card = function (args) {
         });
         
         setTimeout(function () {
-            me.container.find('[data-toggle="popover"]').popover();
+            me.
+                container.
+                find('[data-toggle="popover"]').
+                popover();
             $(window).trigger('card-display-toggle', {
                 'display' : true
             });
@@ -195,7 +204,6 @@ CCH.Objects.Card = function (args) {
                     item : me.item,
                     visibility : true
                 });
-                $button.popover('hide');
             },
             // This is not currently being used - keep this functionality around
             // for when it's needed
@@ -207,10 +215,8 @@ CCH.Objects.Card = function (args) {
                 });
             };
         
-        $button.off();
-        if (nextAction === 'add') {
-            $button.on('click', add);
-        }
+        $button.off('click', add);
+        $button.on('click', add);
     };
 
     me.bindAggMenuToResize = function (args) {
@@ -394,13 +400,7 @@ CCH.Objects.Card = function (args) {
                         })),
                 zoomToBadge = $('<span />').
                     addClass('badge zoom-to-badge').
-                    html('Zoom To'),
-                defaultPopoverObject = {
-                    'data-toggle' : 'popover',
-                    'data-trigger' : 'hover',
-                    'data-placement' : 'auto',
-                    'data-delay' : CCH.CONFIG.ui['tooltip-delay']
-                };
+                    html('Zoom To');
 
             // My container starts out open so I immediately add that class to it
             container.addClass('open');
@@ -424,11 +424,11 @@ CCH.Objects.Card = function (args) {
                 $propertyAggButton.remove();
             }
             
-            $propertyAggButton.attr($.extend({}, defaultPopoverObject, {
+            $propertyAggButton.attr($.extend({}, me.defaultPopoverObject, {
                 'data-content' : 'Explore Contents Of This Dataset'
             }));
             
-            $bucketButton.attr($.extend({}, defaultPopoverObject, {
+            $bucketButton.attr($.extend({}, me.defaultPopoverObject, {
                 'data-content' : 'Add This Dataset To Your Bucket'
             }));
             
@@ -506,10 +506,11 @@ CCH.Objects.Card = function (args) {
         },
         'bucket-added': function (evt, args) {
             if (args.id === me.id) {
-                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button').last(),
+                var $button = me.container.find('button.item-control-button-bucket'),
                     $img = $button.find('> img');
 
                 $img.attr('src', 'images/cards/add-bucket-disabled.svg');
+                
                 me.bindBucketControl({
                     button : $button,
                     nextAction : 'remove'
@@ -518,10 +519,11 @@ CCH.Objects.Card = function (args) {
         },
         'cch.bucket.card.removed': function (evt, args) {
             if (args.id === me.id) {
-                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button').last(),
+                var $button = me.container.find('button.item-control-button-bucket'),
                     $img = $button.find('> img');
 
                 $img.attr('src', 'images/cards/add-bucket.svg');
+                
                 me.bindBucketControl({
                     button : $button,
                     nextAction : 'add'
