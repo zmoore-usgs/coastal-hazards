@@ -382,7 +382,6 @@ CCH.Objects.Card = function (args) {
                 mediumContentContainer = container.find('.application-card-content-container-medium'),
                 minMaxButtons = container.find('.application-card-collapse-icon-container'),
                 $buttonRow = container.find('> div:nth-child(2) > div:nth-child(2)'),
-                $spaceAggButton = $buttonRow.find('> div button:nth-child(1)'),
                 $propertyAggButton = $buttonRow.find('> div button:nth-child(2)'),
                 $bucketButton = $buttonRow.find('> div button:nth-child(3)'),
                 moreInfoBadge = $('<span />').
@@ -427,6 +426,7 @@ CCH.Objects.Card = function (args) {
             $propertyAggButton.attr($.extend({}, defaultPopoverObject, {
                 'data-content' : 'Explore Contents Of This Dataset'
             }));
+            
             $bucketButton.attr($.extend({}, defaultPopoverObject, {
                 'data-content' : 'Add This Dataset To Your Bucket'
             }));
@@ -505,7 +505,7 @@ CCH.Objects.Card = function (args) {
         },
         'bucket-added': function (evt, args) {
             if (args.id === me.id) {
-                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:last-child'),
+                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button').last(),
                     $img = $button.find('> img');
 
                 $img.attr('src', 'images/cards/add-bucket-disabled.svg');
