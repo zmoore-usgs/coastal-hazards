@@ -1,4 +1,10 @@
 
+<%@page import="gov.usgs.cida.coastalhazards.model.summary.Publication"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.summary.Tiny"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.summary.Medium"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.summary.Full"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.Service"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.Item"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page import="org.apache.commons.lang.StringUtils"%>
@@ -39,12 +45,13 @@
             }
         </script>
         <jsp:include page="<%=metaTags%>"></jsp:include>
-            <title>USGS Coastal Change Hazards Portal - Publish</title>
-            <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
+        <title>USGS Coastal Change Hazards Portal - Publish</title>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/publish/publish.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery<%= development ? "." : "-"%>ui<%= development ? ".all" : ".min"%>.css" />
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/1.10.3/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
@@ -63,6 +70,33 @@
         <jsp:include page="<%= configration%>"></jsp:include>
             <script type="text/javascript">
                 CCH.itemid = '<%= id%>';
+                CCH.CONFIG.limits = {
+                    item : {
+                        name : <%= Item.NAME_MAX_LENGTH %>,
+                        attribute : <%= Item.ATTR_MAX_LENGTH %>
+                    },
+                    service : {
+                        endpoint : <%= Service.ENDPOINT_MAX_LENGTH %>,
+                        parameter : <%= Service.PARAMETER_MAX_LENGTH %>
+                    },
+                    summary : {
+                        full : {
+                            title : <%= Full.TITLE_MAX_LENGTH %>,
+                            text : <%= Full.TEXT_MAX_LENGTH %>
+                        },
+                        medium : {
+                            title : <%= Medium.TITLE_MAX_LENGTH %>,
+                            text : <%= Medium.TEXT_MAX_LENGTH %>
+                        },
+                        tiny : {
+                            text : <%= Tiny.MAX_LENGTH %>
+                        },
+                        publication : {
+                            title : <%= Publication.TITLE_MAX_LENGTH %>,
+                            link : <%= Publication.LINK_MAX_LENGTH %>
+                        }
+                    }
+                }
         </script>
     </head>
     <body>
@@ -123,13 +157,13 @@
                             <div id="form-publish-info-item-title-full" class="row row-title">
                                 <div class="form-group">
                                     <label for="form-publish-item-title-full">Title (Full)</label>
-                                    <textarea class="form-control" rows="2" id="form-publish-item-title-full" disabled="disabled"></textarea>
+                                    <textarea class="form-control" rows="2" id="form-publish-item-title-full" disabled="disabled"  maxlength="<%= Full.TITLE_MAX_LENGTH %>"></textarea>
                                 </div>
                             </div>
                             <div id="form-publish-info-item-title-medium" class="row row-title">
                                 <div class="form-group">
                                     <label for="form-publish-item-title-medium">Title (Medium)</label>
-                                    <textarea class="form-control" rows="2" id="form-publish-item-title-medium" disabled="disabled"></textarea>
+                                    <textarea class="form-control" rows="2" id="form-publish-item-title-medium" disabled="disabled" maxlength="<%= Medium.TITLE_MAX_LENGTH %>"></textarea>
                                 </div>
                             </div>
 
@@ -137,19 +171,19 @@
                             <div id="form-publish-info-item-description-full" class="row row-description">
                                 <div class="form-group">
                                     <label for="form-publish-item-description-full">Description (Full)</label>
-                                    <textarea class="form-control" rows="4" id="form-publish-item-description-full" disabled="disabled"></textarea>
+                                    <textarea class="form-control" rows="4" id="form-publish-item-description-full" disabled="disabled"  maxlength="<%= Full.TEXT_MAX_LENGTH %>"></textarea>
                                 </div>
                             </div>
                             <div id="form-publish-info-item-description-medium" class="row row-description">
                                 <div class="form-group">
                                     <label for="form-publish-item-description-medium">Description (Medium)</label>
-                                    <textarea class="form-control" rows="2" id="form-publish-item-description-medium" disabled="disabled"></textarea>
+                                    <textarea class="form-control" rows="2" id="form-publish-item-description-medium" disabled="disabled"  maxlength="<%= Medium.TEXT_MAX_LENGTH %>"></textarea>
                                 </div>
                             </div>
                             <div id="form-publish-info-item-description-tiny" class="row row-description">
                                 <div class="form-group">
                                     <label for="form-publish-item-description-tiny">Description (Tiny)</label>
-                                    <textarea class="form-control" rows="2" id="form-publish-item-description-tiny" disabled="disabled"></textarea>
+                                    <textarea class="form-control" rows="2" id="form-publish-item-description-tiny" disabled="disabled"  maxlength="<%= Tiny.MAX_LENGTH %>"></textarea>
                                 </div>
                             </div>
 
@@ -173,16 +207,16 @@
                                     <div id="form-publish-info-item-service-csw" class="row row-csw">
                                         <div class="form-group">
                                             <label for="form-publish-item-service-csw">CSW</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-csw" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-csw" disabled="disabled" maxlength="<%= Service.ENDPOINT_MAX_LENGTH %>" />
                                         </div>
                                     </div>
                                     <div id="form-publish-info-item-service-source-wfs" class="row row-src-wfs">
                                         <div class="form-group">
                                             <label for="form-publish-item-service-source-wfs">Source WFS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs" disabled="disabled"  maxlength="<%= Service.ENDPOINT_MAX_LENGTH %>"  />
                                             <label for="form-publish-item-service-source-wfs-serviceparam">Service Parameter</label>
                                             <div class="input-group">
-                                                <input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled" />
+                                                <input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH %>"  />
                                                 <span class="input-group-btn">
                                                     <button id="form-publish-item-service-source-wfs-import-button" class="btn btn-default" type="button" disabled="disabled">Import</button>
                                                 </span>
@@ -192,25 +226,25 @@
                                     <div id="form-publish-info-item-service-source-wms" class="row row-src-wms">
                                         <div class="form-group">
                                             <label for="form-publish-item-service-source-wms">Source WMS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms" disabled="disabled"  maxlength="<%= Service.ENDPOINT_MAX_LENGTH %>" />
                                             <label for="form-publish-item-service-source-wms-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms-serviceparam" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH %>" />
                                         </div>
                                     </div>
                                     <div id="form-publish-info-item-service-proxy-wfs" class="row row-prx-wfs">
                                         <div class="form-group">
                                             <label for="form-publish-item-service-proxy-wfs">Proxy WFS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs" disabled="disabled"  maxlength="<%= Service.ENDPOINT_MAX_LENGTH %>" />
                                             <label for="form-publish-item-service-proxy-wfs-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs-serviceparam" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH %>"/>
                                         </div>
                                     </div>
                                     <div id="form-publish-info-item-service-proxy-wms" class="row row-prx-wms">
                                         <div class="form-group">
                                             <label for="form-publish-item-service-proxy-wms">Proxy WMS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms" disabled="disabled"  maxlength="<%= Service.ENDPOINT_MAX_LENGTH %>" />
                                             <label for="form-publish-item-service-proxy-wms-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms-serviceparam" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH %>"/>
                                         </div>
                                     </div>
                                 </div>
@@ -246,7 +280,7 @@
                             <div id="form-publish-info-item-name" class="row row-name">
                                 <div class="form-group">
                                     <label for="form-publish-item-name">Download File Name</label>
-                                    <input type="text" class="form-control" id="form-publish-item-name" disabled="disabled" />
+                                    <input type="text" class="form-control" id="form-publish-item-name" disabled="disabled" maxlength="<%= Item.NAME_MAX_LENGTH %>" />
                                 </div>
                             </div>
 
