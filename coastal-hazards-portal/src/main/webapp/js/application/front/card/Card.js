@@ -399,7 +399,7 @@ CCH.Objects.Card = function (args) {
                     'data-toggle' : 'popover',
                     'data-trigger' : 'hover',
                     'data-placement' : 'auto',
-                    'data-delay' : '200'
+                    'data-delay' : CCH.CONFIG.ui['tooltip-delay']
                 };
 
             // My container starts out open so I immediately add that class to it

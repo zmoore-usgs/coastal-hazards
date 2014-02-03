@@ -53,6 +53,9 @@
 			name: {
 				'published': 'published'
 			},
+            ui: {
+                'tooltip-delay' : 800
+            },
 			map: {
 				ribbonOffset: 6, //Must be an integer
 				layers: {

@@ -6,7 +6,7 @@
             data-toggle="popover" 
             data-trigger="hover" 
             data-placement="auto" 
-            data-delay="200" 
+            data-delay="800"
             data-content="Manipulate Contents Of Your Data Bucket">
             <span id="app-navbar-bucket-button-count">0</span>
         </span>

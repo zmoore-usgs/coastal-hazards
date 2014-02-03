@@ -516,7 +516,7 @@ CCH.Objects.BucketSlide = function (args) {
                 'data-toggle' : 'popover',
                 'data-trigger' : 'hover',
                 'data-placement' : 'auto',
-                'data-delay' : '200'
+                'data-delay' : CCH.CONFIG.ui['tooltip-delay']
             };
 
         $card.attr('id', 'application-slide-bucket-container-card-' + id);
