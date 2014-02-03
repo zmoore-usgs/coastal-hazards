@@ -90,11 +90,11 @@
                         },
                         tiny : {
                             text : <%= Tiny.MAX_LENGTH %>
-                        },
-                        publication : {
-                            title : <%= Publication.TITLE_MAX_LENGTH %>,
-                            link : <%= Publication.LINK_MAX_LENGTH %>
                         }
+                    },
+                    publication : {
+                        title : <%= Publication.TITLE_MAX_LENGTH %>,
+                        link : <%= Publication.LINK_MAX_LENGTH %>
                     }
                 }
         </script>
