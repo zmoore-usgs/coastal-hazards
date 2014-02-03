@@ -1736,32 +1736,6 @@ CCH.Objects.UI = function () {
         }
     });
 
-//
-//CCH.items.each(function (item) {
-//                var itemId = item.id;
-//                if ($itemType.val() === 'aggregation' && item.id !== '') {
-//                    $.ajax({
-//                        url: CCH.CONFIG.contextPath + '/data/item/cycle/' + currentAggregationId + '/' + itemId,
-//                        success : function (response) {
-//                            if (response.cycle === true) {
-//                                CCH.LOG.warn('Found cyclic relationship between parent ' +
-//                                    currentAggregationId + ' and child ' + itemId +
-//                                    '. Removing child from list.');
-//                                $li.remove();
-//                            }
-//                        },
-//                        error : function () {
-//                            CCH.LOG.warn('An error occurred while trying to ' + 
-//                                'get parent/child cycle info. This could cause ' +
-//                                'huge problems if this child is added and a ' +
-//                                'cycle occurs.');
-//                        }
-//                    }); 
-//                } else {
-//                    save()
-//                }
-//            });
-
     $buttonSave.on('click', function () {
         var errors = me.validateForm.call(this),
             $ul = $('<ul />'),
