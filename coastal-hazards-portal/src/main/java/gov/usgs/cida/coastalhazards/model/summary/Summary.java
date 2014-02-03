@@ -21,6 +21,7 @@ public class Summary implements Serializable {
 	private static final long serialVersionUID = 182763L;
 
     public static final int VERSION_MAX_LENGTH = 15;
+    public static final int KEYWORDS_MAX_LENGTH = 2048;
     
     
     private transient int id;
@@ -77,12 +78,13 @@ public class Summary implements Serializable {
         this.full = full;
     }
 
-    @Column(length = 2048)
+    @Column(length = KEYWORDS_MAX_LENGTH)
     public String getKeywords() {
         return keywords;
     }
 
     public void setKeywords(String keywords) {
+        StringPrecondition.checkStringArgument(keywords, KEYWORDS_MAX_LENGTH);
         this.keywords = keywords;
     }
     
