@@ -195,6 +195,7 @@ CCH.Objects.Card = function (args) {
                     item : me.item,
                     visibility : true
                 });
+                $button.popover('hide');
             },
             // This is not currently being used - keep this functionality around
             // for when it's needed
@@ -205,7 +206,7 @@ CCH.Objects.Card = function (args) {
                     item : me.item
                 });
             };
-
+        
         $button.off();
         if (nextAction === 'add') {
             $button.on('click', add);
