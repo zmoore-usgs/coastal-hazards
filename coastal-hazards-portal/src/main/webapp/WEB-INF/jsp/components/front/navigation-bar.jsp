@@ -1,6 +1,6 @@
 <%-- Logo --%>
 <a href="<%=request.getParameter("base-url")%>/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
-    <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
+    <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.svg" />
 </a>
 
 <%-- Application Title --%>
