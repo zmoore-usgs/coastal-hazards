@@ -1,14 +1,16 @@
 package gov.usgs.cida.coastalhazards.exception;
 
+import javax.ws.rs.WebApplicationException;
+
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class DownloadStagingUnsuccessfulException extends RuntimeException {
+public class BadRequestException extends WebApplicationException {
     
     @Override
     public String getMessage() {
-        return "Unable to stage download from remote source";
+        return "Request was unable to be performed: bad";
     }
     
 }

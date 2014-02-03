@@ -1,5 +1,7 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
+import com.sun.jersey.api.NotFoundException;
+import gov.usgs.cida.coastalhazards.exception.UnauthorizedException;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Thumbnail;
 import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
@@ -14,7 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 /**
  *
@@ -34,7 +35,7 @@ public class ThumbnailResource {
         if (image != null) {
             response = Response.ok(image, "image/png").build();
         } else {
-            response = Response.status(Status.NOT_FOUND).build();
+            throw new NotFoundException();
         }
         return response;
     }
@@ -51,7 +52,7 @@ public class ThumbnailResource {
             thumb.setImage(content);
             response = Response.ok(thumbnailManager.save(thumb), MediaType.APPLICATION_JSON_TYPE).build();
         } else {
-            response = Response.status(Status.FORBIDDEN).build();
+            throw new UnauthorizedException();
         }
         
         return response;

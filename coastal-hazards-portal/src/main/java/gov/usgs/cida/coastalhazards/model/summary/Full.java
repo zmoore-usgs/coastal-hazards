@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.model.summary;
 
+import gov.usgs.cida.utilities.StringPrecondition;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +24,8 @@ import org.hibernate.annotations.IndexColumn;
 @Table(name="full_summary")
 public class Full implements Serializable {
 
+    public static final int TITLE_MAX_LENGTH = 1024;
+    public static final int TEXT_MAX_LENGTH = 64000;
 
     private transient long id;
     private String title;
@@ -39,21 +42,23 @@ public class Full implements Serializable {
         this.id = id;
     }
 
-    @Column(name="text", length = 64000)
+    @Column(name="text", length = TEXT_MAX_LENGTH)
     public String getText() {
         return text;
     }
 
     public void setText(String text) {
+        StringPrecondition.checkStringArgument(text, TEXT_MAX_LENGTH);
         this.text = text;
     }
 
-    @Column(name="title", length = 1024)
+    @Column(name="title", length = TITLE_MAX_LENGTH)
     public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
+        StringPrecondition.checkStringArgument(title, TITLE_MAX_LENGTH);
         this.title = title;
     }
 

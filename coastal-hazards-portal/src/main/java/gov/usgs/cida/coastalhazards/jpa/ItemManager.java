@@ -233,9 +233,11 @@ public class ItemManager implements AutoCloseable {
     
     public boolean anyCycles(Item item) {
         boolean cycles = false;
-        for (Item child : item.getChildren()) {
-            if (isCycle(item.getId(), child.getId())) {
-                cycles = true;
+        if (item.getChildren() != null) {
+            for (Item child : item.getChildren()) {
+                if (isCycle(item.getId(), child.getId())) {
+                    cycles = true;
+                }
             }
         }
         return cycles;
