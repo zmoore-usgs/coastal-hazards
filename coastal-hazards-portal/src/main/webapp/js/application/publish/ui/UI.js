@@ -191,33 +191,87 @@ CCH.Objects.UI = function () {
                 if (!$attributeSelect.val()) {
                     errors.push('An attribute was not selected');
                 }
+                if (!$attributeSelect.val().length > CCH.CONFIG.limits.item.attribute) {
+                    errors.push('Attribute was longer than ' + CCH.CONFIG.limits.item.attribute + ' characters');
+                }
+                
                 if (!$cswServiceInput.val()) {
                     errors.push('CSW service endpoint not entered');
                 }
+                if (!$cswServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+                    errors.push('CSW endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
+                }
+                
                 if (!$srcWfsServiceInput.val()) {
                     errors.push('Source WFS Endpoint not provided');
+                }
+                if (!$srcWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+                    errors.push('WFS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
                 }
                 if (!$srcWfsServiceParamInput.val()) {
                     errors.push('Source WFS parameter not provided');
                 }
+                if (!$srcWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+                    errors.push('WFS Source parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
+                }
+                
                 if (!$srcWmsServiceInput.val()) {
                     errors.push('Source WMS Endpoint not provided');
                 }
-                if (!$srcWfsServiceParamInput.val()) {
+                if (!$srcWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+                    errors.push('WMS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
+                }
+                if (!$srcWmsServiceParamInput.val()) {
                     errors.push('Source WMS Endpoint not provided');
                 }
+                if (!$srcWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+                    errors.push('WMS Source parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
+                }
+                
                 if (!$proxyWfsServiceInput.val()) {
                     errors.push('Proxy WFS endpoint not provided');
+                }
+                if (!$proxyWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+                    errors.push('WFS Proxy endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
                 }
                 if (!$proxyWfsServiceParamInput.val()) {
                     errors.push('Proxy WFS parameter not provided');
                 }
+                if (!$proxyWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+                    errors.push('WFS Proxy parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
+                }
+                
                 if (!$proxyWmsServiceInput.val()) {
                     errors.push('Proxy WMS endpoint not provided');
+                }
+                if (!$proxyWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+                    errors.push('WMS Proxy endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
                 }
                 if (!$proxyWmsServiceParamInput.val()) {
                     errors.push('Proxy WMS parameter not provided');
                 }
+                if (!$proxyWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+                    errors.push('WMS Proxy parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
+                }
+                
+                $publicationsPanel.find('> div:nth-child(2) > div.well').each(function (ind, pubPanel) {
+                    var title = $(pubPanel).find('div:nth-child(2) > input').val() || '',
+                        link = $(pubPanel).find('div:nth-child(3) > input').val() || '';
+                        
+                    if (title === '') {
+                        errors.push('Publication title is empty for publication ' + (ind + 1));
+                    }
+                    if (title.length > CCH.CONFIG.limits.publication.title) {
+                        errors.push('Publication title is longer than ' + CCH.CONFIG.limits.publication.title + ' characters for publication ' + (ind + 1));
+                    }
+                    
+                    if (link === '') {
+                        errors.push('Publication link is empty for publication ' + (ind + 1));
+                    }
+                    if (link.length > CCH.CONFIG.limits.publication.link) {
+                        errors.push('Publication link is longer than ' + CCH.CONFIG.limits.publication.link + ' characters for publication ' + (ind + 1));
+                    }
+                });
             } else if ('aggregation' === type || 'uber' === type) {
                 if ($childrenSortableList.find('li > span > div > button:first-child.active').length === 0) {
                     errors.push('Aggregations require at least one child');
@@ -227,21 +281,36 @@ CCH.Objects.UI = function () {
             if (!$titleFullTextArea.val().trim()) {
                 errors.push('Full title not provided');
             }
+            if (!$titleFullTextArea.val().length > CCH.CONFIG.limits.summary.full.title) {
+                errors.push('Full title was longer than ' + CCH.CONFIG.limits.summary.full.title + ' characters');
+            }
 
             if (!$titleMediumTextArea.val().trim()) {
                 errors.push('Full medium not provided');
+            }
+            if (!$titleMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.title) {
+                errors.push('Medium title was longer than ' + CCH.CONFIG.limits.summary.medium.title + ' characters');
             }
 
             if (!$descriptionFullTextArea.val().trim()) {
                 errors.push('Full description not provided');
             }
+            if (!$descriptionFullTextArea.val().length > CCH.CONFIG.limits.summary.full.text) {
+                errors.push('Full description was longer than ' + CCH.CONFIG.limits.summary.full.text + ' characters');
+            }
 
             if (!$descriptionMediumTextArea.val().trim()) {
                 errors.push('Medium description not provided');
             }
+            if (!$descriptionMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.text) {
+                errors.push('Medium description was longer than ' + CCH.CONFIG.limits.summary.medium.text + ' characters');
+            }
 
             if (!$descriptionTinyTextArea.val().trim()) {
                 errors.push('Tiny description not provided');
+            }
+            if (!$descriptionTinyTextArea.val().length > CCH.CONFIG.limits.summary.tiny.text) {
+                errors.push('Tiny description was longer than ' + CCH.CONFIG.limits.summary.tiny.text + ' characters');
             }
 
             if (!$bboxNorth.val().trim()) {
@@ -264,9 +333,15 @@ CCH.Objects.UI = function () {
             if (!$name.val()) {
                 errors.push('Name was not provided');
             }
+            if (!$name.val().length > CCH.CONFIG.limits.item.name) {
+                errors.push('Item name was longer than ' + CCH.CONFIG.limits.item.name + ' characters');
+            }
 
             if (!$typeSb.val()) {
                 errors.push('Item type not provided');
+            }
+            if (!$typeSb.val().length > CCH.CONFIG.limits.item.attribute) {
+                errors.push('Item type was longer than ' + CCH.CONFIG.limits.item.attribute + ' characters');
             }
 
         } else {
@@ -686,14 +761,16 @@ CCH.Objects.UI = function () {
             $linkLabel = $('<label />').html('Link'),
             $linkInput = $('<input />').
                 attr({
-                    type : 'text'
+                    type : 'text',
+                    maxlength : CCH.CONFIG.limits.publication.link
                 }).
                 addClass('form-control').
                 val(link),
             $titleLabel = $('<label />').html('Title'),
             $titleInput = $('<input />').
                 attr({
-                    type : 'text'
+                    type : 'text',
+                    maxlength : CCH.CONFIG.limits.publication.title
                 }).
                 addClass('form-control').
                 val(title),
@@ -1658,32 +1735,6 @@ CCH.Objects.UI = function () {
             $alertModal.modal('show');
         }
     });
-
-//
-//CCH.items.each(function (item) {
-//                var itemId = item.id;
-//                if ($itemType.val() === 'aggregation' && item.id !== '') {
-//                    $.ajax({
-//                        url: CCH.CONFIG.contextPath + '/data/item/cycle/' + currentAggregationId + '/' + itemId,
-//                        success : function (response) {
-//                            if (response.cycle === true) {
-//                                CCH.LOG.warn('Found cyclic relationship between parent ' +
-//                                    currentAggregationId + ' and child ' + itemId +
-//                                    '. Removing child from list.');
-//                                $li.remove();
-//                            }
-//                        },
-//                        error : function () {
-//                            CCH.LOG.warn('An error occurred while trying to ' + 
-//                                'get parent/child cycle info. This could cause ' +
-//                                'huge problems if this child is added and a ' +
-//                                'cycle occurs.');
-//                        }
-//                    }); 
-//                } else {
-//                    save()
-//                }
-//            });
 
     $buttonSave.on('click', function () {
         var errors = me.validateForm.call(this),

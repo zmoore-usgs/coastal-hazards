@@ -1,6 +1,6 @@
 <%-- Logo --%>
 <a href="<%=request.getParameter("base-url")%>/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
-    <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
+    <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.svg" />
 </a>
 
 <%-- Application Title --%>
@@ -23,7 +23,7 @@
             data-toggle="popover" 
             data-trigger="hover" 
             data-placement="auto" 
-            data-delay="200" 
+            data-delay="800" 
             data-content="More Info For USGS Coastal Change Hazards Portal">
         <a href="<%=request.getContextPath()%>/info/" target="_blank"><i class="fa fa-info-circle"></i></a>
     </span>

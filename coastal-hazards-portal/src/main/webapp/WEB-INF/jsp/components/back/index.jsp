@@ -73,8 +73,8 @@
             <jsp:param name="relPath" value="../../" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        <script type="text/javascript" src="js/third-party/openlayers/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/ows/OWS<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/front/map/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/back/map/map<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/back/ui/UI<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Items<%= development ? "" : "-min"%>.js"></script>
@@ -115,7 +115,7 @@
             <div id="header-row" class="row">
                 <%-- Logo --%>
                 <a href="<%=baseUrl%>/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
-                    <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
+                    <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.svg" />
                 </a>
                 <%-- Application Title --%>
                 <div id="app-navbar-site-title-container" class="app-navbar-item-container">

@@ -36,6 +36,7 @@ CCH.Objects.BucketSlide = function (args) {
     me.$TOP_LEVEL_SHARE = me.$TOP_LEVEL_LIST.find('> li:nth-child(2)');
     me.$TOP_LEVEL_DOWNLOAD = me.$TOP_LEVEL_LIST.find('> li:nth-child(3)');
     me.$EMPTY_TEXT_CONTAINER = me.$SLIDE_CONTAINER.find('> div > div > #application-slide-bucket-content-empty');
+    me.LABEL_ORDER_CLASS = '.application-slide-bucket-container-card-label-order';
 
     me.borderWidth = 2;
     me.animationTime = 500;
@@ -148,6 +149,12 @@ CCH.Objects.BucketSlide = function (args) {
             item,
             layerNames,
             sessionItem;
+
+        if (me.cards.length === 1) {
+            $(me.LABEL_ORDER_CLASS).css('visibility', 'hidden');
+        } else {
+            $(me.LABEL_ORDER_CLASS).css('visibility', '');
+        }
 
         me.cards.each(function ($cardClone) {
             id = $cardClone.data('id');
@@ -509,7 +516,7 @@ CCH.Objects.BucketSlide = function (args) {
                 'data-toggle' : 'popover',
                 'data-trigger' : 'hover',
                 'data-placement' : 'auto',
-                'data-delay' : '200'
+                'data-delay' : CCH.CONFIG.ui['tooltip-delay']
             };
 
         $card.attr('id', 'application-slide-bucket-container-card-' + id);

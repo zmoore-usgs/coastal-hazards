@@ -599,7 +599,7 @@ CCH.Objects.SearchSlide = function (args) {
                     'data-toggle' : 'popover',
                     'data-trigger' : 'hover',
                     'data-placement' : 'auto',
-                    'data-delay' : '200'
+                    'data-delay' : CCH.CONFIG.ui['tooltip-delay']
                 };
 
             $newItem.attr('id', 'application-slide-search-product-card-' + id);
