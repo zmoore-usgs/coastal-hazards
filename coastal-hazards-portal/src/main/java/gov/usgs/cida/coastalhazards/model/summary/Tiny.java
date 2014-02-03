@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.model.summary;
 
+import gov.usgs.cida.utilities.StringPrecondition;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -21,9 +22,7 @@ public class Tiny implements Serializable {
     }
 
     public void setText(String text) {
-        if (null == text || text.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("Max length is " + MAX_LENGTH);
-        }
+        StringPrecondition.checkStringArgument(text, MAX_LENGTH);
         this.text = text;
     }
     

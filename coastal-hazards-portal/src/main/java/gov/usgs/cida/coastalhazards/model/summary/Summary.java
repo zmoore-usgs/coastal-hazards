@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.model.summary;
 
+import gov.usgs.cida.utilities.StringPrecondition;
 import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,6 +20,9 @@ import javax.persistence.Table;
 public class Summary implements Serializable {
 	private static final long serialVersionUID = 182763L;
 
+    public static final int VERSION_MAX_LENGTH = 15;
+    
+    
     private transient int id;
     private String version;
     private Tiny tiny;
@@ -36,11 +40,13 @@ public class Summary implements Serializable {
         this.id = id;
     }
 
+    @Column(name = "version", length = VERSION_MAX_LENGTH)
     public String getVersion() {
         return version;
     }
 
     public void setVersion(String version) {
+        StringPrecondition.checkStringArgument(version, VERSION_MAX_LENGTH);
         this.version = version;
     }
 
