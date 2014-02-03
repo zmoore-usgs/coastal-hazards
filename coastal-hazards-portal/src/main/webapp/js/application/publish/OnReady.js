@@ -95,7 +95,7 @@ $(document).ready(function () {
                                     ],
                                     error : [
                                         function () {
-                                            debugger;
+//                                            debugger;
                                         }
                                     ]
                                 }
@@ -106,7 +106,7 @@ $(document).ready(function () {
             ],
             error : [
                 function (err) {
-                    debugger;
+//                    debugger;
                 }
             ]
         }

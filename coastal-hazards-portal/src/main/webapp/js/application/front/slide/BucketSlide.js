@@ -58,7 +58,7 @@ CCH.Objects.BucketSlide = function (args) {
         $slideContainer.css({
             display: ''
         });
-        
+
         me.reorderLayers();
 
         $slideContainer.animate({
@@ -73,18 +73,17 @@ CCH.Objects.BucketSlide = function (args) {
             $(window).trigger('cch.slide.bucket.opened');
         });
     };
-    
+
     me.open = function () {
         if (me.isClosed) {
             if (me.isSmall()) {
                 $(window).trigger('cch.slide.bucket.opening');
-               me.resized();
-            me.openSlide();
+                me.resized();
+                me.openSlide();
             } else {
                 me.openSlide();
             }
 
-            
         } else {
             me.reorderLayers();
             $(window).trigger('cch.slide.bucket.opened');
@@ -92,22 +91,23 @@ CCH.Objects.BucketSlide = function (args) {
     };
 
     me.close = function (dontEmoteClosing, bindItemsOpening) {
-        var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
-        var itemSliderBinding = function () {
-            $(window).off('cch.slide.items.opening', itemSliderBinding);
-            setTimeout(function () {
-                me.resized();
-                me.openSlide();
-            }, 1);
-        }
+        var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
+            itemSliderBinding = function () {
+                $(window).off('cch.slide.items.opening', itemSliderBinding);
+                setTimeout(function () {
+                    me.resized();
+                    me.openSlide();
+                }, 1);
+            };
+
         if (bindItemsOpening === true) {
-             $(window).on('cch.slide.items.opening', itemSliderBinding);
+            $(window).on('cch.slide.items.opening', itemSliderBinding);
         }
-        
-        if (!dontEmoteClosing === true) {
+
+        if (dontEmoteClosing !== true) {
             $(window).trigger('cch.slide.bucket.closing');
         }
-        
+
         if (!me.isClosed) {
             $('body').css({
                 overflow : 'hidden'
@@ -156,7 +156,7 @@ CCH.Objects.BucketSlide = function (args) {
             sessionItem = CCH.session.getItemById(id);
             layer = CCH.map.getLayersByName(id);
 
-            layerNames.each(function(layerName) {
+            layerNames.each(function (layerName) {
                 layer = CCH.map.getLayersByName(layerName);
                 if (layer.length) {
                     layer = layer[0];
@@ -181,7 +181,7 @@ CCH.Objects.BucketSlide = function (args) {
             $myCard,
             evtType = evt.namespace === 'hid.layer.map' ? 'remove' : 'add',
             findImage = function ($cardItem) {
-                return $cardItem.find('> div:nth-child(5) > div:first-child > img');
+                return $cardItem.find('> div:nth-child(5) > div:first-child > i');
             };
 
         if ($card.length) {
@@ -189,27 +189,27 @@ CCH.Objects.BucketSlide = function (args) {
             if (evtType === 'remove') {
                 setTimeout(function () {
                     [$card, $myCard].each(function (card) {
-                        findImage(card).attr('src', 'images/bucket/layer_off.svg');
+                        findImage(card).removeClass('fa-eye').addClass('fa-eye-slash');
                     });
                 }, 50);
             } else if (evtType === 'add') {
                 setTimeout(function () {
                     [$card, $myCard].each(function (card) {
-                        findImage(card).attr('src', 'images/bucket/layer_on.svg');
+                        findImage(card).removeClass('fa-eye-slash').addClass('fa-eye');
                     });
                 }, 50);
             }
         }
     };
-    
-    me.redimensioned = function (evt, isSmall) {
+
+    me.redimensioned = function () {
         if (me.isSmall) {
             if (!me.isClosed) {
                 me.toggle();
                 me.resized();
             }
         }
-    }
+    };
 
     me.resized = function () {
         var extents = me.getExtents(),
@@ -353,8 +353,9 @@ CCH.Objects.BucketSlide = function (args) {
             });
 
             me.getContainer().find('>div:not(:first-child())').each(function (idx, card) {
-                if ($(card).data('id') === id) {
-                    $(card).remove();
+                var $card = $(card);
+                if ($card.data('id') === id) {
+                    $card.remove();
                 }
             });
 
@@ -403,7 +404,7 @@ CCH.Objects.BucketSlide = function (args) {
             id = $(card).data('id');
             index = me.getCardIndex(id);
             $cardUpArrow = $(card).find('> div:nth-child(4) > button:nth-child(1)');
-            $cardDownArrow = $(card).find('> div:nth-child(4)> button:nth-child(2)');
+            $cardDownArrow = $(card).find('> div:nth-child(4)> button:nth-child(3)');
 
             if (cardsLength === 1) {
                 // If I am the only card
@@ -432,6 +433,9 @@ CCH.Objects.BucketSlide = function (args) {
     me.append = function ($card) {
         var $container = me.getContainer();
         $container.append($card.clone(true));
+        $container.
+            find('.application-slide-bucket-container-card *[data-toggle="popover"]').
+            popover();
     };
 
     /**
@@ -493,23 +497,33 @@ CCH.Objects.BucketSlide = function (args) {
             $imageContainer = $card.find('> div:first-child img').first(),
             $bottomControlRow = $card.find('> div:nth-child(5)'),
             $viewButton = $bottomControlRow.find('> div:nth-child(1)'),
-            $shareButton = $bottomControlRow.find('> button:nth-child(2)'),
-            $downloadButton = $bottomControlRow.find('> button:nth-child(3)'),
-            $infoButton = $bottomControlRow.find('> button:nth-child(4)'),
+            $downloadButton = $bottomControlRow.find('> button:nth-child(2)'),
+            $infoButton = $bottomControlRow.find('> button:nth-child(3)'),
+            $shareButton = $bottomControlRow.find('> button:nth-child(4)'),
             $removeButton = $card.find('>button'),
             $upButton = $card.find('> div:nth-child(4) > button:nth-child(1)'),
-            $downButton = $card.find('> div:nth-child(4)> button:nth-child(2)'),
-            layerArray;
+            $downButton = $card.find('> div:nth-child(4)> button:nth-child(3)'),
+            layerArray,
+            defaultPopoverObject = {
+                'html' : 'true',
+                'data-toggle' : 'popover',
+                'data-trigger' : 'hover',
+                'data-placement' : 'auto',
+                'data-delay' : '200'
+            };
 
         $card.attr('id', 'application-slide-bucket-container-card-' + id);
         $imageContainer.
-                attr('src', 'images/thumbnail/thumb_' + id + '.png').
-                on('click', function () {
-                    $(window).trigger('cch.slide.bucket.item.thumbnail.click')
-                    CCH.map.zoomToBoundingBox({
-                        bbox: item.bbox,
-                        fromProjection: new OpenLayers.Projection('EPSG:4326')
-                    });
+            attr($.extend({}, defaultPopoverObject, {
+                'src' : CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id,
+                'data-content' : 'Explore and zoom to this dataset'
+            })).
+            on('click', function () {
+                $(window).trigger('cch.slide.bucket.item.thumbnail.click');
+                CCH.map.zoomToBoundingBox({
+                    bbox: item.bbox,
+                    fromProjection: new OpenLayers.Projection('EPSG:4326')
+                });
             });
         $titleContainer.attr('id', titleContainerClass + '-' + id);
         $titleContainerPNode.html(title);
@@ -528,109 +542,134 @@ CCH.Objects.BucketSlide = function (args) {
         }
 
         if (visibility === true) {
-            $viewButton.find('> img').attr('src', 'images/bucket/layer_on.svg');
+            $viewButton.find('> i').removeClass('fa-eye-slash').addClass('fa-eye');
         } else {
-            $viewButton.find('> img').attr('src', 'images/bucket/layer_off.svg');
+            $viewButton.find('> i').removeClass('fa-eye').addClass('fa-eye-slash');
         }
 
-        $removeButton.on('click', function ($evt) {
-            $evt.stopPropagation();
-            // If I am open, remove my layer
-            item.hideLayer();
-
-            // I emit this to the top so that bucket can catch it, decrement itself
-            // and then pass on the remove back down here to my remove method
-            $(window).trigger('cch.slide.bucket.remove', {
-                id : id
-            });
-        });
-
-        $downloadButton.on('click', function () {
-            window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + id;
-        });
-
-        $viewButton.on('click', function () {
-            var isAggregation = item.itemType === 'aggregation',
-                isLayerInMap = false;
-
-            isLayerInMap = item.getLayerList().every(function (id) {
-                layerArray = CCH.map.getLayersBy('name', id);
-                return layerArray.length > 0 && layerArray[0].getVisibility();
-            });
-
-            if (isLayerInMap) {
+        $removeButton.
+            on('click', function ($evt) {
+                $evt.stopPropagation();
+                // If I am open, remove my layer
                 item.hideLayer();
-                me.layerAppendRemoveHandler(
-                    {
-                        namespace : 'hid.layer.map'
-                    },
-                    { layer : {
-                        name : id,
-                        itemid : id
-                    }}
-                );
-                CCH.session.getItemById(item.id).visibility = false;
-            } else {
-                item.showLayer();
-                me.layerAppendRemoveHandler({
-                    namespace: 'show.layer.map'
-                },
-                    {
-                        layer: {
-                            name: id,
-                            itemid: id
-                        }
-                    });
-                CCH.session.getItemById(item.id).visibility = true;
-            }
 
-            // Regular layers will properly update a session, but because 
-            // aggregations don't actually have layers, sessions need to be updated
-            // manually for the aggregation object
-            if (isAggregation) {
-                CCH.session.update({
-                    itemid : id,
-                    visibility : !isLayerInMap
+                // I emit this to the top so that bucket can catch it, decrement itself
+                // and then pass on the remove back down here to my remove method
+                $(window).trigger('cch.slide.bucket.remove', {
+                    id : id
                 });
-            }
+            }).
+            attr($.extend({}, defaultPopoverObject, {
+                'data-content' : 'Remove From Bucket'
+            }));
 
-            $(window).trigger('slide.bucket.button.click.view', {
-                'adding' : !isLayerInMap,
-                'id' : id
+        $downloadButton.
+            attr($.extend({}, defaultPopoverObject, {
+                'data-content' : 'Download'
+            })).
+            on('click', function () {
+                window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + id;
             });
-        });
 
-        $upButton.on('click', function () {
-            me.moveCard({
-                id : id,
-                direction : -1
+        $viewButton.
+            attr($.extend({}, defaultPopoverObject, {
+                'data-content' : 'Visibility On/Off'
+            })).
+            on('click', function () {
+                var isAggregation = item.itemType === 'aggregation',
+                    isLayerInMap = false;
+
+                isLayerInMap = item.getLayerList().every(function (id) {
+                    layerArray = CCH.map.getLayersBy('name', id);
+                    return layerArray.length > 0 && layerArray[0].getVisibility();
+                });
+
+                if (isLayerInMap) {
+                    item.hideLayer();
+                    me.layerAppendRemoveHandler(
+                        {
+                            namespace : 'hid.layer.map'
+                        },
+                        { layer : {
+                            name : id,
+                            itemid : id
+                        }}
+                    );
+                    CCH.session.getItemById(item.id).visibility = false;
+                } else {
+                    item.showLayer();
+                    me.layerAppendRemoveHandler({
+                        namespace: 'show.layer.map'
+                    },
+                        {
+                            layer: {
+                                name: id,
+                                itemid: id
+                            }
+                        });
+                    CCH.session.getItemById(item.id).visibility = true;
+                }
+
+                // Regular layers will properly update a session, but because 
+                // aggregations don't actually have layers, sessions need to be updated
+                // manually for the aggregation object
+                if (isAggregation) {
+                    CCH.session.update({
+                        itemid : id,
+                        visibility : !isLayerInMap
+                    });
+                }
+
+                $(window).trigger('slide.bucket.button.click.view', {
+                    'adding' : !isLayerInMap,
+                    'id' : id
+                });
             });
-        });
 
-        $downButton.on('click', function () {
-            me.moveCard({
-                id : id,
-                direction : 1
+        $upButton.
+            on('click', function () {
+                me.moveCard({
+                    id : id,
+                    direction : -1
+                });
+            }).
+            attr($.extend({}, defaultPopoverObject, {
+                'data-content' : 'Sort Layer Up'
+            }));
+
+        $downButton.
+            on('click', function () {
+                me.moveCard({
+                    id : id,
+                    direction : 1
+                });
+            }).
+            attr($.extend({}, defaultPopoverObject, {
+                'data-content' : 'Sort Layer Down'
+            }));
+
+        $shareButton.
+            attr($.extend({}, defaultPopoverObject, {
+                'data-content' : 'Share '
+            })).
+            on('click', function () {
+                $(window).trigger('slide.bucket.button.click.share', {
+                    'type' : 'item',
+                    'id' : id
+                });
             });
-        });
 
-        $shareButton.on('click', function () {
-            $(window).trigger('slide.bucket.button.click.share', {
-                'type' : 'item',
-                'id' : id
-            });
-        });
-
-        $infoButton.on('click', function () {
-            $(window).trigger('slide.bucket.button.click.info', {
-                'id' : id
-            });
-            window.open(window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_self');
-        });
-
-        $infoButton.attr({
-            'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id
-        });
+        $infoButton.
+            on('click', function () {
+                $(window).trigger('slide.bucket.button.click.info', {
+                    'id' : id
+                });
+                window.open(window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_self');
+            }).
+            attr($.extend({}, defaultPopoverObject, {
+                'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id,
+                'data-content' : 'More Info'
+            }));
 
         $card.getContainer = function () {
             return $('#' + this.attr('id'));

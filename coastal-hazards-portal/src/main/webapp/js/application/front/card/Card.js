@@ -78,6 +78,7 @@ CCH.Objects.Card = function (args) {
         });
         
         setTimeout(function () {
+            me.container.find('[data-toggle="popover"]').popover();
             $(window).trigger('card-display-toggle', {
                 'display' : true
             });
@@ -94,7 +95,6 @@ CCH.Objects.Card = function (args) {
         }
 
         me.isOpen = true;
-        
 
         CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was shown');
     };
@@ -394,7 +394,13 @@ CCH.Objects.Card = function (args) {
                         })),
                 zoomToBadge = $('<span />').
                     addClass('badge zoom-to-badge').
-                    html('Zoom To');
+                    html('Zoom To'),
+                defaultPopoverObject = {
+                    'data-toggle' : 'popover',
+                    'data-trigger' : 'hover',
+                    'data-placement' : 'auto',
+                    'data-delay' : '200'
+                };
 
             // My container starts out open so I immediately add that class to it
             container.addClass('open');
@@ -417,7 +423,14 @@ CCH.Objects.Card = function (args) {
                 // This is a leaf node so don't add an aggregation button
                 $propertyAggButton.remove();
             }
-
+            
+            $propertyAggButton.attr($.extend({}, defaultPopoverObject, {
+                'data-content' : 'Explore Contents Of This Dataset'
+            }));
+            $bucketButton.attr($.extend({}, defaultPopoverObject, {
+                'data-content' : 'Add This Dataset To Your Bucket'
+            }));
+            
             zoomToBadge.on('click', function () {
                 CCH.map.zoomToBoundingBox({
                     bbox : me.bbox,
