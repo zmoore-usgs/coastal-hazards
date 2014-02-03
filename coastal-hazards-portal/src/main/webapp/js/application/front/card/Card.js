@@ -518,7 +518,7 @@ CCH.Objects.Card = function (args) {
         },
         'cch.bucket.card.removed': function (evt, args) {
             if (args.id === me.id) {
-                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:last-child'),
+                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button').last(),
                     $img = $button.find('> img');
 
                 $img.attr('src', 'images/cards/add-bucket.svg');
