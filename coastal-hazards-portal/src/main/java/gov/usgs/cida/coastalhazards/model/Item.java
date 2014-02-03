@@ -6,6 +6,7 @@ import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import gov.usgs.cida.coastalhazards.util.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.utilities.IdGenerator;
+import gov.usgs.cida.utilities.StringPrecondition;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,6 +43,8 @@ import org.hibernate.annotations.Proxy;
 public class Item implements Serializable {
 
     public static final String UBER_ID = JNDISingleton.getInstance().getProperty("coastal-hazards.item.uber.id", "uber");
+    public static final int NAME_MAX_LENGTH = 255;
+    public static final int ATTR_MAX_LENGTH = 255;
 
     public enum ItemType {
 
@@ -117,11 +120,13 @@ public class Item implements Serializable {
         this.bbox = bbox;
     }
 
+    @Column(name = "name", length = NAME_MAX_LENGTH)
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
+        StringPrecondition.checkStringArgument(name, NAME_MAX_LENGTH);
         this.name = name;
     }
 
@@ -134,11 +139,13 @@ public class Item implements Serializable {
         this.type = type;
     }
 
+    @Column(name = "attr", length = ATTR_MAX_LENGTH)
     public String getAttr() {
         return attr;
     }
 
     public void setAttr(String attr) {
+        StringPrecondition.checkStringArgument(attr, ATTR_MAX_LENGTH);
         this.attr = (StringUtils.isBlank(attr)) ? null : attr;
     }
 
