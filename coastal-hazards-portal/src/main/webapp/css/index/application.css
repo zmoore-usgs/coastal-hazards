@@ -93,7 +93,7 @@ html, body {
     margin-left: 0px !important;
 }
 .olControlLayerSwitcher .layersDiv {
-    background-color: #003366 !important;
+    background: rgba(0,51,102,0.7) !important;
 }
 .olControlLayerSwitcher .maximizeDiv img{
     height: 25px;
