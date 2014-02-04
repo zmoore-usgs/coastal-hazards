@@ -43,7 +43,11 @@ CCH.Objects.CombinedSearch = function (args) {
         var $container = $('#' + me.CONTAINER_ID),
             $parentContainer = $container.parent(),
             parentContainerWidth = $parentContainer.width(),
-            parentContainerVisibleItems,
+            $navSearchbarLocator = $('#' + me.CONTAINER_ID).find('> div'),
+            $dropDown = $navSearchbarLocator.find('> div:first-child > button'),
+            $searchBar = $navSearchbarLocator.find('> input'),
+            $submitButton = $navSearchbarLocator.find('div:last-child > button'),
+            $parentContainerVisibleItems,
             childrenCombinedWidth,
             containerMarginRight,
             idealInputWidth,
@@ -51,21 +55,21 @@ CCH.Objects.CombinedSearch = function (args) {
             
             if (isSmall) {
                 idealInputWidth = '100%';
-                $('#app-navbar-search-container > div > div:first-child > button').height(30);
-                $('#app-navbar-search-container > div > input').height(30);
-                $('#app-navbar-search-container > div > div:last-child > button').height(30);
+                $dropDown.height(30);
+                $searchBar.height(30);
+                $submitButton.height(30);
             } else {
                 // Get all visible, non-modal children of the parent that are also not my container
-                parentContainerVisibleItems = $parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
+                $parentContainerVisibleItems = $parentContainer.find('> :not(:nth-child(3)):not(.hide):not(*[aria-hidden="true"])'),
                 // Get the width of child containers
-                childrenCombinedWidth = parentContainerVisibleItems.toArray().sum(function (el) {
+                childrenCombinedWidth = $parentContainerVisibleItems.toArray().sum(function (el) {
                     return $(el).outerWidth(true);
                 }),
                 containerMarginRight = 15, // TODO- This is problematic between IE9 and others
                 idealInputWidth = parentContainerWidth - childrenCombinedWidth - containerMarginRight;
-                $('#app-navbar-search-container > div > div:first-child > button').height(20);
-                $('#app-navbar-search-container > div > input').height(20);
-                $('#app-navbar-search-container > div > div:last-child > button').height(20);
+                $dropDown.height(20);
+                $searchBar.height(20);
+                $submitButton.height(20);
             }
             
         $container.css({width : idealInputWidth});
@@ -80,7 +84,7 @@ CCH.Objects.CombinedSearch = function (args) {
     
     me.getCriteria = function (args) {
         return me.selectedOption;
-    }
+    };
 
     me.submitButtonClicked = function (evt, args) {
         args = args || {};
