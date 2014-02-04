@@ -15,6 +15,8 @@ html, body {
     padding-left: 10px !important;
     padding-right:  10px !important;
     height: 100%;
+    font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #777;
 }
 
 #info-legend {
