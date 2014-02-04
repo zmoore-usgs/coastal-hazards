@@ -7,13 +7,6 @@
 /**
  * A widget that is used as the search mechanism throughout the application
  * 
- * Events Emitted:
- * 'combined-searchbar-search-performed'
- * 'combined-searchbar-search-performing'
- * 
- * Events Listened To:
- * window.resize
- * 
  * @param {type} args
  * @returns {undefined}
  */

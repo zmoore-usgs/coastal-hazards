@@ -17,7 +17,7 @@ CCH.Objects.Session = function(args) {
         baselayer: '',
         scale: 0,
         bbox: [0.0, 0.0, 0.0, 0.0],
-        center: [0.0, 0.0] 
+        center: [0.0, 0.0]
     };
     
     me.toString = function () {
@@ -29,8 +29,12 @@ CCH.Objects.Session = function(args) {
     };
     
     me.update = function (args) {
+        CCH.LOG.debug('Session.js::update');
+        
         CCH.map.updateSession();
+        
         args = args || {};
+        
         var itemid = args.itemid,
             visibility = args.visibility,
             itemIndex,
@@ -51,6 +55,7 @@ CCH.Objects.Session = function(args) {
     };
     
     me.write = function (args) {
+        CCH.LOG.debug('Session.js::write');
         args = args || {};
         
         var callbacks = args.callbacks || {
@@ -87,7 +92,10 @@ CCH.Objects.Session = function(args) {
     };
     
     me.read = function(args) {
+        CCH.LOG.debug('Session.js::read');
+        
         var sid = args.sid;
+        
         var callbacks = args.callbacks || {
             success: [],
             error: []
@@ -119,6 +127,7 @@ CCH.Objects.Session = function(args) {
     };
     
     me.load = function (args) {
+        CCH.LOG.debug('Session.js::load');
         args = args || {};
         var sid = args.sid,
             callbacks = args.callbacks || {
@@ -172,6 +181,8 @@ CCH.Objects.Session = function(args) {
     };
     
     me.addItem = function (args) {
+        CCH.LOG.debug('Session.js::addItem');
+        
         var item = args.item,
             visibility = args.visibility || false,
             index = me.getItemIndex(item),
@@ -192,6 +203,8 @@ CCH.Objects.Session = function(args) {
     };
     
     me.removeItem = function (item) {
+        CCH.LOG.debug('Session.js::removeItem');
+        
         var index = me.getItemIndex(item),
             cookie;
 
