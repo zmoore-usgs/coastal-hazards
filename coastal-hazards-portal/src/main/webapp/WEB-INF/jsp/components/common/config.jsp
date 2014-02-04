@@ -54,7 +54,10 @@
 				'published': 'published'
 			},
             ui: {
-                'tooltip-delay' : 800
+                'tooltip-delay' : {
+                    show : 800,
+                    hide : 0
+                }
             },
 			map: {
 				ribbonOffset: 6, //Must be an integer

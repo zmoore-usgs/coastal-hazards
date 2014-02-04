@@ -19,6 +19,7 @@ CCH.Objects.BucketSlide = function (args) {
 
     me.SLIDE_CONTAINER_ID = args.containerId;
     me.MAP_DIV_ID = args.mapdivId || 'map';
+    me.$CONTENT_COLUMN = $('#content-column');
     me.CARD_TEMPLATE_ID = 'application-slide-bucket-container-card-template';
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-bucket-content-container';
     me.TOP_LEVEL_BUTTON_CONTAINER_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div:first-child() > div:first-child() > div:nth-child(2)';
@@ -213,9 +214,9 @@ CCH.Objects.BucketSlide = function (args) {
         if (me.isSmall) {
             if (!me.isClosed) {
                 me.toggle();
-                me.resized();
             }
         }
+        me.resized();
     };
 
     me.resized = function () {
@@ -223,7 +224,7 @@ CCH.Objects.BucketSlide = function (args) {
             toExtent = me.isSmall() ? extents.small : extents.large,
             $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             $slideContent = $('#' + me.SLIDE_CONTENT_ID),
-            windowWidth = $(window).outerWidth();
+            windowWidth = $('body').outerWidth();
 
         if (me.isClosed) {
             $slideContainer.css({
@@ -271,9 +272,11 @@ CCH.Objects.BucketSlide = function (args) {
         var $slideContainer = $('#application-slide-items-content-container'),
             $firstAggregationBellow = $slideContainer.find('>div:nth-child(2)'),
             $mapDiv = $('#' + me.MAP_DIV_ID),
+            extents;
+            
             extents = {
                 large: {
-                    top: $mapDiv.offset().top,
+                    top: me.$CONTENT_COLUMN.offset().top,
                     left: $mapDiv.outerWidth() + $mapDiv.offset().left
                 },
                 small: {
@@ -516,7 +519,8 @@ CCH.Objects.BucketSlide = function (args) {
                 'data-toggle' : 'popover',
                 'data-trigger' : 'hover',
                 'data-placement' : 'auto',
-                'data-delay' : CCH.CONFIG.ui['tooltip-delay']
+                // http://stackoverflow.com/questions/15170967/data-delay-in-twitter-bootstrap-tooltips-plugin
+                'data-delay' : '{"show":"'+CCH.CONFIG.ui['tooltip-delay'].show+'","hide":"'+CCH.CONFIG.ui['tooltip-delay'].hide+'"}'
             };
 
         $card.attr('id', 'application-slide-bucket-container-card-' + id);

@@ -112,7 +112,6 @@
         <script type="text/javascript" src="js/application/front/map/Map<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/card/Card<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/common/items/Items<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/popularity/Popularity<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/common/ows/OWS<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/bucket/Bucket<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/search/combined-searchbar<%= development ? "" : "-min"%>.js"></script>

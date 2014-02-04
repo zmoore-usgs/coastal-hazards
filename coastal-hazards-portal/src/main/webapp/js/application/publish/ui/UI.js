@@ -1787,6 +1787,7 @@ CCH.Objects.UI = function () {
     me.clearForm();
 
     CCH.ows.requestCSWRecords({
+        maxRecords: 100000,
         callbacks: {
             success: [
                 function (response) {

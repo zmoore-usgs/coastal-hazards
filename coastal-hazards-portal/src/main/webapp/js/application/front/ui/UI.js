@@ -11,7 +11,7 @@
 /**
  *  Central control object for the user interface
  * 
- * @param {type} args
+ * @param {shareType} args
  * @returns {CCH.Objects.UI.Anonym$22}
  */
 CCH.Objects.UI = function (args) {
@@ -25,7 +25,53 @@ CCH.Objects.UI = function (args) {
                 status : jqXHR.status,
                 textStatus : textStatus
             });
-        };
+        },
+        type = (CCH.CONFIG.params.type + String()).toLowerCase(),
+        id = CCH.CONFIG.params.id,
+        removeMarkers = function () {
+            CCH.map.clearBoundingBoxMarkers();
+            $(window).off('cch-map-bbox-marker-added', removeMarkers);
+        },
+        addItemsToBucketOnLoad = function (items) {
+            items = items || [];
+            // Wait for each item in the session to be loaded 
+            // before adding it to the bucket
+            items.each(function (item) {
+                var loadedHandler = function (evt, args) {
+                    var loadedItemId = args.id,
+                        sessionItems = CCH.session.getSession().items,
+                        addIndex = sessionItems.findIndex(function (i) {
+                            return i.itemId === args.id;
+                        }),
+                        sessionItem = sessionItems[addIndex],
+                        itemById = CCH.items.getById({
+                            id : loadedItemId
+                        });
+
+                    // The following is done to add the items to the bucket and 
+                    // bucket slider in a specific order
+                    itemById.addAtIndex = addIndex;
+                    me.bucket.add({
+                        item : itemById,
+                        visibility : sessionItem.visibility
+                    });
+                    me.bucket.bucket = me.bucket.getItems().sortBy(function (i) {
+                        return i.addAtIndex;
+                    });
+                    me.bucketSlide.cards = me.bucketSlide.cards.sort(function (card) {
+                        return me.bucket.getItemById($(card).data('id')).addAtIndex || -1;
+                    });
+                    me.bucketSlide.rebuild();
+                };
+                $(window).on('cch.item.loaded', function (evt, args) {
+                    if (args.id === item.itemId) {
+                        $(window).off('cch.item.loaded', loadedHandler);
+                        loadedHandler(evt, args);
+                    }
+                });
+            });
+        },
+        cookieItems = $.cookie('cch').items || [];
 
     me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
@@ -40,9 +86,11 @@ CCH.Objects.UI = function (args) {
     me.ITEMS_SLIDE_CONTAINER_ID = args.slideItemsContainerId || 'application-slide-items-container';
     me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId || 'application-slide-bucket-container';
     me.SEARCH_SLIDE_CONTAINER_ID = args.slideSearchContainerId || 'application-slide-search-container';
-    me.magicResizeNumber = 992;
+    me.$NAVBAR_BUCKET_CONTAINER = $('#app-navbar-bucket-button-container');
+    me.$NAVBAR_HELP_CONTAINER = $('#app-navbar-help-container');
     me.minimumHeight = args.minimumHeight || 480;
     me.previousWidth = $(window).width();
+    me.magicResizeNumber = 992;
     me.isSmall = function () {
         // Bootstrap decides when to flip the application view based on 
         // a specific width. 992 seems to be the point 
@@ -118,8 +166,8 @@ CCH.Objects.UI = function (args) {
 
         if (isSmall) {
             contentRowHeight += footerHeight;
-            $titleContainerSiblings = $headerRow.find('>:not(:nth-child(2)):not(.modal)')
-            $titleContainerSiblings.each(function (ind, obj){
+            $titleContainerSiblings = $headerRow.find('>:not(:nth-child(2)):not(.modal)');
+            $titleContainerSiblings.each(function (ind, obj) {
                 titleContainerSiblingsWidth += $(obj).outerWidth();
             });
             $titleContainer.css('width', ($headerRow.innerWidth() - titleContainerSiblingsWidth - 25) + 'px');
@@ -215,11 +263,11 @@ CCH.Objects.UI = function (args) {
 
         args = args || {};
 
-        var type = args.type,
-            id = args.id,
+        var shareType = args.type,
+            shareId = args.id,
             session;
 
-        if (type === 'session') {
+        if (shareType === 'session') {
             // A user has clicked on the share menu item. A session needs to be 
             // created and a token retrieved...
             session = CCH.session;
@@ -241,8 +289,8 @@ CCH.Objects.UI = function (args) {
                     ]
                 }
             });
-        } else if (type === 'item') {
-            me.displayShareModal(CCH.CONFIG.publicUrl +'/ui/item/' + id);
+        } else if (shareType === 'item') {
+            me.displayShareModal(CCH.CONFIG.publicUrl + '/ui/item/' + shareId);
         }
     };
 
@@ -361,6 +409,7 @@ CCH.Objects.UI = function (args) {
             me.accordion.showCurrent();
         }
     });
+
     $(me.combinedSearch).on({
         'combined-searchbar-search-performed' : function (evt, args) {
             var dispResults = function () {
@@ -383,6 +432,7 @@ CCH.Objects.UI = function (args) {
             });
         }
     });
+
     $(CCH.map).on('map-click', function () {
         me.searchSlide.close({
             clearOnClose : true
@@ -395,53 +445,7 @@ CCH.Objects.UI = function (args) {
     // 'ITEM' = Load a single item from the database
     // 'VIEW' = Load a session which can have zero, one or more items
     // '' = Load the application normally through the uber item
-    var type = (CCH.CONFIG.params.type + String()).toLowerCase(),
-        id = CCH.CONFIG.params.id,
-        removeMarkers = function () {
-            CCH.map.clearBoundingBoxMarkers();
-            $(window).off('cch-map-bbox-marker-added', removeMarkers);
-        },
-        addItemsToBucketOnLoad = function (items) {
-            items = items || [];
-            // Wait for each item in the session to be loaded 
-            // before adding it to the bucket
-            items.each(function (item, ind) {
-                var loadedHandler = function (evt, args) {
-                    var loadedItemId = args.id,
-                        sessionItems = CCH.session.getSession().items,
-                        addIndex = sessionItems.findIndex(function(i) {
-                            return i.itemId === args.id;
-                        }),
-                        sessionItem = sessionItems[addIndex],
-                        item = CCH.items.getById({
-                            id : loadedItemId
-                        });
-                        
-                    // The following is done to add the items to the bucket and 
-                    // bucket slider in a specific order
-                    item.addAtIndex = addIndex;
-                    me.bucket.add({
-                        item : item,
-                        visibility : sessionItem.visibility
-                    });
-                    me.bucket.bucket = me.bucket.getItems().sortBy(function(i) {
-                        return i.addAtIndex;
-                    });
-                    me.bucketSlide.cards = me.bucketSlide.cards.sort(function(card) {
-                        return me.bucket.getItemById($(card).data('id')).addAtIndex || -1;
-                    });
-                    me.bucketSlide.rebuild();
-                };
-                $(window).on('cch.item.loaded', function (evt, args) {
-                    if (args.id === item.itemId) {
-                        $(window).off('cch.item.loaded', loadedHandler);
-                        loadedHandler(evt, args);
-                    }
-                });
-            });
-        },
-        cookieItems = $.cookie('cch').items || [];
-
+    // 
     // Most of the application is now initialized, so I'm going to try and load
     // either one item, a view or all top level items. First I check if idType exists
     if (type) {
@@ -514,10 +518,11 @@ CCH.Objects.UI = function (args) {
             zoomToBbox : true
         });
     }
+
+    me.$NAVBAR_BUCKET_CONTAINER.popover();
+    me.$NAVBAR_HELP_CONTAINER.popover();
+
     $(window).trigger('cch.ui.initialized');
-    
-    $('#app-navbar-bucket-button-container').popover();
-    $('#app-navbar-help-container').popover();
 
     CCH.LOG.debug('UI.js::constructor: UI class initialized.');
 

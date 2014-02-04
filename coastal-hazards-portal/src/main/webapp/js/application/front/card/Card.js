@@ -53,7 +53,8 @@ CCH.Objects.Card = function (args) {
         'data-toggle' : 'popover',
         'data-trigger' : 'hover',
         'data-placement' : 'auto',
-        'data-delay' : CCH.CONFIG.ui['tooltip-delay']
+        // http://stackoverflow.com/questions/15170967/data-delay-in-twitter-bootstrap-tooltips-plugin
+        'data-delay' : '{"show":"'+CCH.CONFIG.ui['tooltip-delay'].show+'","hide":"'+CCH.CONFIG.ui['tooltip-delay'].hide+'"}'
     };
 
     if (me.wmsService) {
@@ -220,7 +221,7 @@ CCH.Objects.Card = function (args) {
     };
 
     me.bindAggMenuToResize = function (args) {
-        $(window).on('resize', function () {
+        $(window).on('cch.ui.resized', function () {
             var $container = args.container,
                 $control = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:nth-child(2)'),
                 bodyWidth = $('body').outerWidth(),
