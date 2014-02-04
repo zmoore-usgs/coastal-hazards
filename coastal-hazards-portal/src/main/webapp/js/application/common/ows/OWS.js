@@ -374,6 +374,7 @@ CCH.Objects.OWS = function() {
                     'outputSchema' : 'http://www.opengis.net/cat/csw/2.0.2',
                     'typeNames' : 'csw:Record',
                     'elementSetname' : 'summary',
+                    'maxRecords' : args.maxRecords || '10',
                     'constraint_language_version' : '1.1.0',
                     'outputFormat' : 'application/json'
                 },
