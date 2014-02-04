@@ -28,6 +28,8 @@
 .application-card-control-row button {
     padding-right: 5px;
     padding-left: 5px;
+    font-size: 18px;
+    color: #003366;
 }
 
 .application-card-title-row .application-card-title-container-medium {
