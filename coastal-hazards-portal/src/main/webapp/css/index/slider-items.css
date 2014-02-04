@@ -102,7 +102,9 @@
 .aggregation-selection-container {
     display: inline-block;
     position: absolute;
-    border: 1px #000000 solid;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
     min-width: 320px;
     width: auto;
     border-radius: 4px;
@@ -113,8 +115,11 @@
 
 .aggregation-selection-container ul {
     list-style-type: none;
-    padding: 0px;
     margin: 0px;
+    padding: .5px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
 }
 
 .aggregation-selection-container ul li {
