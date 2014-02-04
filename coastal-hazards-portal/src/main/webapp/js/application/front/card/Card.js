@@ -392,13 +392,12 @@ CCH.Objects.Card = function (args) {
                 $buttonRow = container.find('> div:nth-child(2) > div:nth-child(2)'),
                 $propertyAggButton = $buttonRow.find('> div button:nth-child(2)'),
                 $bucketButton = $buttonRow.find('> div button:nth-child(3)'),
-                moreInfoBadge = $('<span />').
-                    addClass('badge more-info-badge').
-                    append($('<a />').
-                        html('More Info').
-                        attr({
-                            'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
-                        })),
+                $moreInfoLink = $('<a />').
+                    addClass('card-more-info-link').
+                    append($('<i />').addClass('fa fa-share-square-o'),' More Info').
+                    attr({
+                        'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
+                    }),
                 zoomToBadge = $('<span />').
                     addClass('badge zoom-to-badge').
                     html('Zoom To');
@@ -413,7 +412,7 @@ CCH.Objects.Card = function (args) {
             mediumContentContainer.html(mediumContent);
 
             // Add badges to content
-            mediumContentContainer.append(moreInfoBadge, zoomToBadge);
+            mediumContentContainer.append('<br />', $moreInfoLink, zoomToBadge);
 
             // I have either aggregations or leaf nodes as children.
             // I am not myself a child.
