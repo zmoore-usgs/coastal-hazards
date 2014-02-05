@@ -28,6 +28,8 @@
 .application-card-control-row button {
     padding-right: 5px;
     padding-left: 5px;
+    font-size: 18px;
+    color: #003366;
 }
 
 .application-card-title-row .application-card-title-container-medium {
@@ -60,16 +62,10 @@
     cursor: pointer;
 }
 
-.application-card-container .more-info-badge {
-    background-color: #003366;
-    margin-left: 5px;
+.application-card-container .card-more-info-link {
+    color: #003366;
+    font-size: 14px;
 }
-    .application-card-container .more-info-badge a {
-        color: #FFFFFF;
-    }
-    .application-card-container .more-info-badge a:hover {
-        text-decoration: none;
-    }
 
 .application-card-container.open .application-card-collapse-row-closed {
     display: none;

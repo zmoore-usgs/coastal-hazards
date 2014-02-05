@@ -48,10 +48,10 @@
                         <img src="images/cards/item-space.svg" alt="Space Aggregation Image"/>
                     </button>
                     <button class="btn btn-link item-control-button item-control-button-aggregation">
-                        <img src="images/cards/item-branch.svg" alt="Aggregation Image"/>
+                        <img src="images/cards/item-branch.svg" alt="Aggregation Image"/> Explore Contents
                     </button>
                     <button class="btn btn-link item-control-button item-control-button-bucket">
-                        <img src="images/cards/add-bucket.svg" alt="Bucket Image"/>
+                        <img src="images/cards/add-bucket.svg" alt="Bucket Image"/> Add To Bucket
                     </button>
                 </div>
             </div>
