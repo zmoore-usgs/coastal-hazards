@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 
 /**
- *
+ * @deprecated no longer using rank for anything
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Entity

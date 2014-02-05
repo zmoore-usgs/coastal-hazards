@@ -49,6 +49,13 @@ CCH.Objects.Card = function (args) {
     me.child = args.child;
     me.layer = me.item.getWmsLayer();
     me.isOpen = false;
+    me.defaultPopoverObject = {
+        'data-toggle' : 'popover',
+        'data-trigger' : 'hover',
+        'data-placement' : 'auto',
+        // http://stackoverflow.com/questions/15170967/data-delay-in-twitter-bootstrap-tooltips-plugin
+        'data-delay' : '{"show":"'+CCH.CONFIG.ui['tooltip-delay'].show+'","hide":"'+CCH.CONFIG.ui['tooltip-delay'].hide+'"}'
+    };
 
     if (me.wmsService) {
         me.wmsEndpoint = me.wmsService.endpoint;
@@ -76,7 +83,17 @@ CCH.Objects.Card = function (args) {
             direction : 'up',
             complete : complete
         });
-
+        
+        setTimeout(function () {
+            me.
+                container.
+                find('[data-toggle="popover"]').
+                popover();
+            $(window).trigger('card-display-toggle', {
+                'display' : true
+            });
+        }, duration);
+        
         if (me.parent) {
             me.parent.hideLayer();
         }
@@ -88,10 +105,6 @@ CCH.Objects.Card = function (args) {
         }
 
         me.isOpen = true;
-
-        $(me).trigger('card-display-toggle', {
-            'display' : true
-        });
 
         CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was shown');
     };
@@ -117,6 +130,12 @@ CCH.Objects.Card = function (args) {
             direction : 'up',
             complete : complete
         });
+        
+        setTimeout(function () {
+            $(window).trigger('card-display-toggle', {
+                'display' : false
+            });
+        }, duration)
 
         if (me.child) {
             me.child.hide();
@@ -127,10 +146,6 @@ CCH.Objects.Card = function (args) {
         if (me.parent) {
             me.parent.showLayer();
         }
-
-        $(me).trigger('card-display-toggle', {
-            'display' : false
-        });
 
         CCH.LOG.debug('CCH.Objects.Card:: Card ' + me.id + ' was hidden');
     };
@@ -187,7 +202,8 @@ CCH.Objects.Card = function (args) {
             add = function () {
                 // User pressed bucket button in and wants to add me to a bucket
                 $(window).trigger('cch.card.bucket.add', {
-                    item : me.item
+                    item : me.item,
+                    visibility : true
                 });
             },
             // This is not currently being used - keep this functionality around
@@ -199,15 +215,13 @@ CCH.Objects.Card = function (args) {
                     item : me.item
                 });
             };
-
-        $button.off();
-        if (nextAction === 'add') {
-            $button.on('click', add);
-        }
+        
+        $button.off('click', add);
+        $button.on('click', add);
     };
 
     me.bindAggMenuToResize = function (args) {
-        $(window).on('resize', function () {
+        $(window).on('cch.ui.resized', function () {
             var $container = args.container,
                 $control = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:nth-child(2)'),
                 bodyWidth = $('body').outerWidth(),
@@ -376,17 +390,14 @@ CCH.Objects.Card = function (args) {
                 mediumContentContainer = container.find('.application-card-content-container-medium'),
                 minMaxButtons = container.find('.application-card-collapse-icon-container'),
                 $buttonRow = container.find('> div:nth-child(2) > div:nth-child(2)'),
-                $spaceAggButton = $buttonRow.find('> div button:nth-child(1)'),
                 $propertyAggButton = $buttonRow.find('> div button:nth-child(2)'),
                 $bucketButton = $buttonRow.find('> div button:nth-child(3)'),
-                moreInfoBadge = $('<span />').
-                    addClass('badge more-info-badge').
-                    append($('<a />').
-                        html('More Info').
-                        attr({
-                            'target' : '_portal_info_window',
-                            'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
-                        })),
+                $moreInfoLink = $('<a />').
+                    addClass('card-more-info-link').
+                    append($('<i />').addClass('fa fa-share-square-o'),' More Info').
+                    attr({
+                        'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
+                    }),
                 zoomToBadge = $('<span />').
                     addClass('badge zoom-to-badge').
                     html('Zoom To');
@@ -401,7 +412,7 @@ CCH.Objects.Card = function (args) {
             mediumContentContainer.html(mediumContent);
 
             // Add badges to content
-            mediumContentContainer.append(moreInfoBadge, zoomToBadge);
+            mediumContentContainer.append('<br />', $moreInfoLink, zoomToBadge);
 
             // I have either aggregations or leaf nodes as children.
             // I am not myself a child.
@@ -412,7 +423,15 @@ CCH.Objects.Card = function (args) {
                 // This is a leaf node so don't add an aggregation button
                 $propertyAggButton.remove();
             }
-
+            
+            $propertyAggButton.attr($.extend({}, me.defaultPopoverObject, {
+                'data-content' : 'Explore Contents Of This Dataset'
+            }));
+            
+            $bucketButton.attr($.extend({}, me.defaultPopoverObject, {
+                'data-content' : 'Add This Dataset To Your Bucket'
+            }));
+            
             zoomToBadge.on('click', function () {
                 CCH.map.zoomToBoundingBox({
                     bbox : me.bbox,
@@ -487,10 +506,11 @@ CCH.Objects.Card = function (args) {
         },
         'bucket-added': function (evt, args) {
             if (args.id === me.id) {
-                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:last-child'),
+                var $button = me.container.find('button.item-control-button-bucket'),
                     $img = $button.find('> img');
 
                 $img.attr('src', 'images/cards/add-bucket-disabled.svg');
+                
                 me.bindBucketControl({
                     button : $button,
                     nextAction : 'remove'
@@ -499,10 +519,11 @@ CCH.Objects.Card = function (args) {
         },
         'cch.bucket.card.removed': function (evt, args) {
             if (args.id === me.id) {
-                var $button = me.container.find('> div:nth-child(2) > div:nth-child(2) > div button:last-child'),
+                var $button = me.container.find('button.item-control-button-bucket'),
                     $img = $button.find('> img');
 
                 $img.attr('src', 'images/cards/add-bucket.svg');
+                
                 me.bindBucketControl({
                     button : $button,
                     nextAction : 'add'

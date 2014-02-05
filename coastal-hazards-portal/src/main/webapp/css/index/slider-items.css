@@ -21,13 +21,15 @@
     color: #BBBBBB;
 }
 
-.application-card-control-row {
+.application-card-control-row > div {
     text-align: center;
 }
 
 .application-card-control-row button {
     padding-right: 5px;
     padding-left: 5px;
+    font-size: 18px;
+    color: #003366;
 }
 
 .application-card-title-row .application-card-title-container-medium {
@@ -49,26 +51,21 @@
 
 .application-card-container .item-control-button img {
     height: 45px;
+    width: 45px;
 }
 
 .application-card-container .zoom-to-badge {
-    background-color: #345280;
+    background-color: #003366;
     margin-left: 5px;
 }
 .application-card-container .zoom-to-badge:hover {
     cursor: pointer;
 }
 
-.application-card-container .more-info-badge {
-    background-color: #345280;
-    margin-left: 5px;
+.application-card-container .card-more-info-link {
+    color: #003366;
+    font-size: 14px;
 }
-    .application-card-container .more-info-badge a {
-        color: #FFFFFF;
-    }
-    .application-card-container .more-info-badge a:hover {
-        text-decoration: none;
-    }
 
 .application-card-container.open .application-card-collapse-row-closed {
     display: none;
@@ -90,6 +87,9 @@
 #application-slide-items-content-container .panel-heading {
     text-align: center;
 }
+#application-slide-items-content-container .panel-heading:hover {
+    cursor: pointer;
+}
 
 #application-slide-items-content-container .panel-title {
     font-size: 1.9em;
@@ -98,7 +98,9 @@
 .aggregation-selection-container {
     display: inline-block;
     position: absolute;
-    border: 1px #000000 solid;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
     min-width: 320px;
     width: auto;
     border-radius: 4px;
@@ -109,8 +111,11 @@
 
 .aggregation-selection-container ul {
     list-style-type: none;
-    padding: 0px;
     margin: 0px;
+    padding: .5px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
 }
 
 .aggregation-selection-container ul li {
@@ -150,6 +155,12 @@
     #content-column {
         height: 100%;
     }
+    
+    /* Scrollable inner container */
+    #application-slide-items-container > div:nth-child(2) > div > div {
+        overflow-y: auto;
+        height: 100%;
+    }
 }
 
 @media (max-width: 991px) {
@@ -157,11 +168,29 @@
         position: absolute;
         z-index: 1006; /* 1005 is highest on map */
         height: 98%;
+        overflow: hidden;
     }
 
         #application-slide-items-container > div:nth-child(2) > div {
-            padding: 10px 5px 10px 5px;
+            padding: 5px 5px 10px 5px;
+            overflow-y: hidden;
+            background-color: #F5F5F5;
+            height: 100%;
+            border-left: 2px solid #E3E3E3;
+            border-top: 2px solid #E3E3E3;
+            border-bottom: 2px solid #E3E3E3;
+            border-top-left-radius: 10px 10px;
+            -webkit-border-top-left-radius: 10px 10px;
+            border-bottom-left-radius: 10px 10px;
+            -webkit-border-bottom-left-radius: 10px 10px;
         }
+        
+        /* Scrollable inner container */
+        #application-slide-items-container > div:nth-child(2) > div > div:nth-child(2) {
+            overflow-y: auto;
+            height: 95%;
+        }
+        
         #application-slide-items-container > div:nth-child(2) > div > div:first-child {
             margin-bottom: 10px;
         }
@@ -176,19 +205,6 @@
     #application-slide-items-content {
         height: 100%;
         float:right;
-    }
-
-    #application-slide-items-content-container {
-        overflow: auto;
-        background-color: #F5F5F5;
-        height: 100%;
-        border-left: 2px solid #E3E3E3;
-        border-top: 2px solid #E3E3E3;
-        border-bottom: 2px solid #E3E3E3;
-        border-top-left-radius: 10px 10px;
-        -webkit-border-top-left-radius: 10px 10px;
-        border-bottom-left-radius: 10px 10px;
-        -webkit-border-bottom-left-radius: 10px 10px;
     }
 
     #application-slide-items-tab {

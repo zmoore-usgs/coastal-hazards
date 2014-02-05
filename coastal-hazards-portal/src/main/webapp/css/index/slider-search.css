@@ -56,7 +56,7 @@
     /* Results Found Count Container */
     #application-slide-search-container > div > div:nth-child(2) > div:first-child > div:first-child {
         font-size: 1.5em;
-        color: #345280;
+        color: #003366;
     }
     /* Location Search Card - Left-hand Image */
     #application-slide-search-container > div > div:nth-child(2) > div:first-child > div#application-slide-search-location-results-card-container > div > div > div:nth-child(1) {
@@ -77,14 +77,14 @@
     }
 
     #application-slide-search-container > div > div:nth-child(2) > div:first-child > div#application-slide-search-location-results-card-container > div > div > div:nth-child(2) span.badge {
-        background-color: #345280;
+        background-color: #003366;
     }
     /* The control set row within the location container */
     #application-slide-search-container > div > div:nth-child(2) > div:first-child > div > div.application-slide-search-location-card-toggle {
         text-align: center;
     }
     #application-slide-search-container > div > div:nth-child(2) > div:first-child > div > div.application-slide-search-location-card-toggle > span.badge {
-        background-color: #345280;
+        background-color: #003366;
     }
     #application-slide-search-container > div > div:nth-child(2) > div:first-child > div > div.application-slide-search-location-card-toggle > span.badge:hover {
         cursor: pointer;
@@ -106,7 +106,7 @@
     /* Results Found Count Container */
     #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:first-child {
         font-size: 1.5em;
-        color: #345280;
+        color: #003366;
     }
     /* Each row within the product container */
     #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div {
@@ -114,7 +114,7 @@
     }
          /* Add to bucket */
         #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > span.badge {
-            background-color: #345280;
+            background-color: #003366;
             float: right;
         } 
         #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > span.badge:not(.disabled):hover {
@@ -146,7 +146,7 @@
         }
         /* Title Container - Badge */
         #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:nth-child(2) > div > div:first-child > span.badge {
-            background-color: #345280;
+            background-color: #003366;
         }
         #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:nth-child(2) > div > div:first-child > span.badge:hover {
             cursor: pointer;

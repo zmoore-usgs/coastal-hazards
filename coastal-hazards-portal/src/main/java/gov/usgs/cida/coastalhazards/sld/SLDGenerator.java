@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -58,13 +59,17 @@ public class SLDGenerator {
 	
 	public static SLDGenerator getGenerator(Item item, Integer ribbon) {
 		SLDGenerator generator = null;
+        
+        if (ribbon == null) {
+            ribbon = 0;
+        }
 		
 		try {
 			Item.Type itemDotType = item.getType();
 			String itemAttribute = item.getAttr();
 			
 			Map<String, SLDConfig> typeLookup = generatorMap.get(itemDotType);
-			SLDConfig conf = typeLookup.get(itemAttribute);
+			SLDConfig conf = typeLookup.get(StringUtils.upperCase(itemAttribute));
 			
 			if (null != conf) {
 				generator = new SLDGenerator(item, ribbon, conf);

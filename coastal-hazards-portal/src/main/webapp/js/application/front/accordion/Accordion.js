@@ -14,6 +14,7 @@ CCH.Objects.Accordion = function (args) {
     args = args || {};
 
     me.CONTAINER_ID = args.containerId || 'application-slide-items-content-container';
+    me.SCROLLABLE_BELLOW_CONTAINER_ID = 'application-slide-items-content-container-inner-scrollable';
     me.isStopped = true;
 
     container = $('#' + me.CONTAINER_ID);
@@ -59,7 +60,8 @@ CCH.Objects.Accordion = function (args) {
         var card = args.card,
             item = args.item,
             index = args.index,
-            accordion = me.getAccordion(),
+            $scrollContainer = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID),
+            child,
             bellow;
 
         // If we are passed a product, that means we were not passed a card
@@ -69,7 +71,7 @@ CCH.Objects.Accordion = function (args) {
                 initHide : false
             });
         }
-        
+
         // Using the card, create a container from it
         bellow = me.createBellow({
             card : card
@@ -78,13 +80,18 @@ CCH.Objects.Accordion = function (args) {
         // I want to insert the card into the accordion at a specified index if 
         // one was specified. This fixes a race condition in the pulling of the 
         // data for these cards 
-        if (index === undefined || accordion.children().length === 0) {
-            accordion.append(bellow);
+        if (index === undefined || $scrollContainer.children().length === 0) {
+            $scrollContainer.append(bellow);
         } else {
             if (index === 0) {
-                accordion.prepend(bellow);
+                $scrollContainer.prepend(bellow);
             } else {
-                bellow.insertAfter(accordion.children().get(index - 1));
+                child =  $scrollContainer.children().get(index - 1);
+                if (child) {
+                    bellow.insertAfter(child);
+                } else {
+                    $scrollContainer.append(bellow);
+                }
             }
         }
 
@@ -119,9 +126,11 @@ CCH.Objects.Accordion = function (args) {
         toggleTarget.append(
             $('<span />').addClass('accordion-toggle-title-medium').html(titleMedium)
         ).attr({
-            'data-parent' : '#' + me.CONTAINER_ID,
+            'data-parent' : '#' + me.SCROLLABLE_BELLOW_CONTAINER_ID,
             'href' : '#' + accordionBodyId,
-            'data-toggle' : 'collapse'
+            'data-toggle' : 'collapse',
+            'onclick' : 'javascript:return false;' // Yes, this isn't ideal but
+            // it does keep from the url being altered when a user clicks a bellow
         });
 
         accordionBody.attr('id', accordionBodyId);
@@ -152,12 +161,8 @@ CCH.Objects.Accordion = function (args) {
             'shown.bs.collapse' : function (evt) {
                 $(window).trigger('cch.accordion.shown', evt);
                 var $this = $(this),
-                    abId = $this.data('id'),
-					currentUrl = window.location.href;
-					
-				// Clean up the url
-				history.pushState(null, null, currentUrl.substring(0, currentUrl.indexOf(window.location.hash)));
-				
+                    abId = $this.data('id');
+
                 ga('send', 'event', {
                     'eventCategory': 'accordion',
                     'eventAction': 'show',
@@ -193,7 +198,21 @@ CCH.Objects.Accordion = function (args) {
         return $('#' + me.CONTAINER_ID + ' .panel');
     };
 
-    $(window).on('cch.slide.search.button.click.explore', function (evt, args) {
+    $(window).on({
+        'cch.slide.search.button.click.explore' : function (evt, args) {
+            me.explore(evt, args);
+        },
+        'card-display-toggle' : function (evt, obj) {
+            if (obj.display === true) {
+                var $container = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID);
+
+                $container.animate({
+                    scrollTop : $container[0].scrollHeight
+                }, 1000);
+            }
+        }
+    });
+    me.explore = function (evt, args) {
         // When a user clicks explore, I want to be able to search through every
         // item currently in the accordion slider starting with top level items
         // through their children. If found through the initial search, I want to 
@@ -261,20 +280,21 @@ CCH.Objects.Accordion = function (args) {
             });
         }
 
-    });
-    
+    };
+
     me.showCurrent = function () {
         var currentCard = me.getBellows().find('.in > div > div:last-child');
-        
+
         if (currentCard.length > 0) {
-            currentCard.data()['card'].show();
-        } 
+            currentCard.data().card.show();
+        }
     };
 
     return $.extend(me, {
         add: me.addCard,
         load : me.load,
         showCurrent : me.showCurrent,
+        explore : me.explore,
         CLASS_NAME : 'CCH.Objects.Accordion'
     });
 };

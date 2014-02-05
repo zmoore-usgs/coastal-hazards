@@ -1,12 +1,19 @@
 
+<%@page import="gov.usgs.cida.coastalhazards.model.summary.Publication"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.summary.Tiny"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.summary.Medium"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.summary.Full"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.Service"%>
+<%@page import="gov.usgs.cida.coastalhazards.model.Item"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page import="java.util.Map" %>
 
-<%!	
+<%!
     protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
+
     {
         try {
             props = props.addJNDIContexts(new String[0]);
@@ -18,51 +25,83 @@
 <%
     boolean development = Boolean.parseBoolean(props.getProperty("development"));
     String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
-    String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
-    String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
 
     // Figure out the path based on the ID passed in, if any
-    Map<String, String>  attributeMap = (Map<String, String>) pageContext.findAttribute("it");
+    Map<String, String> attributeMap = (Map<String, String>) pageContext.findAttribute("it");
     String id = attributeMap.get("id");
     String path = "../../../../";
     String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
     String jsURI = path + "js/third-party/jsuri/jsuri.jsp";
     String fineUploader = path + "js/fineuploader/fineuploader.jsp";
     String log4js = path + "js/log4javascript/log4javascript.jsp";
-	String configration = path + "WEB-INF/jsp/components/common/config.jsp";
+    String configration = path + "WEB-INF/jsp/components/common/config.jsp";
 %>
 <!DOCTYPE html>
 <html>
     <head>
+        <script type="text/javascript">
+            if (window.location.pathname.indexOf("/item/") === -1) {
+                window.location = window.location.href + "/";
+            }
+        </script>
         <jsp:include page="<%=metaTags%>"></jsp:include>
         <title>USGS Coastal Change Hazards Portal - Publish</title>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
-		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/publish/publish.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/publish/publish.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery<%= development ? "." : "-"%>ui<%= development ? ".all" : ".min"%>.css" />
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/1.10.3/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+
         <jsp:include page="<%= jsURI%>">
             <jsp:param name="relPath" value="../../" />
         </jsp:include>
-        <jsp:include page="<%= log4js %>">
+        <jsp:include page="<%= log4js%>">
             <jsp:param name="relPath" value="../../" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-		<jsp:include page="<%= fineUploader%>">
+        <jsp:include page="<%= fineUploader%>">
             <jsp:param name="relPath" value="../../" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-		<jsp:include page="<%= configration%>"></jsp:include>
-        <script type="text/javascript">
-			CCH.itemid = '<%= id %>';
-		</script>
+        <jsp:include page="<%= configration%>"></jsp:include>
+            <script type="text/javascript">
+                CCH.itemid = '<%= id%>';
+                CCH.CONFIG.limits = {
+                    item : {
+                        name : <%= Item.NAME_MAX_LENGTH %>,
+                        attribute : <%= Item.ATTR_MAX_LENGTH %>
+                    },
+                    service : {
+                        endpoint : <%= Service.ENDPOINT_MAX_LENGTH %>,
+                        parameter : <%= Service.PARAMETER_MAX_LENGTH %>
+                    },
+                    summary : {
+                        full : {
+                            title : <%= Full.TITLE_MAX_LENGTH %>,
+                            text : <%= Full.TEXT_MAX_LENGTH %>
+                        },
+                        medium : {
+                            title : <%= Medium.TITLE_MAX_LENGTH %>,
+                            text : <%= Medium.TEXT_MAX_LENGTH %>
+                        },
+                        tiny : {
+                            text : <%= Tiny.MAX_LENGTH %>
+                        }
+                    },
+                    publication : {
+                        title : <%= Publication.TITLE_MAX_LENGTH %>,
+                        link : <%= Publication.LINK_MAX_LENGTH %>
+                    }
+                }
+        </script>
     </head>
     <body>
-        
+
         <div class="container">
-            
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title"></h3>
@@ -84,13 +123,23 @@
                                 <li><a id="publish-button-create-aggregation-option" href="#">Aggregation</a></li>
                             </ul>
                         </div>
+                        <div id="publish-button-edit-metadata-existing-grp" class="btn-group hidden">
+                            <button type="button" id="publish-button-edit-metadata-existing" class="btn btn-lg btn-success dropdown-toggle" data-toggle="dropdown">
+                                Select Metadata <span class="caret"></span>
+                            </button>
+                            <ul id="publish-list-edit-metadata-existing" class="dropdown-menu" role="menu"></ul>
+                        </div>
                         <div id="qq-uploader-dummy"></div>
                     </div>
                     <form class="form-inline" role="form">
+
                         <input type="hidden" id="form-publish-info-item-itemtype" />
+                        <input type="hidden" id="form-publish-info-item-summary-version" />
+                        <input type="hidden" id="form-publish-info-item-enabled" />
+
                         <%-- 2 column layout --%>
                         <div class="col-md-6">
-                            
+
                             <%-- ITEM ID --%>
                             <div id="form-publish-info-item-id" class="row row-id">
                                 <div class="form-group">
@@ -98,48 +147,46 @@
                                     <input type="text" class="form-control" id="form-publish-item-id" disabled="disabled" />
                                 </div>
                             </div>
-                            
+
+                            <%-- ITEM IMAGE --%>
+                            <div class="row row-id">
+                                <img alt="Item Thumbnail" id="form-publish-info-item-image" src="" /> 
+                            </div>
+
                             <%-- ITEM TITLE --%>
                             <div id="form-publish-info-item-title-full" class="row row-title">
                                 <div class="form-group">
                                     <label for="form-publish-item-title-full">Title (Full)</label>
-                                    <textarea class="form-control" rows="2" id="form-publish-item-title-full" disabled="disabled"></textarea>
+                                    <textarea class="form-control" rows="2" id="form-publish-item-title-full" disabled="disabled"  maxlength="<%= Full.TITLE_MAX_LENGTH %>"></textarea>
                                 </div>
                             </div>
                             <div id="form-publish-info-item-title-medium" class="row row-title">
                                 <div class="form-group">
                                     <label for="form-publish-item-title-medium">Title (Medium)</label>
-                                    <textarea class="form-control" rows="2" id="form-publish-item-title-medium" disabled="disabled"></textarea>
+                                    <textarea class="form-control" rows="2" id="form-publish-item-title-medium" disabled="disabled" maxlength="<%= Medium.TITLE_MAX_LENGTH %>"></textarea>
                                 </div>
                             </div>
-                            <div id="form-publish-info-item-title-tiny" class="row row-title">
-                                <div class="form-group">
-                                    <label for="form-publish-item-title-tiny">Title (Tiny)</label>
-                                    <textarea class="form-control" rows="2" id="form-publish-item-title-tiny" disabled="disabled"></textarea>
-                                </div>
-                            </div>
-                            
+
                             <%-- ITEM DESCRIPTION --%>
                             <div id="form-publish-info-item-description-full" class="row row-description">
                                 <div class="form-group">
                                     <label for="form-publish-item-description-full">Description (Full)</label>
-                                    <textarea class="form-control" rows="4" id="form-publish-item-description-full" disabled="disabled"></textarea>
+                                    <textarea class="form-control" rows="4" id="form-publish-item-description-full" disabled="disabled"  maxlength="<%= Full.TEXT_MAX_LENGTH %>"></textarea>
                                 </div>
                             </div>
                             <div id="form-publish-info-item-description-medium" class="row row-description">
                                 <div class="form-group">
                                     <label for="form-publish-item-description-medium">Description (Medium)</label>
-                                    <textarea class="form-control" rows="2" id="form-publish-item-description-medium" disabled="disabled"></textarea>
+                                    <textarea class="form-control" rows="2" id="form-publish-item-description-medium" disabled="disabled"  maxlength="<%= Medium.TEXT_MAX_LENGTH %>"></textarea>
                                 </div>
                             </div>
                             <div id="form-publish-info-item-description-tiny" class="row row-description">
                                 <div class="form-group">
                                     <label for="form-publish-item-description-tiny">Description (Tiny)</label>
-                                    <textarea class="form-control" rows="2" id="form-publish-item-description-tiny" disabled="disabled"></textarea>
+                                    <textarea class="form-control" rows="2" id="form-publish-item-description-tiny" disabled="disabled"  maxlength="<%= Tiny.MAX_LENGTH %>"></textarea>
                                 </div>
                             </div>
-                            
-                            <%-- KEYWORDS --%>
+
                             <div id="form-publish-info-item-keywords" class="row row-keywords">
                                 <div><h3>Keywords</h3></div>
                                 <div class="input-group form-group-keyword">
@@ -150,8 +197,8 @@
                                     </span>
                                 </div>
                             </div>
-							
-							 <%-- Services --%>
+
+                            <%-- Services --%>
                             <div id="services-panel" class="panel panel-default">
                                 <div class="panel-heading">
                                     <h3 class="panel-title">Services</h3>
@@ -160,16 +207,16 @@
                                     <div id="form-publish-info-item-service-csw" class="row row-csw">
                                         <div class="form-group">
                                             <label for="form-publish-item-service-csw">CSW</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-csw" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-csw" disabled="disabled" maxlength="<%= Service.ENDPOINT_MAX_LENGTH %>" />
                                         </div>
                                     </div>
                                     <div id="form-publish-info-item-service-source-wfs" class="row row-src-wfs">
                                         <div class="form-group">
                                             <label for="form-publish-item-service-source-wfs">Source WFS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wfs" disabled="disabled"  maxlength="<%= Service.ENDPOINT_MAX_LENGTH %>"  />
                                             <label for="form-publish-item-service-source-wfs-serviceparam">Service Parameter</label>
                                             <div class="input-group">
-                                                <input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled" />
+                                                <input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH %>"  />
                                                 <span class="input-group-btn">
                                                     <button id="form-publish-item-service-source-wfs-import-button" class="btn btn-default" type="button" disabled="disabled">Import</button>
                                                 </span>
@@ -179,35 +226,35 @@
                                     <div id="form-publish-info-item-service-source-wms" class="row row-src-wms">
                                         <div class="form-group">
                                             <label for="form-publish-item-service-source-wms">Source WMS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms" disabled="disabled"  maxlength="<%= Service.ENDPOINT_MAX_LENGTH %>" />
                                             <label for="form-publish-item-service-source-wms-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms-serviceparam" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-source-wms-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH %>" />
                                         </div>
                                     </div>
                                     <div id="form-publish-info-item-service-proxy-wfs" class="row row-prx-wfs">
                                         <div class="form-group">
                                             <label for="form-publish-item-service-proxy-wfs">Proxy WFS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs" disabled="disabled"  maxlength="<%= Service.ENDPOINT_MAX_LENGTH %>" />
                                             <label for="form-publish-item-service-proxy-wfs-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs-serviceparam" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH %>"/>
                                         </div>
                                     </div>
                                     <div id="form-publish-info-item-service-proxy-wms" class="row row-prx-wms">
                                         <div class="form-group">
                                             <label for="form-publish-item-service-proxy-wms">Proxy WMS</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms" disabled="disabled"  maxlength="<%= Service.ENDPOINT_MAX_LENGTH %>" />
                                             <label for="form-publish-item-service-proxy-wms-serviceparam">Service Parameter</label>
-                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms-serviceparam" disabled="disabled" />
+                                            <input type="text" class="form-control" id="form-publish-item-service-proxy-wms-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH %>"/>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                            
-                            
+
+
                         <%-- COLUMN TWO --%>
                         <div class="col-md-6">
-                            
+
                             <%-- ITEM TYPE --%>
                             <div id="form-publish-info-item-type" class="row row-type">
                                 <div class="form-group">
@@ -221,14 +268,22 @@
                                 </div>
                             </div>
                             
-                            <%-- NAME --%>
-                            <div id="form-publish-info-item-name" class="row row-name">
+                            <%-- Attribute --%>
+                            <div class="row row-attribute">
                                 <div class="form-group">
-                                    <label for="form-publish-item-name">Name</label>
-                                    <input type="text" class="form-control" id="form-publish-item-name" disabled="disabled" />
+                                    <label for="form-publish-item-attribute">Attribute</label>
+                                    <select class="form-control" id="form-publish-item-attribute" disabled="disabled"></select>
                                 </div>
                             </div>
                             
+                            <%-- NAME --%>
+                            <div id="form-publish-info-item-name" class="row row-name">
+                                <div class="form-group">
+                                    <label for="form-publish-item-name">Download File Name</label>
+                                    <input type="text" class="form-control" id="form-publish-item-name" disabled="disabled" maxlength="<%= Item.NAME_MAX_LENGTH %>" />
+                                </div>
+                            </div>
+
                             <%-- BBOX --%>
                             <div id="form-publish-info-item-bbox" class="row row-bbox">
                                 <div><h5>Bounding Box</h5></div>
@@ -262,7 +317,7 @@
                                     </tr>
                                 </table>
                             </div>
-                            
+
                             <%-- Publications --%>
                             <div id="publications-panel" class="panel panel-default">
                                 <div class="panel-heading">
@@ -273,41 +328,53 @@
                                     <%-- Added programatically --%>
                                 </div>
                             </div>
-                            
-                            <%-- Attribute --%>
-                            <div class="row row-attribute">
-                                <div class="form-group">
-                                    <label for="form-publish-item-attribute">Attribute</label>
-                                    <select class="form-control" id="form-publish-item-attribute" disabled="disabled"></select>
-                                </div>
-                            </div>
+
                             
                             <%-- Children --%>
-                            <div id="form-publish-info-item-children" class="row row-children">
-                                <div class="form-group">
-                                    <label for="form-publish-item-children">Children</label>
-                                    <select class="form-control" multiple id="form-publish-item-children" disabled="disabled"></select>
+                            <div id="form-publish-info-item-panel-children" class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Children</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="form-publish-info-item-children-sortable-row" class="row row-children">
+                                        <div class="form-group">
+                                            <ul id="form-publish-info-item-children-sortable-ul"></ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-							<div id="form-publish-info-item-displayed-children" class="row row-displayed-children">
-                                <div class="form-group">
-                                    <label for="form-publish-item-displayed-children">Displayed Children</label>
-                                    <select class="form-control" multiple id="form-publish-item-displayed-children" disabled="disabled"></select>
-                                </div>
-                            </div>
-                            
+
+
                             <%-- Ribbonable --%>
                             <div class="row row-ribbonable">
                                 <div class="form-group">
                                     <div class="checkbox">
                                         <input id="form-publish-item-ribbonable" type="checkbox" disabled="disabled">
-                                        <label for="fform-publish-item-ribbonable">Ribbonable</label>
+                                        <label for="form-publish-item-ribbonable">Ribbonable</label>
                                     </div>
                                 </div>
                             </div>
-                            
+                            <div class="row row-showchildren">
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <input id="form-publish-item-showchildren" type="checkbox" disabled="disabled">
+                                        <label for="form-publish-item-showchildren">Show Children</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </form>
+                </div>
+                <div id="row-controls-save" class="row clear">
+                    <button type="button" id="publish-button-save" class="btn btn-lg btn-success">
+                        Save
+                    </button>
+                    <button type="button" id="publish-button-publish" class="btn btn-lg btn-success">
+                        Publish
+                    </button>
+                    <button type="button" id="publish-button-delete" class="btn btn-lg btn-success">
+                        Delete
+                    </button>
                 </div>
             </div>
         </div>
@@ -319,19 +386,19 @@
         <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/OnReady.js"></script>
 
-		<div id="alert-modal" class="modal fade">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title"></h4>
-					</div>
-					<div class="modal-body"></div>
-					<div class="modal-footer">
-						<button id="alert-modal-close-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</body>
+        <div id="alert-modal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body"></div>
+                    <div class="modal-footer">
+                        <button id="alert-modal-close-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

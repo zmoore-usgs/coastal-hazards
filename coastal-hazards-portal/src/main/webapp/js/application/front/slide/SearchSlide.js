@@ -29,7 +29,7 @@ CCH.Objects.SearchSlide = function (args) {
     // window: 'cch.ui.resized'
     me.$APPLICATION_CONTAINER = $('#application-container');
     me.SLIDE_CONTAINER_ID = args.containerId;
-    me.SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
+    me.$SLIDE_CONTENT_ID = $('#' + me.SLIDE_CONTAINER_ID + ' .application-slide-content').attr('id');
     me.CLOSE_BUTTON_SELECTOR = '#' + me.SLIDE_CONTAINER_ID + '> div > div.application-slide-controlset';
     me.CONTENT_ROW_ID = 'content-row';
     me.LOCATION_CARD_TEMPLATE_ID = 'application-slide-search-location-card-template';
@@ -39,6 +39,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.SLIDE_SEARCH_CONTAINER_PARENT_ID = 'application-slide-search-content-container';
     me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER = 'application-slide-search-product-results-paging-container';
     me.LOCATION_SLIDE_SEARCH_PAGE_CONTAINER = 'application-slide-search-location-results-paging-container';
+    me.$SEARCH_TYPE_LISTITEM = $('.app-navbar-search-dropdown-item');
     me.bucket = args.bucket;
 
     me.SMALL_OFFSET = 10;
@@ -50,6 +51,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.START_CLOSED = true;
     me.isInitialized = false;
     me.isClosed = me.START_CLOSED;
+    me.isClosing = false;
 
     me.clear = function () {
         var $locationSlide = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
@@ -114,19 +116,20 @@ CCH.Objects.SearchSlide = function (args) {
     };
 
     me.close = function (args) {
-        if (!me.isClosed) {
+        if (!me.isClosed && !me.isClosing) {
             $(window).trigger('cch.slide.search.closing');
-
+            
             var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
-
+            me.isClosing = true;
             $slideContainer.animate({
                 left: $(window).width()
             }, me.ANIMATION_TIME, function () {
-                me.isClosed = true;
                 $slideContainer.addClass('hidden');
                 if (args && args.clearOnClose) {
                     me.clear();
                 }
+                me.isClosing = false;
+                me.isClosed = true;
                 $(window).trigger('cch.slide.search.closed');
             });
         } else {
@@ -148,7 +151,7 @@ CCH.Objects.SearchSlide = function (args) {
         var extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large,
             $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
-            $slideContent = $('#' + me.SLIDE_CONTENT_ID),
+            $slideContent = $('#' + me.$SLIDE_CONTENT_ID),
             $appContainer = $('#' + me.CONTENT_ROW_ID),
             windowWidth = $(window).outerWidth(),
             windowHeight = $(window).outerHeight(),
@@ -360,7 +363,7 @@ CCH.Objects.SearchSlide = function (args) {
 
                     $resultsFoundsContainer.
                             removeClass('hidden').
-                            html(productsSize + ' Result' + (productsSize > 1 ? 's' : '') + ' Found');
+                            html(productsSize + ' Product' + (productsSize > 1 ? 's' : '') + ' Found');
 
                     // Start with a clean slate 
                     $slideContainer.empty();
@@ -379,6 +382,8 @@ CCH.Objects.SearchSlide = function (args) {
                     $slideContainer.append(cards);
 
                     $slideContainer.find('>div:not(.search-result-item-page-1)').addClass('hidden');
+                    $slideContainer.find('*[data-toggle="popover"]').popover();
+                    
 
                     me.createPaging({
                         container : $contentContainer,
@@ -590,13 +595,20 @@ CCH.Objects.SearchSlide = function (args) {
                     $(window).trigger('cch.slide.search.button.bucket.add', {
                         item : item
                     });
+                },
+                defaultPopoverObject = {
+                    'data-toggle' : 'popover',
+                    'data-trigger' : 'hover',
+                    'data-placement' : 'auto',
+                    'data-delay' : CCH.CONFIG.ui['tooltip-delay']
                 };
 
             $newItem.attr('id', 'application-slide-search-product-card-' + id);
-            $imageContainer.attr({
+            $imageContainer.attr($.extend({}, defaultPopoverObject, {
                 'id' : imageContainerClass + '-' + id,
-                'src' : 'images/thumbnail/thumb_' + id + '.png'
-            }).on('click', function () {
+                'src' : 'images/thumbnail/thumb_' + id + '.png',
+                'data-content' : 'Explore this dataset'
+            })).on('click', function () {
                 $exploreControl.trigger('click');
             });
             $titleContainer.attr('id', titleContainerClass + '-' + id);
@@ -623,12 +635,16 @@ CCH.Objects.SearchSlide = function (args) {
                     }
                 }
             });
-            $exploreControl.on('click', function () {
-                $(window).trigger('cch.slide.search.button.click.explore', {
-                    'id' : id
-                });
-                me.close();
-            });
+            $exploreControl.
+                on('click', function () {
+                    $(window).trigger('cch.slide.search.button.click.explore', {
+                        'id' : id
+                    });
+                    me.close();
+                }).
+                attr($.extend({}, defaultPopoverObject, {
+                    'data-content' : 'Explore this dataset'
+                }));
             return $newItem;
         }
     };
@@ -658,6 +674,22 @@ CCH.Objects.SearchSlide = function (args) {
 
         return newItem;
     };
+    
+    me.$SEARCH_TYPE_LISTITEM.on('click', function (evt) {
+        var choice = $(evt.target).attr('title').toLowerCase();
+        
+        if (choice !== 'all') {
+            if (choice === 'location') {
+                $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).
+                    find('>div:nth-child(2)').
+                    empty();
+            } else {
+                $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID).
+                    find('>div:nth-child(2)').
+                    empty();
+            }
+        }
+    });
 
     $(me.CLOSE_BUTTON_SELECTOR).on('click', function () {
         me.toggle({
@@ -695,6 +727,7 @@ CCH.Objects.SearchSlide = function (args) {
         toggle : me.toggle,
         clear : me.clear,
         isClosed : me.isClosed,
+        isClosing : me.isClosing,
         displaySearchResults : me.displaySearchResults,
         CLASS_NAME : 'CCH.Objects.SearchSlide'
     };

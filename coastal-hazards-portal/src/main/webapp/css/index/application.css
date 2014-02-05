@@ -11,10 +11,13 @@ html, body {
     Anything smaller, scroll the app
     */
     min-width: 320px;
-    min-height: 600px;
+    min-height: 480px;
     height: 100%;
     border: 0px;
     padding: 0px;
+    font-size: 100%;
+    font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #777;
 }
 
 /*
@@ -29,7 +32,7 @@ html, body {
 }
 
 #application-container > div.row:nth-child(1) {
-    background-color: #345280 !important;
+    background-color: #003366 !important;
     z-index: 1005;
     margin-bottom: 4px;
     height: 55px;
@@ -40,8 +43,13 @@ html, body {
     padding-right: 0px;
 }
 
+/* Footer Row */
+#application-container > div.row:nth-child(3) {
+    height: 25px;
+}
+
 #application-container > div.row:nth-child(3) > div {
-    background-color: #345280 !important;
+    background-color: #003366 !important;
     height: 20px;
     margin-top: 5px;
 }
@@ -68,7 +76,6 @@ html, body {
 #feature-identification-popup_contentDiv table tr {
     font-size: 1.2em;
     vertical-align: middle;
-    height: 50px;
     margin-bottom: 5px;
 }
 #feature-identification-popup_contentDiv table tr > td:nth-child(2) > span {
@@ -80,13 +87,25 @@ html, body {
     text-align: right;
 }
 
-
-
-@media (min-width: 1200px) {
-    #application-container {
-        width: 100%;
-    }
+.olControlLayerSwitcher {
+    right: inherit !important;
+    top: 80px !important;
+    margin-left: 0px !important;
 }
+.olControlLayerSwitcher .layersDiv {
+    background: rgba(0,51,102,0.7) !important;
+}
+.olControlLayerSwitcher .maximizeDiv img{
+    height: 25px;
+    left: 15px;
+}
+.olControlZoom a {
+    background: rgba(0, 51, 102, 0.7) !important;
+}
+.olControlZoom a:hover {
+    background: rgba(0, 51, 102, 0.7) !important;
+}
+
 
 @media (min-width: 992px) {
     #application-container {
@@ -109,7 +128,7 @@ html, body {
         padding-left: 0px;
         padding-right:  0px;
     }
-    
+
     /* Set the content row to not have any margins, overriding bootstrap's
         15px margins on left/right */
     #application-container > div:nth-child(2) {
@@ -125,6 +144,20 @@ html, body {
 
     #application-container > div.row:nth-child(3) {
         display: none;
+    }
+
+    .application-slide-controlset {
+        margin-top: 10px;
+    }
+    .application-slide-controlset div.pull-left > i {
+        font-size: 1.5em;
+    }
+    .application-slide-controlset div.pull-left > i:hover {
+        cursor: pointer;
+    }
+
+    #map #feature-identification-popup table tr {
+        font-size: 12px;
     }
 }
 

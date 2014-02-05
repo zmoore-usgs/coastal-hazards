@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
+import com.sun.jersey.api.NotFoundException;
 import gov.usgs.cida.coastalhazards.model.Thumbnail;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -18,7 +19,9 @@ public class ThumbnailManager {
         InputStream inputStream = null;
         try {
             Thumbnail thumb = em.find(Thumbnail.class, itemId);
-            inputStream = new ByteArrayInputStream(Base64.decodeBase64(thumb.getImage()));
+            if (thumb != null) {
+                inputStream = new ByteArrayInputStream(Base64.decodeBase64(thumb.getImage()));
+            }
         } finally {
             JPAHelper.close(em);
         }
@@ -31,7 +34,7 @@ public class ThumbnailManager {
         String result = "{\"success\": false}";
 		try {
 			transaction.begin();
-			em.persist(thumbnail);
+			em.merge(thumbnail);
 			transaction.commit();
             result = "{\"success\": true}";
 		} catch (Exception ex) {

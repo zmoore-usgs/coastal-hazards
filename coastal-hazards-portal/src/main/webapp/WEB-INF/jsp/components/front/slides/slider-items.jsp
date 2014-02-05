@@ -1,9 +1,11 @@
 <div id="application-slide-items-container" class="application-slide-container">
     <div id="application-slide-items-tab" class="application-slide-tab">
-        <i class="fa fa-bars"></i>
+        <i class="fa fa-chevron-right"></i>
     </div>
     <div id="application-slide-items-content" class="application-slide-content">
-        <div id="application-slide-items-content-container" class="panel-group"></div>
+        <div id="application-slide-items-content-container" class="panel-group">
+            <div id="application-slide-items-content-container-inner-scrollable"></div>
+        </div>
     </div>
 </div>
 
@@ -42,14 +44,14 @@
             <%-- Control Row --%>
             <div class="application-card-control-row row">
                 <div class="col-md-12">
-                    <button class="btn btn-link item-control-button">
+                    <button class="btn btn-link item-control-button hidden item-control-button-aggregation-space">
                         <img src="images/cards/item-space.svg" alt="Space Aggregation Image"/>
                     </button>
-                    <button class="btn btn-link item-control-button">
-                        <img src="images/cards/item-branch.svg" alt="Aggregation Image"/>
+                    <button class="btn btn-link item-control-button item-control-button-aggregation">
+                        <img src="images/cards/item-branch.svg" alt="Aggregation Image"/> Explore Contents
                     </button>
-                    <button class="btn btn-link item-control-button">
-                        <img src="images/cards/add-bucket.svg" alt="Bucket Image"/>
+                    <button class="btn btn-link item-control-button item-control-button-bucket">
+                        <img src="images/cards/add-bucket.svg" alt="Bucket Image"/> Add To Bucket
                     </button>
                 </div>
             </div>

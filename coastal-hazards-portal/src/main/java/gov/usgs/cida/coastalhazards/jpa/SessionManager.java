@@ -15,7 +15,7 @@ import javax.persistence.PersistenceContext;
 public class SessionManager implements SessionIO {
 
     @Override
-    public String load(String sessionID) throws SessionIOException {
+    public String load(String sessionID) {
         String jsonSession = null;
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         try {
@@ -32,7 +32,7 @@ public class SessionManager implements SessionIO {
     }
 
     @Override
-    public synchronized String save(String session) throws SessionIOException {
+    public synchronized String save(String session) {
         String id = "ERR";
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = em.getTransaction();

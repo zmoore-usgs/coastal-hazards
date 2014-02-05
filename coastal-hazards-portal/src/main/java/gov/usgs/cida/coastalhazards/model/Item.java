@@ -6,6 +6,7 @@ import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import gov.usgs.cida.coastalhazards.util.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.utilities.IdGenerator;
+import gov.usgs.cida.utilities.StringPrecondition;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.IndexColumn;
@@ -43,6 +43,8 @@ import org.hibernate.annotations.Proxy;
 public class Item implements Serializable {
 
     public static final String UBER_ID = JNDISingleton.getInstance().getProperty("coastal-hazards.item.uber.id", "uber");
+    public static final int NAME_MAX_LENGTH = 255;
+    public static final int ATTR_MAX_LENGTH = 255;
 
     public enum ItemType {
 
@@ -69,9 +71,8 @@ public class Item implements Serializable {
     public static final String AGGREGATION_TYPE = "aggregation";
     private String id;
     private ItemType itemType;
-    private Bbox bbox;
-    private Summary summary;
     private String name;
+    private Bbox bbox;
     /**
      * @deprecated or rename to theme
      */
@@ -83,11 +84,8 @@ public class Item implements Serializable {
     /* Whether to show children in navigation menu */
     private boolean showChildren;
     /* Whether to show this item at all, used in mediation */
-    private boolean enabled;
-    /**
-     * @deprecated
-     */
-    private transient Rank rank;
+    private transient boolean enabled;
+    private Summary summary;
     private List<Service> services;
     private transient List<Item> children;
     /* Show only a subset of children */
@@ -122,21 +120,13 @@ public class Item implements Serializable {
         this.bbox = bbox;
     }
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(columnDefinition = "summary_id")
-    public Summary getSummary() {
-        return summary;
-    }
-
-    public void setSummary(Summary summary) {
-        this.summary = summary;
-    }
-
+    @Column(name = "name", length = NAME_MAX_LENGTH)
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
+        StringPrecondition.checkStringArgument(name, NAME_MAX_LENGTH);
         this.name = name;
     }
 
@@ -149,11 +139,13 @@ public class Item implements Serializable {
         this.type = type;
     }
 
+    @Column(name = "attr", length = ATTR_MAX_LENGTH)
     public String getAttr() {
         return attr;
     }
 
     public void setAttr(String attr) {
+        StringPrecondition.checkStringArgument(attr, ATTR_MAX_LENGTH);
         this.attr = (StringUtils.isBlank(attr)) ? null : attr;
     }
 
@@ -181,23 +173,17 @@ public class Item implements Serializable {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(columnDefinition = "summary_id")
+    public Summary getSummary() {
+        return summary;
+    }
+
+    public void setSummary(Summary summary) {
+        this.summary = summary;
+    }
     
-    /**
-     * @deprecated
-     */
-    @OneToOne
-    @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
-    public Rank getRank() {
-        return rank;
-    }
-
-    /**
-     * @deprecated
-     */
-    public void setRank(Rank rank) {
-        this.rank = rank;
-    }
-
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "item_id", referencedColumnName = "id")
     @IndexColumn(name = "list_index")
@@ -258,7 +244,8 @@ public class Item implements Serializable {
     }
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "displayed_children", joinColumns = @JoinColumn(name = "item_id"))
+    @CollectionTable(name = "displayed_children",
+            joinColumns = @JoinColumn(name = "item_id"))
     @IndexColumn(name = "list_index")
     @Column(name = "child_id")
     public List<String> getDisplayedChildren() {
@@ -285,7 +272,7 @@ public class Item implements Serializable {
         Gson gson = GsonUtil.getSubtreeGson();
 
         node = gson.fromJson(json, Item.class);
-        if (node.getId() == null) {
+        if (node.getId() == null || StringUtils.isBlank(node.getId())) {
             node.setId(IdGenerator.generate());
         }
         return node;

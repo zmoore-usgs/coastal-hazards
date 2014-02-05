@@ -36,6 +36,7 @@ CCH.Objects.ItemsSlide = function (args) {
     me.SLIDE_CONTENT_CONTAINER = 'application-slide-items-content-container';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
     me.FOOTER_ROW_ID = args.footerRowId || 'footer-row';
+    me.SMALL_BELLOW_CONTAINER_ID = 'application-slide-items-content-container-inner-scrollable';
     me.bucket = args.bucket;
     me.isSmall = args.isSmall;
     me.borderWidth = 2;
@@ -50,7 +51,7 @@ CCH.Objects.ItemsSlide = function (args) {
     me.open = function () {
         var slideContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
             slideContent = $('#' + me.$SLIDE_CONTENT_ID),
-            slideTab = $('#' + me.SLIDE_TAB_ID),
+            $slideTab = $('#' + me.SLIDE_TAB_ID),
             extents = me.getExtents(),
             windowWidth = $(window).outerWidth(),
             toExtent = extents.small;
@@ -68,12 +69,13 @@ CCH.Objects.ItemsSlide = function (args) {
             $('body').css({
                 overflow : 'hidden'
             });
+            $slideTab.find('i').removeClass('fa-chevron-left').addClass('fa-chevron-right');
             slideContainer.css({
                 width : windowWidth - toExtent.left
             });
             slideContent.css({
                 display : '',
-                width : slideContainer.outerWidth() - slideTab.outerWidth() - me.borderWidth
+                width : slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth
             });
             slideContent.offset({
                 left : windowWidth - me.borderWidth
@@ -94,7 +96,7 @@ CCH.Objects.ItemsSlide = function (args) {
 
     me.close = function () {
         var container = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
-            slideTab = $('#' + me.SLIDE_TAB_ID),
+            $slideTab = $('#' + me.SLIDE_TAB_ID),
             slideContent = $('#' + me.$SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth();
 
@@ -109,19 +111,16 @@ CCH.Objects.ItemsSlide = function (args) {
             $('body').css({
                 overflow : 'hidden'
             });
+            $slideTab.find('i').removeClass('fa-chevron-right').addClass('fa-chevron-left');
             container.animate({
-                left: windowWidth - slideTab.outerWidth() - (me.borderWidth * 2)
+                left: windowWidth - $slideTab.outerWidth() - (me.borderWidth * 2)
             }, me.animationTime, function () {
                 me.isClosed = true;
 
                 slideContent.css({
                     display : 'none'
                 });
-
-                container.css({
-                    width : slideTab.outerWidth()
-                });
-
+                
                 $('body').css({
                     overflow : ''
                 });
@@ -149,6 +148,7 @@ CCH.Objects.ItemsSlide = function (args) {
     me.redimensioned = function (evt, isSmall) {
         var $slideContainer = $('#' + me.SLIDE_CONTENT_CONTAINER),
             $slideItemsContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
+            $slideTab = $('#' + me.SLIDE_TAB_ID),
             $searchContainer;
     
         if (isSmall) {
@@ -160,8 +160,14 @@ CCH.Objects.ItemsSlide = function (args) {
             
             // Move the Search bar from the header to my slider
             $searchContainer.prependTo($slideContainer);
+            
+            if (me.isClosed) {
+                $slideTab.find('i').removeClass('fa-chevron-right').addClass('fa-chevron-left');
+            } else {
+                $slideTab.find('i').removeClass('fa-chevron-left').addClass('fa-chevron-right');
+            }
         } else {
-            $searchContainer =  $slideContainer.find('> div:first-child');
+            $searchContainer =  $slideContainer.find('> div:first-child:not(#application-slide-items-content-container-inner-scrollable)');
             
             $slideItemsContainer.addClass('col-lg-3 col-md-4');
             
@@ -177,7 +183,6 @@ CCH.Objects.ItemsSlide = function (args) {
             $slideTab = $('#' + me.SLIDE_TAB_ID),
             slideContent = $('#' + me.$SLIDE_CONTENT_ID),
             windowWidth = $(window).outerWidth(),
-            windowHeight = $(window).outerHeight(),
             borderSize = 4;
 
         // I've got to know what my form factor is. Bootstrap uses a special number,
@@ -186,16 +191,20 @@ CCH.Objects.ItemsSlide = function (args) {
         //   to a free-floating column and needs quite a bit of help in resizing when
         //   that happens
         if (isSmall) {
+            $slideContainer.width(windowWidth - toExtent.left);
+            slideContent.css('width', $slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth);
+            $slideContainer.height($('body').height() - toExtent.top);
             // Then there's special sizing depending on if I'm closed or not. 
             if (me.isClosed) {
                 // If I'm closed, my container, which holds my tab and content, 
                 // should be off screen to the right except for the width of the tab
                 // and its border so that just the tab is peeking out of the 
                 // right side of the screen
-                $slideContainer.offset({
-                    left: windowWidth  - $slideTab.outerWidth() - (me.borderWidth * 2),
-                    top: toExtent.top
-                });
+                $slideContainer.
+                    offset({
+                        left: windowWidth  - $slideTab.outerWidth() - (me.borderWidth * 2),
+                        top: toExtent.top
+                    });
                 // I hide the content dom since it's off screen and I don't want 
                 // to show it
                 slideContent.css({
@@ -203,20 +212,18 @@ CCH.Objects.ItemsSlide = function (args) {
                 });
             } else {
                 // If I'm open...
-                $slideContainer.
-                    offset(toExtent).
-                    width(windowWidth - toExtent.left);
+                $slideContainer.offset(toExtent);
 
                 slideContent.css({
-                    display : '',
-                    width : $slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth
+                    display : ''
                 });
             }
-            $slideContainer.height(windowHeight - toExtent.top);
+            
             $slideTab.offset({
                 left: $slideContainer.offset().left + borderSize,
                 top: $slideContainer.height() - $slideTab.outerHeight() - 20
             });
+            
         } else {
             slideContent.css({
                 width: '',
@@ -288,8 +295,38 @@ CCH.Objects.ItemsSlide = function (args) {
             if (me.isSmall()) {
                 me.open();
             }
+        },
+        'cch.slide.bucket.item.thumbnail.click' : function () {
+            if (me.isSmall()) {
+                me.toggle();
+            }
         }
     });
+    
+    // This is a horrible hack - Chrome for android seems to be not show anything
+    // above or below the cutoff of my cards whenever I scroll into view. Updating
+    // the CSS slightly forces Chrome to perform a re-flow of the DOM in the container
+    if (new RegExp("Android").test(navigator.userAgent) && 
+            new RegExp("Chrome/[.0-9]*").test(navigator.userAgent)) {
+        $.fn.scrollStopped = function (callback) {
+            $(this).scroll(function () {
+                var self = this,
+                    $this = $(self);
+                if ($this.data('scrollTimeout')) {
+                    clearTimeout($this.data('scrollTimeout'));
+                }
+                $this.data('scrollTimeout', setTimeout(callback, 1, self));
+            });
+        };
+        $('#' + me.SLIDE_CONTENT_CONTAINER).scrollStopped(function(element) {
+            setTimeout(function(element) {
+                $(element).height($(element).height() - 1);
+            }, 2, element);
+            setTimeout(function (element) {
+                $(element).height($(element).height() + 1);
+            }, 3, element);
+        });
+    }
     
     me.redimensioned(null, me.isSmall());
 

@@ -17,7 +17,7 @@ CCH.Objects.Session = function(args) {
         baselayer: '',
         scale: 0,
         bbox: [0.0, 0.0, 0.0, 0.0],
-        center: [0.0, 0.0] 
+        center: [0.0, 0.0]
     };
     
     me.toString = function () {
@@ -29,10 +29,33 @@ CCH.Objects.Session = function(args) {
     };
     
     me.update = function (args) {
+        CCH.LOG.debug('Session.js::update');
+        
         CCH.map.updateSession();
+        
+        args = args || {};
+        
+        var itemid = args.itemid,
+            visibility = args.visibility,
+            itemIndex,
+            cookie;
+    
+        if (itemid) {
+            itemIndex = me.getItemIndex({
+                id : itemid
+            });
+            if (itemIndex !== -1) {
+                me.session.items[itemIndex].visibility = visibility;
+            }
+        }
+        
+        cookie = $.cookie('cch');
+        cookie.items = me.session.items;
+        $.cookie('cch', cookie);
     };
     
     me.write = function (args) {
+        CCH.LOG.debug('Session.js::write');
         args = args || {};
         
         var callbacks = args.callbacks || {
@@ -69,7 +92,10 @@ CCH.Objects.Session = function(args) {
     };
     
     me.read = function(args) {
+        CCH.LOG.debug('Session.js::read');
+        
         var sid = args.sid;
+        
         var callbacks = args.callbacks || {
             success: [],
             error: []
@@ -101,17 +127,24 @@ CCH.Objects.Session = function(args) {
     };
     
     me.load = function (args) {
+        CCH.LOG.debug('Session.js::load');
         args = args || {};
         var sid = args.sid,
             callbacks = args.callbacks || {
                 success : [],
                 error : []
-            };
+            },
+            cookie;
 
         callbacks.success.unshift(function(json, textStatus, jqXHR) {
             if (json) {
                 CCH.LOG.info("Session.js::load: Session found on server. Updating current session.");
                 $.extend(true, me.session, json);
+                
+                cookie = $.cookie('cch');
+                cookie.items = me.session.items;
+                $.cookie('cch', cookie);
+                
                 $(window).trigger('cch.data.session.loaded.true');
             } else {
                 CCH.LOG.info("Session.js::load: Session not found on server.");
@@ -128,6 +161,81 @@ CCH.Objects.Session = function(args) {
             }
         });
     };
+    
+    me.getItemById = function (id) {
+        var item = null,
+            index = me.getItemIndex({
+                id : id
+            });
+            
+        if (index !== -1) {
+            item = me.getSession().items[index];
+        }
+        return item;
+    };
+    
+    me.getItemIndex = function (item) {
+        return me.session.items.findIndex(function(i) {
+            return i.itemId === item.id;
+        });
+    };
+    
+    me.addItem = function (args) {
+        CCH.LOG.debug('Session.js::addItem');
+        
+        var item = args.item,
+            visibility = args.visibility || false,
+            index = me.getItemIndex(item),
+            cookie;
+
+        if (index === -1) {
+            me.session.items.push({
+                itemId : item.id,
+                visibility : visibility
+            });
+        }
+
+        cookie = $.cookie('cch');
+        cookie.items = me.session.items;
+        $.cookie('cch', cookie);
+
+        return me.session;
+    };
+    
+    me.removeItem = function (item) {
+        CCH.LOG.debug('Session.js::removeItem');
+        
+        var index = me.getItemIndex(item),
+            cookie;
+
+        if (index !== -1) {
+            me.session.items.removeAt(index);
+        }
+
+        cookie = $.cookie('cch');
+        cookie.items = me.session.items;
+        $.cookie('cch', cookie);
+        return me.session;
+    };
+    
+    // Cookie handling
+    $.cookie.json = true;
+    if ($.cookie('cch') === undefined) {
+        $.cookie('cch', {
+            'items' : me.session.items
+        },
+        {
+            path: '/'
+        });
+    }
+    $.cookie('cch').items.each(function(item) {
+        me.addItem({
+            item : {
+                id : item.itemId
+            },
+            visibility : item.visibility
+        })
+    });
 
     return $.extend(me, {
         toString: me.toString,
@@ -136,28 +244,9 @@ CCH.Objects.Session = function(args) {
         readSession : me.read,
         writeSession: me.write,
         updateSession : me.update,
-        getItemIndex : function (item) {
-            return me.session.items.findIndex(function(i) {
-                return i.id === item.id;
-            });
-        },
-        addItem : function (item) {
-            var index = me.getItemIndex(item);
-            
-            if (index === -1) {
-                me.session.items.push(item);
-            }
-            
-            return me.session;
-        },
-        removeItem : function (item) {
-            var index = me.getItemIndex(item);
-            
-            if (index !== -1) {
-                me.session.items.removeAt(index);
-            }
-            
-            return me.session;
-        }
+        getItemById : me.getItemById,
+        getItemIndex : me.getItemIndex,
+        addItem : me.addItem,
+        removeItem : me.removeItem
     });
 };

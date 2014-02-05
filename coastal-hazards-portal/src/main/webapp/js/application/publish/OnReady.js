@@ -11,10 +11,10 @@ $(document).ready(function () {
         LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
     });
     CCH.LOG = LOG;
+    
+    CCH.ows = new CCH.Objects.OWS().init();
 
     CCH.ui = new CCH.Objects.UI();
-
-    CCH.ows = new CCH.Objects.OWS().init();
 
     CCH.ui.addUserInformationToForm({
         data : CCH.CONFIG.user
@@ -26,6 +26,7 @@ $(document).ready(function () {
     // TODO This might prove to be an inefficient way of loading items.
     CCH.search.submitItemSearch({
         subtree : true,
+        showDisabled : true,
         callbacks : {
             success : [
                 function (itemsJSON) {
@@ -38,9 +39,11 @@ $(document).ready(function () {
                             })) {
                                 CCH.items.push(item);
                             }
-                            item.children.each(function (child) {
-                                rootOutChildren(child);
-                            })
+                            if (item.children) {
+                                item.children.each(function (child) {
+                                    rootOutChildren(child);
+                                });
+                            }
                         } else {
                             if (!CCH.items.find(function (itemsItem) {
                                 return item.id === itemsItem.id;
@@ -92,7 +95,7 @@ $(document).ready(function () {
                                     ],
                                     error : [
                                         function () {
-                                            debugger;
+//                                            debugger;
                                         }
                                     ]
                                 }
@@ -103,7 +106,7 @@ $(document).ready(function () {
             ],
             error : [
                 function (err) {
-                    debugger;
+//                    debugger;
                 }
             ]
         }
@@ -569,17 +572,6 @@ var publish = function(args) {
                                             callbacks: {
                                                 success: [
                                                     function(data, textStatus, jqXHR) {
-                                                        // Using the published item, update the popularity
-                                                        CCH.Util.updateItemPopularity({
-                                                            item: data.id,
-                                                            type: 'publish',
-                                                            contextPath: contextPath
-                                                        });
-                                                        CCH.Util.updateItemPopularity({
-                                                            item: data.id,
-                                                            type: 'insert',
-                                                            contextPath: contextPath
-                                                        });
                                                         console.log('PUBLISHED');
                                                         publish();
                                                     }

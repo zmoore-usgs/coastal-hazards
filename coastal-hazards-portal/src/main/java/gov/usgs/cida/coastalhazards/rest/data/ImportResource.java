@@ -1,5 +1,7 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
+import gov.usgs.cida.coastalhazards.exception.PreconditionFailedException;
+import gov.usgs.cida.coastalhazards.exception.UnauthorizedException;
 import gov.usgs.cida.coastalhazards.oid.OpenIDConsumerService;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
@@ -37,16 +39,16 @@ public class ImportResource {
 	@Path("/{layer}")
 	public Response deleteLaterFromGeoserver(@Context HttpServletRequest req, @PathParam("layer") String layer) throws URISyntaxException {
 		if (!OpenIDConsumerService.verifyOIDSession(req)) {
-			return Response.status(Response.Status.UNAUTHORIZED).build();
+			throw new UnauthorizedException();
         } else if (StringUtils.isBlank(layer)) {
-			return Response.status(Response.Status.PRECONDITION_FAILED).build();
+			throw new PreconditionFailedException();
 		}
 		
 		GeoServerRESTPublisher publisher = new GeoServerRESTPublisher(geoserverEndpoint, geoserverUser, geoserverPass);
 		if (publisher.removeLayer("proxied", layer + "?recurse=true")) {
 			return Response.status(Response.Status.OK).build();
 		} else {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+			throw new Error();
 		}
 	}
 }

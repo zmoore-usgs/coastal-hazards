@@ -1,1 +1,0 @@
-<script type="text/javascript" src="${param['relPath']}js/third-party/jquery-cookie/jquery.cookie.js"></script>

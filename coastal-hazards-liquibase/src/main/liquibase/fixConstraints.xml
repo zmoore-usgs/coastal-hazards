@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="jiwalker" id="cascade_delete_foreign_key">
+        <dropForeignKeyConstraint baseTableName="aggregation_children" constraintName="fk_aggregation_children_agg_id" />
+        <dropForeignKeyConstraint baseTableName="aggregation_children" constraintName="fk_aggregation_children_item_id" />
+        <addForeignKeyConstraint baseColumnNames="aggregation_id" baseTableName="aggregation_children" constraintName="fk_aggregation_children_agg_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" />
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="aggregation_children" constraintName="fk_aggregation_children_item_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item" />
+    </changeSet>
+    <changeSet author="jiwalker" id="cascade_delete_bbox">
+        <dropForeignKeyConstraint baseTableName="item" constraintName="fk_item_bbox" />
+        <addForeignKeyConstraint baseColumnNames="bbox_id" baseTableName="item" constraintName="fk_item_bbox" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="bbox" />
+    </changeSet>
+    <changeSet author="jiwalker" id="remove_full_foreign_key">
+        <comment>This foreign key prevents the publications from being inserted,
+            hibernate is doing it in an odd way as far as I can tell</comment>
+            <dropForeignKeyConstraint baseTableName="full_publications" constraintName="fk_jbq09el4j5pm4j56emfcag2uq" />
+    </changeSet>
+    <changeSet author="jiwalker" id="remove_displayed_children_pkey">
+        <dropPrimaryKey tableName="displayed_children" constraintName="displayed_children_pkey" />
+    </changeSet>
+</databaseChangeLog>

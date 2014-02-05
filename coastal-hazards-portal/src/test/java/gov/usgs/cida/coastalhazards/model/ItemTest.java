@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.model;
 
+import gov.usgs.cida.coastalhazards.exception.CycleIntroductionException;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
 import org.junit.Test;
@@ -55,15 +56,15 @@ public class ItemTest {
     
     @Test
     @Ignore //need to figure out how to do local db test
-    public void testDB() throws SessionIOException {
+    public void testDB() throws SessionIOException, CycleIntroductionException {
         ItemManager manager = new ItemManager();
-		String id;
-		
-		id = manager.persist(itemJSON);
-		assertNotNull(id);
-		
-		String json = manager.load(id, false);
-		assertNotNull(json);
+        String id;
+        Item fromJSON = Item.fromJSON(itemJSON);
+        id = manager.persist(fromJSON);
+        assertNotNull(id);
+
+        Item item = manager.load(id);
+        assertNotNull(item);
     }
 
     /**

@@ -1,10 +1,9 @@
 package gov.usgs.cida.coastalhazards.model.summary;
 
+import gov.usgs.cida.utilities.StringPrecondition;
 import java.io.Serializable;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,7 +11,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import org.hibernate.annotations.ForeignKey;
+import javax.persistence.Table;
 
 /**
  * Name full_publications is holdout from when this was embedded, didn't want to
@@ -20,7 +19,8 @@ import org.hibernate.annotations.ForeignKey;
  * 
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-@Entity(name = "full_publications")
+@Entity
+@Table(name = "full_publications")
 public class Publication implements Serializable {
     
     public enum PublicationType {
@@ -29,15 +29,18 @@ public class Publication implements Serializable {
         resources;
     }
     
+    public static final int TITLE_MAX_LENGTH = 255;
+    public static final int LINK_MAX_LENGTH = 255;
+    
     public static final String ID = "id";
     public static final String TITLE = "title";
     public static final String LINK = "link";
 
-    private long id;
-    private long fullId;
+    private transient long id;
+    private transient long fullId;
     private String title;
     private String link;
-    private PublicationType type;
+    private transient PublicationType type;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -58,19 +61,23 @@ public class Publication implements Serializable {
         this.fullId = fullId;
     }
 
+    @Column(name = "title", length = TITLE_MAX_LENGTH)
     public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
+        StringPrecondition.checkStringArgument(title, TITLE_MAX_LENGTH);
         this.title = title;
     }
 
+    @Column(name = "link", length = LINK_MAX_LENGTH)
     public String getLink() {
         return link;
     }
 
     public void setLink(String link) {
+        StringPrecondition.checkStringArgument(link, LINK_MAX_LENGTH);
         this.link = link;
     }
 

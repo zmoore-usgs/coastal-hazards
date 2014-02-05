@@ -91,7 +91,7 @@ CCH.Objects.OWS = function() {
                         identifier: "srsHandling",
                         data: {
                             literalData: {
-                                value: 'NONE'
+                                value: 'REPROJECT_TO_DECLARED'
                             }
                         }
                     }
@@ -121,6 +121,50 @@ CCH.Objects.OWS = function() {
                 }
             });
         },
+        generateThumbnail : function(args) {
+            args = args || {};
+            var id = args.id,
+                callbacks = args.callbacks || {
+                    success : [],
+                    error : []
+                },
+                wpsFormat = new OpenLayers.Format.WPSExecute(),
+                doc = wpsFormat.write({
+                    identifier: "org.n52.wps.server.r.thumbnail.service",
+                    dataInputs: [{
+                        identifier: "url",
+                        data: {
+                            literalData: {
+                                value: CCH.CONFIG.publicUrl + '/data/item/' + id
+                            }
+                        }
+                    }],
+                    responseForm: {
+                        rawDataOutput: {
+                            encoding: "base64",
+                            identifier: "output"
+                        }
+                    }
+                });
+                
+            OpenLayers.Request.POST({
+                url: CCH.CONFIG.contextPath + '/52n/WebProcessingService',
+                data:doc,
+                success:function(response){
+                    var trimmedResponse = response.responseText.trim();
+                    if (trimmedResponse.indexOf('ExceptionText') !== -1) {
+                        var errorText = $(trimmedResponse).find('ows\\:ExceptionText');
+                        callbacks.error.each(function (cb) {
+                            cb(errorText.text());
+                        });
+                    } else {
+                        callbacks.success.each(function (cb) {
+                            cb(trimmedResponse);
+                        });
+                    }
+                }
+            });
+        },
         describeFeatureType : function(args) {
             args = args || {};
             var callbacks = args.callbacks || {
@@ -137,9 +181,15 @@ CCH.Objects.OWS = function() {
                 },
                 success: function(data, textStatus, jqXHR) {
                     var describeFTResponse = new OpenLayers.Format.WFSDescribeFeatureType().read(data);
-                    $(callbacks.success).each(function(index, callback, allCallbacks) {
-                        callback(describeFTResponse);
-                    });
+					if (Object.keys(describeFTResponse).length > 0) {
+						$(callbacks.success).each(function(index, callback, allCallbacks) {
+							callback(describeFTResponse);
+						});
+					} else {
+						$(callbacks.error).each(function(index, callback, allCallbacks) {
+							callback(data);
+						});
+					}
                 },
                 error: function(data, textStatus, jqXHR) {
                     $(callbacks.error).each(function(index, callback, allCallbacks) {
@@ -228,6 +278,59 @@ CCH.Objects.OWS = function() {
                 }
             });
         },
+        requestSummaryByAttribute : function (args) {
+            args = args || {};
+            var url = args.url ? args.url : '',
+                attribute = args.attribute,
+                callbacks = args.callbacks || {
+                    success : [],
+                    error : []
+                },
+                wpsFormat = new OpenLayers.Format.WPSExecute(),
+                wpsRequest;
+                
+                wpsRequest = wpsFormat.write({
+                    identifier: "org.n52.wps.server.r.item.summary",
+                    dataInputs: [{
+                        identifier: "input",
+                        data: {
+                            literalData: {
+                                value: url
+                            }
+                        }
+                    },
+                    {
+                        identifier: "attr",
+                        data: {
+                            literalData: {
+                                value: attribute
+                            }
+                        }
+                    }],
+                    responseForm: {
+                        rawDataOutput: {
+                            identifier: "output"
+                        }
+                    }
+                });
+            
+            OpenLayers.Request.POST({
+                url: CCH.CONFIG.contextPath + '/52n/WebProcessingService',
+                data: wpsRequest,
+                success:function(response){
+                    var responseText = response.responseText;
+                    if (responseText.charAt(0) === '{') {
+                        callbacks.success.each(function (cb) {
+                            cb(JSON.parse(responseText));
+                        });
+                    } else {
+                        callbacks.error.each(function (cb) {
+                            cb(responseText);
+                        });
+                    }
+                }
+            });
+        },
 		buildServiceEndpoint: function (endpoint) {
 			var updatedEndpoint = null,
 				urlIndex = 0;
@@ -251,6 +354,41 @@ CCH.Objects.OWS = function() {
 				}
 			}
 			return updatedEndpoint;
-		}
+		},
+        requestCSWRecords: function (args) {
+            args = args || {};
+            
+            var callbacks = args.callbacks || {
+                success : [],
+                error : []
+            }
+            
+            $.ajax({
+                url : CCH.CONFIG.contextPath + '/csw/csw',
+                data : {
+                    'request' : 'GetRecords',
+                    'service' : 'CSW',
+                    'version' : '2.0.2',
+                    'namespace' : 'namespace=xmlns(csw=http://www.opengis.net/cat/csw)',
+                    'resultType' : 'results',
+                    'outputSchema' : 'http://www.opengis.net/cat/csw/2.0.2',
+                    'typeNames' : 'csw:Record',
+                    'elementSetname' : 'summary',
+                    'maxRecords' : args.maxRecords || '10',
+                    'constraint_language_version' : '1.1.0',
+                    'outputFormat' : 'application/json'
+                },
+                success : function (response) {
+                    callbacks.success.each(function (cb) {
+                        cb(response);
+                    })
+                },
+                error : function (response) {
+                    callbacks.error.each(function (cb) {
+                        cb(response);
+                    })
+                }
+            })
+        }
     });
 };

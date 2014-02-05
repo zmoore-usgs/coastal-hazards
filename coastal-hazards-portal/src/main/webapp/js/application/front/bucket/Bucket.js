@@ -17,13 +17,16 @@ CCH.Objects.Bucket = function (args) {
     me.INITIAL_BUCKET_COUNT_MARGIN_LEFT = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left');
     me.MARGIN_WIDTH = 0;
     me.bucket = [];
+    
     me.bucketAddClickHandler = function (evt, args) {
         args = args || {};
-        var item = args.item;
+        var item = args.item,
+            visibility = args.visibility || false;
 
         if (item) {
             me.add({
-                item: item
+                item: item,
+                visibility : visibility
             });
         }
     };
@@ -41,10 +44,7 @@ CCH.Objects.Bucket = function (args) {
 
     me.countChanged = function () {
         var count = me.getCount(),
-            bucketContainer = $('#' + me.BUCKET_CONTAINER_ID),
-            currentMarginString = $('#' + me.BUCKET_COUNT_CONTAINER_ID).css('margin-left'),
-            currentMargin = parseInt(currentMarginString.substring(0, currentMarginString.indexOf('px')), 10),
-            originalMargin = parseInt(me.INITIAL_BUCKET_COUNT_MARGIN_LEFT.substring(0, me.INITIAL_BUCKET_COUNT_MARGIN_LEFT.indexOf('px')), 10);
+            bucketContainer = $('#' + me.BUCKET_CONTAINER_ID);
         
         if (count > 0) {
             if (!bucketContainer.hasClass(me.BUCKET_POPULATED_CLASS)) {
@@ -56,21 +56,21 @@ CCH.Objects.Bucket = function (args) {
             bucketContainer.addClass(me.BUCKET_UNPOPULATED_CLASS);
         }
 
-        if (count > 0 && currentMargin !== originalMargin) {
+        if (count >= 0 && count < 10) {
             $('#' + me.BUCKET_COUNT_CONTAINER_ID).css({
-                'marginLeft' : originalMargin + 'px'
+                'marginLeft' : '17px'
             });
         }
 
-        if (count > 9 && currentMargin !== originalMargin - me.MARGIN_WIDTH) {
+        if (count >= 10 && count < 100) {
             $('#' + me.BUCKET_COUNT_CONTAINER_ID).css({
-                'marginLeft' : (originalMargin - me.MARGIN_WIDTH) + 'px'
+                'marginLeft' : '12px'
             });
         }
 
-        if (count > 99 && currentMargin !== originalMargin - me.MARGIN_WIDTH * 2) {
+        if (count >= 100) {
             $('#' + me.BUCKET_COUNT_CONTAINER_ID).css({
-                'marginLeft' : (originalMargin - me.MARGIN_WIDTH * 2) + 'px'
+                'marginLeft' : '7px'
             });
         }
         CCH.LOG.debug('CCH.Objects.Bucket::countChanged: Bucket count changed. Current count: ' + count);
@@ -80,8 +80,7 @@ CCH.Objects.Bucket = function (args) {
     };
 
     $('#' + me.BUCKET_CONTAINER_ID).on('click', function () {
-        $(me).trigger('app-navbar-button-clicked');
-        me.slide.toggle();
+        $(window).trigger('app-navbar-button-clicked');
     });
     
     $(window).on({
@@ -109,7 +108,8 @@ CCH.Objects.Bucket = function (args) {
             }
 
             var item = args.item,
-                id = item.id;
+                id = item.id,
+                visibility = args.visibility;
         
             if (!me.getItemById(id)) {
                 // Add the item to my personal bucket array
@@ -117,11 +117,15 @@ CCH.Objects.Bucket = function (args) {
                 
                 // Add the item to the bucket slide
                 me.slide.add({
-                    item : item
+                    item : item,
+                    visibility : visibility
                 });
                 
                 // Add the item to the session
-                CCH.session.addItem(item);
+                CCH.session.addItem({
+                    item : item,
+                    visibility : visibility
+                });
                 
                 // Increase the bucket count visually
                 me.increaseCount();
@@ -178,6 +182,7 @@ CCH.Objects.Bucket = function (args) {
                 });
             });
         },
+        bucket : me.bucket,
         getItems : function () {
             return me.bucket;
         },
@@ -204,10 +209,10 @@ CCH.Objects.Bucket = function (args) {
         setCount: function (args) {
             args = args || {};
             var count = parseInt(args.count, 10),
-                bucketContainer = $('#' + me.BUCKET_COUNT_CONTAINER_ID);
+                $countContainer = $('#' + me.BUCKET_COUNT_CONTAINER_ID)
             if (!isNaN(count) && count % 1 === 0) {
                 if (count !== undefined && !isNaN(count)) {
-                    bucketContainer.html(count);
+                    $countContainer.html(count);
                 }
             } else {
                 throw 'setCount called with a double. Only integers allowed';

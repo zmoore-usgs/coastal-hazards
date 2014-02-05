@@ -107,4 +107,11 @@
             <delete tableName="displayed_children" />
         </rollback>
     </changeSet>
+    <changeSet author="jiwalker" id="add_large_sequence_start">
+        <dropSequence sequenceName="hibernate_sequence" />
+        <createSequence sequenceName="hibernate_sequence" startValue="10000" />
+        <rollback>
+            <comment>This should be fine as long as the test_data doesn't have values > 10000</comment>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>

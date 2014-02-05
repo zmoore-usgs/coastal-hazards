@@ -8,7 +8,7 @@
 /*global OpenLayers*/
 $(document).ready(function () {
     "use strict";
-    
+
     splashUpdate("Initializing Logging...");
     initializeLogging({
         LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
@@ -21,10 +21,10 @@ $(document).ready(function () {
     $(document).ajaxStop(function () {
         $('body').css('cursor', 'default');
     });
-
+    
     splashUpdate("Initializing Session Subsystem...");
     CCH.session = new CCH.Objects.Session();
-
+    
     splashUpdate("Initializing Map...");
     CCH.map = new CCH.Objects.Map({
         mapDiv: 'map'

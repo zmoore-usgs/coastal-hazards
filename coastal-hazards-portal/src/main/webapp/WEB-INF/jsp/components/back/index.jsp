@@ -20,14 +20,18 @@
 	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
 	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
 	String version = props.getProperty("application.version");
+    String path = "../../../../";
+    String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
+    String log4js = path + "js/log4javascript/log4javascript.jsp";
+    String overlay = path + "WEB-INF/jsp/components/common/application-overlay.jsp";
 %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <jsp:include page="WEB-INF/jsp/components/common/meta-tags.jsp"></jsp:include>
-			<title>USGS Coastal Change Hazards Portal</title>
-			<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
-			<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
+        <jsp:include page="<%=metaTags%>"></jsp:include>
+        <title>USGS Coastal Change Hazards Portal</title>
+        <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers.js"></script>
@@ -38,6 +42,7 @@
 				CONFIG: {
 					itemId: '${it.id}',
 					contextPath: '<%=baseUrl%>',
+                    development: <%=development%>,
 					map: null,
 					projection: "EPSG:3857",
 					initialExtent: [-18839202.34857, 1028633.5088404, -2020610.1432676, 8973192.4795826],
@@ -63,16 +68,21 @@
 				window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
 			}
         </script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search.js"></script>
-        <jsp:include page="js/log4javascript/log4javascript.jsp">
-            <jsp:param name="relPath" value="" />
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search<%= development ? "" : "-min"%>.js"></script>
+        <jsp:include page="<%= log4js %>">
+            <jsp:param name="relPath" value="../../" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Items.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/util/Util.js"></script>
-        <script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady.js'></script>
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/ows/OWS<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/front/map/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/back/map/map<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/back/ui/UI<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Items<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/util/Util<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= development ? "" : "-min"%>.js'></script>
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />
 		<script>
 			(function(i, s, o, g, r, a, m) {
 				i['GoogleAnalyticsObject'] = r;
@@ -92,7 +102,7 @@
 		</script>
     </head>
     <body>
-        <jsp:include page="WEB-INF/jsp/components/common/application-overlay.jsp">
+        <jsp:include page="<%= overlay %>">
             <jsp:param name="application-overlay-description" value="USGS coastal change hazards research produces data, 
                        knowledge, and tools about storms, shoreline change, and seal-level rise. These products are available 
                        here. They can be used to increase awareness and provide a basis for decision making." />
@@ -104,8 +114,8 @@
         <div id="info-content" class="container">
             <div id="header-row" class="row">
                 <%-- Logo --%>
-                <a href="<%=baseUrl%>/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container"  target="portal_main_window">
-                    <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.gif" />
+                <a href="<%=baseUrl%>/" id="app-navbar-coop-logo-img-container" class="app-navbar-item-container">
+                    <img id="app-navbar-coop-logo-img" alt="Navigation Bar Cooperator Logo" src="images/banner/cida-cmgp.svg" />
                 </a>
                 <%-- Application Title --%>
                 <div id="app-navbar-site-title-container" class="app-navbar-item-container">
@@ -145,9 +155,6 @@
 
                     <div class="row">
                         <div id="info-legend" class="well-small well col-md-6"></div>
-                        <div id="info-graph" class='well well-small col-md-6'>
-                            <img class="img-responsive" alt="Graph Image" src="" />
-                        </div>
                     </div>
 
                 </div>
@@ -160,7 +167,6 @@
                     </div>
                     <div class="row" id='info-container-publications'>
                         <div class="well">
-                            <span id='info-container-publications-label'>Publications: </span>
                             <span id='info-container-publications-list-span'></span>
                         </div>
                     </div>

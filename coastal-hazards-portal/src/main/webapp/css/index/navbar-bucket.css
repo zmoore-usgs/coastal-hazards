@@ -30,10 +30,10 @@
 
 /* Text node ******************************************************************/
 #app-navbar-bucket-control-container > *:nth-child(1) > span > span {
-    color: #345280;
+    color: #003366;
     font-weight: bold;
     top: 23px;
-    margin-left: 20px;
+    margin-left: 17px;
     position: relative;
 }
 /******************************************************************************/
