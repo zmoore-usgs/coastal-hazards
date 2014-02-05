@@ -14,12 +14,12 @@ CCH.Objects.UI = function (args) {
         $publist,
         item = args.item;
 
-    me.loadSLDCallback = function (data, dataItem, index) {
+    me.loadSLDCallback = function (data, dataItem, index, isLast) {
         var sld = data,
             featureLegend,
             existingDivArray,
+            $legendContainer = $('#info-legend'),
             insertLegendAtIndex = function (legend, index) {
-                var $legendContainer = $('#info-legend');
                 if (index === 0) {
                     $legendContainer.prepend(legend);
                 } else {
@@ -71,18 +71,32 @@ CCH.Objects.UI = function (args) {
                 });
             }
         } else if (dataItem.type === 'storms') {
-            featureLegend = CCH.ui.buildLegend({
-                type: dataItem.type,
-                sld: sld
-            });
-            insertLegendAtIndex(featureLegend, index);
+            if ($legendContainer.find('#feature-legend-' + dataItem.attr).length === 0) {
+                featureLegend = CCH.ui.buildLegend({
+                    type: dataItem.type,
+                    sld: sld
+                });
+                featureLegend.attr('id', 'feature-legend-' + dataItem.attr);
+                insertLegendAtIndex(featureLegend, index);
+            }
+            
+            if (isLast && $legendContainer.children().length === 1) {
+                $legendContainer.find('caption').html(item.summary.full.title)
+            }
         } else if (dataItem.type === 'vulnerability') {
-            featureLegend = CCH.ui.buildLegend({
-                type: dataItem.type,
-                attr: dataItem.attr,
-                sld: sld
-            });
-            insertLegendAtIndex(featureLegend, index);
+            if ($legendContainer.find('#feature-legend-' + dataItem.attr).length === 0) {
+                featureLegend = CCH.ui.buildLegend({
+                    type: dataItem.type,
+                    attr: dataItem.attr,
+                    sld: sld
+                });
+                featureLegend.attr('id', 'feature-legend-' + dataItem.attr);
+                insertLegendAtIndex(featureLegend, index);
+            }
+            
+            if (isLast && $legendContainer.children().length === 1) {
+                $legendContainer.find('caption').html(item.summary.full.title)
+            }
         }
     };
 
@@ -98,16 +112,16 @@ CCH.Objects.UI = function (args) {
             bInd = 0,
             ub,
             lb,
-            legendDiv = $('<div />').addClass('cch-ui-legend-div'),
-            legendTable = $('<table />').addClass('cch-ui-legend-table table table-bordered table-hover'),
-            legendTableCaption = $('<caption />').addClass('cch-ui-legend-table-caption').html(sld.title),
-            legendTableHead = $('<thead />').append(
+            $legendDiv = $('<div />').addClass('cch-ui-legend-div'),
+            $legendTable = $('<table />').addClass('cch-ui-legend-table table table-bordered table-hover'),
+            $legendTableCaption = $('<caption />').addClass('cch-ui-legend-table-caption').html(sld.title),
+            $legendTableHead = $('<thead />').append(
                 $('<tr />').append(
                     $('<th />').attr({'scope': 'col'}),
                     $('<th />').attr({'scope': 'col'}).html(sld.units)
                 )
             ),
-            legendTableBody = $('<tbody />'),
+            $legendTableBody = $('<tbody />'),
             legendTableBodyTr,
             legendTableBodyTdColor,
             legendTableBodyTdRange,
@@ -138,7 +152,7 @@ CCH.Objects.UI = function (args) {
                     legendTableBodyTdRange = $('<td />').addClass('cch-ui-legend-table-body-td-range').append(
                         $('<div />').addClass('cch-ui-legend-table-body-div-range').html(range(ub, lb))
                     );
-                    legendTableBody.append(
+                    $legendTableBody.append(
                         legendTableBodyTr.append(
                             legendTableBodyTdColor,
                             legendTableBodyTdRange
@@ -157,7 +171,8 @@ CCH.Objects.UI = function (args) {
             yInd,
             createYearLookupMap = function (y) {
                 return y < 10 ? '0' + y : String + y;
-            };
+            },
+            category;
 
         if (type === 'historical') {
             ratesAttributes = ["LRR", "WLR", "SCE", "NSM", "EPR"];
@@ -195,7 +210,7 @@ CCH.Objects.UI = function (args) {
 
                     // We don't really need visibility toggles when there's only one row
                     if (years.length > 1) {
-                        legendDiv.addClass('btn-group').attr({'data-toggle': 'buttons-radio'});
+                        $legendDiv.addClass('btn-group').attr({'data-toggle': 'buttons-radio'});
                         viewButton = $('<button />').attr({
                             'cch-year': years[yInd],
                             'type': 'button'
@@ -262,7 +277,7 @@ CCH.Objects.UI = function (args) {
                     }
 
                     legendTableBodyTdYear = $('<td />').addClass('cch-ui-legend-table-body-td-year').append(valueContainer);
-                    legendTableBody.append(legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear, legendTableBodyTdButton));
+                    $legendTableBody.append(legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear, legendTableBodyTdButton));
                 }
             }
 
@@ -272,14 +287,13 @@ CCH.Objects.UI = function (args) {
             if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(args.attr.toUpperCase()) !== -1) {
                 // Old school CVI
                 for (bInd = 0; bInd < sld.bins.length; bInd++) {
-                    var category = sld.bins[bInd].category;
-                    var legendTableBodyTr = $('<tr />');
-                    var legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
-                            $('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', sld.bins[bInd].color).html('&nbsp;'));
-                    var legendTableBodyTdRange = $('<td />').addClass('cch-ui-legend-table-body-td-range').append(
-                            $('<div />').addClass('cch-ui-legend-table-body-div-range').html(category));
-                    legendTableBody.append(
-                            legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdRange));
+                    category = sld.bins[bInd].category;
+                    legendTableBodyTr = $('<tr />');
+                    legendTableBodyTdColor = $('<td />').addClass('cch-ui-legend-table-body-td-color').append(
+                        $('<div />').addClass('cch-ui-legend-table-body-div-color').css('background-color', sld.bins[bInd].color).html('&nbsp;'));
+                    legendTableBodyTdRange = $('<td />').addClass('cch-ui-legend-table-body-td-range').append(
+                        $('<div />').addClass('cch-ui-legend-table-body-div-range').html(category));
+                    $legendTableBody.append(legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdRange));
                 }
             } else {
                 // Bayesian
@@ -287,13 +301,13 @@ CCH.Objects.UI = function (args) {
             }
         }
 
-        legendDiv.append(legendTable.append(
-                legendTableCaption,
-                legendTableHead,
-                legendTableBody
-                ));
-        
-        return legendDiv;
+        $legendDiv.append($legendTable.append(
+            $legendTableCaption,
+            $legendTableHead,
+            $legendTableBody
+            ));
+
+        return $legendDiv;
     };
     
     me.removeLegendContainer = function() {
