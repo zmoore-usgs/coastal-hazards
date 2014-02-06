@@ -60,10 +60,6 @@ public class SLDGenerator {
 	public static SLDGenerator getGenerator(Item item, Integer ribbon) {
 		SLDGenerator generator = null;
         
-        if (ribbon == null) {
-            ribbon = 0;
-        }
-		
 		try {
 			Item.Type itemDotType = item.getType();
 			String itemAttribute = item.getAttr();
