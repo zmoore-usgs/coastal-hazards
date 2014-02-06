@@ -142,7 +142,7 @@ public class ItemManager implements AutoCloseable {
         List<Item.Type> typesList = new LinkedList<>();
         if (hasQueryText || hasType) {
             if (hasQueryText) {
-                builder.append(" and ");
+                builder.append(" and (");
 				List<String> likes = new ArrayList<>();
 				for (String keyword : queryText) {
 					if (StringUtils.isNotBlank(keyword)) {
@@ -158,7 +158,7 @@ public class ItemManager implements AutoCloseable {
                         paramIndex++;
                     }
                 }
-                builder.append(StringUtils.join(likes, " or"));
+                builder.append(StringUtils.join(likes, " or")).append(")");
             }
             if (hasType) {
                 builder.append(" and");

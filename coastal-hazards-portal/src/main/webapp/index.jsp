@@ -65,7 +65,7 @@
             </div>
             <div id="content-row" class="row">
                 <div id="content-column" class="col-md-12">
-                    <div id="map" class="col-md-8 col-lg-9"></div>
+                    <div id="map" class="col-md-7 col-lg-8"></div>
                     <jsp:include page="WEB-INF/jsp/components/front/slides/slider-items.jsp">
                         <jsp:param name="base-url" value="<%=baseUrl%>" />
                     </jsp:include>

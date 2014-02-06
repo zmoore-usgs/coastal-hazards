@@ -61,6 +61,7 @@
         <loadData encoding="UTF-8" file="data/aggregation_children.csv" quotchar="&quot;" separator="," tableName="aggregation_children">
             <column header="aggregation_id" name="aggregation_id" type="STRING"/>
             <column header="item_id" name="item_id" type="STRING"/>
+            <column header="list_index" name="list_index" type="NUMERIC"/>
         </loadData>
         <loadData encoding="UTF-8" file="data/session_table.csv" quotchar="&quot;" separator="," tableName="session_table">
             <column header="id" name="id" type="STRING"/>
