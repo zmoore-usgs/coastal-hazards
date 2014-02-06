@@ -54,4 +54,6 @@ $(document).ready(function () {
         slideBucketContainerId: 'application-slide-bucket-container',
         slideSearchContainerId: 'application-slide-search-container'
     });
+    
+    $(window).trigger('cch.app.initialized');
 });

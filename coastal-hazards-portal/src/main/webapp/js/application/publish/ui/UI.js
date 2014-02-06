@@ -1184,6 +1184,8 @@ CCH.Objects.UI = function () {
                                 processChildren();
                             }
                         });
+                    } else {
+                        processChildren();
                     }
                 });
             }
@@ -1322,9 +1324,14 @@ CCH.Objects.UI = function () {
     };
 
     me.updateBoundingBox = function () {
-        var children = $childrenSortableList.find('li > span > div > button:first-child.active');
+        var $children = $childrenSortableList.find('li > span > div > button:first-child.active');
 
-        if (children.length !== 0) {
+        $bboxWest.val('');
+        $bboxEast.val('');
+        $bboxNorth.val('');
+        $bboxSouth.val('');
+
+        if ($children.length !== 0) {
             $childrenSortableList.find('li > span > div > button:first-child.active').each(function (idx, btn) {
                 var $li = $(btn).parent().parent().parent(),
                     id = $li.attr('id').substring(11),

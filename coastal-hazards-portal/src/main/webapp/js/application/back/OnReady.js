@@ -33,7 +33,7 @@ $(document).ready(function () {
                     callbacks: {
                         success : [
                             function (data) {
-                                CCH.ui.loadSLDCallback(data, CCH.items.getById({ id : child.itemid }), index);
+                                CCH.ui.loadSLDCallback(data, CCH.items.getById({ id : child.itemid }), index, index === layers.length - 1);
                             }
                         ],
                         error : [

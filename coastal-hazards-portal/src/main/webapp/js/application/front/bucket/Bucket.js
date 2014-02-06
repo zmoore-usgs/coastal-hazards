@@ -8,6 +8,7 @@ CCH.Objects.Bucket = function (args) {
     var me = (this === window) ? {} : this;
 
     me.slide = args.slide;
+    me.$BUCKET_CONTAINER_CONTROL_CONTAINER_ID = $('#app-navbar-bucket-control-container');
     me.BUCKET_COUNT_CONTAINER_ID = 'app-navbar-bucket-button-count';
     me.BUCKET_CONTAINER_ID = 'app-navbar-bucket-button-container';
     me.IMAGE_LOCATION_BUCKET_WITH_SAND = 'images/banner/bucket/bucket.svg';
