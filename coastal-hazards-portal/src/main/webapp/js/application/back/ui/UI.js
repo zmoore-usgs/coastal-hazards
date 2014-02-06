@@ -3,6 +3,7 @@
 /*global $ */
 /*global CCH */
 /*global OpenLayers */
+/*global twttr */
 CCH.Objects.UI = function (args) {
     "use strict";
     CCH.LOG.info('UI.js::constructor: UI class is initializing.');
@@ -310,30 +311,30 @@ CCH.Objects.UI = function (args) {
         return $legendDiv;
     };
     
-    me.removeLegendContainer = function() {
+    me.removeLegendContainer = function () {
         $('#info-legend').remove();
     };
     
-    me.buildTwitterButton = function() {
+    me.buildTwitterButton = function () {
         var url = window.location.origin + CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId;
         CCH.Util.getMinifiedEndpoint({
             location: url,
             contextPath: CCH.CONFIG.contextPath,
             callbacks: {
                 success: [
-                    function(data, textStatus, jqXHR) {
+                    function (data, textStatus, jqXHR) {
                        me.createShareButton(data.tinyUrl);
                     }],
                 error: [
-                    function(jqXHR, textStatus, errorThrown) {
+                    function (jqXHR, textStatus, errorThrown) {
                         me.createShareButton(url);
                     }]
             }
         });
     };
-    
-    me.createShareButton = function(url) {
-        twttr.ready(function(twttr) {
+
+    me.createShareButton = function (url) {
+        twttr.ready(function (twttr) {
             twttr.widgets.createShareButton(
                     url,
                     $('#social-link')[0],

@@ -433,11 +433,22 @@ CCH.Objects.UI = function (args) {
         }
     });
 
-    $(CCH.map).on('map-click', function () {
-        me.searchSlide.close({
-            clearOnClose : true
-        });
-    });
+    // If a user clicks outside of any of the slides in small form factor, close the 
+    // products slider which also closes all of the other slides
+    me.bodyClickHandler = function (evt) {
+        if (me.isSmall) {
+            var $appSlideContainer = $('.application-slide-container'),
+                $bucketContainer = me.bucket.$BUCKET_CONTAINER_CONTROL_CONTAINER_ID,
+                isClickInASlide = $appSlideContainer.find(evt.target).length !== 0 || 
+                    $bucketContainer.find(evt.target).length !== 0;
+                
+            if (!isClickInASlide && !me.itemsSlide.isClosed) {
+                me.itemsSlide.close();
+            }
+        }
+    };
+    $(CCH.map).on('map-click', me.bodyClickHandler);
+    $('body').on('click', me.bodyClickHandler);
 
     // Populate the UI with incoming data
     // Decide how to load the application. 
