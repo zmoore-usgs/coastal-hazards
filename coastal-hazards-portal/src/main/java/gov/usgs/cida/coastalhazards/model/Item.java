@@ -219,6 +219,7 @@ public class Item implements Serializable {
         @JoinColumn(name = "aggregation_id", referencedColumnName = "id")},
             inverseJoinColumns = {
         @JoinColumn(name = "item_id", referencedColumnName = "id")})
+    @IndexColumn(name = "list_index")
     public List<Item> getChildren() {
         return children;
     }
