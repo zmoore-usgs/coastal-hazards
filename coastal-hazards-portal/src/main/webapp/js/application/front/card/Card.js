@@ -35,8 +35,8 @@ CCH.Objects.Card = function (args) {
     me.service = me.item.service;
     me.children = me.item.children || [];
     me.wmsService = me.item.getService('proxy_wms');
-    me.wmsEndpoint;
-    me.wmsLayers;
+    me.wmsEndpoint = undefined;
+    me.wmsLayers = undefined;
     me.container = null;
     me.descriptionContainer = null;
     // Is the card hidden by default? We probably want it to be false when creating
@@ -54,12 +54,12 @@ CCH.Objects.Card = function (args) {
         'data-trigger' : 'hover',
         'data-placement' : 'auto',
         // http://stackoverflow.com/questions/15170967/data-delay-in-twitter-bootstrap-tooltips-plugin
-        'data-delay' : '{"show":"'+CCH.CONFIG.ui['tooltip-delay'].show+'","hide":"'+CCH.CONFIG.ui['tooltip-delay'].hide+'"}'
+        'data-delay' : '{"show":"' + CCH.CONFIG.ui['tooltip-delay'].show + '","hide":"' + CCH.CONFIG.ui['tooltip-delay'].hide + '"}'
     };
 
     if (me.wmsService) {
         me.wmsEndpoint = me.wmsService.endpoint;
-        me.wmsLayers = [me.wmsService.serviceParameter]
+        me.wmsLayers = [me.wmsService.serviceParameter];
     }
 
     me.show = function (args) {
@@ -83,7 +83,7 @@ CCH.Objects.Card = function (args) {
             direction : 'up',
             complete : complete
         });
-        
+
         setTimeout(function () {
             me.
                 container.
@@ -97,7 +97,7 @@ CCH.Objects.Card = function (args) {
                 'display' : true
             });
         }, duration);
-        
+
         if (me.parent) {
             me.parent.hideLayer();
         }
@@ -134,12 +134,12 @@ CCH.Objects.Card = function (args) {
             direction : 'up',
             complete : complete
         });
-        
+
         setTimeout(function () {
             $(window).trigger('card-display-toggle', {
                 'display' : false
             });
-        }, duration)
+        }, duration);
 
         if (me.child) {
             me.child.hide();
@@ -202,24 +202,14 @@ CCH.Objects.Card = function (args) {
 
     me.bindBucketControl = function (args) {
         var $button = args.button,
-            nextAction = args.nextAction,
             add = function () {
                 // User pressed bucket button in and wants to add me to a bucket
                 $(window).trigger('cch.card.bucket.add', {
                     item : me.item,
                     visibility : true
                 });
-            },
-            // This is not currently being used - keep this functionality around
-            // for when it's needed
-            remove = function () {
-                // User toggled the bucket button off - I should be removed from 
-                // bucket
-                $(window).trigger('cch.card.bucket.remove', {
-                    item : me.item
-                });
-            };
-        
+            }
+
         $button.off('click', add);
         $button.on('click', add);
     };
@@ -398,7 +388,7 @@ CCH.Objects.Card = function (args) {
                 $bucketButton = $buttonRow.find('> div button:nth-child(3)'),
                 $moreInfoLink = $('<a />').
                     addClass('card-more-info-link').
-                    append($('<i />').addClass('fa fa-share-square-o'),' More Info').
+                    append($('<i />').addClass('fa fa-share-square-o'), ' More Info').
                     attr({
                         'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
                     }),
@@ -424,18 +414,21 @@ CCH.Objects.Card = function (args) {
                 // Do bindings
                 me.bindPropertyAggButton($propertyAggButton);
             } else {
-                // This is a leaf node so don't add an aggregation button
-                $propertyAggButton.remove();
+                // This is a leaf node so switch to a disabled aggregation button
+                $propertyAggButton.
+                    addClass('disabled').
+                    find('img').
+                    attr('src', 'images/cards/item-branch-disabled.svg')
             }
-            
+
             $propertyAggButton.attr($.extend({}, me.defaultPopoverObject, {
                 'data-content' : 'Explore Contents Of This Dataset'
             }));
-            
+
             $bucketButton.attr($.extend({}, me.defaultPopoverObject, {
                 'data-content' : 'Add This Dataset To Your Bucket'
             }));
-            
+
             zoomToBadge.on('click', function () {
                 CCH.map.zoomToBoundingBox({
                     bbox : me.bbox,
@@ -515,6 +508,8 @@ CCH.Objects.Card = function (args) {
 
                 $img.attr('src', 'images/cards/add-bucket-disabled.svg');
                 
+                $button.addClass('disabled');
+                
                 me.bindBucketControl({
                     button : $button,
                     nextAction : 'remove'
@@ -527,6 +522,8 @@ CCH.Objects.Card = function (args) {
                     $img = $button.find('> img');
 
                 $img.attr('src', 'images/cards/add-bucket.svg');
+                
+                $button.removeClass('disabled');
                 
                 me.bindBucketControl({
                     button : $button,

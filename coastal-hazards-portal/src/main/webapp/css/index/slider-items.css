@@ -25,6 +25,10 @@
     text-align: center;
 }
 
+.application-card-control-row > div button.disabled{
+    color: #DCDCDC;
+}
+
 .application-card-control-row button {
     padding-right: 5px;
     padding-left: 5px;
