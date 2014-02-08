@@ -21,7 +21,7 @@ CCH.Objects.Map = function (args) {
             visible = args.visible  === false ? false : true,
             layer;
 
-       layer = me.map.getLayersByName(name)[0];
+        layer = me.map.getLayersByName(name)[0];
 
         if (!layer) {
             if (item && 'function' === typeof item.getWmsLayer) {
@@ -37,11 +37,11 @@ CCH.Objects.Map = function (args) {
                 'buffer' : (ribbonIndex - 1) * 6
             });
         }
-        
+
         layer.setVisibility(visible);
-        
+
         me.addLayer(layer);
-        
+
         $(window).trigger('cch.map.shown.layer', {
             layer : layer
         });
@@ -78,7 +78,7 @@ CCH.Objects.Map = function (args) {
             layer : layer
         });
     };
-    
+
     me.removeAllPopups = function () {
         if (CCH.map.getMap().popups.length) {
             CCH.map.getMap().popups.each(function (popup) {
@@ -107,7 +107,7 @@ CCH.Objects.Map = function (args) {
             me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
 
             me.attributionControl = new OpenLayers.Control.Attribution({
-                'template' : '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="'+me.attributionSource+'" /></a>'
+                'template' : '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="' + me.attributionSource + '" /></a>'
             });
 
             CCH.LOG.debug('Map.js::init():Adding base layers to map');
@@ -130,19 +130,19 @@ CCH.Objects.Map = function (args) {
                 'removelayer': me.removeLayerCallback,
                 'preaddlayer': function (evt) {
                     var layer = evt.layer;
-                    
-                    layer.events.register('loadstart', layer, function (evt) {
+
+                    layer.events.register('loadstart', layer, function () {
                         document.body.style.cursor = 'wait';
                         $('div.olMap').css('cursor', 'wait');
                     });
-                    layer.events.register('loadend', layer, function (evt) {
-                        if (CCH.map.getMap().layers.findIndex(function(l) {
-                            return l.numLoadingTiles !== 0;
-                        }) === -1) {
+                    layer.events.register('loadend', layer, function () {
+                        if (CCH.map.getMap().layers.findIndex(function (l) {
+                                return l.numLoadingTiles !== 0;
+                            }) === -1) {
                             document.body.style.cursor = 'default';
                             $('div.olMap').css('cursor', 'default');
                         }
-                    })
+                    });
                 },
                 'addlayer': me.addLayerCallback,
                 'changelayer': me.changelayerCallback
@@ -218,15 +218,16 @@ CCH.Objects.Map = function (args) {
         updateSession: function () {
             var map = me.map,
                 session = CCH.session.getSession(),
-                cookie = $.cookie('cch');
+                cookie = $.cookie('cch'),
+                center = map.getCenter().transform(CCH.map.getMap().displayProjection, new OpenLayers.Projection('EPSG:4326'));
 
             session.baselayer = map.baseLayer.name;
             session.center = [
-                map.center.lon,
-                map.center.lat
+                center.lon,
+                center.lat
             ];
             session.scale = map.getScale();
-            session.bbox = map.getExtent().toArray();
+            session.bbox = map.getExtent().transform(CCH.map.getMap().displayProjection, new OpenLayers.Projection('EPSG:4326')).toArray();
             
             cookie.bbox = session.bbox;
             $.cookie('cch', cookie);
@@ -234,7 +235,8 @@ CCH.Objects.Map = function (args) {
         updateFromSession: function () {
             CCH.LOG.info('Map.js::updateFromSession():Map being recreated from session');
             var session = CCH.session.getSession(),
-                baselayer;
+                baselayer,
+                center;
 
             // Becaue we don't want these events to write back to the session, 
             // unhook the event handlers for map events tied to session writing.
@@ -251,7 +253,9 @@ CCH.Objects.Map = function (args) {
             // are no items in the session or if none are pinned, zoom to the bounding box 
             // provided in the session
             if (!session.items.length) {
-                me.map.setCenter([session.center[0], session.center[1]]);
+                center = new OpenLayers.LonLat(session.center[0], session.center[1]).
+                    transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection);  
+                me.map.setCenter(center);
                 me.map.zoomToScale(session.scale);
             }
 
@@ -270,7 +274,7 @@ CCH.Objects.Map = function (args) {
                     me.map.setBaseLayer(baselayer);
                 }
             }
-            
+
             // We're done altering the map to fit the session. Let's re-register those 
             // events we disconnected earlier
             me.map.events.on({

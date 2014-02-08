@@ -71,8 +71,7 @@ CCH.Objects.UI = function (args) {
                 });
             });
         },
-        cookieItems = $.cookie('cch').items || [],
-        cookieBbox = $.cookie('cch').bbox || [];
+        cookieItems = $.cookie('cch').items || [];
 
     me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
@@ -401,7 +400,7 @@ CCH.Objects.UI = function (args) {
 
     me.loadItems = function () {
         $(window).resize();
-        
+
         // Populate the UI with incoming data
         // Decide how to load the application. 
         // Depending on the 'idType' string, the application can be loaded either through:
@@ -431,7 +430,8 @@ CCH.Objects.UI = function (args) {
                                 });
 
                                 CCH.map.zoomToBoundingBox({
-                                    'bbox' : session.bbox
+                                    'bbox' : session.bbox,
+                                    'fromProjection' : new OpenLayers.Projection('EPSG:4326')
                                 });
                             }
                         ],
@@ -488,7 +488,7 @@ CCH.Objects.UI = function (args) {
                 zoomToBbox : true
             });
         }
-    }
+    };
 
     // Do Bindings
     $(window).on({
@@ -525,7 +525,7 @@ CCH.Objects.UI = function (args) {
             });
         }
     });
-    
+
     me.$NAVBAR_BUCKET_CONTAINER.popover({
         delay : {
             show : 800,
