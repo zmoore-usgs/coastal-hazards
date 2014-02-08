@@ -388,10 +388,11 @@ CCH.Objects.Card = function (args) {
                 $bucketButton = $buttonRow.find('> div button:nth-child(3)'),
                 $moreInfoLink = $('<a />').
                     addClass('card-more-info-link').
-                    append($('<i />').addClass('fa fa-share-square-o'), ' More Info').
+                    append(' ( ', $('<i />').addClass('fa fa-share-square-o'), ' More Info )').
                     attr({
                         'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
                     }),
+                $moreInfoSpan = $('<span />').append($moreInfoLink),
                 zoomToBadge = $('<span />').
                     addClass('badge zoom-to-badge').
                     html('Zoom To');
@@ -406,7 +407,7 @@ CCH.Objects.Card = function (args) {
             mediumContentContainer.html(mediumContent);
 
             // Add badges to content
-            mediumContentContainer.append('<br />', $moreInfoLink, zoomToBadge);
+            mediumContentContainer.append($moreInfoSpan, zoomToBadge);
 
             // I have either aggregations or leaf nodes as children.
             // I am not myself a child.
@@ -418,7 +419,7 @@ CCH.Objects.Card = function (args) {
                 $propertyAggButton.
                     addClass('disabled').
                     find('img').
-                    attr('src', 'images/cards/item-branch-disabled.svg')
+                    attr('src', 'images/cards/item-branch-disabled.svg');
             }
 
             $propertyAggButton.attr($.extend({}, me.defaultPopoverObject, {
