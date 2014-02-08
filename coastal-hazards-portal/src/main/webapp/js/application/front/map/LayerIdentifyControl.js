@@ -115,6 +115,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     attrAvg = 0,
                     category,
                     incomingFeatures = this.features,
+                    layers = this.layers,
                     color,
                     buildLegend,
                     $popupHtml = $(popup.contentHTML),
@@ -135,13 +136,18 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             popup = args.popup,
                             units = args.units,
                             features = args.features,
+                            layers = args.layers,
                             $popupHtml = $(popup.contentHTML),
                             $table = $popupHtml.find('table'),
                             $titleContainer = $('<td />'),
                             $colorContainer = $('<td />'),
                             $averageContainer = $('<td />'),
-                            $legendRow = $('<tr>'),
+                            $legendRow = $('<tr>').addClass('legend-row'),
                             item = args.item,
+                            ribbonIndex = -1,
+                            layerName = layers.find(function(l) {
+                                return l.itemid === item.id;
+                            }).name,
                             lb,
                             ub,
                             width,
@@ -150,6 +156,10 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             year,
                             year2Digit,
                             bin;
+
+                        if (layerName.indexOf('_r_') !== -1) {
+                            ribbonIndex = parseInt(layerName.split('_').last(), 10);
+                        }
 
                         $table.find('#loading-info-row').remove();
                         if ($table.find('thead').length === 0) {
@@ -215,7 +225,23 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                 $averageContainer.append(' ' + units);
                             }
                             $legendRow.append($titleContainer, $colorContainer, $averageContainer);
-                            $table.append($legendRow);
+                            
+                            if (ribbonIndex !== -1) {
+                                // If this is part of a ribboned series, I'm going
+                                //  to have to sort these rows based on the ribbon
+                                // index
+                                $legendRow.attr('id', 'legend-row-' + ribbonIndex);
+                                var rows = $table.find('.legend-row'),
+                                    sortedRows;
+                            
+                                $table.append($legendRow);
+                                sortedRows = rows.toArray().sortBy(function (row) {
+                                    return parseInt($(row).attr('id').split('-').last(),10);
+                                });
+                                $table.empty().append(sortedRows);
+                            } else {
+                                $table.append($legendRow);
+                            }
                         }
 
                         
@@ -255,12 +281,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                         category = sld.bins[attrAvg - 1].category;
                         color = sld.bins[attrAvg - 1].color;
                     }
-                } else if (item.type.toLowerCase() === 'historical') {
-                    if (["LRR", "WLR", "SCE", "NSM", "EPR"].indexOf(attr.toUpperCase()) !== -1) {
-                        // TODO - Figure out what needs to be done here. Need data to look at before that happens
-                    } else if (attr.toUpperCase().indexOf('DATE') !== -1) {
-                        
-                    }
                 }
                 
                 buildLegend({
@@ -271,11 +291,10 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     attrAvg : attrAvg,
                     item : item,
                     popup : popup,
-                    units : units
+                    units : units,
+                    layers : layers
                 });
             };
-            
-            
 
             for (layerName in featuresByName) {
                 if (featuresByName.hasOwnProperty(layerName)) {
@@ -291,7 +310,8 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                     features : features,
                                     layerId : layerName,
                                     evt : evt,
-                                    popup : popup
+                                    popup : popup,
+                                    layers : cchLayers
                                 },
                                 callbacks : {
                                     success : [sldResponseHandler],

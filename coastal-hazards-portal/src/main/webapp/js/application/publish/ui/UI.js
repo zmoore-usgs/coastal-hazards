@@ -53,7 +53,42 @@ CCH.Objects.UI = function () {
         $itemImage = $form.find('#form-publish-info-item-image'),
         $buttonSave = $('#publish-button-save'),
         $buttonPublish = $('#publish-button-publish'),
-        $buttonDelete = $('#publish-button-delete');
+        $buttonDelete = $('#publish-button-delete'),
+        $wfsServerHelpButton = $('#form-publish-item-service-source-wfs-import-button-service-select'),
+        $wfsHelpLink = $('.form-publish-item-service-source-wfs-import-button-service-help-link'),
+        $wmsHelpLink = $('.form-publish-item-service-source-wms-import-button-service-help-link'),
+        $sourceWfsCheckButton = $('#form-publish-item-service-source-wfs-import-button-check'),
+        $sourceWmsCheckButton = $('#form-publish-item-service-source-wms-import-button-check'),
+        $wfsSourceCopyButton = $('#form-publish-item-service-source-wfs-copy-button'),
+        $wmsServerHelpButton = $('#form-publish-item-service-source-wms-import-button-service-select'),
+        $proxyWfsCheckButton = $('#form-publish-item-service-proxy-wfs-import-button-check'),
+        $proxyWmsCheckButton = $('#form-publish-item-service-proxy-wms-import-button-check');
+
+    me.createHelpPopover = function($content, $element) {
+        $element.popover('destroy');
+        $element.popover({
+            'html' : true,
+            'placement' : 'auto',
+            'trigger' : 'manual',
+            'title' : 'Available Services',
+            'content' : $content
+        })
+        $element.popover('show');
+
+        $('body').on('click', function() {
+            $element.popover('destroy');
+        });
+    };
+    
+    me.displayModal = function (args) {
+        var title = args.title,
+            body = args.body;
+    
+        $alertModal.modal('hide');
+        $alertModalTitle.html(title);
+        $alertModalBody.html(body);
+        $alertModal.modal('show');
+    };
 
     me.clearForm = function () {
         $titleFullTextArea.attr('disabled', 'disabled');
@@ -148,6 +183,13 @@ CCH.Objects.UI = function () {
         $metadataDropdownGroup.removeClass('hidden');
         $itemEnabledField.val('false');
         $keywordGroup.find('input').removeAttr('disabled');
+        $wfsServerHelpButton.removeAttr('disabled');
+        $wfsSourceCopyButton.removeAttr('disabled');
+        $sourceWfsCheckButton.removeAttr('disabled');
+        $sourceWmsCheckButton.removeAttr('disabled');
+        $wmsServerHelpButton.removeAttr('disabled');
+        $proxyWfsCheckButton.removeAttr('disabled');
+        $proxyWmsCheckButton.removeAttr('disabled');
         $childrenSortableList.empty();
     };
 
@@ -986,12 +1028,20 @@ CCH.Objects.UI = function () {
                         removeAttr('disabled');
                 }
 
-                if ($srcWfsServiceInput.val().trim() !== '' && $srcWfsServiceParamInput.val().trim() !== '') {
+                if ($srcWfsServiceInput.val().trim() !== '' && $srcWfsServiceParamInput.val() !== '') {
                     $wfsImportButton.removeAttr('disabled');
                 } else {
                     $wfsImportButton.attr('disabled', 'disabled');
                 }
-
+                
+                $wfsServerHelpButton.removeAttr('disabled');
+                $sourceWfsCheckButton.removeAttr('disabled');
+                $wfsSourceCopyButton.removeAttr('disabled');
+                $wmsServerHelpButton.removeAttr('disabled');
+                $sourceWmsCheckButton.removeAttr('disabled');
+                $proxyWfsCheckButton.removeAttr('disabled');
+                $proxyWmsCheckButton.removeAttr('disabled');
+                
                 $metadataDropdownGroup.removeClass('hidden');
                 $uploaderDummy.empty().removeClass('hidden');
                 me.createUploader({
@@ -1790,7 +1840,267 @@ CCH.Objects.UI = function () {
             me.deleteItem(id);
         }
     });
-
+    
+    $wfsHelpLink.on('click', function (evt) {
+        $srcWfsServiceInput.val(CCH.CONFIG.data.sources[$(evt.target).attr('data-attr')].endpoint);
+    });
+    $wmsHelpLink.on('click', function (evt) {
+        $srcWmsServiceInput.val(CCH.CONFIG.data.sources[$(evt.target).attr('data-attr')].endpoint);
+    });
+    $wfsSourceCopyButton.on('click', function () {
+        $srcWmsServiceInput.val($srcWfsServiceInput.val().replace('WFSServer', 'WMSServer'));
+    });
+    
+    $sourceWfsCheckButton.on('click', function () {
+        var srcWfsVal = $srcWfsServiceInput.val(),
+            $contentList = $('<ul />'),
+            $li,
+            $a;
+            
+        if (srcWfsVal !== '') {
+            if (srcWfsVal.indexOf(CCH.CONFIG.data.sources['cida-geoserver'].endpoint) !== -1) {
+                CCH.ows.getWFSCapabilities({
+                    'server': 'cida-geoserver',
+                    'namespace': 'published',
+                    'callbacks' : {
+                        success : [function (args) {
+                            args.wfsCapabilities.featureTypeList.featureTypes.each(function (layer) {
+                                $li = $('<li />');
+                                $a = $('<a />').attr({
+                                    'href' : '#',
+                                    'onclick' : 'return false;'
+                                }).on('click', function () {
+                                    $srcWfsServiceParamInput.val(layer.prefix + ':' + layer.title);
+                                }).html(layer.prefix + ':' + layer.title);
+                                $li.append($a);
+                                $contentList.append($li);
+                            });
+                            me.createHelpPopover($contentList, $srcWfsServiceParamInput);
+                        }],
+                        error : [function (err) {
+                            me.displayModal({
+                                title : 'Could not contact ' + srcWfsVal,
+                                body : 'There was a problem retrieving data.'
+                            });
+                        }]
+                    }
+                });
+            } else if (srcWfsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1 ||
+                    srcWfsVal.indexOf(CCH.CONFIG.data.sources['marine-arcserver'].endpoint !== -1)) {
+                var serverName = srcWfsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1 ? 'stpete-arcserver' : 'marine-arcserver',
+                    server = CCH.CONFIG.data.sources[serverName],
+                    serverData = CCH.CONFIG.data.sources[serverName],
+                    namespace = srcWfsVal.substring(serverData.endpoint.length + 1),
+                    url = $srcWfsServiceInput.val(),
+                    getWFSCaps = function (ns, svcName) {
+                        CCH.ows.getWFSCapabilities({
+                            'server': serverName,
+                            'namespace': ns + '/' + svcName,
+                            'callbacks' : {
+                                success : [function (args) {
+                                    var feature = args.wfsCapabilities.featureTypeList.featureTypes.find(function(f) {
+                                        return f.prefix.toLowerCase().indexOf(svcName.toLowerCase()) !== -1;
+                                    });
+                                    $srcWfsServiceParamInput.val(feature.prefix.replace('/', '_') + ':' + feature.name);
+                                }],
+                                error : [function (err) {
+                                    me.displayModal({
+                                        title : 'Could not contact ' + srcWfsVal,
+                                        body : 'There was a problem retrieving data.'
+                                    })
+                                }]
+                            }
+                        });
+                    };
+                
+                if (url.toLowerCase().indexOf('wfsserver') !== -1) {
+                    var test = url.substring(url.indexOf('services') + 9, url.indexOf('/MapServer')).split('/');
+                    getWFSCaps(test[0], test[1]);
+                } else {
+                    $.ajax({
+                        'url' : serverData.proxy + '/rest/services/' + namespace,
+                        'data' : {
+                            'f' : 'pjson'
+                        },
+                        success : function (json) {
+                            var jsonResponse = JSON.parse(json),
+                                svcName;
+                        
+                            if (jsonResponse.services) {
+                                jsonResponse.services.each(function (svc) {
+                                    if (svc.type === 'MapServer') {
+                                        svcName = svc.name.substring(svc.name.indexOf('/') + 1);
+                                        $li = $('<li />');
+                                        $a = $('<a />').attr({
+                                            'href' : '#',
+                                            'onclick' : 'return false;'
+                                        }).on('click', function () {
+                                            $srcWfsServiceInput.val(server.endpoint + '/services/' + namespace + '/' + svcName + '/MapServer/WFSServer');
+                                            getWFSCaps(namespace, svcName);
+                                        }).html(svcName);
+                                        $li.append($a);
+                                        $contentList.append($li);
+                                    }
+                                });
+                                me.createHelpPopover($contentList, $srcWfsServiceParamInput);
+                            } else {
+                                me.displayModal({
+                                    title : 'Error getting WFS Capabilities',
+                                    body : jsonResponse.error.message
+                                });
+                            }
+                        },
+                        error : function (err) {
+                            me.displayModal({
+                                title : 'Could not contact ' + srcWfsVal,
+                                body : 'There was a problem retrieving data.'
+                            });
+                        }
+                    });
+                }
+            }
+        }
+    });
+    
+    $sourceWmsCheckButton.on('click', function () {
+        var srcWmsVal = $srcWmsServiceInput.val(),
+            $contentList = $('<ul />'),
+            $li,
+            $a;
+            
+        if (srcWmsVal !== '') {
+            if (srcWmsVal.indexOf(CCH.CONFIG.data.sources['cida-geoserver'].endpoint) !== -1) {
+                CCH.ows.getWMSCapabilities({
+                    'server': 'cida-geoserver',
+                    'namespace': 'published',
+                    'callbacks' : {
+                        success : [function () {
+                            CCH.ows.servers['cida-geoserver'].data.wms.capabilities.object.capability.layers.each(function (layer) {
+                                $li = $('<li />');
+                                $a = $('<a />').attr({
+                                    'href' : '#',
+                                    'onclick' : 'return false;',
+                                }).on('click', function () {
+                                    $srcWmsServiceParamInput.val(layer.prefix + ':' + layer.title);
+                                }).html(layer.prefix + ':' + layer.title);
+                                $li.append($a);
+                                $contentList.append($li)
+                            });
+                            me.createHelpPopover($contentList, $srcWmsServiceParamInput);
+                        }],
+                        error : [function (err) {
+                            me.displayModal({
+                                title : 'Could not contact ' + srcWmsVal,
+                                body : 'There was a problem retrieving data.'
+                            });
+                        }]
+                    }
+                })
+            } else if (srcWmsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1 ||
+                    srcWmsVal.indexOf(CCH.CONFIG.data.sources['marine-arcserver'].endpoint !== -1)) {
+                var serverName = srcWmsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1 ? 'stpete-arcserver' : 'marine-arcserver',
+                    serverData = CCH.CONFIG.data.sources[serverName],
+                    namespace = srcWmsVal.substring(serverData.endpoint.length);
+                    
+                if (namespace.indexOf('WMSServer') !== -1) {
+                    namespace = namespace.split('/')[2] + '/' + namespace.split('/')[3];
+                }
+                    
+                CCH.ows.getWMSCapabilities({
+                    'server': serverName,
+                    'namespace': namespace,
+                    'callbacks' : {
+                        success : [function () {
+                            CCH.ows.servers[serverName].data.wms.capabilities.object.capability.layers.each(function (layer) {
+                                $li = $('<li />');
+                                $a = $('<a />').attr({
+                                    'href' : '#',
+                                    'onclick' : 'return false;',
+                                }).on('click', function () {
+                                    $srcWmsServiceParamInput.val(layer.name);
+                                }).html(layer.name);
+                                $li.append($a);
+                                $contentList.append($li)
+                            });
+                            me.createHelpPopover($contentList, $srcWmsServiceParamInput);
+                        }],
+                        error : [function (err) {
+                            me.displayModal({
+                                title : 'Could not contact ' + srcWmsVal,
+                                body : 'There was a problem retrieving data.'
+                            });
+                        }]
+                    }
+                });
+            }
+        }
+    });
+    
+    $proxyWfsCheckButton.on('click', function () {
+        var $li,
+            $a,
+            $contentList = $('<ul />');
+        CCH.ows.getWFSCapabilities({
+            'server': 'cida-geoserver',
+            'namespace': 'proxied',
+            'callbacks' : {
+                success : [function (args) {
+                    args.wfsCapabilities.featureTypeList.featureTypes.each(function (layer) {
+                        $li = $('<li />');
+                        $a = $('<a />').attr({
+                            'href' : '#',
+                            'onclick' : 'return false;'
+                        }).on('click', function () {
+                            $proxyWfsServiceParamInput.val(layer.prefix + ':' + layer.title);
+                        }).html(layer.prefix + ':' + layer.title);
+                        $li.append($a);
+                        $contentList.append($li);
+                    });
+                    me.createHelpPopover($contentList, $proxyWfsServiceParamInput);
+                }],
+                error : [function (err) {
+                    me.displayModal({
+                        title : 'Could not contact CIDA Geoserver',
+                        body : 'There was a problem retrieving data.'
+                    });
+                }]
+            }
+        });
+    });
+    
+    $proxyWmsCheckButton.on('click', function () {
+        var $li,
+            $a,
+            $contentList = $('<ul />');
+            
+        CCH.ows.getWMSCapabilities({
+            'server': 'cida-geoserver',
+            'namespace': 'proxied',
+            'callbacks' : {
+                success : [function () {
+                    CCH.ows.servers['cida-geoserver'].data.wms.capabilities.object.capability.layers.each(function (layer) {
+                        $li = $('<li />');
+                        $a = $('<a />').attr({
+                            'href' : '#',
+                            'onclick' : 'return false;',
+                        }).on('click', function () {
+                            $proxyWmsServiceParamInput.val('proxied:' + layer.name);
+                        }).html('proxied:' + layer.name);
+                        $li.append($a);
+                        $contentList.append($li)
+                    });
+                    me.createHelpPopover($contentList, $proxyWmsServiceParamInput);
+                }],
+                error : [function (err) {
+                    me.displayModal({
+                        title : 'Could not contact CIDA Geoserver',
+                        body : 'There was a problem retrieving data.'
+                    });
+                }]
+            }
+        });
+    });
+    
     me.clearForm();
 
     CCH.ows.requestCSWRecords({

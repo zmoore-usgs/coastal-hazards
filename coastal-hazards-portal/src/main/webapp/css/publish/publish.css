@@ -167,3 +167,7 @@ form-publish-info-item-panel-children .panel-body {
 	background: #5cb85c !important;
 	width: auto !important;
 }
+
+.popover {
+    max-width: none !important;
+}

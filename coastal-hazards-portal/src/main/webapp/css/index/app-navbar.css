@@ -9,6 +9,10 @@
     display: table;
 }
 
+#header-row > .app-navbar-item-container a:hover {
+    text-decoration: none;
+}
+
 /* Logo ***********************************************************************/
 #header-row > .app-navbar-item-container:first-child {
     margin-right: 15px;

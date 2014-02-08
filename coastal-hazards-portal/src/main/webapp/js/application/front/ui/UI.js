@@ -71,8 +71,7 @@ CCH.Objects.UI = function (args) {
                 });
             });
         },
-        cookieItems = $.cookie('cch').items || [],
-        cookieBbox = $.cookie('cch').bbox || [];
+        cookieItems = $.cookie('cch').items || [];
 
     me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
@@ -401,7 +400,7 @@ CCH.Objects.UI = function (args) {
 
     me.loadItems = function () {
         $(window).resize();
-        
+
         // Populate the UI with incoming data
         // Decide how to load the application. 
         // Depending on the 'idType' string, the application can be loaded either through:
@@ -431,7 +430,8 @@ CCH.Objects.UI = function (args) {
                                 });
 
                                 CCH.map.zoomToBoundingBox({
-                                    'bbox' : session.bbox
+                                    'bbox' : session.bbox,
+                                    'fromProjection' : new OpenLayers.Projection('EPSG:4326')
                                 });
                             }
                         ],
@@ -488,7 +488,7 @@ CCH.Objects.UI = function (args) {
                 zoomToBbox : true
             });
         }
-    }
+    };
 
     // Do Bindings
     $(window).on({
@@ -526,25 +526,26 @@ CCH.Objects.UI = function (args) {
         }
     });
 
-    // If a user clicks outside of any of the slides in small form factor, close the 
-    // products slider which also closes all of the other slides
-    me.bodyClickHandler = function (evt) {
-        if (me.isSmall) {
-            var $appSlideContainer = $('.application-slide-container'),
-                $bucketContainer = me.bucket.$BUCKET_CONTAINER_CONTROL_CONTAINER_ID,
-                isClickInASlide = $appSlideContainer.find(evt.target).length !== 0 ||
-                    $bucketContainer.find(evt.target).length !== 0;
-
-            if (!isClickInASlide && !me.itemsSlide.isClosed) {
-                me.itemsSlide.close();
-            }
+    me.$NAVBAR_BUCKET_CONTAINER.popover({
+        delay : {
+            show : 800,
+            hide : 0
         }
-    };
-    $(CCH.map).on('map-click', me.bodyClickHandler);
-    $('body').on('click', me.bodyClickHandler);
-    
-    me.$NAVBAR_BUCKET_CONTAINER.popover();
-    me.$NAVBAR_HELP_CONTAINER.popover();
+    }).on('shown.bs.popover', function (evt) {
+        setTimeout(function () {
+            $(evt.target).popover('hide');
+        }, CCH.CONFIG.ui['tooltip-prevalence']);
+    });
+    me.$NAVBAR_HELP_CONTAINER.popover({
+        delay : {
+            show : 800,
+            hide : 0
+        }
+    }).on('shown.bs.popover', function (evt) {
+        setTimeout(function () {
+            $(evt.target).popover('hide');
+        }, CCH.CONFIG.ui['tooltip-prevalence']);
+    });
 
     $(window).trigger('cch.ui.initialized');
 

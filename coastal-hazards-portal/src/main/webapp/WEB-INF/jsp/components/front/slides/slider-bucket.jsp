@@ -31,7 +31,7 @@
 <div id="application-slide-bucket-container-card-template" class="hidden">
     <div class="application-slide-bucket-container-card well well-small">
         <div class="application-slide-bucket-container-card-image-container">
-            <img class="application-slide-bucket-container-card-image img-responsive" src="http://www.tshirtdesignsnprint.com/img/not-found.png" alt="Bucket Card Image" />
+            <img class="application-slide-bucket-container-card-image img-responsive" alt="Bucket Card Image" />
         </div>
         <div class="application-slide-bucket-container-card-title-description-container">
             <div>
