@@ -60,10 +60,6 @@ public class SLDGenerator {
 	public static SLDGenerator getGenerator(Item item, Integer ribbon) {
 		SLDGenerator generator = null;
         
-        if (ribbon == null) {
-            ribbon = 0;
-        }
-		
 		try {
 			Item.Type itemDotType = item.getType();
 			String itemAttribute = item.getAttr();
@@ -154,5 +150,13 @@ public class SLDGenerator {
 
 	public int getBinCount() {
 		return this.config.getColors().length;
+	}
+	
+	public int[] getScales() {
+		return this.config.getScales();
+	}
+	
+	public int getScaleCount() {
+		return this.config.getScales().length;
 	}
 }
