@@ -33,10 +33,27 @@ CCH.Objects.OWS = function() {
                 'stpete-arcserver': {
                     endpoints: {
                         endpoint: CCH.CONFIG.data.sources['stpete-arcserver'].endpoint,
-                        proxy: CCH.CONFIG.data.sources['stpete-arcserver'].proxy,
-                        wmsGetCapsUrl: CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'ows?service=wms&version=1.3.0&request=GetCapabilities',
-                        wfsGetCapsUrl: CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'ows?service=wfs&version=1.1.0&request=GetCapabilities',
-                        wfsGetFeatureUrl: CCH.CONFIG.data.sources['stpete-arcserver'].proxy + 'ows?service=wfs&version=1.0.0&request=GetFeature'
+                        proxy: CCH.CONFIG.data.sources['stpete-arcserver'].proxy
+                    },
+                    data: {
+                        wms: {
+                            capabilities: {
+                                xml: '',
+                                object: {}
+                            }
+                        },
+                        wfs: {
+                            capabilities: {
+                                xml: '',
+                                object: {}
+                            }
+                        }
+                    }
+                },
+                'marine-arcserver': {
+                    endpoints: {
+                        endpoint: CCH.CONFIG.data.sources['marine-arcserver'].endpoint,
+                        proxy: CCH.CONFIG.data.sources['marine-arcserver'].proxy
                     },
                     data: {
                         wms: {
@@ -221,16 +238,70 @@ CCH.Objects.OWS = function() {
                 }
             });
         },
+        getWFSCapabilities: function(args) {
+            var callbacks = args.callbacks || {},
+                sucessCallbacks = callbacks.success || [],
+                errorCallbacks = callbacks.error || [],
+                server = args.server,
+                namespace = args.namespace || 'ows',
+                url;
+        
+            if (server === 'cida-geoserver' && namespace !== 'ows') {
+                url = me.servers[server].endpoints.wfsGetCapsUrl;
+                url = url.add(namespace + '/', url.indexOf('ows'));
+            } else if (server === 'stpete-arcserver' || server === 'marine-arcserver') {
+                url = me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WFSServer?service=wfs&version=1.1.0&request=GetCapabilities'
+            }
+            
+            CCH.LOG.debug('OWS.js::getWMSCapabilities: A request is being made for WMS GetCapabilities for the namespace: ' + namespace);
+            $.ajax(url, {
+                context: args,
+                success: function(data, textStatus, jqXHR) {
+                    var response = new OpenLayers.Format.WFSCapabilities.v1_1_0().read(data);
+                    
+                    response.featureTypeList.featureTypes.each(function (ft) {
+                        ft.prefix = namespace;
+                    });
+                    
+                    me.servers[server].data.wfs.capabilities.object = response;
+                    me.servers[server].data.wfs.capabilities.xml = data;
+
+                    sucessCallbacks.each(function(callback) {
+                        callback({
+                            wfsCapabilities: response,
+                            data: data,
+                            textStatus: textStatus,
+                            jqXHR: jqXHR,
+                            context: args
+                        });
+                    });
+                },
+                error: function(data, textStatus, jqXHR) {
+                    $(errorCallbacks).each(function(index, callback, allCallbacks) {
+                        callback({
+                            data: data,
+                            textStatus: textStatus,
+                            jqXHR: jqXHR
+                        });
+                    });
+                }
+            });
+        },
         getWMSCapabilities: function(args) {
             var callbacks = args.callbacks || {},
                 sucessCallbacks = callbacks.success || [],
                 errorCallbacks = callbacks.error || [],
                 server = args.server,
                 namespace = args.namespace || 'ows',
-                url = me.servers[server].endpoints.wmsGetCapsUrl;
+                url = args.url;
 
-            if (server === 'cida-geoserver' && namespace !== 'ows') {
-                url = url.add(namespace + '/', url.indexOf('ows'));
+            if (!url) {
+                if (server === 'cida-geoserver' && namespace !== 'ows') {
+                    url = me.servers[server].endpoints.wmsGetCapsUrl;
+                    url = url.add(namespace + '/', url.indexOf('ows'));
+                } else if (server === 'stpete-arcserver' || server === 'marine-arcserver') {
+                    url = me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WMSServer?service=wms&version=1.3.0&request=GetCapabilities'
+                }
             }
 
             CCH.LOG.debug('OWS.js::getWMSCapabilities: A request is being made for WMS GetCapabilities for the namespace: ' + namespace);

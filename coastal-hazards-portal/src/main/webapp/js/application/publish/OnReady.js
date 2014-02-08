@@ -12,6 +12,13 @@ $(document).ready(function () {
     });
     CCH.LOG = LOG;
     
+    $(document).ajaxStart(function () {
+        $('body').css('cursor', 'wait');
+    });
+    $(document).ajaxStop(function () {
+        $('body').css('cursor', 'default');
+    });
+    
     CCH.ows = new CCH.Objects.OWS().init();
 
     CCH.ui = new CCH.Objects.UI();
