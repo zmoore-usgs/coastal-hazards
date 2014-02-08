@@ -606,7 +606,7 @@ CCH.Objects.SearchSlide = function (args) {
                     'data-toggle' : 'popover',
                     'data-trigger' : 'hover',
                     'data-placement' : 'auto',
-                    'data-delay' : CCH.CONFIG.ui['tooltip-delay']
+                    'data-delay' : JSON.stringify(CCH.CONFIG.ui['tooltip-delay'])
                 };
 
             $newItem.attr('id', 'application-slide-search-product-card-' + id);
@@ -616,9 +616,12 @@ CCH.Objects.SearchSlide = function (args) {
                 'data-content' : 'Explore this dataset'
             })).on('click', function () {
                 $exploreControl.trigger('click');
+            }).error(function () {
+                $(this).parent().css('display', 'none');
+                $descriptionContainer.parent().parent().css('width', '100%');
             });
             $titleContainer.attr('id', titleContainerClass + '-' + id);
-            $titleContainer.append(title, '&nbsp;', $exploreControl);
+            $titleContainer.append($('<span />').html(title).addClass('application-slide-search-location-card-title-span'), '&nbsp;', $exploreControl);
             $descriptionContainer.attr('id', descriptionContainerClass + '-' + id).html(description);
 
             if (me.bucket.getItemById(id) === undefined) {

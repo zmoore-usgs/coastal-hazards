@@ -525,7 +525,7 @@ CCH.Objects.BucketSlide = function (args) {
                 'data-trigger' : 'hover',
                 'data-placement' : 'auto',
                 // http://stackoverflow.com/questions/15170967/data-delay-in-twitter-bootstrap-tooltips-plugin
-                'data-delay' : '{"show":"'+CCH.CONFIG.ui['tooltip-delay'].show+'","hide":"'+CCH.CONFIG.ui['tooltip-delay'].hide+'"}'
+                'data-delay' : JSON.stringify(CCH.CONFIG.ui['tooltip-delay'])
             };
 
         $card.attr('id', 'application-slide-bucket-container-card-' + id);
@@ -540,6 +540,8 @@ CCH.Objects.BucketSlide = function (args) {
                     bbox: item.bbox,
                     fromProjection: new OpenLayers.Projection('EPSG:4326')
                 });
+            }).error(function () {
+                $(this).hide();
             });
         $titleContainer.attr('id', titleContainerClass + '-' + id);
         $titleContainerPNode.html(title);

@@ -128,8 +128,9 @@
         }
         /* Image Container */
         #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:first-child {
-            width: 10%;
-            max-height: 100px;
+            width: 20%;
+            vertical-align: top;
+            min-height: 50px;
             display: inline-block;
         }
         #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:first-child > img{
@@ -141,8 +142,13 @@
             }
         /* Description Container */
         #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:nth-child(2) {
-            width: 80%;
+            width: 79%;
             display: inline-block;
+        }
+        /* Title Container - Text */
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:nth-child(2) > div > div:first-child > span:first-child {
+            font-size: 1.2em;
+            font-weight: bold;
         }
         /* Title Container - Badge */
         #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:nth-child(2) > div > div:first-child > span.badge {
