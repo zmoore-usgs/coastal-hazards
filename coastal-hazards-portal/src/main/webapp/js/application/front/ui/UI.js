@@ -526,8 +526,18 @@ CCH.Objects.UI = function (args) {
         }
     });
     
-    me.$NAVBAR_BUCKET_CONTAINER.popover();
-    me.$NAVBAR_HELP_CONTAINER.popover();
+    me.$NAVBAR_BUCKET_CONTAINER.popover({
+        delay : {
+            show : 800,
+            hide : 0
+        }
+    });
+    me.$NAVBAR_HELP_CONTAINER.popover({
+        delay : {
+            show : 800,
+            hide : 0
+        }
+    });
 
     $(window).trigger('cch.ui.initialized');
 
