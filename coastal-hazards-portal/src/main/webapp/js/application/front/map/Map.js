@@ -132,15 +132,22 @@ CCH.Objects.Map = function (args) {
                     var layer = evt.layer;
 
                     layer.events.register('loadstart', layer, function () {
-                        document.body.style.cursor = 'wait';
                         $('div.olMap').css('cursor', 'wait');
+                        $('body').css('cursor', 'wait');
                     });
                     layer.events.register('loadend', layer, function () {
-                        if (CCH.map.getMap().layers.findIndex(function (l) {
-                                return l.numLoadingTiles !== 0;
-                            }) === -1) {
-                            document.body.style.cursor = 'default';
+                        var layers = CCH.map.getMap().layers.findAll(function (l) {
+                            return !l.isBaseLayer;
+                        }),
+                            layersStillLoading = 0;
+                            
+                        layers.each(function (l) {
+                            layersStillLoading += l.numLoadingTiles;
+                        });
+                        
+                        if (layersStillLoading === 0) {
                             $('div.olMap').css('cursor', 'default');
+                            $('body').css('cursor', 'default');
                         }
                     });
                 },
@@ -306,12 +313,12 @@ CCH.Objects.Map = function (args) {
         addLayer: function (layer) {
             var layerName = layer.name,
                 mapLayerArray = me.map.getLayersByName(layerName);
-        
+
             if (mapLayerArray.length === 0) {
                 me.map.addLayer(layer);
                 me.addLayerToFeatureInfoControl(layer);
             }
-            
+
             return layer;
         },
         zoomendCallback: function () {
