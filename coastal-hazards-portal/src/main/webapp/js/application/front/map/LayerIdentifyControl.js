@@ -231,10 +231,11 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                 //  to have to sort these rows based on the ribbon
                                 // index
                                 $legendRow.attr('id', 'legend-row-' + ribbonIndex);
-                                var rows = $table.find('.legend-row'),
+                                var rows,
                                     sortedRows;
                             
                                 $table.append($legendRow);
+                                rows = $table.find('.legend-row');
                                 sortedRows = rows.toArray().sortBy(function (row) {
                                     return parseInt($(row).attr('id').split('-').last(),10);
                                 });
