@@ -445,7 +445,12 @@ CCH.Objects.BucketSlide = function (args) {
         $container.append($card.clone(true));
         $container.
             find('.application-slide-bucket-container-card *[data-toggle="popover"]').
-            popover();
+            popover().
+            on('shown.bs.popover', function (evt) {
+            setTimeout(function () {
+                $(evt.target).popover('hide');
+            }, CCH.CONFIG.ui['tooltip-prevalence']);
+        });
     };
 
     /**

@@ -531,12 +531,20 @@ CCH.Objects.UI = function (args) {
             show : 800,
             hide : 0
         }
+    }).on('shown.bs.popover', function (evt) {
+        setTimeout(function () {
+            $(evt.target).popover('hide');
+        }, CCH.CONFIG.ui['tooltip-prevalence']);
     });
     me.$NAVBAR_HELP_CONTAINER.popover({
         delay : {
             show : 800,
             hide : 0
         }
+    }).on('shown.bs.popover', function (evt) {
+        setTimeout(function () {
+            $(evt.target).popover('hide');
+        }, CCH.CONFIG.ui['tooltip-prevalence']);
     });
 
     $(window).trigger('cch.ui.initialized');

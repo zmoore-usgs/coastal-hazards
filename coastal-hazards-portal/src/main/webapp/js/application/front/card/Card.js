@@ -88,7 +88,11 @@ CCH.Objects.Card = function (args) {
             me.
                 container.
                 find('[data-toggle="popover"]').
-                popover();
+                popover().on('shown.bs.popover', function (evt) {
+                    setTimeout(function () {
+                        $(evt.target).popover('hide');
+                    }, CCH.CONFIG.ui['tooltip-prevalence']);
+                });
             $(window).trigger('card-display-toggle', {
                 'display' : true
             });

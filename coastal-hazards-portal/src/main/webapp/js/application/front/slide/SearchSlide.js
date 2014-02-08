@@ -382,7 +382,14 @@ CCH.Objects.SearchSlide = function (args) {
                     $slideContainer.append(cards);
 
                     $slideContainer.find('>div:not(.search-result-item-page-1)').addClass('hidden');
-                    $slideContainer.find('*[data-toggle="popover"]').popover();
+                    $slideContainer.
+                        find('*[data-toggle="popover"]').
+                        popover().
+                        on('shown.bs.popover', function (evt) {
+                            setTimeout(function () {
+                                $(evt.target).popover('hide')
+                            }, CCH.CONFIG.ui['tooltip-prevalence']);
+                        });
                     
 
                     me.createPaging({
