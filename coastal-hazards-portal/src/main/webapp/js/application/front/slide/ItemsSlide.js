@@ -298,6 +298,11 @@ CCH.Objects.ItemsSlide = function (args) {
             if (me.isSmall()) {
                 me.toggle();
             }
+        },
+        'cch.card.click.zoomto' : function() {
+            if (me.isSmall()){ 
+                me.close();
+            }
         }
     });
 
