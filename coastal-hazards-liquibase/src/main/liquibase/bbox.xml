@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="jiwalker" id="alter_bbox_table">
+        <dropTable tableName="bbox" cascadeConstraints="true"/>
+        <createTable tableName="bbox">
+            <column name="id" type="INT" />
+            <column name="bbox" type="box2d" />
+        </createTable>
+        <addPrimaryKey tableName="bbox" columnNames="id" />
+        <comment>to insert: INSERT INTO new_bbox (id,bbox) VALUES (1, ST_SetSRID(ST_MakeBox2D(ST_Point(-180, -90), ST_Point(180, 90)),4326))</comment>
+    </changeSet>
+</databaseChangeLog>

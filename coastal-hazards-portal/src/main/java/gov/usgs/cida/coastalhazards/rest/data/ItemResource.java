@@ -2,7 +2,6 @@ package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.sun.jersey.api.NotFoundException;
 import gov.usgs.cida.coastalhazards.exception.BadRequestException;
-import gov.usgs.cida.coastalhazards.exception.CycleIntroductionException;
 import gov.usgs.cida.coastalhazards.exception.UnauthorizedException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
@@ -25,7 +24,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 /**
  * 

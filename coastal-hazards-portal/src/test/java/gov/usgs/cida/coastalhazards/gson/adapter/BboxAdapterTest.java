@@ -26,10 +26,7 @@ public class BboxAdapterTest {
     public void serializeTest() {
         Bbox bbox = new Bbox();
         bbox.setId(7);
-        bbox.setMinx(12.3);
-        bbox.setMiny(4.56);
-        bbox.setMaxx(78.9);
-        bbox.setMaxy(8.76);
+        bbox.setBbox(12.3, 4.56, 78.9, 8.76);
         JsonElement serialized = bboxAdapter.serialize(bbox, Bbox.class, null);
         assertThat(serialized.toString(), is(equalTo("[12.3,4.56,78.9,8.76]")));
     }
@@ -38,15 +35,11 @@ public class BboxAdapterTest {
     public void deserializeTest() {
         JsonArray json = new JsonArray();
         json.add(new JsonPrimitive(12.3));
-        json.add(new JsonPrimitive(4.56));
+        json.add(new JsonPrimitive(-4.56));
         json.add(new JsonPrimitive(78.9));
         json.add(new JsonPrimitive(8.76));
         Bbox deserialized = bboxAdapter.deserialize(json, Bbox.class, null);
-        
-        assertThat(deserialized.getMinx(), is(equalTo(12.3)));
-        assertThat(deserialized.getMiny(), is(equalTo(4.56)));
-        assertThat(deserialized.getMaxx(), is(equalTo(78.9)));
-        assertThat(deserialized.getMaxy(), is(equalTo(8.76)));
+        assertThat(deserialized.getBbox(), is(equalTo("BOX(12.300000 -4.560000, 78.900000 8.760000)")));
     }
     
 }

@@ -1,7 +1,9 @@
 package gov.usgs.cida.coastalhazards.jpa;
 
+import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.exception.CycleIntroductionException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
+import gov.usgs.cida.coastalhazards.model.Bbox;
 import gov.usgs.cida.coastalhazards.model.Item;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -140,6 +142,7 @@ public class ItemManager implements AutoCloseable {
         boolean hasQueryText = isEmpty(queryText);
         boolean hasType = isEmpty(types);
         List<Item.Type> typesList = new LinkedList<>();
+        List<String> idsInBboxList = new LinkedList<>();
         if (hasQueryText || hasType) {
             if (hasQueryText) {
                 builder.append(" and (");
@@ -174,7 +177,30 @@ public class ItemManager implements AutoCloseable {
         // TODO add order by clause
 //        }
         if (StringUtils.isNotBlank(bbox)) {
-            //TODO bbox stuff here
+            String[] split = bbox.split(",");
+            if (split.length != 4) {
+                throw new BadRequestException();
+            }
+            double minX = Double.parseDouble(split[0]);
+            double minY = Double.parseDouble(split[1]);
+            double maxX = Double.parseDouble(split[2]);
+            double maxY = Double.parseDouble(split[3]);
+            // Beware, changing database will cause this to fail but will not be caught by hibernate
+            Query bboxQuery = em.createNativeQuery(
+                "SELECT item.id FROM item, bbox WHERE item.bbox_id=bbox.id AND ST_Intersects(bbox.bbox, ST_MakeBox2D(ST_Point(:minx, :miny), ST_Point(:maxx, :maxy)))");
+            bboxQuery.setParameter("minx", minX);
+            bboxQuery.setParameter("miny", minY);
+            bboxQuery.setParameter("maxx", maxX);
+            bboxQuery.setParameter("maxy", maxY);
+            List<Object> results = bboxQuery.getResultList();
+            for (Object result : results) {
+                if (result instanceof String) {
+                    idsInBboxList.add((String)result);
+                } else {
+                    throw new IllegalStateException("ID should be a string");
+                }
+            }
+            builder.append(" and i.id in(:bboxIds)");
         }
 
         String jsonResult = "";
@@ -186,6 +212,11 @@ public class ItemManager implements AutoCloseable {
         }
         if (hasType) {
             query.setParameter("types", typesList);
+        }
+        if (idsInBboxList.isEmpty()) {
+            query.setParameter("bboxIds", "EMPTY");
+        } else if (StringUtils.isNotBlank(bbox)) {
+            query.setParameter("bboxIds", idsInBboxList);
         }
         if (count > 0) {
             query.setMaxResults(count);

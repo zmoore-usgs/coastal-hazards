@@ -12,7 +12,7 @@
         </loadData>
         <loadData tableName="bbox" file="data/bbox.csv" encoding="UTF-8" quotchar="&quot;" separator=",">
             <column header="id" name="id" type="NUMERIC"/>
-            <column header="minx" name="minx" type="NUMERIC"/>
+            <column header="bbox" name="bbox" type="STRING"/>
             <column header="miny" name="miny" type="NUMERIC"/>
             <column header="maxx" name="maxx" type="NUMERIC"/>
             <column header="maxy" name="maxy" type="NUMERIC"/>
