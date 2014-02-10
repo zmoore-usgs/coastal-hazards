@@ -11,9 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedNativeQuery;
 import javax.persistence.Table;
-import org.hibernate.annotations.Loader;
 import org.hibernate.annotations.SQLInsert;
 import org.hibernate.annotations.SQLUpdate;
 
@@ -23,10 +21,9 @@ import org.hibernate.annotations.SQLUpdate;
  */
 @Entity
 @Table(name="bbox")
+// INSERT needs to be done in this order, hibernate seems to ignore otherwise
 @SQLInsert(sql = "INSERT into bbox (bbox, id) VALUES (CAST(? AS box2d), ?)")
 @SQLUpdate(sql = "UPDATE bbox SET bbox = CAST(? AS box2d) WHERE id = ?")
-//@Loader(namedQuery = "bbox_load")
-//@NamedNativeQuery(name="bbox_load", query = "SELECT id, bbox FROM bbox WHERE id = ?", resultClass = Bbox.class)
 public class Bbox implements Serializable {
 	private static final long serialVersionUID = 1L;
     public static final int SRID = 4326;
@@ -54,8 +51,6 @@ public class Bbox implements Serializable {
     }
 
     public void setBbox(String bbox) {
-//        Envelope envelope = bbox.getEnvelopeInternal();
-//        this.bbox = String.format(BOX_FORMAT, envelope.getMinX(), envelope.getMinY(), envelope.getMaxX(), envelope.getMaxY());
         this.bbox = bbox;
     }
     
@@ -63,17 +58,6 @@ public class Bbox implements Serializable {
         this.bbox = String.format(BOX_FORMAT, minX, minY, maxX, maxY);
     }
 
-//    @Transient
-//    public String getBboxString() {
-//        return bbox;
-//    }
-//
-//    public void setBboxString(String bboxString) {
-//        this.bbox = bboxString;
-//    }
-//    
-    
-    
     public static Bbox copyValues(Bbox from, Bbox to) {
         Bbox bbox = new Bbox();
         bbox.setId(to.getId());
