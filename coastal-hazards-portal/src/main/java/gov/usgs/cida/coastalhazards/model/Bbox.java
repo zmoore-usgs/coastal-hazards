@@ -23,10 +23,10 @@ import org.hibernate.annotations.SQLUpdate;
  */
 @Entity
 @Table(name="bbox")
-@SQLInsert(sql = "INSERT into bbox (id, bbox) VALUES(?, ?)")
-@SQLUpdate(sql = "UPDATE bbox SET bbox=? WHERE id=?")
-@Loader(namedQuery = "bbox_load")
-@NamedNativeQuery(name="bbox_load", query = "SELECT id, bbox FROM bbox WHERE id=?", resultClass = Bbox.class)
+@SQLInsert(sql = "INSERT into bbox (bbox, id) VALUES (CAST(? AS box2d), ?)")
+@SQLUpdate(sql = "UPDATE bbox SET bbox = CAST(? AS box2d) WHERE id = ?")
+//@Loader(namedQuery = "bbox_load")
+//@NamedNativeQuery(name="bbox_load", query = "SELECT id, bbox FROM bbox WHERE id = ?", resultClass = Bbox.class)
 public class Bbox implements Serializable {
 	private static final long serialVersionUID = 1L;
     public static final int SRID = 4326;
@@ -39,6 +39,7 @@ public class Bbox implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     public int getId() {
         return id;
     }
