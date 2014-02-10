@@ -7,9 +7,6 @@
 /**
  * Slider widget holding cards
  * 
- * Listens For: 
- * window: 'cch.ui.resized'
- * 
  * @param {type} args
  * @returns {CCH.Objects.ItemsSlide.Anonym$5}
  */
@@ -27,7 +24,8 @@ CCH.Objects.ItemsSlide = function (args) {
 
     me.SLIDE_ITEMS_CONTAINER_ID = args.containerId;
     me.MAP_DIV_ID = args.mapdivId || 'map';
-    me.$APPLICATION_CONTAINER = $('#application-container');
+    me.APPLICATION_CONTAINER_ID = 'application-container';
+    me.$APPLICATION_CONTAINER = $('#' + me.APPLICATION_CONTAINER_ID);
     me.$HEADER_ROW = me.$APPLICATION_CONTAINER.find('> div:nth-child(1)');
     me.$CONTENT_ROW = me.$APPLICATION_CONTAINER.find('> div:nth-child(2)');
     me.SLIDE_TAB_ID = $('#' + me.SLIDE_ITEMS_CONTAINER_ID + ' .application-slide-tab').attr('id');
@@ -120,7 +118,7 @@ CCH.Objects.ItemsSlide = function (args) {
                 slideContent.css({
                     display : 'none'
                 });
-                
+
                 $('body').css({
                     overflow : ''
                 });
@@ -150,17 +148,17 @@ CCH.Objects.ItemsSlide = function (args) {
             $slideItemsContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
             $slideTab = $('#' + me.SLIDE_TAB_ID),
             $searchContainer;
-    
+
         if (isSmall) {
             // When I am switched to small mode, I want to remove the slideContainer's 
             // span class because it's no longer a span.
             $slideItemsContainer.removeClass('col-lg-3 col-md-4');
-            
+
             $searchContainer = me.$HEADER_ROW.find('> div:nth-child(3)');
-            
+
             // Move the Search bar from the header to my slider
             $searchContainer.prependTo($slideContainer);
-            
+
             if (me.isClosed) {
                 $slideTab.find('i').removeClass('fa-chevron-right').addClass('fa-chevron-left');
             } else {
@@ -168,13 +166,13 @@ CCH.Objects.ItemsSlide = function (args) {
             }
         } else {
             $searchContainer =  $slideContainer.find('> div:first-child:not(#application-slide-items-content-container-inner-scrollable)');
-            
+
             $slideItemsContainer.addClass('col-lg-4 col-md-5');
-            
+
             $searchContainer.insertAfter(me.$HEADER_ROW.find('> div:nth-child(2)'));
         }
     };
-    
+
     me.resized = function () {
         var extents = me.getExtents(),
             toExtent = me.isSmall() ? extents.small : extents.large,
@@ -182,7 +180,8 @@ CCH.Objects.ItemsSlide = function (args) {
             $slideContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
             $slideTab = $('#' + me.SLIDE_TAB_ID),
             slideContent = $('#' + me.$SLIDE_CONTENT_ID),
-            windowWidth = $(window).outerWidth(),
+            bodyWidth = $('body').outerWidth(),
+            bodyHeight = $('#' + me.APPLICATION_CONTAINER_ID).outerHeight(),
             borderSize = 4;
 
         // I've got to know what my form factor is. Bootstrap uses a special number,
@@ -191,9 +190,9 @@ CCH.Objects.ItemsSlide = function (args) {
         //   to a free-floating column and needs quite a bit of help in resizing when
         //   that happens
         if (isSmall) {
-            $slideContainer.width(windowWidth - toExtent.left);
+            $slideContainer.width(bodyWidth - toExtent.left);
             slideContent.css('width', $slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth);
-            $slideContainer.height($('body').height() - toExtent.top);
+            $slideContainer.height(bodyHeight - toExtent.top);
             // Then there's special sizing depending on if I'm closed or not. 
             if (me.isClosed) {
                 // If I'm closed, my container, which holds my tab and content, 
@@ -202,7 +201,7 @@ CCH.Objects.ItemsSlide = function (args) {
                 // right side of the screen
                 $slideContainer.
                     offset({
-                        left: windowWidth  - $slideTab.outerWidth() - (me.borderWidth * 2),
+                        left: bodyWidth  - $slideTab.outerWidth() - (me.borderWidth * 2),
                         top: toExtent.top
                     });
                 // I hide the content dom since it's off screen and I don't want 
@@ -218,12 +217,11 @@ CCH.Objects.ItemsSlide = function (args) {
                     display : ''
                 });
             }
-            
+
             $slideTab.offset({
                 left: $slideContainer.offset().left + borderSize,
                 top: $slideContainer.height() - $slideTab.outerHeight() - 20
             });
-            
         } else {
             slideContent.css({
                 width: '',
@@ -302,11 +300,11 @@ CCH.Objects.ItemsSlide = function (args) {
             }
         }
     });
-    
+
     // This is a horrible hack - Chrome for android seems to be not show anything
     // above or below the cutoff of my cards whenever I scroll into view. Updating
     // the CSS slightly forces Chrome to perform a re-flow of the DOM in the container
-    if (new RegExp("Android").test(navigator.userAgent) && 
+    if (new RegExp("Android").test(navigator.userAgent) &&
             new RegExp("Chrome/[.0-9]*").test(navigator.userAgent)) {
         $.fn.scrollStopped = function (callback) {
             $(this).scroll(function () {
@@ -318,8 +316,8 @@ CCH.Objects.ItemsSlide = function (args) {
                 $this.data('scrollTimeout', setTimeout(callback, 1, self));
             });
         };
-        $('#' + me.SLIDE_CONTENT_CONTAINER).scrollStopped(function(element) {
-            setTimeout(function(element) {
+        $('#' + me.SLIDE_CONTENT_CONTAINER).scrollStopped(function (element) {
+            setTimeout(function (element) {
                 $(element).height($(element).height() - 1);
             }, 2, element);
             setTimeout(function (element) {
@@ -327,7 +325,7 @@ CCH.Objects.ItemsSlide = function (args) {
             }, 3, element);
         });
     }
-    
+
     me.redimensioned(null, me.isSmall());
 
     $('#' + me.SLIDE_TAB_ID).on('click', me.toggle);
