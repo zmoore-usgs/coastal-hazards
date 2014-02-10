@@ -8,8 +8,14 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 import gov.usgs.cida.coastalhazards.model.Bbox;
 import java.lang.reflect.Type;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -20,15 +26,32 @@ public class BboxAdapter implements JsonSerializer<Bbox>, JsonDeserializer<Bbox>
     @Override
     public JsonElement serialize(Bbox src, Type typeOfSrc, JsonSerializationContext context) {
         JsonArray bboxArray = new JsonArray();
-        JsonPrimitive minx = new JsonPrimitive(src.getMinx());
-        JsonPrimitive miny = new JsonPrimitive(src.getMiny());
-        JsonPrimitive maxx = new JsonPrimitive(src.getMaxx());
-        JsonPrimitive maxy = new JsonPrimitive(src.getMaxy());
+
+        Envelope envelope = parseBOX(src.getBbox());
+        JsonPrimitive minx = new JsonPrimitive(envelope.getMinX());
+        JsonPrimitive miny = new JsonPrimitive(envelope.getMinY());
+        JsonPrimitive maxx = new JsonPrimitive(envelope.getMaxX());
+        JsonPrimitive maxy = new JsonPrimitive(envelope.getMaxY());
         bboxArray.add(minx);
         bboxArray.add(miny);
         bboxArray.add(maxx);
         bboxArray.add(maxy);
+
         return bboxArray;
+    }
+    
+    public static Envelope parseBOX(String box) {
+        Envelope envelope = null;
+        Pattern pattern = Pattern.compile("BOX\\(\\s*([-\\d\\.]+)\\s+([-\\d\\.]+)\\s*,\\s*([-\\d\\.]+)\\s+([-\\d\\.]+)\\s*\\)");
+        Matcher matcher = pattern.matcher(box);
+        if (matcher.matches()) {
+            double minX = Double.parseDouble(matcher.group(1));
+            double minY = Double.parseDouble(matcher.group(2));
+            double maxX = Double.parseDouble(matcher.group(3));
+            double maxY = Double.parseDouble(matcher.group(4));
+            envelope = new Envelope(minX, maxX, minY, maxY);
+        }
+        return envelope;
     }
 
     @Override
@@ -39,11 +62,11 @@ public class BboxAdapter implements JsonSerializer<Bbox>, JsonDeserializer<Bbox>
             if (array.size() != 4) {
                 throw new JsonParseException("Bbox must be of format [minX,minY,maxX,maxY]");
             }
-            // TODO check validity of bbox
-            bbox.setMinx(array.get(0).getAsDouble());
-            bbox.setMiny(array.get(1).getAsDouble());
-            bbox.setMaxx(array.get(2).getAsDouble());
-            bbox.setMaxy(array.get(3).getAsDouble());
+            double minX = array.get(0).getAsDouble();
+            double minY = array.get(1).getAsDouble();
+            double maxX = array.get(2).getAsDouble();
+            double maxY = array.get(3).getAsDouble();
+            bbox.setBbox(minX, minY, maxX, maxY);
         } else {
             throw new JsonParseException("Bbox must be JSON array");
         }
