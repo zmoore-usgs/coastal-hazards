@@ -24,9 +24,9 @@
 
 /* Give a glow to the search container */
 #app-navbar-search-container > div {
-    -moz-box-shadow: 0 0 11px #FFD700;
-    -webkit-box-shadow: 0 0 11px #FFD700;
-    box-shadow: 0px 0px 11px #FFD700;
+    -moz-box-shadow: 0 0 11px #FFFFFF;
+    -webkit-box-shadow: 0 0 11px #FFFFFF;
+    box-shadow: 0px 0px 11px #FFFFFF;
     border-radius: 4px;
 }
 
