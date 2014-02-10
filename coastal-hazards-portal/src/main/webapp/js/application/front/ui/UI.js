@@ -149,6 +149,13 @@ CCH.Objects.UI = function (args) {
             contentRowHeight;
 
         $(window).trigger('cch.ui.resizing', isSmall);
+        
+        // Check if the application was resized. If so, re-initialize the slideshow to easily
+        // fit into the new layout
+        if (isSmall !== me.previouslySmall) {
+            CCH.LOG.debug('UI:: Redimensioned To ' + isSmall ? ' Small' : ' Large');
+            $(window).trigger('cch.ui.redimensioned', isSmall);
+        }
 
         contentRowHeight = $('body').height() - (headerHeight + footerHeight);
 
@@ -176,13 +183,6 @@ CCH.Objects.UI = function (args) {
         }
 
         $contentRow.height(contentRowHeight - 1);
-
-        // Check if the application was resized. If so, re-initialize the slideshow to easily
-        // fit into the new layout
-        if (isSmall !== me.previouslySmall) {
-            CCH.LOG.debug('UI:: Redimensioned To ' + isSmall ? ' Small' : ' Large');
-            $(window).trigger('cch.ui.redimensioned', isSmall);
-        }
 
         $(window).trigger('cch.ui.resized', isSmall);
 
@@ -526,6 +526,7 @@ CCH.Objects.UI = function (args) {
         }
     });
 
+    // Set up the popovers for the navigation bucket and help containers
     me.$NAVBAR_BUCKET_CONTAINER.popover({
         delay : {
             show : 800,

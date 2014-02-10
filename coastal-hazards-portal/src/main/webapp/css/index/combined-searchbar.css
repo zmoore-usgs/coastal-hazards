@@ -1,7 +1,7 @@
 #app-navbar-search-container {
     margin-right: 5px; 
     margin-top: 10px;
-    width: 20%; // This will change in js
+    width: 20%; /* This will change in js */
 }
 
 
@@ -41,7 +41,7 @@
     #app-navbar-search-container {
         margin-right: 5px; 
         margin-top: 0px;
-        width: 20%; // This will change in js
+        width: 20%; /* This will change in js */
     }
 
     /* Give a glow to the search container */
