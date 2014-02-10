@@ -111,6 +111,10 @@ html, body {
     left: -15px;
 }
 
+.olPopupCloseBox {
+    background: url("../../images/openlayers/layer-identify-close.svg") !important;
+}
+
 @media (min-width: 992px) {
     #application-container {
         width: 100%;
@@ -197,45 +201,6 @@ html, body {
 
 @media (max-width: 320px) {
     overflow-x: auto;
-}
-
-.marker-active {
-    border-color: #00CCFF !important;
-    background-color: rgba(0,102,255, 0.5);
-}
-
-.marker-inactive {
-    border-color: #00A3CC !important;
-    background-color: rgba(0,102,255, 0.5);
-}
-
-.marker-hover {
-    border-color: #8CE8FF !important;
-    background-color: rgba(0,102,255, 0.5);
-    opacity : 1.0 !important;
-}
-
-/* Setting this zIndex manually fixes
- an issue seen on mobile browsers with
- hidden modal windows blocking use of 
- containers they're in front of. This 
- can probably be done to set all 
- .modal[aria-hidden="true"] zo -1 zIndex,
- but I was somewhat concerned of side
- effects from doing it application-wide */
-#helpModal[aria-hidden="true"],
-#modal-content-share[aria-hidden="true"] {
-    z-index: -1;
-}
-
-#modal-help-summary-container {
-    font-size: 1.2em;
-    font-family: Verdana,Arial,Helvetica,sans-serif;
-}
-
-#canned-views-row img {
-    width: 100%;
-    height: 100%;
 }
 
 #modal-share-summary-url-inputbox{
