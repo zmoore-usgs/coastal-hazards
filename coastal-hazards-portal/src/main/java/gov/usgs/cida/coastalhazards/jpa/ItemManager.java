@@ -213,10 +213,12 @@ public class ItemManager implements AutoCloseable {
         if (hasType) {
             query.setParameter("types", typesList);
         }
-        if (idsInBboxList.isEmpty()) {
-            query.setParameter("bboxIds", "EMPTY");
-        } else if (StringUtils.isNotBlank(bbox)) {
-            query.setParameter("bboxIds", idsInBboxList);
+        if (StringUtils.isNotBlank(bbox)) {
+             if (idsInBboxList.isEmpty()) {
+                query.setParameter("bboxIds", "EMPTY");
+            } else {
+              query.setParameter("bboxIds", idsInBboxList);
+            }
         }
         if (count > 0) {
             query.setMaxResults(count);
