@@ -11,6 +11,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,8 @@ public class RibboningProcess implements GeoServerProcess {
 			@DescribeParameter(name = "calcAngles", min = 0, max = 1) Boolean calcAngles,
 			@DescribeParameter(name = "ribbon-count", min = 0, max = 1) Integer ribbonCount,
 			@DescribeParameter(name = "offset", min = 0, max = 1) Integer offset,
-			@DescribeParameter(name = "sort-attribute", min = 0, max = 1) String sortAttribute) throws Exception {
+			@DescribeParameter(name = "sort-attribute", min = 0, max = 1) String sortAttribute,
+			@DescribeParameter(name = "scale", min = 0, max = 1) Double scale) throws Exception {
 		
 		
 		if (null == invertSide) {
@@ -85,6 +87,9 @@ public class RibboningProcess implements GeoServerProcess {
 		if (null == offset) {
 			offset = 5;
 		}
+		if (null == scale) {
+			scale = Double.MAX_VALUE;
+		}
 		SimpleFeatureCollection featuresToProcess = features;
 		
 		if (null != sortAttribute) {
@@ -94,7 +99,7 @@ public class RibboningProcess implements GeoServerProcess {
 		CoordinateReferenceSystem bboxCRS = bbox.getCoordinateReferenceSystem();
 		CoordinateReferenceSystem featureCRS = CRSUtils.getCRSFromFeatureCollection(featuresToProcess);
 		
-		double[] xyOffset = getXYOffset(bbox, bboxCRS, featureCRS, width, height, offset);
+		double[] xyOffset = getXYOffset(bbox, bboxCRS, featureCRS, width, height, offset, scale);
 		
 		return new Process(featuresToProcess, invertSide, sortAttribute, calcAngles, ribbonCount, xyOffset).execute();
 
@@ -120,9 +125,46 @@ public class RibboningProcess implements GeoServerProcess {
 		result.setProperties(Query.ALL_PROPERTIES);
 		return result;
 	}
-
-	private double[] getXYOffset(ReferencedEnvelope bbox, CoordinateReferenceSystem bboxCRS, CoordinateReferenceSystem featureCRS, Integer width, Integer height, Integer offset) {
-		double[] result = new double[] {offset, offset};
+	
+	private double calculateScaledOffset(double scale, double offset) {
+		double result = offset;
+		
+		double[] reverseScales = new double[] {
+			1.0,
+			500.0,
+			1000.0,
+			2500.0,
+			5000.0,
+			10000.0,
+			25000.0,
+			50000.0,
+			100000.0,
+			250000.0,
+			500000.0,
+			1000000.0,
+			2500000.0,
+			5000000.0,
+			10000000.0,
+			25000000.0,
+			50000000.0,
+			1000000000.0
+		};
+		
+		double strokeWidth = ((offset - 1) / 3) * 2;
+		
+		int reversePlace = Math.abs(Arrays.binarySearch(reverseScales, scale));
+		int place = reverseScales.length - reversePlace;
+		
+		double scaledStrokeWidth = strokeWidth + (place * (5 * strokeWidth / reverseScales.length));
+		result = scaledStrokeWidth + ((scaledStrokeWidth / 2) + 1);
+		
+		return result;
+	}
+	
+	private double[] getXYOffset(ReferencedEnvelope bbox, CoordinateReferenceSystem bboxCRS, CoordinateReferenceSystem featureCRS, Integer width, Integer height, Integer unscaledOffset, Double scale) {
+		double[] result = new double[] {unscaledOffset.doubleValue(), unscaledOffset.doubleValue()};
+		
+		double scaledOffset = calculateScaledOffset(scale, unscaledOffset.doubleValue());
 		
 		try {
 			MathTransform transformToFeature = null;
@@ -146,8 +188,8 @@ public class RibboningProcess implements GeoServerProcess {
 			}
 
 			result = new double[] {
-				(bbwidth / pxwidth) * offset,
-				(bbheight / pxheight) * offset
+				(bbwidth / pxwidth) * scaledOffset,
+				(bbheight / pxheight) * scaledOffset
 			};
 		} catch (Exception e) {
 			LOGGER.log(Level.INFO, "Could not transform to feature CRS");

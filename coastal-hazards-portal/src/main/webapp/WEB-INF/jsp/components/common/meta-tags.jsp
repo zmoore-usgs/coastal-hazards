@@ -17,7 +17,7 @@
 <meta name="revised" content="${param.revised}" />
 <meta name="review" content="${param.review}" />
 <meta name="expires" content="never" />
-<link rel="icon" href="favicon.ico" type="image/x-icon" />
+<link rel="icon" href="<%=request.getParameter("relPath")%>favicon.ico" type="image/x-icon" />
 <script type="text/javascript">
     /* This application does not support <IE9 - Stop early if <IE9*/
     if (navigator.appName === 'Microsoft Internet Explorer') {

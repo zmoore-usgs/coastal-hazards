@@ -23,9 +23,8 @@
             data-toggle="popover" 
             data-trigger="hover" 
             data-placement="auto" 
-            data-delay="800" 
             data-content="More Info For USGS Coastal Change Hazards Portal">
-        <a href="<%=request.getContextPath()%>/info/" target="_blank"><i class="fa fa-info-circle"></i></a>
+        <a href="<%=request.getContextPath()%>/info/"><i class="fa fa-info-circle"></i></a>
     </span>
 </div>
 

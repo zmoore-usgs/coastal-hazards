@@ -169,7 +169,7 @@ CCH.Objects.ItemsSlide = function (args) {
         } else {
             $searchContainer =  $slideContainer.find('> div:first-child:not(#application-slide-items-content-container-inner-scrollable)');
             
-            $slideItemsContainer.addClass('col-lg-3 col-md-4');
+            $slideItemsContainer.addClass('col-lg-4 col-md-5');
             
             $searchContainer.insertAfter(me.$HEADER_ROW.find('> div:nth-child(2)'));
         }

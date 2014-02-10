@@ -27,11 +27,60 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <jsp:include page="<%=metaTags%>"></jsp:include>
+        <jsp:include page="<%=metaTags%>">
+            <jsp:param name="relPath" value="../" />
+        </jsp:include>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
-        <title>USGS Coastal Change Hazards Portal</title>
+        <title>Coastal Change Hazards Information</title>
     </head>
     <body>
-        I am an informational page
+        <header>
+            <a href="#"><img src="../images/info/collaborative_logo.png" alt="collaborative logo" /></a>
+            <h1>USGS Coastal Change Hazards Portal</h1>
+            <h1 class="mobile">USGS CCH</h1>
+            <h1 class="mobile_portrait">CCH</h1>
+        </header>
+        <div id="content">
+            <div id="title">
+                <a href="<%=baseUrl%>">
+                    <div id="close">
+                        <p>Back to Portal</p>
+                    </div>
+                </a>
+            </div>
+            <div id="text">
+                <p>With more than half of the American people living along our Nation’s coasts, extreme beach and cliff erosion can dramitically alter coastal ecosysytems, cause billion of dollars’ worth of coastal development, and even threaten human life.</p>
+                <p>Through projects like the National Assessment of Coastal Change Hazards and regional studies of nearshore processes, the US Geological Survey is uncovering the science behind coastal change hazards and providing data, tools, and scientific knowledge to help coastal planners as they work to reduce risk along our coastlines.</p>
+            </div>
+            <div id="icon_area">
+                <div id="holder">
+                    <div class="icon">
+                        <div class="icon_holder">
+                            <a href="#"><img src="../images/info/extreme_storms.jpg" alt="extreme storms pic"/></a>
+                        </div><!--icon_holder-->
+                        <h3><a href="#">Explore Extreme Storms</a></h3>
+                        <p>Coastal erosion hazards</p>
+                    </div><!--icon-->
+                    <div class="icon">
+                        <div class="icon_holder">
+                            <a href="#"><img src="../images/info/shoreline_change.jpg" alt="shoreline change pic"/></a>
+                        </div><!--icon_holder-->
+                        <h3><a href="#">Explore Shoreline Change</a></h3>
+                        <p>Historical positions and</p>
+                        <p>rates of change</p>
+                    </div><!--icon-->
+                    <div class="icon">
+                        <div class="icon_holder">
+                            <a href="#"><img src="../images/info/sea-leve_rise.jpg" alt="sea-level_rise pic"/></a>
+                        </div><!--icon_holder-->
+                        <h3><a href="#">Explore Sea-Level Rise</a></h3>
+                        <p>Vulnerability</p>
+                    </div><!--icon-->
+                </div><!--icon_area-->
+            </div><!--holder-->
+        </div><!--content-->
+        <footer>
+            <a href="#"><img src="../images/info/usgs_logo.png" alt="usgs logo"/></a>
+        </footer>
     </body>
 </html>

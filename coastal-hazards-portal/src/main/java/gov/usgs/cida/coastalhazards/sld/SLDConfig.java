@@ -21,6 +21,27 @@ public class SLDConfig {
 	protected final float[] thresholds;
 	protected final String[] colors;
 	protected final List<Map<String,Object>> bins;
+	
+	protected final int[] scales = new int[] {
+		1000000000,
+		50000000,
+		25000000,
+		10000000,
+		5000000,
+		2500000,
+		1000000,
+		500000,
+		250000,
+		100000,
+		50000,
+		25000,
+		10000,
+		5000,
+		2500,
+		1000,
+		500,
+		1
+	};
 
 	public SLDConfig(String jspPath, String units, String style, int strokeWidth, String[] attrs, float[] thresholds, String[] colors, List<Map<String,Object>> bins) {
 		this.jspPath = jspPath;
@@ -63,6 +84,10 @@ public class SLDConfig {
 	
 	public List<Map<String,Object>> getBins() {
 		return this.bins;
+	}
+	
+	public int[] getScales() {
+		return this.scales;
 	}
 	
 }

@@ -84,6 +84,8 @@ CCH.Objects.SearchSlide = function (args) {
                     overflow : 'hidden'
                 });
 
+                me.resize();
+
                 $slideContainer.css({
                     display: ''
                 });
@@ -118,7 +120,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.close = function (args) {
         if (!me.isClosed && !me.isClosing) {
             $(window).trigger('cch.slide.search.closing');
-            
+
             var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
             me.isClosing = true;
             $slideContainer.animate({
@@ -153,8 +155,8 @@ CCH.Objects.SearchSlide = function (args) {
             $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             $slideContent = $('#' + me.$SLIDE_CONTENT_ID),
             $appContainer = $('#' + me.CONTENT_ROW_ID),
-            windowWidth = $(window).outerWidth(),
-            windowHeight = $(window).outerHeight(),
+            windowWidth = $('body').outerWidth(),
+            windowHeight = $('body').outerHeight(),
             rightWindowBorderOffset = windowWidth - toExtent.left,
             slideContentWidth = $slideContainer.outerWidth() - me.BORDER_WIDTH;
 
@@ -256,7 +258,7 @@ CCH.Objects.SearchSlide = function (args) {
                     $showAllButton = $('<div />').
                             addClass('application-slide-search-location-card-toggle').
                             append($('<span />').addClass('badge').html('Show All ' + locationSize + ' Locations'));
-                    
+
                     pageCount = Math.ceil(locationSize / slidesPerPage);
 
                     $contentContainer.removeClass('hidden');
@@ -356,9 +358,8 @@ CCH.Objects.SearchSlide = function (args) {
                 $resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
                 $slideContainer = $contentContainer.find('>div:nth-child(2)');
                 $pagingContainer = $contentContainer.find('>div:nth-child(3)');
-                
+
                 if (productsSize > 0) {
-                    
                     pageCount = Math.ceil(productsSize / slidesPerPage);
 
                     $resultsFoundsContainer.
@@ -382,8 +383,14 @@ CCH.Objects.SearchSlide = function (args) {
                     $slideContainer.append(cards);
 
                     $slideContainer.find('>div:not(.search-result-item-page-1)').addClass('hidden');
-                    $slideContainer.find('*[data-toggle="popover"]').popover();
-                    
+                    $slideContainer.
+                        find('*[data-toggle="popover"]').
+                        popover().
+                        on('shown.bs.popover', function (evt) {
+                            setTimeout(function () {
+                                $(evt.target).popover('hide');
+                            }, CCH.CONFIG.ui['tooltip-prevalence']);
+                        });
 
                     me.createPaging({
                         container : $contentContainer,
@@ -473,8 +480,8 @@ CCH.Objects.SearchSlide = function (args) {
     };
 
     me.getCurrentlyDisabledPageButton = function (type) {
-        var type = type === 'location' ? me.LOCATION_SLIDE_SEARCH_PAGE_CONTAINER : me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER,
-            $pagingContainer = $('#' + type),
+        var incomingType = type === 'location' ? me.LOCATION_SLIDE_SEARCH_PAGE_CONTAINER : me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER,
+            $pagingContainer = $('#' + incomingType),
             $pagingButtonGroup = $pagingContainer.find('>ul.pagination'),
             numString = $pagingButtonGroup.find('> li.disabled:not(.page-move) > a').html(),
             num = parseInt(numString, 10);
@@ -575,7 +582,6 @@ CCH.Objects.SearchSlide = function (args) {
         if (args.product) {
             var product = args.product,
                 item = CCH.items.getById({ id : product.id }),
-                image = args.image,
                 id = product.id,
                 summary = product.summary.medium,
                 title = summary.title,
@@ -600,19 +606,22 @@ CCH.Objects.SearchSlide = function (args) {
                     'data-toggle' : 'popover',
                     'data-trigger' : 'hover',
                     'data-placement' : 'auto',
-                    'data-delay' : CCH.CONFIG.ui['tooltip-delay']
+                    'data-delay' : JSON.stringify(CCH.CONFIG.ui['tooltip-delay'])
                 };
 
             $newItem.attr('id', 'application-slide-search-product-card-' + id);
             $imageContainer.attr($.extend({}, defaultPopoverObject, {
                 'id' : imageContainerClass + '-' + id,
-                'src' : 'images/thumbnail/thumb_' + id + '.png',
+                'src' : CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id,
                 'data-content' : 'Explore this dataset'
             })).on('click', function () {
                 $exploreControl.trigger('click');
+            }).error(function () {
+                $(this).parent().css('display', 'none');
+                $descriptionContainer.parent().parent().css('width', '100%');
             });
             $titleContainer.attr('id', titleContainerClass + '-' + id);
-            $titleContainer.append(title, '&nbsp;', $exploreControl);
+            $titleContainer.append($('<span />').html(title).addClass('application-slide-search-location-card-title-span'), '&nbsp;', $exploreControl);
             $descriptionContainer.attr('id', descriptionContainerClass + '-' + id).html(description);
 
             if (me.bucket.getItemById(id) === undefined) {
@@ -674,10 +683,10 @@ CCH.Objects.SearchSlide = function (args) {
 
         return newItem;
     };
-    
+
     me.$SEARCH_TYPE_LISTITEM.on('click', function (evt) {
         var choice = $(evt.target).attr('title').toLowerCase();
-        
+
         if (choice !== 'all') {
             if (choice === 'location') {
                 $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID).

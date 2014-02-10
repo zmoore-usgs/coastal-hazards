@@ -115,18 +115,19 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     attrAvg = 0,
                     category,
                     incomingFeatures = this.features,
+                    layers = this.layers,
                     color,
                     buildLegend,
                     $popupHtml = $(popup.contentHTML),
                     $table = $popupHtml.find('table'),
                     $theadRow = $('<thead />').append(
-                    $('<tr />').append(
-                        $('<td />').html('Layer'),
-                        $('<td />').html('Color'),
-                        $('<td />').html('Value')
-                    )),
+                        $('<tr />').append(
+                            $('<td />').html('Layer'),
+                            $('<td />').html('Color'),
+                            $('<td />').html('Value')
+                        )),
                     buildLegend = function (args) {
-                        args = args || {}
+                        args = args || {};
                         var binIdx = 0,
                             bins = args.bins,
                             color = args.color,
@@ -134,53 +135,115 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             title = args.title,
                             popup = args.popup,
                             units = args.units,
+                            features = args.features,
+                            layers = args.layers,
                             $popupHtml = $(popup.contentHTML),
                             $table = $popupHtml.find('table'),
                             $titleContainer = $('<td />'),
                             $colorContainer = $('<td />'),
                             $averageContainer = $('<td />'),
-                            $legendRow = $('<tr>'),
+                            $legendRow = $('<tr>').addClass('legend-row'),
                             item = args.item,
+                            ribbonIndex = -1,
+                            layerName = layers.find(function(l) {
+                                return l.itemid === item.id;
+                            }).name,
                             lb,
                             ub,
                             width,
-                            height;
-                    
+                            height,
+                            dateAttribute,
+                            year,
+                            year2Digit,
+                            bin;
+
+                        if (layerName.indexOf('_r_') !== -1) {
+                            ribbonIndex = parseInt(layerName.split('_').last(), 10);
+                        }
+
                         $table.find('#loading-info-row').remove();
                         if ($table.find('thead').length === 0) {
                             $table.append($theadRow);
                         }
-                        for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
-                            lb = bins[binIdx].lowerBound;
-                            ub = bins[binIdx].upperBound;
+                        $titleContainer.html(title);
 
-                            if (lb !== undefined && ub !== undefined) {
-                                if (attrAvg < ub && attrAvg > lb) {
-                                    color = bins[binIdx].color;
+                        if (units === 'year') {
+                            $theadRow.find('td:first-child').remove();
+                            $theadRow.find('td').last().html('&nbsp;Year');
+                            features.each(function (feature) {
+                                $titleContainer = $('<td />');
+                                $colorContainer = $('<td />');
+                                $averageContainer = $('<td />');
+                                $legendRow = $('<tr>');
+                                dateAttribute = Object.keys(feature).find(function (attr) {
+                                    return attr.toLowerCase().indexOf('date') !== -1;
+                                });
+                                year = feature[dateAttribute].split('/')[2];
+                                year2Digit = year.substring(2);
+
+                                if ($table.find('#popup-legend-' + year).length === 0) {
+                                    bin = bins.find(function (bin) {
+                                        return bin.years.findIndex(function (year) {
+                                            year = String(year);
+                                            if (year.length === 1) {
+                                                year = '0' + year;
+                                            }
+                                            return year === year2Digit;
+                                        }) !== -1;
+                                    });
+                                    $colorContainer.append($('<span />').css('backgroundColor', bin.color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
+                                    $averageContainer.append(year);
+                                    $legendRow.append($colorContainer, $averageContainer).attr('id', 'popup-legend-' + year);
+                                    $table.append($legendRow);
                                 }
-                            } else if (lb === undefined && ub !== undefined) {
-                                if (attrAvg < ub) {
-                                    color = bins[binIdx].color;
+                            });
+                        } else {
+                            for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
+                                lb = bins[binIdx].lowerBound;
+                                ub = bins[binIdx].upperBound;
+
+                                if (lb !== undefined && ub !== undefined) {
+                                    if (attrAvg < ub && attrAvg > lb) {
+                                        color = bins[binIdx].color;
+                                    }
+                                } else if (lb === undefined && ub !== undefined) {
+                                    if (attrAvg < ub) {
+                                        color = bins[binIdx].color;
+                                    }
+                                } else {
+                                    if (attrAvg > lb) {
+                                        color = bins[binIdx].color;
+                                    }
                                 }
+                            }
+                            $colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
+
+                            if (item.attr.toLowerCase() === 'cvirisk') {
+                                $averageContainer.append(bins[attrAvg.toFixed(0) - 1].category + ' Risk');
                             } else {
-                                if (attrAvg > lb) {
-                                    color = bins[binIdx].color;
-                                }
+                                $averageContainer.append(attrAvg % 1 === 0 ? attrAvg.toFixed(0) : attrAvg.toFixed(3));
+                                $averageContainer.append(' ' + units);
+                            }
+                            $legendRow.append($titleContainer, $colorContainer, $averageContainer);
+                            
+                            if (ribbonIndex !== -1) {
+                                // If this is part of a ribboned series, I'm going
+                                //  to have to sort these rows based on the ribbon
+                                // index
+                                $legendRow.attr('id', 'legend-row-' + ribbonIndex);
+                                var sortedRows;
+                            
+                                $table.append($legendRow);
+                                sortedRows = $table.find('.legend-row').toArray().sortBy(function (row) {
+                                    return parseInt($(row).attr('id').split('-').last(),10);
+                                });
+                                $table.empty().append(sortedRows);
+                            } else {
+                                $table.append($legendRow);
                             }
                         }
 
-                        $titleContainer.html(title);
-                        $colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
-
-                        if (item.attr.toLowerCase() === 'cvirisk') {
-                            $averageContainer.append(bins[attrAvg.toFixed(0) - 1].category + ' Risk');
-                        } else {
-                            $averageContainer.append(attrAvg % 1 === 0 ? attrAvg.toFixed(0) : attrAvg.toFixed(3));
-                            $averageContainer.append(' ' + units);
-                        }
-                        $legendRow.append($titleContainer, $colorContainer, $averageContainer);
-
-                        $table.append($legendRow);
+                        
                         $popupHtml.append($table);
                         popup.setContentHTML($popupHtml.clone().wrap('<div/>').parent().html());
                         width = new OpenLayers.Size($('#feature-identification-popup div.col-md-12 > table').width());
@@ -188,7 +251,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             var cHeight = 0;
                             $('#feature-identification-popup div.col-md-12 > table tr').each(function (ind, item) {
                                 cHeight += $(item).height();
-                            })
+                            });
                             return cHeight;
                         };
                         popup.setSize(new OpenLayers.Size(width, height() + 5));
@@ -199,27 +262,23 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     };
 
 
-                // Add up the count for each feature
-                incomingFeatures.each(function (f) {
-                    var pFl = parseFloat(f[attr]);
-                    if (isNaN(pFl)) {
-                        pFl = 0.0;
-                    }
-                    attrAvg += pFl;
-                });
+                if (item.type.toLowerCase() === 'vulnerability' || item.type.toLowerCase() === 'storms') {
+                    // Add up the count for each feature
+                    incomingFeatures.each(function (f) {
+                        var pFl = parseFloat(f[attr]);
+                        if (isNaN(pFl)) {
+                            pFl = 0.0;
+                        }
+                        attrAvg += pFl;
+                    });
 
-                // Average them out
-                attrAvg /= incomingFeatures.length;
-
-                if (item.type.toLowerCase() === 'vulnerability') {
+                    // Average them out
+                    attrAvg /= incomingFeatures.length;
+                    
                     if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(attr.toUpperCase()) !== -1) {
                         attrAvg = Math.ceil(attrAvg);
                         category = sld.bins[attrAvg - 1].category;
                         color = sld.bins[attrAvg - 1].color;
-                    }
-                } else if (item.type.toLowerCase() === 'historical') {
-                    if (["LRR", "WLR", "SCE", "NSM", "EPR"].indexOf(attr.toUpperCase()) === -1) {
-                        // TODO - Figure out what needs to be done here. Need data to look at before that happens
                     }
                 }
                 
@@ -227,10 +286,12 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     bins : bins,
                     color : color,
                     title : title,
+                    features : incomingFeatures,
                     attrAvg : attrAvg,
                     item : item,
                     popup : popup,
-                    units : units
+                    units : units,
+                    layers : layers
                 });
             };
 
@@ -248,7 +309,8 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                     features : features,
                                     layerId : layerName,
                                     evt : evt,
-                                    popup : popup
+                                    popup : popup,
+                                    layers : cchLayers
                                 },
                                 callbacks : {
                                     success : [sldResponseHandler],

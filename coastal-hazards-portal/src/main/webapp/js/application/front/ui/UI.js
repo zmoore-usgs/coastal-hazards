@@ -398,12 +398,105 @@ CCH.Objects.UI = function (args) {
         });
     };
 
+    me.loadItems = function () {
+        $(window).resize();
+
+        // Populate the UI with incoming data
+        // Decide how to load the application. 
+        // Depending on the 'idType' string, the application can be loaded either through:
+        // 'ITEM' = Load a single item from the database
+        // 'VIEW' = Load a session which can have zero, one or more items
+        // '' = Load the application normally through the uber item
+        // 
+        // Most of the application is now initialized, so I'm going to try and load
+        // either one item, a view or all top level items. First I check if idType exists
+        if (type) {
+            // User is coming in with either an item or a view, check which
+            if (type === 'view') {
+                splashUpdate("Loading View...");
+
+                // Begin by trying to load the session from the incoming url
+                CCH.session.load({
+                    sid: CCH.CONFIG.params.id,
+                    callbacks: {
+                        success: [
+                            function (session) {
+                                var items = CCH.session.getSession().items;
+
+                                addItemsToBucketOnLoad(items);
+
+                                me.loadTopLevelItem({
+                                    zoomToBbox : false
+                                });
+
+                                CCH.map.zoomToBoundingBox({
+                                    'bbox' : session.bbox,
+                                    'fromProjection' : new OpenLayers.Projection('EPSG:4326')
+                                });
+                            }
+                        ],
+                        error: [
+                            function () {
+                                // The session couldn't be loaded for whatever reason
+                                // so just load the top level item and move forward
+                                me.loadTopLevelItem({
+                                    zoomToBbox : true,
+                                    callbacks : {
+                                        success : [
+                                            function () {
+                                                alertify.error('The Coastal Change Hazards Portal could not find your session.', 4000);
+                                            }
+                                        ],
+                                        error : []
+                                    }
+                                });
+                            }]
+                    }
+                });
+            } else if (type === 'item') {
+                // User is coming in with an item, so load that item
+                splashUpdate('Loading Application...');
+
+                $(window).on('cch.ui.overlay.removed', function () {
+                    // I want to zoom to the bounding box of the item
+                    CCH.map.zoomToBoundingBox({
+                        bbox : CCH.items.getById({ id : id }).bbox,
+                        fromProjection : new OpenLayers.Projection('EPSG:4326')
+                    });
+                    
+                    // And I want to open the accordion to that item
+                    $(window).trigger('cch.slide.search.button.click.explore', {
+                        id : id
+                    });
+                });
+
+                addItemsToBucketOnLoad(cookieItems);
+
+                me.loadTopLevelItem({
+                    zoomToBbox : false
+                });
+            }
+        } else {
+            // The user is initially loading the application. I do not have any items
+            // to load, nor do I have any session to load, so just start with the top
+            // level item
+            splashUpdate('Loading Application...');
+
+            addItemsToBucketOnLoad(cookieItems);
+
+            me.loadTopLevelItem({
+                zoomToBbox : true
+            });
+        }
+    };
+
     // Do Bindings
     $(window).on({
         'resize': me.windowResizeHandler,
         'cch.data.items.searched': me.itemsSearchedHandler,
         'cch.data.locations.searched': me.locationsSearchedHandler,
         'slide.bucket.button.click.share' : me.sharemodalDisplayHandler,
+        'cch.app.initialized' : me.loadItems,
         'cch.slide.bucket.closing' : function () {
             CCH.map.hideAllLayers();
             me.accordion.showCurrent();
@@ -433,94 +526,26 @@ CCH.Objects.UI = function (args) {
         }
     });
 
-    $(CCH.map).on('map-click', function () {
-        me.searchSlide.close({
-            clearOnClose : true
-        });
-    });
-
-    // Populate the UI with incoming data
-    // Decide how to load the application. 
-    // Depending on the 'idType' string, the application can be loaded either through:
-    // 'ITEM' = Load a single item from the database
-    // 'VIEW' = Load a session which can have zero, one or more items
-    // '' = Load the application normally through the uber item
-    // 
-    // Most of the application is now initialized, so I'm going to try and load
-    // either one item, a view or all top level items. First I check if idType exists
-    if (type) {
-        // User is coming in with either an item or a view, check which
-        if (type === 'view') {
-            splashUpdate("Loading View...");
-
-            // Begin by trying to load the session from the incoming url
-            CCH.session.load({
-                sid: CCH.CONFIG.params.id,
-                callbacks: {
-                    success: [
-                        function (session) {
-                            var items = CCH.session.getSession().items;
-
-                            addItemsToBucketOnLoad(items);
-
-                            me.loadTopLevelItem({
-                                zoomToBbox : false
-                            });
-
-                            CCH.map.zoomToBoundingBox({
-                                'bbox' : session.bbox
-                            });
-                        }
-                    ],
-                    error: [
-                        function () {
-                            // The session couldn't be loaded for whatever reason
-                            // so just load the top level item and move forward
-                            me.loadTopLevelItem({
-                                zoomToBbox : true,
-                                callbacks : {
-                                    success : [
-                                        function () {
-                                            alertify.error('The Coastal Change Hazards Portal could not find your session.', 4000);
-                                        }
-                                    ],
-                                    error : []
-                                }
-                            });
-                        }]
-                }
-            });
-        } else if (type === 'item') {
-            // User is coming in with an item, so load that item
-            splashUpdate('Loading Application...');
-
-            $(window).on('cch.ui.overlay.removed', function () {
-                $(window).trigger('cch.slide.search.button.click.explore', {
-                    id : id
-                });
-            });
-
-            addItemsToBucketOnLoad(cookieItems);
-
-            me.loadTopLevelItem({
-                zoomToBbox : true
-            });
+    me.$NAVBAR_BUCKET_CONTAINER.popover({
+        delay : {
+            show : 800,
+            hide : 0
         }
-    } else {
-        // The user is initially loading the application. I do not have any items
-        // to load, nor do I have any session to load, so just start with the top
-        // level item
-        splashUpdate('Loading Application...');
-
-        addItemsToBucketOnLoad(cookieItems);
-
-        me.loadTopLevelItem({
-            zoomToBbox : true
-        });
-    }
-
-    me.$NAVBAR_BUCKET_CONTAINER.popover();
-    me.$NAVBAR_HELP_CONTAINER.popover();
+    }).on('shown.bs.popover', function (evt) {
+        setTimeout(function () {
+            $(evt.target).popover('hide');
+        }, CCH.CONFIG.ui['tooltip-prevalence']);
+    });
+    me.$NAVBAR_HELP_CONTAINER.popover({
+        delay : {
+            show : 800,
+            hide : 0
+        }
+    }).on('shown.bs.popover', function (evt) {
+        setTimeout(function () {
+            $(evt.target).popover('hide');
+        }, CCH.CONFIG.ui['tooltip-prevalence']);
+    });
 
     $(window).trigger('cch.ui.initialized');
 

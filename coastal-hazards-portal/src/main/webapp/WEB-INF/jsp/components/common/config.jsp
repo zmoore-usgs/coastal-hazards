@@ -17,6 +17,7 @@
 	String publicContext = props.getProperty("coastal-hazards.public.context");
 	String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
 	String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
+	String marineArcServerEndpoint = props.getProperty("coastal-hazards.marine.endpoint");
 	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
 	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
     String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");
@@ -57,7 +58,8 @@
                 'tooltip-delay' : {
                     show : 800,
                     hide : 0
-                }
+                },
+                'tooltip-prevalence' : 2000
             },
 			map: {
 				ribbonOffset: 6, //Must be an integer
@@ -108,12 +110,16 @@
 				sources: {
 					'cida-geoserver': {
 						'endpoint': '<%=geoserverEndpoint%>',
-						'proxy': 'geoserver/'
+						'proxy': '<%=baseUrl%>/geoserver/'
 					},
 					'stpete-arcserver': {
 						'endpoint': '<%=stPeteArcServerEndpoint%>',
-						'proxy': 'stpgis/'
+						'proxy': '<%=baseUrl%>/stpgis/'
 					},
+                    'marine-arcserver' : {
+                        'endpoint': '<%=marineArcServerEndpoint%>',
+						'proxy': '<%=baseUrl%>/marine/'
+                    },
 					'item': {
 						'endpoint': '/data/item'
 					},

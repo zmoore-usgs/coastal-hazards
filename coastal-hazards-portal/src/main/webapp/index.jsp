@@ -65,7 +65,7 @@
             </div>
             <div id="content-row" class="row">
                 <div id="content-column" class="col-md-12">
-                    <div id="map" class="col-md-8 col-lg-9"></div>
+                    <div id="map" class="col-md-7 col-lg-8"></div>
                     <jsp:include page="WEB-INF/jsp/components/front/slides/slider-items.jsp">
                         <jsp:param name="base-url" value="<%=baseUrl%>" />
                     </jsp:include>
@@ -84,7 +84,7 @@
         <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/1.10.3/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-cookie/1.4.0/jquery.cookie.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
         <jsp:include page="WEB-INF/jsp/components/common/config.jsp">
             <jsp:param name="id" value="${it.id}" /> 
             <jsp:param name="idType" value="${it.type}" /> 

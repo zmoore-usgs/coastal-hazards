@@ -7,11 +7,11 @@
             </button>
             <ul id="app-navbar-search-dropdown-menu" class="dropdown-menu">
                 <li class="disabled app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-all" title="All" href="#">All</a></li>
-                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-location" title="Location" href="#">Location</a></li>
                 <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products" title="Products" href="#">Products</a></li>
                 <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-extreme-storms" title="Extreme Storms" href="#">Products - Extreme Storms</a></li>
                 <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-shoreline-vulnerability" title="Shoreline Change" href="#">Products - Shoreline Change</a></li>
                 <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-products-sealevel-historical" title="Sea-level Rise" href="#">Products - Sea-level Rise</a></li>
+                <li class="app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-location" title="Location" href="#">Location</a></li>
             </ul>
         </div> 
         
