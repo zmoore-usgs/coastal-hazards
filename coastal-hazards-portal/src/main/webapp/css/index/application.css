@@ -105,7 +105,11 @@ html, body {
 .olControlZoom a:hover {
     background: rgba(0, 51, 102, 0.7) !important;
 }
-
+    
+#OpenLayers_Control_MinimizeDiv img {
+    height: 100%;
+    left: -15px;
+}
 
 @media (min-width: 992px) {
     #application-container {
@@ -165,6 +169,10 @@ html, body {
         width: 25px !important;
         height: 25px !important;
         background-size: contain !important;
+    }
+    
+    #OpenLayers_Control_MaximizeDiv img {
+        height: 30px;
     }
 }
 
