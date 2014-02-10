@@ -49,7 +49,7 @@ CCH.Objects.Map = function (args) {
             }
         }
 
-        if (layer.params.SLD.indexOf('ribbon') === -1) {
+        if (layer.params.SLD.indexOf('ribbon') !== -1) {
             layer.name = layerName;
             layer.mergeNewParams({
                 'SLD' : layer.params.SLD + '?ribbon=' + ribbonIndex,
