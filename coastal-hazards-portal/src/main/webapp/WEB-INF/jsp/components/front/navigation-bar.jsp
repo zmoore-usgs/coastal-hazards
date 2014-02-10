@@ -8,7 +8,7 @@
     <div class="app-navbar-title visible-lg hidden-md hidden-sm hidden-xs">USGS Coastal Change Hazards Portal</div>
     <div class="app-navbar-title hidden-lg visible-md hidden-sm hidden-xs">USGS Coastal Change Hazards</div>
     <div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">USGS Coastal Change Hazards</div>
-    <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">CCH</div>
+    <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">&nbsp;</div>
 </div>
 
 <%-- Combination Search Bar --%>

@@ -121,7 +121,7 @@
                 <div id="app-navbar-site-title-container" class="app-navbar-item-container">
                     <div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">USGS Coastal Change Hazards Portal</div>
                     <div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">Coastal Change Hazards Portal</div>
-                    <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">CCH</div>
+                    <div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">&nbsp;</div>
                 </div>
                 <%-- Help Button --%>
                 <div class='app-navbar-item-container'>
