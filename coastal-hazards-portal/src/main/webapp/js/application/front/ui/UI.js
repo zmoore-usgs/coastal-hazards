@@ -463,7 +463,7 @@ CCH.Objects.UI = function (args) {
                         bbox : CCH.items.getById({ id : id }).bbox,
                         fromProjection : new OpenLayers.Projection('EPSG:4326')
                     });
-                    
+
                     // And I want to open the accordion to that item
                     $(window).trigger('cch.slide.search.button.click.explore', {
                         id : id

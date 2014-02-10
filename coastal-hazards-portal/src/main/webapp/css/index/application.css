@@ -159,6 +159,13 @@ html, body {
     #map #feature-identification-popup table tr {
         font-size: 12px;
     }
+    
+    /* Click-to-identify close-box OpenLayers override */
+    .olPopupCloseBox {
+        width: 25px !important;
+        height: 25px !important;
+        background-size: contain !important;
+    }
 }
 
 @media (max-width: 440px) {
