@@ -31,6 +31,7 @@ CCH.Objects.UI = function (args) {
                         $legendContainer.append(legend);
                     }
                 }
+                $legendContainer.height($legendContainer.find('>div:first-child').height());
             };
         if (dataItem.type === 'historical') {
             if (dataItem.item.name === 'rates') {
@@ -99,6 +100,9 @@ CCH.Objects.UI = function (args) {
                 $legendContainer.find('caption').html(item.summary.full.title)
             }
         }
+        
+        
+        
     };
 
     me.buildLegend = function (args) {
