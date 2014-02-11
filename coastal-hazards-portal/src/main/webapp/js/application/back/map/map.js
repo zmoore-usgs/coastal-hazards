@@ -35,6 +35,25 @@ CCH.Objects.Map = function (args) {
                 layer = card.layer;
             } else if (item && 'function' === typeof item.getWmsLayer) {
                 layer = item.getWmsLayer();
+                layer.events.register('loadstart', layer, function () {
+                    $('div.olMap').css('cursor', 'wait');
+                    $('body').css('cursor', 'wait');
+                });
+                layer.events.register('loadend', layer, function () {
+                    var layers = CCH.CONFIG.map.layers.findAll(function (l) {
+                        return !l.isBaseLayer;
+                    }),
+                        layersStillLoading = 0;
+
+                    layers.each(function (l) {
+                        layersStillLoading += l.numLoadingTiles;
+                    });
+
+                    if (layersStillLoading === 0) {
+                        $('div.olMap').css('cursor', 'default');
+                        $('body').css('cursor', 'default');
+                    }
+                });
             }
         }
 

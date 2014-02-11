@@ -31,6 +31,8 @@ CCH.Objects.UI = function (args) {
                         $legendContainer.append(legend);
                     }
                 }
+                // Make sure the legend container is only as large as the first
+                // legend child
                 $legendContainer.height($legendContainer.find('>div:first-child').height());
             };
         if (dataItem.type === 'historical') {
