@@ -24,6 +24,9 @@
                 <div id="application-slide-search-product-results-paging-container" class="application-slide-search-paging-container row">
                     <ul class="pagination"></ul>
                 </div>
+                <div id="application-slide-search-product-results-spatial-filter-check-container" class="application-slide-search-paging-container row">
+                    <button type="button" class="btn btn-default" data-toggle="button"><i class="fa fa-check"></i> Filter Results To Current View</button>
+                </div>
             </div>
         </div>
     </div>

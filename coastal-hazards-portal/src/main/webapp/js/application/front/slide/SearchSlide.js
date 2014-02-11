@@ -39,6 +39,7 @@ CCH.Objects.SearchSlide = function (args) {
     me.SLIDE_SEARCH_CONTAINER_PARENT_ID = 'application-slide-search-content-container';
     me.PRODUCT_SLIDE_SEARCH_PAGE_CONTAINER = 'application-slide-search-product-results-paging-container';
     me.LOCATION_SLIDE_SEARCH_PAGE_CONTAINER = 'application-slide-search-location-results-paging-container';
+    me.FILTER_RESULTS_BUTTON = $('#application-slide-search-product-results-spatial-filter-check-container > button');
     me.$SEARCH_TYPE_LISTITEM = $('.app-navbar-search-dropdown-item');
     me.bucket = args.bucket;
 
@@ -71,15 +72,17 @@ CCH.Objects.SearchSlide = function (args) {
         });
     };
 
-    me.open = function () {
+    me.open = function (args) {
+        args = args || {};
         var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             isSmall = me.isSmall(),
+            animationTime = args.animationTime || me.ANIMATION_TIME,
             openSlide;
 
         if (me.isClosed) {
             openSlide = function () {
                 $(window).off('cch.slide.items.opened', openSlide);
-
+                
                 $('body').css({
                     overflow : 'hidden'
                 });
@@ -94,7 +97,7 @@ CCH.Objects.SearchSlide = function (args) {
 
                 $slideContainer.animate({
                     left: me.getExtents()[isSmall ? 'small' : 'large'].left
-                }, me.animationTime, function () {
+                }, animationTime, function () {
                     me.isClosed = false;
 
                     $('body').css({
@@ -121,11 +124,12 @@ CCH.Objects.SearchSlide = function (args) {
         if (!me.isClosed && !me.isClosing) {
             $(window).trigger('cch.slide.search.closing');
 
-            var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
+            var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
+                animationTime = args.animationTime || me.ANIMATION_TIME;
             me.isClosing = true;
             $slideContainer.animate({
                 left: $(window).width()
-            }, me.ANIMATION_TIME, function () {
+            }, animationTime, function () {
                 $slideContainer.addClass('hidden');
                 if (args && args.clearOnClose) {
                     me.clear();
@@ -239,7 +243,7 @@ CCH.Objects.SearchSlide = function (args) {
             $showAllButton,
             $resultsFoundsContainer,
             slidesPerPage = args.slidesPerPage || me.PAGE_ITEM_COUNT,
-            pageCount,
+            pageCount = 0,
             type = args.type,
             itemsIdx,
             cards = [],
@@ -359,12 +363,12 @@ CCH.Objects.SearchSlide = function (args) {
                 $slideContainer = $contentContainer.find('>div:nth-child(2)');
                 $pagingContainer = $contentContainer.find('>div:nth-child(3)');
 
+                $resultsFoundsContainer.
+                            removeClass('hidden').
+                            html(productsSize + ' Product' + (productsSize !== 1 ? 's' : '') + ' Found');
+
                 if (productsSize > 0) {
                     pageCount = Math.ceil(productsSize / slidesPerPage);
-
-                    $resultsFoundsContainer.
-                            removeClass('hidden').
-                            html(productsSize + ' Product' + (productsSize > 1 ? 's' : '') + ' Found');
 
                     // Start with a clean slate 
                     $slideContainer.empty();
@@ -698,6 +702,18 @@ CCH.Objects.SearchSlide = function (args) {
                     empty();
             }
         }
+    });
+    
+    $(me.FILTER_RESULTS_BUTTON).on('click', function (evt) {
+        var active = true;
+        if ($(evt.target).hasClass('active')) {
+            // Button had the active class on when pushed. This means user is 
+            // turning it off
+            active = false;
+        }
+        $(window).trigger('cch.slide.search.filter.toggle', {
+            active : active
+        });
     });
 
     $(me.CLOSE_BUTTON_SELECTOR).on('click', function () {

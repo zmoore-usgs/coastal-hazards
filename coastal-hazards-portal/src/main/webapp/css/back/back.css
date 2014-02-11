@@ -11,7 +11,7 @@ html, body {
     Anything smaller, scroll the app
     */
     min-width: 320px;
-    min-height: 600px;
+    min-height: 480px;
     padding-left: 10px !important;
     padding-right:  10px !important;
     height: 100%;
@@ -22,7 +22,6 @@ html, body {
 #info-legend {
     overflow-y: scroll;
     width: 100%;
-    height: 400px;
 }
 
 /* Fixes pink tile issue in OpenLayers map */
@@ -138,12 +137,16 @@ html, body {
     line-height: 1.5em;
 }
 
-#modal-services-view .modal-body > .row {
+#modal-services-view .modal-dialog {
+    width: auto;
+}
+
+#modal-services-view .modal-body .row {
 	margin-bottom: 10px;
 	font-size: 1.2em;
 }
 
-#modal-services-view .modal-body > .row > input{
+#modal-services-view .modal-body .row > input{
 	width: 100%;
 }
 

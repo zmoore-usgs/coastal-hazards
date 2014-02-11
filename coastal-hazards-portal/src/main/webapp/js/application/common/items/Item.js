@@ -316,7 +316,15 @@ CCH.Objects.Item = function (args) {
             if (me.children.length > 0) {
                 for (idx; idx < me.children.length && path.length === 0; idx++) {
                     child = CCH.items.getItems()[me.children[idx]];
-                    path = child.pathToItem(id, path);
+                    // Child may not have been loaded so just keep going. This
+                    // only happens sometimes when I have to drill down initially
+                    // to an item that may be loaded at the very end of the process.
+                    // However, if this function is called, it usually means I have 
+                    // enough information upstream to tell me how to get to the item
+                    // I'm trying to get to and this is not the correct path anyway
+                    // so the upstream functionality will end up looking at the 
+                    // next branch for the item.
+                    path = child ? child.pathToItem(id, path) : [];
                 }
 
                 if (path.length > 0) {

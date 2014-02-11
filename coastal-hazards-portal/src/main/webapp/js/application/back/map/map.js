@@ -10,7 +10,8 @@ CCH.Objects.Map = function (args) {
     var me = (this === window) ? {} : this;
 
     me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
-
+    me.EXTEND_BOUNDS_BY = 0.00;
+    
     me.addLayer = function (layer) {
         CCH.CONFIG.map.addLayer(layer);
     };
@@ -34,6 +35,25 @@ CCH.Objects.Map = function (args) {
                 layer = card.layer;
             } else if (item && 'function' === typeof item.getWmsLayer) {
                 layer = item.getWmsLayer();
+                layer.events.register('loadstart', layer, function () {
+                    $('div.olMap').css('cursor', 'wait');
+                    $('body').css('cursor', 'wait');
+                });
+                layer.events.register('loadend', layer, function () {
+                    var layers = CCH.CONFIG.map.layers.findAll(function (l) {
+                        return !l.isBaseLayer;
+                    }),
+                        layersStillLoading = 0;
+
+                    layers.each(function (l) {
+                        layersStillLoading += l.numLoadingTiles;
+                    });
+
+                    if (layersStillLoading === 0) {
+                        $('div.olMap').css('cursor', 'default');
+                        $('body').css('cursor', 'default');
+                    }
+                });
             }
         }
 
@@ -60,13 +80,13 @@ CCH.Objects.Map = function (args) {
         // restricted extend
         var originalBounds = new OpenLayers.Bounds(CCH.CONFIG.item.bbox),
             extendedBounds = new OpenLayers.Bounds([
-                originalBounds.left - Math.abs(originalBounds.left * 0.1),
-                originalBounds.bottom - Math.abs(originalBounds.bottom * 0.1),
-                originalBounds.right + Math.abs(originalBounds.right * 0.1),
-                originalBounds.top + Math.abs(originalBounds.top * 0.1)
+                originalBounds.left - Math.abs(originalBounds.left * me.EXTEND_BOUNDS_BY),
+                originalBounds.bottom - Math.abs(originalBounds.bottom * me.EXTEND_BOUNDS_BY),
+                originalBounds.right + Math.abs(originalBounds.right * me.EXTEND_BOUNDS_BY),
+                originalBounds.top + Math.abs(originalBounds.top * me.EXTEND_BOUNDS_BY)
             ]),
             bounds,
-            attributionControl;
+            attributionControl; // We may want to re-enable this later
 
         originalBounds.extend(extendedBounds);
         bounds = originalBounds.transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));

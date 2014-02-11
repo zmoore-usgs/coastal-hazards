@@ -208,10 +208,9 @@ CCH.Objects.Card = function (args) {
                     item : me.item,
                     visibility : true
                 });
-            }
+            };
 
-        $button.off('click', add);
-        $button.on('click', add);
+        $button.off('click', add).on('click', add);
     };
 
     me.bindAggMenuToResize = function (args) {
@@ -393,7 +392,7 @@ CCH.Objects.Card = function (args) {
                         'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
                     }),
                 $moreInfoSpan = $('<span />').append($moreInfoLink),
-                zoomToBadge = $('<span />').
+                $zoomToBadge = $('<span />').
                     addClass('badge zoom-to-badge').
                     html('Zoom To');
 
@@ -407,7 +406,7 @@ CCH.Objects.Card = function (args) {
             mediumContentContainer.html(mediumContent);
 
             // Add badges to content
-            mediumContentContainer.append($moreInfoSpan, zoomToBadge);
+            mediumContentContainer.append($moreInfoSpan, $zoomToBadge);
 
             // I have either aggregations or leaf nodes as children.
             // I am not myself a child.
@@ -430,7 +429,8 @@ CCH.Objects.Card = function (args) {
                 'data-content' : 'Add This Dataset To Your Bucket'
             }));
 
-            zoomToBadge.on('click', function () {
+            $zoomToBadge.on('click', function () {
+                $(window).trigger('cch.card.click.zoomto');
                 CCH.map.zoomToBoundingBox({
                     bbox : me.bbox,
                     fromProjection : new OpenLayers.Projection('EPSG:4326')

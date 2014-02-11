@@ -157,8 +157,11 @@
         #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:nth-child(2) > div > div:first-child > span.badge:hover {
             cursor: pointer;
         }
-        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:last-child {
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) ~ div {
             text-align: center;
+        }
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:last-child > button.active i {
+            color: #008000;
         }
 
 @media (min-width: 992px) {

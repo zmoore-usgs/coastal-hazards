@@ -10,6 +10,7 @@ CCH.Objects.UI = function (args) {
 
     var me = (this === window) ? {} : this,
         $metadataLink,
+        $metadataLinkButton = $('#metadata-link'),
         $downloadFull,
         $applicationLink,
         $publist,
@@ -31,6 +32,9 @@ CCH.Objects.UI = function (args) {
                         $legendContainer.append(legend);
                     }
                 }
+                // Make sure the legend container is only as large as the first
+                // legend child
+                $legendContainer.height($legendContainer.find('>div:first-child').height());
             };
         if (dataItem.type === 'historical') {
             if (dataItem.item.name === 'rates') {
@@ -99,6 +103,9 @@ CCH.Objects.UI = function (args) {
                 $legendContainer.find('caption').html(item.summary.full.title)
             }
         }
+        
+        
+        
     };
 
     me.buildLegend = function (args) {
@@ -354,69 +361,111 @@ CCH.Objects.UI = function (args) {
         });
     };
     
-    // Initialize The UI
- 
-    // Fill out the modal window with services
-    CCH.CONFIG.item.services.each(function (service) {
-        var endpoint = service.endpoint,
-            serviceType = service.type,
-            serviceParam = service.serviceParameter,
-
-            $link = $('<a />').attr({
-                        'href' : endpoint,
-                        'target' : '_services'
-                    }),
-            $textBox = $('<input />').attr({
-                'type' : 'text'
-            }),
-            $serviceParamSpan = $('<span />').html(' (Service Parameter: '),
-            $newRow = $('<div />').
-                addClass('row').
-                append($link);
-
-        switch (serviceType) {
-            case ('csw') :
-                {
-                $link.html('CSW :');
-                $textBox.val(endpoint);
-                $newRow.append($link, $textBox)
-                break;
-                }
-            case ('source_wms') :
-                {
-                $link.html('Source WMS :');
-                $textBox.val(endpoint);
-                $serviceParamSpan.append(serviceParam, ' )');
-                $newRow.append($link, $serviceParamSpan, $textBox)
-                break;
-                }
-            case ('source_wfs') :
-                {
-                $link.html('Source WFS :');
-                $textBox.val(endpoint);
-                $serviceParamSpan.append(serviceParam, ' )');
-                $newRow.append($link, $serviceParamSpan, $textBox)
-                break;
-                }
-            case ('proxy_wfs') :
-                {
-                $link.html('Proxy WFS :');
-                $textBox.val(endpoint);
-                $serviceParamSpan.append(serviceParam, ' )');
-                $newRow.append($link, $serviceParamSpan, $textBox)
-                break;
-                }
-            case ('proxy_wms') :
-                {
-                $link.html('Proxy WMS :');
-                $textBox.val(endpoint);
-                $serviceParamSpan.append(serviceParam, ' )');
-                $newRow.append($link, $serviceParamSpan, $textBox)
-                break;
-                }
+    me.createModalServicesTab = function (args) {
+        
+        var item = args.item,
+            $container = args.container || $('#modal-services-view .modal-body'),
+            $tabUl = $container.find('> ul'),
+            $tabContentContainer = $container.find('> div'),
+            $tabLi = $('<li />'),
+            $tabLink = $('<a />').
+                attr({
+                    'data-toggle' : 'tab',
+                    'href' : '#tab-' + item.id
+                }).html(item.summary.tiny.text),
+            $tabBody = $('<div />').
+                addClass('tab-pane').
+                attr('id', 'tab-' + item.id);
+    
+        if ($tabUl.length === 0) {
+            $tabUl = $('<ul />').addClass('nav nav-tabs');
+            $tabContentContainer = $('<div />').addClass('tab-content');
+            $container.append($tabUl, $tabContentContainer);
         }
+        
+        if ($tabUl.children().length === 0) {
+            $tabLi.addClass('active');
+            $tabBody.addClass('active');
+        }
+        
+        $tabLi.append($tabLink);
+        $tabUl.append($tabLi);
+        $tabContentContainer.append($tabBody);
+    
+        if (item.children.length !== 0) {
+            item.children.each(function (childId) {
+                var child = CCH.items.getById({ id : childId });
+                me.createModalServicesTab({
+                    item : child,
+                    container : $tabBody
+                });
+            });
+        } else {
+            item.services.each(function (service) {
+                var endpoint = service.endpoint,
+                    serviceType = service.type,
+                    serviceParam = service.serviceParameter,
 
-        $('#modal-services-view .modal-body').append($newRow)
+                    $link = $('<a />').attr({
+                                'href' : endpoint,
+                                'target' : '_services'
+                            }),
+                    $textBox = $('<input />').attr({
+                        'type' : 'text'
+                    }),
+                    $serviceParamSpan = $('<span />').html(' (Service Parameter: '),
+                    $newRow = $('<div />').
+                        addClass('row').
+                        append($link);
+
+                switch (serviceType) {
+                    case ('csw') :
+                        {
+                        $link.html('CSW :');
+                        $textBox.val(endpoint);
+                        $newRow.append($link, $textBox)
+                        break;
+                        }
+                    case ('source_wms') :
+                        {
+                        $link.html('Source WMS :');
+                        $textBox.val(endpoint);
+                        $serviceParamSpan.append(serviceParam, ' )');
+                        $newRow.append($link, $serviceParamSpan, $textBox)
+                        break;
+                        }
+                    case ('source_wfs') :
+                        {
+                        $link.html('Source WFS :');
+                        $textBox.val(endpoint);
+                        $serviceParamSpan.append(serviceParam, ' )');
+                        $newRow.append($link, $serviceParamSpan, $textBox)
+                        break;
+                        }
+                    case ('proxy_wfs') :
+                        {
+                        $link.html('Proxy WFS :');
+                        $textBox.val(endpoint);
+                        $serviceParamSpan.append(serviceParam, ' )');
+                        $newRow.append($link, $serviceParamSpan, $textBox)
+                        break;
+                        }
+                    case ('proxy_wms') :
+                        {
+                        $link.html('Proxy WMS :');
+                        $textBox.val(endpoint);
+                        $serviceParamSpan.append(serviceParam, ' )');
+                        $newRow.append($link, $serviceParamSpan, $textBox)
+                        break;
+                        }
+                }
+                $tabBody.append($newRow);
+            });
+        }
+    };
+    
+    me.createModalServicesTab({
+        item : item
     });
     
     // Create a "Download Full" button
@@ -426,12 +475,21 @@ CCH.Objects.UI = function (args) {
     }).addClass('btn btn-default').html('<i class="fa fa-download"></i> Download Full Data');
  
     // Create a "View Metadata" button
-    $metadataLink = $('<a />').attr({
-        'href': CCH.CONFIG.item.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
-        'target': 'portal_metadata_window',
-        'role': 'button'
-    }).addClass('btn btn-default').html('<i class="fa fa-download"></i> View Metadata');
-    $('#metadata-link').append($metadataLink);
+    var cswService = CCH.CONFIG.item.services.find(function (service) {
+        return service.type === 'csw';
+    });
+    
+    if (cswService) {
+        $metadataLink = $('<a />').attr({
+            'href': cswService.endpoint + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
+            'target': 'portal_metadata_window',
+            'role': 'button'
+        }).addClass('btn btn-default').html('<i class="fa fa-download"></i> View Metadata');
+        $metadataLinkButton.append($metadataLink);
+    } else {
+        $metadataLinkButton.remove()
+    }
+    
     $('#download-full-link').append($downloadFull);
     
     // Create a "Back To Portal" link to let the user view this in the portal
