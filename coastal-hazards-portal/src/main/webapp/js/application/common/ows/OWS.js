@@ -212,7 +212,7 @@ CCH.Objects.OWS = function() {
                 error: []
             },
                 layername = args.layerName || '';
-            $.ajax(CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?', {
+            $.ajax(CCH.CONFIG.publicUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?', {
                 data: {
                     request: 'DescribeFeaturetype',
                     service: 'WFS',
@@ -250,7 +250,7 @@ CCH.Objects.OWS = function() {
                 url = me.servers[server].endpoints.wfsGetCapsUrl;
                 url = url.add(namespace + '/', url.indexOf('ows'));
             } else if (server === 'stpete-arcserver' || server === 'marine-arcserver') {
-                url = me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WFSServer?service=wfs&version=1.1.0&request=GetCapabilities'
+                url = CCH.CONFIG.publicUrl + me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WFSServer?service=wfs&version=1.1.0&request=GetCapabilities'
             }
             
             CCH.LOG.debug('OWS.js::getWMSCapabilities: A request is being made for WMS GetCapabilities for the namespace: ' + namespace);
@@ -300,7 +300,7 @@ CCH.Objects.OWS = function() {
                     url = me.servers[server].endpoints.wmsGetCapsUrl;
                     url = url.add(namespace + '/', url.indexOf('ows'));
                 } else if (server === 'stpete-arcserver' || server === 'marine-arcserver') {
-                    url = me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WMSServer?service=wms&version=1.3.0&request=GetCapabilities'
+                    url = CCH.CONFIG.publicUrl + me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WMSServer?service=wms&version=1.3.0&request=GetCapabilities'
                 }
             }
 
