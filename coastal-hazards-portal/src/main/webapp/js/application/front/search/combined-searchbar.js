@@ -33,6 +33,7 @@ CCH.Objects.CombinedSearch = function (args) {
     me.DD_TOGGLE_SPINNER_IMG_LOCATION = 'images/spinner/ajax-loader.gif';
     me.selectedOption = 'all';
     me.isSmall;
+    me.includeBboxInSearch = false;
 
     // Internally used objects
     me.search = new CCH.Objects.Search({
@@ -86,9 +87,7 @@ CCH.Objects.CombinedSearch = function (args) {
         return me.selectedOption;
     };
 
-    me.submitButtonClicked = function (evt, args) {
-        args = args || {};
-
+    me.submitButtonClicked = function () {
         var inputBox = $(me.INPUTBOX_SELECTOR),
             criteria = inputBox.val(),
             type = me.selectedOption;
@@ -137,11 +136,23 @@ CCH.Objects.CombinedSearch = function (args) {
         var criteria = args.criteria + String(),
             types = args.types,
             callbacks = args.callbacks,
+            bbox = null,
             scope = args.scope || me;
-
+            
+        if (me.includeBboxInSearch) {
+            bbox = CCH.map.getMap().
+                getExtent().
+                transform(
+                    CCH.map.getMap().displayProjection,
+                    new OpenLayers.Projection('EPSG:4326')).
+                toArray().
+                join(',');
+        }
+            
         me.search.submitItemSearch({
             criteria : criteria,
             scope : scope,
+            bbox : bbox,
             callbacks : callbacks,
             types : types
         });
@@ -390,6 +401,10 @@ CCH.Objects.CombinedSearch = function (args) {
         },
         'slide-search-opened' : function (evt) {
             $(me.INPUTBOX_SELECTOR)[0].blur();
+        },
+        'cch.slide.search.filter.toggle' : function (evt, args) {
+            me.includeBboxInSearch = args.active;
+            me.submitButtonClicked();
         }
     });
 
