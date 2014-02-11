@@ -62,7 +62,8 @@ CCH.Objects.UI = function () {
         $wfsSourceCopyButton = $('#form-publish-item-service-source-wfs-copy-button'),
         $wmsServerHelpButton = $('#form-publish-item-service-source-wms-import-button-service-select'),
         $proxyWfsCheckButton = $('#form-publish-item-service-proxy-wfs-import-button-check'),
-        $proxyWmsCheckButton = $('#form-publish-item-service-proxy-wms-import-button-check');
+        $proxyWmsCheckButton = $('#form-publish-item-service-proxy-wms-import-button-check'),
+        $getWfsAttributesButton = $('#form-publish-item-service-proxy-wfs-pull-attributes-button');
 
     me.createHelpPopover = function($content, $element) {
         $element.popover('destroy');
@@ -115,7 +116,6 @@ CCH.Objects.UI = function () {
         $showChildrenCb.attr('disabled', 'disabled');
         $itemType.attr('disabled', 'disabled');
         $name.attr('disabled', 'disabled');
-        $wfsImportButton.attr('disabled', 'disabled');
         $keywordGroup.find('input').attr('disabled', 'disabled');
         $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').attr('disabled', 'disabled');
         $itemIdInput.val('');
@@ -154,6 +154,7 @@ CCH.Objects.UI = function () {
     };
 
     me.enableNewItemForm = function () {
+        var gsBaseUrl = CCH.CONFIG.publicUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/';
         $itemType.val('data');
         $titleFullTextArea.removeAttr('disabled');
         $titleMediumTextArea.removeAttr('disabled');
@@ -171,9 +172,14 @@ CCH.Objects.UI = function () {
         $srcWfsServiceParamInput.removeAttr('disabled');
         $srcWmsServiceInput.removeAttr('disabled');
         $srcWmsServiceParamInput.removeAttr('disabled');
-        $proxyWfsServiceInput.removeAttr('disabled');
+        $proxyWfsServiceInput.
+            removeAttr('disabled').
+            val(gsBaseUrl + 'wfs');
         $proxyWfsServiceParamInput.removeAttr('disabled');
-        $proxyWmsServiceInput.removeAttr('disabled');
+        $proxyWmsServiceInput.
+            removeAttr('disabled').
+            val(gsBaseUrl + 'wms');
+        $getWfsAttributesButton.removeAttr('disabled');
         $proxyWmsServiceParamInput.removeAttr('disabled');
         $ribbonableCb.removeAttr('disabled');
         $showChildrenCb.prop('checked', false);
@@ -999,15 +1005,7 @@ CCH.Objects.UI = function () {
                         removeAttr('disabled');
                     $srcWfsServiceParamInput.
                         val(services.source_wfs.serviceParameter).
-                        removeAttr('disabled').
-                        keyup(function (evt) {
-                            if ($srcWfsServiceInput.val().trim() !== '' &&
-                                    $(evt.target).val().trim() !== '') {
-                                $wfsImportButton.removeAttr('disabled');
-                            } else {
-                                $wfsImportButton.attr('disabled', 'disabled');
-                            }
-                        });
+                        removeAttr('disabled')
                     $srcWmsServiceInput.
                         val(services.source_wms.endpoint).
                         removeAttr('disabled');
@@ -1020,6 +1018,7 @@ CCH.Objects.UI = function () {
                     $proxyWfsServiceParamInput.
                         val(services.proxy_wfs.serviceParameter).
                         removeAttr('disabled');
+                    $getWfsAttributesButton.removeAttr('disabled');
                     $proxyWmsServiceInput.
                         val(services.proxy_wms.endpoint).
                         removeAttr('disabled');
@@ -1028,12 +1027,6 @@ CCH.Objects.UI = function () {
                         removeAttr('disabled');
                 }
 
-                if ($srcWfsServiceInput.val().trim() !== '' && $srcWfsServiceParamInput.val() !== '') {
-                    $wfsImportButton.removeAttr('disabled');
-                } else {
-                    $wfsImportButton.attr('disabled', 'disabled');
-                }
-                
                 $wfsServerHelpButton.removeAttr('disabled');
                 $sourceWfsCheckButton.removeAttr('disabled');
                 $wfsSourceCopyButton.removeAttr('disabled');
@@ -1513,8 +1506,6 @@ CCH.Objects.UI = function () {
             });
         }
     };
-    
-    
 
     $wfsImportButton.on('click', function () {
         var importCall,
@@ -1624,15 +1615,6 @@ CCH.Objects.UI = function () {
     $keywordGroup.find('button').on('click', function () {
         if ($keywordGroup.find('input').val() !== '') {
             me.addKeywordGroup($keywordGroup.find('input').val());
-        }
-    });
-
-    $srcWfsServiceParamInput.keyup(function (evt) {
-        if ($srcWfsServiceInput.val().trim() !== '' &&
-                $(evt.target).val().trim() !== '') {
-            $wfsImportButton.removeAttr('disabled');
-        } else {
-            $wfsImportButton.attr('disabled', 'disabled');
         }
     });
 
@@ -2066,6 +2048,28 @@ CCH.Objects.UI = function () {
                 }]
             }
         });
+    });
+    
+        
+    $getWfsAttributesButton.on('click', function () {
+        if ($proxyWfsServiceParamInput.val() !== '') {
+            me.updateAttributedUsingDescribeFeaturetype({
+                service : $proxyWfsServiceInput,
+                param : $proxyWfsServiceParamInput.val(),
+                callbacks : {
+                    success : [
+                        function (featureDescription) {
+                            me.updateSelectAttribtue(featureDescription);
+                        }
+                    ],
+                    error : [
+                        function (error) {
+                            CCH.LOG.warn('Error pulling describe feature: ' + error);
+                        }
+                    ]
+                }
+            });
+        }
     });
     
     $proxyWmsCheckButton.on('click', function () {
