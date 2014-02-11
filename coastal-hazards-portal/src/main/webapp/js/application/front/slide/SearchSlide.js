@@ -72,15 +72,17 @@ CCH.Objects.SearchSlide = function (args) {
         });
     };
 
-    me.open = function () {
+    me.open = function (args) {
+        args = args || {};
         var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
             isSmall = me.isSmall(),
+            animationTime = args.animationTime || me.ANIMATION_TIME,
             openSlide;
 
         if (me.isClosed) {
             openSlide = function () {
                 $(window).off('cch.slide.items.opened', openSlide);
-
+                
                 $('body').css({
                     overflow : 'hidden'
                 });
@@ -95,7 +97,7 @@ CCH.Objects.SearchSlide = function (args) {
 
                 $slideContainer.animate({
                     left: me.getExtents()[isSmall ? 'small' : 'large'].left
-                }, me.animationTime, function () {
+                }, animationTime, function () {
                     me.isClosed = false;
 
                     $('body').css({
@@ -122,11 +124,12 @@ CCH.Objects.SearchSlide = function (args) {
         if (!me.isClosed && !me.isClosing) {
             $(window).trigger('cch.slide.search.closing');
 
-            var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID);
+            var $slideContainer = $('#' + me.SLIDE_CONTAINER_ID),
+                animationTime = args.animationTime || me.ANIMATION_TIME;
             me.isClosing = true;
             $slideContainer.animate({
                 left: $(window).width()
-            }, me.ANIMATION_TIME, function () {
+            }, animationTime, function () {
                 $slideContainer.addClass('hidden');
                 if (args && args.clearOnClose) {
                     me.clear();
@@ -240,7 +243,7 @@ CCH.Objects.SearchSlide = function (args) {
             $showAllButton,
             $resultsFoundsContainer,
             slidesPerPage = args.slidesPerPage || me.PAGE_ITEM_COUNT,
-            pageCount,
+            pageCount = 0,
             type = args.type,
             itemsIdx,
             cards = [],

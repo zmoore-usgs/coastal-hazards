@@ -532,11 +532,6 @@ CCH.Objects.UI = function (args) {
             } else {
                 dispResults();
             }
-        },
-        'combined-searchbar-search-performing' : function () {
-            me.searchSlide.close({
-                clearOnClose : false
-            });
         }
     });
 
