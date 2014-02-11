@@ -10,6 +10,7 @@ CCH.Objects.UI = function (args) {
 
     var me = (this === window) ? {} : this,
         $metadataLink,
+        $metadataLinkButton = $('#metadata-link'),
         $downloadFull,
         $applicationLink,
         $publist,
@@ -474,12 +475,21 @@ CCH.Objects.UI = function (args) {
     }).addClass('btn btn-default').html('<i class="fa fa-download"></i> Download Full Data');
  
     // Create a "View Metadata" button
-    $metadataLink = $('<a />').attr({
-        'href': CCH.CONFIG.item.metadata + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
-        'target': 'portal_metadata_window',
-        'role': 'button'
-    }).addClass('btn btn-default').html('<i class="fa fa-download"></i> View Metadata');
-    $('#metadata-link').append($metadataLink);
+    var cswService = CCH.CONFIG.item.services.find(function (service) {
+        return service.type === 'csw';
+    });
+    
+    if (cswService) {
+        $metadataLink = $('<a />').attr({
+            'href': cswService.endpoint + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
+            'target': 'portal_metadata_window',
+            'role': 'button'
+        }).addClass('btn btn-default').html('<i class="fa fa-download"></i> View Metadata');
+        $metadataLinkButton.append($metadataLink);
+    } else {
+        $metadataLinkButton.remove()
+    }
+    
     $('#download-full-link').append($downloadFull);
     
     // Create a "Back To Portal" link to let the user view this in the portal
