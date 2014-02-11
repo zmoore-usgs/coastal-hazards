@@ -137,12 +137,16 @@ html, body {
     line-height: 1.5em;
 }
 
-#modal-services-view .modal-body > .row {
+#modal-services-view .modal-dialog {
+    width: auto;
+}
+
+#modal-services-view .modal-body .row {
 	margin-bottom: 10px;
 	font-size: 1.2em;
 }
 
-#modal-services-view .modal-body > .row > input{
+#modal-services-view .modal-body .row > input{
 	width: 100%;
 }
 

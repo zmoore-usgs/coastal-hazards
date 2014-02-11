@@ -360,69 +360,111 @@ CCH.Objects.UI = function (args) {
         });
     };
     
-    // Initialize The UI
- 
-    // Fill out the modal window with services
-    CCH.CONFIG.item.services.each(function (service) {
-        var endpoint = service.endpoint,
-            serviceType = service.type,
-            serviceParam = service.serviceParameter,
-
-            $link = $('<a />').attr({
-                        'href' : endpoint,
-                        'target' : '_services'
-                    }),
-            $textBox = $('<input />').attr({
-                'type' : 'text'
-            }),
-            $serviceParamSpan = $('<span />').html(' (Service Parameter: '),
-            $newRow = $('<div />').
-                addClass('row').
-                append($link);
-
-        switch (serviceType) {
-            case ('csw') :
-                {
-                $link.html('CSW :');
-                $textBox.val(endpoint);
-                $newRow.append($link, $textBox)
-                break;
-                }
-            case ('source_wms') :
-                {
-                $link.html('Source WMS :');
-                $textBox.val(endpoint);
-                $serviceParamSpan.append(serviceParam, ' )');
-                $newRow.append($link, $serviceParamSpan, $textBox)
-                break;
-                }
-            case ('source_wfs') :
-                {
-                $link.html('Source WFS :');
-                $textBox.val(endpoint);
-                $serviceParamSpan.append(serviceParam, ' )');
-                $newRow.append($link, $serviceParamSpan, $textBox)
-                break;
-                }
-            case ('proxy_wfs') :
-                {
-                $link.html('Proxy WFS :');
-                $textBox.val(endpoint);
-                $serviceParamSpan.append(serviceParam, ' )');
-                $newRow.append($link, $serviceParamSpan, $textBox)
-                break;
-                }
-            case ('proxy_wms') :
-                {
-                $link.html('Proxy WMS :');
-                $textBox.val(endpoint);
-                $serviceParamSpan.append(serviceParam, ' )');
-                $newRow.append($link, $serviceParamSpan, $textBox)
-                break;
-                }
+    me.createModalServicesTab = function (args) {
+        
+        var item = args.item,
+            $container = args.container || $('#modal-services-view .modal-body'),
+            $tabUl = $container.find('> ul'),
+            $tabContentContainer = $container.find('> div'),
+            $tabLi = $('<li />'),
+            $tabLink = $('<a />').
+                attr({
+                    'data-toggle' : 'tab',
+                    'href' : '#tab-' + item.id
+                }).html(item.summary.tiny.text),
+            $tabBody = $('<div />').
+                addClass('tab-pane').
+                attr('id', 'tab-' + item.id);
+    
+        if ($tabUl.length === 0) {
+            $tabUl = $('<ul />').addClass('nav nav-tabs');
+            $tabContentContainer = $('<div />').addClass('tab-content');
+            $container.append($tabUl, $tabContentContainer);
         }
+        
+        if ($tabUl.children().length === 0) {
+            $tabLi.addClass('active');
+            $tabBody.addClass('active');
+        }
+        
+        $tabLi.append($tabLink);
+        $tabUl.append($tabLi);
+        $tabContentContainer.append($tabBody);
+    
+        if (item.children.length !== 0) {
+            item.children.each(function (childId) {
+                var child = CCH.items.getById({ id : childId });
+                me.createModalServicesTab({
+                    item : child,
+                    container : $tabBody
+                });
+            });
+        } else {
+            item.services.each(function (service) {
+                var endpoint = service.endpoint,
+                    serviceType = service.type,
+                    serviceParam = service.serviceParameter,
 
-        $('#modal-services-view .modal-body').append($newRow)
+                    $link = $('<a />').attr({
+                                'href' : endpoint,
+                                'target' : '_services'
+                            }),
+                    $textBox = $('<input />').attr({
+                        'type' : 'text'
+                    }),
+                    $serviceParamSpan = $('<span />').html(' (Service Parameter: '),
+                    $newRow = $('<div />').
+                        addClass('row').
+                        append($link);
+
+                switch (serviceType) {
+                    case ('csw') :
+                        {
+                        $link.html('CSW :');
+                        $textBox.val(endpoint);
+                        $newRow.append($link, $textBox)
+                        break;
+                        }
+                    case ('source_wms') :
+                        {
+                        $link.html('Source WMS :');
+                        $textBox.val(endpoint);
+                        $serviceParamSpan.append(serviceParam, ' )');
+                        $newRow.append($link, $serviceParamSpan, $textBox)
+                        break;
+                        }
+                    case ('source_wfs') :
+                        {
+                        $link.html('Source WFS :');
+                        $textBox.val(endpoint);
+                        $serviceParamSpan.append(serviceParam, ' )');
+                        $newRow.append($link, $serviceParamSpan, $textBox)
+                        break;
+                        }
+                    case ('proxy_wfs') :
+                        {
+                        $link.html('Proxy WFS :');
+                        $textBox.val(endpoint);
+                        $serviceParamSpan.append(serviceParam, ' )');
+                        $newRow.append($link, $serviceParamSpan, $textBox)
+                        break;
+                        }
+                    case ('proxy_wms') :
+                        {
+                        $link.html('Proxy WMS :');
+                        $textBox.val(endpoint);
+                        $serviceParamSpan.append(serviceParam, ' )');
+                        $newRow.append($link, $serviceParamSpan, $textBox)
+                        break;
+                        }
+                }
+                $tabBody.append($newRow);
+            });
+        }
+    };
+    
+    me.createModalServicesTab({
+        item : item
     });
     
     // Create a "Download Full" button

@@ -191,6 +191,8 @@
 						<h4 id="modal-label">Available Services</h4>
 					</div>
 					<div class="modal-body">
+                        <ul class="nav nav-tabs"></ul>
+                        <div class="tab-content"></div>
 					</div>
 					<div class="modal-footer">
 						<a href="#" class="btn btn-default"  data-dismiss="modal" aria-hidden="true">Close</a>
