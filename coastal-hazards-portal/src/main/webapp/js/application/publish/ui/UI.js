@@ -1228,8 +1228,12 @@ CCH.Objects.UI = function () {
                             }
                         });
                     } else {
+                        if ($button.siblings().hasClass('active')) {
+                            $button.siblings().first().click();
+                        }
                         processChildren();
                     }
+                    $button.blur();
                 });
             }
             

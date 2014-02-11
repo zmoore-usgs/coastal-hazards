@@ -134,6 +134,10 @@ form-publish-info-item-panel-children .panel-body {
     font-size: 1.7em;
 }
 
+#form-publish-info-item-children-sortable-ul li span > div button.active i {
+    color: #5cb85c;
+}
+
 #form-publish-info-item-children-sortable-ul li span > div {
     clear : both
 }
