@@ -149,7 +149,7 @@ CCH.Objects.UI = function (args) {
             contentRowHeight;
 
         $(window).trigger('cch.ui.resizing', isSmall);
-        
+
         // Check if the application was resized. If so, re-initialize the slideshow to easily
         // fit into the new layout
         if (isSmall !== me.previouslySmall) {
@@ -371,16 +371,28 @@ CCH.Objects.UI = function (args) {
                 });
             }
 
+            $(window).on('cch.item.loaded', function (evt) {
+                var allLoaded = true,
+                    item;
+                data.children.each(function (id) {
+                    item = CCH.items.getById({id : id});
+                    if (!item || !item.loaded) {
+                        allLoaded = false;
+                    }
+                });
+                
+                if (allLoaded) {
+                    $(window).trigger('cch.item.loaded.all');
+                    me.removeOverlay();
+                }
+            });
+
             data.children.each(function (child, index) {
                 me.accordion.load({
                     'id' : child,
                     'index' : index,
                     'callbacks' : {
-                        success : [
-                            function () {
-                                me.removeOverlay();
-                            }
-                        ],
+                        success : [],
                         error : [errorResponseHandler]
                     }
                 });
@@ -457,39 +469,18 @@ CCH.Objects.UI = function (args) {
                 // User is coming in with an item, so load that item
                 splashUpdate('Loading Application...');
 
-                $(window).on('cch.item.loaded', function (evt, args) {
-                    if (args.id === id) {
-                        var item = CCH.items.getById({ id : id }),
-                            beginDrilldown = function () {
-                                // I want to zoom to the bounding box of the item
-                                CCH.map.zoomToBoundingBox({
-                                    bbox : CCH.items.getById({ id : id }).bbox,
-                                    fromProjection : new OpenLayers.Projection('EPSG:4326')
-                                });
+                $(window).on('cch.item.loaded.all', function (evt, args) {
+                    if (evt.namespace === 'all.item.loaded') {
+                        // I want to zoom to the bounding box of the item
+                        CCH.map.zoomToBoundingBox({
+                            bbox : CCH.items.getById({ id : id }).bbox,
+                            fromProjection : new OpenLayers.Projection('EPSG:4326')
+                        });
 
-                                // And I want to open the accordion to that item
-                                $(window).trigger('cch.slide.search.button.click.explore', {
-                                    id : id
-                                });
-                            };
-                        
-                        
-                        // This may be a child item of an aggregation that may not
-                        // have been completely loaded yet and if that's the case,
-                        // I may not be able to drill down to that child because
-                        // children in the middle may be missing. If that's the
-                        // case, keep waiting until the ancestor has been loaded
-                        if (item.parent && !item.getAncestor().loaded) {
-                            var ancestorId = item.getAncestor().id;
-                             $(window).on('cch.item.loaded', function (evt, args) {
-                                 if (args.id === ancestorId) {
-                                     beginDrilldown();
-                                 }
-                             });
-                        } else {
-                            beginDrilldown();
-                        }
-                        
+                        // And I want to open the accordion to that item
+                        $(window).trigger('cch.slide.search.button.click.explore', {
+                            id : id
+                        });
                     }
                 });
 
