@@ -22,4 +22,5 @@
     <include file="fixConstraints.xml" relativeToChangelogFile="true" />
     <include file="subtreeFunction.xml" relativeToChangelogFile="true" />
     <include file="itemUpdates.xml" relativeToChangelogFile="true" />
+    <include file="bbox.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
