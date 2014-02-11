@@ -1918,7 +1918,7 @@ CCH.Objects.UI = function () {
                     getWFSCaps(test[0], test[1]);
                 } else {
                     $.ajax({
-                        'url' : serverData.proxy + '/rest/services/' + namespace,
+                        'url' : CCH.CONFIG.publicUrl + serverData.proxy + '/rest/services/' + namespace,
                         'data' : {
                             'f' : 'pjson'
                         },
