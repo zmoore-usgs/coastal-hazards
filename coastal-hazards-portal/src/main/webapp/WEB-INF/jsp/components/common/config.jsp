@@ -110,15 +110,15 @@
 				sources: {
 					'cida-geoserver': {
 						'endpoint': '<%=geoserverEndpoint%>',
-						'proxy': '<%=baseUrl%>/geoserver/'
+						'proxy': '/geoserver/'
 					},
 					'stpete-arcserver': {
 						'endpoint': '<%=stPeteArcServerEndpoint%>',
-						'proxy': '<%=baseUrl%>/stpgis/'
+						'proxy': '/stpgis/'
 					},
                     'marine-arcserver' : {
                         'endpoint': '<%=marineArcServerEndpoint%>',
-						'proxy': '<%=baseUrl%>/marine/'
+						'proxy': '/marine/'
                     },
 					'item': {
 						'endpoint': '/data/item'
