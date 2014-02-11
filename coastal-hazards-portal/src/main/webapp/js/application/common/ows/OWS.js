@@ -247,7 +247,7 @@ CCH.Objects.OWS = function() {
                 url;
         
             if (server === 'cida-geoserver' && namespace !== 'ows') {
-                url = me.servers[server].endpoints.wfsGetCapsUrl;
+                url = CCH.CONFIG.publicUrl + me.servers[server].endpoints.wfsGetCapsUrl;
                 url = url.add(namespace + '/', url.indexOf('ows'));
             } else if (server === 'stpete-arcserver' || server === 'marine-arcserver') {
                 url = CCH.CONFIG.publicUrl + me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WFSServer?service=wfs&version=1.1.0&request=GetCapabilities'
@@ -297,7 +297,7 @@ CCH.Objects.OWS = function() {
 
             if (!url) {
                 if (server === 'cida-geoserver' && namespace !== 'ows') {
-                    url = me.servers[server].endpoints.wmsGetCapsUrl;
+                    url = CCH.CONFIG.publicUrl + me.servers[server].endpoints.wmsGetCapsUrl;
                     url = url.add(namespace + '/', url.indexOf('ows'));
                 } else if (server === 'stpete-arcserver' || server === 'marine-arcserver') {
                     url = CCH.CONFIG.publicUrl + me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WMSServer?service=wms&version=1.3.0&request=GetCapabilities'

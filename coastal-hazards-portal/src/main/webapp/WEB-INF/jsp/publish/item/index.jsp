@@ -236,7 +236,7 @@
                                                 <input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH%>"  />
                                                 <span class="input-group-btn">
                                                     <button id="form-publish-item-service-source-wfs-copy-button" class="btn btn-default" type="button" disabled="disabled">Use As WMS Source</button>
-                                                    <button id="form-publish-item-service-source-wfs-import-button" class="btn btn-default" type="button" disabled="disabled">Import</button>
+                                                    <button id="form-publish-item-service-source-wfs-import-button" class="btn btn-default" type="button">Import</button>
                                                 </span>
                                             </div>
                                         </div>
@@ -276,6 +276,9 @@
                                                     <button id="form-publish-item-service-proxy-wfs-import-button-check" class="btn btn-default" type="button" disabled="disabled">Check</button>
                                                 </div>
                                                 <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH%>"/>
+                                            <div class="input-group-btn">
+                                                    <button id="form-publish-item-service-proxy-wfs-pull-attributes-button" class="btn btn-default" type="button" disabled="disabled">Get Attribtues</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
