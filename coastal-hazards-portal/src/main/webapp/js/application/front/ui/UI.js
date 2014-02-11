@@ -457,17 +457,40 @@ CCH.Objects.UI = function (args) {
                 // User is coming in with an item, so load that item
                 splashUpdate('Loading Application...');
 
-                $(window).on('cch.ui.overlay.removed', function () {
-                    // I want to zoom to the bounding box of the item
-                    CCH.map.zoomToBoundingBox({
-                        bbox : CCH.items.getById({ id : id }).bbox,
-                        fromProjection : new OpenLayers.Projection('EPSG:4326')
-                    });
+                $(window).on('cch.item.loaded', function (evt, args) {
+                    if (args.id === id) {
+                        var item = CCH.items.getById({ id : id }),
+                            beginDrilldown = function () {
+                                // I want to zoom to the bounding box of the item
+                                CCH.map.zoomToBoundingBox({
+                                    bbox : CCH.items.getById({ id : id }).bbox,
+                                    fromProjection : new OpenLayers.Projection('EPSG:4326')
+                                });
 
-                    // And I want to open the accordion to that item
-                    $(window).trigger('cch.slide.search.button.click.explore', {
-                        id : id
-                    });
+                                // And I want to open the accordion to that item
+                                $(window).trigger('cch.slide.search.button.click.explore', {
+                                    id : id
+                                });
+                            };
+                        
+                        
+                        // This may be a child item of an aggregation that may not
+                        // have been completely loaded yet and if that's the case,
+                        // I may not be able to drill down to that child because
+                        // children in the middle may be missing. If that's the
+                        // case, keep waiting until the ancestor has been loaded
+                        if (item.parent && !item.getAncestor().loaded) {
+                            var ancestorId = item.getAncestor().id;
+                             $(window).on('cch.item.loaded', function (evt, args) {
+                                 if (args.id === ancestorId) {
+                                     beginDrilldown();
+                                 }
+                             });
+                        } else {
+                            beginDrilldown();
+                        }
+                        
+                    }
                 });
 
                 addItemsToBucketOnLoad(cookieItems);

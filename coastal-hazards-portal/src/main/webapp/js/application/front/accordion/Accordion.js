@@ -239,7 +239,7 @@ CCH.Objects.Accordion = function (args) {
                 }).pathToItem(id, path);
             }
         }
-
+        
         // If I found the item in one of the bellows, open up the bellows and 
         // possibly child items down to where that item is found. If not, load
         // the item from the back-end and put it on the accordion
