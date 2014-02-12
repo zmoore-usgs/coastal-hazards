@@ -423,9 +423,6 @@
                     <button type="button" id="publish-button-save" class="btn btn-lg btn-success">
                         Save
                     </button>
-                    <button type="button" id="publish-button-publish" class="btn btn-lg btn-success">
-                        Publish
-                    </button>
                     <button type="button" id="publish-button-delete" class="btn btn-lg btn-success">
                         Delete
                     </button>
