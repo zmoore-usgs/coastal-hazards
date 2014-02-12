@@ -152,6 +152,7 @@
                             <div class="row row-id">
                                 <img alt="Item Thumbnail" id="form-publish-info-item-image" src="" /> 
                             </div>
+                            <button  id="form-publish-info-item-image-gen" class="btn btn-default" type="button" disabled="disabled">Generate</button>
 
                             <%-- ITEM TITLE --%>
                             <div id="form-publish-info-item-title-full" class="row row-title">

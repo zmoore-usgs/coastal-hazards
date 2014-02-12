@@ -51,19 +51,19 @@ CCH.Objects.UI = function () {
         $uploaderDummy = $('#qq-uploader-dummy'),
         $itemEnabledField = $('#form-publish-info-item-enabled'),
         $itemImage = $form.find('#form-publish-info-item-image'),
-        $buttonSave = $('#publish-button-save'),
-        $buttonPublish = $('#publish-button-publish'),
-        $buttonDelete = $('#publish-button-delete'),
-        $wfsServerHelpButton = $('#form-publish-item-service-source-wfs-import-button-service-select'),
-        $wfsHelpLink = $('.form-publish-item-service-source-wfs-import-button-service-help-link'),
-        $wmsHelpLink = $('.form-publish-item-service-source-wms-import-button-service-help-link'),
-        $sourceWfsCheckButton = $('#form-publish-item-service-source-wfs-import-button-check'),
-        $sourceWmsCheckButton = $('#form-publish-item-service-source-wms-import-button-check'),
-        $wfsSourceCopyButton = $('#form-publish-item-service-source-wfs-copy-button'),
-        $wmsServerHelpButton = $('#form-publish-item-service-source-wms-import-button-service-select'),
-        $proxyWfsCheckButton = $('#form-publish-item-service-proxy-wfs-import-button-check'),
-        $proxyWmsCheckButton = $('#form-publish-item-service-proxy-wms-import-button-check'),
-        $getWfsAttributesButton = $('#form-publish-item-service-proxy-wfs-pull-attributes-button');
+        $imageGenButton = $form.find('#form-publish-info-item-image-gen'),
+        $buttonSave = $form.find('#publish-button-save'),
+        $buttonDelete = $form.find('#publish-button-delete'),
+        $wfsServerHelpButton = $form.find('#form-publish-item-service-source-wfs-import-button-service-select'),
+        $wfsHelpLink = $form.find('.form-publish-item-service-source-wfs-import-button-service-help-link'),
+        $wmsHelpLink = $form.find('.form-publish-item-service-source-wms-import-button-service-help-link'),
+        $sourceWfsCheckButton = $form.find('#form-publish-item-service-source-wfs-import-button-check'),
+        $sourceWmsCheckButton = $form.find('#form-publish-item-service-source-wms-import-button-check'),
+        $wfsSourceCopyButton = $form.find('#form-publish-item-service-source-wfs-copy-button'),
+        $wmsServerHelpButton = $form.find('#form-publish-item-service-source-wms-import-button-service-select'),
+        $proxyWfsCheckButton = $form.find('#form-publish-item-service-proxy-wfs-import-button-check'),
+        $proxyWmsCheckButton = $form.find('#form-publish-item-service-proxy-wms-import-button-check'),
+        $getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button');
 
     me.createHelpPopover = function($content, $element) {
         $element.popover('destroy');
@@ -913,6 +913,8 @@ CCH.Objects.UI = function () {
                 removeAttr('disabled').
                 on('change', me.createSortableChildren).
                 trigger('change');
+        
+            $imageGenButton.removeAttr('disabled');
             
             if (type === 'aggregation' || type === 'uber') {
                 // Populate children
@@ -1467,6 +1469,36 @@ CCH.Objects.UI = function () {
         $alertModal.modal('show');
     };
     
+    me.generateImage = function (id) {
+        var imageEndpoint = CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id;
+        CCH.ows.generateThumbnail({
+            id : id,
+            callbacks : {
+                success : [
+                    function (base64Image) {
+                        $.ajax({
+                            url: imageEndpoint,
+                            method: 'PUT',
+                            data : base64Image,
+                            contentType: 'text/plain',
+                            success : function () {
+                                me.loadItemImage(id);
+                            },
+                            error : function (err) {
+                                $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+                            }
+                        })
+                    }
+                ],
+                error : [
+                    function () {
+                        $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
+                    }
+                ]
+            }
+        });
+    };
+    
     me.loadItemImage = function (id) {
         if (id) {
             var imageEndpoint = CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id;
@@ -1477,32 +1509,7 @@ CCH.Objects.UI = function () {
                 },
                 error : function (err) {
                     if (err.status === 404) {
-                        CCH.ows.generateThumbnail({
-                            id : id,
-                            callbacks : {
-                                success : [
-                                    function (base64Image) {
-                                        $.ajax({
-                                            url: imageEndpoint,
-                                            method: 'PUT',
-                                            data : base64Image,
-                                            contentType: 'text/plain',
-                                            success : function () {
-                                                me.loadItemImage(id);
-                                            },
-                                            error : function (err) {
-                                                $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
-                                            }
-                                        })
-                                    }
-                                ],
-                                error : [
-                                    function () {
-                                        $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
-                                    }
-                                ]
-                            }
-                        });
+                        me.generateImage(id);
                     } else {
                         $itemImage.attr('src', CCH.CONFIG.contextPath + '/images/publish/image-not-found.gif');
                     }
@@ -1735,48 +1742,6 @@ CCH.Objects.UI = function () {
                 ]
             }
         });
-    });
-
-    $buttonPublish.on('click', function () {
-        var errors = me.validateForm.call(this),
-            $ul = $('<ul />'),
-            $li,
-            item;
-        if (errors.length === 0) {
-            item = me.buildItemFromForm();
-            item.enabled = true;
-            me.saveItem({
-                item : item,
-                callbacks : {
-                    success : [
-                        function (obj) {
-                            var id = obj.id;
-                            if (!id) {
-                                id = $itemIdInput.val();
-                            }
-                            window.location = window.location.origin + CCH.CONFIG.contextPath + '/publish/item/' + id;
-                        }
-                    ],
-                    error  : [
-                        function (err) {
-                            $alertModal.modal('hide');
-                            $alertModalTitle.html('Unable To Publish Item');
-                            $alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
-                            $alertModal.modal('show');
-                        }
-                    ]
-                }
-            });
-        } else {
-            errors.each(function (error) {
-                $li = $('<li />').html(error);
-                $ul.append($li);
-            });
-            $alertModal.modal('hide');
-            $alertModalTitle.html('Errors Found In Publish Form');
-            $alertModalBody.html($ul);
-            $alertModal.modal('show');
-        }
     });
 
     $buttonSave.on('click', function () {
@@ -2054,6 +2019,10 @@ CCH.Objects.UI = function () {
         });
     });
     
+    $imageGenButton.on('click', function () {
+        $itemImage.attr('src', '');
+        me.generateImage($itemIdInput.val());
+    });
         
     $getWfsAttributesButton.on('click', function () {
         if ($proxyWfsServiceParamInput.val() !== '') {
