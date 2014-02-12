@@ -1856,10 +1856,12 @@ CCH.Objects.UI = function () {
                             args.wfsCapabilities.featureTypeList.featureTypes.each(function (layer) {
                                 $li = $('<li />');
                                 $a = $('<a />').attr({
+                                    'data-attr' : layer.prefix + ':' + layer.title,
                                     'href' : '#',
                                     'onclick' : 'return false;'
-                                }).on('click', function () {
-                                    $srcWfsServiceParamInput.val(layer.prefix + ':' + layer.title);
+                                }).on('click', function (evt) {
+                                    $srcWfsServiceInput.val(CCH.CONFIG.data.sources['cida-geoserver'].endpoint + '/ows');
+                                    $srcWfsServiceParamInput.val($(evt.target).attr('data-attr'));
                                 }).html(layer.prefix + ':' + layer.title);
                                 $li.append($a);
                                 $contentList.append($li);
@@ -1921,10 +1923,11 @@ CCH.Objects.UI = function () {
                                         svcName = svc.name.substring(svc.name.indexOf('/') + 1);
                                         $li = $('<li />');
                                         $a = $('<a />').attr({
+                                            'data-attr' : svcName,
                                             'href' : '#',
                                             'onclick' : 'return false;'
-                                        }).on('click', function () {
-                                            $srcWfsServiceInput.val(server.endpoint + '/services/' + namespace + '/' + svcName + '/MapServer/WFSServer');
+                                        }).on('click', function (evt) {
+                                            $srcWfsServiceInput.val(server.endpoint + '/services/' + namespace + '/' + $(evt.target).attr('data-attr') + '/MapServer/WFSServer');
                                             getWFSCaps(namespace, svcName);
                                         }).html(svcName);
                                         $li.append($a);
