@@ -120,7 +120,7 @@
             <activation>
                 <activeByDefault>false</activeByDefault>
                 <property>
-                    <name>boostrapCchPortal</name>
+                    <name>bootstrapCchPortal</name>
                 </property>
             </activation>
             <build>
