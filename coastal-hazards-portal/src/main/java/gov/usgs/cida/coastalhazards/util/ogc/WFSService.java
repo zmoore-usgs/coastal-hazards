@@ -81,6 +81,13 @@ public class WFSService implements Serializable {
     }
     
     public boolean checkValidity() {
-        return !(StringUtils.isBlank(this.getEndpoint()) || StringUtils.isBlank(this.getTypeName()));
+        boolean isValid = false;
+        try {
+            isValid = !(StringUtils.isBlank(this.getEndpoint()) || StringUtils.isBlank(this.getTypeName()));
+            URL testUrl = new URL(this.getEndpoint());
+        } catch (MalformedURLException ex) {
+            isValid = false;
+        }
+        return isValid;
     }
 }
