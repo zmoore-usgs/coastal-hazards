@@ -262,7 +262,9 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     };
 
 
-                if (item.type.toLowerCase() === 'vulnerability' || item.type.toLowerCase() === 'storms') {
+                if (item.type.toLowerCase() === 'vulnerability' ||
+                        item.type.toLowerCase() === 'storms' ||
+                        item.type.toLowerCase() === 'historical') {
                     // Add up the count for each feature
                     incomingFeatures.each(function (f) {
                         var pFl = parseFloat(f[attr]);
