@@ -929,18 +929,18 @@ CCH.Objects.UI = function () {
             // Item ID
             $itemIdInput.val(id);
             
-            // Fill out item type
-            $typeSb.
-                val(item.type).
-                removeAttr('disabled').
-                on('change', me.createSortableChildren).
-                trigger('change');
-        
             $imageGenButton.removeAttr('disabled');
             
             if (type === 'aggregation' || type === 'uber') {
                 // Populate children
                 me.createSortableChildren();
+                
+                // Fill out item type
+                $typeSb.
+                    val(item.type).
+                    removeAttr('disabled').
+                    on('change', me.createSortableChildren).
+                    trigger('change');
                 
                 // Show Children
                 $showChildrenCb.
@@ -983,6 +983,11 @@ CCH.Objects.UI = function () {
                 $metadataDropdownGroup.addClass('hidden');
             } else {
                 $childrenSortableList.empty();
+
+                // Fill out item type
+                $typeSb.
+                    val(item.type).
+                    removeAttr('disabled')
 
                 // Show Children
                 $showChildrenCb.
@@ -1589,6 +1594,7 @@ CCH.Objects.UI = function () {
 
     $wfsImportButton.on('click', function () {
         var importCall,
+            sourceWfs = $srcWfsServiceInput.val().indexOf('geoserver') !== -1 ? 'http://geoserver/wfs' :  $srcWfsServiceInput.val(),
             successCallback = function (responseObject) {
                 var responseText = responseObject.responseText,
                     baseUrl = CCH.CONFIG.publicUrl,
@@ -1677,7 +1683,7 @@ CCH.Objects.UI = function () {
 
         importCall = function () {
             CCH.ows.importWfsLayer({
-                endpoint: $srcWfsServiceInput.val(),
+                endpoint: sourceWfs,
                 param: $srcWfsServiceParamInput.val(),
                 callbacks: {
                     success: [successCallback],
