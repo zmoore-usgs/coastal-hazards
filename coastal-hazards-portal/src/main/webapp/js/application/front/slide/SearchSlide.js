@@ -58,9 +58,9 @@ CCH.Objects.SearchSlide = function (args) {
         var $locationSlide = $('#' + me.LOCATION_SLIDE_SEARCH_CONTAINER_ID),
             $productSlide = $('#' + me.PRODUCT_SLIDE_SEARCH_CONTAINER_ID);
 
-        [$locationSlide, $productSlide].each(function ($slide) {
+        [$locationSlide, $productSlide].each(function ($slide, ind) {
             $slide.find('>div:nth-child(1)').empty();
-            $slide.find('>div:nth-child(2)').
+            $slide.find('>div:nth-child(' + (ind + 2) + ')').
                 empty().
                 append($('<img />').
                     addClass('img-responsive').
@@ -68,7 +68,7 @@ CCH.Objects.SearchSlide = function (args) {
                         'src' : 'images/spinner/spinner3.gif',
                         'alt' : "Spinner Image"
                     }));
-            $slide.find('>div:nth-child(3)>ul').empty();
+            $slide.find('>div:nth-child(' + (ind + 3) + ')>ul').empty();
         });
     };
 
@@ -294,7 +294,7 @@ CCH.Objects.SearchSlide = function (args) {
                     // If I have more than one page worth of stuff, I want to create a
                     // paging system to deal with that
                     me.createPaging({
-                        container : $contentContainer,
+                        container : $pagingContainer,
                         pageCount : pageCount
                     });
 
@@ -360,8 +360,8 @@ CCH.Objects.SearchSlide = function (args) {
             case 'item':
                 $contentContainer = $productContentContainer;
                 $resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
-                $slideContainer = $contentContainer.find('>div:nth-child(2)');
-                $pagingContainer = $contentContainer.find('>div:nth-child(3)');
+                $slideContainer = $contentContainer.find('>div:nth-child(3)');
+                $pagingContainer = $contentContainer.find('>div:nth-child(4)');
 
                 $resultsFoundsContainer.
                             removeClass('hidden').
@@ -397,7 +397,7 @@ CCH.Objects.SearchSlide = function (args) {
                         });
 
                     me.createPaging({
-                        container : $contentContainer,
+                        container : $pagingContainer,
                         pageCount : pageCount
                     });
                 } else {
@@ -428,8 +428,7 @@ CCH.Objects.SearchSlide = function (args) {
     };
 
     me.createPaging = function (args) {
-        var $productContentContainer = args.container,
-            $pagingContainer = $productContentContainer.find('>div:nth-child(3)'),
+        var $pagingContainer = args.container,
             $pagingButtonGroup = $pagingContainer.find('>ul.pagination'),
             $pageButton,
             $li,
@@ -548,8 +547,9 @@ CCH.Objects.SearchSlide = function (args) {
     me.displayPage = function (args) {
         var num = args.num,
             $productContentContainer = args.container,
-            $slideContainer = $productContentContainer.find('>div:nth-child(2)'),
-            $pagingContainer = $productContentContainer.find('>div:nth-child(3)'),
+            startIndex = $productContentContainer.attr('id').indexOf('location') !== -1 ? 2 : 3, 
+            $slideContainer = $productContentContainer.find('>div:nth-child(' + startIndex + ')'),
+            $pagingContainer = $productContentContainer.find('>div:nth-child(' + (startIndex + 1) + ')'),
             $listItems = $pagingContainer.find('>ul>li'),
             $incomingListItem =  $($listItems.get(num)),
             isProductPaging = $pagingContainer.attr('id').indexOf('product') > -1,

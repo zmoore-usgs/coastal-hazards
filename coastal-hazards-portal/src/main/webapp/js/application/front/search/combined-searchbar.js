@@ -347,6 +347,7 @@ CCH.Objects.CombinedSearch = function (args) {
 
     // Bind the search submit button
     $('#' + me.SUBMIT_BUTTON_ID).on('click', function (evt) {
+        evt.stopImmediatePropagation();
         me.submitButtonClicked(evt);
     });
 
