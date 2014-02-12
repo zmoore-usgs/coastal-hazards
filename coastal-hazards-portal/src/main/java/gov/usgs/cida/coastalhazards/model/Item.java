@@ -5,6 +5,7 @@ import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import gov.usgs.cida.coastalhazards.util.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
+import gov.usgs.cida.coastalhazards.util.ogc.CSWService;
 import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.StringPrecondition;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
@@ -209,6 +210,18 @@ public class Item implements Serializable {
             }
         }
         return wmsService;
+    }
+    
+    public CSWService fetchCswService() {
+        CSWService cswService = null;
+        if (services != null) {
+            for (Service service : services) {
+                if (service.getType() == ServiceType.csw) {
+                    cswService = new CSWService(service);
+                }
+            }
+        }
+        return cswService;
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
