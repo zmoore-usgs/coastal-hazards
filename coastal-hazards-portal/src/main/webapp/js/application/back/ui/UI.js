@@ -493,8 +493,6 @@ CCH.Objects.UI = function (args) {
         $metadataLinkButton.remove();
     }
     
-    
-    
     // Create a "Back To Portal" link to let the user view this in the portal
     $applicationLink = $('<a />').attr({
         'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId,
