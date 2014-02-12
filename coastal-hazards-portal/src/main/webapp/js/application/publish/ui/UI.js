@@ -929,18 +929,18 @@ CCH.Objects.UI = function () {
             // Item ID
             $itemIdInput.val(id);
             
-            // Fill out item type
-            $typeSb.
-                val(item.type).
-                removeAttr('disabled').
-                on('change', me.createSortableChildren).
-                trigger('change');
-        
             $imageGenButton.removeAttr('disabled');
             
             if (type === 'aggregation' || type === 'uber') {
                 // Populate children
                 me.createSortableChildren();
+                
+                // Fill out item type
+                $typeSb.
+                    val(item.type).
+                    removeAttr('disabled').
+                    on('change', me.createSortableChildren).
+                    trigger('change');
                 
                 // Show Children
                 $showChildrenCb.
@@ -983,6 +983,11 @@ CCH.Objects.UI = function () {
                 $metadataDropdownGroup.addClass('hidden');
             } else {
                 $childrenSortableList.empty();
+
+                // Fill out item type
+                $typeSb.
+                    val(item.type).
+                    removeAttr('disabled')
 
                 // Show Children
                 $showChildrenCb.
