@@ -101,6 +101,26 @@
     }
 }
 
+@media (max-height: 445px) {
+    #application-overlay > div:nth-child(2) > div:nth-child(2) {
+        font-size: 2em;
+    }
+
+    #application-overlay > div:nth-child(2) > div {
+        height: 10%;
+    }
+
+    /* Spinner */
+    #application-overlay > div:nth-child(2) > div:nth-child(4)  > img:first-child {
+        height: 25px;
+    }
+
+    /* Spinner/Status Update Container */
+    #application-overlay > div:nth-child(2) > div:nth-child(4) {
+        padding-top: 10px;
+    }
+}
+
 @media (max-width: 620px) {
     #application-overlay > div:nth-child(2) > div {
         font-size: 1em;
@@ -119,7 +139,7 @@
     #application-overlay > div:first-child img {
         margin-top: 5px;
     }
-    
+
     #application-overlay > div:nth-child(2) > div:nth-child(4) > img:first-child {
         height: 70%;
         margin-left: auto;
