@@ -37,11 +37,11 @@ CCH.Objects.UI = function (args) {
                 $legendContainer.height($legendContainer.find('>div:first-child').height());
             };
         if (dataItem.type === 'historical') {
-            if (dataItem.item.name === 'rates') {
+            if (dataItem.name === 'rates') {
                 featureLegend = CCH.ui.buildLegend({
-                    type: dataItem.item.type,
-                    name: dataItem.item.name,
-                    attr: dataItem.item.attr,
+                    type: dataItem.type,
+                    name: dataItem.name,
+                    attr: dataItem.attr,
                     sld: sld
                 });
                 insertLegendAtIndex(featureLegend, index);
