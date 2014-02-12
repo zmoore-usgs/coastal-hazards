@@ -322,6 +322,11 @@
                                 <div class="form-group">
                                     <label for="form-publish-item-attribute">Attribute</label>
                                     <select class="form-control" id="form-publish-item-attribute" disabled="disabled"></select>
+                                    <div class="input-group">
+                                        <div class="input-group-btn">
+                                            <button id="form-publish-item-attribute-button" class="btn btn-default" type="button" disabled="disabled">Populate Data</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

@@ -113,54 +113,55 @@
         padding-bottom: 25px;
     }
          /* Add to bucket */
-        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > span.badge {
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > span.badge {
             background-color: #003366;
             float: right;
         } 
-        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > span.badge:not(.disabled):hover {
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > span.badge:not(.disabled):hover {
             cursor: pointer;
         }
-        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > span.badge.disabled {
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > span.badge.disabled {
             background-color: #999999;
         } 
-        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > span.badge.badge > img {
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > span.badge.badge > img {
             height: 10px;
         }
         /* Image Container */
-        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:first-child {
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:first-child {
             width: 20%;
             vertical-align: top;
             min-height: 50px;
             display: inline-block;
         }
-        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:first-child > img{
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:first-child > img{
             width: 100%;
             max-height: 100%;
         }
-            #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:first-child > img:hover {
+            #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:first-child > img:hover {
                 cursor: pointer;
             }
         /* Description Container */
-        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:nth-child(2) {
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:nth-child(2) {
             width: 79%;
             display: inline-block;
         }
         /* Title Container - Text */
-        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:nth-child(2) > div > div:first-child > span:first-child {
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:nth-child(2) > div > div:first-child > span:first-child {
             font-size: 1.2em;
             font-weight: bold;
         }
         /* Title Container - Badge */
-        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:nth-child(2) > div > div:first-child > span.badge {
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:nth-child(2) > div > div:first-child > span.badge {
             background-color: #003366;
         }
-        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:first-child > div:nth-child(2) > div > div:first-child > span.badge:hover {
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div > div:first-child > div:nth-child(2) > div > div:first-child > span.badge:hover {
             cursor: pointer;
         }
-        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) ~ div {
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(4) {
             text-align: center;
         }
-        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:last-child > button.active i {
+        /* Filter Results To Current View Button */
+        #application-slide-search-container > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > button.active i {
             color: #008000;
         }
 
