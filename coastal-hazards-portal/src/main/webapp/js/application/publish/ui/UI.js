@@ -77,15 +77,15 @@ CCH.Objects.UI = function () {
         });
         $element.popover('show');
 
-        $('body').on('click', function() {
+        $('body').on('click', function () {
             $element.popover('destroy');
         });
     };
-    
+
     me.displayModal = function (args) {
         var title = args.title,
             body = args.body;
-    
+
         $alertModal.modal('hide');
         $alertModalTitle.html(title);
         $alertModalBody.html(body);
@@ -152,6 +152,7 @@ CCH.Objects.UI = function () {
         $name.val('');
         $childrenSortableList.empty();
         $metadataDropdownGroup.addClass('hidden');
+        $itemImage.attr('src', '');
     };
 
     me.enableNewItemForm = function () {
@@ -231,104 +232,109 @@ CCH.Objects.UI = function () {
         $keywordGroup.find('input').removeAttr('disabled');
         me.createSortableChildren();
     };
-    
+
     me.isBlank = function ($ele) {
+        if (!$ele) {
+            return true;
+        }
+
         if ($ele.length === 0) {
             return true;
         }
-        
+
         if (!$ele.val()) {
             return true;
         }
-        
+
         if (!$ele.val()) {
             return true;
         }
-        
-    }
+
+        return false;
+    };
 
     me.validateForm = function () {
         var type = $itemType.val(),
             errors = [];
         if (type) {
             if ('data' === type) {
-                if (!$attributeSelect.val()) {
+                if (me.isBlank($attributeSelect)) {
                     errors.push('An attribute was not selected');
                 }
-                if (!$attributeSelect.val().length > CCH.CONFIG.limits.item.attribute) {
+                if ($attributeSelect.val().length > CCH.CONFIG.limits.item.attribute) {
                     errors.push('Attribute was longer than ' + CCH.CONFIG.limits.item.attribute + ' characters');
                 }
-                
-                if (!$cswServiceInput.val()) {
+
+                if (me.isBlank($cswServiceInput)) {
                     errors.push('CSW service endpoint not entered');
                 }
-                if (!$cswServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+                if ($cswServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
                     errors.push('CSW endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
                 }
-                
-                if (!$srcWfsServiceInput.val()) {
+
+                if (me.isBlank($srcWfsServiceInput)) {
                     errors.push('Source WFS Endpoint not provided');
                 }
-                if (!$srcWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+                if ($srcWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
                     errors.push('WFS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
                 }
-                if (!$srcWfsServiceParamInput.val()) {
+                if (me.isBlank($srcWfsServiceParamInput)) {
                     errors.push('Source WFS parameter not provided');
                 }
-                if (!$srcWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+                if ($srcWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
                     errors.push('WFS Source parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
                 }
-                
-                if (!$srcWmsServiceInput.val()) {
+
+                if (me.isBlank($srcWmsServiceInput)) {
                     errors.push('Source WMS Endpoint not provided');
                 }
-                if (!$srcWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+                if ($srcWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
                     errors.push('WMS Source endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
                 }
-                if (!$srcWmsServiceParamInput.val()) {
+                if (me.isBlank($srcWmsServiceParamInput)) {
                     errors.push('Source WMS Endpoint not provided');
                 }
-                if (!$srcWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+                if ($srcWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
                     errors.push('WMS Source parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
                 }
                 
-                if (!$proxyWfsServiceInput.val()) {
+                if (me.isBlank($proxyWfsServiceInput)) {
                     errors.push('Proxy WFS endpoint not provided');
                 }
-                if (!$proxyWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+                if ($proxyWfsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
                     errors.push('WFS Proxy endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
                 }
-                if (!$proxyWfsServiceParamInput.val()) {
+                if (me.isBlank($proxyWfsServiceParamInput)) {
                     errors.push('Proxy WFS parameter not provided');
                 }
-                if (!$proxyWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+                if ($proxyWfsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
                     errors.push('WFS Proxy parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
                 }
-                
-                if (!$proxyWmsServiceInput.val()) {
+
+                if (me.isBlank($proxyWmsServiceInput)) {
                     errors.push('Proxy WMS endpoint not provided');
                 }
-                if (!$proxyWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
+                if ($proxyWmsServiceInput.val().length > CCH.CONFIG.limits.service.endpoint) {
                     errors.push('WMS Proxy endpoint was longer than ' + CCH.CONFIG.limits.service.endpoint + ' characters');
                 }
-                if (!$proxyWmsServiceParamInput.val()) {
+                if (me.isBlank($proxyWmsServiceParamInput)) {
                     errors.push('Proxy WMS parameter not provided');
                 }
-                if (!$proxyWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
+                if ($proxyWmsServiceParamInput.val().length > CCH.CONFIG.limits.service.parameter) {
                     errors.push('WMS Proxy parameter was longer than ' + CCH.CONFIG.limits.service.parameter + ' characters');
                 }
-                
+
                 $publicationsPanel.find('> div:nth-child(2) > div.well').each(function (ind, pubPanel) {
                     var title = $(pubPanel).find('div:nth-child(2) > input').val() || '',
                         link = $(pubPanel).find('div:nth-child(3) > input').val() || '';
-                        
+
                     if (title === '') {
                         errors.push('Publication title is empty for publication ' + (ind + 1));
                     }
                     if (title.length > CCH.CONFIG.limits.publication.title) {
                         errors.push('Publication title is longer than ' + CCH.CONFIG.limits.publication.title + ' characters for publication ' + (ind + 1));
                     }
-                    
+
                     if (link === '') {
                         errors.push('Publication link is empty for publication ' + (ind + 1));
                     }
@@ -342,51 +348,51 @@ CCH.Objects.UI = function () {
                 }
             }
 
-            if (!$titleFullTextArea.val() || !$titleFullTextArea.val().trim()) {
+            if (me.isBlank($titleFullTextArea)) {
                 errors.push('Full title not provided');
             }
             if ($titleFullTextArea.val().length > CCH.CONFIG.limits.summary.full.title) {
                 errors.push('Full title was longer than ' + CCH.CONFIG.limits.summary.full.title + ' characters');
             }
 
-            if (!$titleMediumTextArea.val() || !$titleMediumTextArea.val().trim()) {
+            if (me.isBlank($titleMediumTextArea)) {
                 errors.push('Full medium not provided');
             }
-            if (!$titleMediumTextArea.val() || !$titleMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.title) {
+            if ($titleMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.title) {
                 errors.push('Medium title was longer than ' + CCH.CONFIG.limits.summary.medium.title + ' characters');
             }
 
-            if (!$descriptionFullTextArea.val() || !$descriptionFullTextArea.val().trim()) {
+            if (me.isBlank($descriptionFullTextArea)) {
                 errors.push('Full description not provided');
             }
-            if (!$descriptionFullTextArea.val() || !$descriptionFullTextArea.val().length > CCH.CONFIG.limits.summary.full.text) {
+            if ($descriptionFullTextArea.val().length > CCH.CONFIG.limits.summary.full.text) {
                 errors.push('Full description was longer than ' + CCH.CONFIG.limits.summary.full.text + ' characters');
             }
 
-            if (!$descriptionMediumTextArea.val() || !$descriptionMediumTextArea.val().trim()) {
+            if (me.isBlank($descriptionMediumTextArea)) {
                 errors.push('Medium description not provided');
             }
-            if (!$descriptionMediumTextArea.val() || !$descriptionMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.text) {
+            if ($descriptionMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.text) {
                 errors.push('Medium description was longer than ' + CCH.CONFIG.limits.summary.medium.text + ' characters');
             }
 
-            if (!$descriptionTinyTextArea.val() || !$descriptionTinyTextArea.val().trim()) {
+            if (me.isBlank($descriptionTinyTextArea)) {
                 errors.push('Tiny description not provided');
             }
-            if (!$descriptionTinyTextArea.val() || !$descriptionTinyTextArea.val().length > CCH.CONFIG.limits.summary.tiny.text) {
+            if ($descriptionTinyTextArea.val().length > CCH.CONFIG.limits.summary.tiny.text) {
                 errors.push('Tiny description was longer than ' + CCH.CONFIG.limits.summary.tiny.text + ' characters');
             }
 
-            if (!$bboxNorth.val() || !$bboxNorth.val().trim()) {
+            if (me.isBlank($bboxNorth)) {
                 errors.push('Bounding box north is not provided');
             }
-            if (!$bboxWest.val() || !$bboxWest.val().trim()) {
+            if (me.isBlank($bboxWest)) {
                 errors.push('Bounding box west is not provided');
             }
-            if (!$bboxSouth.val() || !$bboxSouth.val().trim()) {
+            if (me.isBlank($bboxSouth)) {
                 errors.push('Bounding box south is not provided');
             }
-            if (!$bboxEast.val() || !$bboxEast.val().trim()) {
+            if (me.isBlank($bboxEast)) {
                 errors.push('Bounding box east is not provided');
             }
 
@@ -394,17 +400,17 @@ CCH.Objects.UI = function () {
                 errors.push('No keywords provided');
             }
 
-            if (!$name.val()) {
+            if (me.isBlank($name)) {
                 errors.push('Name was not provided');
             }
-            if (!$name.val() || !$name.val().length > CCH.CONFIG.limits.item.name) {
+            if ($name.val().length > CCH.CONFIG.limits.item.name) {
                 errors.push('Item name was longer than ' + CCH.CONFIG.limits.item.name + ' characters');
             }
 
-            if (!$typeSb.val()) {
+            if (me.isBlank($typeSb)) {
                 errors.push('Item type not provided');
             }
-            if (!$typeSb.val() || !$typeSb.val().length > CCH.CONFIG.limits.item.attribute) {
+            if ($typeSb.val().length > CCH.CONFIG.limits.item.attribute) {
                 errors.push('Item type was longer than ' + CCH.CONFIG.limits.item.attribute + ' characters');
             }
 
@@ -897,11 +903,11 @@ CCH.Objects.UI = function () {
             services = {},
             type,
             isItemEnabled = false;
-    
+
         if (item) {
             item.children = item.children || [];
             id = item.id;
-            type = item.itemType,
+            type = item.itemType;
             summary = item.summary;
             titleFull = summary.full.title;
             titleMedium = summary.medium.title;
@@ -942,16 +948,21 @@ CCH.Objects.UI = function () {
                     removeAttr('disabled');
 
                 // Select children
-                item.children.each(function (child) {
+                item.children.reverse().each(function (child) {
                     var id;
                     if (typeof child === 'string') {
                         id = child;
                     } else {
                         id = child.id;
                     }
-                    var $button = $childrenSortableList.
-                        find('li#child-item-' + id).
-                        find('div > button:nth-child(1)');
+                    
+                    var $li = $childrenSortableList.
+                        find('li#child-item-' + id);
+                
+                    // Move child to top of list
+                    $childrenSortableList.prepend($li);
+                    
+                    var $button = $li.find('div > button:nth-child(1)');
 
                     if (!$button.hasClass('active')) {
                         $button.click();
@@ -1692,6 +1703,7 @@ CCH.Objects.UI = function () {
     });
 
     $('#publish-button-create-aggregation-option').on('click', function () {
+        history.pushState(null, 'New Item', CCH.CONFIG.contextPath + '/publish/item/');
         me.clearForm();
         me.enableNewAggregationForm();
     });
