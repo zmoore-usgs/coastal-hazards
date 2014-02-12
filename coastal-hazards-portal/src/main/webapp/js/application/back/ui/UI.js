@@ -491,7 +491,6 @@ CCH.Objects.UI = function (args) {
         $metadataLinkButton.append($metadataLink);
     } else {
         $metadataLinkButton.remove();
-        $downloadFullLink.remove();
     }
     
     
