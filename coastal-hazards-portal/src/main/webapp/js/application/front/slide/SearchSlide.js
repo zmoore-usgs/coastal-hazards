@@ -705,11 +705,16 @@ CCH.Objects.SearchSlide = function (args) {
     });
     
     $(me.FILTER_RESULTS_BUTTON).on('click', function (evt) {
-        var active = true;
-        if ($(evt.target).hasClass('active')) {
+        var active = true,
+            $button = $(evt.target),
+            $i = $button.find('i');
+        if ($button.hasClass('active')) {
             // Button had the active class on when pushed. This means user is 
             // turning it off
             active = false;
+            $i.removeClass('fa-check-square-o').addClass('fa-square-o');
+        } else {
+            $i.removeClass('fa-square-o').addClass('fa-check-square-o');
         }
         $(window).trigger('cch.slide.search.filter.toggle', {
             active : active
