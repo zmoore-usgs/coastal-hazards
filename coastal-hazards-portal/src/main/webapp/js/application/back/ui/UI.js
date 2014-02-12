@@ -11,6 +11,7 @@ CCH.Objects.UI = function (args) {
     var me = (this === window) ? {} : this,
         $metadataLink,
         $metadataLinkButton = $('#metadata-link'),
+        $downloadFullLink = $('#download-full-link'),
         $downloadFull,
         $applicationLink,
         $publist,
@@ -423,7 +424,7 @@ CCH.Objects.UI = function (args) {
                         {
                         $link.html('CSW :');
                         $textBox.val(endpoint);
-                        $newRow.append($link, $textBox)
+                        $newRow.append($link, $textBox);
                         break;
                         }
                     case ('source_wms') :
@@ -431,7 +432,7 @@ CCH.Objects.UI = function (args) {
                         $link.html('Source WMS :');
                         $textBox.val(endpoint);
                         $serviceParamSpan.append(serviceParam, ' )');
-                        $newRow.append($link, $serviceParamSpan, $textBox)
+                        $newRow.append($link, $serviceParamSpan, $textBox);
                         break;
                         }
                     case ('source_wfs') :
@@ -439,7 +440,7 @@ CCH.Objects.UI = function (args) {
                         $link.html('Source WFS :');
                         $textBox.val(endpoint);
                         $serviceParamSpan.append(serviceParam, ' )');
-                        $newRow.append($link, $serviceParamSpan, $textBox)
+                        $newRow.append($link, $serviceParamSpan, $textBox);
                         break;
                         }
                     case ('proxy_wfs') :
@@ -447,7 +448,7 @@ CCH.Objects.UI = function (args) {
                         $link.html('Proxy WFS :');
                         $textBox.val(endpoint);
                         $serviceParamSpan.append(serviceParam, ' )');
-                        $newRow.append($link, $serviceParamSpan, $textBox)
+                        $newRow.append($link, $serviceParamSpan, $textBox);
                         break;
                         }
                     case ('proxy_wms') :
@@ -455,7 +456,7 @@ CCH.Objects.UI = function (args) {
                         $link.html('Proxy WMS :');
                         $textBox.val(endpoint);
                         $serviceParamSpan.append(serviceParam, ' )');
-                        $newRow.append($link, $serviceParamSpan, $textBox)
+                        $newRow.append($link, $serviceParamSpan, $textBox);
                         break;
                         }
                 }
@@ -473,13 +474,15 @@ CCH.Objects.UI = function (args) {
         'role': 'button',
         'href': window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + CCH.CONFIG.itemId
     }).addClass('btn btn-default').html('<i class="fa fa-download"></i> Download Full Data');
- 
+
+    $downloadFullLink.append($downloadFull);
+    
     // Create a "View Metadata" button
     var cswService = CCH.CONFIG.item.services.find(function (service) {
         return service.type === 'csw';
     });
     
-    if (cswService) {
+    if (cswService && cswService.endpoint) {
         $metadataLink = $('<a />').attr({
             'href': cswService.endpoint + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
             'target': 'portal_metadata_window',
@@ -487,10 +490,11 @@ CCH.Objects.UI = function (args) {
         }).addClass('btn btn-default').html('<i class="fa fa-download"></i> View Metadata');
         $metadataLinkButton.append($metadataLink);
     } else {
-        $metadataLinkButton.remove()
+        $metadataLinkButton.remove();
+        $downloadFullLink.remove();
     }
     
-    $('#download-full-link').append($downloadFull);
+    
     
     // Create a "Back To Portal" link to let the user view this in the portal
     $applicationLink = $('<a />').attr({
