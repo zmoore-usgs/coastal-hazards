@@ -1537,7 +1537,7 @@ CCH.Objects.UI = function () {
             $.ajax({
                 url : imageEndpoint,
                 success : function () {
-                    $itemImage.attr('src', imageEndpoint);
+                    $itemImage.attr('src', imageEndpoint + '?cb=' + Date.now());
                 },
                 error : function (err) {
                     if (err.status === 404) {
