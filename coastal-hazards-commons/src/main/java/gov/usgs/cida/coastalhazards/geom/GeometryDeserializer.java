@@ -23,7 +23,7 @@ public class GeometryDeserializer implements JsonDeserializer<Geometry> {
             Coordinate coord = new Coordinate(coordinates.get(0).getAsDouble(), coordinates.get(1).getAsDouble());
             geom = geometryFactory.createPoint(coord);
         } else if (json.isJsonObject()) {
-            String type = json.getAsJsonObject().get("type").toString();
+            String type = json.getAsJsonObject().get("type").getAsString();
 
             if ("Point".equalsIgnoreCase(type)) {
                 JsonArray coordinates = json.getAsJsonObject().getAsJsonArray("coordinates");
