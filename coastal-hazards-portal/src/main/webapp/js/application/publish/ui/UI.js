@@ -1589,6 +1589,7 @@ CCH.Objects.UI = function () {
 
     $wfsImportButton.on('click', function () {
         var importCall,
+            sourceWfs = $srcWfsServiceInput.val().indexOf('geoserver') !== -1 ? 'http://geoserver/ows' :  $srcWfsServiceInput.val(),
             successCallback = function (responseObject) {
                 var responseText = responseObject.responseText,
                     baseUrl = CCH.CONFIG.publicUrl,
@@ -1677,7 +1678,7 @@ CCH.Objects.UI = function () {
 
         importCall = function () {
             CCH.ows.importWfsLayer({
-                endpoint: $srcWfsServiceInput.val(),
+                endpoint: sourceWfs,
                 param: $srcWfsServiceParamInput.val(),
                 callbacks: {
                     success: [successCallback],
