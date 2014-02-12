@@ -19,5 +19,5 @@
     var splashUpdate = function(message) {
         document.getElementById('splash-status-update').innerHTML = message;
     };
-    splashUpdate("Loading application...");
+    splashUpdate("Loading Application...");
 </script>
