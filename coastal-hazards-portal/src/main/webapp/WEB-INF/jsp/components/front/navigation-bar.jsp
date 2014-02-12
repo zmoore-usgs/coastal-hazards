@@ -20,7 +20,7 @@
 <%-- Help Button --%>
 <div class='app-navbar-item-container' title="More Info For USGS Coastal Change Hazards Portal">
     <span id='app-navbar-help-container'>
-        <a href="<%=request.getContextPath()%>/info/"><i class="fa fa-info-circle"></i></a>
+        <a href="<%=request.getParameter("base-url")%>/info/"><i class="fa fa-info-circle"></i></a>
     </span>
 </div>
 
