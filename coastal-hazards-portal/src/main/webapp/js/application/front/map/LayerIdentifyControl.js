@@ -108,9 +108,9 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
             sldResponseHandler = function (sld) {
                 var bins = sld.bins,
                     units = sld.units,
-                    title = item.summary.medium.title,
                     layerId = this.layerId,
                     item = CCH.items.getById({id : layerId}),
+                    title = item.summary.medium.title,
                     attr = item.attr,
                     attrAvg = 0,
                     category,
