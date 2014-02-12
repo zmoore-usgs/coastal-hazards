@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -228,6 +229,14 @@ public class DownloadUtility {
                     download = new SingleDownload();
                     download.setWfs(wfs);
                     download.setName(currentItem.getName());
+                    try {
+                        URL cswUrl = currentItem.fetchCswService().fetchUrl();
+                        download.setMetadata(cswUrl);
+                    } catch (MalformedURLException ex) {
+                        LOG.debug("Invalid csw url {}", currentItem.fetchCswService());
+                    } catch (NullPointerException ex) {
+                        LOG.debug("CSW service not set");
+                    }
                     downloadMap.put(wfs, download);
                 }
                 String attr = currentItem.getAttr();
