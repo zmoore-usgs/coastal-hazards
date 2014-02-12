@@ -443,14 +443,6 @@ CCH.Objects.BucketSlide = function (args) {
     me.append = function ($card) {
         var $container = me.getContainer();
         $container.append($card.clone(true));
-        $container.
-            find('.application-slide-bucket-container-card *[data-toggle="popover"]').
-            popover().
-            on('shown.bs.popover', function (evt) {
-            setTimeout(function () {
-                $(evt.target).popover('hide');
-            }, CCH.CONFIG.ui['tooltip-prevalence']);
-        });
     };
 
     /**
@@ -518,22 +510,14 @@ CCH.Objects.BucketSlide = function (args) {
             $removeButton = $card.find('>button'),
             $upButton = $card.find('> div:nth-child(4) > button:nth-child(1)'),
             $downButton = $card.find('> div:nth-child(4)> button:nth-child(3)'),
-            layerArray,
-            defaultPopoverObject = {
-                'html' : 'true',
-                'data-toggle' : 'popover',
-                'data-trigger' : 'hover',
-                'data-placement' : 'auto',
-                // http://stackoverflow.com/questions/15170967/data-delay-in-twitter-bootstrap-tooltips-plugin
-                'data-delay' : JSON.stringify(CCH.CONFIG.ui['tooltip-delay'])
-            };
+            layerArray;
 
         $card.attr('id', 'application-slide-bucket-container-card-' + id);
         $imageContainer.
-            attr($.extend({}, defaultPopoverObject, {
+            attr({
                 'src' : CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id,
-                'data-content' : 'Explore and zoom to this dataset'
-            })).
+                'title' : 'Explore and zoom to this dataset'
+            }).
             on('click', function () {
                 $(window).trigger('cch.slide.bucket.item.thumbnail.click');
                 CCH.map.zoomToBoundingBox({
@@ -577,22 +561,22 @@ CCH.Objects.BucketSlide = function (args) {
                     id : id
                 });
             }).
-            attr($.extend({}, defaultPopoverObject, {
-                'data-content' : 'Remove From Bucket'
-            }));
+            attr({
+                'title' : 'Remove From Bucket'
+            });
 
         $downloadButton.
-            attr($.extend({}, defaultPopoverObject, {
-                'data-content' : 'Download'
-            })).
+            attr({
+                'title' : 'Download'
+            }).
             on('click', function () {
                 window.location = window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + id;
             });
 
         $viewButton.
-            attr($.extend({}, defaultPopoverObject, {
-                'data-content' : 'Visibility On/Off'
-            })).
+            attr({
+                'title' : 'Visibility On/Off'
+            }).
             on('click', function () {
                 var isAggregation = item.itemType === 'aggregation',
                     isLayerInMap = false;
@@ -651,9 +635,9 @@ CCH.Objects.BucketSlide = function (args) {
                     direction : -1
                 });
             }).
-            attr($.extend({}, defaultPopoverObject, {
-                'data-content' : 'Sort Layer Up'
-            }));
+            attr({
+                'title' : 'Sort Layer Up'
+            });
 
         $downButton.
             on('click', function () {
@@ -662,14 +646,14 @@ CCH.Objects.BucketSlide = function (args) {
                     direction : 1
                 });
             }).
-            attr($.extend({}, defaultPopoverObject, {
-                'data-content' : 'Sort Layer Down'
-            }));
+            attr({
+                'title' : 'Sort Layer Down'
+            });
 
         $shareButton.
-            attr($.extend({}, defaultPopoverObject, {
-                'data-content' : 'Share '
-            })).
+            attr({
+                'title' : 'Share '
+            }).
             on('click', function () {
                 $(window).trigger('slide.bucket.button.click.share', {
                     'type' : 'item',
@@ -684,10 +668,10 @@ CCH.Objects.BucketSlide = function (args) {
                 });
                 window.open(window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id, '_self');
             }).
-            attr($.extend({}, defaultPopoverObject, {
+            attr({
                 'href' : window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + id,
-                'data-content' : 'More Info'
-            }));
+                'title' : 'More Info'
+            });
 
         $card.getContainer = function () {
             return $('#' + this.attr('id'));

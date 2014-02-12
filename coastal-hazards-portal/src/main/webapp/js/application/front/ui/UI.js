@@ -535,28 +535,6 @@ CCH.Objects.UI = function (args) {
         }
     });
 
-    // Set up the popovers for the navigation bucket and help containers
-    me.$NAVBAR_BUCKET_CONTAINER.popover({
-        delay : {
-            show : 800,
-            hide : 0
-        }
-    }).on('shown.bs.popover', function (evt) {
-        setTimeout(function () {
-            $(evt.target).popover('hide');
-        }, CCH.CONFIG.ui['tooltip-prevalence']);
-    });
-    me.$NAVBAR_HELP_CONTAINER.popover({
-        delay : {
-            show : 800,
-            hide : 0
-        }
-    }).on('shown.bs.popover', function (evt) {
-        setTimeout(function () {
-            $(evt.target).popover('hide');
-        }, CCH.CONFIG.ui['tooltip-prevalence']);
-    });
-
     $(window).trigger('cch.ui.initialized');
 
     CCH.LOG.debug('UI.js::constructor: UI class initialized.');

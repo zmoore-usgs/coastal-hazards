@@ -49,13 +49,6 @@ CCH.Objects.Card = function (args) {
     me.child = args.child;
     me.layer = me.item.getWmsLayer();
     me.isOpen = false;
-    me.defaultPopoverObject = {
-        'data-toggle' : 'popover',
-        'data-trigger' : 'hover',
-        'data-placement' : 'auto',
-        // http://stackoverflow.com/questions/15170967/data-delay-in-twitter-bootstrap-tooltips-plugin
-        'data-delay' : JSON.stringify(CCH.CONFIG.ui['tooltip-delay'])
-    };
 
     if (me.wmsService) {
         me.wmsEndpoint = me.wmsService.endpoint;
@@ -83,20 +76,6 @@ CCH.Objects.Card = function (args) {
             direction : 'up',
             complete : complete
         });
-
-        setTimeout(function () {
-            me.
-                container.
-                find('[data-toggle="popover"]').
-                popover().on('shown.bs.popover', function (evt) {
-                    setTimeout(function () {
-                        $(evt.target).popover('hide');
-                    }, CCH.CONFIG.ui['tooltip-prevalence']);
-                });
-            $(window).trigger('card-display-toggle', {
-                'display' : true
-            });
-        }, duration);
 
         if (me.parent) {
             me.parent.hideLayer();
@@ -421,13 +400,13 @@ CCH.Objects.Card = function (args) {
                     attr('src', 'images/cards/item-branch-disabled.svg');
             }
 
-            $propertyAggButton.attr($.extend({}, me.defaultPopoverObject, {
-                'data-content' : 'Explore Contents Of This Dataset'
-            }));
+            $propertyAggButton.attr({
+                'title' : 'Explore Contents Of This Dataset'
+            });
 
-            $bucketButton.attr($.extend({}, me.defaultPopoverObject, {
-                'data-content' : 'Add This Dataset To Your Bucket'
-            }));
+            $bucketButton.attr({
+                'title' : 'Add This Dataset To Your Bucket'
+            });
 
             $zoomToBadge.on('click', function () {
                 $(window).trigger('cch.card.click.zoomto');
