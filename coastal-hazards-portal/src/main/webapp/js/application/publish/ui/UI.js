@@ -231,6 +231,21 @@ CCH.Objects.UI = function () {
         $keywordGroup.find('input').removeAttr('disabled');
         me.createSortableChildren();
     };
+    
+    me.isBlank = function ($ele) {
+        if ($ele.length === 0) {
+            return true;
+        }
+        
+        if (!$ele.val()) {
+            return true;
+        }
+        
+        if (!$ele.val()) {
+            return true;
+        }
+        
+    }
 
     me.validateForm = function () {
         var type = $itemType.val(),
@@ -327,51 +342,51 @@ CCH.Objects.UI = function () {
                 }
             }
 
-            if (!$titleFullTextArea.val().trim()) {
+            if (!$titleFullTextArea.val() || !$titleFullTextArea.val().trim()) {
                 errors.push('Full title not provided');
             }
-            if (!$titleFullTextArea.val().length > CCH.CONFIG.limits.summary.full.title) {
+            if ($titleFullTextArea.val().length > CCH.CONFIG.limits.summary.full.title) {
                 errors.push('Full title was longer than ' + CCH.CONFIG.limits.summary.full.title + ' characters');
             }
 
-            if (!$titleMediumTextArea.val().trim()) {
+            if (!$titleMediumTextArea.val() || !$titleMediumTextArea.val().trim()) {
                 errors.push('Full medium not provided');
             }
-            if (!$titleMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.title) {
+            if (!$titleMediumTextArea.val() || !$titleMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.title) {
                 errors.push('Medium title was longer than ' + CCH.CONFIG.limits.summary.medium.title + ' characters');
             }
 
-            if (!$descriptionFullTextArea.val().trim()) {
+            if (!$descriptionFullTextArea.val() || !$descriptionFullTextArea.val().trim()) {
                 errors.push('Full description not provided');
             }
-            if (!$descriptionFullTextArea.val().length > CCH.CONFIG.limits.summary.full.text) {
+            if (!$descriptionFullTextArea.val() || !$descriptionFullTextArea.val().length > CCH.CONFIG.limits.summary.full.text) {
                 errors.push('Full description was longer than ' + CCH.CONFIG.limits.summary.full.text + ' characters');
             }
 
-            if (!$descriptionMediumTextArea.val().trim()) {
+            if (!$descriptionMediumTextArea.val() || !$descriptionMediumTextArea.val().trim()) {
                 errors.push('Medium description not provided');
             }
-            if (!$descriptionMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.text) {
+            if (!$descriptionMediumTextArea.val() || !$descriptionMediumTextArea.val().length > CCH.CONFIG.limits.summary.medium.text) {
                 errors.push('Medium description was longer than ' + CCH.CONFIG.limits.summary.medium.text + ' characters');
             }
 
-            if (!$descriptionTinyTextArea.val().trim()) {
+            if (!$descriptionTinyTextArea.val() || !$descriptionTinyTextArea.val().trim()) {
                 errors.push('Tiny description not provided');
             }
-            if (!$descriptionTinyTextArea.val().length > CCH.CONFIG.limits.summary.tiny.text) {
+            if (!$descriptionTinyTextArea.val() || !$descriptionTinyTextArea.val().length > CCH.CONFIG.limits.summary.tiny.text) {
                 errors.push('Tiny description was longer than ' + CCH.CONFIG.limits.summary.tiny.text + ' characters');
             }
 
-            if (!$bboxNorth.val().trim()) {
+            if (!$bboxNorth.val() || !$bboxNorth.val().trim()) {
                 errors.push('Bounding box north is not provided');
             }
-            if (!$bboxWest.val().trim()) {
+            if (!$bboxWest.val() || !$bboxWest.val().trim()) {
                 errors.push('Bounding box west is not provided');
             }
-            if (!$bboxSouth.val().trim()) {
+            if (!$bboxSouth.val() || !$bboxSouth.val().trim()) {
                 errors.push('Bounding box south is not provided');
             }
-            if (!$bboxEast.val().trim()) {
+            if (!$bboxEast.val() || !$bboxEast.val().trim()) {
                 errors.push('Bounding box east is not provided');
             }
 
@@ -382,14 +397,14 @@ CCH.Objects.UI = function () {
             if (!$name.val()) {
                 errors.push('Name was not provided');
             }
-            if (!$name.val().length > CCH.CONFIG.limits.item.name) {
+            if (!$name.val() || !$name.val().length > CCH.CONFIG.limits.item.name) {
                 errors.push('Item name was longer than ' + CCH.CONFIG.limits.item.name + ' characters');
             }
 
             if (!$typeSb.val()) {
                 errors.push('Item type not provided');
             }
-            if (!$typeSb.val().length > CCH.CONFIG.limits.item.attribute) {
+            if (!$typeSb.val() || !$typeSb.val().length > CCH.CONFIG.limits.item.attribute) {
                 errors.push('Item type was longer than ' + CCH.CONFIG.limits.item.attribute + ' characters');
             }
 
@@ -2109,8 +2124,11 @@ CCH.Objects.UI = function () {
                                 if (id && title) {
                                     $li = $('<li />');
                                     $a = $('<a />').
-                                            attr('href', '#').
-                                            html(title);
+                                        attr({
+                                            'data-attr' : id,
+                                            'href' : '#'
+                                        }).
+                                        html(title);
                                     $li.append($a);
                                     $metadataDropdownList.append($li);
 
@@ -2121,7 +2139,7 @@ CCH.Objects.UI = function () {
                                         endpoint += '&request=GetRecordById';
                                         endpoint += '&version=2.0.2';
                                         endpoint += '&typeNames=fgdc:metadata';
-                                        endpoint += '&id=' + id;
+                                        endpoint += '&id=' + $(evt.target).attr('data-attr');
                                         endpoint += '&outputSchema=http://www.opengis.net/cat/csw/csdgm';
                                         endpoint += '&elementSetName=full';
                                         $cswServiceInput.val(endpoint);
