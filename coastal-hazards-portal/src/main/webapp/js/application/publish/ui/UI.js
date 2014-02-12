@@ -23,6 +23,7 @@ CCH.Objects.UI = function () {
         $bboxEast = $form.find('#form-publish-item-bbox-input-east'),
         $typeSb = $form.find('#form-publish-item-type'),
         $attributeSelect = $form.find('#form-publish-item-attribute'),
+        $attributeRetrieveDataButton = $form.find('#form-publish-item-attribute-button'),
         $keywordGroup = $form.find('.form-group-keyword'),
         $cswServiceInput = $form.find('#form-publish-item-service-csw'),
         $srcWfsServiceInput = $form.find('#form-publish-item-service-source-wfs'),
@@ -65,7 +66,7 @@ CCH.Objects.UI = function () {
         $proxyWmsCheckButton = $form.find('#form-publish-item-service-proxy-wms-import-button-check'),
         $getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button');
 
-    me.createHelpPopover = function($content, $element) {
+    me.createHelpPopover = function ($content, $element) {
         $element.popover('destroy');
         $element.popover({
             'html' : true,
@@ -73,7 +74,7 @@ CCH.Objects.UI = function () {
             'trigger' : 'manual',
             'title' : 'Available Services',
             'content' : $content
-        })
+        });
         $element.popover('show');
 
         $('body').on('click', function() {
@@ -773,7 +774,7 @@ CCH.Objects.UI = function () {
             });
         }
         $attributeSelect.removeAttr('disabled');
-        $attributeSelect.trigger('change');
+        $attributeRetrieveDataButton.removeAttr('disabled');
     };
 
     me.metadataPublishCallback = function (mdObject, status) {
@@ -1517,6 +1518,48 @@ CCH.Objects.UI = function () {
             });
         }
     };
+    
+    me.getDataForAttribute = function () {
+        var attribute = $attributeSelect.val();
+
+        CCH.ows.requestSummaryByAttribute({
+            url: $('#form-publish-item-service-csw').val(),
+            attribute: attribute,
+            callbacks: {
+                success: [
+                    function (response) {
+                        $titleFullTextArea.val(response.full.title || '');
+                        $descriptionFullTextArea.val(response.full.text || '');
+
+                        $titleMediumTextArea.val(response.medium.title || '');
+                        $descriptionMediumTextArea.val(response.medium.text || '');
+
+                        $descriptionTinyTextArea.val(response.tiny.text || '');
+
+                        $publicationsPanel.find('>div:nth-child(2)').empty();
+                        $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled', 'disabled');
+                        Object.keys(response.full.publications, function(type) {
+                            response.full.publications[type].each(function(publication) {
+                                me.createPublicationRow(publication.link, publication.title, type);
+                            });
+                        });
+
+                        response.keywords.split('|').each(function(keyword) {
+                            me.addKeywordGroup(keyword);
+                        });
+                    }
+                ],
+                error: [
+                    function(err) {
+                        $alertModal.modal('hide');
+                        $alertModalTitle.html('Unable To Load Attribute Information');
+                        $alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
+                        $alertModal.modal('show');
+                    }
+                ]
+            }
+        });
+    };
 
     $wfsImportButton.on('click', function () {
         var importCall,
@@ -1702,48 +1745,6 @@ CCH.Objects.UI = function () {
         $alertModalFooter.find('button').not('#alert-modal-close-button').remove();
     });
 
-    $attributeSelect.on('change', function(evt) {
-        var attribute = $(evt.target).val();
-
-        CCH.ows.requestSummaryByAttribute({
-            url: $('#form-publish-item-service-csw').val(),
-            attribute: attribute,
-            callbacks: {
-                success: [
-                    function (response) {
-                        $titleFullTextArea.val(response.full.title || '');
-                        $descriptionFullTextArea.val(response.full.text || '');
-
-                        $titleMediumTextArea.val(response.medium.title || '');
-                        $descriptionMediumTextArea.val(response.medium.text || '');
-
-                        $descriptionTinyTextArea.val(response.tiny.text || '');
-
-                        $publicationsPanel.find('>div:nth-child(2)').empty();
-                        $publicationsPanel.find('#form-publish-info-item-panel-publications-button-add').removeAttr('disabled', 'disabled');
-                        Object.keys(response.full.publications, function(type) {
-                            response.full.publications[type].each(function(publication) {
-                                me.createPublicationRow(publication.link, publication.title, type);
-                            });
-                        });
-
-                        response.keywords.split('|').each(function(keyword) {
-                            me.addKeywordGroup(keyword);
-                        });
-                    }
-                ],
-                error: [
-                    function(err) {
-                        $alertModal.modal('hide');
-                        $alertModalTitle.html('Unable To Load Attribute Information');
-                        $alertModalBody.html(err.statusText + ' <br /><br />Try again or contact system administrator');
-                        $alertModal.modal('show');
-                    }
-                ]
-            }
-        });
-    });
-
     $buttonSave.on('click', function () {
         var errors = me.validateForm.call(this),
             $ul = $('<ul />'),
@@ -1800,6 +1801,10 @@ CCH.Objects.UI = function () {
     });
     $wfsSourceCopyButton.on('click', function () {
         $srcWmsServiceInput.val($srcWfsServiceInput.val().replace('WFSServer', 'WMSServer'));
+    });
+    
+    $attributeRetrieveDataButton.on('click', function () {
+        me.getDataForAttribute();
     });
     
     $sourceWfsCheckButton.on('click', function () {
