@@ -18,13 +18,9 @@
 <jsp:include page="navbar-bucket.jsp"></jsp:include>
 
 <%-- Help Button --%>
-<div class='app-navbar-item-container'>
-    <span id='app-navbar-help-container'
-            data-toggle="popover" 
-            data-trigger="hover" 
-            data-placement="auto" 
-            data-content="More Info For USGS Coastal Change Hazards Portal">
-        <a href="<%=request.getContextPath()%>/info/"><i class="fa fa-info-circle"></i></a>
+<div class='app-navbar-item-container' title="More Info For USGS Coastal Change Hazards Portal">
+    <span id='app-navbar-help-container'>
+        <a href="<%=request.getParameter("base-url")%>/info/"><i class="fa fa-info-circle"></i></a>
     </span>
 </div>
 
