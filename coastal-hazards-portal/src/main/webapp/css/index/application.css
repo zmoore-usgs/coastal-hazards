@@ -70,11 +70,16 @@ html, body {
 }
 
 /* Deals with layer identification on-click */
-#feature-identification-popup_contentDiv table {
+#feature-identification-popup_contentDiv {
     width: 100%;
 }
+#feature-identification-popup_contentDiv table {
+    width: 100%;
+    border: 1px solid #CCC;
+    margin-top: 10px;
+}
 #feature-identification-popup_contentDiv table tr {
-    font-size: 1.2em;
+    font-size: 1em;
     vertical-align: middle;
     margin-bottom: 5px;
 }
@@ -83,7 +88,7 @@ html, body {
     border: 1px #999999 solid;
 }
 #feature-identification-popup_contentDiv table tr > td:nth-child(3) {
-    padding-left: 10px;
+    padding-left: 5px;
     text-align: right;
 }
 
@@ -113,6 +118,10 @@ html, body {
 
 .olPopupCloseBox {
     background: url("../../images/openlayers/layer-identify-close.svg") !important;
+}
+
+#feature-identification-popup_contentDiv table > tbody > tr:nth-child(even) {
+    background: #EEE;
 }
 
 @media (min-width: 992px) {
