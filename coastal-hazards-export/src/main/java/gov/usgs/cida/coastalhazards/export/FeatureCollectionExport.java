@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.export;
 
+import gov.usgs.cida.gml.GMLStreamingFeatureCollection;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -144,7 +145,8 @@ public class FeatureCollectionExport {
         builder.setCRS(this.crs);
         builder.add(getGeometryDescriptor());
         if (downloadAll) {
-            List<AttributeDescriptor> attributeDescriptors = simpleFeatureCollection.getSchema().getAttributeDescriptors();
+            SimpleFeatureType unwrapped = GMLStreamingFeatureCollection.unwrapSchema(simpleFeatureCollection.getSchema());
+            List<AttributeDescriptor> attributeDescriptors = unwrapped.getAttributeDescriptors();
             for (AttributeDescriptor attrDesc : attributeDescriptors) {
                 builder.add(attrDesc);
             }

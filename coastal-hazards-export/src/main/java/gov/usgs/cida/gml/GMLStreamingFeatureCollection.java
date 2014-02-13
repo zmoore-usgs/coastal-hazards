@@ -1,6 +1,5 @@
 package gov.usgs.cida.gml;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,10 +20,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeImpl;
-import org.geotools.feature.type.GeometryDescriptorImpl;
-import org.geotools.feature.type.GeometryTypeImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.PullParser;
 import org.opengis.feature.Feature;
@@ -32,12 +28,9 @@ import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.GeometryType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterVisitor;
 import org.opengis.filter.sort.SortBy;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -225,6 +218,7 @@ public class GMLStreamingFeatureCollection implements SimpleFeatureCollection {
         disallowed.add("name");
         disallowed.add("location");
         disallowed.add("description");
+        disallowed.add("descriptio");
         
         for (AttributeDescriptor desc : wrappedFeatureType.getAttributeDescriptors()) {
             if(!disallowed.contains(desc.getLocalName())) {
