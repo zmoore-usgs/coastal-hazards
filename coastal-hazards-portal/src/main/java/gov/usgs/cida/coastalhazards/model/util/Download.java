@@ -1,6 +1,9 @@
 package gov.usgs.cida.coastalhazards.model.util;
 
+import java.io.File;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,7 +30,12 @@ public class Download implements Serializable {
     private String sessionId;
     private String persistanceURI;
     private Date insertedTime;
+    private boolean problem;
 
+    public Download() {
+        problem = false;
+    }
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public int getId() {
@@ -79,4 +87,17 @@ public class Download implements Serializable {
     protected void onCreate() {
         this.insertedTime = new Date();
     }
+
+    public boolean isProblem() {
+        return problem;
+    }
+
+    public void setProblem(boolean problem) {
+        this.problem = problem;
+    }
+    
+    public File fetchZipFile() throws URISyntaxException {
+        return new File(new URI(getPersistanceURI()));
+    }
+    
 }
