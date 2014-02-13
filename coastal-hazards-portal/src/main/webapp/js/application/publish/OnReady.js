@@ -59,7 +59,9 @@ $(document).ready(function () {
                             }
                         }
                     },
-                        $option;
+                        $option,
+                        $list = $('#publish-button-edit-existing-list'),
+                        sortedItems;
                     
                     CCH.items.each(function (item) {
                         rootOutChildren(item);
@@ -73,9 +75,12 @@ $(document).ready(function () {
                                         'href' : CCH.CONFIG.contextPath + '/publish/item/' + item.id
                                     }).
                                     html(item.summary.medium.title));
-                        $('#publish-button-edit-existing-list').append($option);
+                        $list.append($option);
                     });
-                    
+                    sortedItems = $list.find('li').toArray().sortBy(function(li) {
+                        return $(li).find('a').html();
+                    });
+                    $list.empty().append(sortedItems);
                     if (CCH.itemid) {
                         CCH.CONFIG.item = CCH.items.find(function (item) {
                             return item.id === CCH.itemid;

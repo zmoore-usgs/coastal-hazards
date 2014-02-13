@@ -87,10 +87,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                 });
             });
 
-            popupHtml = '<div class="col-md-12">' +
-                    '<table>' +
-                    '<tr id="loading-info-row"><td>Loading Information...</td></tr>' +
-                    '</table>';
+            popupHtml = '<div class="col-md-12"><span id="layer-load-id">Loading Information...</span></div>';
 
             // Create the popup and add it to the map
             popup = new OpenLayers.Popup.FramedCloud('feature-identification-popup',
@@ -118,14 +115,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     layers = this.layers,
                     color,
                     buildLegend,
-                    $popupHtml = $(popup.contentHTML),
-                    $table = $popupHtml.find('table'),
-                    $theadRow = $('<thead />').append(
-                        $('<tr />').append(
-                            $('<td />').html('Layer'),
-                            $('<td />').html('Color'),
-                            $('<td />').html('Value')
-                        )),
+                    $popup = $(popup),
                     buildLegend = function (args) {
                         args = args || {};
                         var binIdx = 0,
@@ -137,11 +127,20 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             units = args.units,
                             features = args.features,
                             layers = args.layers,
+                            layerId = args.layerId,
+                            layer = CCH.map.getMap().getLayersBy('itemid', layerId)[0],
+                            layerIndex = CCH.map.getMap().getLayerIndex(layer),
                             $popupHtml = $(popup.contentHTML),
-                            $table = $popupHtml.find('table'),
+                            $table = $('<table />').attr('data-attr', layerIndex),
+                            $theadRow = $('<thead />').append(
+                                $('<tr />').append(
+                                    $('<td />').html('Layer'),
+                                    $('<td />').html('Color'),
+                                    $('<td />').html('Value')
+                                )),
                             $titleContainer = $('<td />'),
                             $colorContainer = $('<td />'),
-                            $averageContainer = $('<td />'),
+                            $yearContainer = $('<td />'),
                             $legendRow = $('<tr>').addClass('legend-row'),
                             item = args.item,
                             ribbonIndex = -1,
@@ -161,19 +160,15 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             ribbonIndex = parseInt(layerName.split('_').last(), 10);
                         }
 
-                        $table.find('#loading-info-row').remove();
-                        if ($table.find('thead').length === 0) {
-                            $table.append($theadRow);
-                        }
+                        $table.append($theadRow);
                         $titleContainer.html(title);
 
                         if (units === 'year') {
-                            $theadRow.find('td:first-child').remove();
-                            $theadRow.find('td').last().html('&nbsp;Year');
+                            $theadRow.find('td').last().html('Year');
                             features.each(function (feature) {
-                                $titleContainer = $('<td />');
+                                $titleContainer = $('<td />').html(title);
                                 $colorContainer = $('<td />');
-                                $averageContainer = $('<td />');
+                                $yearContainer = $('<td />');
                                 $legendRow = $('<tr>');
                                 dateAttribute = Object.keys(feature).find(function (attr) {
                                     return attr.toLowerCase().indexOf('date') !== -1;
@@ -192,11 +187,15 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                         }) !== -1;
                                     });
                                     $colorContainer.append($('<span />').css('backgroundColor', bin.color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
-                                    $averageContainer.append(year);
-                                    $legendRow.append($colorContainer, $averageContainer).attr('id', 'popup-legend-' + year);
+                                    $yearContainer.append(year, ' yr');
+                                    $legendRow.append($titleContainer, $colorContainer, $yearContainer).attr('id', 'popup-legend-' + year);
                                     $table.append($legendRow);
                                 }
                             });
+                            var sortedRows = $table.find('tr').not(':first').toArray().sortBy(function(row) {
+                                return parseInt($(row).attr('id').substring(13));
+                            })
+                            $table.empty().append(sortedRows);
                         } else {
                             for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
                                 lb = bins[binIdx].lowerBound;
@@ -219,12 +218,12 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             $colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
 
                             if (item.attr.toLowerCase() === 'cvirisk') {
-                                $averageContainer.append(bins[attrAvg.toFixed(0) - 1].category + ' Risk');
+                                $yearContainer.append(bins[attrAvg.toFixed(0) - 1].category + ' Risk');
                             } else {
-                                $averageContainer.append(attrAvg % 1 === 0 ? attrAvg.toFixed(0) : attrAvg.toFixed(3));
-                                $averageContainer.append(' ' + units);
+                                $yearContainer.append(attrAvg % 1 === 0 ? attrAvg.toFixed(0) : attrAvg.toFixed(3));
+                                $yearContainer.append(' ' + units);
                             }
-                            $legendRow.append($titleContainer, $colorContainer, $averageContainer);
+                            $legendRow.append($titleContainer, $colorContainer, $yearContainer);
                             
                             if (ribbonIndex !== -1) {
                                 // If this is part of a ribboned series, I'm going
@@ -243,24 +242,47 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             }
                         }
 
-                        
+                        $popupHtml.find('#layer-load-id').remove();
+                        CCH.map.getMap().getLayerIndex(CCH.map.getMap().getLayersBy('itemid', layerId)[0])
                         $popupHtml.append($table);
+                        var tables = $popupHtml.find('table').toArray().sort(function (tbl) {
+                            return parseInt($(tbl).attr('data-attr'));
+                        });
+                        $popupHtml.empty().append(tables);
                         popup.setContentHTML($popupHtml.clone().wrap('<div/>').parent().html());
-                        width = new OpenLayers.Size($('#feature-identification-popup div.col-md-12 > table').width());
+                        width = function () {
+                            var cWidth = 0,
+                                maxWidth = Math.round($('#map').width() / 2);
+                                
+                            $('#feature-identification-popup div.col-md-12 table').each(function (ind, table) {
+                                cWidth = $(table).width() > cWidth ? $(table).width() : cWidth;
+                            });
+                            
+                            if (cWidth > maxWidth) {
+                                cWidth = maxWidth;
+                            }
+                            
+                            return cWidth + 10;
+                        };
                         height = function () {
-                            var cHeight = 0;
+                            var cHeight = 0,
+                                maxHeight = Math.round($('#map').height() * .5);
                             $('#feature-identification-popup div.col-md-12 > table tr').each(function (ind, item) {
                                 cHeight += $(item).height();
                             });
-                            return cHeight;
+                            if (cHeight > maxHeight) {
+                                cHeight = maxHeight;
+                            }
+                            return cHeight + 5;
                         };
-                        popup.setSize(new OpenLayers.Size(width, height() + 5));
+                        popup.setSize(new OpenLayers.Size(width(), height()));
                         popup.panIntoView();
                         $(window).on('cch.ui.redimensioned', function () {
-                            popup.setSize(new OpenLayers.Size(width, height() + 5));
+                            popup.setSize(new OpenLayers.Size(width(), height()));
                         });
                     };
-
+                
+               
 
                 if (item.type.toLowerCase() === 'vulnerability' ||
                         item.type.toLowerCase() === 'storms' ||
@@ -293,7 +315,8 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     item : item,
                     popup : popup,
                     units : units,
-                    layers : layers
+                    layers : layers,
+                    layerId : layerId
                 });
             };
 

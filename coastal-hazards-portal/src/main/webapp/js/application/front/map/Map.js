@@ -333,10 +333,7 @@ CCH.Objects.Map = function (args) {
                 property : evt.property,
                 layer : layer
             });
-            CCH.session.updateSession({
-                itemid : layer.itemid,
-                visibility : layer.visibility
-            });
+            CCH.map.removeAllPopups();
         },
         getLayersBy : function (attr, value) {
             return me.map.getLayersBy(attr, value);

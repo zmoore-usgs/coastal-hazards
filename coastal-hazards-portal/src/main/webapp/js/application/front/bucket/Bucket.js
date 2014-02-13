@@ -37,6 +37,7 @@ CCH.Objects.Bucket = function (args) {
             item = id ? CCH.items.getById({ id : id }) : args.item;
 
         if (item) {
+            item.hideLayer();
             me.remove({
                 item: item
             });

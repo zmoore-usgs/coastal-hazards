@@ -61,6 +61,8 @@ CCH.Objects.BucketSlide = function (args) {
             display: ''
         });
 
+        CCH.map.hideAllLayers();
+        
         me.reorderLayers();
 
         $slideContainer.animate({
@@ -552,9 +554,6 @@ CCH.Objects.BucketSlide = function (args) {
         $removeButton.
             on('click', function ($evt) {
                 $evt.stopPropagation();
-                // If I am open, remove my layer
-                item.hideLayer();
-
                 // I emit this to the top so that bucket can catch it, decrement itself
                 // and then pass on the remove back down here to my remove method
                 $(window).trigger('cch.slide.bucket.remove', {
@@ -588,6 +587,10 @@ CCH.Objects.BucketSlide = function (args) {
 
                 if (isLayerInMap) {
                     item.hideLayer();
+                    CCH.session.update({
+                        itemid : item.id,
+                        visibility : false
+                    });
                     me.layerAppendRemoveHandler(
                         {
                             namespace : 'hid.layer.map'
@@ -600,6 +603,10 @@ CCH.Objects.BucketSlide = function (args) {
                     CCH.session.getItemById(item.id).visibility = false;
                 } else {
                     item.showLayer();
+                    CCH.session.update({
+                        itemid : item.id,
+                        visibility : true
+                    });
                     me.layerAppendRemoveHandler({
                         namespace: 'show.layer.map'
                     },
