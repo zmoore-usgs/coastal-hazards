@@ -1,4 +1,5 @@
 
+<%@page import="gov.usgs.cida.coastalhazards.model.summary.Summary"%>
 <%@page import="gov.usgs.cida.coastalhazards.model.summary.Publication"%>
 <%@page import="gov.usgs.cida.coastalhazards.model.summary.Tiny"%>
 <%@page import="gov.usgs.cida.coastalhazards.model.summary.Medium"%>
@@ -95,6 +96,9 @@
                 publication: {
                     title: <%= Publication.TITLE_MAX_LENGTH%>,
                     link: <%= Publication.LINK_MAX_LENGTH%>
+                },
+                keywords : {
+                    text: <%= Summary.KEYWORDS_MAX_LENGTH %>
                 }
             }
         </script>
