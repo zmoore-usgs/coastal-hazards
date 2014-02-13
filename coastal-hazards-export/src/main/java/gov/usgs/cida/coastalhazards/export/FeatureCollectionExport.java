@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.export;
 
+import gov.usgs.cida.gml.GMLStreamingFeatureCollection;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -47,7 +48,15 @@ public class FeatureCollectionExport {
     private final String namePrefix;
     private List<String> attributes;
     private CoordinateReferenceSystem crs;
+    private boolean downloadAll;
     
+    /**
+     * Default constructor assumes all attributes from source should be downloaded
+     * 
+     * @param simpleFeatureCollection
+     * @param outputDirectory
+     * @param namePrefix 
+     */
     public FeatureCollectionExport(SimpleFeatureCollection simpleFeatureCollection,
             File outputDirectory, String namePrefix) {
         this.simpleFeatureCollection = simpleFeatureCollection;
@@ -55,8 +64,28 @@ public class FeatureCollectionExport {
         this.namePrefix = namePrefix;
         this.attributes = new LinkedList<>();
         this.crs = DEFAULT_CRS;
+        this.downloadAll = true;
     }
     
+    /**
+     * Alternate constructor allows client to specify specific attributes to download
+     * 
+     * @param simpleFeatureCollection
+     * @param outputDirectory
+     * @param namePrefix
+     * @param downloadAll 
+     */
+    public FeatureCollectionExport(SimpleFeatureCollection simpleFeatureCollection,
+            File outputDirectory, String namePrefix, boolean downloadAll) {
+        this(simpleFeatureCollection, outputDirectory, namePrefix);
+        this.downloadAll = downloadAll;
+    }
+    
+    /**
+     * Ignored if downloadAll is true
+     * 
+     * @param attrName 
+     */
     public void addAttribute(String attrName) {
         if (attributeExists(attrName)) {
             attributes.add(attrName);
@@ -110,17 +139,26 @@ public class FeatureCollectionExport {
     }
     
     private SimpleFeatureType buildFeatureType() {
+        SimpleFeatureType featureType = null;
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName(namePrefix);
         builder.setCRS(this.crs);
         builder.add(getGeometryDescriptor());
-        for (String name : attributes) {
-            AttributeDescriptor descriptor = getDescriptorFromPrototype(name);
-            if (descriptor != null) {
-                builder.add(descriptor);
+        if (downloadAll) {
+            SimpleFeatureType unwrapped = GMLStreamingFeatureCollection.unwrapSchema(simpleFeatureCollection.getSchema());
+            List<AttributeDescriptor> attributeDescriptors = unwrapped.getAttributeDescriptors();
+            for (AttributeDescriptor attrDesc : attributeDescriptors) {
+                builder.add(attrDesc);
+            }
+        } else {
+            for (String name : attributes) {
+                AttributeDescriptor descriptor = getDescriptorFromPrototype(name);
+                if (descriptor != null) {
+                    builder.add(descriptor);
+                }
             }
         }
-        SimpleFeatureType featureType = builder.buildFeatureType();
+        featureType = builder.buildFeatureType();
         return featureType;
     }
     

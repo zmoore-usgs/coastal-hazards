@@ -37,7 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Utility to download items and sessions (bucket)
+ * 
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class DownloadUtility {
@@ -221,7 +222,7 @@ public class DownloadUtility {
         while (itemQueue.peek() != null) {
             Item currentItem = itemQueue.poll();
             WFSService wfs = getWfsService(currentItem);
-            if (wfs.checkValidity()) {
+            if (wfs != null && wfs.checkValidity()) {
                 if (downloadMap.containsKey(wfs)) {
                     download = downloadMap.get(wfs);
                 }
@@ -288,7 +289,7 @@ public class DownloadUtility {
         WFSService sourceWfs = null;
         List<Service> services = item.getServices();
         for (Service service : services) {
-            if (service.getType() == ServiceType.source_wfs) {
+            if (service.getType() == ServiceType.proxy_wfs) {
                 sourceWfs = new WFSService(service);
             }
         }
