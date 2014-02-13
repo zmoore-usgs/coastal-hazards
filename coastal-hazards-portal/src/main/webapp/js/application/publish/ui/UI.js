@@ -1603,7 +1603,7 @@ CCH.Objects.UI = function () {
             sourceWfs = $srcWfsServiceInput.val().indexOf('geoserver') !== -1 ? 'http://geoserver/wfs' :  $srcWfsServiceInput.val(),
             successCallback = function (responseObject) {
                 var responseText = responseObject.responseText,
-                    baseUrl = CCH.CONFIG.contextPath,
+                    baseUrl = CCH.CONFIG.publicUrl,
                     baseService = baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/',
                     wfsServiceVal = baseService + 'wfs',
                     wmsServiceVal = baseService + 'wms';
