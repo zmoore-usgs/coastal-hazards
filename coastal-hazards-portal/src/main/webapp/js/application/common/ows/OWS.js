@@ -177,7 +177,7 @@ CCH.Objects.OWS = function() {
                         identifier: "url",
                         data: {
                             literalData: {
-                                value: CCH.CONFIG.contextPath + '/data/item/' + id
+                                value: CCH.CONFIG.publicUrl + '/data/item/' + id
                             }
                         }
                     }],
