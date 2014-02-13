@@ -2,7 +2,9 @@ var CCH = CCH || {};
 CCH.Objects.OWS = function() {
     CCH.LOG.info('OWS.js::constructor: OWS class is initializing.');
     var me = (this === window) ? {} : this;
-
+    
+    me.featureTypeDescription = {};
+    
     CCH.LOG.debug('OWS.js::constructor: OWS class initialized.');
     return $.extend(me, {
         init: function () {
@@ -175,7 +177,7 @@ CCH.Objects.OWS = function() {
                         identifier: "url",
                         data: {
                             literalData: {
-                                value: CCH.CONFIG.publicUrl + '/data/item/' + id
+                                value: CCH.CONFIG.contextPath + '/data/item/' + id
                             }
                         }
                     }],
@@ -212,7 +214,7 @@ CCH.Objects.OWS = function() {
                 error: []
             },
                 layername = args.layerName || '';
-            $.ajax(CCH.CONFIG.publicUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?', {
+            $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?', {
                 data: {
                     request: 'DescribeFeaturetype',
                     service: 'WFS',
@@ -350,9 +352,9 @@ CCH.Objects.OWS = function() {
             var scope = args.scope;
             var propertyArray = args.propertyArray;
             var callbacks = args.callbacks;
-            var proxyEndpoint = me.servers['cida-geoserver'].endpoints.proxy;
+            var proxyEndpoint = CCH.CONFIG.data.sources['cida-geoserver'].proxy;
 
-            var url = proxyEndpoint + layerPrefix + '/wfs?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&typeName=' + layerName + '&propertyName=';
+            var url = CCH.CONFIG.contextPath + proxyEndpoint + layerPrefix + '/wfs?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&typeName=' + layerName + '&propertyName=';
             url += (propertyArray || []).join(',');
 
             $.ajax(url, {

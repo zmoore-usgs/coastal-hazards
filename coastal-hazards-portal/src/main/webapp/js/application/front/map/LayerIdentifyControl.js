@@ -132,12 +132,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             layerIndex = CCH.map.getMap().getLayerIndex(layer),
                             $popupHtml = $(popup.contentHTML),
                             $table = $('<table />').attr('data-attr', layerIndex),
-                            $theadRow = $('<thead />').append(
-                                $('<tr />').append(
-                                    $('<td />').html('Layer'),
-                                    $('<td />').html('Color'),
-                                    $('<td />').html('Value')
-                                )),
                             $titleContainer = $('<td />'),
                             $colorContainer = $('<td />'),
                             $yearContainer = $('<td />'),
@@ -160,11 +154,10 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             ribbonIndex = parseInt(layerName.split('_').last(), 10);
                         }
 
-                        $table.append($theadRow);
+//                        $table.append($theadRow);
                         $titleContainer.html(title);
 
                         if (units === 'year') {
-                            $theadRow.find('td').last().html('Year');
                             features.each(function (feature) {
                                 $titleContainer = $('<td />').html(title);
                                 $colorContainer = $('<td />');
@@ -241,12 +234,27 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                 $table.append($legendRow);
                             }
                         }
-
+                        
                         $popupHtml.find('#layer-load-id').remove();
                         CCH.map.getMap().getLayerIndex(CCH.map.getMap().getLayersBy('itemid', layerId)[0])
                         $popupHtml.append($table);
                         var tables = $popupHtml.find('table').toArray().sort(function (tbl) {
                             return parseInt($(tbl).attr('data-attr'));
+                        });
+                        tables.each(function (tbl, ind) {
+                            var $tbl = $(tbl);
+                            if (ind === 0) {
+                                if ($tbl.find('thead').length === 0) {
+                                    $tbl.prepend($('<thead />').append(
+                                $('<tr />').append(
+                                    $('<td />').html('Layer'),
+                                    $('<td />').html('Color'),
+                                    $('<td />').html('Value')
+                                )));
+                                }
+                            } else {
+                                $tbl.find('thead').remove();
+                            }
                         });
                         $popupHtml.empty().append(tables);
                         popup.setContentHTML($popupHtml.clone().wrap('<div/>').parent().html());
@@ -268,7 +276,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             var cHeight = 0,
                                 maxHeight = Math.round($('#map').height() * .5);
                             $('#feature-identification-popup div.col-md-12 > table tr').each(function (ind, item) {
-                                cHeight += $(item).height();
+                                cHeight += $(item).height() * 1.5;
                             });
                             if (cHeight > maxHeight) {
                                 cHeight = maxHeight;
@@ -281,8 +289,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             popup.setSize(new OpenLayers.Size(width(), height()));
                         });
                     };
-                
-               
 
                 if (item.type.toLowerCase() === 'vulnerability' ||
                         item.type.toLowerCase() === 'storms' ||

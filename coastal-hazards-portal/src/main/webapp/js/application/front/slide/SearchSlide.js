@@ -121,6 +121,7 @@ CCH.Objects.SearchSlide = function (args) {
     };
 
     me.close = function (args) {
+        args = args || {};
         if (!me.isClosed && !me.isClosing) {
             $(window).trigger('cch.slide.search.closing');
 
@@ -354,6 +355,9 @@ CCH.Objects.SearchSlide = function (args) {
                     }
                 } else {
                     $slideContainer.empty();
+                    $resultsFoundsContainer.
+                            removeClass('hidden').
+                            html('0 Locations Found');
                 }
                 break;
 
@@ -395,13 +399,14 @@ CCH.Objects.SearchSlide = function (args) {
                                 $(evt.target).popover('hide');
                             }, CCH.CONFIG.ui['tooltip-prevalence']);
                         });
-
+                    me.FILTER_RESULTS_BUTTON.show();
                     me.createPaging({
                         container : $pagingContainer,
                         pageCount : pageCount
                     });
                 } else {
                     $slideContainer.empty();
+                    me.FILTER_RESULTS_BUTTON.hide();
                 }
                 break;
             }
@@ -413,7 +418,7 @@ CCH.Objects.SearchSlide = function (args) {
             }
 
             // Check if I have more than one product or location to display
-            if (locationSize + productsSize > 0) {
+//            if (locationSize + productsSize > 0) {
                 // If I am closed, open me up. Resizing happens after I 
                 // am open because otherwise some of my elements don't have 
                 // a height. Otherwise, just resize me because I may have had 
@@ -423,7 +428,7 @@ CCH.Objects.SearchSlide = function (args) {
                 } else {
                     me.resize();
                 }
-            }
+//            }
         }
     };
 
@@ -619,7 +624,10 @@ CCH.Objects.SearchSlide = function (args) {
                 'src' : CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id,
                 'data-content' : 'Explore this dataset'
             })).on('click', function () {
-                $exploreControl.trigger('click');
+                $(window).trigger('cch.slide.search.button.click.explore', {
+                        'id' : id
+                });
+                me.close();
             }).error(function () {
                 $(this).parent().css('display', 'none');
                 $descriptionContainer.parent().parent().css('width', '100%');

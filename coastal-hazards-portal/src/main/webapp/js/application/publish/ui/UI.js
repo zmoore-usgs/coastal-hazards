@@ -398,6 +398,12 @@ CCH.Objects.UI = function () {
 
             if ($('.form-group-keyword').length === 1) {
                 errors.push('No keywords provided');
+            } else {
+                $('.form-group-keyword input').each(function(ind, input) {
+                    if ($(input).val().length > CCH.CONFIG.limits.keywords.text) {
+                        errors.push('Keyword ' + $(input).val() + ' longer than ' + CCH.CONFIG.limits.keywords.text + ' characters');
+                    }
+                });
             }
 
             if (me.isBlank($name)) {
@@ -2052,10 +2058,10 @@ CCH.Objects.UI = function () {
             } else if (srcWmsVal.indexOf(CCH.CONFIG.data.sources['marine-arcserver'].endpoint) !== -1) {
                 var serverName = 'marine-arcserver',
                     serverData = CCH.CONFIG.data.sources[serverName],
-                    namespace = srcWmsVal.substring(serverData.endpoint.length);
+                    namespace = srcWmsVal.substring(serverData.endpoint.length + 1);
                     
                 if (namespace.indexOf('WMSServer') !== -1) {
-                    namespace = namespace.split('/')[2] + '/' + namespace.split('/')[3];
+                    namespace = namespace.split('/')[0] + '/' + namespace.split('/')[1];
                 }
 
                 CCH.ows.getWMSCapabilities({
