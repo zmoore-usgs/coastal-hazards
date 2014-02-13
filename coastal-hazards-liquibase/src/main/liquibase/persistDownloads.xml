@@ -14,4 +14,9 @@
         <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="downloads" constraintName="fk_downloads_item_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item"/>
         <addForeignKeyConstraint baseColumnNames="session_id" baseTableName="downloads" constraintName="fk_downloads_session_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="session_table"/>
     </changeSet>
+    <changeSet author="jiwalker" id="add_download_problem_flag">
+        <addColumn tableName="downloads">
+            <column name="problem" type="BIT" defaultValue="0" />
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

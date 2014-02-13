@@ -6,6 +6,7 @@ import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.coastalhazards.model.SessionItem;
+import gov.usgs.cida.coastalhazards.model.util.Download;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.File;
@@ -168,11 +169,12 @@ public class DownloadUtility {
     /**
      *
      * @param stagingDir
-     * @return
+     * @return Download populates the download item with everything but itemId
      * @throws java.io.IOException
      */
-    public static File zipStagingAreaForDownload(File stagingDir) throws ConcurrentModificationException, IOException {
+    public static Download zipStagingAreaForDownload(File stagingDir) throws ConcurrentModificationException, IOException {
         lock(stagingDir);
+        Download download = new Download();
         File zipFile = null;
         ZipOutputStream zipOutputStream = null;
         try {
@@ -181,6 +183,9 @@ public class DownloadUtility {
             zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile), Charset.defaultCharset());
             for (File file : files) {
                 if (file.isFile()) {
+                    if (MISSING_FILE.equals(file.getName())) {
+                        download.setProblem(true);
+                    }
                     FileInputStream fis = null;
                     try {
                         fis = new FileInputStream(file);
@@ -198,8 +203,8 @@ public class DownloadUtility {
             IOUtils.closeQuietly(zipOutputStream);
             unlock(stagingDir);
         }
-
-        return zipFile;
+        download.setPersistanceURI(zipFile.toURI().toString());
+        return download;
     }
     
     public static File getPersistedZipFile(String stagingUUID) throws FileNotFoundException {
