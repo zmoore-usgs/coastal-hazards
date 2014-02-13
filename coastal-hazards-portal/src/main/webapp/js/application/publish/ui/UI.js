@@ -156,7 +156,7 @@ CCH.Objects.UI = function () {
     };
 
     me.enableNewItemForm = function () {
-        var gsBaseUrl = CCH.CONFIG.publicUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/';
+        var gsBaseUrl = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/';
         $itemType.val('data');
         $titleFullTextArea.removeAttr('disabled');
         $titleMediumTextArea.removeAttr('disabled');
@@ -1603,7 +1603,7 @@ CCH.Objects.UI = function () {
             sourceWfs = $srcWfsServiceInput.val().indexOf('geoserver') !== -1 ? 'http://geoserver/wfs' :  $srcWfsServiceInput.val(),
             successCallback = function (responseObject) {
                 var responseText = responseObject.responseText,
-                    baseUrl = CCH.CONFIG.publicUrl,
+                    baseUrl = CCH.CONFIG.contextPath,
                     baseService = baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/',
                     wfsServiceVal = baseService + 'wfs',
                     wmsServiceVal = baseService + 'wms';
@@ -1914,7 +1914,7 @@ CCH.Objects.UI = function () {
                     getWFSCaps(test[0], test[1]);
                 } else {
                     $.ajax({
-                        'url' : CCH.CONFIG.publicUrl + serverData.proxy + '/rest/services/' + namespace,
+                        'url' : CCH.CONFIG.contextPath + serverData.proxy + '/rest/services/' + namespace,
                         'data' : {
                             'f' : 'pjson'
                         },
@@ -2220,7 +2220,7 @@ CCH.Objects.UI = function () {
                                     $metadataDropdownList.append($li);
 
                                     $a.on('click', function(evt) {
-                                        var endpoint = CCH.CONFIG.publicUrl;
+                                        var endpoint = CCH.CONFIG.contextPath;
                                         endpoint += '/csw/?';
                                         endpoint += 'service=CSW';
                                         endpoint += '&request=GetRecordById';
