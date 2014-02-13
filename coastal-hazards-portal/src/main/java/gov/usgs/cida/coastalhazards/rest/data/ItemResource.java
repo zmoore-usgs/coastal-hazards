@@ -158,6 +158,12 @@ public class ItemResource {
         return response;
     }
     
+    /**
+     * Run the cycle check before attempting POST or PUT to verify item would not introduce cycle
+     * @param parentId aggregation item to check
+     * @param childId child item being added to parent item
+     * @return JSON response with true or false
+     */
     @GET
     @Path("cycle/{parentId}/{childId}")
     public Response checkForCycle(@PathParam("parentId") String parentId, @PathParam("childId") String childId) {

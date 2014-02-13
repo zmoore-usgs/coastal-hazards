@@ -9,7 +9,6 @@ import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.jpa.SessionManager;
 import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.coastalhazards.model.util.Download;
-import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,7 +20,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 /**
  *
