@@ -47,18 +47,22 @@ CCH.Objects.UI = function (args) {
                 });
                 insertLegendAtIndex(featureLegend, index);
             } else {
+                var wmsService = dataItem.services.find(function(svc) {
+                    return svc.type === 'proxy_wms'
+                });
+                
                 // - The legend builder is going to need the actual data from the shorelines layer
                 // 
                 // - Using the wmsService.layers info for a WMS request because that's properly
                 // formatted to go into this request. The wfsService has the fully qualified namespace
                 // which borks the WFS request
                 CCH.ows.getFilteredFeature({
-                    layerName : dataItem.wmsService.layers,
+                    layerName : wmsService.serviceParameter,
                     propertyArray : [dataItem.attr],
-                    success : [
+                    callbacks : {
+                        success : [
                         function (data) {
-                            var gmlReader = new OpenLayers.Format.GML.v3(),
-                                features = gmlReader.read(data);
+                            var features = data;
                             featureLegend = CCH.ui.buildLegend({
                                 type: dataItem.type,
                                 attr: dataItem.attr,
@@ -74,6 +78,7 @@ CCH.Objects.UI = function (args) {
                             CCH.ui.removeLegendContainer();
                         }
                     ]
+                    }
                 });
             }
         } else if (dataItem.type === 'storms') {

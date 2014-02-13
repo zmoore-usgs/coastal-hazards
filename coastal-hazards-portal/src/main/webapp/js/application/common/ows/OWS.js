@@ -2,7 +2,9 @@ var CCH = CCH || {};
 CCH.Objects.OWS = function() {
     CCH.LOG.info('OWS.js::constructor: OWS class is initializing.');
     var me = (this === window) ? {} : this;
-
+    
+    me.featureTypeDescription = {};
+    
     CCH.LOG.debug('OWS.js::constructor: OWS class initialized.');
     return $.extend(me, {
         init: function () {
@@ -350,9 +352,9 @@ CCH.Objects.OWS = function() {
             var scope = args.scope;
             var propertyArray = args.propertyArray;
             var callbacks = args.callbacks;
-            var proxyEndpoint = me.servers['cida-geoserver'].endpoints.proxy;
+            var proxyEndpoint = CCH.CONFIG.data.sources['cida-geoserver'].proxy;
 
-            var url = proxyEndpoint + layerPrefix + '/wfs?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&typeName=' + layerName + '&propertyName=';
+            var url = CCH.CONFIG.contextPath + proxyEndpoint + layerPrefix + '/wfs?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&typeName=' + layerName + '&propertyName=';
             url += (propertyArray || []).join(',');
 
             $.ajax(url, {
