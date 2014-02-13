@@ -1962,8 +1962,11 @@ CCH.Objects.UI = function () {
                             success : [function (args) {
                                 var feature = args.wfsCapabilities.featureTypeList.featureTypes.find(function(f) {
                                     return f.prefix.toLowerCase().indexOf(namespace.toLowerCase()) !== -1;
-                                });
-                                $srcWfsServiceParamInput.val(feature.prefix.replace('/', '_') + ':' + feature.name);
+                                }),
+                                renamedFeature = feature.prefix.replace('/', '_') + ':' + feature.name;
+                                
+                                $srcWfsServiceInput.val($srcWfsServiceInput.val() + '/MapServer/WFSServer');
+                                $srcWfsServiceParamInput.val(renamedFeature);
                             }],
                             error : [function (err) {
                                 me.displayModal({
@@ -2011,9 +2014,8 @@ CCH.Objects.UI = function () {
                         }]
                     }
                 })
-            } else if (srcWmsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1 ||
-                    srcWmsVal.indexOf(CCH.CONFIG.data.sources['marine-arcserver'].endpoint !== -1)) {
-                var serverName = srcWmsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1 ? 'stpete-arcserver' : 'marine-arcserver',
+            } else if (srcWmsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1) {
+                var serverName = 'stpete-arcserver',
                     serverData = CCH.CONFIG.data.sources[serverName],
                     namespace = srcWmsVal.substring(serverData.endpoint.length);
                     
@@ -2021,6 +2023,41 @@ CCH.Objects.UI = function () {
                     namespace = namespace.split('/')[2] + '/' + namespace.split('/')[3];
                 }
                     
+                CCH.ows.getWMSCapabilities({
+                    'server': serverName,
+                    'namespace': namespace,
+                    'callbacks' : {
+                        success : [function () {
+                            CCH.ows.servers[serverName].data.wms.capabilities.object.capability.layers.each(function (layer) {
+                                $li = $('<li />');
+                                $a = $('<a />').attr({
+                                    'href' : '#',
+                                    'onclick' : 'return false;',
+                                }).on('click', function () {
+                                    $srcWmsServiceParamInput.val(layer.name);
+                                }).html(layer.name);
+                                $li.append($a);
+                                $contentList.append($li)
+                            });
+                            me.createHelpPopover($contentList, $srcWmsServiceParamInput);
+                        }],
+                        error : [function (err) {
+                            me.displayModal({
+                                title : 'Could not contact ' + srcWmsVal,
+                                body : 'There was a problem retrieving data.'
+                            });
+                        }]
+                    }
+                });
+            } else if (srcWmsVal.indexOf(CCH.CONFIG.data.sources['marine-arcserver'].endpoint) !== -1) {
+                var serverName = 'marine-arcserver',
+                    serverData = CCH.CONFIG.data.sources[serverName],
+                    namespace = srcWmsVal.substring(serverData.endpoint.length);
+                    
+                if (namespace.indexOf('WMSServer') !== -1) {
+                    namespace = namespace.split('/')[2] + '/' + namespace.split('/')[3];
+                }
+
                 CCH.ows.getWMSCapabilities({
                     'server': serverName,
                     'namespace': namespace,
