@@ -53,7 +53,7 @@ CCH.Objects.UI = function (args) {
                     itemById.addAtIndex = addIndex;
                     me.bucket.add({
                         item : itemById,
-                        visibility : sessionItem.visibility
+                        visibility : sessionItem.visible
                     });
                     me.bucket.bucket = me.bucket.getItems().sortBy(function (i) {
                         return i.addAtIndex;

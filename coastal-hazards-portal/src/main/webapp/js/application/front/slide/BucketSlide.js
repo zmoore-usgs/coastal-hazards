@@ -170,11 +170,11 @@ CCH.Objects.BucketSlide = function (args) {
                 layer = CCH.map.getLayersByName(layerName);
                 if (layer.length) {
                     layer = layer[0];
-                    layer.setVisibility(sessionItem.visibility);
+                    layer.setVisibility(sessionItem.visible);
                     layers.push(layer);
                 } else {
                     layers = layers.concat(item.showLayer({
-                        visible : sessionItem.visibility || false
+                        visible : sessionItem.visible || false
                     }));
                 }
             });
@@ -389,6 +389,8 @@ CCH.Objects.BucketSlide = function (args) {
                     id : $card.data('id')
                 });
             });
+            CCH.session.getSesstion().items = [];
+            CCH.session.update();
         }
 
         return $card;
@@ -589,7 +591,7 @@ CCH.Objects.BucketSlide = function (args) {
                     item.hideLayer();
                     CCH.session.update({
                         itemid : item.id,
-                        visibility : false
+                        visible : false
                     });
                     me.layerAppendRemoveHandler(
                         {
@@ -600,12 +602,12 @@ CCH.Objects.BucketSlide = function (args) {
                             itemid : id
                         }}
                     );
-                    CCH.session.getItemById(item.id).visibility = false;
+                    CCH.session.getItemById(item.id).visible = false;
                 } else {
                     item.showLayer();
                     CCH.session.update({
                         itemid : item.id,
-                        visibility : true
+                        visible : true
                     });
                     me.layerAppendRemoveHandler({
                         namespace: 'show.layer.map'
@@ -616,7 +618,7 @@ CCH.Objects.BucketSlide = function (args) {
                                 itemid: id
                             }
                         });
-                    CCH.session.getItemById(item.id).visibility = true;
+                    CCH.session.getItemById(item.id).visible = true;
                 }
 
                 // Regular layers will properly update a session, but because 
@@ -625,7 +627,7 @@ CCH.Objects.BucketSlide = function (args) {
                 if (isAggregation) {
                     CCH.session.update({
                         itemid : id,
-                        visibility : !isLayerInMap
+                        visible : !isLayerInMap
                     });
                 }
 

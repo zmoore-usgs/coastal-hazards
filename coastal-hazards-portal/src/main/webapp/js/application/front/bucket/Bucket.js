@@ -126,7 +126,7 @@ CCH.Objects.Bucket = function (args) {
                 // Add the item to the session
                 CCH.session.addItem({
                     item : item,
-                    visibility : visibility
+                    visible : visibility
                 });
                 
                 // Increase the bucket count visually
