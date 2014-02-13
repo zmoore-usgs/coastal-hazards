@@ -247,12 +247,12 @@ CCH.Objects.OWS = function() {
                 url;
         
             if (server === 'cida-geoserver' && namespace !== 'ows') {
-                url = CCH.CONFIG.publicUrl + me.servers[server].endpoints.wfsGetCapsUrl;
+                url = CCH.CONFIG.contextPath + me.servers[server].endpoints.wfsGetCapsUrl;
                 url = url.add(namespace + '/', url.indexOf('ows'));
             } else if (server === 'stpete-arcserver') {
-                url = CCH.CONFIG.publicUrl + me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WFSServer?service=wfs&version=1.1.0&request=GetCapabilities';
+                url = CCH.CONFIG.contextPath + me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WFSServer?service=wfs&version=1.1.0&request=GetCapabilities';
             } else if ( server === 'marine-arcserver') {
-                url = CCH.CONFIG.publicUrl + me.servers[server].endpoints.proxy + '/' + namespace + '/MapServer/WFSServer?service=wfs&version=1.1.0&request=GetCapabilities';
+                url = CCH.CONFIG.contextPath + me.servers[server].endpoints.proxy + namespace + '/MapServer/WFSServer?service=wfs&version=1.1.0&request=GetCapabilities';
             }
             
             CCH.LOG.debug('OWS.js::getWMSCapabilities: A request is being made for WMS GetCapabilities for the namespace: ' + namespace);
@@ -299,12 +299,12 @@ CCH.Objects.OWS = function() {
 
             if (!url) {
                 if (server === 'cida-geoserver' && namespace !== 'ows') {
-                    url = CCH.CONFIG.publicUrl + me.servers[server].endpoints.wmsGetCapsUrl;
+                    url = CCH.CONFIG.contextPath + me.servers[server].endpoints.wmsGetCapsUrl;
                     url = url.add(namespace + '/', url.indexOf('ows'));
                 } else if (server === 'stpete-arcserver') {
-                    url = CCH.CONFIG.publicUrl + me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WMSServer?service=wms&version=1.3.0&request=GetCapabilities';
+                    url = CCH.CONFIG.contextPath + me.servers[server].endpoints.proxy + '/services/' + namespace + '/MapServer/WMSServer?service=wms&version=1.3.0&request=GetCapabilities';
                 } else if ( server === 'marine-arcserver') {
-                    url = CCH.CONFIG.publicUrl + me.servers[server].endpoints.proxy + '/' + namespace + '/MapServer/WMSServer?service=wms&version=1.3.0&request=GetCapabilities';
+                    url = CCH.CONFIG.contextPath + me.servers[server].endpoints.proxy + namespace + '/MapServer/WMSServer?service=wms&version=1.3.0&request=GetCapabilities';
                 }
             }
 
