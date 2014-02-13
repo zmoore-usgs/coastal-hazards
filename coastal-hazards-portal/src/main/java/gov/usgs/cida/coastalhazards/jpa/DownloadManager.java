@@ -12,14 +12,15 @@ import javax.persistence.Query;
  */
 public class DownloadManager {
 
-    private static final String HQL_SELECT = "select d from Download d where d.itemId = :id or d.sessionId = :id";
+    private static final String HQL_SELECT_BY_ID = "select d from Download d where d.itemId = :id or d.sessionId = :id";
+    private static final String HQL_SELECT_ALL = "select d from Download d";
 
     public boolean isPersisted(String id) {
         boolean isPersisted = false;
 
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         try {
-            Query selectQuery = em.createQuery(HQL_SELECT);
+            Query selectQuery = em.createQuery(HQL_SELECT_BY_ID);
             selectQuery.setParameter("id", id);
             List<Download> resultList = selectQuery.getResultList();
             if (!resultList.isEmpty()) {
@@ -36,7 +37,7 @@ public class DownloadManager {
 
         EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
         try {
-            Query selectQuery = em.createQuery(HQL_SELECT);
+            Query selectQuery = em.createQuery(HQL_SELECT_BY_ID);
             selectQuery.setParameter("id", id);
             List<Download> resultList = selectQuery.getResultList();
             if (!resultList.isEmpty()) {
@@ -78,5 +79,17 @@ public class DownloadManager {
         } finally {
             JPAHelper.close(em);
         }
+    }
+    
+    public List<Download> getAllStagedDownloads() {
+        List<Download> resultList;
+        EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
+        try {
+            Query selectQuery = em.createQuery(HQL_SELECT_ALL);
+            resultList = selectQuery.getResultList();
+        } finally {
+            JPAHelper.close(em);
+        }
+        return resultList;
     }
 }

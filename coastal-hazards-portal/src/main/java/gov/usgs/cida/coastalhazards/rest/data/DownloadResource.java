@@ -1,8 +1,10 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
+import com.google.gson.Gson;
 import com.sun.jersey.api.NotFoundException;
 import gov.usgs.cida.coastalhazards.download.DownloadUtility;
 import gov.usgs.cida.coastalhazards.exception.DownloadStagingUnsuccessfulException;
+import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.DownloadManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
@@ -15,10 +17,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -55,7 +60,7 @@ public class DownloadResource {
                         Download persistedDownload = manager.load(id);
                         // if we switch this to external file server or S3,
                         // redirect to this uri as a url
-                        zipFile = new File(new URI(persistedDownload.getPersistanceURI()));
+                        zipFile = persistedDownload.fetchZipFile();
                         if (zipFile == null || !zipFile.exists()) {
                             throw new FileNotFoundException();
                         }
@@ -64,12 +69,15 @@ public class DownloadResource {
                     }
                 } catch (FileNotFoundException | URISyntaxException ex) {
                     File stagingDir = DownloadUtility.createDownloadStagingArea();
-                    boolean stageItemDownload = DownloadUtility.stageItemDownload(item, stagingDir);
-                    if (stageItemDownload) {
-                        zipFile = DownloadUtility.zipStagingAreaForDownload(stagingDir);
-                        Download download = new Download();
+                    boolean staged = DownloadUtility.stageItemDownload(item, stagingDir);
+                    if (staged) {
+                        Download download = DownloadUtility.zipStagingAreaForDownload(stagingDir);
                         download.setItemId(id);
-                        download.setPersistanceURI(zipFile.toURI().toString());
+                        try {
+                            zipFile = download.fetchZipFile();
+                        } catch (URISyntaxException ex2) {
+                            throw new DownloadStagingUnsuccessfulException();
+                        }
                         manager.save(download);
                     } else {
                         throw new DownloadStagingUnsuccessfulException();
@@ -116,10 +124,13 @@ public class DownloadResource {
                 File stagingDir = DownloadUtility.createDownloadStagingArea();
                 boolean staged = DownloadUtility.stageSessionDownload(session, stagingDir);
                 if (staged) {
-                    zipFile = DownloadUtility.zipStagingAreaForDownload(stagingDir);
-                    Download download = new Download();
+                    Download download = DownloadUtility.zipStagingAreaForDownload(stagingDir);
                     download.setSessionId(id);
-                    download.setPersistanceURI(zipFile.toURI().toString());
+                    try {
+                        zipFile = download.fetchZipFile();
+                    } catch (URISyntaxException ex2) {
+                        throw new DownloadStagingUnsuccessfulException();
+                    }
                     manager.save(download);
                 } else {
                     throw new DownloadStagingUnsuccessfulException();
@@ -129,5 +140,15 @@ public class DownloadResource {
             response = Response.ok(zipFile, "application/zip").header("Content-Disposition",  contentDisposition).build();
         }
         return response;
+    }
+    
+    @GET
+    @Produces("application/json")
+    public Response displayStagedItems() {
+        DownloadManager downloadManager = new DownloadManager();
+        List<Download> allStagedDownloads = downloadManager.getAllStagedDownloads();
+        Gson serializer = GsonUtil.getDefault();
+        String downloadJson = serializer.toJson(allStagedDownloads, ArrayList.class);
+        return Response.ok(downloadJson, MediaType.APPLICATION_JSON_TYPE).build();
     }
 }
