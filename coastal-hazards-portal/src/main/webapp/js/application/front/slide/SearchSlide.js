@@ -354,6 +354,9 @@ CCH.Objects.SearchSlide = function (args) {
                     }
                 } else {
                     $slideContainer.empty();
+                    $resultsFoundsContainer.
+                            removeClass('hidden').
+                            html('0 Locations Found');
                 }
                 break;
 
@@ -395,13 +398,14 @@ CCH.Objects.SearchSlide = function (args) {
                                 $(evt.target).popover('hide');
                             }, CCH.CONFIG.ui['tooltip-prevalence']);
                         });
-
+                    me.FILTER_RESULTS_BUTTON.show();
                     me.createPaging({
                         container : $pagingContainer,
                         pageCount : pageCount
                     });
                 } else {
                     $slideContainer.empty();
+                    me.FILTER_RESULTS_BUTTON.hide();
                 }
                 break;
             }
@@ -413,7 +417,7 @@ CCH.Objects.SearchSlide = function (args) {
             }
 
             // Check if I have more than one product or location to display
-            if (locationSize + productsSize > 0) {
+//            if (locationSize + productsSize > 0) {
                 // If I am closed, open me up. Resizing happens after I 
                 // am open because otherwise some of my elements don't have 
                 // a height. Otherwise, just resize me because I may have had 
@@ -423,7 +427,7 @@ CCH.Objects.SearchSlide = function (args) {
                 } else {
                     me.resize();
                 }
-            }
+//            }
         }
     };
 
