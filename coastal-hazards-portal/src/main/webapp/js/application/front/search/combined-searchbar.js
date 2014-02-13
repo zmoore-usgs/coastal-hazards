@@ -166,7 +166,8 @@ CCH.Objects.CombinedSearch = function (args) {
             spatialAndItemType = 'all',
             allSpatialType = 'location',
             allProductsType = 'products',
-            itemsArray = ['storms', 'vulnerability', 'historical'],
+            // extreme storms, shoreline change, sea level rise
+            itemsArray = ['storms', 'historical', 'vulnerability'],
             types = [],
             count = args.count || 20;
         
