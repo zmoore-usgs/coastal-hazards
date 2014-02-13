@@ -175,7 +175,7 @@ CCH.Objects.OWS = function() {
                         identifier: "url",
                         data: {
                             literalData: {
-                                value: CCH.CONFIG.publicUrl + '/data/item/' + id
+                                value: CCH.CONFIG.contextPath + '/data/item/' + id
                             }
                         }
                     }],
@@ -212,7 +212,7 @@ CCH.Objects.OWS = function() {
                 error: []
             },
                 layername = args.layerName || '';
-            $.ajax(CCH.CONFIG.publicUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?', {
+            $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?', {
                 data: {
                     request: 'DescribeFeaturetype',
                     service: 'WFS',

@@ -2052,10 +2052,10 @@ CCH.Objects.UI = function () {
             } else if (srcWmsVal.indexOf(CCH.CONFIG.data.sources['marine-arcserver'].endpoint) !== -1) {
                 var serverName = 'marine-arcserver',
                     serverData = CCH.CONFIG.data.sources[serverName],
-                    namespace = srcWmsVal.substring(serverData.endpoint.length);
+                    namespace = srcWmsVal.substring(serverData.endpoint.length + 1);
                     
                 if (namespace.indexOf('WMSServer') !== -1) {
-                    namespace = namespace.split('/')[2] + '/' + namespace.split('/')[3];
+                    namespace = namespace.split('/')[0] + '/' + namespace.split('/')[1];
                 }
 
                 CCH.ows.getWMSCapabilities({
