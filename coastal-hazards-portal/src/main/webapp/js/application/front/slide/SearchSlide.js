@@ -121,6 +121,7 @@ CCH.Objects.SearchSlide = function (args) {
     };
 
     me.close = function (args) {
+        args = args || {};
         if (!me.isClosed && !me.isClosing) {
             $(window).trigger('cch.slide.search.closing');
 
@@ -623,7 +624,10 @@ CCH.Objects.SearchSlide = function (args) {
                 'src' : CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id,
                 'data-content' : 'Explore this dataset'
             })).on('click', function () {
-                $exploreControl.trigger('click');
+                $(window).trigger('cch.slide.search.button.click.explore', {
+                        'id' : id
+                });
+                me.close();
             }).error(function () {
                 $(this).parent().css('display', 'none');
                 $descriptionContainer.parent().parent().css('width', '100%');
