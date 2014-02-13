@@ -377,7 +377,8 @@ CCH.Objects.Card = function (args) {
                 $moreInfoSpan = $('<span />').append($moreInfoLink),
                 $zoomToBadge = $('<span />').
                     addClass('badge zoom-to-badge').
-                    html('Zoom To');
+                    html('Zoom To'),
+                isItemInBucket = CCH.ui.bucket.getItemById(me.id) !== undefined;
 
             // My container starts out open so I immediately add that class to it
             container.addClass('open');
@@ -411,7 +412,14 @@ CCH.Objects.Card = function (args) {
             $bucketButton.attr({
                 'title' : 'Add This Dataset To Your Bucket'
             });
-
+            
+            // Item may already be in bucket by the time I make this card
+            if (isItemInBucket) {
+                $bucketButton
+                    .addClass('disabled')
+                    .find('> img').attr('src', 'images/cards/add-bucket-disabled.svg');
+            }
+            
             $zoomToBadge.on('click', function () {
                 $(window).trigger('cch.card.click.zoomto');
                 CCH.map.zoomToBoundingBox({
