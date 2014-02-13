@@ -62,39 +62,48 @@ CCH.Objects.Accordion = function (args) {
             index = args.index,
             $scrollContainer = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID),
             child,
-            bellow;
+            bellow,
+            cardExists;
+            
+        if ($('#' + me.CONTAINER_ID).find('.panel-collapse').length === 0) {
+            cardExists = false;
+        } else {
+            cardExists = $('#' + me.CONTAINER_ID).find('.panel-collapse').toArray().find(function (card) {
+                return $(card).attr('id').substring(15) === item.id;
+            }).length !== 0 ;
+        }
 
         // If we are passed a product, that means we were not passed a card
-        if (item) {
+        if (item && !cardExists) {
             card = new CCH.Objects.Card({
                 item : item,
                 initHide : false
             });
-        }
 
-        // Using the card, create a container from it
-        bellow = me.createBellow({
-            card : card
-        });
+            // Using the card, create a container from it
+            bellow = me.createBellow({
+                card : card
+            });
 
-        // I want to insert the card into the accordion at a specified index if 
-        // one was specified. This fixes a race condition in the pulling of the 
-        // data for these cards 
-        if (index === undefined || $scrollContainer.children().length === 0) {
-            $scrollContainer.append(bellow);
-        } else {
-            if (index === 0) {
-                $scrollContainer.prepend(bellow);
+            // I want to insert the card into the accordion at a specified index if 
+            // one was specified. This fixes a race condition in the pulling of the 
+            // data for these cards 
+            if (index === undefined || $scrollContainer.children().length === 0) {
+                $scrollContainer.append(bellow);
             } else {
-                child =  $scrollContainer.children().get(index - 1);
-                if (child) {
-                    bellow.insertAfter(child);
+                if (index === 0) {
+                    $scrollContainer.prepend(bellow);
                 } else {
-                    $scrollContainer.append(bellow);
+                    child =  $scrollContainer.children().get(index - 1);
+                    if (child) {
+                        bellow.insertAfter(child);
+                    } else {
+                        $scrollContainer.append(bellow);
+                    }
                 }
             }
         }
-
+        
         return bellow;
     };
 
@@ -276,7 +285,7 @@ CCH.Objects.Accordion = function (args) {
             // I have to load the item since it doesn't yet live in the top level.
             // Once I load it, add it to the accordion
             me.load({
-                'id' : path[0]
+                'id' : id
             });
         }
 
