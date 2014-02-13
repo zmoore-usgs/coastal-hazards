@@ -1876,9 +1876,8 @@ CCH.Objects.UI = function () {
                         }]
                     }
                 });
-            } else if (srcWfsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1 ||
-                    srcWfsVal.indexOf(CCH.CONFIG.data.sources['marine-arcserver'].endpoint !== -1)) {
-                var serverName = srcWfsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1 ? 'stpete-arcserver' : 'marine-arcserver',
+            } else if (srcWfsVal.indexOf(CCH.CONFIG.data.sources['stpete-arcserver'].endpoint) !== -1) {
+                var serverName = 'stpete-arcserver',
                     server = CCH.CONFIG.data.sources[serverName],
                     serverData = CCH.CONFIG.data.sources[serverName],
                     namespace = srcWfsVal.substring(serverData.endpoint.length + 1),
@@ -1950,6 +1949,30 @@ CCH.Objects.UI = function () {
                         }
                     });
                 }
+            } else if (srcWfsVal.indexOf(CCH.CONFIG.data.sources['marine-arcserver'].endpoint) !== -1) {
+                var serverName = 'marine-arcserver',
+                    serverData = CCH.CONFIG.data.sources[serverName],
+                    namespace = srcWfsVal.substring(serverData.endpoint.length + 1),
+                    url = $srcWfsServiceInput.val(),
+                    nsSvc = url.substring(url.indexOf('cmgp') + 5);
+                    CCH.ows.getWFSCapabilities({
+                        'server': serverName,
+                        'namespace': nsSvc,
+                        'callbacks' : {
+                            success : [function (args) {
+                                var feature = args.wfsCapabilities.featureTypeList.featureTypes.find(function(f) {
+                                    return f.prefix.toLowerCase().indexOf(namespace.toLowerCase()) !== -1;
+                                });
+                                $srcWfsServiceParamInput.val(feature.prefix.replace('/', '_') + ':' + feature.name);
+                            }],
+                            error : [function (err) {
+                                me.displayModal({
+                                    title : 'Could not contact ' + srcWfsVal,
+                                    body : 'There was a problem retrieving data.'
+                                })
+                            }]
+                        }
+                    });
             }
         }
     });
