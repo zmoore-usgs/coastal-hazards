@@ -2220,7 +2220,7 @@ CCH.Objects.UI = function () {
                                     $metadataDropdownList.append($li);
 
                                     $a.on('click', function(evt) {
-                                        var endpoint = CCH.CONFIG.contextPath;
+                                        var endpoint = CCH.CONFIG.publicUrl;
                                         endpoint += '/csw/?';
                                         endpoint += 'service=CSW';
                                         endpoint += '&request=GetRecordById';
