@@ -77,6 +77,10 @@ CCH.Objects.Card = function (args) {
             complete : complete
         });
 
+        $(window).trigger('card-display-toggle', {
+            'display' : true
+        });
+
         if (me.parent) {
             me.parent.hideLayer();
         }
