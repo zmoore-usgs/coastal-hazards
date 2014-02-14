@@ -45,8 +45,8 @@ CCH.Objects.UI = function (args) {
                     attr: dataItem.attr,
                     sld: sld
                 });
-                insertLegendAtIndex(featureLegend, index);
-            } else {
+                    insertLegendAtIndex(featureLegend, index);
+                } else {
                 var wmsService = dataItem.services.find(function(svc) {
                     return svc.type === 'proxy_wms'
                 });
@@ -69,7 +69,32 @@ CCH.Objects.UI = function (args) {
                                 sld: sld,
                                 features: features
                             });
-                            insertLegendAtIndex(featureLegend, index);
+                            if ($('.cch-ui-legend-table').length === 0) {
+                                insertLegendAtIndex(featureLegend, index);
+                            } else {
+                                var $table = $('.cch-ui-legend-table'),
+                                    $rows = $table.find('tbody > tr');
+
+                                featureLegend.find('tr').each(function (ind, row) {
+                                    var foundRow = $rows.toArray().find(function(r) {
+                                        return $(r).attr('data-attr') === $(row).attr('data-attr');
+                                    });
+
+                                    if (!foundRow) {
+                                        $rows.push(row)
+                                    }
+                                });
+
+                                $table.empty();
+                                var sortedRows = $rows.toArray().sortBy(function (row) {
+                                    return parseInt($(row).find('.cch-ui-legend-table-body-div-year').html());
+                                }),
+                                    $thead = $('<thead />').append($('<tr />').append(
+                                        $('<td />'),
+                                        $('<td />').html('Year')
+                                    ))
+                                $table.append($thead, $('<tbody />').append(sortedRows.reverse()));
+                            }
                         }
                     ],
                     error : [
@@ -109,9 +134,6 @@ CCH.Objects.UI = function (args) {
                 $legendContainer.find('caption').html(item.summary.full.title)
             }
         }
-        
-        
-        
     };
 
     me.buildLegend = function (args) {
@@ -139,7 +161,6 @@ CCH.Objects.UI = function (args) {
             legendTableBodyTr,
             legendTableBodyTdColor,
             legendTableBodyTdRange,
-            legendTableBodyTdButton,
             legendTableBodyTdYear,
             valueContainer,
             range = function (ub, lb) {
@@ -174,27 +195,42 @@ CCH.Objects.UI = function (args) {
                     );
                 }
             },
-            layer,
-            ns,
-            name,
-            ratesAttributes,
-            viewButton,
             year,
             years,
             yearToColor,
             yInd,
             createYearLookupMap = function (y) {
-                return y < 10 ? '0' + y : String + y;
+                return y < 10 ? '0' + y : String() + y;
             },
+            attr = args.attr,
             category;
-
+        
         if (type === 'historical') {
-            ratesAttributes = ["LRR", "WLR", "SCE", "NSM", "EPR"];
-            if (ratesAttributes.indexOf(args.attr.toUpperCase()) !== -1) {
+            if (["LRR", "WLR", "SCE", "NSM", "EPR"].indexOf(attr.toUpperCase()) !== -1) {
                 buildVanillaLegend();
+                $legendDiv.append($legendTable.append(
+                    $legendTableCaption,
+                    $legendTableHead,
+                    $legendTableBody
+                ));
             } else {
+                
+                var $testTable = $('.cch-ui-legend-table[data-attr="' + attr + '"]');
+                if ($testTable.length !== 0) {
+                    $legendTable = $testTable;
+                    $legendDiv.empty();
+                }
+                $legendDiv.append($legendTable);
+                $legendTableCaption = $legendTable.find('caption');
+                $legendTableCaption.remove();
+                $legendTableCaption.html('');
+                
                 years = args.features.map(function (f) {
-                    return f.data[CCH.CONFIG.item.attr].split('/')[2];
+                    if (CCH.CONFIG.item.attr) {
+                        return f.data[CCH.CONFIG.item.attr].split('/')[2];
+                    } else {
+                        return Object.values(f.data)[0].split('/')[2];
+                    }
                 }).unique().sort().reverse();
 
                 // Create a proper map to quickly look years up against
@@ -211,7 +247,8 @@ CCH.Objects.UI = function (args) {
                 }
 
                 for (yInd = 0; yInd < years.length; yInd++) {
-                    legendTableBodyTr = $('<tr />');
+                    var yr = years[yInd].substr(2);
+                    legendTableBodyTr = $('<tr />').attr('data-attr', yr);
                     legendTableBodyTdColor = $('<td />').
                             addClass('cch-ui-legend-table-body-td-color').
                             append(
@@ -219,84 +256,18 @@ CCH.Objects.UI = function (args) {
                                 addClass('cch-ui-legend-table-body-div-color').
                                 css('background-color', yearToColor[years[yInd].substr(2)]).html('&nbsp;')
                         );
-                    legendTableBodyTdButton = $('<td />');
                     valueContainer = $('<div />').attr({'id': 'cch-ui-legend-table-body-div-year-' + years[yInd]}).addClass('cch-ui-legend-table-body-div-year').html(years[yInd]);
-
-                    // We don't really need visibility toggles when there's only one row
-                    if (years.length > 1) {
-                        $legendDiv.addClass('btn-group').attr({'data-toggle': 'buttons-radio'});
-                        viewButton = $('<button />').attr({
-                            'cch-year': years[yInd],
-                            'type': 'button'
-                        }).
-                            addClass('btn btn-sm pull-right cch-ui-legend-table-body-div-year-toggle').
-                            append($('<i />').addClass('glyphicon glyphicon-eye-open')).
-                            on({
-                                'click': function (evt) {
-                                    // Bootstrap radio toggle buttons don't let you un-toggle 
-                                    // a button that's currently toggled so if a user presses an
-                                    // active button, that means we should pop it up and 
-                                    // un-highlight everything
-                                    var tgt = $(evt.target);
-                                    if (tgt.hasClass('active')) {
-                                        tgt.removeClass('active');
-                                        evt.stopImmediatePropagation();
-                                    }
-
-                                    setTimeout(function() {
-                                        years = $('.cch-ui-legend-table-body-div-year-toggle').map(function (idx, btn) {
-                                            year = $(btn).attr('cch-year');
-                                            if ($(btn).hasClass('active')) {
-                                                return year;
-                                            } 
-                                            return null;
-                                        });
-
-                                        layer = CCH.CONFIG.map.getLayersBy('type', 'cch-layer-dotted')[0];
-                                        if (layer) {
-                                            CCH.CONFIG.map.removeLayer(layer);
-                                        }
-
-                                        ns = CCH.CONFIG.item.wmsService.layers.split(':')[0];
-                                        name = CCH.CONFIG.item.wmsService.layers.split(':')[1];
-                                        layer = new OpenLayers.Layer.Vector("WFS", {
-                                            strategies: [new OpenLayers.Strategy.BBOX()],
-                                            protocol: new OpenLayers.Protocol.WFS({
-                                                url: CCH.CONFIG.contextPath + '/cidags/' + ns + '/wfs',
-                                                featureType: name
-                                            }),
-                                            styleMap: new OpenLayers.StyleMap({
-                                                strokeColor: "#000000",
-                                                strokeDashstyle: 'dot',
-                                                strokeWidth: 2,
-                                                strokeOpacity: 1
-                                            }),
-                                            filter: new OpenLayers.Filter.Logical({
-                                                type: OpenLayers.Filter.Logical.OR,
-                                                filters: years.map(function(idx, yr) {
-                                                    return new OpenLayers.Filter.Comparison({
-                                                        type: OpenLayers.Filter.Comparison.LIKE,
-                                                        property: CCH.CONFIG.item.attr,
-                                                        value: '*' + yr
-                                                    });
-                                                })
-                                            })
-                                        });
-                                        layer.type = 'cch-layer-dotted';
-                                        CCH.CONFIG.map.addLayer(layer);
-                                    }, 100);
-                                }
-                            });
-                        legendTableBodyTdButton.append(viewButton);
-                    }
-
                     legendTableBodyTdYear = $('<td />').addClass('cch-ui-legend-table-body-td-year').append(valueContainer);
-                    $legendTableBody.append(legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear, legendTableBodyTdButton));
+                    $legendTable.append(legendTableBodyTr.append(legendTableBodyTdColor, legendTableBodyTdYear));
                 }
             }
-
         } else if (type === 'storms') {
             buildVanillaLegend();
+            $legendDiv.append($legendTable.append(
+                $legendTableCaption,
+                $legendTableHead,
+                $legendTableBody
+            ));
         } else if (type === 'vulnerability') {
             if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(args.attr.toUpperCase()) !== -1) {
                 // Old school CVI
@@ -313,13 +284,13 @@ CCH.Objects.UI = function (args) {
                 // Bayesian
                 buildVanillaLegend();
             }
-        }
-
-        $legendDiv.append($legendTable.append(
-            $legendTableCaption,
-            $legendTableHead,
-            $legendTableBody
+            
+            $legendDiv.append($legendTable.append(
+                $legendTableCaption,
+                $legendTableHead,
+                $legendTableBody
             ));
+        }
 
         return $legendDiv;
     };
