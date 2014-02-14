@@ -95,6 +95,7 @@ html, body {
 
 #feature-identification-popup_contentDiv table tr > td:nth-child(2) > span {
     height: 50%;
+    border: 1px solid #CCC; 
 }
 #feature-identification-popup_contentDiv table tr > td:nth-child(3) {
     padding-left: 5px;

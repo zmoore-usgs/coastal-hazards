@@ -64,7 +64,9 @@ CCH.Objects.UI = function () {
         $wmsServerHelpButton = $form.find('#form-publish-item-service-source-wms-import-button-service-select'),
         $proxyWfsCheckButton = $form.find('#form-publish-item-service-proxy-wfs-import-button-check'),
         $proxyWmsCheckButton = $form.find('#form-publish-item-service-proxy-wms-import-button-check'),
-        $getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button');
+        $getWfsAttributesButton = $form.find('#form-publish-item-service-proxy-wfs-pull-attributes-button'),
+        $emphasisItemSpan = $form.find('.emphasis-item'),
+        $emphasisAggregationSpan = $form.find('.emphasis-aggregation');
 
     me.createHelpPopover = function ($content, $element) {
         $element.popover('destroy');
@@ -153,7 +155,8 @@ CCH.Objects.UI = function () {
         $childrenSortableList.empty();
         $metadataDropdownGroup.addClass('hidden');
         $itemImage.attr('src', '');
-        $('.emphasis-item').removeClass('enabled');
+        $emphasisItemSpan.removeClass('enabled');
+        $emphasisAggregationSpan.removeClass('enabled');
     };
 
     me.enableNewItemForm = function () {
@@ -200,7 +203,8 @@ CCH.Objects.UI = function () {
         $proxyWfsCheckButton.removeAttr('disabled');
         $proxyWmsCheckButton.removeAttr('disabled');
         $childrenSortableList.empty();
-        $('.emphasis-item').addClass('enabled');
+        $emphasisItemSpan.addClass('enabled');
+        $emphasisAggregationSpan.removeClass('enabled');
     };
 
     me.enableNewAggregationForm = function () {
@@ -233,7 +237,8 @@ CCH.Objects.UI = function () {
         $itemEnabledField.val('false');
         $keywordGroup.find('input').removeAttr('disabled');
         me.createSortableChildren();
-        $('.emphasis-item').removeClass('enabled');
+        $emphasisItemSpan.removeClass('enabled');
+        $emphasisAggregationSpan.addClass('enabled');
     };
 
     me.isBlank = function ($ele) {
@@ -941,6 +946,8 @@ CCH.Objects.UI = function () {
             $imageGenButton.removeAttr('disabled');
             
             if (type === 'aggregation' || type === 'uber') {
+                $emphasisAggregationSpan.addClass('enabled');
+                $emphasisItemSpan.removeClass('enabled');
                 // Populate children
                 me.createSortableChildren();
                 
@@ -991,8 +998,8 @@ CCH.Objects.UI = function () {
                 $uploaderDummy.empty().addClass('hidden');
                 $metadataDropdownGroup.addClass('hidden');
             } else {
-                $('.emphasis-aggregation').removeClass('enabled');
-                $('.emphasis-item').addClass('enabled');
+                $emphasisAggregationSpan.removeClass('enabled');
+                $emphasisItemSpan.addClass('enabled');
                 $childrenSortableList.empty();
 
                 // Fill out item type

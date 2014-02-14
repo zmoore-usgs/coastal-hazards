@@ -161,13 +161,13 @@
                             <%-- ITEM TITLE --%>
                             <div id="form-publish-info-item-title-full" class="row row-title">
                                 <div class="form-group">
-                                    <label for="form-publish-item-title-full">Title (Full)</label>
+                                    <label for="form-publish-item-title-full"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Title (Full)</label>
                                     <textarea class="form-control" rows="2" id="form-publish-item-title-full" disabled="disabled"  maxlength="<%= Full.TITLE_MAX_LENGTH%>"></textarea>
                                 </div>
                             </div>
                             <div id="form-publish-info-item-title-medium" class="row row-title">
                                 <div class="form-group">
-                                    <label for="form-publish-item-title-medium">Title (Medium)</label>
+                                    <label for="form-publish-item-title-medium"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Title (Medium)</label>
                                     <textarea class="form-control" rows="2" id="form-publish-item-title-medium" disabled="disabled" maxlength="<%= Medium.TITLE_MAX_LENGTH%>"></textarea>
                                 </div>
                             </div>
@@ -175,19 +175,19 @@
                             <%-- ITEM DESCRIPTION --%>
                             <div id="form-publish-info-item-description-full" class="row row-description">
                                 <div class="form-group">
-                                    <label for="form-publish-item-description-full">Description (Full)</label>
+                                    <label for="form-publish-item-description-full"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Full)</label>
                                     <textarea class="form-control" rows="4" id="form-publish-item-description-full" disabled="disabled"  maxlength="<%= Full.TEXT_MAX_LENGTH%>"></textarea>
                                 </div>
                             </div>
                             <div id="form-publish-info-item-description-medium" class="row row-description">
                                 <div class="form-group">
-                                    <label for="form-publish-item-description-medium">Description (Medium)</label>
+                                    <label for="form-publish-item-description-medium"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Medium)</label>
                                     <textarea class="form-control" rows="2" id="form-publish-item-description-medium" disabled="disabled"  maxlength="<%= Medium.TEXT_MAX_LENGTH%>"></textarea>
                                 </div>
                             </div>
                             <div id="form-publish-info-item-description-tiny" class="row row-description">
                                 <div class="form-group">
-                                    <label for="form-publish-item-description-tiny">Description (Tiny)</label>
+                                    <label for="form-publish-item-description-tiny"><span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>Description (Tiny)</label>
                                     <textarea class="form-control" rows="2" id="form-publish-item-description-tiny" disabled="disabled"  maxlength="<%= Tiny.MAX_LENGTH%>"></textarea>
                                 </div>
                             </div>
@@ -311,7 +311,11 @@
                             <%-- ITEM TYPE --%>
                             <div id="form-publish-info-item-type" class="row row-type">
                                 <div class="form-group">
-                                    <label for="form-publish-item-type"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Item Type</label>
+                                    <label for="form-publish-item-type">
+                                        <span class="emphasis-item"><i class="fa fa-asterisk"></i></span>
+                                        <span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>
+                                        Item Type
+                                    </label>
                                     <select class="form-control" id="form-publish-item-type" disabled="disabled">
                                         <option value="storms">Storms</option>
                                         <option value="vulnerability">Vulnerability</option>
@@ -337,7 +341,11 @@
                             <%-- NAME --%>
                             <div id="form-publish-info-item-name" class="row row-name">
                                 <div class="form-group">
-                                    <label for="form-publish-item-name"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Download File Name</label>
+                                    <label for="form-publish-item-name">
+                                        <span class="emphasis-item"><i class="fa fa-asterisk"></i></span>
+                                        <span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>
+                                        Download File Name
+                                    </label>
                                     <input type="text" class="form-control" id="form-publish-item-name" disabled="disabled" maxlength="<%= Item.NAME_MAX_LENGTH%>" />
                                 </div>
                             </div>
@@ -391,7 +399,10 @@
                             <%-- Children --%>
                             <div id="form-publish-info-item-panel-children" class="panel panel-default">
                                 <div class="panel-heading">
-                                    <h3 class="panel-title">Children</h3>
+                                    <h3 class="panel-title">
+                                        <span class="emphasis-aggregation"><i class="fa fa-asterisk"></i></span>
+                                        Children
+                                    </h3>
                                 </div>
                                 <div class="panel-body">
                                     <div id="form-publish-info-item-children-sortable-row" class="row row-children">
