@@ -26,9 +26,9 @@ public class SLDGenerator {
 	
 	protected static final EnumMap<Item.Type,Map<String, SLDConfig>> generatorMap;
 	static {
-		EnumMap<Item.Type,Map<String, SLDConfig>> gmap = new EnumMap<Item.Type,Map<String, SLDConfig>>(Item.Type.class);
+		EnumMap<Item.Type,Map<String, SLDConfig>> gmap = new EnumMap<>(Item.Type.class);
 		
-		Map<String, SLDConfig> stormsMap = new HashMap<String, SLDConfig>();
+		Map<String, SLDConfig> stormsMap = new HashMap<>();
 		sideEffectMapPut(stormsMap, Pcoi.pcoi);
 		sideEffectMapPut(stormsMap, Extreme.extreme);
 		sideEffectMapPut(stormsMap, DuneHeight.duneCrest);
@@ -36,17 +36,21 @@ public class SLDGenerator {
 		sideEffectMapPut(stormsMap, MeanWaterLevel.mean);
 		gmap.put(Item.Type.storms, stormsMap);
 		
-		Map<String, SLDConfig> vulnerability = new HashMap<String, SLDConfig>();
-		sideEffectMapPut(vulnerability, BayesianCVI.bayes);
+		Map<String, SLDConfig> vulnerability = new HashMap<>();
+		sideEffectMapPut(vulnerability, BayesianProbablityCVI.bayes);
+        sideEffectMapPut(vulnerability, BayesianSLRCVI.rslr);
+        sideEffectMapPut(vulnerability, BayesianWaveHeightCVI.mwh);
+        sideEffectMapPut(vulnerability, BayesianTidalRangeCVI.tr);
+        sideEffectMapPut(vulnerability, BayesianErateCVI.erate);
 		sideEffectMapPut(vulnerability, OldSchoolCVI.oldSchool);
 		gmap.put(Item.Type.vulnerability, vulnerability);
 		
-		Map<String, SLDConfig> historical = new HashMap<String, SLDConfig>();
+		Map<String, SLDConfig> historical = new HashMap<>();
 		sideEffectMapPut(historical, Shorelines.shorelines);
 		sideEffectMapPut(historical, Rates.rates);
 		gmap.put(Item.Type.historical, historical);
 		
-		Map<String, SLDConfig> mixed = new HashMap<String, SLDConfig>();
+		Map<String, SLDConfig> mixed = new HashMap<>();
 		gmap.put(Item.Type.mixed, mixed);
 		
 		generatorMap = gmap;
@@ -103,7 +107,7 @@ public class SLDGenerator {
 	}
 
 	public Response generateSLDInfo() {
-		Map<String, Object> sldInfo = new LinkedHashMap<String, Object>();
+		Map<String, Object> sldInfo = new LinkedHashMap<>();
 		sldInfo.put("title", this.item.getSummary().getTiny().getText());
 		sldInfo.put("units", this.config.getUnits());
 		sldInfo.put("style", this.config.getStyle());
