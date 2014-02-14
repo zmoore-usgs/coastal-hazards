@@ -175,3 +175,12 @@ form-publish-info-item-panel-children .panel-body {
 .popover {
     max-width: none !important;
 }
+
+.emphasis-item.enabled {
+    color: #FF0000;
+    display: initial;
+}
+
+.emphasis-item {
+    display: none;
+}
