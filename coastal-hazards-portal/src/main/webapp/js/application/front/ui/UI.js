@@ -471,16 +471,19 @@ CCH.Objects.UI = function (args) {
 
                 $(window).on('cch.item.loaded.all', function (evt, args) {
                     if (evt.namespace === 'all.item.loaded') {
-                        // I want to zoom to the bounding box of the item
-                        CCH.map.zoomToBoundingBox({
-                            bbox : CCH.items.getById({ id : id }).bbox,
-                            fromProjection : new OpenLayers.Projection('EPSG:4326')
-                        });
+                        var item = CCH.items.getById({ id : id });
+                        if (item) {
+                            // I want to zoom to the bounding box of the item
+                            CCH.map.zoomToBoundingBox({
+                                bbox : item.bbox,
+                                fromProjection : new OpenLayers.Projection('EPSG:4326')
+                            });
 
-                        // And I want to open the accordion to that item
-                        $(window).trigger('cch.slide.search.button.click.explore', {
-                            id : id
-                        });
+                            // And I want to open the accordion to that item
+                            $(window).trigger('cch.slide.search.button.click.explore', {
+                                id : id
+                            });
+                        }
                     }
                 });
 
