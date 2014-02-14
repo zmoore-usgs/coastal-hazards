@@ -184,3 +184,12 @@ form-publish-info-item-panel-children .panel-body {
 .emphasis-item {
     display: none;
 }
+
+.emphasis-aggregation.enabled {
+    color: #FF0000;
+    display: initial;
+}
+
+.emphasis-aggregation {
+    display: none;
+}
