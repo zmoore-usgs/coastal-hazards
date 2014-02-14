@@ -151,7 +151,8 @@ CCH.Objects.BucketSlide = function (args) {
             layers = [],
             item,
             layerNames,
-            sessionItem;
+            sessionItem,
+            sortedSessionItems = [];
 
         if (me.cards.length === 1) {
             $(me.LABEL_ORDER_CLASS).css('visibility', 'hidden');
@@ -164,6 +165,7 @@ CCH.Objects.BucketSlide = function (args) {
             item = CCH.items.getById({id : id});
             layerNames = item.getLayerList();
             sessionItem = CCH.session.getItemById(id);
+            sortedSessionItems.push(sessionItem);
             layer = CCH.map.getLayersByName(id);
 
             layerNames.each(function (layerName) {
@@ -179,6 +181,9 @@ CCH.Objects.BucketSlide = function (args) {
                 }
             });
         });
+        
+        CCH.session.getSession().items = sortedSessionItems;
+        CCH.session.update();
 
         layers.reverse().each(function (layer) {
             CCH.map.getMap().setLayerIndex(layer, CCH.map.getMap().layers.length - 1);
