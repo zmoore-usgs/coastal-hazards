@@ -131,6 +131,18 @@
     }
 }
 
+@media (max-width: 480px), (max-height: 280px) {
+    #application-overlay > div:first-child img {
+        margin-left: 2px;
+        margin-top: 0px;
+        height: 83%;
+    }
+
+    #application-overlay > div:nth-child(2) > div:nth-child(2) {
+        font-size: 1.1em;
+    }
+}
+
 @media (max-width: 320px) {
     #application-overlay > div:nth-child(2) > div:nth-child(2) {
         font-size: 1.2em;
