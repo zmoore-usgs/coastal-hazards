@@ -273,14 +273,14 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                         };
                         height = function () {
                             var cHeight = 0,
-                                maxHeight = Math.round($('#map').height() - 20);
+                                maxHeight = Math.round($('#map').height() / 2);
                             $('#feature-identification-popup div.col-md-12 > table tr').each(function (ind, item) {
-                                cHeight += $(item).outerHeight() + ($(item).outerHeight() * .1);
+                                cHeight += $(item).outerHeight() + ($(item).outerHeight() * .3);
                             });
                             if (cHeight > maxHeight) {
                                 cHeight = maxHeight;
                             }
-                            return cHeight;
+                            return Math.round(cHeight);
                         };
                         popup.setSize(new OpenLayers.Size(width(), height()));
                         popup.panIntoView();
