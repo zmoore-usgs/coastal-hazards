@@ -154,7 +154,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                             ribbonIndex = parseInt(layerName.split('_').last(), 10);
                         }
 
-//                        $table.append($theadRow);
                         $titleContainer.html(title);
 
                         if (units === 'year') {
@@ -260,7 +259,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                         popup.setContentHTML($popupHtml.clone().wrap('<div/>').parent().html());
                         width = function () {
                             var cWidth = 0,
-                                maxWidth = Math.round($('#map').width() / 2);
+                                maxWidth = Math.round($('#map').width() - 20);
                                 
                             $('#feature-identification-popup div.col-md-12 table').each(function (ind, table) {
                                 cWidth = $(table).width() > cWidth ? $(table).width() : cWidth;
@@ -270,23 +269,24 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                 cWidth = maxWidth;
                             }
                             
-                            return cWidth + 10;
+                            return cWidth + 5;
                         };
                         height = function () {
                             var cHeight = 0,
-                                maxHeight = Math.round($('#map').height() * .5);
+                                maxHeight = Math.round($('#map').height() - 20);
                             $('#feature-identification-popup div.col-md-12 > table tr').each(function (ind, item) {
-                                cHeight += $(item).height() * 1.5;
+                                cHeight += $(item).outerHeight() + ($(item).outerHeight() * .1);
                             });
                             if (cHeight > maxHeight) {
                                 cHeight = maxHeight;
                             }
-                            return cHeight + 5;
+                            return cHeight;
                         };
                         popup.setSize(new OpenLayers.Size(width(), height()));
                         popup.panIntoView();
                         $(window).on('cch.ui.redimensioned', function () {
                             popup.setSize(new OpenLayers.Size(width(), height()));
+                            popup.panIntoView();
                         });
                     };
 
