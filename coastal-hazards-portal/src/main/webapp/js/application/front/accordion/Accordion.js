@@ -65,13 +65,7 @@ CCH.Objects.Accordion = function (args) {
             bellow,
             cardExists;
             
-        if ($('#' + me.CONTAINER_ID).find('.panel-collapse').length === 0) {
-            cardExists = false;
-        } else {
-            cardExists = $('#' + me.CONTAINER_ID).find('.panel-collapse').toArray().find(function (card) {
-                return $(card).attr('id').substring(15) === item.id;
-            }).length !== 0 ;
-        }
+        cardExists = $('#' + me.CONTAINER_ID).find('.panel-collapse#accordion-body-' + item.id).length !== 0;
 
         // If we are passed a product, that means we were not passed a card
         if (item && !cardExists) {

@@ -219,7 +219,7 @@
                                     <%-- Source WFS --%>
                                     <div id="form-publish-info-item-service-source-wfs" class="row row-src-wfs">
                                         <div class="form-group">
-                                            <label for="form-publish-item-service-source-wfs">Source WFS</label>
+                                            <label for="form-publish-item-service-source-wfs"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Source WFS</label>
                                             <div class="input-group">
                                                 <div class="input-group-btn">
                                                     <button id="form-publish-item-service-source-wfs-import-button-service-select" class="btn btn-default" type="button" disabled="disabled" data-toggle="dropdown">
@@ -236,7 +236,7 @@
                                                     <button id="form-publish-item-service-source-wfs-import-button-check" class="btn btn-default" type="button" disabled="disabled">Check</button>
                                                 </span>
                                             </div>
-                                            <label for="form-publish-item-service-source-wfs-serviceparam">Service Parameter</label>
+                                            <label for="form-publish-item-service-source-wfs-serviceparam"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Service Parameter</label>
                                             <div class="input-group">
                                                 <input type="text" class="form-control" id="form-publish-item-service-source-wfs-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH%>"  />
                                                 <span class="input-group-btn">
@@ -250,7 +250,7 @@
                                     <%-- Source WMS --%>
                                     <div id="form-publish-info-item-service-source-wms" class="row row-src-wms">
                                         <div class="form-group">
-                                            <label for="form-publish-item-service-source-wms">Source WMS</label>
+                                            <label for="form-publish-item-service-source-wms"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Source WMS</label>
                                             <div class="input-group">
                                                 <div class="input-group-btn">
                                                     <button id="form-publish-item-service-source-wms-import-button-service-select" class="btn btn-default" type="button" disabled="disabled" data-toggle="dropdown">
@@ -267,7 +267,7 @@
                                                     <button id="form-publish-item-service-source-wms-import-button-check" class="btn btn-default" type="button" disabled="disabled">Check</button>
                                                 </span>
                                             </div>
-                                            <label for="form-publish-item-service-source-wms-serviceparam">Service Parameter</label>
+                                            <label for="form-publish-item-service-source-wms-serviceparam"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Service Parameter</label>
                                             <input type="text" class="form-control" id="form-publish-item-service-source-wms-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH%>" />
                                         </div>
                                     </div>
@@ -311,7 +311,7 @@
                             <%-- ITEM TYPE --%>
                             <div id="form-publish-info-item-type" class="row row-type">
                                 <div class="form-group">
-                                    <label for="form-publish-item-type">Item Type</label>
+                                    <label for="form-publish-item-type"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Item Type</label>
                                     <select class="form-control" id="form-publish-item-type" disabled="disabled">
                                         <option value="storms">Storms</option>
                                         <option value="vulnerability">Vulnerability</option>
@@ -324,7 +324,7 @@
                             <%-- Attribute --%>
                             <div class="row row-attribute">
                                 <div class="form-group">
-                                    <label for="form-publish-item-attribute">Attribute</label>
+                                    <label for="form-publish-item-attribute"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Attribute</label>
                                     <select class="form-control" id="form-publish-item-attribute" disabled="disabled"></select>
                                     <div class="input-group">
                                         <div class="input-group-btn">
@@ -337,7 +337,7 @@
                             <%-- NAME --%>
                             <div id="form-publish-info-item-name" class="row row-name">
                                 <div class="form-group">
-                                    <label for="form-publish-item-name">Download File Name</label>
+                                    <label for="form-publish-item-name"><span class="emphasis-item"><i class="fa fa-asterisk"></i></span>Download File Name</label>
                                     <input type="text" class="form-control" id="form-publish-item-name" disabled="disabled" maxlength="<%= Item.NAME_MAX_LENGTH%>" />
                                 </div>
                             </div>

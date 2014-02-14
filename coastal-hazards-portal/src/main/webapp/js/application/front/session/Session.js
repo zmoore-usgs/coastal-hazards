@@ -36,7 +36,7 @@ CCH.Objects.Session = function (args) {
         args = args || {};
 
         var itemid = args.itemid,
-            visibility = args.visibility,
+            visible = args.visible,
             itemIndex,
             cookie;
 
@@ -45,7 +45,7 @@ CCH.Objects.Session = function (args) {
                 id : itemid
             });
             if (itemIndex !== -1) {
-                me.session.items[itemIndex].visibility = visibility;
+                me.session.items[itemIndex].visible = visible;
             }
         }
 
@@ -184,14 +184,14 @@ CCH.Objects.Session = function (args) {
         CCH.LOG.debug('Session.js::addItem');
 
         var item = args.item,
-            visibility = args.visibility || false,
+            visible = args.visible || false,
             index = me.getItemIndex(item),
             cookie;
 
         if (index === -1) {
             me.session.items.push({
                 itemId : item.id,
-                visibility : visibility
+                visible : visible
             });
         }
 
@@ -233,7 +233,7 @@ CCH.Objects.Session = function (args) {
             item : {
                 id : item.itemId
             },
-            visibility : item.visibility
+            visible : item.visible
         });
     });
 

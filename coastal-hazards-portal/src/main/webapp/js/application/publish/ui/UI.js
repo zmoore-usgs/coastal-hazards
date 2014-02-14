@@ -153,6 +153,7 @@ CCH.Objects.UI = function () {
         $childrenSortableList.empty();
         $metadataDropdownGroup.addClass('hidden');
         $itemImage.attr('src', '');
+        $('.emphasis-item').removeClass('enabled');
     };
 
     me.enableNewItemForm = function () {
@@ -199,6 +200,7 @@ CCH.Objects.UI = function () {
         $proxyWfsCheckButton.removeAttr('disabled');
         $proxyWmsCheckButton.removeAttr('disabled');
         $childrenSortableList.empty();
+        $('.emphasis-item').addClass('enabled');
     };
 
     me.enableNewAggregationForm = function () {
@@ -231,6 +233,7 @@ CCH.Objects.UI = function () {
         $itemEnabledField.val('false');
         $keywordGroup.find('input').removeAttr('disabled');
         me.createSortableChildren();
+        $('.emphasis-item').removeClass('enabled');
     };
 
     me.isBlank = function ($ele) {
@@ -988,6 +991,8 @@ CCH.Objects.UI = function () {
                 $uploaderDummy.empty().addClass('hidden');
                 $metadataDropdownGroup.addClass('hidden');
             } else {
+                $('.emphasis-aggregation').removeClass('enabled');
+                $('.emphasis-item').addClass('enabled');
                 $childrenSortableList.empty();
 
                 // Fill out item type
@@ -1932,8 +1937,9 @@ CCH.Objects.UI = function () {
                                             'href' : '#',
                                             'onclick' : 'return false;'
                                         }).on('click', function (evt) {
-                                            $srcWfsServiceInput.val(server.endpoint + '/services/' + namespace + '/' + $(evt.target).attr('data-attr') + '/MapServer/WFSServer');
-                                            getWFSCaps(namespace, svcName);
+                                            var serviceName = $(evt.target).attr('data-attr');
+                                            $srcWfsServiceInput.val(server.endpoint + '/services/' + namespace + '/' + serviceName + '/MapServer/WFSServer');
+                                            getWFSCaps(namespace, serviceName);
                                         }).html(svcName);
                                         $li.append($a);
                                         $contentList.append($li);
