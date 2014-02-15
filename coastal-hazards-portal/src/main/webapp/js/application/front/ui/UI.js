@@ -302,7 +302,6 @@ CCH.Objects.UI = function (args) {
             var applicationOverlay = $('#' + me.APPLICATION_OVERLAY_ID);
 
             $(window).resize();
-            CCH.map.getMap().updateSize();
 
             // Get rid of the overlay and clean it up out of memory and DOM
             applicationOverlay.fadeOut(2000, function () {
@@ -509,7 +508,11 @@ CCH.Objects.UI = function (args) {
 
     // Do Bindings
     $(window).on({
-        'resize': me.windowResizeHandler,
+        'resize': function () {
+            setTimeout(function () {
+                me.windowResizeHandler();
+            }, 1)
+        },
         'cch.data.items.searched': me.itemsSearchedHandler,
         'cch.data.locations.searched': me.locationsSearchedHandler,
         'slide.bucket.button.click.share' : me.sharemodalDisplayHandler,
