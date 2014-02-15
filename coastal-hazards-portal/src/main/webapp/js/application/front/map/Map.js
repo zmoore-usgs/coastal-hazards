@@ -98,7 +98,57 @@ CCH.Objects.Map = function (args) {
                 displayProjection: me.displayProjection,
                 tileManager : new CCH.Objects.FixedTileManager()
             });
+            
+            OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
+                defaultHandlerOptions: {
+                    'single': true,
+                    'double': false,
+                    'pixelTolerance': 0,
+                    'stopSingle': false,
+                    'stopDouble': false
+                },
 
+                initialize: function(options) {
+                    this.handlerOptions = OpenLayers.Util.extend(
+                        {}, this.defaultHandlerOptions
+                    );
+                    OpenLayers.Control.prototype.initialize.apply(
+                        this, arguments
+                    ); 
+                    this.handler = new OpenLayers.Handler.Click(
+                        this, {
+                            'click': this.onClick,
+                            'dblclick': this.onDblclick 
+                        }, this.handlerOptions
+                    );
+                }, 
+
+                onClick: function(evt) {
+                    var msg = "click " + evt.xy;
+                    CCH.LOG.debug(msg);
+//                    var size = new OpenLayers.Size(25,25),
+//                        icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, new OpenLayers.Pixel(-(size.w/2), -size.h)),
+//                        marker = new OpenLayers.Marker(new OpenLayers.LonLat(evt.xy.x,evt.xy.y),icon);
+//                
+//                    me.markersLayer.addMarker(marker);
+//                    setTimeout(function () {
+//                        marker.destroy();
+//                    }, 2000)
+                },
+
+                onDblclick: function(evt) {  
+                    var msg = "click " + evt.xy;
+                    CCH.LOG.debug(msg);
+                }   
+
+            });
+            me.clickControl = new OpenLayers.Control.Click({
+                handlerOptions: {
+                    "single": true
+                }
+            });
+            
+            
             me.layerSwitcher = new OpenLayers.Control.LayerSwitcher({
                 roundedCorner: true
             });
@@ -117,8 +167,11 @@ CCH.Objects.Map = function (args) {
             me.map.addControls([
                 me.layerSwitcher,
                 me.getFeatureInfoControl,
-                me.attributionControl
+                me.attributionControl,
+                me.clickControl
             ]);
+            
+            me.clickControl.activate();
 
             CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);
             me.zoomToBoundingBox({ bbox : me.initialExtent });
