@@ -54,14 +54,6 @@ CCH.Objects.Item = function (args) {
             me.type = data.type;
             me.services = data.services;
 
-            if (me.parent) {
-                if (me.parent.ribboned === true) {
-                    me.ribboned = true;
-                } else {
-                    me.ribboned = false;
-                }
-            }
-
             CCH.items.add({ item : me });
 
             if (me.children.length) {
@@ -155,14 +147,13 @@ CCH.Objects.Item = function (args) {
                     type: 'cch'// CCH specific setting
                 }
             );
-        
+
         return layer;
     };
 
     me.getLayerList = function (args) {
         args = args || {};
         var index,
-            layer,
             layerName,
             idx,
             child,
@@ -184,13 +175,13 @@ CCH.Objects.Item = function (args) {
 
             }
         } else {
-            if (me.ribboned) {
-                if (layers.length > 0) {
-                    layer = layers[layers.length - 1];
-                    index = parseInt(layer.substring(layer.lastIndexOf('_') + 1), 10) + 1;
-                } else {
-                    index = 1;
+            if (me.ribboned && me.parent.ribboned) {
+                index = me.parent.children.findIndex(me.id) + 1;
+                
+                if (index > layers.length + 1) {
+                    index = layers.length + 1;
                 }
+                
                 layerName = aggregationName + me.id + '_r_' + index;
             } else {
                 layerName = aggregationName + me.id;
@@ -244,17 +235,16 @@ CCH.Objects.Item = function (args) {
                 }
             });
         } else {
-
             layerName = aggregationName + this.id;
 
-            if (me.ribboned) {
-                if (layers.length > 0) {
-                    layer = layers[layers.length - 1];
-                    index = parseInt(layer.name.substring(layer.name.lastIndexOf('_') + 1), 10) + 1;
-                } else {
-                    index = 1;
+            if (me.ribboned && me.parent.ribboned) {
+                index = me.parent.children.findIndex(me.id) + 1;
+                
+                if (index > layers.length + 1) {
+                    index = layers.length + 1;
                 }
-                layerName = layerName + '_r_' + index;
+                
+                layerName = aggregationName + me.id + '_r_' + index;
             } else {
                 index = 0;
             }
