@@ -42,6 +42,8 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                 return splitName.last();
             };
 
+        $(window).trigger('cch.map.control.layerid.responded')
+
         // I don't roll out of bed before having some features to work with.
         // If I have no features, this means the user clicked in an empty
         // spot
