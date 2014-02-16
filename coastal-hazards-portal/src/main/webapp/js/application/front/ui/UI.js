@@ -72,7 +72,7 @@ CCH.Objects.UI = function (args) {
             });
         },
         cookieItems = $.cookie('cch').items || [];
-
+    me.APPLICATION_CONTAINER = $('#application-container');
     me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
     me.HEADER_ROW_ID = args.headerRowId || 'header-row';
     me.FOOTER_ROW_ID = args.footerRowId || 'footer-row';
@@ -157,7 +157,7 @@ CCH.Objects.UI = function (args) {
             $(window).trigger('cch.ui.redimensioned', isSmall);
         }
 
-        contentRowHeight = $('body').height() - (headerHeight + footerHeight);
+        contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : $('body').outerHeight(true) - (headerHeight + footerHeight);
 
         // This is an issue that happens with IE9. I've still not figured out why
         // but the height numbers seem to switch. It's probably an IE9 event
@@ -169,7 +169,7 @@ CCH.Objects.UI = function (args) {
         }
 
         // Set the correct height for the content row
-        contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight : contentRowHeight;
+//        contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight -  : contentRowHeight;
 
         if (isSmall) {
             contentRowHeight += footerHeight;
