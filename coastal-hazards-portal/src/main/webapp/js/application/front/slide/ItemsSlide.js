@@ -181,9 +181,12 @@ CCH.Objects.ItemsSlide = function (args) {
         if (me.isSmall()) {
             var top;
             if (window.innerHeight < CCH.ui.minimumHeight) {
-                top = window.innerHeight -  $slideTab.outerHeight() - 20;
+                top = window.innerHeight -  $slideTab.outerHeight() * 2;
                 if (top < 0) {
-                    top = 20;
+                    top = $slideContainer.offset().top + $slideTab.outerHeight();
+                }
+                if (top < $(window).scrollTop()) {
+                    top = $(window).scrollTop() + $slideTab.outerHeight();
                 }
             } else {
                 top = $slideContainer.height() - $slideTab.outerHeight() - 20;
@@ -253,10 +256,14 @@ CCH.Objects.ItemsSlide = function (args) {
             });
             
             
-            if ($(window).height() < 480) {
-                top = $(window).height() -  $slideTab.outerHeight() - 60;
-            } else {
-                top = $slideContainer.height() - $slideTab.outerHeight() - 20;
+            if (window.innerHeight < CCH.ui.minimumHeight) {
+                top = window.innerHeight -  $slideTab.outerHeight() * 2;
+                if (top < 0) {
+                    top = $slideContainer.offset().top + $slideTab.outerHeight();
+                }
+                if (top < $(window).scrollTop()) {
+                    top = $(window).scrollTop() + $slideTab.outerHeight();
+                }
             }
 
             $slideTab.offset({
