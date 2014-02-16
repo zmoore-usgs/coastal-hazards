@@ -163,7 +163,7 @@ CCH.Objects.Map = function (args) {
                         if (marker && marker.map) {
                             var markerLayer = marker.map.getLayersByName('Markers')[0];
 
-                            markerLayer.markers.each(function (ind, marker) {
+                            markerLayer.markers.each(function (marker) {
                                 markerLayer.removeMarker(marker);
                                 marker.destroy();
                             });
