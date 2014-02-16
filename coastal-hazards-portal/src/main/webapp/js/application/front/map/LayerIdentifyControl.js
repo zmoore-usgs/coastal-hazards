@@ -115,7 +115,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                     layers = this.layers,
                     color,
                     buildLegend,
-                    $popup = $(popup),
                     buildLegend = function (args) {
                         args = args || {};
                         var binIdx = 0,
@@ -194,15 +193,15 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                 ub = bins[binIdx].upperBound;
 
                                 if (lb !== undefined && ub !== undefined) {
-                                    if (attrAvg < ub && attrAvg > lb) {
+                                    if (attrAvg <= ub && attrAvg >= lb) {
                                         color = bins[binIdx].color;
                                     }
                                 } else if (lb === undefined && ub !== undefined) {
-                                    if (attrAvg < ub) {
+                                    if (attrAvg <= ub) {
                                         color = bins[binIdx].color;
                                     }
                                 } else {
-                                    if (attrAvg > lb) {
+                                    if (attrAvg >= lb) {
                                         color = bins[binIdx].color;
                                     }
                                 }
@@ -225,7 +224,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                 var sortedRows;
                             
                                 $table.append($legendRow);
-                                sortedRows = $table.find('.legend-row').toArray().sortBy(function (row) {
+                                sortedRows = $table.find('tbody > tr').toArray().sortBy(function (row) {
                                     return parseInt($(row).attr('id').split('-').last(),10);
                                 });
                                 $table.empty().append(sortedRows);

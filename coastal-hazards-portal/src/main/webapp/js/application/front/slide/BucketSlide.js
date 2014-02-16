@@ -80,9 +80,9 @@ CCH.Objects.BucketSlide = function (args) {
 
     me.open = function () {
         if (me.isClosed) {
+            me.resized();
             if (me.isSmall()) {
                 $(window).trigger('cch.slide.bucket.opening');
-                me.resized();
                 me.openSlide();
             } else {
                 me.openSlide();
@@ -258,7 +258,7 @@ CCH.Objects.BucketSlide = function (args) {
             $slideContainer.height($('body').height() - toExtent.top - 1);
             $slideContainer.width(windowWidth - toExtent.left);
             $slideContent.width($slideContainer.outerWidth() - me.borderWidth);
-            $slideContent.height($slideContainer.innerHeight() - me.$SLIDE_CONTROLSET.outerHeight() - me.borderWidth);
+            $slideContent.height($slideContainer.innerHeight() - me.borderWidth - 1);
         } else {
             if (me.isClosed) {
                 $slideContainer.css({
@@ -719,7 +719,7 @@ CCH.Objects.BucketSlide = function (args) {
     });
 
     $(window).on({
-        'cch.ui.resized' : me.resized,
+        'cch.slide.items.resized' : me.resized,
         'cch.ui.redimensioned' : me.redimensioned,
         'cch.slide.search.button.click.explore' : me.close,
         'app-navbar-button-clicked' : me.toggle,
