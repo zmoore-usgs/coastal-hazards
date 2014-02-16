@@ -139,7 +139,7 @@ CCH.Objects.Map = function (args) {
                     });
                     
                     $(window).on('cch.map.control.layerid.responded', function() {
-                        var markerLayer = me.map.map.getLayersByName('Markers')[0];
+                        var markerLayer = me.map.getLayersByName('Markers')[0];
                         
                         markerLayer.markers.each(function (marker) {
                             markerLayer.removeMarker(marker);
@@ -159,12 +159,15 @@ CCH.Objects.Map = function (args) {
 
                     this.iconLayer.addMarker(marker);
                     setTimeout(function () {
-                        var markerLayer = marker.map.getLayersByName('Markers')[0];
-                        
-                        markerLayer.markers.each(function (ind, marker) {
-                            markerLayer.removeMarker(marker);
-                            marker.destroy();
-                        });
+                        // Marker may not exist. It may have been removed already
+                        if (marker && marker.map) {
+                            var markerLayer = marker.map.getLayersByName('Markers')[0];
+
+                            markerLayer.markers.each(function (marker) {
+                                markerLayer.removeMarker(marker);
+                                marker.destroy();
+                            });
+                        }
                     }, 5000);
                 },
 
