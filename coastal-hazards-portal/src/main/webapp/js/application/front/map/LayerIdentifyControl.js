@@ -236,7 +236,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                         $popupHtml.find('#layer-load-id').remove();
                         CCH.map.getMap().getLayerIndex(CCH.map.getMap().getLayersBy('itemid', layerId)[0])
                         $popupHtml.append($table);
-                        var tables = $popupHtml.find('table').toArray().sort(function (tbl) {
+                        var tables = $popupHtml.find('table').toArray().sortBy(function (tbl) {
                             return parseInt($(tbl).attr('data-attr'));
                         });
                         tables.each(function (tbl, ind) {
