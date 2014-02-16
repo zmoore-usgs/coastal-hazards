@@ -107,6 +107,8 @@ CCH.Objects.Map = function (args) {
                     'stopSingle': false,
                     'stopDouble': false
                 },
+                
+                iconLayer : new OpenLayers.Layer.Markers( "Markers" ),
 
                 initialize: function(options) {
                     this.handlerOptions = OpenLayers.Util.extend(
@@ -121,25 +123,58 @@ CCH.Objects.Map = function (args) {
                             'dblclick': this.onDblclick 
                         }, this.handlerOptions
                     );
+            
+                    me.map.events.on({
+                        'addlayer' : function () {
+                            var baseLayers = me.map.getLayersBy('isBaseLayer', true),
+                                highestLayer = baseLayers.max(function(layer) {
+                                    return me.map.getLayerIndex(layer)
+                                }),
+                                highestLayerIndex = me.map.getLayerIndex(highestLayer);
+                            
+                            if (highestLayerIndex !== -1) {
+                                me.map.setLayerIndex(me.map.getLayersByName('Markers')[0], highestLayerIndex + 1);
+                            }
+                        }
+                    });
+                    
+                    $(window).on('cch.map.control.layerid.responded', function() {
+                        var markerLayer = me.map.getLayersByName('Markers')[0];
+                        
+                        markerLayer.markers.each(function (marker) {
+                            markerLayer.removeMarker(marker);
+                            marker.destroy();
+                        });
+                    });
+            
+                    me.map.addLayer(this.iconLayer);
                 }, 
 
                 onClick: function(evt) {
                     var msg = "click " + evt.xy;
                     CCH.LOG.debug(msg);
-//                    var size = new OpenLayers.Size(25,25),
-//                        icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, new OpenLayers.Pixel(-(size.w/2), -size.h)),
-//                        marker = new OpenLayers.Marker(new OpenLayers.LonLat(evt.xy.x,evt.xy.y),icon);
-//                
-//                    me.markersLayer.addMarker(marker);
-//                    setTimeout(function () {
-//                        marker.destroy();
-//                    }, 2000)
+                    var size = new OpenLayers.Size(20,20),
+                        icon = new OpenLayers.Icon(CCH.CONFIG.contextPath + '/images/spinner/spinner3.gif', size, new OpenLayers.Pixel(-(size.w/2), -size.h)),
+                        marker = new OpenLayers.Marker(me.map.getLonLatFromPixel(evt.xy),icon);
+
+                    this.iconLayer.addMarker(marker);
+                    setTimeout(function () {
+                        // Marker may not exist. It may have been removed already
+                        if (marker && marker.map) {
+                            var markerLayer = marker.map.getLayersByName('Markers')[0];
+
+                            markerLayer.markers.each(function (ind, marker) {
+                                markerLayer.removeMarker(marker);
+                                marker.destroy();
+                            });
+                        }
+                    }, 5000);
                 },
 
                 onDblclick: function(evt) {  
                     var msg = "click " + evt.xy;
                     CCH.LOG.debug(msg);
-                }   
+                }
 
             });
             me.clickControl = new OpenLayers.Control.Click({
@@ -190,7 +225,7 @@ CCH.Objects.Map = function (args) {
                     });
                     layer.events.register('loadend', layer, function () {
                         var layers = CCH.map.getMap().layers.findAll(function (l) {
-                            return !l.isBaseLayer;
+                            return l.type === 'cch';
                         }),
                             layersStillLoading = 0;
                             
