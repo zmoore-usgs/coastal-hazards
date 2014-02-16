@@ -139,12 +139,12 @@ CCH.Objects.Card = function (args) {
 
     me.showLayer = function (args) {
         args = args || {};
-        me.item.showLayer();
+        return me.item.showLayer();
     };
 
     me.hideLayer = function (args) {
         args = args || {};
-        me.item.hideLayer();
+        return me.item.hideLayer();
     };
 
     me.close = function () {

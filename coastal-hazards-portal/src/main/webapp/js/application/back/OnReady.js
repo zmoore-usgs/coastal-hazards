@@ -25,7 +25,7 @@ $(document).ready(function () {
 
         if (CCH.CONFIG.item.id === id) {
             CCH.ui = new CCH.Objects.UI({item : item});
-            layers = item.showLayer();
+            layers = item.showLayer().layers;
             layers.each(function (child, index) {
                 CCH.Util.getSLD({
                     contextPath: CCH.CONFIG.contextPath,

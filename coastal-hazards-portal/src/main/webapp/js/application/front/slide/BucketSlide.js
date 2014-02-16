@@ -163,7 +163,7 @@ CCH.Objects.BucketSlide = function (args) {
         me.cards.each(function ($cardClone) {
             id = $cardClone.data('id');
             item = CCH.items.getById({id : id});
-            layerNames = item.getLayerList();
+            layerNames = item.getLayerList().layers;
             sessionItem = CCH.session.getItemById(id);
             sortedSessionItems.push(sessionItem);
             layer = CCH.map.getLayersByName(id);
@@ -177,7 +177,7 @@ CCH.Objects.BucketSlide = function (args) {
                 } else {
                     layers = layers.concat(item.showLayer({
                         visible : sessionItem.visible || false
-                    }));
+                    }).layers);
                 }
             });
         });
@@ -541,7 +541,7 @@ CCH.Objects.BucketSlide = function (args) {
         $card.data('id', id);
 
         // Test if the layer is currently visible. If not, set view button to off 
-        layerCurrentlyInMap = item.getLayerList().every(function (id) {
+        layerCurrentlyInMap = item.getLayerList().layers.every(function (id) {
             layerArray = CCH.map.getLayersBy('name', id);
             return layerArray.length > 0 && layerArray[0].getVisibility();
         });
@@ -587,7 +587,7 @@ CCH.Objects.BucketSlide = function (args) {
                 var isAggregation = item.itemType === 'aggregation',
                     isLayerInMap = false;
 
-                isLayerInMap = item.getLayerList().every(function (id) {
+                isLayerInMap = item.getLayerList().layers.every(function (id) {
                     layerArray = CCH.map.getLayersBy('name', id);
                     return layerArray.length > 0 && layerArray[0].getVisibility();
                 });
