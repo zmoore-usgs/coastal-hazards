@@ -192,6 +192,7 @@ CCH.Objects.Item = function (args) {
                     index = bboxObject[stringifiedBbox].length + 1;
                     bboxObject[stringifiedBbox].push(me.id);
                 } else {
+                    index = 1;
                     bboxObject[stringifiedBbox] = [me.id];
                 }
                 
@@ -241,7 +242,8 @@ CCH.Objects.Item = function (args) {
                     childReturnObj = child.showLayer({
                         layers : layers,
                         aggregationName : aggregationName,
-                        bboxObject : bboxObject
+                        bboxObject : bboxObject,
+                        visible : visible
                     });
                     layers.concat(childReturnObj.layers);
                     bboxObject = childReturnObj.bboxObject;
@@ -270,6 +272,7 @@ CCH.Objects.Item = function (args) {
                     index = bboxObject[stringifiedBbox].length + 1;
                     bboxObject[stringifiedBbox].push(me.id);
                 } else {
+                    index = 1;
                     bboxObject[stringifiedBbox] = [me.id];
                 }
                 
