@@ -168,9 +168,6 @@ CCH.Objects.UI = function (args) {
             footerHeight = tHeight;
         }
 
-        // Set the correct height for the content row
-//        contentRowHeight = contentRowHeight < me.minimumHeight ? me.minimumHeight -  : contentRowHeight;
-
         if (isSmall) {
             contentRowHeight += footerHeight;
             $titleContainerSiblings = $headerRow.find('>:not(:nth-child(2)):not(.modal)');

@@ -80,9 +80,9 @@ CCH.Objects.BucketSlide = function (args) {
 
     me.open = function () {
         if (me.isClosed) {
-            me.resized();
             if (me.isSmall()) {
                 $(window).trigger('cch.slide.bucket.opening');
+                me.resized();
                 me.openSlide();
             } else {
                 me.openSlide();
