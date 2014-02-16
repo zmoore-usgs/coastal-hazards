@@ -258,7 +258,7 @@ CCH.Objects.BucketSlide = function (args) {
             $slideContainer.height($('body').height() - toExtent.top - 1);
             $slideContainer.width(windowWidth - toExtent.left);
             $slideContent.width($slideContainer.outerWidth() - me.borderWidth);
-            $slideContent.height($slideContainer.innerHeight() - me.$SLIDE_CONTROLSET.outerHeight() - me.borderWidth);
+            $slideContent.height($slideContainer.innerHeight() - me.borderWidth - 1);
         } else {
             if (me.isClosed) {
                 $slideContainer.css({
