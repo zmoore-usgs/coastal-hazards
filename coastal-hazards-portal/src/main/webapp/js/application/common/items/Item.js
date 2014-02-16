@@ -158,7 +158,10 @@ CCH.Objects.Item = function (args) {
             idx,
             child,
             aggregationName = args.aggregationName || '',
-            layers = args.layers || [];
+            layers = args.layers || [],
+            bboxObject = args.bboxObject || {},
+            stringifiedBbox = me.bbox.toString(),
+            childReturnObj;
 
         if (me.itemType === 'aggregation') {
             if (aggregationName === '') {
@@ -167,10 +170,13 @@ CCH.Objects.Item = function (args) {
             for (idx = 0; idx < this.displayedChildren.length; idx++) {
                 child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
-                    layers.concat(child.getLayerList({
+                    childReturnObj = child.getLayerList({
                         layers : layers,
-                        aggregationName : aggregationName
-                    }));
+                        aggregationName : aggregationName,
+                        bboxObject : bboxObject
+                    });
+                    layers.concat(childReturnObj.layers);
+                    bboxObject = childReturnObj.bboxObject;
                 }
 
             }
@@ -180,6 +186,13 @@ CCH.Objects.Item = function (args) {
                 
                 if (index > layers.length + 1) {
                     index = layers.length + 1;
+                } 
+                
+                if (bboxObject[stringifiedBbox]) {
+                    index = bboxObject[stringifiedBbox].length + 1;
+                    bboxObject[stringifiedBbox].push(me.id);
+                } else {
+                    bboxObject[stringifiedBbox] = [me.id];
                 }
                 
                 layerName = aggregationName + me.id + '_r_' + index;
@@ -189,7 +202,11 @@ CCH.Objects.Item = function (args) {
 
             layers.push(layerName);
         }
-        return layers;
+        
+        return {
+            layers : layers,
+            bboxObject : bboxObject
+        };
     };
 
     me.showLayer = function (args) {
@@ -201,7 +218,10 @@ CCH.Objects.Item = function (args) {
             layerName,
             aggregationName = args.aggregationName || '',
             visible = args.visible,
-            layers = args.layers || [];
+            layers = args.layers || [],
+            bboxObject = args.bboxObject || {},
+            stringifiedBbox = me.bbox.toString(),
+            childReturnObj;
 
 
         // Check to see if this is an aggregation. If it is, I need
@@ -218,11 +238,13 @@ CCH.Objects.Item = function (args) {
             for (idx = 0; idx < this.displayedChildren.length; idx++) {
                 child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
-                    child.showLayer({
+                    childReturnObj = child.showLayer({
                         layers : layers,
-                        visible : visible,
-                        aggregationName : aggregationName
+                        aggregationName : aggregationName,
+                        bboxObject : bboxObject
                     });
+                    layers.concat(childReturnObj.layers);
+                    bboxObject = childReturnObj.bboxObject;
                 }
             }
 
@@ -244,6 +266,13 @@ CCH.Objects.Item = function (args) {
                     index = layers.length + 1;
                 }
                 
+                if (bboxObject[stringifiedBbox]) {
+                    index = bboxObject[stringifiedBbox].length + 1;
+                    bboxObject[stringifiedBbox].push(me.id);
+                } else {
+                    bboxObject[stringifiedBbox] = [me.id];
+                }
+                
                 layerName = aggregationName + me.id + '_r_' + index;
             } else {
                 index = 0;
@@ -258,11 +287,15 @@ CCH.Objects.Item = function (args) {
             });
             layers.push(layer);
         }
-        return layers;
+        
+        return {
+            layers : layers,
+            bboxObject : bboxObject
+        };
     };
 
     me.hideLayer = function () {
-        me.getLayerList().each(function (layerName) {
+        me.getLayerList().layers.each(function (layerName) {
             CCH.map.hideLayersByName(layerName);
         });
 
