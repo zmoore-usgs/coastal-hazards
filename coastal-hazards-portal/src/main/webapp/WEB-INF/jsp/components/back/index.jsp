@@ -19,7 +19,7 @@
     String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
     String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
     String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
-	String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
+	String geoserverEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
 	String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
 	String marineArcServerEndpoint = props.getProperty("coastal-hazards.marine.endpoint");
     String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");

@@ -1022,6 +1022,7 @@ CCH.Objects.UI = function () {
                     // Fill out attribute selectbox by making a call to the WFS
                     CCH.ows.describeFeatureType({
                         layerName : services.proxy_wfs.serviceParameter,
+                        sourceServer : 'cida-geoserver',
                         callbacks : {
                             success : [function (responseObject) {
                                 me.updateSelectAttribtue(responseObject);
@@ -1402,6 +1403,7 @@ CCH.Objects.UI = function () {
         if (service && param) {
             CCH.ows.describeFeatureType({
                 layerName: param,
+                sourceServer : 'cida-geoserver',
                 callbacks: {
                     success: [
                         function (featureDescription) {
@@ -1612,7 +1614,7 @@ CCH.Objects.UI = function () {
 
     $wfsImportButton.on('click', function () {
         var importCall,
-            sourceWfs = $srcWfsServiceInput.val().indexOf('geoserver') !== -1 ? 'http://geoserver/wfs' :  $srcWfsServiceInput.val(),
+            sourceWfs = $srcWfsServiceInput.val(),
             successCallback = function (responseObject) {
                 var responseText = responseObject.responseText,
                     baseUrl = CCH.CONFIG.publicUrl,
@@ -1865,9 +1867,9 @@ CCH.Objects.UI = function () {
             $a;
             
         if (srcWfsVal !== '') {
-            if (srcWfsVal.indexOf(CCH.CONFIG.data.sources['cida-geoserver'].endpoint) !== -1) {
+            if (srcWfsVal.indexOf(CCH.CONFIG.data.sources['dsas-geoserver'].endpoint) !== -1) {
                 CCH.ows.getWFSCapabilities({
-                    'server': 'cida-geoserver',
+                    'server': 'dsas-geoserver',
                     'namespace': 'published',
                     'callbacks' : {
                         success : [function (args) {
@@ -1878,7 +1880,7 @@ CCH.Objects.UI = function () {
                                     'href' : '#',
                                     'onclick' : 'return false;'
                                 }).on('click', function (evt) {
-                                    $srcWfsServiceInput.val(CCH.CONFIG.data.sources['cida-geoserver'].endpoint + '/ows');
+                                    $srcWfsServiceInput.val(CCH.CONFIG.data.sources['dsas-geoserver'].endpoint + '/ows');
                                     $srcWfsServiceParamInput.val($(evt.target).attr('data-attr'));
                                 }).html(layer.prefix + ':' + layer.title);
                                 $li.append($a);
@@ -2006,13 +2008,13 @@ CCH.Objects.UI = function () {
             $a;
             
         if (srcWmsVal !== '') {
-            if (srcWmsVal.indexOf(CCH.CONFIG.data.sources['cida-geoserver'].endpoint) !== -1) {
+            if (srcWmsVal.indexOf(CCH.CONFIG.data.sources['dsas-geoserver'].endpoint) !== -1) {
                 CCH.ows.getWMSCapabilities({
-                    'server': 'cida-geoserver',
+                    'server': 'dsas-geoserver',
                     'namespace': 'published',
                     'callbacks' : {
                         success : [function () {
-                            CCH.ows.servers['cida-geoserver'].data.wms.capabilities.object.capability.layers.each(function (layer) {
+                            CCH.ows.servers['dsas-geoserver'].data.wms.capabilities.object.capability.layers.each(function (layer) {
                                 $li = $('<li />');
                                 $a = $('<a />').attr({
                                     'href' : '#',

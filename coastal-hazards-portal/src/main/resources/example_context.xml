@@ -33,9 +33,9 @@ minified urls -->
 <Environment name="coastal-hazards.go.usa.gov.endpoint" type="java.lang.String" value="http://go.usa.gov/api/" />
 			
 <!--
-coastal-hazards.geoserver.endpoint: Specifies where the back-end proxy server 
+coastal-hazards.portal.geoserver.endpoint: Specifies where the back-end proxy server 
 should send connections to for Geoserver-->
-<Environment name="coastal-hazards.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/coastal-hazards-geoserver" />
+<Environment name="coastal-hazards.portal.geoserver.endpoint" type="java.lang.String" value="http://localhost:8081/coastal-hazards-geoserver" />
 
 <!-- 
 coastal-hazards.stpetearcserver.endpoint: Specifies where the back-end proxy 
