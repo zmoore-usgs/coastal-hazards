@@ -182,8 +182,10 @@ CCH.Objects.Item = function (args) {
             }
         } else {
             if (me.ribboned && me.parent.ribboned) {
-                index = me.parent.children.findIndex(me.id) + 1;
-                
+                index = me.parent.children.findIndex(function (childId) {
+                    return me.id === childId;
+                });
+                index += 1;
                 if (index > layers.length + 1) {
                     index = layers.length + 1;
                 } 
@@ -262,7 +264,10 @@ CCH.Objects.Item = function (args) {
             layerName = aggregationName + this.id;
 
             if (me.ribboned && me.parent.ribboned) {
-                index = me.parent.children.findIndex(me.id) + 1;
+                index = me.parent.children.findIndex(function (childId) {
+                    return me.id === childId;
+                });
+                index += 1;
                 
                 if (index > layers.length + 1) {
                     index = layers.length + 1;
