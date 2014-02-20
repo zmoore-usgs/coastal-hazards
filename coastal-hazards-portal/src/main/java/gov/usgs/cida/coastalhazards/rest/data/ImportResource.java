@@ -30,7 +30,7 @@ public class ImportResource {
 	
 	static {
         props = JNDISingleton.getInstance();
-        geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
+        geoserverEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
 		geoserverUser = props.getProperty("coastal-hazards.geoserver.username");
 		geoserverPass = props.getProperty("coastal-hazards.geoserver.password");
 	}

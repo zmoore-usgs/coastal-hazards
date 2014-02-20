@@ -226,7 +226,7 @@
                                                         <i class="fa fa-asterisk"></i>  <span class="caret"></span>
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu">
-                                                        <li><a id="form-publish-item-service-source-wfs-import-button-service-geoserver" class="form-publish-item-service-source-wfs-import-button-service-help-link" data-attr="cida-geoserver" href="#" onclick="return false;">Geoserver</a></li>
+                                                        <li><a id="form-publish-item-service-source-wfs-import-button-service-cidags" class="form-publish-item-service-source-wfs-import-button-service-help-link" data-attr="dsas-geoserver" href="#" onclick="return false;">Geoserver</a></li>
                                                         <li><a id="form-publish-item-service-source-wfs-import-button-service-marine" class="form-publish-item-service-source-wfs-import-button-service-help-link" data-attr="marine-arcserver" href="#" onclick="return false;">Marine</a></li>
                                                         <li><a id="form-publish-item-service-source-wfs-import-button-service-olga" class="form-publish-item-service-source-wfs-import-button-service-help-link" data-attr="stpete-arcserver" href="#" onclick="return false;">Olga</a></li>
                                                     </ul>
@@ -257,7 +257,7 @@
                                                         <i class="fa fa-asterisk"></i>  <span class="caret"></span>
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu">
-                                                        <li><a id="form-publish-item-service-source-wms-import-button-service-geoserver" class="form-publish-item-service-source-wms-import-button-service-help-link" data-attr="cida-geoserver" href="#" onclick="return false;">Geoserver</a></li>
+                                                        <li><a id="form-publish-item-service-source-wms-import-button-service-cidags" class="form-publish-item-service-source-wms-import-button-service-help-link" data-attr="dsas-geoserver" href="#" onclick="return false;">Geoserver</a></li>
                                                         <li><a id="form-publish-item-service-source-wms-import-button-service-marine" class="form-publish-item-service-source-wms-import-button-service-help-link" data-attr="marine-arcserver" href="#" onclick="return false;">Marine</a></li>
                                                         <li><a id="form-publish-item-service-source-wms-import-button-service-olga" class="form-publish-item-service-source-wms-import-button-service-help-link" data-attr="stpete-arcserver" href="#" onclick="return false;">Olga</a></li>
                                                     </ul>
