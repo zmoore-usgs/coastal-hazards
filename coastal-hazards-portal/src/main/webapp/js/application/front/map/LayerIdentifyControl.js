@@ -185,7 +185,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                                     $table.append($legendRow);
                                 }
                             });
-                            var sortedRows = $table.find('tr').not(':first').toArray().sortBy(function(row) {
+                            var sortedRows = $table.find('tr').toArray().sortBy(function(row) {
                                 return parseInt($(row).attr('id').substring(13));
                             })
                             $table.empty().append(sortedRows);
