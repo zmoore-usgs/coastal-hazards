@@ -263,7 +263,7 @@ CCH.Objects.Item = function (args) {
         } else {
             layerName = aggregationName + this.id;
 
-            if (me.ribboned && me.parent.ribboned) {
+            if (me.ribboned && me.parent && me.parent.ribboned) {
                 index = me.parent.children.findIndex(function (childId) {
                     return me.id === childId;
                 });
