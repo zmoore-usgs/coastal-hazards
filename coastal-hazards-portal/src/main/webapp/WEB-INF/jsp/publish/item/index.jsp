@@ -96,9 +96,6 @@
                 publication: {
                     title: <%= Publication.TITLE_MAX_LENGTH%>,
                     link: <%= Publication.LINK_MAX_LENGTH%>
-                },
-                keywords : {
-                    text: <%= Summary.KEYWORDS_MAX_LENGTH %>
                 }
             }
         </script>
