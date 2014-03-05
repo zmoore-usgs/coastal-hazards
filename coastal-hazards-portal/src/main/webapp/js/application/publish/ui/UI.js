@@ -406,12 +406,6 @@ CCH.Objects.UI = function () {
 
             if ($('.form-group-keyword').length === 1) {
                 errors.push('No keywords provided');
-            } else {
-                $('.form-group-keyword input').each(function(ind, input) {
-                    if ($(input).val().length > CCH.CONFIG.limits.keywords.text) {
-                        errors.push('Keyword ' + $(input).val() + ' longer than ' + CCH.CONFIG.limits.keywords.text + ' characters');
-                    }
-                });
             }
 
             if (me.isBlank($name)) {
