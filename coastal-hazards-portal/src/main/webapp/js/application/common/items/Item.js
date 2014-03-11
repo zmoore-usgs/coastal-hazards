@@ -139,7 +139,7 @@ CCH.Objects.Item = function (args) {
                     projection: 'EPSG:3857',
                     isBaseLayer: false,
                     displayInLayerSwitcher: false,
-                    singleTile : true,
+                    singleTile : me.ribboned,
                     ratio : 1,
                     bbox: bbox,
                     itemid: id,
