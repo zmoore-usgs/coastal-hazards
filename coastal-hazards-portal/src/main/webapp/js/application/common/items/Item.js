@@ -136,11 +136,12 @@ CCH.Objects.Item = function (args) {
                     exceptions : 'application/vnd.ogc.se_blank'
                 },
                 {
+                    displayOutsideMaxExtent: false,
                     projection: 'EPSG:3857',
                     isBaseLayer: false,
                     displayInLayerSwitcher: false,
-                    singleTile : me.ribboned,
-                    ratio : 1,
+                    singleTile : me.ribboned || false,
+                    maxExtent: new OpenLayers.Bounds(bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')),
                     bbox: bbox,
                     itemid: id,
                     transitionEffect : 'map-resize',
