@@ -54,14 +54,6 @@ CCH.Objects.Item = function (args) {
             me.type = data.type;
             me.services = data.services;
 
-            if (me.parent) {
-                if (me.parent.ribboned === true) {
-                    me.ribboned = true;
-                } else {
-                    me.ribboned = false;
-                }
-            }
-
             CCH.items.add({ item : me });
 
             if (me.children.length) {
@@ -144,30 +136,33 @@ CCH.Objects.Item = function (args) {
                     exceptions : 'application/vnd.ogc.se_blank'
                 },
                 {
+                    displayOutsideMaxExtent: false,
                     projection: 'EPSG:3857',
                     isBaseLayer: false,
                     displayInLayerSwitcher: false,
-                    singleTile : true,
-                    ratio : 1,
+                    singleTile : me.ribboned || false,
+                    maxExtent: new OpenLayers.Bounds(bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')),
                     bbox: bbox,
                     itemid: id,
                     transitionEffect : 'map-resize',
                     type: 'cch'// CCH specific setting
                 }
             );
-        
+
         return layer;
     };
 
     me.getLayerList = function (args) {
         args = args || {};
         var index,
-            layer,
             layerName,
             idx,
             child,
             aggregationName = args.aggregationName || '',
-            layers = args.layers || [];
+            layers = args.layers || [],
+            bboxObject = args.bboxObject || {},
+            stringifiedBbox = me.bbox.toString(),
+            childReturnObj;
 
         if (me.itemType === 'aggregation') {
             if (aggregationName === '') {
@@ -176,21 +171,34 @@ CCH.Objects.Item = function (args) {
             for (idx = 0; idx < this.displayedChildren.length; idx++) {
                 child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
-                    layers.concat(child.getLayerList({
+                    childReturnObj = child.getLayerList({
                         layers : layers,
-                        aggregationName : aggregationName
-                    }));
+                        aggregationName : aggregationName,
+                        bboxObject : bboxObject
+                    });
+                    layers.concat(childReturnObj.layers);
+                    bboxObject = childReturnObj.bboxObject;
                 }
 
             }
         } else {
-            if (me.ribboned) {
-                if (layers.length > 0) {
-                    layer = layers[layers.length - 1];
-                    index = parseInt(layer.substring(layer.lastIndexOf('_') + 1), 10) + 1;
+            if (me.ribboned && me.parent.ribboned) {
+                index = me.parent.children.findIndex(function (childId) {
+                    return me.id === childId;
+                });
+                index += 1;
+                if (index > layers.length + 1) {
+                    index = layers.length + 1;
+                } 
+                
+                if (bboxObject[stringifiedBbox]) {
+                    index = bboxObject[stringifiedBbox].length + 1;
+                    bboxObject[stringifiedBbox].push(me.id);
                 } else {
                     index = 1;
+                    bboxObject[stringifiedBbox] = [me.id];
                 }
+                
                 layerName = aggregationName + me.id + '_r_' + index;
             } else {
                 layerName = aggregationName + me.id;
@@ -198,7 +206,11 @@ CCH.Objects.Item = function (args) {
 
             layers.push(layerName);
         }
-        return layers;
+        
+        return {
+            layers : layers,
+            bboxObject : bboxObject
+        };
     };
 
     me.showLayer = function (args) {
@@ -210,7 +222,10 @@ CCH.Objects.Item = function (args) {
             layerName,
             aggregationName = args.aggregationName || '',
             visible = args.visible,
-            layers = args.layers || [];
+            layers = args.layers || [],
+            bboxObject = args.bboxObject || {},
+            stringifiedBbox = me.bbox.toString(),
+            childReturnObj;
 
 
         // Check to see if this is an aggregation. If it is, I need
@@ -227,11 +242,14 @@ CCH.Objects.Item = function (args) {
             for (idx = 0; idx < this.displayedChildren.length; idx++) {
                 child = CCH.items.getById({ id : this.displayedChildren[idx] });
                 if (child) {
-                    child.showLayer({
+                    childReturnObj = child.showLayer({
                         layers : layers,
-                        visible : visible,
-                        aggregationName : aggregationName
+                        aggregationName : aggregationName,
+                        bboxObject : bboxObject,
+                        visible : visible
                     });
+                    layers.concat(childReturnObj.layers);
+                    bboxObject = childReturnObj.bboxObject;
                 }
             }
 
@@ -244,17 +262,27 @@ CCH.Objects.Item = function (args) {
                 }
             });
         } else {
-
             layerName = aggregationName + this.id;
 
-            if (me.ribboned) {
-                if (layers.length > 0) {
-                    layer = layers[layers.length - 1];
-                    index = parseInt(layer.name.substring(layer.name.lastIndexOf('_') + 1), 10) + 1;
+            if (me.ribboned && me.parent && me.parent.ribboned) {
+                index = me.parent.children.findIndex(function (childId) {
+                    return me.id === childId;
+                });
+                index += 1;
+                
+                if (index > layers.length + 1) {
+                    index = layers.length + 1;
+                }
+                
+                if (bboxObject[stringifiedBbox]) {
+                    index = bboxObject[stringifiedBbox].length + 1;
+                    bboxObject[stringifiedBbox].push(me.id);
                 } else {
                     index = 1;
+                    bboxObject[stringifiedBbox] = [me.id];
                 }
-                layerName = layerName + '_r_' + index;
+                
+                layerName = aggregationName + me.id + '_r_' + index;
             } else {
                 index = 0;
             }
@@ -268,11 +296,15 @@ CCH.Objects.Item = function (args) {
             });
             layers.push(layer);
         }
-        return layers;
+        
+        return {
+            layers : layers,
+            bboxObject : bboxObject
+        };
     };
 
     me.hideLayer = function () {
-        me.getLayerList().each(function (layerName) {
+        me.getLayerList().layers.each(function (layerName) {
             CCH.map.hideLayersByName(layerName);
         });
 

@@ -76,7 +76,8 @@ CCH.Objects.ItemsSlide = function (args) {
                 width : slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth
             });
             slideContent.offset({
-                left : windowWidth - me.borderWidth
+                left : windowWidth - me.borderWidth,
+                top : slideContainer.offset().top
             });
             slideContainer.animate({
                 left: toExtent.left
@@ -173,14 +174,20 @@ CCH.Objects.ItemsSlide = function (args) {
         }
     };
 
-    $(window).scroll(function () {
+    me.windowScrollHandler = function () {
         var $slideContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
             $slideTab = $('#' + me.SLIDE_TAB_ID);
             
         if (me.isSmall()) {
             var top;
-            if ($(window).height() < 480) {
-                top = $(window).height() -  $slideTab.outerHeight() - 20;
+            if (window.innerHeight < CCH.ui.minimumHeight) {
+                top = window.innerHeight -  $slideTab.outerHeight() * 2;
+                if (top < 0) {
+                    top = $slideContainer.offset().top + $slideTab.outerHeight();
+                }
+                if (top < $(window).scrollTop()) {
+                    top = $(window).scrollTop() + $slideTab.outerHeight();
+                }
             } else {
                 top = $slideContainer.height() - $slideTab.outerHeight() - 20;
             }
@@ -189,7 +196,8 @@ CCH.Objects.ItemsSlide = function (args) {
                 top: top
             });
         }
-    });
+    };
+    $(window).scroll(me.windowScrollHandler);
 
     me.resized = function () {
         var extents = me.getExtents(),
@@ -197,10 +205,11 @@ CCH.Objects.ItemsSlide = function (args) {
             isSmall = me.isSmall(),
             $slideContainer = $('#' + me.SLIDE_ITEMS_CONTAINER_ID),
             $slideTab = $('#' + me.SLIDE_TAB_ID),
-            slideContent = $('#' + me.$SLIDE_CONTENT_ID),
+            $slideContent = $('#' + me.$SLIDE_CONTENT_ID),
             bodyWidth = $('body').outerWidth(),
             bodyHeight = $('#' + me.APPLICATION_CONTAINER_ID).outerHeight(),
-            borderSize = 4;
+            borderSize = 4,
+            top;
 
         // I've got to know what my form factor is. Bootstrap uses a special number,
         // 992px at which to resize and I do some special stuff when bootstrap resizes.
@@ -208,49 +217,67 @@ CCH.Objects.ItemsSlide = function (args) {
         //   to a free-floating column and needs quite a bit of help in resizing when
         //   that happens
         if (isSmall) {
-            $slideContainer.width(bodyWidth - toExtent.left);
-            slideContent.css('width', $slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth);
-            $slideContainer.height(bodyHeight - toExtent.top);
             // Then there's special sizing depending on if I'm closed or not. 
             if (me.isClosed) {
                 // If I'm closed, my container, which holds my tab and content, 
                 // should be off screen to the right except for the width of the tab
                 // and its border so that just the tab is peeking out of the 
                 // right side of the screen
-                $slideContainer.
-                    offset({
-                        left: bodyWidth  - $slideTab.outerWidth() - (me.borderWidth * 2),
-                        top: toExtent.top
-                    });
+                $slideContainer.offset({
+                    left: bodyWidth  - $slideTab.outerWidth() - (me.borderWidth * 2)
+                });
                 // I hide the content dom since it's off screen and I don't want 
                 // to show it
-                slideContent.css({
+                $slideContent.css({
                     display : 'none'
                 });
             } else {
                 // If I'm open...
                 $slideContainer.offset(toExtent);
 
-                slideContent.css({
+                $slideContent.css({
                     display : ''
                 });
             }
-
-            var top;
-            if ($(window).height() < 480) {
-                top = $(window).height() -  $slideTab.outerHeight() - 60;
-            } else {
-                top = $slideContainer.height() - $slideTab.outerHeight() - 20;
+            
+            
+            $slideContainer.offset({
+                'top' : toExtent.top
+            });
+            $slideContainer.css({
+                'width' : bodyWidth - toExtent.left,
+                'height' : bodyHeight - toExtent.top
+            });
+            
+            $slideContent.css({
+                'width' : $slideContainer.outerWidth() - $slideTab.outerWidth() - me.borderWidth
+            });
+            $slideContent.offset({
+                'top' : toExtent.top
+            });
+            
+            
+            if (window.innerHeight < CCH.ui.minimumHeight) {
+                top = window.innerHeight -  $slideTab.outerHeight() * 2;
+                if (top < 0) {
+                    top = $slideContainer.offset().top + $slideTab.outerHeight();
+                }
+                if (top < $(window).scrollTop()) {
+                    top = $(window).scrollTop() + $slideTab.outerHeight();
+                }
             }
 
             $slideTab.offset({
                 left: $slideContainer.offset().left + borderSize,
                 top: top
             });
+            
+            me.windowScrollHandler();
         } else {
-            slideContent.css({
+            $slideContent.css({
                 width: '',
-                display : ''
+                display : '',
+                top : ''
             });
             $slideContainer.
                 css({
@@ -261,6 +288,8 @@ CCH.Objects.ItemsSlide = function (args) {
                     'width' : ''
                 });
         }
+        
+        $(window).trigger('cch.slide.items.resized');
     };
 
     me.getExtents = function () {

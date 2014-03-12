@@ -9,6 +9,29 @@ CCH.Objects.OWS = function() {
     return $.extend(me, {
         init: function () {
             me.servers = {
+                'dsas-geoserver': {
+                    endpoints: {
+                        endpoint: CCH.CONFIG.data.sources['dsas-geoserver'].endpoint,
+                        proxy: CCH.CONFIG.data.sources['dsas-geoserver'].proxy,
+                        wmsGetCapsUrl: CCH.CONFIG.data.sources['dsas-geoserver'].proxy + 'ows?service=wms&version=1.3.0&request=GetCapabilities',
+                        wfsGetCapsUrl: CCH.CONFIG.data.sources['dsas-geoserver'].proxy + 'ows?service=wfs&version=1.1.0&request=GetCapabilities',
+                        wfsGetFeatureUrl: CCH.CONFIG.data.sources['dsas-geoserver'].proxy + 'ows?service=wfs&version=1.0.0&request=GetFeature'
+                    },
+                    data: {
+                        wms: {
+                            capabilities: {
+                                xml: '',
+                                object: {}
+                            }
+                        },
+                        wfs: {
+                            capabilities: {
+                                xml: '',
+                                object: {}
+                            }
+                        }
+                    }
+                },
                 'cida-geoserver': {
                     endpoints: {
                         endpoint: CCH.CONFIG.data.sources['cida-geoserver'].endpoint,
@@ -213,8 +236,9 @@ CCH.Objects.OWS = function() {
                 success: [],
                 error: []
             },
-                layername = args.layerName || '';
-            $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'ows?', {
+                layername = args.layerName || '',
+                sourceServer = args.sourceServer || 'cida-geoserver';
+            $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources[sourceServer].proxy + 'ows?', {
                 data: {
                     request: 'DescribeFeaturetype',
                     service: 'WFS',
@@ -248,7 +272,7 @@ CCH.Objects.OWS = function() {
                 namespace = args.namespace || 'ows',
                 url;
         
-            if (server === 'cida-geoserver' && namespace !== 'ows') {
+            if ((server === 'dsas-geoserver' || server === 'cida-geoserver') && namespace !== 'ows') {
                 url = CCH.CONFIG.contextPath + me.servers[server].endpoints.wfsGetCapsUrl;
                 url = url.add(namespace + '/', url.indexOf('ows'));
             } else if (server === 'stpete-arcserver') {
@@ -300,7 +324,7 @@ CCH.Objects.OWS = function() {
                 url = args.url;
 
             if (!url) {
-                if (server === 'cida-geoserver' && namespace !== 'ows') {
+                if ((server === 'dsas-geoserver' || server === 'cida-geoserver') && namespace !== 'ows') {
                     url = CCH.CONFIG.contextPath + me.servers[server].endpoints.wmsGetCapsUrl;
                     url = url.add(namespace + '/', url.indexOf('ows'));
                 } else if (server === 'stpete-arcserver') {
@@ -352,7 +376,8 @@ CCH.Objects.OWS = function() {
             var scope = args.scope;
             var propertyArray = args.propertyArray;
             var callbacks = args.callbacks;
-            var proxyEndpoint = CCH.CONFIG.data.sources['cida-geoserver'].proxy;
+            var proxyServer = args.proxyServer || 'cida-geoserver';
+            var proxyEndpoint = CCH.CONFIG.data.sources[proxyServer].proxy;
 
             var url = CCH.CONFIG.contextPath + proxyEndpoint + layerPrefix + '/wfs?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&typeName=' + layerName + '&propertyName=';
             url += (propertyArray || []).join(',');

@@ -163,7 +163,7 @@ CCH.Objects.BucketSlide = function (args) {
         me.cards.each(function ($cardClone) {
             id = $cardClone.data('id');
             item = CCH.items.getById({id : id});
-            layerNames = item.getLayerList();
+            layerNames = item.getLayerList().layers;
             sessionItem = CCH.session.getItemById(id);
             sortedSessionItems.push(sessionItem);
             layer = CCH.map.getLayersByName(id);
@@ -177,7 +177,7 @@ CCH.Objects.BucketSlide = function (args) {
                 } else {
                     layers = layers.concat(item.showLayer({
                         visible : sessionItem.visible || false
-                    }));
+                    }).layers);
                 }
             });
         });
@@ -258,7 +258,7 @@ CCH.Objects.BucketSlide = function (args) {
             $slideContainer.height($('body').height() - toExtent.top - 1);
             $slideContainer.width(windowWidth - toExtent.left);
             $slideContent.width($slideContainer.outerWidth() - me.borderWidth);
-            $slideContent.height($slideContainer.innerHeight() - me.$SLIDE_CONTROLSET.outerHeight() - me.borderWidth);
+            $slideContent.height($slideContainer.innerHeight() - me.borderWidth - 1);
         } else {
             if (me.isClosed) {
                 $slideContainer.css({
@@ -541,7 +541,7 @@ CCH.Objects.BucketSlide = function (args) {
         $card.data('id', id);
 
         // Test if the layer is currently visible. If not, set view button to off 
-        layerCurrentlyInMap = item.getLayerList().every(function (id) {
+        layerCurrentlyInMap = item.getLayerList().layers.every(function (id) {
             layerArray = CCH.map.getLayersBy('name', id);
             return layerArray.length > 0 && layerArray[0].getVisibility();
         });
@@ -587,7 +587,7 @@ CCH.Objects.BucketSlide = function (args) {
                 var isAggregation = item.itemType === 'aggregation',
                     isLayerInMap = false;
 
-                isLayerInMap = item.getLayerList().every(function (id) {
+                isLayerInMap = item.getLayerList().layers.every(function (id) {
                     layerArray = CCH.map.getLayersBy('name', id);
                     return layerArray.length > 0 && layerArray[0].getVisibility();
                 });
@@ -719,7 +719,7 @@ CCH.Objects.BucketSlide = function (args) {
     });
 
     $(window).on({
-        'cch.ui.resized' : me.resized,
+        'cch.slide.items.resized' : me.resized,
         'cch.ui.redimensioned' : me.redimensioned,
         'cch.slide.search.button.click.explore' : me.close,
         'app-navbar-button-clicked' : me.toggle,

@@ -15,7 +15,8 @@
 	}
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
 	String publicContext = props.getProperty("coastal-hazards.public.context");
-	String geoserverEndpoint = props.getProperty("coastal-hazards.geoserver.endpoint");
+	String portalGeoserverEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
+	String dsasGeoserverEndpoint = props.getProperty("coastal-hazards.cidags.endpoint");
 	String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
 	String marineArcServerEndpoint = props.getProperty("coastal-hazards.marine.endpoint");
 	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
@@ -109,8 +110,12 @@
 			data: {
 				sources: {
 					'cida-geoserver': {
-						'endpoint': '<%=geoserverEndpoint%>',
+						'endpoint': '<%=portalGeoserverEndpoint%>',
 						'proxy': '/geoserver/'
+					},
+                    'dsas-geoserver': {
+						'endpoint': '<%=dsasGeoserverEndpoint%>',
+						'proxy': '/cidags/'
 					},
 					'stpete-arcserver': {
 						'endpoint': '<%=stPeteArcServerEndpoint%>',

@@ -198,7 +198,7 @@
         /* Scrollable inner container */
         #application-slide-items-container > div:nth-child(2) > div > div:nth-child(2) {
             overflow-y: auto;
-            height: 95%;
+            height: 90%;
         }
         
         #application-slide-items-container > div:nth-child(2) > div > div:first-child {

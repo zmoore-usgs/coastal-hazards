@@ -33,7 +33,7 @@
         <servlet-class>gov.usgs.cida.proxy.cache.CachingProxyServlet</servlet-class>
         <init-param>
             <param-name>forward-url-param</param-name>
-            <param-value>coastal-hazards.geoserver.endpoint</param-value>
+            <param-value>coastal-hazards.portal.geoserver.endpoint</param-value>
         </init-param>
         <init-param>
             <param-name>readTimeout</param-name>

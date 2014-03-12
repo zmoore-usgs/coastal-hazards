@@ -736,7 +736,7 @@ CCH.Objects.SearchSlide = function (args) {
     });
 
     $(window).on({
-        'cch.ui.resized': function (args) {
+        'cch.slide.items.resized': function (args) {
             me.resize(args);
         },
         'cch.slide.items.close' : me.close
