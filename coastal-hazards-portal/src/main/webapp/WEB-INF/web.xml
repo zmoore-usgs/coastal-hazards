@@ -30,7 +30,7 @@
 	</servlet-mapping>
     <servlet>
         <servlet-name>GeoServerServlet</servlet-name>
-        <servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+        <servlet-class>gov.usgs.cida.proxy.cache.CachingProxyServlet</servlet-class>
         <init-param>
             <param-name>forward-url-param</param-name>
             <param-value>coastal-hazards.geoserver.endpoint</param-value>
@@ -38,6 +38,22 @@
         <init-param>
             <param-name>readTimeout</param-name>
             <param-value>300000</param-value>
+        </init-param>
+        <init-param>
+            <param-name>proxy-cache-name</param-name>
+            <param-value>cchGeoserverCache</param-value>
+        </init-param>
+        <init-param>
+            <param-name>max-megabytes-on-disk</param-name>
+            <param-value>8096</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cache-eternal</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cache-max-entries</param-name>
+            <param-value>1000000</param-value>
         </init-param>
     </servlet>
     <servlet>
