@@ -19,7 +19,7 @@ public final class Pcoi {
         "POVW1",
         "POVW2",
         "POVW3",
-        "POVw4",
+        "POVW4",
         "POVW5",
         "PIND1",
         "PIND2",
