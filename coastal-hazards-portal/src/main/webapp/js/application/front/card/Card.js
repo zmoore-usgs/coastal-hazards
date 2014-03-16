@@ -87,7 +87,9 @@ CCH.Objects.Card = function (args) {
         }
 
         if (me.child) {
-            me.child.show();
+            me.child.show({
+                dontShowLayer : dontShowLayer
+            });
         } else {
             if (!dontShowLayer) {
                 me.showLayer();
