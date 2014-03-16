@@ -209,7 +209,7 @@ CCH.Objects.Accordion = function (args) {
             if (obj.display === true) {
                 var $container = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID);
 
-                $container.animate({
+                $container.stop().animate({
                     scrollTop : $container[0].scrollHeight
                 }, 1000);
             }
