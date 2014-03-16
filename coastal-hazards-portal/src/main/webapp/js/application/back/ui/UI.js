@@ -38,19 +38,19 @@ CCH.Objects.UI = function (args) {
                 $legendContainer.height($legendContainer.find('>div:first-child').height());
             };
         if (dataItem.type === 'historical') {
-            if (dataItem.name === 'rates') {
+            if (["LRR", "WLR", "SCE", "NSM", "EPR"].indexOf(dataItem.attr.toUpperCase()) !== -1) {
                 featureLegend = CCH.ui.buildLegend({
                     type: dataItem.type,
                     name: dataItem.name,
                     attr: dataItem.attr,
                     sld: sld
                 });
-                    insertLegendAtIndex(featureLegend, index);
-                } else {
+                insertLegendAtIndex(featureLegend, index);
+            } else {
                 var wmsService = dataItem.services.find(function(svc) {
-                    return svc.type === 'proxy_wms'
+                    return svc.type === 'proxy_wms';
                 });
-                
+
                 // - The legend builder is going to need the actual data from the shorelines layer
                 // 
                 // - Using the wmsService.layers info for a WMS request because that's properly
@@ -62,47 +62,51 @@ CCH.Objects.UI = function (args) {
                     callbacks : {
                         success : [
                         function (data) {
-                            var features = data;
-                            featureLegend = CCH.ui.buildLegend({
-                                type: dataItem.type,
-                                attr: dataItem.attr,
-                                sld: sld,
-                                features: features
-                            });
-                            if ($('.cch-ui-legend-table').length === 0) {
-                                insertLegendAtIndex(featureLegend, index);
-                            } else {
-                                var $table = $('.cch-ui-legend-table'),
-                                    $rows = $table.find('tbody > tr');
-
-                                featureLegend.find('tr').each(function (ind, row) {
-                                    var foundRow = $rows.toArray().find(function(r) {
-                                        return $(r).attr('data-attr') === $(row).attr('data-attr');
-                                    });
-
-                                    if (!foundRow) {
-                                        $rows.push(row)
-                                    }
+                                var features = data;
+                                featureLegend = CCH.ui.buildLegend({
+                                    type: dataItem.type,
+                                    attr: dataItem.attr,
+                                    sld: sld,
+                                    features: features
                                 });
+                                if ($('.cch-ui-legend-table').length === 0) {
+                                    insertLegendAtIndex(featureLegend, index);
+                                } else {
+                                    var $table = $('.cch-ui-legend-table'),
+                                        $rows = $table.find('tbody > tr'),
+                                        $caption = $table.find('caption');
 
-                                $table.empty();
-                                var sortedRows = $rows.toArray().sortBy(function (row) {
-                                    return parseInt($(row).find('.cch-ui-legend-table-body-div-year').html());
-                                }),
-                                    $thead = $('<thead />').append($('<tr />').append(
-                                        $('<td />'),
-                                        $('<td />').html('Year')
-                                    ))
-                                $table.append($thead, $('<tbody />').append(sortedRows.reverse()));
+                                    featureLegend.find('tr').each(function (ind, row) {
+                                        var foundRow = $rows.toArray().find(function(r) {
+                                            return $(r).attr('data-attr') === $(row).attr('data-attr');
+                                        });
+
+                                        if (!foundRow) {
+                                            $rows.push(row);
+                                        }
+                                    });
+                                    
+                                    // I'm going to empty the table, add the sorted
+                                    // rows put the caption back on top
+                                    $table.empty();
+                                    var sortedRows = $rows.toArray().sortBy(function(row) {
+                                        return parseInt($(row).find('.cch-ui-legend-table-body-div-year').html());
+                                    }),
+                                        $thead = $('<thead />').append($('<tr />').append(
+                                            $('<td />'),
+                                            $('<td />').html('Year')
+                                            ));
+                                    $table.append($thead, $('<tbody />').append(sortedRows.reverse()));
+                                    $table.prepend($caption);
+                                }
                             }
-                        }
-                    ],
-                    error : [
-                        function (data, textStatus, jqXHR) {
-                            LOG.warn(textStatus);
-                            CCH.ui.removeLegendContainer();
-                        }
-                    ]
+                        ],
+                        error: [
+                            function(data, textStatus) {
+                                LOG.warn(textStatus);
+                                CCH.ui.removeLegendContainer();
+                            }
+                        ]
                     }
                 });
             }
@@ -117,7 +121,7 @@ CCH.Objects.UI = function (args) {
             }
             
             if (isLast && $legendContainer.children().length === 1) {
-                $legendContainer.find('caption').html(item.summary.full.title)
+                $legendContainer.find('caption').html(item.summary.full.title);
             }
         } else if (dataItem.type === 'vulnerability') {
             if ($legendContainer.find('#feature-legend-' + dataItem.attr).length === 0) {
@@ -131,7 +135,7 @@ CCH.Objects.UI = function (args) {
             }
             
             if (isLast && $legendContainer.children().length === 1) {
-                $legendContainer.find('caption').html(item.summary.full.title)
+                $legendContainer.find('caption').html(item.summary.full.title);
             }
         }
     };
@@ -150,7 +154,7 @@ CCH.Objects.UI = function (args) {
             lb,
             $legendDiv = $('<div />').addClass('cch-ui-legend-div'),
             $legendTable = $('<table />').addClass('cch-ui-legend-table table table-bordered table-hover'),
-            $legendTableCaption = $('<caption />').addClass('cch-ui-legend-table-caption').html(sld.title),
+            $legendTableCaption = $('<caption />').addClass('cch-ui-legend-table-caption').html(CCH.CONFIG.item.summary.tiny.text || sld.title),
             $legendTableHead = $('<thead />').append(
                 $('<tr />').append(
                     $('<th />').attr({'scope': 'col'}),
@@ -214,16 +218,16 @@ CCH.Objects.UI = function (args) {
                     $legendTableBody
                 ));
             } else {
-                
                 var $testTable = $('.cch-ui-legend-table[data-attr="' + attr + '"]');
                 if ($testTable.length !== 0) {
                     $legendTable = $testTable;
                     $legendDiv.empty();
                 }
-                $legendDiv.append($legendTable);
-                $legendTableCaption = $legendTable.find('caption');
-                $legendTableCaption.remove();
-                $legendTableCaption.html('');
+                
+                // TODO- When time permits, figure out why adding this repeatedly
+                // only creates one caption in the table. I don't have time right 
+                // now to trace this down
+                $legendDiv.append($legendTable.append($legendTableCaption));
                 
                 years = args.features.map(function (f) {
                     if (CCH.CONFIG.item.attr) {

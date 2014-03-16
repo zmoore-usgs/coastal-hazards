@@ -14,7 +14,7 @@
                         <li role="presentation">
                             Share Bucket
                         </li>
-                        <li role="presentation">
+                        <li class="hide" role="presentation">
                             Download Bucket
                         </li>
                     </ul>
