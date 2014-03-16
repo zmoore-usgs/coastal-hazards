@@ -67,7 +67,8 @@ CCH.Objects.Card = function (args) {
         var duration = args.duration !== undefined ? args.duration : 500,
             effect = args.effect || 'slide',
             easing = args.easing || 'swing',
-            complete = args.complete || null;
+            complete = args.complete || null,
+            dontShowLayer = args.dontShowLayer || false;
 
         me.container.show({
             effect : effect,
@@ -88,7 +89,9 @@ CCH.Objects.Card = function (args) {
         if (me.child) {
             me.child.show();
         } else {
-            me.showLayer();
+            if (!dontShowLayer) {
+                me.showLayer();
+            }
         }
 
         me.isOpen = true;
@@ -223,7 +226,7 @@ CCH.Objects.Card = function (args) {
         });
     };
 
-    me.createCard = function (id) {
+    me.createCard = function (id, dontShowLayer) {
         // User selected a product. I will append that card to myself
         var card = new CCH.Objects.Card({
             item : CCH.items.getById({
@@ -240,7 +243,9 @@ CCH.Objects.Card = function (args) {
         me.container.after(card.getContainer());
 
         // Show this new card to the user
-        card.show();
+        card.show({
+            dontShowLayer : dontShowLayer
+        });
     };
 
     me.bindPropertyAggButton = function ($control) {
@@ -450,13 +455,18 @@ CCH.Objects.Card = function (args) {
     };
 
     me.showPath = function (path) {
-        var nextChild = path.shift();
+        var nextChild = path.shift(),
+            dontShowLayer;
 
         if (nextChild === me.id) {
             path.shift();
         }
-
+        
+        // I don't want to show the layer until I've drilled down to the bottom
+        dontShowLayer = path.length > 0 || nextChild !== undefined;
+        
         me.show({
+            dontShowLayer : dontShowLayer,
             complete : function () {
                 if (nextChild) {
                     if (me.child) {
@@ -468,7 +478,7 @@ CCH.Objects.Card = function (args) {
                                     me.child.removeSelf();
                                     // Now that my child is gone, I'm going to 
                                     // replace it with a new card
-                                    me.createCard(nextChild);
+                                    me.createCard(nextChild, dontShowLayer);
                                     me.child.showPath(path);
                                 }
                             });
@@ -478,7 +488,7 @@ CCH.Objects.Card = function (args) {
                     } else {
                         // I have no children so I am free to go ahead and 
                         // just create a new child card
-                        me.createCard(nextChild);
+                        me.createCard(nextChild, dontShowLayer);
                         me.child.showPath(path);
                     }
                 }
