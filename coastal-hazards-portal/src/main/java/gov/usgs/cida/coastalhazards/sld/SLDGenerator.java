@@ -42,7 +42,8 @@ public class SLDGenerator {
         sideEffectMapPut(vulnerability, BayesianWaveHeightCVI.mwh);
         sideEffectMapPut(vulnerability, BayesianTidalRangeCVI.tr);
         sideEffectMapPut(vulnerability, BayesianErateCVI.erate);
-		sideEffectMapPut(vulnerability, OldSchoolCVI.oldSchool);
+		sideEffectMapPut(vulnerability, OldSchoolComponentCVI.componentOldSchool);
+        sideEffectMapPut(vulnerability, OldSchoolOverallCVI.overallOldSchool);
 		gmap.put(Item.Type.vulnerability, vulnerability);
 		
 		Map<String, SLDConfig> historical = new HashMap<>();

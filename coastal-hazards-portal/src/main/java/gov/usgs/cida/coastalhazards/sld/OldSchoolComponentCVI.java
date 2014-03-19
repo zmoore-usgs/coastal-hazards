@@ -9,9 +9,9 @@ import java.util.Map;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public final class OldSchoolCVI {
+public final class OldSchoolComponentCVI {
 
-    protected static final String[] attrs = {"TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"};
+    protected static final String[] attrs = {"TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK"};
     protected static final float[] thresholds = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
     protected static final String[] colors = {"#006945", "#3B6800", "#FFFF00", "#FEAC00", "#FF0000"};
     protected static final String[] categories = {"Very Low", "Low", "Moderate", "High", "Very High"};
@@ -31,7 +31,7 @@ public final class OldSchoolCVI {
 		bins = binsResult;
 	}
 	
-	public static final SLDConfig oldSchool = new SLDConfig(
+	public static final SLDConfig componentOldSchool = new SLDConfig(
 			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH, attrs, thresholds, colors, bins
 	);
 
