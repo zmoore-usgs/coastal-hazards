@@ -48,8 +48,19 @@
                 </a>
             </div>
             <div id="text">
-                <p>With more than half of the American people living along our Nation’s coasts, extreme beach and cliff erosion can dramitically alter coastal ecosysytems, cause billion of dollars’ worth of coastal development, and even threaten human life.</p>
-                <p>Through projects like the National Assessment of Coastal Change Hazards and regional studies of nearshore processes, the US Geological Survey is uncovering the science behind coastal change hazards and providing data, tools, and scientific knowledge to help coastal planners as they work to reduce risk along our coastlines.</p>
+                <p>
+                    Coastal change can dramatically alter ecosystems, cause 
+                    damage to billions of dollars' worth of coastal development, 
+                    and even threaten human life.
+                </p>
+                <p>
+                    Through projects like the National Assessment of Coastal 
+                    Change Hazards and regional studies of nearshore processes, 
+                    the US Geological Survey conducts research on coastal change 
+                    hazards and provide data, tools, and scientific knowledge to 
+                    help coastal planners as they work to reduce risk along our 
+                    coastlines.
+                </p>
             </div>
             <div id="icon_area">
                 <div id="holder">
