@@ -139,6 +139,16 @@
 }
 
 @media (min-width: 992px) {
+    /* Chrome issue
+    http://stackoverflow.com/questions/17508035/navigation-disappearing-in-chrome-after-scrolling-and-clicking
+    */
+    #application-slide-items-content-container-inner-scrollable {
+        -webkit-transform: translateZ(0);
+    }  
+    #application-slide-items-content-container-inner-scrollable > .panel{
+        -webkit-transform: translateZ(0);
+    } 
+    
     /* No tab shown on large display. Toggled via button in bar */
     #application-slide-items-tab {
         display: none;
