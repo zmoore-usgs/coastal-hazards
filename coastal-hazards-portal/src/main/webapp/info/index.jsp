@@ -55,24 +55,24 @@
                 <div id="holder">
                     <div class="icon">
                         <div class="icon_holder">
-                            <a href="<%=baseUrl%>/ui/item/CzjZVd9"><img src="../images/info/extreme_storms.jpg" alt="extreme storms pic"/></a>
+                            <a href="<%=baseUrl%>/ui/item/CAckxGz"><img src="../images/info/extreme_storms.jpg" alt="extreme storms pic"/></a>
                         </div><!--icon_holder-->
-                        <h3><a href="<%=baseUrl%>/ui/item/CzjZVd9">Explore Extreme Storms</a></h3>
+                        <h3><a href="<%=baseUrl%>/ui/item/CAckxGz">Explore Extreme Storms</a></h3>
                         <p>Coastal erosion hazards</p>
                     </div><!--icon-->
                     <div class="icon">
                         <div class="icon_holder">
-                            <a href="<%=baseUrl%>/ui/item/Czina7y"><img src="../images/info/shoreline_change.jpg" alt="shoreline change pic"/></a>
+                            <a href="<%=baseUrl%>/ui/item/CAkR645"><img src="../images/info/shoreline_change.jpg" alt="shoreline change pic"/></a>
                         </div><!--icon_holder-->
-                        <h3><a href="<%=baseUrl%>/ui/item/Czina7y">Explore Shoreline Change</a></h3>
+                        <h3><a href="<%=baseUrl%>/ui/item/CAkR645">Explore Shoreline Change</a></h3>
                         <p>Historical positions and</p>
                         <p>rates of change</p>
                     </div><!--icon-->
                     <div class="icon">
                         <div class="icon_holder">
-                            <a href="<%=baseUrl%>/ui/item/CzjTP3N"><img src="../images/info/sea-leve_rise.jpg" alt="sea-level_rise pic"/></a>
+                            <a href="<%=baseUrl%>/ui/item/CARv9Z5"><img src="../images/info/sea-leve_rise.jpg" alt="sea-level_rise pic"/></a>
                         </div><!--icon_holder-->
-                        <h3><a href="<%=baseUrl%>/ui/item/CzjTP3N">Explore Sea-Level Rise</a></h3>
+                        <h3><a href="<%=baseUrl%>/ui/item/CARv9Z5">Explore Sea-Level Rise</a></h3>
                         <p>Vulnerability</p>
                     </div><!--icon-->
                 </div><!--icon_area-->
