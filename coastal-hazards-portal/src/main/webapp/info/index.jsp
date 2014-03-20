@@ -69,6 +69,9 @@
         </style>
     </head>
     <body>
+
+	<div id=“wrapper”>
+
         <header>
             <a href="#"><img src="../images/info/collaborative_logo.png" alt="collaborative logo" /></a>
             <h1>USGS Coastal Change Hazards Portal</h1>
@@ -128,6 +131,8 @@
                 </div><!--icon_area-->
             </div><!--holder-->
         </div><!--content-->
+
+	</div><!—wrapper—>
 
         <footer>
             <p id="usgsfooterbar">
