@@ -13,7 +13,7 @@ html, body{background:#fff;
 			height:100%;
 	}
 	
-#wrapper{min-height:100%;}
+#wrapper{min-height:920px;}
 
 #content{overflow:auto;
 	padding-bottom:68px;}
