@@ -3,7 +3,7 @@
     <div class="input-group">
         <div class="input-group-btn">
             <button id='app-navbar-search-dropdown-toggle' type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                All<span><i class="fa fa-caret-down"></i></span>
+                All<span><i class="fa fa-caret-down" alt=“arrow pointing downwards”></i></span>
             </button>
             <ul id="app-navbar-search-dropdown-menu" class="dropdown-menu">
                 <li class="disabled app-navbar-search-dropdown-item"><a id="app-navbar-search-dropdown-toggle-choice-all" title="All" href="#">All</a></li>
@@ -20,7 +20,7 @@
 
         <%-- Go Button --%>
         <div class="input-group-btn">
-            <button id="app-navbar-search-submit-button" class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
+            <button id="app-navbar-search-submit-button" class="btn btn-default" type="button"><i class="fa fa-search” alt=“magnifying glass”></i></button>
         </div>
     </div>
 </div>
