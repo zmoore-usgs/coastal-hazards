@@ -9,8 +9,14 @@ em {font-style:normal;
     font-weight:normal;} 
 .clearfix {clear:both;}
 
-body{background:#fff;
-}
+html, body{background:#fff;
+			height:100%;
+	}
+	
+#wrapper{min-height:100%;}
+
+#content{overflow:auto;
+	padding-bottom:68px;}
 
 h1.mobile{display:none;}
 
@@ -125,8 +131,9 @@ h1.mobile{display:none;}
            margin-top:10px;
            border-top:1px solid rgb(219,219,219);
            border-bottom:1px solid rgb(219,219,219);
-           position:absolute;
-           bottom:0;}
+          	position: relative;
+			margin-top: -68px; /* negative value of footer height */
+			clear:both;}
 
     footer img{padding-left:10px;
                padding-top:11px;}
@@ -252,7 +259,9 @@ h1.mobile{display:none;}
            margin-top:10px;
            border-top:1px solid rgb(219,219,219);
            border-bottom:1px solid rgb(219,219,219);
-           position:relative;}
+           position:relative;
+		   	margin-top: -68px; /* negative value of footer height */
+			clear:both;}
 
     footer img{padding-left:10px;
                padding-top:11px;}
@@ -383,7 +392,9 @@ h1.mobile{display:none;}
            margin-top:10px;
            border-top:1px solid rgb(219,219,219);
            border-bottom:1px solid rgb(219,219,219);
-           position:relative;}
+           position:relative;
+		   	margin-top: -68px; /* negative value of footer height */
+			clear:both;}
 
     footer img{padding-left:10px;
                padding-top:11px;}
