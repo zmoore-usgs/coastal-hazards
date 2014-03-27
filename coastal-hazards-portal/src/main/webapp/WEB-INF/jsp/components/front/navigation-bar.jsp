@@ -30,14 +30,14 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
+                <button class="close" aria-hidden="true" data-dismiss="modal" type="button">ï¿½</button>
                 <h4 id="modal-label">Share Your Coastal Change Hazards Portal View With Others</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="well well-small">
-                        <label for=Òmodal-share-summary-url-inputbox-divÓ><div id="modal-share-summary-url-inputbox-div">
-                            <label for=Òmodal-share-summary-url-inputboxÓ><input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." title=Òmodal-share-summary-url-inputboxÓ /></label>
+                        <label for="modal-share-summary-url-inputbox-div"><div id="modal-share-summary-url-inputbox-div">
+                            <label for="modal-share-summary-url-inputbox"><input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." title=ï¿½modal-share-summary-url-inputboxï¿½ /></label>
                         </div></label>
                         <a id="modal-share-summary-url-button" class="btn btn-default" target="portal_view_window" role="button">View In Portal</a>
 
