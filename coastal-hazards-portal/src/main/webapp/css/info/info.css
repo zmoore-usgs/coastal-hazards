@@ -1,22 +1,36 @@
 @charset "UTF-8";
 /* CSS Document */
 
-* {margin:0; padding:0;}
-a img {border:0;}
-a {outline:0;text-decoration:none;}
-h1,h2,h3,h4,h5,h6 {font-weight:normal;}
-em {font-style:normal;
-    font-weight:normal;} 
-.clearfix {clear:both;}
+* {
+    margin:0; 
+    padding:0;
+}
+a img {
+    border:0;
+}
+a {
+    outline:0;
+    text-decoration:none;
+}
+h1,h2,h3,h4,h5,h6 {
+    font-weight:normal;
+}
+em {
+    font-style:normal;
+    font-weight:normal;
+} 
+.clearfix {
+    clear:both;
+}
 
-html, body{background:#fff;
-			height:100%;
-	}
-	
+html, body{
+    background:#fff;
+    height:100%;
+}
+
 #wrapper{min-height:100%;}
 
-#content{overflow:auto;
-	padding-bottom:68px;}
+#content{overflow:auto;}
 
 h1.mobile{display:none;}
 
@@ -128,12 +142,12 @@ h1.mobile{display:none;}
     footer{background:rgb(245,245,245);
            width:100%;
            height:68px;
-           margin-top:10px;
+           /*margin-top:10px;*/
            border-top:1px solid rgb(219,219,219);
            border-bottom:1px solid rgb(219,219,219);
-          	position: relative;
-			margin-top: -68px; /* negative value of footer height */
-			clear:both;}
+           /*position: relative;*/
+           /*margin-top: -68px;  negative value of footer height */
+           clear:both;}
 
     footer img{padding-left:10px;
                padding-top:11px;}
@@ -145,8 +159,6 @@ h1.mobile{display:none;}
 }
 
 @media (min-width:392px) and (max-width:767px){
-
-
     /*############header#################*/
 
     header{background:rgb(0,51,102);
@@ -259,9 +271,9 @@ h1.mobile{display:none;}
            margin-top:10px;
            border-top:1px solid rgb(219,219,219);
            border-bottom:1px solid rgb(219,219,219);
-           position:relative;
-		   	margin-top: -68px; /* negative value of footer height */
-			clear:both;}
+           position:absolute;
+           margin-top: -68px; /* negative value of footer height */
+           clear:both;}
 
     footer img{padding-left:10px;
                padding-top:11px;}
@@ -393,8 +405,8 @@ h1.mobile{display:none;}
            border-top:1px solid rgb(219,219,219);
            border-bottom:1px solid rgb(219,219,219);
            position:relative;
-		   	margin-top: -68px; /* negative value of footer height */
-			clear:both;}
+           margin-top: -68px; /* negative value of footer height */
+           clear:both;}
 
     footer img{padding-left:10px;
                padding-top:11px;}
