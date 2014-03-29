@@ -137,6 +137,7 @@
             <jsp:param name="application-overlay-background-image" value="images/splash/splash.svg" />
             <jsp:param name="base-url" value="<%=baseUrl%>" />
             <jsp:param name="version" value="<%=version%>" />
+            <jsp:param name="debug-qualifier" value="<%=development%>" />
         </jsp:include>
         <%-- Content Here --%>
         <div id="info-content" class="container">
