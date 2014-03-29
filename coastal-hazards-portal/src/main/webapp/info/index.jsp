@@ -89,17 +89,17 @@
             <div id="text">
                 <p>
                     Welcome to the U.S. Geological Survey Coastal Change Hazards 
-                    beta site.  If you see changes needed or have ideas for 
+                    beta site. If you see changes needed or have ideas for 
                     improving use of this USGS data, please email 
                     <a href="mailto:cch_help@usgs.gov">cch_help@usgs.gov</a>.
                 </p>
                 <p>
                     Coastal change can dramatically alter ecosystems, cause 
                     damage to billions of dollars' worth of coastal development, 
-                    and even threaten human life.  Through projects like the National 
+                    and even threaten human life. Through projects like the National 
                     Assessment of Coastal Change Hazards and regional studies
                     of nearshore processes, the U.S. Geological Survey conducts
-                    research on coastal change hazards and provide data, tools, 
+                    research on coastal change hazards and provides data, tools, 
                     and scientific knowledge to help coastal planners as they 
                     work to reduce risk along our coastlines.
                 </p>
