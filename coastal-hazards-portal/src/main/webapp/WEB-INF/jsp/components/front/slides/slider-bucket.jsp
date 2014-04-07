@@ -3,7 +3,7 @@
         <div id="application-slide-bucket-controlset"  class="application-slide-controlset row">
             <div class="col-md-12">
                 <div id="application-slide-bucket-controlset-control-close" class="pull-left">
-                    <i class="fa fa-minus-square-o" alt=“minus inside a square”></i>
+                    <i class="fa fa-minus-square-o" alt="minus inside a square"></i>
                 </div>
                 <div class="btn-group pull-right hidden">
                     <button id="bucket-manage-menu-drop" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Manage Contents <b class="caret"></b></button>
@@ -42,26 +42,26 @@
             </div>
         </div>
         <button class="application-slide-bucket-container-card-button-remove btn btn-link application-slide-bucket-container-card-template-button" type="button">
-            <i class="fa fa-times" alt=“the letter x”></i>
+            <i class="fa fa-times" alt="the letter x"></i>
         </button>
         <div class="application-slide-bucket-container-card-navigation-container">
             <button class="application-slide-bucket-container-card-button-up btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-up" type="button">
-                <i class="fa fa-caret-up" alt=“arrow facing upwards”></i>
+                <i class="fa fa-caret-up" alt="arrow facing upwards"></i>
             </button>
             <div class="application-slide-bucket-container-card-label-order">Order</div>
             <button class="application-slide-bucket-container-card-button-down btn btn-link application-slide-bucket-container-card-template-button application-slide-bucket-container-card-template-button-down" type="button">
-                <i class="fa fa-caret-down" alt=“downward facing arrow”></i>
+                <i class="fa fa-caret-down" alt="downward facing arrow"></i>
             </button>
         </div>
         <div class="application-slide-bucket-container-card-controlset-container">
             <div class="application-slide-bucket-container-card-button-layer application-slide-bucket-container-card-template-button active">
-                <i class="fa fa-eye-slash" alt=“closed eye icon”></i>
+                <i class="fa fa-eye-slash" alt="layer off icon"></i>
             </div>
             <button class="application-slide-bucket-container-card-button-download application-slide-bucket-container-card-template-button btn btn-link " type="button">
-                <i class="fa fa-cloud-download" alt=“cloud with arrow inside”></i>
+                <i class="fa fa-cloud-download" alt="download icon"></i>
             </button>
             <button class="application-slide-bucket-container-card-button-info application-slide-bucket-container-card-template-button btn btn-link " type="button">
-                <i class="fa fa-info" alt=“the letter i”></i>
+                <i class="fa fa-info" alt="the letter i"></i>
             </button>
             <button class="application-slide-bucket-container-card-button-shareapplication-slide-bucket-container-card-template-button btn btn-link " type="button">
                 <img alt="Share Icon" src="images/bucket/share.svg"/>
