@@ -37,7 +37,7 @@
                 <div class="row">
                     <div class="well well-small">
                         <label for="modal-share-summary-url-inputbox-div"><div id="modal-share-summary-url-inputbox-div">
-                            <label for="modal-share-summary-url-inputbox"><input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." title=Òmodal-share-summary-url-inputboxÓ/></label>
+                            <label for="modal-share-summary-url-inputbox"><input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." title=Ômodal-share-summary-url-inputboxÕ/></label>
                         </div></label>
                         <a id="modal-share-summary-url-button" class="btn btn-default" target="portal_view_window" role="button">View In Portal</a>
 
