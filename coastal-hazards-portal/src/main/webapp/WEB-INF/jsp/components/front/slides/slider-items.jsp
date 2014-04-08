@@ -1,6 +1,6 @@
 <div id="application-slide-items-container" class="application-slide-container">
     <div id="application-slide-items-tab" class="application-slide-tab">
-        <i class="fa fa-chevron-right" alt=“right facing arrow”></i>
+        <i class="fa fa-chevron-right" alt="right facing arrow"></i>
     </div>
     <div id="application-slide-items-content" class="application-slide-content">
         <div id="application-slide-items-content-container" class="panel-group">
@@ -17,7 +17,7 @@
         <%-- The job of this control is to close all child objects, then this container --%>
         <div class="application-card-collapse-row row">
             <div class="col-md-12">
-                <div class="application-card-collapse-icon-container application-card-collapse-row-open"><i class="fa fa-chevron-up" alt=“upward facing arrow”></i></div>
+                <div class="application-card-collapse-icon-container application-card-collapse-row-open"><i class="fa fa-chevron-up" alt="upward facing arrow"></i></div>
                 <div class="application-card-collapse-row-dottedline"><hr /></div>
             </div>
         </div>
