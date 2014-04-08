@@ -22,6 +22,10 @@
     <head>
         <jsp:include page="/WEB-INF/jsp/components/common/meta-tags.jsp"></jsp:include>
         <title>USGS Coastal Change Hazards Portal</title>
+        <link rel="apple-touch-icon" sizes="57x57" href="images/mobileIcons/iphone_usgs_57x57.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="images/mobileIcons/ipad_usgs_72x72.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="images/mobileIcons/iphone_usgs_114x114.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="images/mobileIcons/ipad_usgs_144x144.png" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery<%= development ? "." : "-"%>ui<%= development ? ".all" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
