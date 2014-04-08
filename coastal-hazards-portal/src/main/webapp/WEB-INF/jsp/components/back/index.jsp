@@ -154,7 +154,7 @@
                 <%-- Help Button --%>
                 <div class='app-navbar-item-container'>
                     <span id='app-navbar-help-container'>
-                        <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="fa fa-info-circle" alt="letter i insides a circle"></i></a>
+                        <a tabindex='-1' data-toggle='modal' href='#helpModal'><i class="fa fa-info-circle" alt="letter i inside a circle"></i></a>
                     </span>
                 </div>
             </div>
