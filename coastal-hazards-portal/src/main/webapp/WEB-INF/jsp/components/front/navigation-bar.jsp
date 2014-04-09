@@ -20,7 +20,7 @@
 <%-- Help Button --%>
 <div class='app-navbar-item-container' title="More Info For USGS Coastal Change Hazards Portal">
     <span id='app-navbar-help-container'>
-        <a href="<%=request.getParameter("base-url")%>/info/"><i class="fa fa-info-circle"></i></a>
+        <a href="<%=request.getParameter("base-url")%>/info/"><i class="fa fa-info-circle" alt="letter i inside a circle"></i></a>
     </span>
 </div>
 
@@ -30,15 +30,15 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
+                <button class="close" aria-hidden="true" data-dismiss="modal" type="button">Ã—</button>
                 <h4 id="modal-label">Share Your Coastal Change Hazards Portal View With Others</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="well well-small">
-                        <div id="modal-share-summary-url-inputbox-div">
-                            <input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." />
-                        </div>
+                        <label for="modal-share-summary-url-inputbox-div"><div id="modal-share-summary-url-inputbox-div">
+                            <label for="modal-share-summary-url-inputbox"><input id="modal-share-summary-url-inputbox" type='text' autofocus readonly size="20" placeholder="Loading..." title="modal-share-summary-url-inputbox"/></label>
+                        </div></label>
                         <a id="modal-share-summary-url-button" class="btn btn-default" target="portal_view_window" role="button">View In Portal</a>
 
                     </div>
