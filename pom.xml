@@ -17,7 +17,8 @@
 		<module>coastal-hazards-portal</module>
         <module>coastal-hazards-liquibase</module>
         <module>coastal-hazards-export</module>
-    </modules>
+        <module>ehcache-shaded</module>
+	</modules>
   
 	<issueManagement>
 		<system>JIRA</system>
