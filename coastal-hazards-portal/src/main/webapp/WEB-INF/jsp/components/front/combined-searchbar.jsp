@@ -16,6 +16,9 @@
         </div> 
         
         <%-- Input --%>
+        
+        <label for="app-navbar-search-input"></label>
+        
         <input id="app-navbar-search-input" type="text"  class="form-control" placeholder="Search...">
 
         <%-- Go Button --%>
