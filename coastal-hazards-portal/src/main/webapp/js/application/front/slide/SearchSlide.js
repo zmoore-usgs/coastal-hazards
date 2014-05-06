@@ -2,7 +2,7 @@
 /*jslint plusplus: true */
 /*global $*/
 /*global CCH*/
-/*global splashUpdate*/
+/*global OpenLayers*/
 
 /**
  * A slide widget that shows up when items are searched for
@@ -61,13 +61,13 @@ CCH.Objects.SearchSlide = function (args) {
         [$locationSlide, $productSlide].each(function ($slide, ind) {
             $slide.find('>div:nth-child(1)').empty();
             $slide.find('>div:nth-child(' + (ind + 2) + ')').
-                empty().
-                append($('<img />').
-                    addClass('img-responsive').
-                    attr({
-                        'src' : 'images/spinner/spinner3.gif',
-                        'alt' : "Spinner Image"
-                    }));
+                    empty().
+                    append($('<img />').
+                            addClass('img-responsive').
+                            attr({
+                                'src': 'images/spinner/spinner3.gif',
+                                'alt': "Spinner Image"
+                            }));
             $slide.find('>div:nth-child(' + (ind + 3) + ')>ul').empty();
         });
     };
@@ -417,18 +417,11 @@ CCH.Objects.SearchSlide = function (args) {
                 $pagingContainer.addClass('hidden');
             }
 
-            // Check if I have more than one product or location to display
-//            if (locationSize + productsSize > 0) {
-                // If I am closed, open me up. Resizing happens after I 
-                // am open because otherwise some of my elements don't have 
-                // a height. Otherwise, just resize me because I may have had 
-                // items added to me
-                if (me.isClosed) {
-                    me.open();
-                } else {
-                    me.resize();
-                }
-//            }
+            if (me.isClosed) {
+                me.open();
+            } else {
+                me.resize();
+            }
         }
     };
 
@@ -592,6 +585,7 @@ CCH.Objects.SearchSlide = function (args) {
             var product = args.product,
                 item = CCH.items.getById({ id : product.id }),
                 id = product.id,
+                bbox = product.bbox,
                 summary = product.summary.medium,
                 title = summary.title,
                 description = summary.text,
@@ -624,8 +618,12 @@ CCH.Objects.SearchSlide = function (args) {
                 'src' : CCH.CONFIG.contextPath + '/data/thumbnail/item/' + id,
                 'data-content' : 'Explore this dataset'
             })).on('click', function () {
+                CCH.map.zoomToBoundingBox({
+                    bbox: bbox,
+                    fromProjection: new OpenLayers.Projection('EPSG:4326')
+                });
                 $(window).trigger('cch.slide.search.button.click.explore', {
-                        'id' : id
+                    'id' : id
                 });
                 me.close();
             }).error(function () {
@@ -656,16 +654,14 @@ CCH.Objects.SearchSlide = function (args) {
                     }
                 }
             });
-            $exploreControl.
-                on('click', function () {
-                    $(window).trigger('cch.slide.search.button.click.explore', {
-                        'id' : id
-                    });
-                    me.close();
-                }).
-                attr($.extend({}, defaultPopoverObject, {
-                    'data-content' : 'Explore this dataset'
-                }));
+            $exploreControl.on('click', function () {
+                $(window).trigger('cch.slide.search.button.click.explore', {
+                    'id' : id
+                });
+                me.close();
+            }).attr($.extend({}, defaultPopoverObject, {
+                'data-content' : 'Explore this dataset'
+            }));
             return $newItem;
         }
     };
@@ -747,8 +743,8 @@ CCH.Objects.SearchSlide = function (args) {
             var target = $(evt.target),
                 targetId = target.attr('id') || '',
                 parentContainer = $('#' + me.SLIDE_SEARCH_CONTAINER_PARENT_ID),
-                clickOutsideContainer = parentContainer.attr('id') !== targetId
-                    && parentContainer.find(evt.target).length === 0;
+                clickOutsideContainer = parentContainer.attr('id') !== targetId &&
+                        parentContainer.find(evt.target).length === 0;
 
             if (clickOutsideContainer) {
                 // The click came from outside the container
