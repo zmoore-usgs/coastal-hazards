@@ -1,7 +1,6 @@
 /*jslint browser: true */
 /*jslint plusplus: true */
 /*global $*/
-/*global LOG*/
 /*global CCH*/
 /*global OpenLayers*/
 CCH.Objects.Map = function (args) {
@@ -15,7 +14,7 @@ CCH.Objects.Map = function (args) {
     me.mapProjection = "EPSG:900913";
     me.displayProjection = new OpenLayers.Projection(me.mapProjection);
     me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
-    
+
     // Map Controls
     me.scaleLineControl = new OpenLayers.Control.ScaleLine({
         geodesic: true
@@ -28,7 +27,7 @@ CCH.Objects.Map = function (args) {
     });
     me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
     me.clickControl = null; // Defined in init 
-    
+
     me.showLayer = function (args) {
         var item = args.item,
             ribbonIndex = args.ribbon || 0,
@@ -113,14 +112,14 @@ CCH.Objects.Map = function (args) {
                 displayProjection: me.displayProjection,
                 tileManager : new CCH.Objects.FixedTileManager()
             });
-            
+
             me.clickControl = new OpenLayers.Control.Click({
                 handlerOptions: {
                     "single": true,
                     "map": me.map
                 }
             });
-            
+
             CCH.LOG.debug('Map.js::init():Adding base layers to map');
             me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
 
@@ -132,7 +131,6 @@ CCH.Objects.Map = function (args) {
                 me.clickControl,
                 me.scaleLineControl
             ]);
-            
             me.clickControl.activate();
 
             CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);
@@ -228,7 +226,7 @@ CCH.Objects.Map = function (args) {
             ];
             session.scale = map.getScale();
             session.bbox = map.getExtent().transform(CCH.map.getMap().displayProjection, new OpenLayers.Projection('EPSG:4326')).toArray();
-            
+
             cookie.bbox = session.bbox;
             $.cookie('cch', cookie);
         },
@@ -254,7 +252,7 @@ CCH.Objects.Map = function (args) {
             // provided in the session
             if (!session.items.length) {
                 center = new OpenLayers.LonLat(session.center[0], session.center[1]).
-                    transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection);  
+                        transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection);
                 me.map.setCenter(center);
                 me.map.zoomToScale(session.scale);
             }
