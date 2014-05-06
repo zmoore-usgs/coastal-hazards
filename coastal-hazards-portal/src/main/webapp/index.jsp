@@ -111,6 +111,7 @@
         <script type="text/javascript" src="js/application/front/accordion/Accordion<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/common/search/Search<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/session/Session<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/application/front/map/ClickControl<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/map/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/map/LayerIdentifyControl<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/map/Map<%= development ? "" : "-min"%>.js"></script>
