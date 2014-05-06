@@ -15,6 +15,20 @@ CCH.Objects.Map = function (args) {
     me.mapProjection = "EPSG:900913";
     me.displayProjection = new OpenLayers.Projection(me.mapProjection);
     me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
+    
+    // Map Controls
+    me.scaleLineControl = new OpenLayers.Control.ScaleLine({
+        geodesic: true
+    });
+    me.layerSwitcher = new OpenLayers.Control.LayerSwitcher({
+        roundedCorner: true
+    });
+    me.attributionControl = new OpenLayers.Control.Attribution({
+        'template' : '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="' + me.attributionSource + '" /></a>'
+    });
+    me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
+    me.clickControl = null; // Defined in init 
+    
     me.showLayer = function (args) {
         var item = args.item,
             ribbonIndex = args.ribbon || 0,
@@ -107,18 +121,6 @@ CCH.Objects.Map = function (args) {
                 }
             });
             
-            
-            me.layerSwitcher = new OpenLayers.Control.LayerSwitcher({
-                roundedCorner: true
-            });
-
-            // This control is used as the on-click identifier for layers
-            me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
-
-            me.attributionControl = new OpenLayers.Control.Attribution({
-                'template' : '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="' + me.attributionSource + '" /></a>'
-            });
-
             CCH.LOG.debug('Map.js::init():Adding base layers to map');
             me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
 
@@ -127,7 +129,8 @@ CCH.Objects.Map = function (args) {
                 me.layerSwitcher,
                 me.getFeatureInfoControl,
                 me.attributionControl,
-                me.clickControl
+                me.clickControl,
+                me.scaleLineControl
             ]);
             
             me.clickControl.activate();

@@ -9,3 +9,25 @@
 .olControlAttribution {
     bottom: 20px !important;
 }
+
+/* Coloring scale line text (with dropshadow) and  scale line to light grey*/
+.olControlScaleLineTop, .olControlScaleLineBottom {
+	color: #D3D3D3;
+	text-shadow:
+		-1px -1px 0 #000,  
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
+		1px 1px 0 #000;
+}
+
+.olControlScaleLineTop {
+	border-right-color: #D3D3D3 !important;
+	border-bottom-color: #D3D3D3 !important;
+	border-left-color: #D3D3D3 !important;
+}
+
+.olControlScaleLineBottom {
+	border-top-color: #D3D3D3 !important;
+	border-right-color: #D3D3D3 !important;
+	border-left-color: #D3D3D3 !important;
+}
