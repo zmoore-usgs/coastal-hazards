@@ -3,6 +3,9 @@
 /*global $*/
 /*global CCH*/
 /*global OpenLayers*/
+window.CCH = CCH || {};
+CCH.Objects = CCH.Objects || {};
+CCH.Objects.Front = CCH.Objects.Front || {};
 CCH.Objects.Front.Map = function (args) {
     "use strict";
     var me = (this === window) ? {} : this;
