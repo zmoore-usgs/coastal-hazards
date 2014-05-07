@@ -10,9 +10,11 @@
  * Listeners: 
  * 
  * @param {type} args
- * @returns {CCH.Objects.Search.Anonym$6}
+ * @returns {CCH.Util.Search.Anonym$6}
  */
-CCH.Objects.Search = function (args) {
+window.CCH = CCH || {};
+CCH.Util = CCH.Util || {};
+CCH.Util.Search = function (args) {
     "use strict";
     var me = (this === window) ? {} : this;
     args = args || {};

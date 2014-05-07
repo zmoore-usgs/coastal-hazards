@@ -26,18 +26,18 @@ $(document).ready(function () {
     CCH.session = new CCH.Objects.Session();
 
     splashUpdate("Initializing Map...");
-    CCH.map = new CCH.Objects.Map({
+    CCH.map = new CCH.Objects.Front.Map({
         mapDiv: 'map'
     }).init();
 
     splashUpdate("Initializing OWS Services...");
-    CCH.ows = new CCH.Objects.OWS().init();
+    CCH.ows = new CCH.Util.OWS().init();
 
     splashUpdate("Initializing Items...");
     CCH.items = new CCH.Objects.Items();
 
     splashUpdate("Initializing UI...");
-    CCH.ui = CCH.Objects.UI({
+    CCH.ui = CCH.Objects.Front.UI({
         applicationOverlayId: 'application-overlay',
         headerRowId: 'header-row',
         footerRowId: 'footer-row',

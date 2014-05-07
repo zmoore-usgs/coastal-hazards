@@ -32,7 +32,9 @@
 <script type="text/javascript">
 	OpenLayers.ProxyHost = 'geoserver/';
 	var CCH = {
-		Objects : {},
+		Objects : {
+			Front : {}
+		},
 		items : [],
 		CONFIG: {
 			item : null,

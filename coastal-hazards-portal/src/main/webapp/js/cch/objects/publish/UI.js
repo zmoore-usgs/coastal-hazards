@@ -4,7 +4,10 @@
 /*global LOG*/
 /*global CCH*/
 /*global qq*/
-CCH.Objects.UI = function () {
+window.CCH = CCH || {};
+CCH.Objects = CCH.Objects || {};
+CCH.Objects.Publish = CCH.Objects.Publish || {};
+CCH.Objects.Publish.UI = function () {
     "use strict";
 
     CCH.LOG.info('UI.js::constructor: UI class is initializing.');

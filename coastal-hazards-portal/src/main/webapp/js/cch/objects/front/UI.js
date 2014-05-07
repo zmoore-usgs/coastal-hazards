@@ -14,7 +14,7 @@
  * @param {shareType} args
  * @returns {CCH.Objects.UI.Anonym$22}
  */
-CCH.Objects.UI = function (args) {
+CCH.Objects.Front.UI = function (args) {
     "use strict";
     CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 
@@ -187,7 +187,7 @@ CCH.Objects.UI = function (args) {
     };
 
     me.displayShareModal = function (url) {
-        CCH.Util.getMinifiedEndpoint({
+        CCH.Util.Util.getMinifiedEndpoint({
             location: url,
             callbacks: {
                 success: [
@@ -397,7 +397,7 @@ CCH.Objects.UI = function (args) {
 
         callbacks.error.unshift(errorResponseHandler);
 
-        new CCH.Objects.Search().submitItemSearch({
+        new CCH.Util.Search().submitItemSearch({
             'item' : 'uber',
             'callbacks' : {
                 'success' : callbacks.success,

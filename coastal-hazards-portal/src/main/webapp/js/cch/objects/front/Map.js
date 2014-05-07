@@ -3,7 +3,7 @@
 /*global $*/
 /*global CCH*/
 /*global OpenLayers*/
-CCH.Objects.Map = function (args) {
+CCH.Objects.Front.Map = function (args) {
     "use strict";
     var me = (this === window) ? {} : this;
 
@@ -113,7 +113,7 @@ CCH.Objects.Map = function (args) {
                 tileManager : new CCH.Objects.FixedTileManager()
             });
 
-            me.clickControl = new OpenLayers.Control.Click({
+            me.clickControl = new CCH.Objects.ClickControl({
                 handlerOptions: {
                     "single": true,
                     "map": me.map

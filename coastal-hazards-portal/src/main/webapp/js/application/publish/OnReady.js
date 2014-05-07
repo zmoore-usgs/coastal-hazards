@@ -19,15 +19,15 @@ $(document).ready(function () {
         $('body').css('cursor', 'default');
     });
     
-    CCH.ows = new CCH.Objects.OWS().init();
+    CCH.ows = new CCH.Util.OWS().init();
 
-    CCH.ui = new CCH.Objects.UI();
+    CCH.ui = new CCH.Objects.Publish.UI();
 
     CCH.ui.addUserInformationToForm({
         data : CCH.CONFIG.user
     });
 
-    CCH.search = new CCH.Objects.Search();
+    CCH.search = new CCH.Util.Search();
 
     // First load all of the items in the application.
     // TODO This might prove to be an inefficient way of loading items.

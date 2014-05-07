@@ -24,7 +24,7 @@ CCH.Objects.Items = function (args) {
     var me = this === window ? {} : this;
 
     me.items = {};
-    me.search = new CCH.Objects.Search();
+    me.search = new CCH.Util.Search();
 
     me.load = function (args) {
         args = args || {};

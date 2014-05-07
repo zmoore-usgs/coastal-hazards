@@ -30,7 +30,7 @@
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/index/custom<%= development ? "" : "-min"%>.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/front/custom<%= development ? "" : "-min"%>.css" />
         <script>
             (function(i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
@@ -103,24 +103,24 @@
             <jsp:param name="relPath" value="<%=baseUrl%>" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        <script type="text/javascript" src="js/application/common/items/Item<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/slide/ItemsSlide<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/slide/BucketSlide<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/slide/SearchSlide<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/common/util/Util<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/accordion/Accordion<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/common/search/Search<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/session/Session<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/map/ClickControl<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/map/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/map/LayerIdentifyControl<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/map/Map<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/card/Card<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/common/items/Items<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/common/ows/OWS<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/bucket/Bucket<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/search/combined-searchbar<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/application/front/ui/UI<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/ItemsSlide<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/BucketSlide<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/SearchSlide<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/Accordion<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/Session<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/ClickControl<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/LayerIdentifyControl<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/front/Map<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/Card<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/Items<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/util/OWS<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/Bucket<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/CombinedSearchbar<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/front/UI<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/OnReady<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
