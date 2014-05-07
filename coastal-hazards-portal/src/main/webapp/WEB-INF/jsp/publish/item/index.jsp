@@ -442,11 +442,11 @@
             </div>
         </div>
 
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/ui/UI.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/ows/OWS.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/util/Util.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/publish/UI.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/application/publish/OnReady.js"></script>
 
         <div id="alert-modal" class="modal fade">

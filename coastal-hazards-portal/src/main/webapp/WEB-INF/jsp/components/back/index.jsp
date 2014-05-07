@@ -15,19 +15,19 @@
     }
 %>
 <%
-    boolean development = Boolean.parseBoolean(props.getProperty("development"));
-    String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
-    String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
-    String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
+	boolean development = Boolean.parseBoolean(props.getProperty("development"));
+	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
+	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
 	String geoserverEndpoint = props.getProperty("coastal-hazards.portal.geoserver.endpoint");
 	String stPeteArcServerEndpoint = props.getProperty("coastal-hazards.stpetearcserver.endpoint");
 	String marineArcServerEndpoint = props.getProperty("coastal-hazards.marine.endpoint");
-    String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");
-    String version = props.getProperty("application.version");
-    String path = "../../../../";
-    String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
-    String log4js = path + "js/log4javascript/log4javascript.jsp";
-    String overlay = path + "WEB-INF/jsp/components/common/application-overlay.jsp";
+	String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");
+	String version = props.getProperty("application.version");
+	String path = "../../../../";
+	String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
+	String log4js = path + "js/log4javascript/log4javascript.jsp";
+	String overlay = path + "WEB-INF/jsp/components/common/application-overlay.jsp";
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -96,18 +96,18 @@
                 window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
             }
         </script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/search/Search<%= development ? "" : "-min"%>.js"></script>
         <jsp:include page="<%= log4js%>">
             <jsp:param name="relPath" value="../../" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/ows/OWS<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/front/map/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/back/map/map<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/back/ui/UI<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Items<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/items/Item<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/js/application/common/util/Util<%= development ? "" : "-min"%>.js"></script>
+	<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/cch/util/OWS<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/Map<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/back/UI<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Items<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= development ? "" : "-min"%>.js'></script>
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />

@@ -5,7 +5,10 @@
 /*global CCH*/
 /*global OpenLayers*/
 /*global ga*/
-CCH.Objects.Map = function (args) {
+window.CCH = CCH || {};
+CCH.Objects = CCH.Objects || {};
+CCH.Objects.Back = CCH.Objects.Back || {};
+CCH.Objects.Back.Map = function (args) {
     "use strict";
     var me = (this === window) ? {} : this;
 

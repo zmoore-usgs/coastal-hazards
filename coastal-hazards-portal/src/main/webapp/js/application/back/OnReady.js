@@ -15,8 +15,8 @@ $(document).ready(function () {
     CCH.CONFIG.item = new CCH.Objects.Item({
         id : CCH.CONFIG.itemId
     });
-    CCH.map = new CCH.Objects.Map();
-    CCH.ows = new CCH.Objects.OWS();
+    CCH.map = new CCH.Objects.Back.Map();
+    CCH.ows = new CCH.Util.OWS();
 
     $(window).on('cch.item.loaded', function (evt, args) {
         var id = args.id || '',
@@ -24,10 +24,10 @@ $(document).ready(function () {
             layers;
 
         if (CCH.CONFIG.item.id === id) {
-            CCH.ui = new CCH.Objects.UI({item : item});
+            CCH.ui = new CCH.Objects.Back.UI({item : item});
             layers = item.showLayer().layers;
             layers.each(function (child, index) {
-                CCH.Util.getSLD({
+                CCH.Util.Util.getSLD({
                     contextPath: CCH.CONFIG.contextPath,
                     itemId: child.itemid,
                     callbacks: {

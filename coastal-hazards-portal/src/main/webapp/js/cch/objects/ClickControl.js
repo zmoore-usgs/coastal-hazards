@@ -2,7 +2,7 @@
 /*global LOG*/
 /*global CCH*/
 /*global OpenLayers*/
-OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
+CCH.Objects.ClickControl = OpenLayers.Class(OpenLayers.Control, {                
                 defaultHandlerOptions: {
                     'single': true,
                     'double': false,
@@ -50,7 +50,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     });
                     
                     $(window).on('cch.map.control.layerid.responded', function() {
-                        var markerLayer = CCH.map.getMap().gtLayersByName('Markers')[0];
+                        var markerLayer = CCH.map.getMap().getLayersByName('Markers')[0];
                         
                         markerLayer.markers.each(function (marker) {
                             markerLayer.removeMarker(marker);

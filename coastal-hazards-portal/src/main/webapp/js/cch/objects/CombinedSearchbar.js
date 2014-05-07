@@ -36,7 +36,7 @@ CCH.Objects.CombinedSearch = function (args) {
     me.includeBboxInSearch = false;
 
     // Internally used objects
-    me.search = new CCH.Objects.Search({
+    me.search = new CCH.Util.Search({
         geocodeServiceEndpoint: CCH.CONFIG.data.sources.geocoding.endpoint
     });
 
