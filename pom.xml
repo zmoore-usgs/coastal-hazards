@@ -107,7 +107,6 @@
 		<slf4j.version>1.7.5</slf4j.version>
 		<version.sugarjs>1.4.1</version.sugarjs>
 		<version.jquery>2.1.1</version.jquery>
-		<!-- Skip Bootstrap 3.1.1-1. Does not add anything useful and doesn't follow numbering scheme -->
 		<version.bootstrap>3.1.1</version.bootstrap>
 		<version.fontawesome>4.0.3</version.fontawesome>
 		<version.openlayers>2.13.1</version.openlayers>
@@ -353,7 +352,7 @@
 			<dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>bootstrap</artifactId>
-				<version>${version.bootstrap}</version>
+				<version>${version.bootstrap}-1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.webjars</groupId>

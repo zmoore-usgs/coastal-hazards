@@ -13,6 +13,11 @@
             System.out.println("Could not find JNDI - Application will probably not function correctly");
         }
     }
+	private String getProp(String key) {
+	String result = props.getProperty(key, "");
+	return result;
+	}
+	
 %>
 <%
 	boolean development = Boolean.parseBoolean(props.getProperty("development"));
@@ -28,6 +33,10 @@
 	String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
 	String log4js = path + "js/log4javascript/log4javascript.jsp";
 	String overlay = path + "WEB-INF/jsp/components/common/application-overlay.jsp";
+	String vJquery = getProp("version.jquery");
+	String vBootstrap = getProp("version.bootstrap");
+	String vOpenlayers = getProp("version.openlayers");
+	String vSugarJs = getProp("version.sugarjs");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,11 +44,11 @@
         <jsp:include page="<%=metaTags%>"></jsp:include>
             <title>USGS Coastal Change Hazards Portal</title>
             <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/${version.jquery}/jquery<%= development ? "" : ".min"%>.js"></script>
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/${version.bootstrap}/css/bootstrap<%= development ? "" : ".min"%>.css" />
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/${version.bootstrap}/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/${version.openlayers}/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
-        <script type="text/javascript" src="webjars/sugar/${version.sugarjs}/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/<%=vOpenlayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
+        <script type="text/javascript" src="webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <script type="text/javascript">
             var CCH = {
                 Objects: {},
