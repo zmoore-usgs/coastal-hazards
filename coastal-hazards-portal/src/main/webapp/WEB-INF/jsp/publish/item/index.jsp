@@ -279,7 +279,7 @@
                                                 </div>
                                                 <input type="text" class="form-control" id="form-publish-item-service-proxy-wfs-serviceparam" disabled="disabled"  maxlength="<%= Service.PARAMETER_MAX_LENGTH%>"/>
                                             <div class="input-group-btn">
-                                                    <button id="form-publish-item-service-proxy-wfs-pull-attributes-button" class="btn btn-default" type="button" disabled="disabled">Get Attribtues</button>
+                                                    <button id="form-publish-item-service-proxy-wfs-pull-attributes-button" class="btn btn-default" type="button" disabled="disabled">Get Attributes</button>
                                                 </div>
                                             </div>
                                         </div>
