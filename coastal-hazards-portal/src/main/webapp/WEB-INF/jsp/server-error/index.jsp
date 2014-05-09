@@ -21,10 +21,10 @@
     <head>
         <jsp:include page="../components/common/meta-tags.jsp"></jsp:include>
         <title>USGS Coastal Change Hazards Portal</title>
-        <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
-        <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
-        <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
-        <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+        <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/bootstrap/${version.bootstrap}/css/bootstrap<%= development ? "" : ".min"%>.css" />
+        <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/webjars/font-awesome/${version.fontawesome}/css/font-awesome<%= development ? "" : ".min"%>.css" />
+        <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/jquery/${version.jquery}/jquery<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=request.getContextPath()%>/webjars/bootstrap/${version.bootstrap}/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <link type="text/css" rel="stylesheet" href="<%=request.getContextPath()%>/css/error/error.css" />
         <script type="text/javascript">
             var errorCode = <%=request.getAttribute("javax.servlet.error.status_code")%>;

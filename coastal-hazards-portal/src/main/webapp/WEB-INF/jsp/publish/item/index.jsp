@@ -47,15 +47,15 @@
         </script>
         <jsp:include page="<%=metaTags%>"></jsp:include>
             <title>USGS Coastal Change Hazards Portal - Publish</title>
-            <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery.min.js"></script>
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/${version.jquery}/jquery<%= development ? "" : ".min"%>.js"></script>
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/${version.bootstrap}/css/bootstrap<%= development ? "" : ".min"%>.css" />
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/${version.fontawesome}/css/font-awesome<%= development ? "" : ".min"%>.css" />
         <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/publish/publish.css" />
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery<%= development ? "." : "-"%>ui<%= development ? ".all" : ".min"%>.css" />
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/1.10.3/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/${version.jqueryui}/themes/base/<%= development ? "" : "minified/"%>jquery<%= development ? "." : "-"%>ui<%= development ? ".all" : ".min"%>.css" />
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/${version.jqueryui}/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/${version.bootstrap}/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/${version.openlayers}/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/${version.sugarjs}/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
 
         <jsp:include page="<%= jsURI%>">
             <jsp:param name="relPath" value="../../" />
