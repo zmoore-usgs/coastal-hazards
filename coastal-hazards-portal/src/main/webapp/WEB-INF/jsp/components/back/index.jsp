@@ -35,11 +35,11 @@
         <jsp:include page="<%=metaTags%>"></jsp:include>
             <title>USGS Coastal Change Hazards Portal</title>
             <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
-            <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/sugar/1.3.8/sugar-full.min.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/${version.jquery}/jquery<%= development ? "" : ".min"%>.js"></script>
+        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/${version.bootstrap}/css/bootstrap<%= development ? "" : ".min"%>.css" />
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/${version.bootstrap}/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/${version.openlayers}/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
+        <script type="text/javascript" src="webjars/sugar/${version.sugarjs}/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <script type="text/javascript">
             var CCH = {
                 Objects: {},

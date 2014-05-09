@@ -22,32 +22,37 @@
     <head>
         <jsp:include page="/WEB-INF/jsp/components/common/meta-tags.jsp"></jsp:include>
         <title>USGS Coastal Change Hazards Portal</title>
-        <link rel="apple-touch-icon" sizes="57x57" href="<%=baseUrl%>/images/mobileIcons/iphone_usgs_57x57.jpg" />
-        <link rel="apple-touch-icon" sizes="72x72" href="<%=baseUrl%>/images/mobileIcons/ipad_usgs_72x72.jpg" />
-        <link rel="apple-touch-icon" sizes="114x114" href="<%=baseUrl%>/images/mobileIcons/iphone_usgs_114x114.jpg" />
-        <link rel="apple-touch-icon" sizes="144x144" href="<%=baseUrl%>/images/mobileIcons/ipad_usgs_144x144.jpg" />
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/1.10.3/themes/base/<%= development ? "" : "minified/"%>jquery<%= development ? "." : "-"%>ui<%= development ? ".all" : ".min"%>.css" />
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/3.0.2/css/bootstrap<%= development ? "" : ".min"%>.css" />
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/4.0.3/css/font-awesome<%= development ? "" : ".min"%>.css" />
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
-        <link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/front/custom<%= development ? "" : "-min"%>.css" />
-        <script>
-            (function(i, s, o, g, r, a, m) {
-                i['GoogleAnalyticsObject'] = r;
-                i[r] = i[r] || function() {
-                    (i[r].q = i[r].q || []).push(arguments)
-                }, i[r].l = 1 * new Date();
-                a = s.createElement(o),
-                        m = s.getElementsByTagName(o)[0];
-                a.async = 1;
-                a.src = g;
-                m.parentNode.insertBefore(a, m)
-            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+	
+	<%-- https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html --%>
+	<link rel="apple-touch-icon" sizes="57x57" href="<%=baseUrl%>/images/mobileIcons/iphone_usgs_57x57.jpg" />
+	<link rel="apple-touch-icon" sizes="72x72" href="<%=baseUrl%>/images/mobileIcons/ipad_usgs_72x72.jpg" />
+	<link rel="apple-touch-icon" sizes="114x114" href="<%=baseUrl%>/images/mobileIcons/iphone_usgs_114x114.jpg" />
+	<link rel="apple-touch-icon" sizes="144x144" href="<%=baseUrl%>/images/mobileIcons/ipad_usgs_144x144.jpg" />
+	
+	<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/${version.jqueryui}/themes/base/<%= development ? "" : "minified/"%>jquery<%= development ? "." : "-"%>ui<%= development ? ".all" : ".min"%>.css" />
+	<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/${version.bootstrap}/css/bootstrap<%= development ? "" : ".min"%>.css" />
+	<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/${version.fontawesome}/css/font-awesome<%= development ? "" : ".min"%>.css" />
+	<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
+	<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/front/custom<%= development ? "" : "-min"%>.css" />
+	
+	<%-- Google Analytics for CCH --%>
+	<script>
+		(function(i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r;
+			i[r] = i[r] || function() {
+				(i[r].q = i[r].q || []).push(arguments)
+			}, i[r].l = 1 * new Date();
+			a = s.createElement(o),
+					m = s.getElementsByTagName(o)[0];
+			a.async = 1;
+			a.src = g;
+			m.parentNode.insertBefore(a, m)
+		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-            ga('create', 'UA-46378632-1', 'usgs.gov');
-            ga('set', 'anonymizeIp', true);
-            ga('send', 'pageview');
-        </script>
+		ga('create', 'UA-46378632-1', 'usgs.gov');
+		ga('set', 'anonymizeIp', true);
+		ga('send', 'pageview');
+	</script>
     </head>
 
     <body>
@@ -84,10 +89,10 @@
 
         <jsp:include page="WEB-INF/jsp/components/front/slides/slider-bucket.jsp"></jsp:include>
         <jsp:include page="WEB-INF/jsp/components/front/slides/slider-search.jsp"></jsp:include>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/2.0.0/jquery<%= development ? "" : ".min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/1.10.3/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/2.13.1/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/3.0.2/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/${version.jquery}/jquery<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/${version.jqueryui}/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/${version.openlayers}/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/${version.bootstrap}/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
         <jsp:include page="WEB-INF/jsp/components/common/config.jsp">
             <jsp:param name="id" value="${it.id}" /> 
@@ -122,7 +127,7 @@
         <script type="text/javascript" src="js/cch/objects/CombinedSearchbar<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/front/UI<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/OnReady<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="webjars/sugar/1.3.8/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+        <script type="text/javascript" src="webjars/sugar/${version.sugarjs}/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
         <jsp:include page="WEB-INF/jsp/components/front/image-preload.jsp">
             <jsp:param name="relPath" value="<%=baseUrl%>" />
