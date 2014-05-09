@@ -136,9 +136,6 @@ CCH.Objects.Front.Map = function (args) {
             ]);
             me.clickControl.activate();
 
-            CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);
-            me.zoomToBoundingBox({ bbox : me.initialExtent });
-
             CCH.LOG.debug('Map.js::init():Binding map event handlers');
             me.map.events.on({
                 'zoomend': me.zoomendCallback,
@@ -155,14 +152,41 @@ CCH.Objects.Front.Map = function (args) {
 
             // Bind application event handlers
             $(window).on({
+		'cch.item.loaded.all': function(evt) {
+			// After all items have been loaded I expect the map to be its full size. Previous to this, the map size 
+			// is short and doesn't get sized correctly until later in the initialization. (in CCH.Objects.UI.windowResizeHandler()
+			// which gets triggered when items have finished loading. If I try to zoom while the map is short, the
+			// zoom level is too far out when the map gets set to its normal size.
+			
+			// If the user is coming from the back of the card and has a bbox in their cookie, I want to zoom to that
+			// so the user essentially picks up where they left off.
+			
+			// Some of this logic is repeated in CCH.Objects.UI.loadTopLevelItem to figure out if the application 
+			// should override normal zoomTo behavior on load
+			if (evt.namespace === 'all.item.loaded') {
+				var returningVisitor = document.referrer.toLowerCase().indexOf('info/item') !== -1,
+					cookie = $.cookie('cch');
+
+				if (returningVisitor && cookie !== undefined && cookie.bbox  !== undefined & cookie.bbox.length === 4) {
+					me.initialExtent = OpenLayers.Bounds.fromArray(cookie.bbox).transform(new OpenLayers.Projection('EPSG:4326'), me.displayProjection).toArray();
+					
+					for (var ieIdx = 0;ieIdx < me.initialExtent.length;ieIdx++) {
+						me.initialExtent[ieIdx] = parseFloat(me.initialExtent[ieIdx]).toFixed(7);
+					}
+				}
+
+				CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);
+				me.zoomToBoundingBox({ bbox : me.initialExtent });
+			}
+		},
                 'cch.data.session.loaded.true': function () {
                     // A session has been loaded. The map will be rebuilt from the session
                     me.updateFromSession();
                 },
                 'cch.ui.resized': function () {
-                    $(me.$MAP_DIV.height($('#content-row').height()));
-                    me.removeAllPopups();
-                    me.map.updateSize();
+			$(me.$MAP_DIV).height($('#content-row').height());
+			me.removeAllPopups();
+			me.map.updateSize();
                 }
             });
 

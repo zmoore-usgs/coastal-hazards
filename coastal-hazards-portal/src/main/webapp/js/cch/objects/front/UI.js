@@ -354,10 +354,18 @@ CCH.Objects.Front.UI = function (args) {
         args = args || {};
 
         var zoomToBbox = args.zoomToBbox === true ? true : false,
-            callbacks = args.callbacks || {
-                success : [],
-                error : []
-            };
+		returningVisitor = document.referrer.toLowerCase().indexOf('info/item') !== -1,
+		cookie = $.cookie('cch'),
+		callbacks = args.callbacks || {
+			success: [],
+			error: []
+		};
+			
+	// If the user is coming from the back of the card, shortcut to not zoom to a bounding box because
+	// the user wants to maintain their zoom level from when they left
+	if (returningVisitor && cookie !== undefined && cookie.bbox  !== undefined & cookie.bbox.length === 4) {
+		zoomToBbox = false;
+	}
 
         callbacks.success.unshift(function (data) {
             if (zoomToBbox) {
