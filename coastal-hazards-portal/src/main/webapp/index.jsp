@@ -5,17 +5,30 @@
 <!DOCTYPE html>
 <%!	protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
-    {
-        try {
-            File propsFile = new File(getClass().getClassLoader().getResource("application.properties").toURI());
-            props = new DynamicReadOnlyProperties(propsFile);
-            props = props.addJNDIContexts(new String[0]);
-        } catch (Exception e) {
-            System.out.println("Could not find JNDI - Application will probably not function correctly");
-        }
-    }
-    boolean development = Boolean.parseBoolean(props.getProperty("development"));
-    String version = props.getProperty("application.version");
+	{
+		try {
+			File propsFile = new File(getClass().getClassLoader().getResource("application.properties").toURI());
+			props = new DynamicReadOnlyProperties(propsFile);
+			props = props.addJNDIContexts(new String[0]);
+		} catch (Exception e) {
+			System.out.println("Could not find JNDI - Application will probably not function correctly");
+		}
+
+	}
+
+	private String getProp(String key) {
+		String result = props.getProperty(key, "");
+		return result;
+	}
+	boolean development = Boolean.parseBoolean(getProp("development"));
+	String version = getProp("application.version");
+	String vJqueryUI = getProp("version.jqueryui");
+	String vJquery = getProp("version.jquery");
+	String vBootstrap = getProp("version.bootstrap");
+	String vFontAwesome = getProp("version.fontawesome");
+	String vOpenlayers = getProp("version.openlayers");
+	String vSugarJs = getProp("version.sugarjs");
+
 %>
 <% String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");%>
 <html lang="en"> 
@@ -29,9 +42,9 @@
 	<link rel="apple-touch-icon" sizes="114x114" href="<%=baseUrl%>/images/mobileIcons/iphone_usgs_114x114.jpg" />
 	<link rel="apple-touch-icon" sizes="144x144" href="<%=baseUrl%>/images/mobileIcons/ipad_usgs_144x144.jpg" />
 	
-	<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/${version.jqueryui}/themes/base/<%= development ? "" : "minified/"%>jquery<%= development ? "." : "-"%>ui<%= development ? ".all" : ".min"%>.css" />
-	<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/${version.bootstrap}/css/bootstrap<%= development ? "" : ".min"%>.css" />
-	<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/${version.fontawesome}/css/font-awesome<%= development ? "" : ".min"%>.css" />
+	<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/jquery-ui/<%=vJqueryUI%>/themes/base/<%= development ? "" : "minified/"%>jquery<%= development ? "." : "-"%>ui<%= development ? ".all" : ".min"%>.css" />
+	<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
+	<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/font-awesome/<%=vFontAwesome%>/css/font-awesome<%= development ? "" : ".min"%>.css" />
 	<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
 	<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/front/custom<%= development ? "" : "-min"%>.css" />
 	
@@ -89,10 +102,10 @@
 
         <jsp:include page="WEB-INF/jsp/components/front/slides/slider-bucket.jsp"></jsp:include>
         <jsp:include page="WEB-INF/jsp/components/front/slides/slider-search.jsp"></jsp:include>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/${version.jquery}/jquery<%= development ? "" : ".min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/${version.jqueryui}/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/${version.openlayers}/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/${version.bootstrap}/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/<%=vJqueryUI%>/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/<%=vOpenlayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
+        <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/js/third-party/cookie/cookie.js"></script>
         <jsp:include page="WEB-INF/jsp/components/common/config.jsp">
             <jsp:param name="id" value="${it.id}" /> 
@@ -127,7 +140,7 @@
         <script type="text/javascript" src="js/cch/objects/CombinedSearchbar<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/front/UI<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/OnReady<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="webjars/sugar/${version.sugarjs}/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
+        <script type="text/javascript" src="webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
         <jsp:include page="WEB-INF/jsp/components/front/image-preload.jsp">
             <jsp:param name="relPath" value="<%=baseUrl%>" />

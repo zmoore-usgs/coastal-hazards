@@ -219,44 +219,6 @@
 					</excludes>
 				</configuration>  
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<warName>${warName}</warName>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<filters>
-						<filter>pom.xml</filter>
-					</filters>
-					<webResources>
-						<resource>
-							<directory>src/main/webapp</directory>
-							<targetPath>/</targetPath>
-							<filtering>true</filtering>
-							<includes>
-								<include>index.jsp</include>
-							</includes>                     
-						</resource>
-						<resource>
-							<directory>src/main/webapp/WEB-INF/jsp/components/back</directory>
-							<targetPath>WEB-INF/jsp/components/back</targetPath>
-							<filtering>true</filtering>
-							<includes>
-								<include>index.jsp</include>
-							</includes>                     
-						</resource>
-						<resource>
-							<directory>src/main/webapp/WEB-INF/jsp/publish/item</directory>
-							<targetPath>WEB-INF/jsp/publish/item</targetPath>
-							<filtering>true</filtering>
-							<includes>
-								<include>index.jsp</include>
-							</includes>                     
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
 		</plugins>
 		<resources>
 			<resource>
