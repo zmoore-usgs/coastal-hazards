@@ -10,6 +10,7 @@ $(document).ready(function () {
     initializeLogging({
         LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
     });
+
     CCH.LOG = LOG;
     CCH.items = new CCH.Objects.Items();
     CCH.CONFIG.item = new CCH.Objects.Item({
@@ -25,7 +26,7 @@ $(document).ready(function () {
 
         if (CCH.CONFIG.item.id === id) {
             CCH.ui = new CCH.Objects.Back.UI({item : item});
-            layers = item.showLayer().layers;
+	layers = item.showLayer().layers;
             layers.each(function (child, index) {
                 CCH.Util.Util.getSLD({
                     contextPath: CCH.CONFIG.contextPath,

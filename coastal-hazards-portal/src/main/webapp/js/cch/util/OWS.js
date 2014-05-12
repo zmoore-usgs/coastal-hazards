@@ -389,6 +389,8 @@ CCH.Util.OWS = function() {
                     CCH.LOG.trace('OWS.js::getFilteredFeature: Successfully received WFS GetFeature response.');
                     var gmlReader = new OpenLayers.Format.GML.v3();
                     var getFeatureResponse = gmlReader.read(data);
+		var successCallbacks = callbacks.success || [];
+		
                     CCH.LOG.debug('OWS.js::getFilteredFeature: WFS GetFeature parsed .');
                     if (!me.featureTypeDescription[layerPrefix]) {
                         me.featureTypeDescription[layerPrefix] = Object.extended();
@@ -396,10 +398,10 @@ CCH.Util.OWS = function() {
                     me.featureTypeDescription[layerPrefix][layerTitle] = getFeatureResponse;
 
                     CCH.LOG.trace('OWS.js::getFilteredFeature: Executing ' + callbacks.success + 'callbacks');
-                    $(callbacks.success || []).each(function(index, callback, allCallbacks) {
-                        CCH.LOG.trace('OWS.js::getFilteredFeature: Executing callback ' + index);
-                        callback(getFeatureResponse, this);
-                    });
+		for (var scbIdx = 0;scbIdx < successCallbacks.length;scbIdx++) {
+			 CCH.LOG.trace('OWS.js::getFilteredFeature: Executing callback ' + scbIdx);
+			 successCallbacks[scbIdx].call(this, getFeatureResponse);
+		}
                 },
                 error: function(data, textStatus, jqXHR) {
                     $(callbacks.error || []).each(function(index, callback, allCallbacks) {

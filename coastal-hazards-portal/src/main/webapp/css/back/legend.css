@@ -1,0 +1,45 @@
+#info-legend {
+    overflow-y: scroll;
+    width: 100%;
+}
+
+/* Width for this element has to be set dynamcally in js */
+#info-legend table > thead > caption {
+	font-size: 1.2em;
+}
+
+#info-legend table {
+	width: 100%;
+	table-layout: fixed;
+}
+
+#info-legend table > tbody >tr > td:first-child {
+	text-align: right;
+	width: 25px;
+}
+
+/*Legend Table cell divs for the left (color) )column*/ 
+#info-legend table > tbody >tr > td:first-child > span {
+	height: 15px;
+	border: #000000;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 10px;
+	display: inline-block;
+	margin-right: 5px;
+	width: 20px;
+	-moz-border-radius: 10px;
+	-webkit-botder-radius: 10px;
+
+}
+/*Every Table Cell*/ 
+#info-legend table > tbody > tr > td {
+	padding : 2px;
+	vertical-align: middle;
+}
+
+
+/* Legend div */
+.container > div.row:nth-child(3) > div:first-child > div:nth-child(2) > div:first-child > div {
+	max-height: none;
+}

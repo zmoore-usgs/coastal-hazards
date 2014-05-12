@@ -131,6 +131,12 @@ CCH.Objects.Items = function (args) {
             var id = args.id;
             return me.items[id];
         },
+	Types: {
+		AGGREGATION : 'aggregation',
+		HISTORICAL : 'historical',
+		STORMS : 'storms',
+		VULNERABILITY : 'vulnerability'
+	},
        CLASS_NAME : 'CCH.Objects.Items'
     };
 };

@@ -139,6 +139,7 @@
         <script type="text/javascript" src="js/cch/objects/Bucket<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/CombinedSearchbar<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/front/UI<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/widget/Legend<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/OnReady<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>

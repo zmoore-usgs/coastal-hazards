@@ -109,6 +109,7 @@ CCH.Objects.Item = function (args) {
         CCH.items.search({
             item : me.id,
             displayNotification : false,
+//	subtree: true,
             context : context,
             callbacks: {
                 success: callbacks.success,
@@ -404,7 +405,7 @@ CCH.Objects.Item = function (args) {
         type : me.type,
         getWmsLayer : me.createWmsLayer,
         load : me.load,
-        getlayerList : me.getLayerList,
+        getLayerList : me.getLayerList,
         showLayer : me.showLayer,
         hideLayer : me.hideLayer,
         pathToItem: me.pathToItem,
