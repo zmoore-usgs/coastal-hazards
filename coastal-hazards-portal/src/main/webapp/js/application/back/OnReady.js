@@ -55,8 +55,6 @@ $(document).ready(function () {
 
     CCH.CONFIG.item.load({
         callbacks : {
-            success : [
-            ],
             error : [
                 function (jqXHR, textStatus, errorThrown) {
                     var continueLink = $('<a />').attr({
