@@ -52,7 +52,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		});
 		itemType = nonAggItem.attr;
 
-		if (me.item.type === 'historical' && nonYearHistoricalAttributes.indexOf(itemType)) {
+		if (me.item.type === 'historical' && nonYearHistoricalAttributes.indexOf(itemType) === -1) {
 			CCH.LOG.debug("Requesting SLD  for item " + itemId);
 			CCH.Util.Util.getSLD({
 				contextPath: CCH.CONFIG.contextPath,
@@ -70,15 +70,12 @@ CCH.Objects.Widget.Legend = function (args) {
 								return i.itemType === 'data';
 							});
 
-							dataItems.each(function(item) {
-								me.generateDateLegendTable({
-									item: item,
-									sld: sld,
-									total: dataItems.length,
-									legendTables: legendTables
-								});
+							me.generateDateLegendTable({
+								items: dataItems,
+								sld: sld,
+								legendTables: legendTables
 							});
-							
+
 						}
 					],
 					error: [
@@ -271,55 +268,62 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.generateDateLegendTable = function (args) {
 		args = args || {};
 
-		var item = args.item,
+		CCH.LOG.debug('Only ' + args.items.length + ' left to go');
+
+		var items = args.items,
+			item = items.pop(),
 			sld = args.sld,
-			attrArr = [item.attr],
-			total = args.total,
-			index = args.index,
-			legendTables = args.legendTables,
+			attribute = [item.attr],
 			wmsService = item.services.find(function (svc) {
 				return svc.type === 'proxy_wms';
 			}),
 			layerName = wmsService.serviceParameter;
 
+
+
 		// In order to build the legend, I am going to need year data
 		me.owsUtils.getFilteredFeature({
 			layerName: layerName,
-			propertyArray: attrArr,
+			propertyArray: attribute,
 			scope: {
 				item: item,
+				items: items,
 				sld: sld,
-				total: total,
-				index: index,
-				legendTables: legendTables,
 				wfsCount: new Number(this.wfsCount)
 			},
 			callbacks: {
 				success: [
 					function (features) {
-						CCH.LOG.debug("Got WFS: " + this.wfsCount);
 						var $legendTable = me.generateHistoricalLegendTable({
 							features: features,
 							sld: this.sld,
-							item: this.item,
-							index: this.index
+							item: this.item
 						});
 
-						this.legendTables.push($legendTable);
 						me.tableAdded({
-							legendTables: this.legendTables,
-							total: this.total
+							legendTables: $legendTable,
+							isYearLegend: true
 						});
+
+						// More WFS to call, go back into this function
+						if (items.length > 0) {
+							me.generateDateLegendTable({
+								items: items,
+								sld: sld
+							});
+						}
 					}
 				],
 				error: [
 					function (data, textStatus) {
 						LOG.warn(textStatus);
-						this.legendTables.push(-1);
-						me.tableAdded({
-							legendTables: this.legendTables,
-							total: this.total
-						});
+						if (items.length > 0) {
+							me.generateDateLegendTable({
+								items: items,
+								sld: sld,
+								index: index
+							});
+						}
 					}
 				]
 			}
@@ -331,7 +335,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		var sld = args.sld,
 			item = args.item,
 			attr = item.attr,
-			index = args.index,
+			index = args.index || null,
 			features = args.features,
 			feature,
 			date,
@@ -437,26 +441,24 @@ CCH.Objects.Widget.Legend = function (args) {
 			tIdx = 0,
 			$table,
 			rowArray,
+			isYearLegend = args.isYearLegend || false,
 			yearRows = [];
 
-		isYearLegend = legendTables.first().find('thead tr:nth-child(2) > td:last-child').html().toLowerCase() === 'year';
-
 		if (isYearLegend) {
-			// Because this is an array of tables for a list of years, I'd like to combine them all into a single table
-			// and put the result into the legend
-			for (var tIdx; tIdx < legendTables.length; tIdx++) {
-				$table = $(legendTables[tIdx]);
-				// Get every row from the table that is now the first row (the THEAD row)
-				rowArray = $table.
-					find('tr').// Find all the rows in this table
-					toArray().// Get a js array out of the jQuery object returned by find
-					slice(1); // Chop off the first row (which is the header row) 
-
-				yearRows = yearRows.concat(rowArray);
-				yearRows = yearRows.unique(function (tr) { // Cut down the array only to unique rows
-					return $(tr).html();
-				});
-			}
+			// Combine all years, put into a single table
+			$table = legendTables;
+			
+			// Get every row from the table that is now the first row (the THEAD row)
+			rowArray = $table.
+				find('tbody tr'). // Find all the rows in this table
+				toArray(); // Get a js array out of the jQuery object returned by find
+				
+			
+			rowArray = rowArray.concat(yearRows.concat(me.$legendDiv.find('table tbody tr')));
+			yearRows = yearRows.concat(rowArray);
+			yearRows = yearRows.unique(function (tr) { // Cut down the array only to unique rows
+				return $(tr).html();
+			});
 
 			// Now that I have all of my year rows, sort them descending by year
 			yearRows = yearRows.sortBy(function (tr) {
@@ -465,59 +467,29 @@ CCH.Objects.Widget.Legend = function (args) {
 
 			// Re-create the legend table
 			legendTables = $('<table />').append(yearRows);
-			
+
 			me.$legendDiv.empty().append(legendTables);
 			me.$container.append(me.$legendDiv);
-			
+
 		} else if (legendTables.length === total) {
 			// When all the tables are created, I want to sort them, append them to a  wrapper and throw that wrapper 
 			// into the final container
-			
-			// Figure out whether or not the table is a yearly table. If so, I won't unique it based on legend attribute
-			isYearLegend = legendTables.first().find('thead tr:nth-child(2) > td:last-child').html().toLowerCase() === 'year';
+			// There are no more legends to be built, filter and add the legend to the document
+			legendTables = legendTables.unique(function (table) {
+				return $(table).attr('legend-attribute');
+			});
 
-			if (isYearLegend) {
-				// Because this is an array of tables for a list of years, I'd like to combine them all into a single table
-				// and put the result into the legend
-				for (var tIdx; tIdx < legendTables.length; tIdx++) {
-					$table = $(legendTables[tIdx]);
-					// Get every row from the table that is now the first row (the THEAD row)
-					rowArray = $table.
-						find('tr').// Find all the rows in this table
-						toArray().// Get a js array out of the jQuery object returned by find
-						slice(1); // Chop off the first row (which is the header row) 
-
-					yearRows = yearRows.concat(rowArray);
-					yearRows = yearRows.unique(function (tr) { // Cut down the array only to unique rows
-						return $(tr).html();
-					});
-				}
-
-				// Now that I have all of my year rows, sort them descending by year
-				yearRows = yearRows.sortBy(function (tr) {
-					return $(tr).find('td:nth-child(2)').html();
-				}, true);
-
-				// Re-create the legend table
-				legendTables = $('<table />').append(yearRows);
+			if (legendTables.length === 1) {
+				// If there's only one table, replace the caption with the title of its 
+				// ancestor. Otherwise, we just have the title of the last child to 
+				// make it through unique()
+				legendTables[0].find('caption').html(item.getAncestor().summary.full.title);
 			} else {
-				// There are no more legends to be built, filter and add the legend to the document
-				legendTables = legendTables.unique(function (table) {
-					return $(table).attr('legend-attribute');
+				// If there's multiple tables, sort them according to index, leaving
+				// titles as is
+				legendTables = legendTables.sort(function (a, b) {
+					return $(a).attr('legend-index') - $(b).attr('legend-index');
 				});
-
-				if (legendTables.length === 1) {
-					// If there's only one table, replace the caption with the title of its 
-					// ancestor. Otherwise, we just have the title of the last child to 
-					// make it through unique()
-					legendTables[0].find('caption').html(item.getAncestor().summary.full.title);
-				} else {
-					// If there's multiple tables, sort them according to index, leaving
-					// titles as is
-					legendTables = legendTables.sort(function (a, b) {
-						return $(a).attr('legend-index') - $(b).attr('legend-index');
-					});
-				}
 			}
 
 
