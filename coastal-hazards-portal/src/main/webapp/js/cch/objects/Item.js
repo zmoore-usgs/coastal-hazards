@@ -91,22 +91,30 @@ CCH.Objects.Item = function (args) {
 
 				$(window).on('cch.item.loaded', setLoaded);
 
+				// I make the distinction here whether the item has been loaded completely or did we just get
+				// child ids. If the object is loaded completely, I have no more need to make any other calls
+				// to the back end so just properly load the children as Item objects 
 				if (typeof me.children[0] === 'object') {
+					// Set myself to be fully loaded since I have no need to make further async calls
 					me.loaded = true;
 
-					var loadChildren = function (itemData, parentId) {
+					var loadDataToItem = function (itemData, parent) {
 						var child,
 							item;
+						
+						itemData.parent = parent;
+						itemData.loaded = true;
+						item = new CCH.Objects.Item(itemData);
+						
+						// For each child, recurse back into this function using my child's data 
 						if (itemData.children) {
 							for (var i = 0; i < itemData.children.length; i++) {
 								child = itemData.children[i];
-								loadChildren(child, itemData.id);
-								itemData.children[i] = child.id;
+								loadDataToItem(child, item);
+								item.children[i] = child.id;
 							}
 						}
-						itemData.parent = parentId;
-						itemData.loaded = true;
-						item = new CCH.Objects.Item(itemData);
+						
 						CCH.items.add({item: item});
 
 						$(window).trigger('cch.item.loaded', {
@@ -114,7 +122,9 @@ CCH.Objects.Item = function (args) {
 						});
 					}
 
-					loadChildren(me, null);
+					// Start loading my children by just passing me in
+					// I may have a parent but probably don't.
+					loadDataToItem(me, null);
 				} else {
 					// The child still needs to be loaded
 					me.children.each(function (child) {
