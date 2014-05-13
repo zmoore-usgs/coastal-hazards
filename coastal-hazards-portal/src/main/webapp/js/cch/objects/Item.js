@@ -120,7 +120,7 @@ CCH.Objects.Item = function (args) {
 						$(window).trigger('cch.item.loaded', {
 							id: item.id
 						});
-					}
+					};
 
 					// Start loading my children by just passing me in
 					// I may have a parent but probably don't.
