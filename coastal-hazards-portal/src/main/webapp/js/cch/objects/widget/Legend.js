@@ -133,7 +133,8 @@ CCH.Objects.Widget.Legend = function (args) {
 									this.legendTables.push($legendTable);
 									me.tableAdded({
 										legendTables: this.legendTables,
-										total: total
+										total: total,
+										item : CCH.items.getById({id : itemId})
 									});
 								}
 							}
@@ -439,6 +440,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			$yearlyTable,
 			$yearlyTableHead,
 			rowArray,
+			item = args.item || null,
 			isYearLegend = args.isYearLegend || false,
 			yearRows = [];
 
