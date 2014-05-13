@@ -155,7 +155,6 @@ CCH.Objects.Widget.Legend = function (args) {
 				});
 			});
 		}
-
 		return me;
 	};
 
