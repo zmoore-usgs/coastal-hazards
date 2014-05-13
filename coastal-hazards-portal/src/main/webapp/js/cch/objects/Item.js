@@ -36,6 +36,7 @@ CCH.Objects.Item = function (args) {
 		args = args || {};
 
 		var callbacks = args.callbacks || {},
+			subtree = args.subtree || false,
 			context = args.context || me;
 
 		callbacks.success = callbacks.success || [];
@@ -147,8 +148,8 @@ CCH.Objects.Item = function (args) {
 		CCH.items.search({
 			item: me.id,
 			displayNotification: false,
-			subtree: true,
 			context: context,
+			subtree : subtree,
 			callbacks: {
 				success: callbacks.success,
 				error: callbacks.error

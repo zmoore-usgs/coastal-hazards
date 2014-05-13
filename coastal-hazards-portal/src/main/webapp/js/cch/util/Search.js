@@ -75,19 +75,20 @@ CCH.Util.Search = function (args) {
 			sortBy = args.sortBy || null,
 			item = args.item ? '/' + args.item : '',
 			types = args.types || [],
-			subtree = args.subtree,
+			subtree = args.subtree || false,
 			showDisabled = args.showDisabled || false,
 			callbacks = args.callbacks || {
 				success: [],
 				error: []
 			},
-		scope = args.scope || this,
-			data = {},
+			scope = args.scope || this,
+			data = {
+				subtree : subtree
+			},
 			url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.item.endpoint,
 			displayNotification = args.displayNotification === false ? false : true;
 
 		if (item) {
-			data.subtree = subtree;
 			url += item;
 		} else {
 			data.query = criteria;
@@ -108,8 +109,6 @@ CCH.Util.Search = function (args) {
 				data.types = types;
 			}
 		}
-
-		data.subtree = subtree;
 
 		$.ajax({
 			url: url,

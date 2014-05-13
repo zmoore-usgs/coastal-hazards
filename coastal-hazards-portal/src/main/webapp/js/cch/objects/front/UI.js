@@ -357,6 +357,7 @@ CCH.Objects.Front.UI = function (args) {
 		var zoomToBbox = args.zoomToBbox === true ? true : false,
 			returningVisitor = document.referrer.toLowerCase().indexOf('info/item') !== -1,
 			cookie = $.cookie('cch'),
+			subtree = args.subtree || false,
 			callbacks = args.callbacks || {
 				success: [],
 				error: []
@@ -407,8 +408,9 @@ CCH.Objects.Front.UI = function (args) {
 		callbacks.error.unshift(errorResponseHandler);
 
 		new CCH.Util.Search().submitItemSearch({
-			'item': 'uber',
-			'callbacks': {
+			item: 'uber',
+			subtree: subtree,
+			callbacks: {
 				'success': callbacks.success,
 				'error': callbacks.error
 			}
@@ -495,6 +497,7 @@ CCH.Objects.Front.UI = function (args) {
 				addItemsToBucketOnLoad(cookieItems);
 
 				me.loadTopLevelItem({
+					subtree: false,
 					zoomToBbox: false
 				});
 			}

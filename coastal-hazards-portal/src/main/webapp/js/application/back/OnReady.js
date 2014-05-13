@@ -35,6 +35,7 @@ $(document).ready(function () {
 	});
 
 	CCH.CONFIG.item.load({
+		subtree : true,
 		callbacks: {
 			error: [
 				function (jqXHR, textStatus, errorThrown) {
