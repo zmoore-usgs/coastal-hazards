@@ -15,54 +15,54 @@
 window.CCH = CCH || {};
 CCH.Util = CCH.Util || {};
 CCH.Util.Search = function (args) {
-    "use strict";
-    var me = (this === window) ? {} : this;
-    args = args || {};
-    me.GEOCODE_SERVICE_ENDPOINT = args.geocodeServiceEndpoint || CCH.CONFIG.data.sources.geocoding.endpoint;
+	"use strict";
+	var me = (this === window) ? {} : this;
+	args = args || {};
+	me.GEOCODE_SERVICE_ENDPOINT = args.geocodeServiceEndpoint || CCH.CONFIG.data.sources.geocoding.endpoint;
 
-    me.submitLocationSearch = function (args) {
-        if (!args) {
-            throw 'arguments required';
-        }
+	me.submitLocationSearch = function (args) {
+		if (!args) {
+			throw 'arguments required';
+		}
 
-        var criteria = args.criteria || '',
-            maxLocations = args.maxLocations || 20,
-            callbacks = args.callbacks || {
-                success : [],
-                error : []
-            },
-            scope = args.scope || this,
-            displayNotification = args.displayNotification === false ? false : true;
+		var criteria = args.criteria || '',
+			maxLocations = args.maxLocations || 20,
+			callbacks = args.callbacks || {
+				success: [],
+				error: []
+			},
+		scope = args.scope || this,
+			displayNotification = args.displayNotification === false ? false : true;
 
-        $.ajax({
-            type: 'GET',
-            url: me.GEOCODE_SERVICE_ENDPOINT,
-            context : scope,
-            data: {
-                text: criteria,
-                maxLocations: maxLocations,
-                sourceCountry : 'USA',
-                outFields: '*',
-                f: 'pjson',
-                outSR: '3785'
-            },
-            contentType: 'application/json',
-            dataType: 'jsonp',
-            success: function (data, statusText, xhrResponse) {
-                if (displayNotification && data.locations.length) {
-                    $(window).trigger('cch.data.locations.searched', { items : data.locations});
-                }
-                callbacks.success.each(function (cb) {
-                    cb.apply(this, [data, statusText, xhrResponse]);
-                });
-            },
-            error: function (xhr, status, error) {
-                callbacks.error.each(function (cb) {
-                    cb.apply(this, [xhr, status, error]);
-                });
-            }
-        });
-    };
+		$.ajax({
+			type: 'GET',
+			url: me.GEOCODE_SERVICE_ENDPOINT,
+			context: scope,
+			data: {
+				text: criteria,
+				maxLocations: maxLocations,
+				sourceCountry: 'USA',
+				outFields: '*',
+				f: 'pjson',
+				outSR: '3785'
+			},
+			contentType: 'application/json',
+			dataType: 'jsonp',
+			success: function (data, statusText, xhrResponse) {
+				if (displayNotification && data.locations.length) {
+					$(window).trigger('cch.data.locations.searched', {items: data.locations});
+				}
+				callbacks.success.each(function (cb) {
+					cb.apply(this, [data, statusText, xhrResponse]);
+				});
+			},
+			error: function (xhr, status, error) {
+				callbacks.error.each(function (cb) {
+					cb.apply(this, [xhr, status, error]);
+				});
+			}
+		});
+	};
 
 	me.submitItemSearch = function (args) {
 		if (!args) {
@@ -81,7 +81,7 @@ CCH.Util.Search = function (args) {
 				success: [],
 				error: []
 			},
-			scope = args.scope || this,
+		scope = args.scope || this,
 			data = {},
 			url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.item.endpoint,
 			displayNotification = args.displayNotification === false ? false : true;
@@ -133,9 +133,9 @@ CCH.Util.Search = function (args) {
 		});
 	};
 
-    return {
-        submitLocationSearch : me.submitLocationSearch,
-        submitItemSearch : me.submitItemSearch
-    };
+	return {
+		submitLocationSearch: me.submitLocationSearch,
+		submitItemSearch: me.submitItemSearch
+	};
 
 };
