@@ -53,7 +53,6 @@ CCH.Objects.Widget.Legend = function (args) {
 		itemType = nonAggItem.attr;
 
 		if (me.item.type === 'historical' && nonYearHistoricalAttributes.indexOf(itemType) === -1) {
-			CCH.LOG.debug("Requesting SLD  for item " + itemId);
 			CCH.Util.Util.getSLD({
 				contextPath: CCH.CONFIG.contextPath,
 				itemId: nonAggItem.id,
@@ -75,11 +74,10 @@ CCH.Objects.Widget.Legend = function (args) {
 								sld: sld,
 								legendTables: legendTables
 							});
-
 						}
 					],
 					error: [
-						function (jqXHR, textStatus, errorThrown) {
+						function () {
 							LOG.warn("Could not retrieve SLD. Legend will not be created");
 							this.legendTables.push(-1);
 							me.tableAdded({
@@ -438,8 +436,9 @@ CCH.Objects.Widget.Legend = function (args) {
 		var total = args.total,
 			legendTables = args.legendTables,
 			isYearLegend,
-			tIdx = 0,
 			$table,
+			$yearlyTable,
+			$yearlyTableHead,
 			rowArray,
 			isYearLegend = args.isYearLegend || false,
 			yearRows = [];
@@ -447,30 +446,45 @@ CCH.Objects.Widget.Legend = function (args) {
 		if (isYearLegend) {
 			// Combine all years, put into a single table
 			$table = legendTables;
-			
+
 			// Get every row from the table that is now the first row (the THEAD row)
 			rowArray = $table.
-				find('tbody tr'). // Find all the rows in this table
+				find('tbody tr').// Find all the rows in this table
 				toArray(); // Get a js array out of the jQuery object returned by find
-				
-			
-			rowArray = rowArray.concat(yearRows.concat(me.$legendDiv.find('table tbody tr')));
+
+			// Get everything from the incoming table ito the yearRows row array
 			yearRows = yearRows.concat(rowArray);
-			yearRows = yearRows.unique(function (tr) { // Cut down the array only to unique rows
+
+			// Include what's already in the legend, if anything
+			yearRows = yearRows.concat(me.$legendDiv.find('table tbody tr').toArray());
+
+			// Cut down the array only to unique rows
+			yearRows = yearRows.unique(function (tr) {
 				return $(tr).html();
 			});
 
-			// Now that I have all of my year rows, sort them descending by year
+			// Now that I have all of my year rows, sort them descending by year (2nd td node in every row)
 			yearRows = yearRows.sortBy(function (tr) {
 				return $(tr).find('td:nth-child(2)').html();
 			}, true);
 
-			// Re-create the legend table
-			legendTables = $('<table />').append(yearRows);
+			// Create the yearly table legend. This should only happen once
+			if (me.$container.children().length === 0) {
+				$yearlyTable = $('<table />');
+				$yearlyTableHead = $('<thead />');
+				$yearlyTableHead.append($('<caption />').html(me.item.summary.tiny.text));
+				$yearlyTableHead.append($('<tr/>').append($('<td />'), $('<td />').html('Year')));
+				$yearlyTable.append($yearlyTableHead, $('<tbody />'));
+				me.$legendDiv.append($yearlyTable);
+				me.$container.append(me.$legendDiv);
+			}
 
-			me.$legendDiv.empty().append(legendTables);
-			me.$container.append(me.$legendDiv);
+			// Re-create the legend table body
+			me.$legendDiv.find('tbody').empty().append(yearRows);
 
+			if (me.onComplete) {
+				me.onComplete.call(me);
+			}
 		} else if (legendTables.length === total) {
 			// When all the tables are created, I want to sort them, append them to a  wrapper and throw that wrapper 
 			// into the final container

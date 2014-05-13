@@ -18,29 +18,9 @@ CCH.Objects.Back.UI = function (args) {
 		$downloadFull,
 		$applicationLink,
 		$publist,
-		item = args.item,
-		legend = new CCH.Objects.Widget.Legend({
-			containerId : 'info-legend',
-			item : item,
-			onComplete : function() {
-				var $container = this.$container,
-					$legendDiv = this.$legendDiv,
-					$firstTable = $('#info-legend > div > table:first-child'),
-					$captions = $legendDiv.find('table > thead > caption'),
-					tableHeight,
-					tableWidth = $firstTable.width();
-				
-				// For one reason or another, the caption in the table doesn't seem to dynamically resize
-				$captions.width(tableWidth);
-				
-				tableHeight = $firstTable.height() - parseInt($container.css('paddingTop'));
-				
-				// Set the height of the container to the height of the first table (All tables should be about
-				// the same size)
-				$container.height(tableHeight);
-			}
-		}).init();
-	me.loadSLDCallback =function (data, dataItem, index, isLast) {
+		item = args.item;
+
+	me.loadSLDCallback = function (data, dataItem, index, isLast) {
 		return;
 		var sld = data,
 			featureLegend,
@@ -534,6 +514,34 @@ CCH.Objects.Back.UI = function (args) {
 
 	me.buildTwitterButton();
 	CCH.map.buildMap();
+
+	me.legend = new CCH.Objects.Widget.Legend({
+		containerId: 'info-legend',
+		item: item,
+		onComplete: function () {
+			var $container = this.$container,
+				$legendDiv = this.$legendDiv,
+				$firstTable = $('#info-legend > div > table:first-child'),
+				$captions = $legendDiv.find('table > thead > caption'),
+				mapHeight = $('#map').height(),
+				tableHeight,
+				tableWidth = $firstTable.width();
+
+			// For one reason or another, the caption in the table doesn't seem to dynamically resize
+			$captions.width(tableWidth);
+
+			// I don't want my legend div to be taller than the map
+			tableHeight = $firstTable.height() - parseInt($container.css('paddingTop'));
+
+			if (tableHeight > mapHeight) {
+				tableHeight = mapHeight;
+			}
+
+			// Set the height of the container to the height of the first table (All tables should be about
+			// the same size)
+			$container.height(tableHeight);
+		}
+	}).init();
 
 	return me;
 };
