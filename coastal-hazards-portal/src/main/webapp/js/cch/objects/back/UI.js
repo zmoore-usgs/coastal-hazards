@@ -233,7 +233,7 @@ CCH.Objects.Back.UI = function (args) {
 	me.buildTwitterButton();
 	CCH.map.buildMap();
 
-	if (item.getLayerList().length) {
+	if (item.getLayerList().layers.length) {
 		new CCH.Objects.Widget.Legend({
 			containerId: 'info-legend',
 			item: item,

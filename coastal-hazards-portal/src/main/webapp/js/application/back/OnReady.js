@@ -21,31 +21,12 @@ $(document).ready(function () {
 
 	$(window).on('cch.item.loaded', function (evt, args) {
 		var id = args.id || '',
-			item = CCH.CONFIG.item,
-			layers;
+			item = CCH.CONFIG.item;
 
 		if (CCH.CONFIG.item.id === id) {
 			CCH.ui = new CCH.Objects.Back.UI({item: item});
-			layers = item.showLayer().layers;
-			layers.each(function (child, index) {
-				CCH.Util.Util.getSLD({
-					contextPath: CCH.CONFIG.contextPath,
-					itemId: child.itemid,
-					callbacks: {
-						success: [
-							function (data) {
-								CCH.ui.loadSLDCallback(data, CCH.items.getById({id: child.itemid}), index, index === layers.length - 1);
-							}
-						],
-						error: [
-							function (jqXHR, textStatus, errorThrown) {
-								LOG.warn(errorThrown);
-							}
-						]
-					}
-				});
-			});
-
+			CCH.map.addLayers(item.showLayer().layers);
+			
 			// Clear the overlay
 			$('#application-overlay').fadeOut(2000, function () {
 				$('#application-overlay').remove();
