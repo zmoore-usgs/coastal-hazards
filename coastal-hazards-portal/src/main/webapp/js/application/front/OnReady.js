@@ -8,7 +8,7 @@
 /*global OpenLayers*/
 $(document).ready(function () {
 	"use strict";
-	
+
 	splashUpdate("Initializing Logging...");
 	initializeLogging({
 		LOG4JS_LOG_THRESHOLD: CCH.CONFIG.development ? 'debug' : 'info'
@@ -54,10 +54,10 @@ $(document).ready(function () {
 		slideBucketContainerId: 'application-slide-bucket-container',
 		slideSearchContainerId: 'application-slide-search-container'
 	});
-	
+
 	CCH.loadItems = function () {
 		$(window).resize();
-		
+
 		var type = (CCH.CONFIG.params.type + String()).toLowerCase(),
 			cookieItems = $.cookie('cch').items || [];
 
@@ -149,12 +149,12 @@ $(document).ready(function () {
 			CCH.ui.addItemsToBucketOnLoad(cookieItems);
 
 			CCH.loadTopLevelItem({
-				subtree : false,
+				subtree: false,
 				zoomToBbox: true
 			});
 		}
 	};
-	
+
 	CCH.loadTopLevelItem = function (args) {
 		args = args || {};
 
@@ -173,6 +173,7 @@ $(document).ready(function () {
 			zoomToBbox = false;
 		}
 
+		callbacks.error.unshift(CCH.ui.errorResponseHandler);
 		callbacks.success.unshift(function (data) {
 			if (zoomToBbox) {
 				CCH.map.zoomToBoundingBox({
@@ -181,36 +182,31 @@ $(document).ready(function () {
 				});
 			}
 
-			$(window).on('cch.item.loaded', function () {
-				var allLoaded = true,
-					item;
-					
-				data.children.each(function (id) {
-					item = CCH.items.getById({id: id});
-					if (!item || !item.loaded) {
-						allLoaded = false;
-					}
-				});
+			$(window).on('cch.item.loaded', function (evt, obj) {
+				var item;
 
-				if (allLoaded) {
+				CCH.LOG.debug(obj.id);
+				
+				// If the incoming item is the uber item, that means that by now, everything under it has been
+				// fully hydrated, so I can now add sub items to the accordion and remove the overlay
+				if (obj.id === 'uber') {
 					$(window).trigger('cch.item.loaded.all');
+					data.children.each(function (id, index, all) {
+						item = CCH.items.getById({id : id});
+						// Add it to the accordion...
+						CCH.ui.accordion.addCard({
+							item: item,
+							index: index
+						});
+						item = CCH.items.getById({id: id});
+					});
+					
 					CCH.ui.removeOverlay();
 				}
 			});
 
-			data.children.each(function (child, index) {
-				CCH.ui.accordion.load({
-					'id': child,
-					'index': index,
-					'callbacks': {
-						success: [],
-						error: [CCH.ui.errorResponseHandler]
-					}
-				});
-			});
+			new CCH.Objects.Item(data).loadFromData(data);
 		});
-
-		callbacks.error.unshift(CCH.ui.errorResponseHandler);
 
 		new CCH.Util.Search().submitItemSearch({
 			item: 'uber',
@@ -221,8 +217,8 @@ $(document).ready(function () {
 			}
 		});
 	};
-	
+
 	$(window).trigger('cch.app.initialized');
-	
+
 	CCH.loadItems();
 });
