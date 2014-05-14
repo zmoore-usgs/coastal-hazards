@@ -21,15 +21,20 @@
 	String marineArcServerEndpoint = props.getProperty("coastal-hazards.marine.endpoint");
 	String geocodeEndpoint = props.getProperty("coastal-hazards.geocoding.endpoint", "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find");
 	String publicUrl = props.getProperty("coastal-hazards.public.url", "http://127.0.0.1:8080/coastal-hazards-portal");
-    String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");
+	String externalCSWEndpoint = props.getProperty("coastal-hazards.csw.endpoint", "http://localhost:8000/pycsw");
 %>
 <%
+	if (publicUrl.endsWith("/")) {
+		publicUrl = publicUrl.substring(0, publicUrl.length() - 1);
+	}
 	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
 %>
 <script type="text/javascript">
 	OpenLayers.ProxyHost = 'geoserver/';
 	var CCH = {
-		Objects : {},
+		Objects : {
+			Front : {}
+		},
 		items : [],
 		CONFIG: {
 			item : null,

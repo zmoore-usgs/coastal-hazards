@@ -88,9 +88,16 @@
                         </li> 
                     </ul>
 
-                    <label for="app-nav_bar-search-form"><form id="app-navbar-search-form" class="navbar-search pull-right" action="javascript:void(0);">
-                        <i id="app-navbar-search-icon" class="icon-search"></i><label for="app-navbar-search-input"><input id="app-navbar-search-input" type="text" class="search-query span2" title="app-navbar-search-input" placeholder="Location Search"></label>
-                    </form></label>
+                    <label for="app-nav_bar-search-form"></label>
+                    
+                    <form id="app-navbar-search-form" class="navbar-search pull-right" action="javascript:void(0);">
+                    
+                        <i id="app-navbar-search-icon" class="icon-search"></i>
+                        
+                        <label for="app-navbar-search-input" title="app-navbar-search-input"></label>
+                        
+                        <input id="app-navbar-search-input" type="text" class="search-query span2" title="app-navbar-search-input" placeholder="Location Search">
+                    </form>
 
                 </div>
             </div>

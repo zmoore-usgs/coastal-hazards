@@ -334,7 +334,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
                         features = featuresByName[layerName];
                         featureCount = features.length;
                         if (featureCount) {
-                            CCH.Util.getSLD({
+                            CCH.Util.Util.getSLD({
                                 itemId : layerName,
                                 contextPath: CCH.CONFIG.contextPath,
                                 context : {

@@ -13,7 +13,8 @@
 #app-navbar-bucket-control-container > *:nth-child(1) > span {
     background-size: 40px 40px;
     background-repeat: no-repeat;
-    background-position: 0;
+    background-position-x: 0px;
+    background-position-y: 50%;
     height: 50px;
     width: 40px;
     display: inline-block;

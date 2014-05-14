@@ -1,10 +1,12 @@
 /*jslint browser: true */
 /*jslint plusplus: true */
 /*global $*/
-/*global LOG*/
 /*global CCH*/
 /*global OpenLayers*/
-CCH.Objects.Map = function (args) {
+window.CCH = CCH || {};
+CCH.Objects = CCH.Objects || {};
+CCH.Objects.Front = CCH.Objects.Front || {};
+CCH.Objects.Front.Map = function (args) {
     "use strict";
     var me = (this === window) ? {} : this;
 
@@ -12,8 +14,23 @@ CCH.Objects.Map = function (args) {
     me.mapDivId = args.mapDiv;
     me.$MAP_DIV = $('#' + args.mapDiv);
     me.bboxFadeoutDuration = 2000;
-    me.displayProjection = new OpenLayers.Projection("EPSG:900913");
+    me.mapProjection = "EPSG:900913";
+    me.displayProjection = new OpenLayers.Projection(me.mapProjection);
     me.attributionSource = CCH.CONFIG.contextPath + '/images/openlayers/usgs.svg';
+
+    // Map Controls
+    me.scaleLineControl = new OpenLayers.Control.ScaleLine({
+        geodesic: true
+    });
+    me.layerSwitcher = new OpenLayers.Control.LayerSwitcher({
+        roundedCorner: true
+    });
+    me.attributionControl = new OpenLayers.Control.Attribution({
+        'template' : '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="' + me.attributionSource + '" /></a>'
+    });
+    me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
+    me.clickControl = null; // Defined in init 
+
     me.showLayer = function (args) {
         var item = args.item,
             ribbonIndex = args.ribbon || 0,
@@ -93,106 +110,17 @@ CCH.Objects.Map = function (args) {
 
             CCH.LOG.debug('Map.js::init():Building map object');
             me.map = new OpenLayers.Map(me.mapDivId, {
-                projection: "EPSG:900913",
+                projection: me.mapProjection,
                 initialExtent: me.initialExtent,
                 displayProjection: me.displayProjection,
                 tileManager : new CCH.Objects.FixedTileManager()
             });
-            
-            OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
-                defaultHandlerOptions: {
-                    'single': true,
-                    'double': false,
-                    'pixelTolerance': 0,
-                    'stopSingle': false,
-                    'stopDouble': false
-                },
-                
-                iconLayer : new OpenLayers.Layer.Markers( "Markers" ),
 
-                initialize: function(options) {
-                    this.handlerOptions = OpenLayers.Util.extend(
-                        {}, this.defaultHandlerOptions
-                    );
-                    OpenLayers.Control.prototype.initialize.apply(
-                        this, arguments
-                    ); 
-                    this.handler = new OpenLayers.Handler.Click(
-                        this, {
-                            'click': this.onClick,
-                            'dblclick': this.onDblclick 
-                        }, this.handlerOptions
-                    );
-            
-                    me.map.events.on({
-                        'addlayer' : function () {
-                            var baseLayers = me.map.getLayersBy('isBaseLayer', true),
-                                highestLayer = baseLayers.max(function(layer) {
-                                    return me.map.getLayerIndex(layer)
-                                }),
-                                highestLayerIndex = me.map.getLayerIndex(highestLayer);
-                            
-                            if (highestLayerIndex !== -1) {
-                                me.map.setLayerIndex(me.map.getLayersByName('Markers')[0], highestLayerIndex + 1);
-                            }
-                        }
-                    });
-                    
-                    $(window).on('cch.map.control.layerid.responded', function() {
-                        var markerLayer = me.map.getLayersByName('Markers')[0];
-                        
-                        markerLayer.markers.each(function (marker) {
-                            markerLayer.removeMarker(marker);
-                            marker.destroy();
-                        });
-                    });
-            
-                    me.map.addLayer(this.iconLayer);
-                }, 
-
-                onClick: function(evt) {
-                    var msg = "click " + evt.xy;
-                    CCH.LOG.debug(msg);
-                    var size = new OpenLayers.Size(20,20),
-                        icon = new OpenLayers.Icon(CCH.CONFIG.contextPath + '/images/spinner/spinner3.gif', size, new OpenLayers.Pixel(-(size.w/2), -size.h)),
-                        marker = new OpenLayers.Marker(me.map.getLonLatFromPixel(evt.xy),icon);
-
-                    this.iconLayer.addMarker(marker);
-                    setTimeout(function () {
-                        // Marker may not exist. It may have been removed already
-                        if (marker && marker.map) {
-                            var markerLayer = marker.map.getLayersByName('Markers')[0];
-
-                            markerLayer.markers.each(function (marker) {
-                                markerLayer.removeMarker(marker);
-                                marker.destroy();
-                            });
-                        }
-                    }, 5000);
-                },
-
-                onDblclick: function(evt) {  
-                    var msg = "click " + evt.xy;
-                    CCH.LOG.debug(msg);
-                }
-
-            });
-            me.clickControl = new OpenLayers.Control.Click({
+            me.clickControl = new CCH.Objects.ClickControl({
                 handlerOptions: {
-                    "single": true
+                    "single": true,
+                    "map": me.map
                 }
-            });
-            
-            
-            me.layerSwitcher = new OpenLayers.Control.LayerSwitcher({
-                roundedCorner: true
-            });
-
-            // This control is used as the on-click identifier for layers
-            me.getFeatureInfoControl = new CCH.Objects.LayerIdentifyControl();
-
-            me.attributionControl = new OpenLayers.Control.Attribution({
-                'template' : '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="' + me.attributionSource + '" /></a>'
             });
 
             CCH.LOG.debug('Map.js::init():Adding base layers to map');
@@ -203,42 +131,17 @@ CCH.Objects.Map = function (args) {
                 me.layerSwitcher,
                 me.getFeatureInfoControl,
                 me.attributionControl,
-                me.clickControl
+                me.clickControl,
+                me.scaleLineControl
             ]);
-            
             me.clickControl.activate();
-
-            CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);
-            me.zoomToBoundingBox({ bbox : me.initialExtent });
 
             CCH.LOG.debug('Map.js::init():Binding map event handlers');
             me.map.events.on({
                 'zoomend': me.zoomendCallback,
                 'moveend': me.moveendCallback,
                 'removelayer': me.removeLayerCallback,
-                'preaddlayer': function (evt) {
-                    var layer = evt.layer;
-
-                    layer.events.register('loadstart', layer, function () {
-                        $('div.olMap').css('cursor', 'wait');
-                        $('body').css('cursor', 'wait');
-                    });
-                    layer.events.register('loadend', layer, function () {
-                        var layers = CCH.map.getMap().layers.findAll(function (l) {
-                            return l.type === 'cch';
-                        }),
-                            layersStillLoading = 0;
-                            
-                        layers.each(function (l) {
-                            layersStillLoading += l.numLoadingTiles;
-                        });
-                        
-                        if (layersStillLoading === 0) {
-                            $('div.olMap').css('cursor', 'default');
-                            $('body').css('cursor', 'default');
-                        }
-                    });
-                },
+                'preaddlayer': me.preAddLayerCallback,
                 'addlayer': me.addLayerCallback,
                 'changelayer': me.changelayerCallback
             });
@@ -249,14 +152,41 @@ CCH.Objects.Map = function (args) {
 
             // Bind application event handlers
             $(window).on({
+		'cch.item.loaded.all': function(evt) {
+			// After all items have been loaded I expect the map to be its full size. Previous to this, the map size 
+			// is short and doesn't get sized correctly until later in the initialization. (in CCH.Objects.UI.windowResizeHandler()
+			// which gets triggered when items have finished loading. If I try to zoom while the map is short, the
+			// zoom level is too far out when the map gets set to its normal size.
+			
+			// If the user is coming from the back of the card and has a bbox in their cookie, I want to zoom to that
+			// so the user essentially picks up where they left off.
+			
+			// Some of this logic is repeated in CCH.Objects.UI.loadTopLevelItem to figure out if the application 
+			// should override normal zoomTo behavior on load
+			if (evt.namespace === 'all.item.loaded') {
+				var returningVisitor = document.referrer.toLowerCase().indexOf('info/item') !== -1,
+					cookie = $.cookie('cch');
+
+				if (returningVisitor && cookie !== undefined && cookie.bbox  !== undefined & cookie.bbox.length === 4) {
+					me.initialExtent = OpenLayers.Bounds.fromArray(cookie.bbox).transform(new OpenLayers.Projection('EPSG:4326'), me.displayProjection).toArray();
+					
+					for (var ieIdx = 0;ieIdx < me.initialExtent.length;ieIdx++) {
+						me.initialExtent[ieIdx] = parseFloat(me.initialExtent[ieIdx]).toFixed(7);
+					}
+				}
+
+				CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);
+				me.zoomToBoundingBox({ bbox : me.initialExtent });
+			}
+		},
                 'cch.data.session.loaded.true': function () {
                     // A session has been loaded. The map will be rebuilt from the session
                     me.updateFromSession();
                 },
                 'cch.ui.resized': function () {
-                    $(me.$MAP_DIV.height($('#content-row').height()));
-                    me.removeAllPopups();
-                    me.map.updateSize();
+			$(me.$MAP_DIV).height($('#content-row').height());
+			me.removeAllPopups();
+			me.map.updateSize();
                 }
             });
 
@@ -323,7 +253,7 @@ CCH.Objects.Map = function (args) {
             ];
             session.scale = map.getScale();
             session.bbox = map.getExtent().transform(CCH.map.getMap().displayProjection, new OpenLayers.Projection('EPSG:4326')).toArray();
-            
+
             cookie.bbox = session.bbox;
             $.cookie('cch', cookie);
         },
@@ -349,7 +279,7 @@ CCH.Objects.Map = function (args) {
             // provided in the session
             if (!session.items.length) {
                 center = new OpenLayers.LonLat(session.center[0], session.center[1]).
-                    transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection);  
+                        transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection);
                 me.map.setCenter(center);
                 me.map.zoomToScale(session.scale);
             }
@@ -422,6 +352,32 @@ CCH.Objects.Map = function (args) {
                 layer : layer
             });
             CCH.map.removeAllPopups();
+        },
+        preAddLayerCallback:  function (evt) {
+            var layer = evt.layer,
+                mapDiv = 'div.olMap',
+                body = 'body',
+                cursor = 'cursor';
+
+            layer.events.register('loadstart', layer, function () {
+                $(mapDiv).css(cursor, 'wait');
+                $(body).css(cursor, 'wait');
+            });
+            layer.events.register('loadend', layer, function () {
+                var layers = CCH.map.getMap().layers.findAll(function (l) {
+                    return l.type === 'cch';
+                }),
+                    layersStillLoading = 0;
+
+                layers.each(function (l) {
+                    layersStillLoading += l.numLoadingTiles;
+                });
+
+                if (layersStillLoading === 0) {
+                    $(mapDiv).css(cursor, 'default');
+                    $(body).css(cursor, 'default');
+                }
+            });
         },
         getLayersBy : function (attr, value) {
             return me.map.getLayersBy(attr, value);
