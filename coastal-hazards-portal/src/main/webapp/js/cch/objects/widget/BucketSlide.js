@@ -8,11 +8,14 @@
 
 /**
  * @param {type} args
- * @returns {CCH.Objects.BucketSlide.Anonym$12}
+ * @returns 
  */
-CCH.Objects.BucketSlide = function (args) {
+window.CCH = CCH || {};
+CCH.Objects = CCH.Objects || {};
+CCH.Objects.Widget = CCH.Objects.Widget || {};
+CCH.Objects.Widget.BucketSlide = function (args) {
     "use strict";
-    CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class is initializing.');
+    CCH.LOG.debug('CCH.Objects.Widget.BucketSlide::constructor: BucketSlide class is initializing.');
     args = args || {};
 
     var me = (this === window) ? {} : this;
@@ -730,7 +733,7 @@ CCH.Objects.BucketSlide = function (args) {
         }
     });
 
-    CCH.LOG.debug('CCH.Objects.BucketSlide::constructor: BucketSlide class initialized.');
+    CCH.LOG.debug('CCH.Objects.Widget.BucketSlide::constructor: BucketSlide class initialized.');
 
     return {
         events : me.events,
@@ -747,6 +750,6 @@ CCH.Objects.BucketSlide = function (args) {
         cards : me.cards,
         rebuild : me.rebuild,
         reorderLayers : me.reorderLayers,
-        CLASS_NAME : 'CCH.Objects.BucketSlide'
+        CLASS_NAME : 'CCH.Objects.Widget.BucketSlide'
     };
 };

@@ -123,7 +123,7 @@
         </jsp:include>
         <script type="text/javascript" src="js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/ItemsSlide<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/cch/objects/BucketSlide<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/widget/BucketSlide<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/SearchSlide<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/widget/Accordion<%= development ? "" : "-min"%>.js"></script>
@@ -133,7 +133,7 @@
         <script type="text/javascript" src="js/cch/objects/FixedTileManager<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/LayerIdentifyControl<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/front/Map<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/cch/objects/Card<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/widget/Card<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/Items<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/util/OWS<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/Bucket<%= development ? "" : "-min"%>.js"></script>

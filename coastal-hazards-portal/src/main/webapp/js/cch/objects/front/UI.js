@@ -49,7 +49,7 @@ CCH.Objects.Front.UI = function (args) {
 		return $(window).outerWidth() < me.magicResizeNumber;
 	};
 	me.previouslySmall = me.isSmall();
-	me.bucketSlide = new CCH.Objects.BucketSlide({
+	me.bucketSlide = new CCH.Objects.Widget.BucketSlide({
 		containerId: me.BUCKET_SLIDE_CONTAINER_ID,
 		mapdivId: me.MAP_DIV_ID,
 		isSmall: me.isSmall

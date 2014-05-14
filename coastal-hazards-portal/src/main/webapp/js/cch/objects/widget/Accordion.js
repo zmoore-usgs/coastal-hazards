@@ -71,7 +71,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 
 		// If we are passed a product, that means we were not passed a card
 		if (item && !cardExists) {
-			card = new CCH.Objects.Card({
+			card = new CCH.Objects.Widget.Card({
 				item: item,
 				initHide: false
 			});
