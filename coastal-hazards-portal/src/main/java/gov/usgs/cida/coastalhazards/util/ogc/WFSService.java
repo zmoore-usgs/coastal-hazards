@@ -2,7 +2,6 @@ package gov.usgs.cida.coastalhazards.util.ogc;
 
 import gov.usgs.cida.coastalhazards.model.Service;
 import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
-import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
@@ -12,7 +11,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class WFSService implements Serializable {
+public class WFSService implements OGCService {
 
     private static final long serialVersionUID = 1L;
     
@@ -33,10 +32,12 @@ public class WFSService implements Serializable {
         }
     }
     
+    @Override
     public String getEndpoint() {
         return endpoint;
     }
 
+    @Override
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
     }

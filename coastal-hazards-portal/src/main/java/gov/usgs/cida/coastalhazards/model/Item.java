@@ -6,6 +6,8 @@ import gov.usgs.cida.coastalhazards.model.Service.ServiceType;
 import gov.usgs.cida.coastalhazards.util.ogc.WMSService;
 import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.util.ogc.CSWService;
+import gov.usgs.cida.coastalhazards.util.ogc.OGCService;
+import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.StringPrecondition;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
@@ -195,34 +197,6 @@ public class Item implements Serializable {
     public void setServices(List<Service> services) {
         this.services = services;
     }
-    
-    /**
-     * Get the WMSService to display from the services
-     * @return 
-     */
-    public WMSService fetchWmsService() {
-        WMSService wmsService = null;
-        if (services != null) {
-            for (Service service : services) {
-                if (service.getType() == ServiceType.proxy_wms) {
-                    wmsService = new WMSService(service);
-                }
-            }
-        }
-        return wmsService;
-    }
-    
-    public CSWService fetchCswService() {
-        CSWService cswService = null;
-        if (services != null) {
-            for (Service service : services) {
-                if (service.getType() == ServiceType.csw) {
-                    cswService = new CSWService(service);
-                }
-            }
-        }
-        return cswService;
-    }
 
     @ManyToMany(fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)
@@ -328,5 +302,62 @@ public class Item implements Serializable {
             services.add(service);
         }
         return services;
+    }
+    
+     /**
+     * Get the WMSService to display from the services
+     * @return 
+     */
+    public WMSService fetchWmsService() {
+        WMSService wmsService = null;
+        OGCService ogc = fetchOgcService(ServiceType.proxy_wms);
+        if (ogc instanceof WMSService) {
+            wmsService = (WMSService)ogc;
+        }
+        return wmsService;
+    }
+    
+    public CSWService fetchCswService() {
+        CSWService cswService = null;
+        OGCService ogc = fetchOgcService(ServiceType.csw);
+        if (ogc instanceof CSWService) {
+            cswService = (CSWService)ogc;
+        }
+        return cswService;
+    }
+    
+    public WFSService fetchWfsService() {
+        WFSService wfsService = null;
+        OGCService ogc = fetchOgcService(ServiceType.proxy_wfs);
+        if (ogc instanceof WFSService) {
+            wfsService = (WFSService)ogc;
+        }
+        return wfsService;
+    }
+    
+    private OGCService fetchOgcService(ServiceType type) {
+        OGCService ogc = null;
+        if (services != null) {
+            for (Service service : services) {
+                if (service.getType() == type) {
+                    switch (type) {
+                        case csw:
+                            ogc = new CSWService(service);
+                            break;
+                        case proxy_wms:
+                        case source_wms:
+                            ogc = new WMSService(service);
+                            break;
+                        case proxy_wfs:
+                        case source_wfs:
+                            ogc = new WFSService(service);
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Specified service type not valid OGC service");
+                    }
+                }
+            }
+        }
+        return ogc;
     }
 }
