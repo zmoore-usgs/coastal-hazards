@@ -88,7 +88,7 @@ $(document).ready(function () {
 
 								CCH.ui.addItemsToBucketOnLoad(items);
 
-								CCH.loadTopLevelItem({
+								CCH.loadUberItem({
 									zoomToBbox: false
 								});
 
@@ -102,7 +102,7 @@ $(document).ready(function () {
 							function () {
 								// The session couldn't be loaded for whatever reason
 								// so just load the top level item and move forward
-								CCH.loadTopLevelItem({
+								CCH.loadUberItem({
 									zoomToBbox: true,
 									callbacks: {
 										success: [
@@ -138,7 +138,7 @@ $(document).ready(function () {
 
 				CCH.ui.addItemsToBucketOnLoad(cookieItems);
 
-				CCH.loadTopLevelItem({
+				CCH.loadUberItem({
 					subtree: true,
 					zoomToBbox: false
 				});
@@ -148,14 +148,14 @@ $(document).ready(function () {
 			// to load, nor do I have any session to load, so just start with the top level item
 			CCH.ui.addItemsToBucketOnLoad(cookieItems);
 
-			CCH.loadTopLevelItem({
+			CCH.loadUberItem({
 				subtree: true,
 				zoomToBbox: true
 			});
 		}
 	};
 
-	CCH.loadTopLevelItem = function (args) {
+	CCH.loadUberItem = function (args) {
 		args = args || {};
 
 		var zoomToBbox = args.zoomToBbox === true ? true : false,
@@ -201,7 +201,6 @@ $(document).ready(function () {
 					});
 					
 					$(window).trigger('cch.item.loaded.all');
-					
 					CCH.ui.removeOverlay();
 				}
 			});
