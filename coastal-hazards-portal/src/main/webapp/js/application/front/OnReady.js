@@ -59,6 +59,7 @@ $(document).ready(function () {
 		$(window).resize();
 
 		var type = (CCH.CONFIG.params.type + String()).toLowerCase(),
+			id = CCH.CONFIG.params.id,
 			cookieItems = $.cookie('cch').items || [];
 
 		splashUpdate('Loading Application...');
@@ -138,18 +139,17 @@ $(document).ready(function () {
 				CCH.ui.addItemsToBucketOnLoad(cookieItems);
 
 				CCH.loadTopLevelItem({
-					subtree: false,
+					subtree: true,
 					zoomToBbox: false
 				});
 			}
 		} else {
-			// The user is initially loading the application. I do not have any items
-			// to load, nor do I have any session to load, so just start with the top
-			// level item
+			// The user is initially loading the application. I do not have any items or views
+			// to load, nor do I have any session to load, so just start with the top level item
 			CCH.ui.addItemsToBucketOnLoad(cookieItems);
 
 			CCH.loadTopLevelItem({
-				subtree: false,
+				subtree: true,
 				zoomToBbox: true
 			});
 		}
@@ -190,7 +190,6 @@ $(document).ready(function () {
 				// If the incoming item is the uber item, that means that by now, everything under it has been
 				// fully hydrated, so I can now add sub items to the accordion and remove the overlay
 				if (obj.id === 'uber') {
-					$(window).trigger('cch.item.loaded.all');
 					data.children.each(function (id, index, all) {
 						item = CCH.items.getById({id : id});
 						// Add it to the accordion...
@@ -200,6 +199,8 @@ $(document).ready(function () {
 						});
 						item = CCH.items.getById({id: id});
 					});
+					
+					$(window).trigger('cch.item.loaded.all');
 					
 					CCH.ui.removeOverlay();
 				}

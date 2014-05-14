@@ -9,14 +9,14 @@ CCH.Objects.Item = function (args) {
 	args = args || {};
 
 	CCH.LOG.debug('Item.js::init():Item class is initializing.');
-	
+
 	var me = this === window ? {} : this;
 
 	me.UNITED_STATES_BBOX = [24.956, -124.731, 49.372, -66.97];
 	me.id = args.id;
 	me.parent = args.parent || null;
 	me.loaded = args.loaded || false;
-	me.ribboned = args.ribboned || null;
+	me.ribboned = args.ribbonable || false;
 	me.children = args.children || [];
 	me.displayedChildren = args.displayedChildren || [];
 	me.attr = args.attr || null;
@@ -220,7 +220,7 @@ CCH.Objects.Item = function (args) {
 
 			}
 		} else {
-			if (me.ribboned && me.parent.ribboned) {
+			if (me.ribboned && me.parent && me.parent.ribboned) {
 				index = me.parent.children.findIndex(function (childId) {
 					return me.id === childId;
 				});

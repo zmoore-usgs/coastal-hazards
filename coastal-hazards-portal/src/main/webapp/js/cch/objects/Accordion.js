@@ -97,7 +97,7 @@ CCH.Objects.Accordion = function (args) {
 				}
 			}
 		}
-
+		
 		return bellow;
 	};
 
