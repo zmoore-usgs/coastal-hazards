@@ -70,7 +70,7 @@ CCH.Objects.Front.UI = function (args) {
 		isSmall: me.isSmall,
 		bucket: me.bucket
 	});
-	me.accordion = new CCH.Objects.Accordion({
+	me.accordion = new CCH.Objects.Widget.Accordion({
 		containerId: me.SLIDE_CONTAINER_DIV_ID
 	});
 	me.combinedSearch = new CCH.Objects.CombinedSearch();

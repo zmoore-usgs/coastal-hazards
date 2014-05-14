@@ -126,7 +126,7 @@
         <script type="text/javascript" src="js/cch/objects/BucketSlide<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/SearchSlide<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/cch/objects/Accordion<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/widget/Accordion<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/Session<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/ClickControl<%= development ? "" : "-min"%>.js"></script>

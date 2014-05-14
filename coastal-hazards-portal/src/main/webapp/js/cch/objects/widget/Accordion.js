@@ -3,8 +3,10 @@
 /*global $*/
 /*global CCH*/
 /*global ga*/
-
-CCH.Objects.Accordion = function (args) {
+window.CCH = CCH || {};
+CCH.Objects = CCH.Objects || {};
+CCH.Objects.Widget = CCH.Objects.Widget || {};
+CCH.Objects.Widget.Accordion = function (args) {
 	"use strict";
 
 	CCH.LOG.info('Accordion.js::constructor:Accordion class is initializing.');
@@ -298,6 +300,6 @@ CCH.Objects.Accordion = function (args) {
 		load: me.load,
 		showCurrent: me.showCurrent,
 		explore: me.explore,
-		CLASS_NAME: 'CCH.Objects.Accordion'
+		CLASS_NAME: 'CCH.Objects.Widget.Accordion'
 	});
 };
