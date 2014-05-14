@@ -1,7 +1,7 @@
 package gov.usgs.cida.coastalhazards.model.util;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.SortedSet;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -31,7 +32,7 @@ public class DataDomain implements Serializable {
     private int id;
     private String itemId;
     private String sessionId;
-    private Set<String> domainValues;
+    private SortedSet<String> domainValues;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -65,12 +66,12 @@ public class DataDomain implements Serializable {
     @CollectionTable(name = "domain_values",
             joinColumns = @JoinColumn(name = "domain_id"))
     @Sort(type = SortType.NATURAL)
-    @Column(name = "value_id")
-    public Set<String> getDomainValues() {
+    @Column(name = "domain_value")
+    public SortedSet<String> getDomainValues() {
         return domainValues;
     }
 
-    public void setDomainValues(Set<String> domainValues) {
+    public void setDomainValues(SortedSet<String> domainValues) {
         this.domainValues = domainValues;
     }
 
