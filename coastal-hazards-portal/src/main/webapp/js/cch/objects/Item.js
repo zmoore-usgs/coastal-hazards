@@ -9,11 +9,7 @@ CCH.Objects.Item = function (args) {
 	args = args || {};
 
 	CCH.LOG.debug('Item.js::init():Item class is initializing.');
-
-	if (!args.id) {
-		throw 'Item can not initialize without an id being passed to it';
-	}
-
+	
 	var me = this === window ? {} : this;
 
 	me.UNITED_STATES_BBOX = [24.956, -124.731, 49.372, -66.97];
@@ -42,119 +38,121 @@ CCH.Objects.Item = function (args) {
 		callbacks.success = callbacks.success || [];
 		callbacks.error = callbacks.error || [];
 
-		callbacks.success.unshift(function (data) {
-			me.children = data.children || [];
-			me.displayedChildren = data.displayedChildren || [];
-			me.attr = data.attr;
-			me.metadata = data.metadata;
-			me.ribboned = data.ribbonable;
-			me.bbox = data.bbox || me.UNITED_STATES_BBOX;
-			me.itemType = data.itemType;
-			me.name = data.name;
-			me.summary = data.summary;
-			me.type = data.type;
-			me.services = data.services;
-
-			CCH.items.add({item: me});
-
-			if (me.children.length && !me.loaded) {
-				// If I have children, load those as well
-				var setLoaded = function (evt, args) {
-					if (!me.loaded) {
-						var loadedItemIsChild = me.children.findIndex(function (childId) {
-							return childId === args.id;
-						}) !== -1,
-							childItems = [],
-							allLoaded;
-						if (loadedItemIsChild) {
-							me.children.each(function (childId) {
-								var childItem = CCH.items.getById({id: childId});
-								if (childItem) {
-									childItems.push(childItem);
-								}
-							});
-
-							if (childItems.length === me.children.length) {
-								allLoaded = childItems.findIndex(function (childItem) {
-									return !childItem.loaded;
-								}) === -1;
-								if (allLoaded) {
-									me.loaded = true;
-									CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
-									$(window).trigger('cch.item.loaded', {
-										id: me.id
-									});
-								}
-							}
-						}
-					}
-				};
-
-				$(window).on('cch.item.loaded', setLoaded);
-
-				// I make the distinction here whether the item has been loaded completely or did we just get
-				// child ids. If the object is loaded completely, I have no more need to make any other calls
-				// to the back end so just properly load the children as Item objects 
-				if (typeof me.children[0] === 'object') {
-					// Set myself to be fully loaded since I have no need to make further async calls
-					me.loaded = true;
-
-					var loadDataToItem = function (itemData, parent) {
-						var child,
-							item;
-						
-						itemData.parent = parent;
-						itemData.loaded = true;
-						item = new CCH.Objects.Item(itemData);
-						
-						// For each child, recurse back into this function using my child's data 
-						if (itemData.children) {
-							for (var i = 0; i < itemData.children.length; i++) {
-								child = itemData.children[i];
-								loadDataToItem(child, item);
-								item.children[i] = child.id;
-							}
-						}
-						
-						CCH.items.add({item: item});
-
-						$(window).trigger('cch.item.loaded', {
-							id: item.id
-						});
-					};
-
-					// Start loading my children by just passing me in
-					// I may have a parent but probably don't.
-					loadDataToItem(me, null);
-				} else {
-					// The child still needs to be loaded
-					me.children.each(function (child) {
-						new CCH.Objects.Item({
-							id: child,
-							parent: me
-						}).load();
-					});
-				}
-
-			} else {
-				me.loaded = true;
-				$(window).trigger('cch.item.loaded', {
-					id: me.id
-				});
-				CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
-			}
-		});
+		callbacks.success.unshift(me.loadFromData);
 
 		CCH.items.search({
 			item: me.id,
 			displayNotification: false,
 			context: context,
-			subtree : subtree,
+			subtree: subtree,
 			callbacks: {
 				success: callbacks.success,
 				error: callbacks.error
 			}
 		});
+	};
+
+	me.loadFromData = function (data) {
+		me.children = data.children || [];
+		me.displayedChildren = data.displayedChildren || [];
+		me.attr = data.attr;
+		me.metadata = data.metadata;
+		me.ribboned = data.ribbonable;
+		me.bbox = data.bbox || me.UNITED_STATES_BBOX;
+		me.itemType = data.itemType;
+		me.name = data.name;
+		me.summary = data.summary;
+		me.type = data.type;
+		me.services = data.services;
+
+		CCH.items.add({item: me});
+
+		if (me.children.length && !me.loaded) {
+			// If I have children, load those as well
+			var setLoaded = function (evt, args) {
+				if (!me.loaded) {
+					var loadedItemIsChild = me.children.findIndex(function (childId) {
+						return childId === args.id;
+					}) !== -1,
+						childItems = [],
+						allLoaded;
+					if (loadedItemIsChild) {
+						me.children.each(function (childId) {
+							var childItem = CCH.items.getById({id: childId});
+							if (childItem) {
+								childItems.push(childItem);
+							}
+						});
+
+						if (childItems.length === me.children.length) {
+							allLoaded = childItems.findIndex(function (childItem) {
+								return !childItem.loaded;
+							}) === -1;
+							if (allLoaded) {
+								me.loaded = true;
+								CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
+								$(window).trigger('cch.item.loaded', {
+									id: me.id
+								});
+							}
+						}
+					}
+				}
+			};
+
+			$(window).on('cch.item.loaded', setLoaded);
+
+			// I make the distinction here whether the item has been loaded completely or did we just get
+			// child ids. If the object is loaded completely, I have no more need to make any other calls
+			// to the back end so just properly load the children as Item objects 
+			if (typeof me.children[0] === 'object') {
+				// Set myself to be fully loaded since I have no need to make further async calls
+				me.loaded = true;
+
+				var loadDataToItem = function (itemData, parent) {
+					var child,
+						item;
+
+					itemData.parent = parent;
+					itemData.loaded = true;
+					item = new CCH.Objects.Item(itemData);
+
+					// For each child, recurse back into this function using my child's data 
+					if (itemData.children) {
+						for (var i = 0; i < itemData.children.length; i++) {
+							child = itemData.children[i];
+							loadDataToItem(child, item);
+							item.children[i] = child.id;
+						}
+					}
+
+					CCH.items.add({item: item});
+
+					$(window).trigger('cch.item.loaded', {
+						id: item.id
+					});
+				};
+
+				// Start loading my children by just passing me in
+				// I may have a parent but probably don't.
+				loadDataToItem(me, null);
+			} else {
+				// The child still needs to be loaded
+				me.children.each(function (child) {
+					new CCH.Objects.Item({
+						id: child,
+						parent: me
+					}).load();
+				});
+			}
+
+		} else {
+			me.loaded = true;
+			$(window).trigger('cch.item.loaded', {
+				id: me.id
+			});
+			CCH.LOG.debug('Item.js::init():Item ' + me.id + ' finished initializing.');
+		}
 	};
 
 	me.createWmsLayer = function () {
@@ -444,6 +442,7 @@ CCH.Objects.Item = function (args) {
 		type: me.type,
 		getWmsLayer: me.createWmsLayer,
 		load: me.load,
+		loadFromData: me.loadFromData,
 		getLayerList: me.getLayerList,
 		showLayer: me.showLayer,
 		hideLayer: me.hideLayer,
