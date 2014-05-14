@@ -6,6 +6,7 @@ import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
@@ -78,9 +79,9 @@ public class DataDomainManager implements AutoCloseable {
             domain = load(item.getId());
         } else {
             log.debug("No domain found in database, get it from WFS");
-            Set<String> domainVals = DataDomainUtility.retrieveDomainFromWFS(item);
+            SortedSet<String> domainVals = DataDomainUtility.retrieveDomainFromWFS(item);
             // only using this for years for now, separated out for future endeavors though
-            Set<String> domainAsYears = DataDomainUtility.getDomainAsYears(domainVals);
+            SortedSet<String> domainAsYears = DataDomainUtility.getDomainAsYears(domainVals);
             domain.setItemId(item.getId());
             domain.setDomainValues(domainAsYears);
             save(domain);

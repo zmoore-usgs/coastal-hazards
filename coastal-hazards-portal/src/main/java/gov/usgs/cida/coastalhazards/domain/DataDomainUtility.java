@@ -3,8 +3,9 @@ package gov.usgs.cida.coastalhazards.domain;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 /**
@@ -15,8 +16,8 @@ public class DataDomainUtility {
     
     private static final Logger log = Logger.getLogger(DataDomainUtility.class);
 
-    public static Set<String> retrieveDomainFromWFS(Item item)  {
-        Set<String> domain = new HashSet<>();
+    public static SortedSet<String> retrieveDomainFromWFS(Item item)  {
+        SortedSet<String> domain = new TreeSet<>();
         
         WFSGetDomain client = new WFSGetDomain();
         if (item == null) {
@@ -39,8 +40,8 @@ public class DataDomainUtility {
         return domain;
     }
     
-    public static Set<String> getDomainAsYears(Set<String> stringDomain) {
-        Set<String> yearDomain = new HashSet<>();
+    public static SortedSet<String> getDomainAsYears(Set<String> stringDomain) {
+        SortedSet<String> yearDomain = new TreeSet<>();
         
         for (String date : stringDomain) {
             // We are assuming mm/dd/yyyy format, will break otherwise
