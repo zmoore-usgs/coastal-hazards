@@ -19,59 +19,10 @@ CCH.Objects.Front.UI = function (args) {
 	CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 
 	var me = (this === window) ? {} : this,
-		errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
-			CCH.ui.displayLoadingError({
-				errorThrown: errorThrown,
-				status: jqXHR.status,
-				textStatus: textStatus
-			});
-		},
-		type = (CCH.CONFIG.params.type + String()).toLowerCase(),
-		id = CCH.CONFIG.params.id,
 		removeMarkers = function () {
 			CCH.map.clearBoundingBoxMarkers();
 			$(window).off('cch-map-bbox-marker-added', removeMarkers);
-		},
-		addItemsToBucketOnLoad = function (items) {
-			items = items || [];
-			// Wait for each item in the session to be loaded 
-			// before adding it to the bucket
-			items.each(function (item) {
-				var loadedHandler = function (evt, args) {
-					var loadedItemId = args.id,
-						sessionItems = CCH.session.getSession().items,
-						addIndex = sessionItems.findIndex(function (i) {
-							return i.itemId === args.id;
-						}),
-						sessionItem = sessionItems[addIndex],
-						itemById = CCH.items.getById({
-							id: loadedItemId
-						});
-
-					// The following is done to add the items to the bucket and 
-					// bucket slider in a specific order
-					itemById.addAtIndex = addIndex;
-					me.bucket.add({
-						item: itemById,
-						visibility: sessionItem.visible
-					});
-					me.bucket.bucket = me.bucket.getItems().sortBy(function (i) {
-						return i.addAtIndex;
-					});
-					me.bucketSlide.cards = me.bucketSlide.cards.sort(function (card) {
-						return me.bucket.getItemById($(card).data('id')).addAtIndex || -1;
-					});
-					me.bucketSlide.rebuild();
-				};
-				$(window).on('cch.item.loaded', function (evt, args) {
-					if (args.id === item.itemId) {
-						$(window).off('cch.item.loaded', loadedHandler);
-						loadedHandler(evt, args);
-					}
-				});
-			});
-		},
-		cookieItems = $.cookie('cch').items || [];
+		};
 	
 	me.APPLICATION_CONTAINER = $('#application-container');
 	me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
@@ -350,169 +301,53 @@ CCH.Objects.Front.UI = function (args) {
 			append(splashMessage, $('<span />').append(continueLink), emailLink);
 		$('#splash-spinner').remove();
 	};
-
-	me.loadTopLevelItem = function (args) {
-		args = args || {};
-
-		var zoomToBbox = args.zoomToBbox === true ? true : false,
-			returningVisitor = document.referrer.toLowerCase().indexOf('info/item') !== -1,
-			cookie = $.cookie('cch'),
-			subtree = args.subtree || false,
-			callbacks = args.callbacks || {
-				success: [],
-				error: []
-			};
-
-		// If the user is coming from the back of the card, shortcut to not zoom to a bounding box because
-		// the user wants to maintain their zoom level from when they left
-		if (returningVisitor && cookie !== undefined && cookie.bbox !== undefined & cookie.bbox.length === 4) {
-			zoomToBbox = false;
-		}
-
-		callbacks.success.unshift(function (data) {
-			if (zoomToBbox) {
-				CCH.map.zoomToBoundingBox({
-					bbox: data.bbox,
-					fromProjection: new OpenLayers.Projection('EPSG:4326')
-				});
-			}
-
-			$(window).on('cch.item.loaded', function (evt) {
-				var allLoaded = true,
-					item;
-				data.children.each(function (id) {
-					item = CCH.items.getById({id: id});
-					if (!item || !item.loaded) {
-						allLoaded = false;
-					}
-				});
-
-				if (allLoaded) {
-					$(window).trigger('cch.item.loaded.all');
-					me.removeOverlay();
-				}
-			});
-
-			data.children.each(function (child, index) {
-				me.accordion.load({
-					'id': child,
-					'index': index,
-					'callbacks': {
-						success: [],
-						error: [errorResponseHandler]
-					}
-				});
-			});
-		});
-
-		callbacks.error.unshift(errorResponseHandler);
-
-		new CCH.Util.Search().submitItemSearch({
-			item: 'uber',
-			subtree: subtree,
-			callbacks: {
-				'success': callbacks.success,
-				'error': callbacks.error
-			}
+	
+	me.errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
+		CCH.ui.displayLoadingError({
+			errorThrown: errorThrown,
+			status: jqXHR.status,
+			textStatus: textStatus
 		});
 	};
+	
+	me.addItemsToBucketOnLoad = function (items) {
+		items = items || [];
+		// Wait for each item in the session to be loaded 
+		// before adding it to the bucket
+		items.each(function (item) {
+			var loadedHandler = function (evt, args) {
+				var loadedItemId = args.id,
+					sessionItems = CCH.session.getSession().items,
+					addIndex = sessionItems.findIndex(function (i) {
+						return i.itemId === args.id;
+					}),
+					sessionItem = sessionItems[addIndex],
+					itemById = CCH.items.getById({
+						id: loadedItemId
+					});
 
-	me.loadItems = function () {
-		$(window).resize();
-
-		// Populate the UI with incoming data
-		// Decide how to load the application. 
-		// Depending on the 'idType' string, the application can be loaded either through:
-		// 'ITEM' = Load a single item from the database
-		// 'VIEW' = Load a session which can have zero, one or more items
-		// '' = Load the application normally through the uber item
-		// 
-		// Most of the application is now initialized, so I'm going to try and load
-		// either one item, a view or all top level items. First I check if idType exists
-		if (type) {
-			// User is coming in with either an item or a view, check which
-			if (type === 'view') {
-				splashUpdate("Loading View...");
-
-				// Begin by trying to load the session from the incoming url
-				CCH.session.load({
-					sid: CCH.CONFIG.params.id,
-					callbacks: {
-						success: [
-							function (session) {
-								var items = CCH.session.getSession().items;
-
-								addItemsToBucketOnLoad(items);
-
-								me.loadTopLevelItem({
-									zoomToBbox: false
-								});
-
-								CCH.map.zoomToBoundingBox({
-									'bbox': session.bbox,
-									'fromProjection': new OpenLayers.Projection('EPSG:4326')
-								});
-							}
-						],
-						error: [
-							function () {
-								// The session couldn't be loaded for whatever reason
-								// so just load the top level item and move forward
-								me.loadTopLevelItem({
-									zoomToBbox: true,
-									callbacks: {
-										success: [
-											function () {
-												alertify.error('The Coastal Change Hazards Portal could not find your session.', 4000);
-											}
-										],
-										error: []
-									}
-								});
-							}]
-					}
+				// The following is done to add the items to the bucket and 
+				// bucket slider in a specific order
+				itemById.addAtIndex = addIndex;
+				me.bucket.add({
+					item: itemById,
+					visibility: sessionItem.visible
 				});
-			} else if (type === 'item') {
-				// User is coming in with an item, so load that item
-				splashUpdate('Loading Application...');
-
-				$(window).on('cch.item.loaded.all', function (evt, args) {
-					if (evt.namespace === 'all.item.loaded') {
-						var item = CCH.items.getById({id: id});
-						if (item) {
-							// I want to zoom to the bounding box of the item
-							CCH.map.zoomToBoundingBox({
-								bbox: item.bbox,
-								fromProjection: new OpenLayers.Projection('EPSG:4326')
-							});
-
-							// And I want to open the accordion to that item
-							$(window).trigger('cch.slide.search.button.click.explore', {
-								id: id
-							});
-						}
-					}
+				me.bucket.bucket = me.bucket.getItems().sortBy(function (i) {
+					return i.addAtIndex;
 				});
-
-				addItemsToBucketOnLoad(cookieItems);
-
-				me.loadTopLevelItem({
-					subtree: false,
-					zoomToBbox: false
+				me.bucketSlide.cards = me.bucketSlide.cards.sort(function (card) {
+					return me.bucket.getItemById($(card).data('id')).addAtIndex || -1;
 				});
-			}
-		} else {
-			// The user is initially loading the application. I do not have any items
-			// to load, nor do I have any session to load, so just start with the top
-			// level item
-			splashUpdate('Loading Application...');
-
-			addItemsToBucketOnLoad(cookieItems);
-
-			me.loadTopLevelItem({
-				zoomToBbox: true
+				me.bucketSlide.rebuild();
+			};
+			$(window).on('cch.item.loaded', function (evt, args) {
+				if (args.id === item.itemId) {
+					$(window).off('cch.item.loaded', loadedHandler);
+					loadedHandler(evt, args);
+				}
 			});
-		}
+		});
 	};
 
 	// Do Bindings
@@ -520,12 +355,11 @@ CCH.Objects.Front.UI = function (args) {
 		'resize': function () {
 			setTimeout(function () {
 				me.windowResizeHandler();
-			}, 1)
+			}, 1);
 		},
 		'cch.data.items.searched': me.itemsSearchedHandler,
 		'cch.data.locations.searched': me.locationsSearchedHandler,
 		'slide.bucket.button.click.share': me.sharemodalDisplayHandler,
-		'cch.app.initialized': me.loadItems,
 		'cch.slide.bucket.closing': function () {
 			CCH.map.hideAllLayers();
 			me.accordion.showCurrent();
@@ -563,6 +397,9 @@ CCH.Objects.Front.UI = function (args) {
 		searchSlide: me.searchSlide,
 		bucket: me.bucket,
 		share: me.share,
+		accordion: me.accordion,
+		errorResponseHandler: me.errorResponseHandler,
+		addItemsToBucketOnLoad : me.addItemsToBucketOnLoad,
 		CLASS_NAME: 'CCH.Objects.UI'
 	});
 };
