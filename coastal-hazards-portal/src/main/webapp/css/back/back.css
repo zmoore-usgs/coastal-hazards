@@ -20,11 +20,6 @@ html, body {
     color: #777;
 }
 
-#info-legend {
-    overflow-y: scroll;
-    width: 100%;
-}
-
 /* Fixes pink tile issue in OpenLayers map */
 .olImageLoadError {
     display : none !important;
@@ -85,37 +80,6 @@ html, body {
 .container > div.row:nth-child(3) > div:first-child > div > div.olMap {
     height: 400px;
 }
-
-/* Legend div */
-.container > div.row:nth-child(3) > div:first-child > div > :nth-child(3) > :first-child > div {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-/*  Legend Table */
-.container > div.row:nth-child(3) > div:first-child > div:nth-child(2) table {
-    table-layout: fixed;
-}
-/* Legend Table cells for the left column */
-.container > div.row:nth-child(3) > div:first-child > div:nth-child(2) table > tbody >tr > td:nth-of-type(odd) > div {
-    height: 10px;
-    border: #000000;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 10px;
-    -moz-border-radius: 10px;
-    -webkit-botder-radius: 10px;
-}
-/* Legend Table Caption */
-.container > div.row:nth-child(3) > div:first-child > div:nth-child(2) table > caption {
-    font-size: 1.2em;
-}
-/* Every Table Cell */
-.container > div.row:nth-child(3) > div:first-child > div:nth-child(2) table > tbody > tr > td {
-    padding : 2px;
-    vertical-align: middle;
-}
-
 /* Social Media Icon */
 .container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
     vertical-align: middle;
@@ -194,8 +158,4 @@ html, body {
         height: 100px;
     }
 
-    /* Legend div */
-    .container > div.row:nth-child(3) > div:first-child > div:nth-child(2) > div:first-child > div {
-        max-height: none;
-    }
 }
