@@ -9,16 +9,13 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 	initialize: function (options) {
 		options = options || {};
 		options.displayClass = this.displayClass;
-		
-		this.eventListeners = {
-			scope: this,
-			activate : function () {
-				debugger;
-			}
-		};
-		
+
 		OpenLayers.Control.prototype.initialize.apply(this, [options]);
-		
+		this.events.register('activate', this, function () {
+			if (this.startHidden) {
+				this.hide();
+			}
+		});
 	},
 	destroy: function () {
 		OpenLayers.Control.prototype.destroy.apply(this, arguments);
