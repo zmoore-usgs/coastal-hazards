@@ -381,13 +381,25 @@ CCH.Objects.Front.UI = function (args) {
 
 		// Card is being opened. There may be a legend to show
 		if (display) {
-			// I don't currently have this legend in my map of legends and legend container
-			if (!me.legends.card[item.id]) {
+			// A new card is being opened. Remove all other legends
+			Object.values(me.legends.card).each(function(legend) {
+				legend.destroy();
+			});
+			
+			// I want to show a legend if either the item is a data item or an aggregation with visible children
+			// otherwise nothing is going to be shown 
+			if (item.getLayerList().layers.length > 0) {
 				me.legends.card[item.id] = new CCH.Objects.Widget.Legend({
 					containerId: 'cchMapLegendInnerContainer',
 					item: item
 				}).init();
+			}
+			
+			// If legends are available, show the legend, otherwise hide it
+			if (Object.keys(me.legends.card).length > 0) {
 				CCH.map.showLegend();
+			} else {
+				CCH.map.hideLegend();
 			}
 		} else {
 			// I need to remove this legend from my map of legends and the legend container
@@ -395,6 +407,16 @@ CCH.Objects.Front.UI = function (args) {
 				me.legends.card[item.id].destroy();
 				delete me.legends.card[item.id];
 			}
+			
+			// Because closing this card doesn't re-trigger an 'open' event of its parent card (if there is one),
+			// I have to re-trigger the event if the card has a parent with layers available (unless it's uber)
+			if (item.parent.id !== 'uber' && item.parent &&  item.parent.getLayerList().layers.length > 0) {
+				me.cardDisplayed(null, {
+					item : item.parent,
+					display : true
+				});
+			}
+			
 			if (Object.keys(me.legends.card).length === 0) {
 				CCH.map.hideLegend();
 			}

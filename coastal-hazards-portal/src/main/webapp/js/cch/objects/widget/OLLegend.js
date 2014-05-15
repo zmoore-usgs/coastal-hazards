@@ -9,8 +9,16 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 	initialize: function (options) {
 		options = options || {};
 		options.displayClass = this.displayClass;
-
+		
+		this.eventListeners = {
+			scope: this,
+			activate : function () {
+				debugger;
+			}
+		};
+		
 		OpenLayers.Control.prototype.initialize.apply(this, [options]);
+		
 	},
 	destroy: function () {
 		OpenLayers.Control.prototype.destroy.apply(this, arguments);
@@ -76,6 +84,7 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 		if (this.maximized) {
 			this.maximizeControl();
 		}
+
 		return this.div;
 	},
 	onButtonClick: function (evt) {

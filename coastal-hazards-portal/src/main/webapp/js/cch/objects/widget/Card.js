@@ -83,7 +83,8 @@ CCH.Objects.Widget.Card = function (args) {
 
 		$(window).trigger('cch.card.display.toggle', {
 			'display': true,
-			'item': me.item
+			'item': me.item,
+			'card': me
 		});
 
 		if (me.parent) {
@@ -130,7 +131,8 @@ CCH.Objects.Widget.Card = function (args) {
 		setTimeout(function () {
 			$(window).trigger('cch.card.display.toggle', {
 				'display': false,
-				'item': me.item
+				'item': me.item,
+				'card': me
 			});
 		}, duration);
 

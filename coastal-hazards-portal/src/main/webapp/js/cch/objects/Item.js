@@ -406,7 +406,7 @@ CCH.Objects.Item = function (args) {
 	};
 
 	me.getAncestor = function () {
-		if (!me.parent) {
+		if (!me.parent || me.parent.id === 'uber') {
 			return me;
 		}
 		return me.parent.getAncestor();

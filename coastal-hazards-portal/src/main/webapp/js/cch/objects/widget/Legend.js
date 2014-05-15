@@ -95,7 +95,6 @@ CCH.Objects.Widget.Legend = function (args) {
 			// Now that I have all of the necessary items that I will be creating the legend from, I need the SLDs 
 			// associated with them
 			me.items.each(function (childId, index, items) {
-				CCH.LOG.debug("Requesting SLD " + index);
 				CCH.Util.Util.getSLD({
 					contextPath: CCH.CONFIG.contextPath,
 					itemId: childId,
@@ -114,8 +113,6 @@ CCH.Objects.Widget.Legend = function (args) {
 									itemId = this.itemId,
 									legendTables = this.legendTables,
 									total = items.length;
-
-								CCH.LOG.debug("Got SLD " + index);
 
 								try {
 									// Build the table and add a custom attribute to it that serves to sort the 
