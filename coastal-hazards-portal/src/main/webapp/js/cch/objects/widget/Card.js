@@ -81,8 +81,9 @@ CCH.Objects.Widget.Card = function (args) {
 			complete: complete
 		});
 
-		$(window).trigger('card-display-toggle', {
-			'display': true
+		$(window).trigger('cch.card.display.toggle', {
+			'display': true,
+			'item': me.item
 		});
 
 		if (me.parent) {
@@ -127,8 +128,9 @@ CCH.Objects.Widget.Card = function (args) {
 		});
 
 		setTimeout(function () {
-			$(window).trigger('card-display-toggle', {
-				'display': false
+			$(window).trigger('cch.card.display.toggle', {
+				'display': false,
+				'item': me.item
 			});
 		}, duration);
 

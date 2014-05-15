@@ -158,7 +158,11 @@ CCH.Objects.Widget.Legend = function (args) {
 		}
 		return me;
 	};
-
+	
+	me.destroy = function () {
+		me.$legendDiv.remove();
+	};
+	
 	me.generateLegendTable = function (args) {
 		args = args || {};
 
@@ -232,8 +236,8 @@ CCH.Objects.Widget.Legend = function (args) {
 		$caption.html(title);
 		$theadUOM.html(uom);
 		$theadTr.append($('<td />'), $theadUOM);
-		$thead.append($caption, $theadTr);
-		$table.append($thead);
+		$thead.append($theadTr);
+		$table.append($caption, $thead);
 
 		bins.each(function (bin) {
 			$tr = $('<tr />');
@@ -263,6 +267,7 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		return $table;
 	};
+	
 	me.generateDateLegendTable = function (args) {
 		args = args || {};
 
@@ -473,7 +478,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			if (me.$container.children().length === 0) {
 				$yearlyTable = $('<table />');
 				$yearlyTableHead = $('<thead />');
-				$yearlyTableHead.append($('<caption />').html(me.item.summary.tiny.text));
+				$yearlyTable.append($('<caption />').html(me.item.summary.tiny.text));
 				$yearlyTableHead.append($('<tr/>').append($('<td />'), $('<td />').html('Year')));
 				$yearlyTable.append($yearlyTableHead, $('<tbody />'));
 				me.$legendDiv.append($yearlyTable);

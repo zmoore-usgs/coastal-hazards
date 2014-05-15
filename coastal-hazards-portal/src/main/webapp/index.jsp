@@ -123,6 +123,7 @@
         </jsp:include>
         <script type="text/javascript" src="js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/ItemsSlide<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/widget/OLLegend<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/widget/BucketSlide<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/SearchSlide<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>

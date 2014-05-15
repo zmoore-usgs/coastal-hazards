@@ -122,6 +122,8 @@ CCH.Objects.Front.Map = function (args) {
 					"map": me.map
 				}
 			});
+			
+			me.legendControl = new CCH.Objects.Widget.OLLegend();
 
 			CCH.LOG.debug('Map.js::init():Adding base layers to map');
 			me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
@@ -132,7 +134,8 @@ CCH.Objects.Front.Map = function (args) {
 				me.getFeatureInfoControl,
 				me.attributionControl,
 				me.clickControl,
-				me.scaleLineControl
+				me.scaleLineControl,
+				me.legendControl 
 			]);
 			me.clickControl.activate();
 
@@ -195,6 +198,12 @@ CCH.Objects.Front.Map = function (args) {
 			});
 
 			return me;
+		},
+		showLegend : function () {
+			me.legendControl.show();
+		},
+		hideLegend : function () {
+			me.legendControl.hide();
 		},
 		getMap: function () {
 			return me.map;

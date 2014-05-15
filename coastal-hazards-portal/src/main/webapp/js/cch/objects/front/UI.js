@@ -23,7 +23,7 @@ CCH.Objects.Front.UI = function (args) {
 			CCH.map.clearBoundingBoxMarkers();
 			$(window).off('cch-map-bbox-marker-added', removeMarkers);
 		};
-	
+
 	me.APPLICATION_CONTAINER = $('#application-container');
 	me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
 	me.HEADER_ROW_ID = args.headerRowId || 'header-row';
@@ -74,6 +74,16 @@ CCH.Objects.Front.UI = function (args) {
 		containerId: me.SLIDE_CONTAINER_DIV_ID
 	});
 	me.combinedSearch = new CCH.Objects.CombinedSearch();
+
+	// This object holds the legend items that are currently viewed
+	me.legends = {
+		// May hold one or more legend items based on what card is currently open in the accordion. Usually this
+		// will only hold one card but because a card may emit an open event before the other one emits a close
+		// event, this object may hold two objects momentarily. No big deal.
+		card: {},
+		// May hold one or more legend items based on what items are currently being viewed in the bucket
+		bucket: {}
+	};
 
 	me.itemsSearchedHandler = function (evt, data) {
 		if (data.items) {
@@ -301,7 +311,7 @@ CCH.Objects.Front.UI = function (args) {
 			append(splashMessage, $('<span />').append(continueLink), emailLink);
 		$('#splash-spinner').remove();
 	};
-	
+
 	me.errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
 		CCH.ui.displayLoadingError({
 			errorThrown: errorThrown,
@@ -309,7 +319,7 @@ CCH.Objects.Front.UI = function (args) {
 			textStatus: textStatus
 		});
 	};
-	
+
 	me.addItemsToBucketOnLoad = function (items) {
 		items = items || [];
 		// Wait for each item in the session to be loaded 
@@ -350,19 +360,59 @@ CCH.Objects.Front.UI = function (args) {
 		});
 	};
 
+	me.bucketClosing = function () {
+		CCH.map.hideAllLayers();
+		me.accordion.showCurrent();
+	};
+	
+	me.bucketOpening = function () {
+		
+	};
+
+	/**
+	 * When a card is opened in the UI, create the legend 
+	 * @param {type} evt
+	 * @param {type} args
+	 * @returns {undefined}
+	 */
+	me.cardDisplayed = function (evt, args) {
+		var item = args.item,
+			display = args.display;
+
+		// Card is being opened. There may be a legend to show
+		if (display) {
+			// I don't currently have this legend in my map of legends and legend container
+			if (!me.legends.card[item.id]) {
+				me.legends.card[item.id] = new CCH.Objects.Widget.Legend({
+					containerId: 'cchMapLegendInnerContainer',
+					item: item
+				}).init();
+				CCH.map.showLegend();
+			}
+		} else {
+			// I need to remove this legend from my map of legends and the legend container
+			if (me.legends.card[item.id]) {
+				me.legends.card[item.id].destroy();
+				delete me.legends.card[item.id];
+			}
+			if (Object.keys(me.legends.card).length === 0) {
+				CCH.map.hideLegend();
+			}
+		}
+	};
+
 	// Do Bindings
 	$(window).on({
+		'cch.data.items.searched': me.itemsSearchedHandler,
+		'cch.data.locations.searched': me.locationsSearchedHandler,
+		'slide.bucket.button.click.share': me.sharemodalDisplayHandler,
+		'cch.slide.bucket.closing': me.bucketClosing,
+		'cch.slide.bucket.opening': me.bucketOpening,
+		'cch.card.display.toggle': me.cardDisplayed,
 		'resize': function () {
 			setTimeout(function () {
 				me.windowResizeHandler();
 			}, 1);
-		},
-		'cch.data.items.searched': me.itemsSearchedHandler,
-		'cch.data.locations.searched': me.locationsSearchedHandler,
-		'slide.bucket.button.click.share': me.sharemodalDisplayHandler,
-		'cch.slide.bucket.closing': function () {
-			CCH.map.hideAllLayers();
-			me.accordion.showCurrent();
 		}
 	});
 
@@ -399,7 +449,7 @@ CCH.Objects.Front.UI = function (args) {
 		share: me.share,
 		accordion: me.accordion,
 		errorResponseHandler: me.errorResponseHandler,
-		addItemsToBucketOnLoad : me.addItemsToBucketOnLoad,
+		addItemsToBucketOnLoad: me.addItemsToBucketOnLoad,
 		CLASS_NAME: 'CCH.Objects.UI'
 	});
 };

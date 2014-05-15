@@ -1,0 +1,62 @@
+.cchMapLegendContainer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.cchMapLegendElement {
+    padding: 10px 18px 10px 10px;
+    background-color: #00008B;
+    -moz-border-radius: 1em 0 0 0;
+}
+
+.cchMapLegendMinimizeButton,
+.cchMapLegendMaximizeButton {
+    height: 18px;
+    width: 18px;
+    right: 0;
+    bottom: 80px;
+    cursor: pointer;
+}
+
+#cchMapLegendInnerContainer {
+	background-color: #f5f5f5;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+#cchMapLegendInnerContainer table {
+	display: inline-table;
+	width: 100%;
+}
+
+#cchMapLegendInnerContainer table caption {
+	display: table-caption;
+}
+
+#cchMapLegendInnerContainer table th, td{
+	width: 50%;
+}
+
+#cchMapLegendInnerContainer table tbody tr td{
+	vertical-align: middle;
+}
+
+#cchMapLegendInnerContainer table tbody td:first-child{
+	text-align: right;
+}
+
+#cchMapLegendInnerContainer table tbody td:first-child span{
+	height: 15px;
+	border: #000000;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 10px;
+	display: inline-block;
+	margin-right: 5px;
+	width: 20px;
+	-moz-border-radius: 10px;
+	-webkit-botder-radius: 10px;
+}
+
+
