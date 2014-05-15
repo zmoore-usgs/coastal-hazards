@@ -84,6 +84,13 @@ CCH.Objects.Front.UI = function (args) {
 		// May hold one or more legend items based on what items are currently being viewed in the bucket
 		bucket: {}
 	};
+	// When a card is shown, a new legend appears (if the card has layers available to show). When the legend is 
+	// created, this class is appended to the legend's div. 
+	me.cardLegendClass = 'cchCardLegend';
+	// When a buacket item is visible, its associated legend is shown if layers are available for it. When the legend is
+	// created, this class is appended to the legend's div
+	me.bucketLegendClass = 'cchBucketLegend';
+
 
 	me.itemsSearchedHandler = function (evt, data) {
 		if (data.items) {
@@ -360,13 +367,47 @@ CCH.Objects.Front.UI = function (args) {
 		});
 	};
 
-	me.bucketClosing = function () {
+	/**
+	 * Handler for the bucket slider closing
+	 * @returns {undefined}
+	 */
+	me.bucketSliderClosing = function () {
+		// I want to hide all of the layers
 		CCH.map.hideAllLayers();
+
+		// I want to remove the bucket's legends out of the legend map control
+		for (var id in me.legends.bucket) {
+			me.legends.bucket[id].destroy();
+			delete me.legends.bucket[id];
+		}
+
+		// There may be accordion legend items hidden. When the bucket opens, I hide the legend items that
+		// the accordion put up. If there are hidden accordion legend items, show them. Otherwise, hide the legend
+		if (Object.keys(me.legends.card).length > 0) {
+			for (var id in me.legends.card) {
+				me.legends.card[id].show();
+			}
+		} else {
+			CCH.map.hideLegend();
+		}
+
+		// I want to show the current items in the accordion
 		me.accordion.showCurrent();
 	};
-	
-	me.bucketOpening = function () {
-		
+
+	/**
+	 * Handler for the bucket slider opening
+	 * @returns {undefined}
+	 */
+	me.bucketSliderOpening = function () {
+		//  The bucket slider is opening, so I want to hide all of the card legends as I am switching to the bucket
+		// context on the map
+		for (var id in me.legends.card) {
+			me.legends.card[id].hide();
+		}
+
+
+
 	};
 
 	/**
@@ -375,28 +416,31 @@ CCH.Objects.Front.UI = function (args) {
 	 * @param {type} args
 	 * @returns {undefined}
 	 */
-	me.cardDisplayed = function (evt, args) {
+	me.cardDisplayToggled = function (evt, args) {
 		var item = args.item,
-			display = args.display;
+			display = args.display,
+			parent = item.parent,
+			cardLegends = me.legends.card;
 
 		// Card is being opened. There may be a legend to show
 		if (display) {
-			// A new card is being opened. Remove all other legends
-			Object.values(me.legends.card).each(function(legend) {
-				legend.destroy();
-			});
-			
+			for (var id in cardLegends) {
+				cardLegends[id].destroy();
+				delete cardLegends[id];
+			}
+
 			// I want to show a legend if either the item is a data item or an aggregation with visible children
 			// otherwise nothing is going to be shown 
 			if (item.getLayerList().layers.length > 0) {
-				me.legends.card[item.id] = new CCH.Objects.Widget.Legend({
+				cardLegends[item.id] = new CCH.Objects.Widget.Legend({
 					containerId: 'cchMapLegendInnerContainer',
+					legendClass: 'cchCardLegend',
 					item: item
 				}).init();
 			}
-			
+
 			// If legends are available, show the legend, otherwise hide it
-			if (Object.keys(me.legends.card).length > 0) {
+			if (Object.keys(cardLegends).length > 0) {
 				CCH.map.showLegend();
 			} else {
 				CCH.map.hideLegend();
@@ -410,14 +454,14 @@ CCH.Objects.Front.UI = function (args) {
 			
 			// Because closing this card doesn't re-trigger an 'open' event of its parent card (if there is one),
 			// I have to re-trigger the event if the card has a parent with layers available (unless it's uber)
-			if (item.parent.id !== 'uber' && item.parent &&  item.parent.getLayerList().layers.length > 0) {
-				me.cardDisplayed(null, {
-					item : item.parent,
-					display : true
+			if (parent && parent.id !== 'uber' && parent.getLayerList().layers.length > 0 && !me.legends.card[parent.id]) {
+				me.cardDisplayToggled(null, {
+					item: item.parent,
+					display: true
 				});
 			}
-			
-			if (Object.keys(me.legends.card).length === 0) {
+
+			if (Object.keys(cardLegends).length === 0) {
 				CCH.map.hideLegend();
 			}
 		}
@@ -428,9 +472,9 @@ CCH.Objects.Front.UI = function (args) {
 		'cch.data.items.searched': me.itemsSearchedHandler,
 		'cch.data.locations.searched': me.locationsSearchedHandler,
 		'slide.bucket.button.click.share': me.sharemodalDisplayHandler,
-		'cch.slide.bucket.closing': me.bucketClosing,
-		'cch.slide.bucket.opening': me.bucketOpening,
-		'cch.card.display.toggle': me.cardDisplayed,
+		'cch.slide.bucket.closing': me.bucketSliderClosing,
+		'cch.slide.bucket.opening': me.bucketSliderOpening,
+		'cch.card.display.toggle': me.cardDisplayToggled,
 		'resize': function () {
 			setTimeout(function () {
 				me.windowResizeHandler();

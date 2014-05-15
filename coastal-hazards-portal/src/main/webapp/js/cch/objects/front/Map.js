@@ -331,7 +331,7 @@ CCH.Objects.Front.Map = function (args) {
 		 * @returns {undefined}
 		 */
 		hideLayersByName: function (name) {
-			CCH.LOG.debug('Map.js::hideLayersByName: Trying to hide a layer. Layer name: ' + name);
+			CCH.LOG.trace('Map.js::hideLayersByName: Trying to hide a layer. Layer name: ' + name);
 			var layers = me.map.getLayersByName(name) || [];
 			layers.each(function (layer) {
 				me.hideLayer(layer);

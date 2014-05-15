@@ -9,7 +9,7 @@ CCH.Util.Util = {
         args.callbacks = args.callbacks || {};
         args.callbacks.success = args.callbacks.success || [];
         args.callbacks.error = args.callbacks.error || [];
-        $.ajax({
+        return $.ajax({
             url: args.contextPath + '/data/sld/' + args.itemId,
             context: args.context || arguments.callee.caller,
             headers: {

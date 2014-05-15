@@ -103,7 +103,7 @@ CCH.Objects.Widget.Card = function (args) {
 
 		me.isOpen = true;
 
-		CCH.LOG.debug('CCH.Objects.Widget.Card:: Card ' + me.id + ' was shown');
+		CCH.LOG.trace('CCH.Objects.Widget.Card:: Card ' + me.id + ' was shown');
 	};
 
 	me.hide = function (args) {
@@ -128,6 +128,10 @@ CCH.Objects.Widget.Card = function (args) {
 			complete: complete
 		});
 
+		if (me.child) {
+			me.child.hide();
+		}
+
 		setTimeout(function () {
 			$(window).trigger('cch.card.display.toggle', {
 				'display': false,
@@ -136,17 +140,13 @@ CCH.Objects.Widget.Card = function (args) {
 			});
 		}, duration);
 
-		if (me.child) {
-			me.child.hide();
-		}
-
 		me.hideLayer();
 
 		if (me.parent) {
 			me.parent.showLayer();
 		}
 
-		CCH.LOG.debug('CCH.Objects.Widget.Card:: Card ' + me.id + ' was hidden');
+		CCH.LOG.trace('CCH.Objects.Widget.Card:: Card ' + me.id + ' was hidden');
 	};
 
 	me.showLayer = function (args) {

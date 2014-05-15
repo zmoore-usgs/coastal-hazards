@@ -383,7 +383,7 @@ CCH.Util.OWS = function () {
 			var url = CCH.CONFIG.contextPath + proxyEndpoint + layerPrefix + '/wfs?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&typeName=' + layerName + '&propertyName=';
 			url += (propertyArray || []).join(',');
 
-			$.ajax(url, {
+			return $.ajax(url, {
 				context: scope || this,
 				success: function (data, textStatus, jqXHR) {
 					CCH.LOG.trace('OWS.js::getFilteredFeature: Successfully received WFS GetFeature response.');

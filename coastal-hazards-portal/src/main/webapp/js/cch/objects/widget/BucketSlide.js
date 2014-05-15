@@ -88,6 +88,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				me.resized();
 				me.openSlide();
 			} else {
+				$(window).trigger('cch.slide.bucket.opening');
 				me.openSlide();
 			}
 
