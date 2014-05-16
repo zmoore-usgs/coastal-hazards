@@ -418,17 +418,17 @@ CCH.Objects.Front.UI = function (args) {
 	 */
 	me.cardDisplayToggled = function (evt, args) {
 		var item = args.item,
-			display = args.display,
-			parent = item.parent,
+			display = evt.namespace === 'card.layer.show',
 			cardLegends = me.legends.card;
+
+		if (me.legends.card[item.id]) {
+				me.legends.card[item.id].destroy();
+				delete me.legends.card[item.id];
+			}
 
 		// Card is being opened. There may be a legend to show
 		if (display) {
-			for (var id in cardLegends) {
-				cardLegends[id].destroy();
-				delete cardLegends[id];
-			}
-
+			
 			// I want to show a legend if either the item is a data item or an aggregation with visible children
 			// otherwise nothing is going to be shown 
 			if (item.getLayerList().layers.length > 0) {
@@ -438,32 +438,13 @@ CCH.Objects.Front.UI = function (args) {
 					item: item
 				}).init();
 			}
+		}
 
-			// If legends are available, show the legend, otherwise hide it
-			if (Object.keys(cardLegends).length > 0) {
-				CCH.map.showLegend();
-			} else {
-				CCH.map.hideLegend();
-			}
+		// If legends are available, show the legend, otherwise hide it
+		if (Object.keys(cardLegends).length > 0) {
+			CCH.map.showLegend();
 		} else {
-			// I need to remove this legend from my map of legends and the legend container
-			if (me.legends.card[item.id]) {
-				me.legends.card[item.id].destroy();
-				delete me.legends.card[item.id];
-			}
-			
-			// Because closing this card doesn't re-trigger an 'open' event of its parent card (if there is one),
-			// I have to re-trigger the event if the card has a parent with layers available (unless it's uber)
-			if (parent && parent.id !== 'uber' && parent.getLayerList().layers.length > 0 && !me.legends.card[parent.id]) {
-				me.cardDisplayToggled(null, {
-					item: item.parent,
-					display: true
-				});
-			}
-
-			if (Object.keys(cardLegends).length === 0) {
-				CCH.map.hideLegend();
-			}
+			CCH.map.hideLegend();
 		}
 	};
 
@@ -474,7 +455,8 @@ CCH.Objects.Front.UI = function (args) {
 		'slide.bucket.button.click.share': me.sharemodalDisplayHandler,
 		'cch.slide.bucket.closing': me.bucketSliderClosing,
 		'cch.slide.bucket.opening': me.bucketSliderOpening,
-		'cch.card.display.toggle': me.cardDisplayToggled,
+		'cch.card.layer.show': me.cardDisplayToggled,
+		'cch.card.layer.hide': me.cardDisplayToggled,
 		'resize': function () {
 			setTimeout(function () {
 				me.windowResizeHandler();

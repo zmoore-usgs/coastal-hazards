@@ -158,13 +158,12 @@ CCH.Objects.Widget.Accordion = function (args) {
 
 		accordionBody.on({
 			'show.bs.collapse': function (evt) {
-				$(window).trigger('cch.accordion.show', evt);
 				card.show({
 					duration: 0
 				});
+				$(window).trigger('cch.accordion.show', evt);
 			},
 			'shown.bs.collapse': function (evt) {
-				$(window).trigger('cch.accordion.shown', evt);
 				var $this = $(this),
 					abId = $this.data('id');
 
@@ -173,12 +172,13 @@ CCH.Objects.Widget.Accordion = function (args) {
 					'eventAction': 'show',
 					'eventLabel': abId
 				});
+				$(window).trigger('cch.accordion.shown', evt);
 			},
 			'hide.bs.collapse': function (evt) {
+				card.hide();
 				$(window).trigger('cch.accordion.hide', evt);
 			},
 			'hidden.bs.collapse': function (evt) {
-				$(window).trigger('cch.accordion.hidden', evt);
 				var $this = $(this),
 					abId = $this.data('id');
 
@@ -187,8 +187,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 					'eventAction': 'hide', // Required.
 					'eventLabel': abId
 				});
-
-				card.hide();
+				$(window).trigger('cch.accordion.hidden', evt);
 			}
 		});
 
@@ -287,6 +286,11 @@ CCH.Objects.Widget.Accordion = function (args) {
 
 	};
 
+	me.getCurrent = function () {
+		var currentCard = me.getBellows().find('.in > div > div:last-child');
+		return currentCard.data();
+	};
+
 	me.showCurrent = function () {
 		var currentCard = me.getBellows().find('.in > div > div:last-child');
 
@@ -299,6 +303,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 		add: me.addCard,
 		load: me.load,
 		showCurrent: me.showCurrent,
+		getCurrent: me.getCurrent,
 		explore: me.explore,
 		CLASS_NAME: 'CCH.Objects.Widget.Accordion'
 	});
