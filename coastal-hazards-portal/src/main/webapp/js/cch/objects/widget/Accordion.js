@@ -9,7 +9,7 @@ CCH.Objects.Widget = CCH.Objects.Widget || {};
 CCH.Objects.Widget.Accordion = function (args) {
 	"use strict";
 
-	CCH.LOG.info('Accordion.js::constructor:Accordion class is initializing.');
+	CCH.LOG.trace('Accordion.js::constructor:Accordion class is initializing.');
 	var me = (this === window) ? {} : this,
 		container;
 

@@ -16,7 +16,7 @@
  */
 CCH.Objects.Front.UI = function (args) {
 	"use strict";
-	CCH.LOG.info('UI.js::constructor: UI class is initializing.');
+	CCH.LOG.trace('UI.js::constructor: UI class is initializing.');
 
 	var me = (this === window) ? {} : this,
 		removeMarkers = function () {
@@ -400,13 +400,20 @@ CCH.Objects.Front.UI = function (args) {
 	 * @returns {undefined}
 	 */
 	me.bucketSliderOpening = function () {
+		var bucketLegends = me.legends.bucket;
 		//  The bucket slider is opening, so I want to hide all of the card legends as I am switching to the bucket
 		// context on the map
-		for (var id in me.legends.card) {
-			me.legends.card[id].hide();
+		for (var id in bucketLegends) {
+			bucketLegends[id].hide();
+			delete bucketLegends[id];
 		}
 
-
+		// If legends are available, show the legend, otherwise hide it
+		if (Object.keys(bucketLegends).length > 0) {
+			CCH.map.showLegend();
+		} else {
+			CCH.map.hideLegend();
+		}
 
 	};
 
@@ -484,7 +491,7 @@ CCH.Objects.Front.UI = function (args) {
 
 	$(window).trigger('cch.ui.initialized');
 
-	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
+	CCH.LOG.trace('UI.js::constructor: UI class initialized.');
 
 	return $.extend(me, {
 		removeOverlay: me.removeOverlay,

@@ -15,7 +15,7 @@ CCH.Objects = CCH.Objects || {};
 CCH.Objects.Widget = CCH.Objects.Widget || {};
 CCH.Objects.Widget.BucketSlide = function (args) {
 	"use strict";
-	CCH.LOG.debug('CCH.Objects.Widget.BucketSlide::constructor: BucketSlide class is initializing.');
+	CCH.LOG.trace('CCH.Objects.Widget.BucketSlide::constructor: BucketSlide class is initializing.');
 	args = args || {};
 
 	var me = (this === window) ? {} : this;
@@ -460,6 +460,8 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 
 	/**
 	 * Moves a card both in the internal cards array as well as in the view
+	 * @param {type} args
+	 * @returns {Array}
 	 */
 	me.moveCard = function (args) {
 		var id = args.id,
@@ -734,7 +736,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		}
 	});
 
-	CCH.LOG.debug('CCH.Objects.Widget.BucketSlide::constructor: BucketSlide class initialized.');
+	CCH.LOG.trace('CCH.Objects.Widget.BucketSlide::constructor: BucketSlide class initialized.');
 
 	return {
 		events: me.events,

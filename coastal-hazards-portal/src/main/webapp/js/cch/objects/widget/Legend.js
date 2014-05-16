@@ -27,7 +27,7 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.destroyed = false;
 
 	me.init = function () {
-		CCH.LOG.info('Legend.js::constructor:Legend class is initializing.');
+		CCH.LOG.trace('Legend.js::constructor:Legend class is initializing.');
 		var childItems = [],
 			legendTables = [],
 			itemType,
@@ -180,11 +180,11 @@ CCH.Objects.Widget.Legend = function (args) {
 	};
 
 	me.destroy = function () {
+		me.destroyed = true;
 		me.ajaxRequests.each(function (req) {
 			req.abort();
 		});
 		me.$legendDiv.remove();
-		me.destroyed = true;
 	};
 
 	me.generateLegendTable = function (args) {

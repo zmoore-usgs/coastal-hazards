@@ -13,7 +13,7 @@
 CCH.Objects.CombinedSearch = function (args) {
     "use strict";
     splashUpdate("Initializing Search Subsystem...");
-    CCH.LOG.info('CCH.Objects.CombinedSearch::constructor: CombinedSearch class is initializing.');
+    CCH.LOG.trace('CCH.Objects.CombinedSearch::constructor: CombinedSearch class is initializing.');
 
     var me = (this === window) ? {} : this;
 
@@ -424,5 +424,5 @@ CCH.Objects.CombinedSearch = function (args) {
     CCH.LOG.trace('CCH.Objects.CombinedSearch::constructor: Pre-loading images.');
     $.get(me.DD_TOGGLE_SPINNER_IMG_LOCATION);
 
-    CCH.LOG.debug('CCH.Objects.CombinedSearch::constructor: CombinedSearch class initialized.');
+    CCH.LOG.trace('CCH.Objects.CombinedSearch::constructor: CombinedSearch class initialized.');
 };

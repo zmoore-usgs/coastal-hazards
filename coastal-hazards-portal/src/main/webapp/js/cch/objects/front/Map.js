@@ -106,7 +106,7 @@ CCH.Objects.Front.Map = function (args) {
 
 	return $.extend(me, {
 		init: function () {
-			CCH.LOG.info('Map.js::init():Map class is initializing.');
+			CCH.LOG.trace('Map.js::init():Map class is initializing.');
 
 			CCH.LOG.debug('Map.js::init():Building map object');
 			me.map = new OpenLayers.Map(me.mapDivId, {
@@ -130,7 +130,7 @@ CCH.Objects.Front.Map = function (args) {
 			CCH.LOG.debug('Map.js::init():Adding base layers to map');
 			me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
 
-			CCH.LOG.debug('Map.js::init():Adding ontrols to map');
+			CCH.LOG.debug('Map.js::init():Adding controls to map');
 			me.map.addControls([
 				me.layerSwitcher,
 				me.getFeatureInfoControl,

@@ -10,7 +10,7 @@ CCH.Objects.Publish = CCH.Objects.Publish || {};
 CCH.Objects.Publish.UI = function () {
     "use strict";
 
-    CCH.LOG.info('UI.js::constructor: UI class is initializing.');
+    CCH.LOG.trace('UI.js::constructor: UI class is initializing.');
 
     var me = (this === window) ? {} : this,
         $form = $('form'),

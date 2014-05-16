@@ -6,7 +6,7 @@
 CCH.Objects.Session = function (args) {
     "use strict";
 
-    CCH.LOG.info('Session.js::constructor: Session class is initializing.');
+    CCH.LOG.trace('Session.js::constructor: Session class is initializing.');
 
     var me = (this === window) ? {} : this;
 
@@ -29,7 +29,7 @@ CCH.Objects.Session = function (args) {
     };
 
     me.update = function (args) {
-        CCH.LOG.debug('Session.js::update');
+        CCH.LOG.trace('Session.js::update');
 
         CCH.map.updateSession();
 
@@ -181,7 +181,7 @@ CCH.Objects.Session = function (args) {
     };
 
     me.addItem = function (args) {
-        CCH.LOG.debug('Session.js::addItem');
+        CCH.LOG.trace('Session.js::addItem');
 
         var item = args.item,
             visible = args.visible || false,
