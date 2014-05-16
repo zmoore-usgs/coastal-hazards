@@ -552,13 +552,25 @@ CCH.Objects.Widget.Legend = function (args) {
 		}
 	};
 
+	/**
+	 * Hides the legend div
+	 * 
+	 * @returns {$} the jQuery dom container for this legend
+	 */
 	me.hide = function () {
 		me.$legendDiv.addClass('hidden');
+		return me.$legendDiv;
 	};
 
+	/**
+	 * Shows the legend div
+	 * 
+	 * @returns {$} the jQuery dom container for this legend
+	 */
 	me.show = function () {
 		me.$legendDiv.removeClass('hidden');
-	}
+		return me.$legendDiv;
+	};
 
 	// Verify that everything we need was passed in and create the item. Otherwise, error out.
 	if (!me.containerId) {

@@ -80,17 +80,10 @@ CCH.Objects.Front.UI = function (args) {
 		// May hold one or more legend items based on what card is currently open in the accordion. Usually this
 		// will only hold one card but because a card may emit an open event before the other one emits a close
 		// event, this object may hold two objects momentarily. No big deal.
-		card: {},
+		accordion: {},
 		// May hold one or more legend items based on what items are currently being viewed in the bucket
 		bucket: {}
 	};
-	// When a card is shown, a new legend appears (if the card has layers available to show). When the legend is 
-	// created, this class is appended to the legend's div. 
-	me.cardLegendClass = 'cchCardLegend';
-	// When a buacket item is visible, its associated legend is shown if layers are available for it. When the legend is
-	// created, this class is appended to the legend's div
-	me.bucketLegendClass = 'cchBucketLegend';
-
 
 	me.itemsSearchedHandler = function (evt, data) {
 		if (data.items) {
@@ -372,27 +365,26 @@ CCH.Objects.Front.UI = function (args) {
 	 * @returns {undefined}
 	 */
 	me.bucketSliderClosing = function () {
-		// I want to hide all of the layers
-		CCH.map.hideAllLayers();
-
-		// I want to remove the bucket's legends out of the legend map control
-		for (var id in me.legends.bucket) {
-			me.legends.bucket[id].destroy();
-			delete me.legends.bucket[id];
+		var bucketLegends = me.legends.bucket,
+			accordionLegends = me.legends.accordion;
+		//  The bucket slider is closing.  I want to destroy all of the bucket legends as I am switching to the accordion
+		// context on the map
+		for (var id in bucketLegends) {
+			bucketLegends[id].destroy();
+			delete bucketLegends[id];
 		}
 
-		// There may be accordion legend items hidden. When the bucket opens, I hide the legend items that
-		// the accordion put up. If there are hidden accordion legend items, show them. Otherwise, hide the legend
-		if (Object.keys(me.legends.card).length > 0) {
-			for (var id in me.legends.card) {
-				me.legends.card[id].show();
-			}
+		// Because I switched to the accordion context of the app, show the accordion cards
+		for (var id in accordionLegends) {
+			accordionLegends[id].show();
+		}
+
+		// If there are currently card legends shown, show the legend container
+		if (Object.keys(accordionLegends).length > 0) {
+			CCH.map.showLegend();
 		} else {
 			CCH.map.hideLegend();
 		}
-
-		// I want to show the current items in the accordion
-		me.accordion.showCurrent();
 	};
 
 	/**
@@ -400,25 +392,73 @@ CCH.Objects.Front.UI = function (args) {
 	 * @returns {undefined}
 	 */
 	me.bucketSliderOpening = function () {
-		var bucketLegends = me.legends.bucket;
+		var bucketLegends = me.legends.bucket,
+			accordionLegends = me.legends.accordion;
 		//  The bucket slider is opening, so I want to hide all of the card legends as I am switching to the bucket
 		// context on the map
 		for (var id in bucketLegends) {
-			bucketLegends[id].hide();
+			bucketLegends[id].destroy();
 			delete bucketLegends[id];
 		}
 
-		// If legends are available, show the legend, otherwise hide it
+		for (var id in accordionLegends) {
+			accordionLegends[id].hide();
+		}
+
+		// Hide the legend. I will be catching the bucket reordering event in order to update the legend
+		CCH.map.hideLegend();
+	};
+
+	/**
+	 * When the bucket slider gets reordered, update the legend on the map
+	 * 
+	 * @param {type} evt
+	 * @param {type} args
+	 * @returns {undefined}
+	 */
+	me.bucketSliderReordered = function (evt, args) {
+		var cards = args.cards || me.bucketSlide.cards,
+			id,
+			item,
+			itemVisible,
+			bucketLegends = me.legends.bucket;
+
+		// Prepare to recreate the bucket legend
+		for (id in bucketLegends) {
+			bucketLegends[id].destroy();
+			delete bucketLegends[id];
+		}
+
+		// I'm going to build a legend per card
+		cards.each(function (card) {
+			// Every card in the bucket has an associated id referencing the item it belongs to
+			id = card.data('id');
+			// If the item is visible, show it in the legend
+			itemVisible = CCH.session.getItemById(id).visible;
+			if (itemVisible) {
+				// Get the item, check that it has associated layers to show and create the legend
+				item = CCH.items.getById({id: id});
+				if (item.getLayerList().layers.length > 0) {
+					bucketLegends[id] = new CCH.Objects.Widget.Legend({
+						containerId: 'cchMapLegendInnerContainer',
+						legendClass: 'cchCardLegend',
+						item: item
+					}).init();
+				}
+			}
+		});
+
+		// If after going through the building process, the bucket has available legends, show the legend container
+		// otherwise hide it
 		if (Object.keys(bucketLegends).length > 0) {
 			CCH.map.showLegend();
 		} else {
 			CCH.map.hideLegend();
 		}
-
 	};
 
 	/**
-	 * When a card is opened in the UI, create the legend 
+	 * Handlet for a card in the accordion being toggled on/off
 	 * @param {type} evt
 	 * @param {type} args
 	 * @returns {undefined}
@@ -426,20 +466,20 @@ CCH.Objects.Front.UI = function (args) {
 	me.cardDisplayToggled = function (evt, args) {
 		var item = args.item,
 			display = evt.namespace === 'card.layer.show',
-			cardLegends = me.legends.card;
+			accordionLegends = me.legends.accordion;
 
-		if (me.legends.card[item.id]) {
-				me.legends.card[item.id].destroy();
-				delete me.legends.card[item.id];
-			}
+		// Oreoare ti recreate the legend
+		if (me.legends.accordion[item.id]) {
+			me.legends.accordion[item.id].destroy();
+			delete me.legends.accordion[item.id];
+		}
 
 		// Card is being opened. There may be a legend to show
 		if (display) {
-			
 			// I want to show a legend if either the item is a data item or an aggregation with visible children
 			// otherwise nothing is going to be shown 
 			if (item.getLayerList().layers.length > 0) {
-				cardLegends[item.id] = new CCH.Objects.Widget.Legend({
+				accordionLegends[item.id] = new CCH.Objects.Widget.Legend({
 					containerId: 'cchMapLegendInnerContainer',
 					legendClass: 'cchCardLegend',
 					item: item
@@ -448,7 +488,7 @@ CCH.Objects.Front.UI = function (args) {
 		}
 
 		// If legends are available, show the legend, otherwise hide it
-		if (Object.keys(cardLegends).length > 0) {
+		if (Object.keys(accordionLegends).length > 0) {
 			CCH.map.showLegend();
 		} else {
 			CCH.map.hideLegend();
@@ -462,6 +502,8 @@ CCH.Objects.Front.UI = function (args) {
 		'slide.bucket.button.click.share': me.sharemodalDisplayHandler,
 		'cch.slide.bucket.closing': me.bucketSliderClosing,
 		'cch.slide.bucket.opening': me.bucketSliderOpening,
+		'cch.slide.bucket.reordered': me.bucketSliderReordered,
+		'slide.bucket.button.click.view': me.bucketSliderReordered,
 		'cch.card.layer.show': me.cardDisplayToggled,
 		'cch.card.layer.hide': me.cardDisplayToggled,
 		'resize': function () {
