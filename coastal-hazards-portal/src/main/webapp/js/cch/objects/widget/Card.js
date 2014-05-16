@@ -151,11 +151,13 @@ CCH.Objects.Widget.Card = function (args) {
 
 	me.showLayer = function (args) {
 		args = args || {};
+		$(window).trigger('cch.card.layer.show', me);
 		return me.item.showLayer();
 	};
 
 	me.hideLayer = function (args) {
 		args = args || {};
+		$(window).trigger('cch.card.layer.hide', me);
 		return me.item.hideLayer();
 	};
 
