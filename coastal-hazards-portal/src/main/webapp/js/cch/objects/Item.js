@@ -8,7 +8,7 @@ CCH.Objects.Item = function (args) {
 	"use strict";
 	args = args || {};
 
-	CCH.LOG.debug('Item.js::init():Item class is initializing.');
+	CCH.LOG.trace('Item.js::init():Item class is initializing.');
 
 	var me = this === window ? {} : this;
 
@@ -406,7 +406,7 @@ CCH.Objects.Item = function (args) {
 	};
 
 	me.getAncestor = function () {
-		if (!me.parent) {
+		if (!me.parent || me.parent.id === 'uber') {
 			return me;
 		}
 		return me.parent.getAncestor();
@@ -429,7 +429,7 @@ CCH.Objects.Item = function (args) {
 		return serviceObject || defaultServiceObject;
 	};
 
-	CCH.LOG.debug('Item.js::init():Item class finished initializing.');
+	CCH.LOG.trace('Item.js::init():Item class finished initializing.');
 
 	return $.extend(me, {
 		id: me.id,

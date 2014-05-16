@@ -3,11 +3,13 @@
 /*global $*/
 /*global CCH*/
 /*global ga*/
-
-CCH.Objects.Accordion = function (args) {
+window.CCH = CCH || {};
+CCH.Objects = CCH.Objects || {};
+CCH.Objects.Widget = CCH.Objects.Widget || {};
+CCH.Objects.Widget.Accordion = function (args) {
 	"use strict";
 
-	CCH.LOG.info('Accordion.js::constructor:Accordion class is initializing.');
+	CCH.LOG.trace('Accordion.js::constructor:Accordion class is initializing.');
 	var me = (this === window) ? {} : this,
 		container;
 
@@ -69,7 +71,7 @@ CCH.Objects.Accordion = function (args) {
 
 		// If we are passed a product, that means we were not passed a card
 		if (item && !cardExists) {
-			card = new CCH.Objects.Card({
+			card = new CCH.Objects.Widget.Card({
 				item: item,
 				initHide: false
 			});
@@ -156,13 +158,12 @@ CCH.Objects.Accordion = function (args) {
 
 		accordionBody.on({
 			'show.bs.collapse': function (evt) {
-				$(window).trigger('cch.accordion.show', evt);
 				card.show({
 					duration: 0
 				});
+				$(window).trigger('cch.accordion.show', evt);
 			},
 			'shown.bs.collapse': function (evt) {
-				$(window).trigger('cch.accordion.shown', evt);
 				var $this = $(this),
 					abId = $this.data('id');
 
@@ -171,12 +172,13 @@ CCH.Objects.Accordion = function (args) {
 					'eventAction': 'show',
 					'eventLabel': abId
 				});
+				$(window).trigger('cch.accordion.shown', evt);
 			},
 			'hide.bs.collapse': function (evt) {
+				card.hide();
 				$(window).trigger('cch.accordion.hide', evt);
 			},
 			'hidden.bs.collapse': function (evt) {
-				$(window).trigger('cch.accordion.hidden', evt);
 				var $this = $(this),
 					abId = $this.data('id');
 
@@ -185,8 +187,7 @@ CCH.Objects.Accordion = function (args) {
 					'eventAction': 'hide', // Required.
 					'eventLabel': abId
 				});
-
-				card.hide();
+				$(window).trigger('cch.accordion.hidden', evt);
 			}
 		});
 
@@ -205,7 +206,7 @@ CCH.Objects.Accordion = function (args) {
 		'cch.slide.search.button.click.explore': function (evt, args) {
 			me.explore(evt, args);
 		},
-		'card-display-toggle': function (evt, obj) {
+		'cch.card.display.toggle': function (evt, obj) {
 			if (obj.display === true) {
 				var $container = $('#' + me.SCROLLABLE_BELLOW_CONTAINER_ID);
 
@@ -285,6 +286,11 @@ CCH.Objects.Accordion = function (args) {
 
 	};
 
+	me.getCurrent = function () {
+		var currentCard = me.getBellows().find('.in > div > div:last-child');
+		return currentCard.data();
+	};
+
 	me.showCurrent = function () {
 		var currentCard = me.getBellows().find('.in > div > div:last-child');
 
@@ -297,7 +303,8 @@ CCH.Objects.Accordion = function (args) {
 		add: me.addCard,
 		load: me.load,
 		showCurrent: me.showCurrent,
+		getCurrent: me.getCurrent,
 		explore: me.explore,
-		CLASS_NAME: 'CCH.Objects.Accordion'
+		CLASS_NAME: 'CCH.Objects.Widget.Accordion'
 	});
 };

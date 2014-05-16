@@ -17,20 +17,33 @@ CCH.Objects.Widget.Legend = function (args) {
 	me.items = [];
 	me.itemTypes = new CCH.Objects.Items().Types;
 	me.owsUtils = new CCH.Util.OWS();
+	// If available, this class is added to $legendDiv
+	me.legendClass = args.legendClass;
+	// I keep track of ongoing ajax requests. When I destroy this object
+	me.ajaxRequests = [];
+	// A flag that informs any ongoing processes in this object whether or not the object has already been destroyed.
+	// There are edge cases where the application may not want the ajax calls from this object to complete and if
+	// this gets flipped to true, I want to stop all processes as soon as possible
+	me.destroyed = false;
 
 	me.init = function () {
-		CCH.LOG.info('Legend.js::constructor:Legend class is initializing.');
+		CCH.LOG.trace('Legend.js::constructor:Legend class is initializing.');
 		var childItems = [],
 			legendTables = [],
 			itemType,
 			nonYearHistoricalAttributes = ["LRR", "WLR", "SCE", "NSM", "EPR"],
 			nonAggItem,
-			itemId = me.item.id;
+			itemId = me.item.id,
+			request;
 
 		me.$container = $('#' + me.containerId);
 
 		if (me.$container.length === 0) {
 			throw me.errorMessage.replace('%s', 'containerId  "' + me.containerId + '" not found in document.');
+		}
+
+		if (me.legendClass) {
+			me.$legendDiv.addClass(me.legendClass);
 		}
 
 		// Fill out the items array with the item ids of the items that will end up in the legend
@@ -53,7 +66,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		itemType = nonAggItem.attr;
 
 		if (me.item.type === 'historical' && nonYearHistoricalAttributes.indexOf(itemType) === -1) {
-			CCH.Util.Util.getSLD({
+			request = CCH.Util.Util.getSLD({
 				contextPath: CCH.CONFIG.contextPath,
 				itemId: nonAggItem.id,
 				context: {
@@ -69,79 +82,19 @@ CCH.Objects.Widget.Legend = function (args) {
 								return i.itemType === 'data';
 							});
 
-							me.generateDateLegendTable({
-								items: dataItems,
-								sld: sld,
-								legendTables: legendTables
-							});
+							if (!me.destroyed) {
+								me.generateDateLegendTable({
+									items: dataItems,
+									sld: sld,
+									legendTables: legendTables
+								});
+							}
 						}
 					],
 					error: [
 						function () {
-							LOG.warn("Could not retrieve SLD. Legend will not be created");
-							this.legendTables.push(-1);
-							me.tableAdded({
-								legendTables: this.legendTables,
-								total: this.total
-							});
-							if (me.onError) {
-								me.onError.call(me, arguments);
-							}
-						}
-					]
-				}
-			});
-		} else {
-			// Now that I have all of the necessary items that I will be creating the legend from, I need the SLDs 
-			// associated with them
-			me.items.each(function (childId, index, items) {
-				CCH.LOG.debug("Requesting SLD " + index);
-				CCH.Util.Util.getSLD({
-					contextPath: CCH.CONFIG.contextPath,
-					itemId: childId,
-					context: {
-						index: index,
-						items: items,
-						legendTables: legendTables,
-						itemId: childId
-					},
-					callbacks: {
-						success: [
-							function (sld) {
-								var $legendTable,
-									index = this.index,
-									items = this.items,
-									itemId = this.itemId,
-									legendTables = this.legendTables,
-									total = items.length;
-
-								CCH.LOG.debug("Got SLD " + index);
-
-								try {
-									// Build the table and add a custom attribute to it that serves to sort the 
-									// table in the legend when all legends are created
-									$legendTable = me.generateLegendTable({
-										sld: sld,
-										itemId: itemId,
-										index: index
-									});
-								} catch (ex) {
-									LOG.warn(ex);
-								}
-
-								if ($legendTable) {
-									this.legendTables.push($legendTable);
-									me.tableAdded({
-										legendTables: this.legendTables,
-										total: total,
-										item : CCH.items.getById({id : itemId})
-									});
-								}
-							}
-						],
-						error: [
-							function (jqXHR, textStatus, errorThrown) {
-								LOG.warn("Could not retrieve SLD. Legend will not be created for this item");
+							if (!me.destroyed) {
+								LOG.warn("Could not retrieve SLD. Legend will not be created");
 								this.legendTables.push(-1);
 								me.tableAdded({
 									legendTables: this.legendTables,
@@ -151,12 +104,87 @@ CCH.Objects.Widget.Legend = function (args) {
 									me.onError.call(me, arguments);
 								}
 							}
-						]
-					}
-				});
+						}
+					]
+				}
+			});
+			me.ajaxRequests.push(request);
+		} else {
+			// Now that I have all of the necessary items that I will be creating the legend from, I need the SLDs 
+			// associated with them
+			me.items.each(function (childId, index, items) {
+				if (!me.destroyed) {
+					request = CCH.Util.Util.getSLD({
+						contextPath: CCH.CONFIG.contextPath,
+						itemId: childId,
+						context: {
+							index: index,
+							items: items,
+							legendTables: legendTables,
+							itemId: childId
+						},
+						callbacks: {
+							success: [
+								function (sld) {
+									var $legendTable,
+										index = this.index,
+										items = this.items,
+										itemId = this.itemId,
+										legendTables = this.legendTables,
+										total = items.length;
+
+									try {
+										// Build the table and add a custom attribute to it that serves to sort the 
+										// table in the legend when all legends are created
+										$legendTable = me.generateLegendTable({
+											sld: sld,
+											itemId: itemId,
+											index: index
+										});
+									} catch (ex) {
+										LOG.warn(ex);
+									}
+
+									if ($legendTable) {
+										this.legendTables.push($legendTable);
+										me.tableAdded({
+											legendTables: this.legendTables,
+											total: total,
+											item: CCH.items.getById({id: itemId})
+										});
+									}
+								}
+							],
+							error: [
+								function (jqXHR, textStatus, errorThrown) {
+									if (!me.destroyed) {
+										LOG.warn("Could not retrieve SLD. Legend will not be created for this item");
+										this.legendTables.push(-1);
+										me.tableAdded({
+											legendTables: this.legendTables,
+											total: this.total
+										});
+										if (me.onError) {
+											me.onError.call(me, arguments);
+										}
+									}
+								}
+							]
+						}
+					});
+					me.ajaxRequests.push(request)
+				}
 			});
 		}
 		return me;
+	};
+
+	me.destroy = function () {
+		me.destroyed = true;
+		me.ajaxRequests.each(function (req) {
+			req.abort();
+		});
+		me.$legendDiv.remove();
 	};
 
 	me.generateLegendTable = function (args) {
@@ -232,8 +260,8 @@ CCH.Objects.Widget.Legend = function (args) {
 		$caption.html(title);
 		$theadUOM.html(uom);
 		$theadTr.append($('<td />'), $theadUOM);
-		$thead.append($caption, $theadTr);
-		$table.append($thead);
+		$thead.append($theadTr);
+		$table.append($caption, $thead);
 
 		bins.each(function (bin) {
 			$tr = $('<tr />');
@@ -263,6 +291,7 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		return $table;
 	};
+
 	me.generateDateLegendTable = function (args) {
 		args = args || {};
 
@@ -275,57 +304,63 @@ CCH.Objects.Widget.Legend = function (args) {
 			wmsService = item.services.find(function (svc) {
 				return svc.type === 'proxy_wms';
 			}),
-			layerName = wmsService.serviceParameter;
+			layerName = wmsService.serviceParameter,
+			request;
 
 
 
 		// In order to build the legend, I am going to need year data
-		me.owsUtils.getFilteredFeature({
-			layerName: layerName,
-			propertyArray: attribute,
-			scope: {
-				item: item,
-				items: items,
-				sld: sld,
-				wfsCount: new Number(this.wfsCount)
-			},
-			callbacks: {
-				success: [
-					function (features) {
-						var $legendTable = me.generateHistoricalLegendTable({
-							features: features,
-							sld: this.sld,
-							item: this.item
-						});
-
-						me.tableAdded({
-							legendTables: $legendTable,
-							isYearLegend: true
-						});
-
-						// More WFS to call, go back into this function
-						if (items.length > 0) {
-							me.generateDateLegendTable({
-								items: items,
-								sld: sld
+		if (!me.destroyed) {
+			request = me.owsUtils.getFilteredFeature({
+				layerName: layerName,
+				propertyArray: attribute,
+				scope: {
+					item: item,
+					items: items,
+					sld: sld,
+					wfsCount: new Number(this.wfsCount)
+				},
+				callbacks: {
+					success: [
+						function (features) {
+							var $legendTable = me.generateHistoricalLegendTable({
+								features: features,
+								sld: this.sld,
+								item: this.item
 							});
-						}
-					}
-				],
-				error: [
-					function (data, textStatus) {
-						LOG.warn(textStatus);
-						if (items.length > 0) {
-							me.generateDateLegendTable({
-								items: items,
-								sld: sld,
-								index: index
+
+							me.tableAdded({
+								legendTables: $legendTable,
+								isYearLegend: true
 							});
+
+							// More WFS to call, go back into this function
+							if (items.length > 0) {
+								me.generateDateLegendTable({
+									items: items,
+									sld: sld
+								});
+							}
 						}
-					}
-				]
-			}
-		});
+					],
+					error: [
+						function (data, textStatus) {
+							if (!me.destroyed) {
+								LOG.warn(textStatus);
+								if (items.length > 0) {
+									me.generateDateLegendTable({
+										items: items,
+										sld: sld,
+										index: index
+									});
+								}
+							}
+						}
+					]
+				}
+			});
+			me.ajaxRequests.push(request);
+		}
 	};
 
 	me.generateHistoricalLegendTable = function (args) {
@@ -473,7 +508,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			if (me.$container.children().length === 0) {
 				$yearlyTable = $('<table />');
 				$yearlyTableHead = $('<thead />');
-				$yearlyTableHead.append($('<caption />').html(me.item.summary.tiny.text));
+				$yearlyTable.append($('<caption />').html(me.item.summary.tiny.text));
 				$yearlyTableHead.append($('<tr/>').append($('<td />'), $('<td />').html('Year')));
 				$yearlyTable.append($yearlyTableHead, $('<tbody />'));
 				me.$legendDiv.append($yearlyTable);
@@ -515,6 +550,26 @@ CCH.Objects.Widget.Legend = function (args) {
 				me.onComplete.call(me);
 			}
 		}
+	};
+
+	/**
+	 * Hides the legend div
+	 * 
+	 * @returns {$} the jQuery dom container for this legend
+	 */
+	me.hide = function () {
+		me.$legendDiv.addClass('hidden');
+		return me.$legendDiv;
+	};
+
+	/**
+	 * Shows the legend div
+	 * 
+	 * @returns {$} the jQuery dom container for this legend
+	 */
+	me.show = function () {
+		me.$legendDiv.removeClass('hidden');
+		return me.$legendDiv;
 	};
 
 	// Verify that everything we need was passed in and create the item. Otherwise, error out.

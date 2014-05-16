@@ -185,8 +185,6 @@ $(document).ready(function () {
 			$(window).on('cch.item.loaded', function (evt, obj) {
 				var item;
 
-				CCH.LOG.debug(obj.id);
-				
 				// If the incoming item is the uber item, that means that by now, everything under it has been
 				// fully hydrated, so I can now add sub items to the accordion and remove the overlay
 				if (obj.id === 'uber') {

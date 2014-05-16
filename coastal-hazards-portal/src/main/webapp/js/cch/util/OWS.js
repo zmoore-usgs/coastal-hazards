@@ -1,12 +1,12 @@
 window.CCH = CCH || {};
 CCH.Util = CCH.Util || {};
 CCH.Util.OWS = function () {
-	CCH.LOG.info('OWS.js::constructor: OWS class is initializing.');
+	CCH.LOG.trace('OWS.js::constructor: OWS class is initializing.');
 	var me = (this === window) ? {} : this;
 
 	me.featureTypeDescription = {};
 
-	CCH.LOG.debug('OWS.js::constructor: OWS class initialized.');
+	CCH.LOG.trace('OWS.js::constructor: OWS class initialized.');
 	return $.extend(me, {
 		init: function () {
 			me.servers = {
@@ -383,7 +383,7 @@ CCH.Util.OWS = function () {
 			var url = CCH.CONFIG.contextPath + proxyEndpoint + layerPrefix + '/wfs?service=wfs&version=1.1.0&outputFormat=GML2&request=GetFeature&typeName=' + layerName + '&propertyName=';
 			url += (propertyArray || []).join(',');
 
-			$.ajax(url, {
+			return $.ajax(url, {
 				context: scope || this,
 				success: function (data, textStatus, jqXHR) {
 					CCH.LOG.trace('OWS.js::getFilteredFeature: Successfully received WFS GetFeature response.');
@@ -513,14 +513,14 @@ CCH.Util.OWS = function () {
 				success: function (response) {
 					callbacks.success.each(function (cb) {
 						cb(response);
-					})
+					});
 				},
 				error: function (response) {
 					callbacks.error.each(function (cb) {
 						cb(response);
-					})
+					});
 				}
-			})
+			});
 		}
 	});
 };

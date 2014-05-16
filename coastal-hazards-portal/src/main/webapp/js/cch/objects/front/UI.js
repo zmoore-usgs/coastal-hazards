@@ -16,14 +16,14 @@
  */
 CCH.Objects.Front.UI = function (args) {
 	"use strict";
-	CCH.LOG.info('UI.js::constructor: UI class is initializing.');
+	CCH.LOG.trace('UI.js::constructor: UI class is initializing.');
 
 	var me = (this === window) ? {} : this,
 		removeMarkers = function () {
 			CCH.map.clearBoundingBoxMarkers();
 			$(window).off('cch-map-bbox-marker-added', removeMarkers);
 		};
-	
+
 	me.APPLICATION_CONTAINER = $('#application-container');
 	me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
 	me.HEADER_ROW_ID = args.headerRowId || 'header-row';
@@ -49,7 +49,7 @@ CCH.Objects.Front.UI = function (args) {
 		return $(window).outerWidth() < me.magicResizeNumber;
 	};
 	me.previouslySmall = me.isSmall();
-	me.bucketSlide = new CCH.Objects.BucketSlide({
+	me.bucketSlide = new CCH.Objects.Widget.BucketSlide({
 		containerId: me.BUCKET_SLIDE_CONTAINER_ID,
 		mapdivId: me.MAP_DIV_ID,
 		isSmall: me.isSmall
@@ -70,10 +70,20 @@ CCH.Objects.Front.UI = function (args) {
 		isSmall: me.isSmall,
 		bucket: me.bucket
 	});
-	me.accordion = new CCH.Objects.Accordion({
+	me.accordion = new CCH.Objects.Widget.Accordion({
 		containerId: me.SLIDE_CONTAINER_DIV_ID
 	});
 	me.combinedSearch = new CCH.Objects.CombinedSearch();
+
+	// This object holds the legend items that are currently viewed
+	me.legends = {
+		// May hold one or more legend items based on what card is currently open in the accordion. Usually this
+		// will only hold one card but because a card may emit an open event before the other one emits a close
+		// event, this object may hold two objects momentarily. No big deal.
+		accordion: {},
+		// May hold one or more legend items based on what items are currently being viewed in the bucket
+		bucket: {}
+	};
 
 	me.itemsSearchedHandler = function (evt, data) {
 		if (data.items) {
@@ -301,7 +311,7 @@ CCH.Objects.Front.UI = function (args) {
 			append(splashMessage, $('<span />').append(continueLink), emailLink);
 		$('#splash-spinner').remove();
 	};
-	
+
 	me.errorResponseHandler = function (jqXHR, textStatus, errorThrown) {
 		CCH.ui.displayLoadingError({
 			errorThrown: errorThrown,
@@ -309,7 +319,7 @@ CCH.Objects.Front.UI = function (args) {
 			textStatus: textStatus
 		});
 	};
-	
+
 	me.addItemsToBucketOnLoad = function (items) {
 		items = items || [];
 		// Wait for each item in the session to be loaded 
@@ -350,19 +360,156 @@ CCH.Objects.Front.UI = function (args) {
 		});
 	};
 
+	/**
+	 * Handler for the bucket slider closing
+	 * @returns {undefined}
+	 */
+	me.bucketSliderClosing = function () {
+		var bucketLegends = me.legends.bucket,
+			accordionLegends = me.legends.accordion;
+		//  The bucket slider is closing.  I want to destroy all of the bucket legends as I am switching to the accordion
+		// context on the map
+		for (var id in bucketLegends) {
+			bucketLegends[id].destroy();
+			delete bucketLegends[id];
+		}
+
+		// Because I switched to the accordion context of the app, show the accordion cards
+		for (var id in accordionLegends) {
+			accordionLegends[id].show();
+		}
+
+		// If there are currently card legends shown, show the legend container
+		if (Object.keys(accordionLegends).length > 0) {
+			CCH.map.showLegend();
+		} else {
+			CCH.map.hideLegend();
+		}
+	};
+
+	/**
+	 * Handler for the bucket slider opening
+	 * @returns {undefined}
+	 */
+	me.bucketSliderOpening = function () {
+		var bucketLegends = me.legends.bucket,
+			accordionLegends = me.legends.accordion;
+		//  The bucket slider is opening, so I want to hide all of the card legends as I am switching to the bucket
+		// context on the map
+		for (var id in bucketLegends) {
+			bucketLegends[id].destroy();
+			delete bucketLegends[id];
+		}
+
+		for (var id in accordionLegends) {
+			accordionLegends[id].hide();
+		}
+
+		// Hide the legend. I will be catching the bucket reordering event in order to update the legend
+		CCH.map.hideLegend();
+	};
+
+	/**
+	 * When the bucket slider gets reordered, update the legend on the map
+	 * 
+	 * @param {type} evt
+	 * @param {type} args
+	 * @returns {undefined}
+	 */
+	me.bucketSliderReordered = function (evt, args) {
+		var cards = args.cards || me.bucketSlide.cards,
+			id,
+			item,
+			itemVisible,
+			bucketLegends = me.legends.bucket;
+
+		// Prepare to recreate the bucket legend
+		for (id in bucketLegends) {
+			bucketLegends[id].destroy();
+			delete bucketLegends[id];
+		}
+
+		// I'm going to build a legend per card
+		cards.each(function (card) {
+			// Every card in the bucket has an associated id referencing the item it belongs to
+			id = card.data('id');
+			// If the item is visible, show it in the legend
+			itemVisible = CCH.session.getItemById(id).visible;
+			if (itemVisible) {
+				// Get the item, check that it has associated layers to show and create the legend
+				item = CCH.items.getById({id: id});
+				if (item.getLayerList().layers.length > 0) {
+					bucketLegends[id] = new CCH.Objects.Widget.Legend({
+						containerId: 'cchMapLegendInnerContainer',
+						legendClass: 'cchCardLegend',
+						item: item
+					}).init();
+				}
+			}
+		});
+
+		// If after going through the building process, the bucket has available legends, show the legend container
+		// otherwise hide it
+		if (Object.keys(bucketLegends).length > 0) {
+			CCH.map.showLegend();
+		} else {
+			CCH.map.hideLegend();
+		}
+	};
+
+	/**
+	 * Handlet for a card in the accordion being toggled on/off
+	 * @param {type} evt
+	 * @param {type} args
+	 * @returns {undefined}
+	 */
+	me.cardDisplayToggled = function (evt, args) {
+		var item = args.item,
+			display = evt.namespace === 'card.layer.show',
+			accordionLegends = me.legends.accordion;
+
+		// Oreoare ti recreate the legend
+		if (me.legends.accordion[item.id]) {
+			me.legends.accordion[item.id].destroy();
+			delete me.legends.accordion[item.id];
+		}
+
+		// Card is being opened. There may be a legend to show
+		if (display) {
+			// I want to show a legend if either the item is a data item or an aggregation with visible children
+			// otherwise nothing is going to be shown 
+			if (item.getLayerList().layers.length > 0) {
+				accordionLegends[item.id] = new CCH.Objects.Widget.Legend({
+					containerId: 'cchMapLegendInnerContainer',
+					legendClass: 'cchCardLegend',
+					item: item
+				}).init();
+			}
+		}
+
+		// If legends are available, show the legend, otherwise hide it
+		if (Object.keys(accordionLegends).length > 0) {
+			CCH.map.showLegend();
+		} else {
+			CCH.map.hideLegend();
+		}
+	};
+
 	// Do Bindings
 	$(window).on({
+		'cch.data.items.searched': me.itemsSearchedHandler,
+		'cch.data.locations.searched': me.locationsSearchedHandler,
+		'slide.bucket.button.click.share': me.sharemodalDisplayHandler,
+		'cch.slide.bucket.closing': me.bucketSliderClosing,
+		'cch.slide.bucket.opening': me.bucketSliderOpening,
+		'cch.slide.bucket.reordered': me.bucketSliderReordered,
+		'slide.bucket.button.click.view': me.bucketSliderReordered,
+		'cch.card.layer.show': me.cardDisplayToggled,
+		'cch.card.layer.hide': me.cardDisplayToggled,
 		'resize': function () {
 			setTimeout(function () {
 				me.windowResizeHandler();
 			}, 1);
-		},
-		'cch.data.items.searched': me.itemsSearchedHandler,
-		'cch.data.locations.searched': me.locationsSearchedHandler,
-		'slide.bucket.button.click.share': me.sharemodalDisplayHandler,
-		'cch.slide.bucket.closing': function () {
-			CCH.map.hideAllLayers();
-			me.accordion.showCurrent();
 		}
 	});
 
@@ -386,7 +533,7 @@ CCH.Objects.Front.UI = function (args) {
 
 	$(window).trigger('cch.ui.initialized');
 
-	CCH.LOG.debug('UI.js::constructor: UI class initialized.');
+	CCH.LOG.trace('UI.js::constructor: UI class initialized.');
 
 	return $.extend(me, {
 		removeOverlay: me.removeOverlay,
@@ -399,7 +546,7 @@ CCH.Objects.Front.UI = function (args) {
 		share: me.share,
 		accordion: me.accordion,
 		errorResponseHandler: me.errorResponseHandler,
-		addItemsToBucketOnLoad : me.addItemsToBucketOnLoad,
+		addItemsToBucketOnLoad: me.addItemsToBucketOnLoad,
 		CLASS_NAME: 'CCH.Objects.UI'
 	});
 };

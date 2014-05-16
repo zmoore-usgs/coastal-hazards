@@ -3,7 +3,7 @@
 /*global CCH*/
 CCH.Objects.Bucket = function (args) {
     "use strict";
-    CCH.LOG.debug('CCH.Objects.Bucket::constructor: Bucket class is initializing.');
+    CCH.LOG.trace('CCH.Objects.Bucket::constructor: Bucket class is initializing.');
 
     var me = (this === window) ? {} : this;
 
@@ -98,7 +98,7 @@ CCH.Objects.Bucket = function (args) {
     $.get(me.IMAGE_LOCATION_BUCKET_WITH_SAND);
     $.get(me.IMAGE_LOCATION_BUCKET_WITHOUT_SAND);
 
-    CCH.LOG.debug('CCH.Objects.Bucket::constructor: Bucket class initialized.');
+    CCH.LOG.trace('CCH.Objects.Bucket::constructor: Bucket class initialized.');
 
     return $.extend(me, {
         add : function (args) {
