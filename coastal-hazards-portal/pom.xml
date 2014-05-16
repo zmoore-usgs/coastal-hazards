@@ -14,6 +14,7 @@
 
 	<properties>
 		<version.jqueryui>1.10.4</version.jqueryui>
+        <gt.version>10.1</gt.version>
 	</properties>
 
 	<dependencies>
@@ -152,6 +153,11 @@
 			<artifactId>geoserver-manager</artifactId>
 			<version>1.5.2</version>
 		</dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-wfs</artifactId>
+            <version>${gt.version}</version>
+        </dependency>
 		
 		<!-- this has to be after hibernate in the classpath :( -->
 		<dependency>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="jiwalker" id="add_domain_table">
+        <comment>each item should have a list of domain values</comment>
+        <createTable tableName="domains">
+            <column name="id" type="INT4">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="item_id" type="VARCHAR(255)" />
+            <column name="session_id" type="VARCHAR(255)" />
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="item_id" baseTableName="domains" constraintName="fk_domains_item_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="item"/>
+        <addForeignKeyConstraint baseColumnNames="session_id" baseTableName="domains" constraintName="fk_domains_session_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="session_table"/>
+    </changeSet>
+    <changeSet author="jiwalker" id="add_domain_collection">
+        <createTable tableName="domain_values">
+            <column name="domain_id" type="INT4" />
+            <column name="domain_value" type="VARCHAR(31)" />
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="domain_id" baseTableName="domain_values" constraintName="fk_domain_values_domain_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="domains"/>
+    </changeSet>
+</databaseChangeLog>

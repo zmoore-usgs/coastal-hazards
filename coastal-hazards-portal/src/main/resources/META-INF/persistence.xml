@@ -20,6 +20,7 @@
         <class>gov.usgs.cida.coastalhazards.model.summary.Medium</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Full</class>
         <class>gov.usgs.cida.coastalhazards.model.summary.Publication</class>
+        <class>gov.usgs.cida.coastalhazards.model.util.DataDomain</class>
 
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>

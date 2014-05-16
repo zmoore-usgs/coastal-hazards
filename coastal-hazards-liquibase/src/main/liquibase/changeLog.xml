@@ -24,4 +24,5 @@
     <include file="itemUpdates.xml" relativeToChangelogFile="true" />
     <include file="bbox.xml" relativeToChangelogFile="true" />
     <include file="keywordToText.xml" relativeToChangelogFile="true" />
+    <include file="domains.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
