@@ -17,7 +17,7 @@ CCH.Objects = CCH.Objects || {};
 CCH.Objects.Widget = CCH.Objects.Widget || {};
 CCH.Objects.Widget.Card = function (args) {
 	"use strict";
-	CCH.LOG.info('Card.js::constructor:Card class is initializing.');
+	CCH.LOG.trace('Card.js::constructor:Card class is initializing.');
 
 	var me = (this === window) ? {} : this;
 
@@ -546,7 +546,7 @@ CCH.Objects.Widget.Card = function (args) {
 		}
 	});
 
-	CCH.LOG.info('Card.js::constructor:Card class is initialized.');
+	CCH.LOG.trace('Card.js::constructor:Card class is initialized.');
 
 	return {
 		id: me.id,
