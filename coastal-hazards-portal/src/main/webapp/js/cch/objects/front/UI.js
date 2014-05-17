@@ -455,9 +455,10 @@ CCH.Objects.Front.UI = function (args) {
 							if (Object.keys(bucketLegends).length === this.$container.children().length) {
 								// I am the final card that will be loaded. I need to organize my container to 
 								// be indexed in the same way that the bucket is
-								var sortedLegends = this.$container.find('>div').sort(function ($div) {
+								var sortedLegends = this.$container.find('>div').toArray().sortBy(function ($div) {
 									return parseInt($($div).attr('card-index'));
 								});
+								
 								this.$container.empty().append(sortedLegends);
 							}
 						}
