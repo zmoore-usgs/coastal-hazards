@@ -367,6 +367,10 @@ CCH.Objects.Front.UI = function (args) {
 	me.bucketSliderClosing = function () {
 		var bucketLegends = me.legends.bucket,
 			accordionLegends = me.legends.accordion;
+		
+		CCH.map.hideAllLayers();
+		me.accordion.showCurrent();
+		
 		//  The bucket slider is closing.  I want to destroy all of the bucket legends as I am switching to the accordion
 		// context on the map
 		for (var id in bucketLegends) {
@@ -430,7 +434,7 @@ CCH.Objects.Front.UI = function (args) {
 		}
 
 		// I'm going to build a legend per card
-		cards.each(function (card) {
+		cards.each(function (card, index) {
 			// Every card in the bucket has an associated id referencing the item it belongs to
 			id = card.data('id');
 			// If the item is visible, show it in the legend
@@ -442,7 +446,26 @@ CCH.Objects.Front.UI = function (args) {
 					bucketLegends[id] = new CCH.Objects.Widget.Legend({
 						containerId: 'cchMapLegendInnerContainer',
 						legendClass: 'cchCardLegend',
-						item: item
+						item: item,
+						cardIndex: index,
+						onComplete: function () {
+							// When I'm requesting multiple legends, those legends still have to make ajax
+							// calls to pull down SLDs. Because it is indeterminate in what order I get those 
+							// back, I have to sort the legends in the legend container 
+							// 
+							// Mark the card with the index I gave it going in
+							this.$legendDiv.attr('card-index', this.cardIndex);
+
+							if (Object.keys(bucketLegends).length === this.$container.children().length) {
+								// I am the final card that will be loaded. I need to organize my container to 
+								// be indexed in the same way that the bucket is
+								var sortedLegends = this.$container.find('>div').toArray().sortBy(function ($div) {
+									return parseInt($($div).attr('card-index'));
+								});
+								
+								this.$container.empty().append(sortedLegends);
+							}
+						}
 					}).init();
 				}
 			}

@@ -44,7 +44,7 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 		if (!this.outsideViewport) {
 			this.div.className += " " + this.displayClass + 'Container';
 			// Create maximize div
-			var img = OpenLayers.Util.getImageLocation('layer-switcher-maximize.png');
+			var img = 'images/openlayers/maximize_minimize_toggle/tall-medium-arrow-closed-left.svg';
 			this.maximizeDiv = OpenLayers.Util.createAlphaImageDiv(
 				this.displayClass + 'MaximizeButton',
 				null,
@@ -58,7 +58,7 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 			}
 			this.div.appendChild(this.maximizeDiv);
 			// Create minimize div
-			var img = OpenLayers.Util.getImageLocation('layer-switcher-minimize.png');
+			var img = 'images/openlayers/maximize_minimize_toggle/tall-medium-arrow-open-right.svg';
 			this.minimizeDiv = OpenLayers.Util.createAlphaImageDiv(
 				'OpenLayers_Control_minimizeDiv',
 				null,
