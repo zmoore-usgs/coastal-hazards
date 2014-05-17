@@ -430,7 +430,7 @@ CCH.Objects.Front.UI = function (args) {
 		}
 
 		// I'm going to build a legend per card
-		cards.each(function (card) {
+		cards.each(function (card, index) {
 			// Every card in the bucket has an associated id referencing the item it belongs to
 			id = card.data('id');
 			// If the item is visible, show it in the legend
@@ -442,7 +442,25 @@ CCH.Objects.Front.UI = function (args) {
 					bucketLegends[id] = new CCH.Objects.Widget.Legend({
 						containerId: 'cchMapLegendInnerContainer',
 						legendClass: 'cchCardLegend',
-						item: item
+						item: item,
+						cardIndex: index,
+						onComplete: function () {
+							// When I'm requesting multiple legends, those legends still have to make ajax
+							// calls to pull down SLDs. Because it is indeterminate in what order I get those 
+							// back, I have to sort the legends in the legend container 
+							// 
+							// Mark the card with the index I gave it going in
+							this.$legendDiv.attr('card-index', this.cardIndex);
+
+							if (Object.keys(bucketLegends).length === this.$container.children().length) {
+								// I am the final card that will be loaded. I need to organize my container to 
+								// be indexed in the same way that the bucket is
+								var sortedLegends = this.$container.find('>div').sort(function ($div) {
+									return parseInt($($div).attr('card-index'));
+								});
+								this.$container.empty().append(sortedLegends);
+							}
+						}
 					}).init();
 				}
 			}
