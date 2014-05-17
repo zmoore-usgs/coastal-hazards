@@ -367,6 +367,10 @@ CCH.Objects.Front.UI = function (args) {
 	me.bucketSliderClosing = function () {
 		var bucketLegends = me.legends.bucket,
 			accordionLegends = me.legends.accordion;
+		
+		CCH.map.hideAllLayers();
+		me.accordion.showCurrent();
+		
 		//  The bucket slider is closing.  I want to destroy all of the bucket legends as I am switching to the accordion
 		// context on the map
 		for (var id in bucketLegends) {
