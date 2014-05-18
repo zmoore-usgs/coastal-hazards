@@ -122,10 +122,10 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
         <script type="text/javascript" src="js/cch/objects/Item<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/cch/objects/ItemsSlide<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/widget/ItemsSlide<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/widget/OLLegend<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/widget/BucketSlide<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/cch/objects/SearchSlide<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/widget/SearchSlide<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/widget/Accordion<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/util/Search<%= development ? "" : "-min"%>.js"></script>
@@ -138,7 +138,7 @@
         <script type="text/javascript" src="js/cch/objects/Items<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/util/OWS<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/Bucket<%= development ? "" : "-min"%>.js"></script>
-        <script type="text/javascript" src="js/cch/objects/CombinedSearchbar<%= development ? "" : "-min"%>.js"></script>
+        <script type="text/javascript" src="js/cch/objects/widget/CombinedSearchbar<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/front/UI<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/cch/objects/widget/Legend<%= development ? "" : "-min"%>.js"></script>
         <script type="text/javascript" src="js/application/front/OnReady<%= development ? "" : "-min"%>.js"></script>

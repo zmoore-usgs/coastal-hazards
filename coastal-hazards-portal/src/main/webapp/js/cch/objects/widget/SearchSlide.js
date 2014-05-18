@@ -4,6 +4,10 @@
 /*global CCH*/
 /*global OpenLayers*/
 
+window.CCH = CCH || {};
+CCH.Objects = CCH.Objects || {};
+CCH.Objects.Widget = CCH.Objects.Widget || {};
+
 /**
  * A slide widget that shows up when items are searched for
  * 
@@ -14,9 +18,9 @@
  * window: 'cch.ui.resized'
  * 
  * @param {type} args
- * @returns {CCH.Objects.SearchSlide.Anonym$8}
+ * @returns {CCH.Objects.Widget.SearchSlide.Anonym$8}
  */
-CCH.Objects.SearchSlide = function (args) {
+CCH.Objects.Widget.SearchSlide = function (args) {
     "use strict";
     args = args || {};
 
@@ -763,6 +767,6 @@ CCH.Objects.SearchSlide = function (args) {
         isClosed : me.isClosed,
         isClosing : me.isClosing,
         displaySearchResults : me.displaySearchResults,
-        CLASS_NAME : 'CCH.Objects.SearchSlide'
+        CLASS_NAME : 'CCH.Objects.Widget.SearchSlide'
     };
 };
