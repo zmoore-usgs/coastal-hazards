@@ -42,7 +42,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 				return splitName.last();
 			};
 
-		$(window).trigger('cch.map.control.layerid.responded')
+		$(window).trigger('cch.map.control.layerid.responded');
 
 		// I don't roll out of bed before having some features to work with.
 		// If I have no features, this means the user clicked in an empty
@@ -116,7 +116,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					incomingFeatures = this.features,
 					layers = this.layers,
 					color,
-					buildLegend,
 					buildLegend = function (args) {
 						args = args || {};
 						var binIdx = 0,
@@ -135,7 +134,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 							$table = $('<table />').attr('data-attr', layerIndex),
 							$titleContainer = $('<td />'),
 							$colorContainer = $('<td />'),
-							$yearContainer = $('<td />'),
+							$valueContainer = $('<td />'),
 							$legendRow = $('<tr>').addClass('legend-row'),
 							item = args.item,
 							ribbonIndex = -1,
@@ -157,11 +156,12 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 
 						$titleContainer.html(title);
 
+						// Historical
 						if (units === 'year') {
 							features.each(function (feature) {
 								$titleContainer = $('<td />').html(title);
 								$colorContainer = $('<td />');
-								$yearContainer = $('<td />');
+								$valueContainer = $('<td />');
 								$legendRow = $('<tr>');
 								dateAttribute = Object.keys(feature).find(function (attr) {
 									return attr.toLowerCase().indexOf('date') !== -1;
@@ -180,14 +180,14 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 										}) !== -1;
 									});
 									$colorContainer.append($('<span />').css('backgroundColor', bin.color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
-									$yearContainer.append(year, ' yr');
-									$legendRow.append($titleContainer, $colorContainer, $yearContainer).attr('id', 'popup-legend-' + year);
+									$valueContainer.append(year, ' yr');
+									$legendRow.append($titleContainer, $colorContainer, $valueContainer).attr('id', 'popup-legend-' + year);
 									$table.append($legendRow);
 								}
 							});
 							var sortedRows = $table.find('tr').toArray().sortBy(function (row) {
 								return parseInt($(row).attr('id').substring(13));
-							})
+							});
 							$table.empty().append(sortedRows);
 						} else {
 							for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
@@ -211,12 +211,17 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 							$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
 
 							if (item.attr.toLowerCase() === 'cvirisk') {
-								$yearContainer.append(bins[attrAvg.toFixed(0) - 1].category + ' Risk');
+								$valueContainer.append(bins[attrAvg.toFixed(0) - 1].category + ' Risk');
 							} else {
-								$yearContainer.append(attrAvg % 1 === 0 ? attrAvg.toFixed(0) : attrAvg.toFixed(3));
-								$yearContainer.append(' ' + units);
+								if (attrAvg === 0) {
+									attrAvg = '--';
+									$valueContainer.append(attrAvg);
+								} else {
+									attrAvg = attrAvg % 1 === 0 ? attrAvg.toFixed(0) : attrAvg.toFixed(3);
+									$valueContainer.append(attrAvg + units);
+								}
 							}
-							$legendRow.append($titleContainer, $colorContainer, $yearContainer);
+							$legendRow.append($titleContainer, $colorContainer, $valueContainer);
 
 							if (ribbonIndex !== -1) {
 								// If this is part of a ribboned series, I'm going
@@ -236,7 +241,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 						}
 
 						$popupHtml.find('#layer-load-id').remove();
-						CCH.map.getMap().getLayerIndex(CCH.map.getMap().getLayersBy('itemid', layerId)[0])
+						CCH.map.getMap().getLayerIndex(CCH.map.getMap().getLayersBy('itemid', layerId)[0]);
 						$popupHtml.append($table);
 						var tables = $popupHtml.find('table').toArray().sortBy(function (tbl) {
 							return parseInt($(tbl).attr('data-attr'));
@@ -276,7 +281,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 							var cHeight = 0,
 								maxHeight = Math.round($('#map').height() / 2);
 							$('#feature-identification-popup div.col-md-12 > table tr').each(function (ind, item) {
-								cHeight += $(item).outerHeight() + ($(item).outerHeight() * .3);
+								cHeight += $(item).outerHeight() + ($(item).outerHeight() * 0.3);
 							});
 							if (cHeight > maxHeight) {
 								cHeight = maxHeight;
