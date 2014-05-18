@@ -4,13 +4,17 @@
 /*global CCH*/
 /*global splashUpdate*/
 
+window.CCH = CCH || {};
+CCH.Objects = CCH.Objects || {};
+CCH.Objects.Widget = CCH.Objects.Widget || {};
+
 /**
  * Slider widget holding cards
  * 
  * @param {type} args
  * @returns {CCH.Objects.ItemsSlide.Anonym$5}
  */
-CCH.Objects.ItemsSlide = function (args) {
+CCH.Objects.Widget.ItemsSlide = function (args) {
 	"use strict";
 	args = args || {};
 
@@ -389,7 +393,7 @@ CCH.Objects.ItemsSlide = function (args) {
 
 	$('#' + me.SLIDE_TAB_ID).on('click', me.toggle);
 
-	CCH.LOG.trace('CCH.Objects.ItemsSlide::constructor: ItemsSlide class initialized.');
+	CCH.LOG.trace('CCH.Objects.Widget.ItemsSlide::constructor: ItemsSlide class initialized.');
 	return {
 		open: me.open,
 		close: me.close,

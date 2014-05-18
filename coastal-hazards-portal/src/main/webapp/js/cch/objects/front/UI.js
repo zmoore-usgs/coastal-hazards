@@ -57,7 +57,7 @@ CCH.Objects.Front.UI = function (args) {
 	me.bucket = new CCH.Objects.Bucket({
 		slide: me.bucketSlide
 	});
-	me.itemsSlide = new CCH.Objects.ItemsSlide({
+	me.itemsSlide = new CCH.Objects.Widget.ItemsSlide({
 		containerId: me.ITEMS_SLIDE_CONTAINER_ID,
 		mapdivId: me.MAP_DIV_ID,
 		headerRowId: me.HEADER_ROW_ID,
@@ -65,7 +65,7 @@ CCH.Objects.Front.UI = function (args) {
 		isSmall: me.isSmall,
 		bucket: me.bucket
 	});
-	me.searchSlide = new CCH.Objects.SearchSlide({
+	me.searchSlide = new CCH.Objects.Widget.SearchSlide({
 		containerId: me.SEARCH_SLIDE_CONTAINER_ID,
 		isSmall: me.isSmall,
 		bucket: me.bucket
@@ -73,7 +73,7 @@ CCH.Objects.Front.UI = function (args) {
 	me.accordion = new CCH.Objects.Widget.Accordion({
 		containerId: me.SLIDE_CONTAINER_DIV_ID
 	});
-	me.combinedSearch = new CCH.Objects.CombinedSearch();
+	me.combinedSearch = new CCH.Objects.Widget.CombinedSearch();
 
 	// This object holds the legend items that are currently viewed
 	me.legends = {

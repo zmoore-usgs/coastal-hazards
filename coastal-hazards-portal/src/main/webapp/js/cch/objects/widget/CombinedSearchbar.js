@@ -4,16 +4,20 @@
 /*global splashUpdate*/
 /*global CCH*/
 
+window.CCH = CCH || {};
+CCH.Objects = CCH.Objects || {};
+CCH.Objects.Widget = CCH.Objects.Widget || {};
+
 /**
  * A widget that is used as the search mechanism throughout the application
  * 
  * @param {type} args
  * @returns {undefined}
  */
-CCH.Objects.CombinedSearch = function (args) {
+CCH.Objects.Widget.CombinedSearch = function (args) {
     "use strict";
     splashUpdate("Initializing Search Subsystem...");
-    CCH.LOG.trace('CCH.Objects.CombinedSearch::constructor: CombinedSearch class is initializing.');
+    CCH.LOG.trace('CCH.Objects.Widget.CombinedSearch::constructor: CombinedSearch class is initializing.');
 
     var me = (this === window) ? {} : this;
 
@@ -192,7 +196,7 @@ CCH.Objects.CombinedSearch = function (args) {
                             me.hideSpinner,
                             function (data) {
                                 if (data) {
-                                    CCH.LOG.info('CCH.Objects.CombinedSearch:: Location search has completed successfully');
+                                    CCH.LOG.info('CCH.Objects.Widget.CombinedSearch:: Location search has completed successfully');
                                     $(me).trigger('combined-searchbar-search-performed', {
                                         'type' : 'location',
                                         'data' : data,
@@ -204,7 +208,7 @@ CCH.Objects.CombinedSearch = function (args) {
                         error : [
                             me.hideSpinner,
                             function (jqXHR, textStatus, errorThrown) {
-                                CCH.LOG.warn('CCH.Objects.CombinedSearch:: Could not complete geo-search:' + errorThrown);
+                                CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Could not complete geo-search:' + errorThrown);
                                 $(me).trigger('combined-searchbar-search-performed', {
                                     'type' : 'location',
                                     'data' : {
@@ -227,21 +231,21 @@ CCH.Objects.CombinedSearch = function (args) {
                             me.hideSpinner,
                             function (data, status) {
                                 if (status === 'success') {
-                                    CCH.LOG.info('CCH.Objects.CombinedSearch:: Item search has completed successfully');
+                                    CCH.LOG.info('CCH.Objects.Widget.CombinedSearch:: Item search has completed successfully');
                                     $(me).trigger('combined-searchbar-search-performed', {
                                         'type' : 'item',
                                         'data' : data,
                                         'criteria' : me.getCriteria()
                                     });
                                 } else {
-                                    CCH.LOG.warn('CCH.Objects.CombinedSearch:: Item search could not complete items search');
+                                    CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Item search could not complete items search');
                                 }
                             }
                         ],
                         error : [
                             me.hideSpinner,
                             function (jqXHR, textStatus, errorThrown) {
-                                CCH.LOG.warn('CCH.Objects.CombinedSearch:: Item search could not complete items search:' + errorThrown);
+                                CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Item search could not complete items search:' + errorThrown);
                                 $(me).trigger('combined-searchbar-search-performed', {
                                     'type' : 'item',
                                     'data' : {
@@ -263,7 +267,7 @@ CCH.Objects.CombinedSearch = function (args) {
                             me.hideSpinner,
                             function (data) {
                                 if (data) {
-                                    CCH.LOG.info('CCH.Objects.CombinedSearch:: Location search has completed successfully');
+                                    CCH.LOG.info('CCH.Objects.Widget.CombinedSearch:: Location search has completed successfully');
                                     $(me).trigger('combined-searchbar-search-performed', {
                                         'type' : 'location',
                                         'data' : data,
@@ -275,7 +279,7 @@ CCH.Objects.CombinedSearch = function (args) {
                         error : [
                             me.hideSpinner,
                             function (jqXHR, textStatus, errorThrown) {
-                                CCH.LOG.warn('CCH.Objects.CombinedSearch:: Could not complete geo-search:' + errorThrown);
+                                CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Could not complete geo-search:' + errorThrown);
                             }
                         ]
                     }
@@ -297,28 +301,28 @@ CCH.Objects.CombinedSearch = function (args) {
                             me.hideSpinner,
                             function (data, status) {
                                 if (status === 'success') {
-                                    CCH.LOG.info('CCH.Objects.CombinedSearch:: Item search has completed successfully');
+                                    CCH.LOG.info('CCH.Objects.Widget.CombinedSearch:: Item search has completed successfully');
                                     $(me).trigger('combined-searchbar-search-performed', {
                                         'type' : 'item',
                                         'data' : data,
                                         'criteria' : me.getCriteria()
                                     });
                                 } else {
-                                    CCH.LOG.warn('CCH.Objects.CombinedSearch:: Item search could not complete items search');
+                                    CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Item search could not complete items search');
                                 }
                             }
                         ],
                         error : [
                             me.hideSpinner,
                             function (jqXHR, textStatus, errorThrown) {
-                                CCH.LOG.warn('CCH.Objects.CombinedSearch:: Item search could not complete items search:' + errorThrown);
+                                CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Item search could not complete items search:' + errorThrown);
                             }
                         ]
                     }
                 });
             }
         } else {
-            CCH.LOG.debug('CCH.Objects.CombinedSearch:: Missing criteria');
+            CCH.LOG.debug('CCH.Objects.Widget.CombinedSearch:: Missing criteria');
         }
     };
 
@@ -421,8 +425,8 @@ CCH.Objects.CombinedSearch = function (args) {
     });
 
     // Preload required images
-    CCH.LOG.trace('CCH.Objects.CombinedSearch::constructor: Pre-loading images.');
+    CCH.LOG.trace('CCH.Objects.Widget.CombinedSearch::constructor: Pre-loading images.');
     $.get(me.DD_TOGGLE_SPINNER_IMG_LOCATION);
 
-    CCH.LOG.trace('CCH.Objects.CombinedSearch::constructor: CombinedSearch class initialized.');
+    CCH.LOG.trace('CCH.Objects.Widget.CombinedSearch::constructor: CombinedSearch class initialized.');
 };
