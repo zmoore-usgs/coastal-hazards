@@ -3,6 +3,11 @@ package gov.usgs.cida.coastalhazards.domain;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -42,11 +47,17 @@ public class DataDomainUtility {
     
     public static SortedSet<String> getDomainAsYears(Set<String> stringDomain) {
         SortedSet<String> yearDomain = new TreeSet<>();
-        
+        Calendar cal = Calendar.getInstance();
         for (String date : stringDomain) {
             // We are assuming mm/dd/yyyy format, will break otherwise
-            String year = date.substring(date.lastIndexOf("/") + 1);
-            yearDomain.add(year);
+            try {
+                Date javaDate = new SimpleDateFormat("MM/dd/yyyy").parse(date);
+                cal.setTime(javaDate);
+                yearDomain.add(String.valueOf(cal.get(Calendar.YEAR)));
+            } catch (ParseException ex) {
+                log.error("Invalid date format in data", ex);
+            }
+            
         }
         
         return yearDomain;
