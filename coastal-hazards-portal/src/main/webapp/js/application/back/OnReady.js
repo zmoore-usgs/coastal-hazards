@@ -18,9 +18,9 @@ $(document).ready(function () {
 	CCH.CONFIG.item = new CCH.Objects.Item({
 		id: CCH.CONFIG.itemId
 	});
-	
+
 	CCH.map = new CCH.Objects.Back.Map();
-	
+
 	CCH.ows = new CCH.Util.OWS();
 
 	// I am loading an item with the full subtree so once that item is loaded, start loading the rest of the application

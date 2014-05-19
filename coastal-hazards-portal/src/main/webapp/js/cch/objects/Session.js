@@ -4,249 +4,257 @@
 /*global LOG*/
 /*global CCH*/
 CCH.Objects.Session = function (args) {
-    "use strict";
+	"use strict";
 
-    CCH.LOG.trace('Session.js::constructor: Session class is initializing.');
+	CCH.LOG.trace('Session.js::constructor: Session class is initializing.');
 
-    var me = (this === window) ? {} : this;
+	var me = (this === window) ? {} : this;
 
-    args = args || {};
+	args = args || {};
 
-    me.session = {
-        items: [],
-        baselayer: '',
-        scale: 0,
-        bbox: [0.0, 0.0, 0.0, 0.0],
-        center: [0.0, 0.0]
-    };
+	me.cookieName = args.cookieName || 'cch';
 
-    me.toString = function () {
-        return JSON.stringify(me.session);
-    };
+	me.session = {
+		items: [],
+		baselayer: '',
+		scale: 0,
+		bbox: [0.0, 0.0, 0.0, 0.0],
+		center: [0.0, 0.0]
+	};
 
-    me.getSession = function () {
-        return me.session;
-    };
+	me.toString = function () {
+		return JSON.stringify(me.session);
+	};
 
-    me.update = function (args) {
-        CCH.LOG.trace('Session.js::update');
+	me.getSession = function () {
+		return me.session;
+	};
+	
+	me.getItems = function() {
+		return me.session.items;
+	};
 
-        CCH.map.updateSession();
+	me.update = function (args) {
+		CCH.LOG.trace('Session.js::update');
 
-        args = args || {};
+		CCH.map.updateSession();
 
-        var itemid = args.itemid,
-            visible = args.visible,
-            itemIndex,
-            cookie;
+		args = args || {};
 
-        if (itemid) {
-            itemIndex = me.getItemIndex({
-                id : itemid
-            });
-            if (itemIndex !== -1) {
-                me.session.items[itemIndex].visible = visible;
-            }
-        }
+		var itemid = args.itemid,
+			visible = args.visible,
+			itemIndex,
+			cookie;
 
-        cookie = $.cookie('cch');
-        cookie.bbox = me.session.bbox;
-        cookie.items = me.session.items;
-        $.cookie('cch', cookie);
-    };
+		if (itemid) {
+			itemIndex = me.getItemIndex({
+				id: itemid
+			});
+			if (itemIndex !== -1) {
+				me.session.items[itemIndex].visible = visible;
+			}
+		}
 
-    me.write = function (args) {
-        CCH.LOG.debug('Session.js::write');
-        args = args || {};
+		cookie = $.cookie(me.cookieName);
+		cookie.bbox = me.session.bbox;
+		cookie.items = me.session.items;
+		$.cookie(me.cookieName, cookie);
+	};
 
-        var callbacks = args.callbacks || {
-            success: [],
-            error: []
-        };
+	me.write = function (args) {
+		CCH.LOG.debug('Session.js::write');
+		args = args || {};
 
-        me.update();
+		var callbacks = args.callbacks || {
+			success: [],
+			error: []
+		};
 
-        callbacks.success.unshift(function (json) {
-            CCH.LOG.debug("Session.js::write: " + json.sid);
-        });
+		me.update();
 
-        $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint, {
-            type: 'POST',
-            contentType: 'application/json;charset=utf-8',
-            dataType: 'json',
-            data: me.toString(),
-            success: function (json, textStatus, jqXHR) {
-                if (callbacks.success && callbacks.success.length > 0) {
-                    callbacks.success.each(function (callback) {
-                        callback.call(null, json, textStatus, jqXHR);
-                    });
-                }
-            },
-            error: function (data, textStatus, jqXHR) {
-                if (callbacks.error && callbacks.error.length > 0) {
-                    callbacks.error.each(function (callback) {
-                        callback.call(null, data, textStatus, jqXHR);
-                    });
-                }
-            }
-        });
-    };
+		callbacks.success.unshift(function (json) {
+			CCH.LOG.debug("Session.js::write: " + json.sid);
+		});
 
-    me.read = function (args) {
-        CCH.LOG.debug('Session.js::read');
+		$.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint, {
+			type: 'POST',
+			contentType: 'application/json;charset=utf-8',
+			dataType: 'json',
+			data: me.toString(),
+			success: function (json, textStatus, jqXHR) {
+				if (callbacks.success && callbacks.success.length > 0) {
+					callbacks.success.each(function (callback) {
+						callback.call(null, json, textStatus, jqXHR);
+					});
+				}
+			},
+			error: function (data, textStatus, jqXHR) {
+				if (callbacks.error && callbacks.error.length > 0) {
+					callbacks.error.each(function (callback) {
+						callback.call(null, data, textStatus, jqXHR);
+					});
+				}
+			}
+		});
+	};
 
-        var sid = args.sid,
-            callbacks = args.callbacks || {
-                success: [],
-                error: []
-            },
-            context = args.context;
+	me.read = function (args) {
+		CCH.LOG.debug('Session.js::read');
 
-        if (sid) {
-            $.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint + sid, {
-                type: 'GET',
-                contentType: 'application/json;charset=utf-8',
-                dataType: 'json',
-                success: function (json, textStatus, jqXHR) {
-                    if (callbacks.success && callbacks.success.length > 0) {
-                        callbacks.success.each(function (callback) {
-                            callback.call(context, json, textStatus, jqXHR);
-                        });
-                    }
-                },
-                error: function (data, textStatus, jqXHR) {
-                    if (callbacks.error && callbacks.error.length > 0) {
-                        callbacks.error.each(function (callback) {
-                            callback.call(context, data, textStatus, jqXHR);
-                        });
-                    }
-                }
-            });
-        }
-    };
+		var sid = args.sid,
+			callbacks = args.callbacks || {
+				success: [],
+				error: []
+			},
+		context = args.context;
 
-    me.load = function (args) {
-        CCH.LOG.debug('Session.js::load');
-        args = args || {};
-        var sid = args.sid,
-            callbacks = args.callbacks || {
-                success : [],
-                error : []
-            },
-            cookie;
+		if (sid) {
+			$.ajax(CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.session.endpoint + sid, {
+				type: 'GET',
+				contentType: 'application/json;charset=utf-8',
+				dataType: 'json',
+				success: function (json, textStatus, jqXHR) {
+					if (callbacks.success && callbacks.success.length > 0) {
+						callbacks.success.each(function (callback) {
+							callback.call(context, json, textStatus, jqXHR);
+						});
+					}
+				},
+				error: function (data, textStatus, jqXHR) {
+					if (callbacks.error && callbacks.error.length > 0) {
+						callbacks.error.each(function (callback) {
+							callback.call(context, data, textStatus, jqXHR);
+						});
+					}
+				}
+			});
+		}
+	};
 
-        callbacks.success.unshift(function (json) {
-            if (json) {
-                CCH.LOG.info("Session.js::load: Session found on server. Updating current session.");
-                $.extend(true, me.session, json);
+	me.load = function (args) {
+		CCH.LOG.debug('Session.js::load');
+		args = args || {};
+		var sid = args.sid,
+			callbacks = args.callbacks || {
+				success: [],
+				error: []
+			},
+		cookie;
 
-                cookie = $.cookie('cch');
-                cookie.bbox = me.session.bbox;
-                cookie.items = me.session.items;
-                $.cookie('cch', cookie);
+		callbacks.success.unshift(function (json) {
+			if (json) {
+				CCH.LOG.info("Session.js::load: Session found on server. Updating current session.");
+				$.extend(true, me.session, json);
 
-                $(window).trigger('cch.data.session.loaded.true');
-            } else {
-                CCH.LOG.info("Session.js::load: Session not found on server.");
-                $(window).trigger('cch.data.session.loaded.false');
-            }
-        });
+				cookie = $.cookie(me.cookieName);
+				cookie.bbox = me.session.bbox;
+				cookie.items = me.session.items;
+				$.cookie(me.cookieName, cookie);
 
-        CCH.LOG.info("Session.js::load: Will try to load session '" + sid + "' from server");
-        me.read({
-            sid: sid,
-            callbacks: {
-                success: callbacks.success,
-                error: callbacks.error
-            }
-        });
-    };
+				$(window).trigger('cch.data.session.loaded.true');
+			} else {
+				CCH.LOG.info("Session.js::load: Session not found on server.");
+				$(window).trigger('cch.data.session.loaded.false');
+			}
+		});
 
-    me.getItemById = function (id) {
-        var item = null,
-            index = me.getItemIndex({
-                id : id
-            });
+		CCH.LOG.info("Session.js::load: Will try to load session '" + sid + "' from server");
+		me.read({
+			sid: sid,
+			callbacks: {
+				success: callbacks.success,
+				error: callbacks.error
+			}
+		});
+	};
 
-        if (index !== -1) {
-            item = me.getSession().items[index];
-        }
-        return item;
-    };
+	me.getItemById = function (id) {
+		var item = null,
+			index = me.getItemIndex({
+				id: id
+			});
 
-    me.getItemIndex = function (item) {
-        return me.session.items.findIndex(function (i) {
-            return i.itemId === item.id;
-        });
-    };
+		if (index !== -1) {
+			item = me.getSession().items[index];
+		}
+		return item;
+	};
 
-    me.addItem = function (args) {
-        CCH.LOG.trace('Session.js::addItem');
+	me.getItemIndex = function (item) {
+		return me.session.items.findIndex(function (i) {
+			return i.itemId === item.id;
+		});
+	};
 
-        var item = args.item,
-            visible = args.visible || false,
-            index = me.getItemIndex(item),
-            cookie;
+	me.addItem = function (args) {
+		CCH.LOG.trace('Session.js::addItem');
 
-        if (index === -1) {
-            me.session.items.push({
-                itemId : item.id,
-                visible : visible
-            });
-        }
+		var item = args.item,
+			visible = args.visible || false,
+			index = me.getItemIndex(item),
+			cookie;
 
-        cookie = $.cookie('cch');
-        cookie.items = me.session.items;
-        $.cookie('cch', cookie);
+		if (index === -1) {
+			me.session.items.push({
+				itemId: item.id,
+				visible: visible
+			});
+		}
 
-        return me.session;
-    };
+		cookie = $.cookie(me.cookieName);
+		cookie.items = me.session.items;
+		$.cookie(me.cookieName, cookie);
 
-    me.removeItem = function (item) {
-        CCH.LOG.debug('Session.js::removeItem');
+		return me.session;
+	};
 
-        var index = me.getItemIndex(item),
-            cookie;
+	me.removeItem = function (item) {
+		CCH.LOG.debug('Session.js::removeItem');
 
-        if (index !== -1) {
-            me.session.items.removeAt(index);
-        }
+		var index = me.getItemIndex(item),
+			cookie;
 
-        cookie = $.cookie('cch');
-        cookie.items = me.session.items;
-        $.cookie('cch', cookie);
-        return me.session;
-    };
+		if (index !== -1) {
+			me.session.items.removeAt(index);
+		}
 
-    // Cookie handling
-    $.cookie.json = true;
-    if ($.cookie('cch') === undefined) {
-        $.cookie('cch', {
-            'items' : me.session.items
-        },
-            {
-                path: '/'
-            });
-    }
-    $.cookie('cch').items.each(function (item) {
-        me.addItem({
-            item : {
-                id : item.itemId
-            },
-            visible : item.visible
-        });
-    });
+		cookie = $.cookie(me.cookieName);
+		cookie.items = me.session.items;
+		$.cookie(me.cookieName, cookie);
+		return me.session;
+	};
 
-    return $.extend(me, {
-        toString: me.toString,
-        getSession: me.getSession,
-        load : me.load,
-        readSession : me.read,
-        writeSession: me.write,
-        updateSession : me.update,
-        getItemById : me.getItemById,
-        getItemIndex : me.getItemIndex,
-        addItem : me.addItem,
-        removeItem : me.removeItem
-    });
+	// Cookie handling
+	$.cookie.json = true;
+	if ($.cookie(me.cookieName) === undefined) {
+		$.cookie(me.cookieName, {
+			'items': me.session.items
+		},
+		{
+			path: '/'
+		});
+	}
+	$.cookie(me.cookieName).items.each(function (item) {
+		me.addItem({
+			item: {
+				id: item.itemId
+			},
+			visible: item.visible
+		});
+	});
+
+	return $.extend(me, {
+		cookieName: me.cookieName,
+		toString: me.toString,
+		getSession: me.getSession,
+		load: me.load,
+		readSession: me.read,
+		writeSession: me.write,
+		updateSession: me.update,
+		getItemById: me.getItemById,
+		getItemIndex: me.getItemIndex,
+		getItems: me.getItems,
+		addItem: me.addItem,
+		removeItem: me.removeItem
+	});
 };

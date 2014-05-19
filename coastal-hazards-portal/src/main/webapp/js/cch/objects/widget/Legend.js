@@ -63,7 +63,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			return CCH.items.getById({id: id}).itemType.toLowerCase() !== 'aggregation';
 		});
 		// The above function gets us an id string. Now I need to pull out the item from CCH.items
-		nonAggItem = CCH.items.getById({id : nonAggItem});
+		nonAggItem = CCH.items.getById({id: nonAggItem});
 		attribute = nonAggItem.attr;
 
 		if (me.item.type === 'historical' && attribute.toLowerCase().indexOf('date') !== -1) {

@@ -74,11 +74,11 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 			this.minimizeControl();
 		}
 
-		this.handlers.drag =  new OpenLayers.Handler.Drag(
+		this.handlers.drag = new OpenLayers.Handler.Drag(
 			this, null, {
-			documentDrag: false,
-			map: this.map
-		});
+				documentDrag: false,
+				map: this.map
+			});
 
 		// Cancel or catch events 
 		OpenLayers.Event.observe(this.div, 'click', OpenLayers.Function.bind(function (ctrl, evt) {

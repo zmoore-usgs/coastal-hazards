@@ -124,9 +124,9 @@ CCH.Objects.Front.Map = function (args) {
 			});
 
 			me.legendControl = new CCH.Objects.Widget.OLLegend({
-				startHidden : true
+				startHidden: true
 			});
-			
+
 			CCH.LOG.debug('Map.js::init():Adding base layers to map');
 			me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
 
@@ -171,7 +171,7 @@ CCH.Objects.Front.Map = function (args) {
 					// should override normal zoomTo behavior on load
 					if (evt.namespace === 'all.item.loaded') {
 						var returningVisitor = document.referrer.toLowerCase().indexOf('info/item') !== -1,
-							cookie = $.cookie('cch');
+							cookie = $.cookie(CCH.session.cookieName);
 
 						if (returningVisitor && cookie !== undefined && cookie.bbox !== undefined & cookie.bbox.length === 4) {
 							me.initialExtent = OpenLayers.Bounds.fromArray(cookie.bbox).transform(new OpenLayers.Projection('EPSG:4326'), me.displayProjection).toArray();
@@ -255,7 +255,7 @@ CCH.Objects.Front.Map = function (args) {
 		updateSession: function () {
 			var map = me.map,
 				session = CCH.session.getSession(),
-				cookie = $.cookie('cch'),
+				cookie = $.cookie(CCH.session.cookieName),
 				center = map.getCenter().transform(CCH.map.getMap().displayProjection, new OpenLayers.Projection('EPSG:4326'));
 
 			session.baselayer = map.baseLayer.name;
@@ -267,7 +267,7 @@ CCH.Objects.Front.Map = function (args) {
 			session.bbox = map.getExtent().transform(CCH.map.getMap().displayProjection, new OpenLayers.Projection('EPSG:4326')).toArray();
 
 			cookie.bbox = session.bbox;
-			$.cookie('cch', cookie);
+			$.cookie(CCH.session.cookieName, cookie);
 		},
 		updateFromSession: function () {
 			CCH.LOG.info('Map.js::updateFromSession():Map being recreated from session');

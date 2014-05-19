@@ -223,14 +223,12 @@ CCH.Objects.Front.UI = function (args) {
 		args = args || {};
 
 		var shareType = args.type,
-			shareId = args.id,
-			session;
+			shareId = args.id
 
 		if (shareType === 'session') {
 			// A user has clicked on the share menu item. A session needs to be 
 			// created and a token retrieved...
-			session = CCH.session;
-			session.writeSession({
+			CCH.session.writeSession({
 				callbacks: {
 					success: [
 						function (json) {
@@ -298,9 +296,9 @@ CCH.Objects.Front.UI = function (args) {
 		if (!splashMessage) {
 			switch (status) {
 				case 404:
-					splashMessage = '<b>Item Not Found</b><br /><div>There was a problem loading information.' +
+					splashMessage = '<b>Item Not Found</b><br /><div id="splash-error-message">There was a problem loading information.' +
 						'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
-						'Either try to reload the application or let us know.</div>';
+						'Either try to reload the application or let us knowthat this happened.</div>';
 					break;
 			}
 		}
@@ -367,10 +365,10 @@ CCH.Objects.Front.UI = function (args) {
 	me.bucketSliderClosing = function () {
 		var bucketLegends = me.legends.bucket,
 			accordionLegends = me.legends.accordion;
-		
+
 		CCH.map.hideAllLayers();
 		me.accordion.showCurrent();
-		
+
 		//  The bucket slider is closing.  I want to destroy all of the bucket legends as I am switching to the accordion
 		// context on the map
 		for (var id in bucketLegends) {
@@ -462,7 +460,7 @@ CCH.Objects.Front.UI = function (args) {
 								var sortedLegends = this.$container.find('>div').toArray().sortBy(function ($div) {
 									return parseInt($($div).attr('card-index'));
 								});
-								
+
 								this.$container.empty().append(sortedLegends);
 							}
 						}

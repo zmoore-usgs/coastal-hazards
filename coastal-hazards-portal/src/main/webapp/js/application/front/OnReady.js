@@ -4,6 +4,7 @@
 /*global splashUpdate*/
 /*global initializeLogging*/
 /*global CCH*/
+/*global alertify*/
 /*global LOG*/
 /*global OpenLayers*/
 $(document).ready(function () {
@@ -15,10 +16,14 @@ $(document).ready(function () {
 	});
 	CCH.LOG = LOG;
 
+	// For any ajax call going out, change the mouse pointer to a wait cursors, change it back on ajax stop/error
 	$(document).ajaxStart(function () {
 		$('body').css('cursor', 'wait');
 	});
 	$(document).ajaxStop(function () {
+		$('body').css('cursor', 'default');
+	});
+	$(document).ajaxError(function () {
 		$('body').css('cursor', 'default');
 	});
 
@@ -55,12 +60,15 @@ $(document).ready(function () {
 		slideSearchContainerId: 'application-slide-search-container'
 	});
 
+	/**
+	 * Begins the item loading process based on how the user is entering the application
+	 * 
+	 * @returns {undefined}
+	 */
 	CCH.loadItems = function () {
-		$(window).resize();
-
 		var type = (CCH.CONFIG.params.type + String()).toLowerCase(),
 			id = CCH.CONFIG.params.id,
-			cookieItems = $.cookie('cch').items || [];
+			cookieItems = CCH.session.getItems();
 
 		splashUpdate('Loading Application...');
 
@@ -89,7 +97,8 @@ $(document).ready(function () {
 								CCH.ui.addItemsToBucketOnLoad(items);
 
 								CCH.loadUberItem({
-									zoomToBbox: false
+									zoomToBbox: false,
+									subtree: true
 								});
 
 								CCH.map.zoomToBoundingBox({
@@ -104,21 +113,22 @@ $(document).ready(function () {
 								// so just load the top level item and move forward
 								CCH.loadUberItem({
 									zoomToBbox: true,
+									subtree: true,
 									callbacks: {
 										success: [
 											function () {
-												alertify.error('The Coastal Change Hazards Portal could not find your session.', 4000);
+												alertify.error('The Coastal Change Hazards Portal could not find your session.', 6000);
 											}
-										],
-										error: []
+										]
 									}
 								});
-							}]
+							}
+						]
 					}
 				});
 			} else if (type === 'item') {
 				// User is coming in with an item, so load that item
-				$(window).on('cch.item.loaded.all', function (evt, args) {
+				$(window).on('cch.item.loaded.all', function (evt) {
 					if (evt.namespace === 'all.item.loaded') {
 						var item = CCH.items.getById({id: id});
 						if (item) {
@@ -155,12 +165,19 @@ $(document).ready(function () {
 		}
 	};
 
+	/**
+	 * Loads the top-level item for the entire portal
+	 * 
+	 * @param {type} args
+	 * @returns {undefined}
+	 */
 	CCH.loadUberItem = function (args) {
 		args = args || {};
 
 		var zoomToBbox = args.zoomToBbox === true ? true : false,
 			returningVisitor = document.referrer.toLowerCase().indexOf('info/item') !== -1,
-			cookie = $.cookie('cch'),
+			cookie = $.cookie(CCH.session.cookieName),
+			// Do I load the entire item with all its children? 
 			subtree = args.subtree || false,
 			callbacks = args.callbacks || {
 				success: [],
@@ -169,7 +186,7 @@ $(document).ready(function () {
 
 		// If the user is coming from the back of the card, shortcut to not zoom to a bounding box because
 		// the user wants to maintain their zoom level from when they left
-		if (returningVisitor && cookie !== undefined && cookie.bbox !== undefined & cookie.bbox.length === 4) {
+		if (returningVisitor && cookie !== undefined && cookie.bbox !== undefined && cookie.bbox.length === 4) {
 			zoomToBbox = false;
 		}
 
@@ -188,8 +205,8 @@ $(document).ready(function () {
 				// If the incoming item is the uber item, that means that by now, everything under it has been
 				// fully hydrated, so I can now add sub items to the accordion and remove the overlay
 				if (obj.id === 'uber') {
-					data.children.each(function (id, index, all) {
-						item = CCH.items.getById({id : id});
+					data.children.each(function (id, index) {
+						item = CCH.items.getById({id: id});
 						// Add it to the accordion...
 						CCH.ui.accordion.addCard({
 							item: item,
@@ -197,7 +214,7 @@ $(document).ready(function () {
 						});
 						item = CCH.items.getById({id: id});
 					});
-					
+
 					$(window).trigger('cch.item.loaded.all');
 					CCH.ui.removeOverlay();
 				}
