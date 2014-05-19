@@ -223,14 +223,12 @@ CCH.Objects.Front.UI = function (args) {
 		args = args || {};
 
 		var shareType = args.type,
-			shareId = args.id,
-			session;
+			shareId = args.id
 
 		if (shareType === 'session') {
 			// A user has clicked on the share menu item. A session needs to be 
 			// created and a token retrieved...
-			session = CCH.session;
-			session.writeSession({
+			CCH.session.writeSession({
 				callbacks: {
 					success: [
 						function (json) {

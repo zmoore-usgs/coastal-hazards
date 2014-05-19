@@ -59,12 +59,15 @@ $(document).ready(function () {
 		slideSearchContainerId: 'application-slide-search-container'
 	});
 
+	/**
+	 * Begins the item loading process based on how the user is entering the application
+	 * 
+	 * @returns {undefined}
+	 */
 	CCH.loadItems = function () {
-		$(window).resize();
-
 		var type = (CCH.CONFIG.params.type + String()).toLowerCase(),
 			id = CCH.CONFIG.params.id,
-			cookieItems = $.cookie(CCH.session.cookieName).items || [];
+			cookieItems =CCH.session.getItems();
 
 		splashUpdate('Loading Application...');
 
@@ -93,7 +96,8 @@ $(document).ready(function () {
 								CCH.ui.addItemsToBucketOnLoad(items);
 
 								CCH.loadUberItem({
-									zoomToBbox: false
+									zoomToBbox: false,
+									subtree: true
 								});
 
 								CCH.map.zoomToBoundingBox({

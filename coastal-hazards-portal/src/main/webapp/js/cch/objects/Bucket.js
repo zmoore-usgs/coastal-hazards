@@ -211,7 +211,8 @@ CCH.Objects.Bucket = function (args) {
 		setCount: function (args) {
 			args = args || {};
 			var count = parseInt(args.count, 10),
-				$countContainer = $('#' + me.BUCKET_COUNT_CONTAINER_ID)
+				$countContainer = $('#' + me.BUCKET_COUNT_CONTAINER_ID);
+			
 			if (!isNaN(count) && count % 1 === 0) {
 				if (count !== undefined && !isNaN(count)) {
 					$countContainer.html(count);

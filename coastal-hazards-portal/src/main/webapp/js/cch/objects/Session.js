@@ -29,6 +29,10 @@ CCH.Objects.Session = function (args) {
 	me.getSession = function () {
 		return me.session;
 	};
+	
+	me.getItems = function() {
+		return me.session.items;
+	};
 
 	me.update = function (args) {
 		CCH.LOG.trace('Session.js::update');
@@ -249,6 +253,7 @@ CCH.Objects.Session = function (args) {
 		updateSession: me.update,
 		getItemById: me.getItemById,
 		getItemIndex: me.getItemIndex,
+		getItems: me.getItems,
 		addItem: me.addItem,
 		removeItem: me.removeItem
 	});
