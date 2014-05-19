@@ -124,9 +124,9 @@ CCH.Objects.Front.Map = function (args) {
 			});
 
 			me.legendControl = new CCH.Objects.Widget.OLLegend({
-				startHidden : true
+				startHidden: true
 			});
-			
+
 			CCH.LOG.debug('Map.js::init():Adding base layers to map');
 			me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
 

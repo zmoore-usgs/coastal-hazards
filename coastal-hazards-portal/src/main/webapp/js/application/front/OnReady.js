@@ -189,7 +189,7 @@ $(document).ready(function () {
 				// fully hydrated, so I can now add sub items to the accordion and remove the overlay
 				if (obj.id === 'uber') {
 					data.children.each(function (id, index, all) {
-						item = CCH.items.getById({id : id});
+						item = CCH.items.getById({id: id});
 						// Add it to the accordion...
 						CCH.ui.accordion.addCard({
 							item: item,
@@ -197,7 +197,7 @@ $(document).ready(function () {
 						});
 						item = CCH.items.getById({id: id});
 					});
-					
+
 					$(window).trigger('cch.item.loaded.all');
 					CCH.ui.removeOverlay();
 				}

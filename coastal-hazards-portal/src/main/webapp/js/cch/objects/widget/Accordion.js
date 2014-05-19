@@ -99,7 +99,7 @@ CCH.Objects.Widget.Accordion = function (args) {
 				}
 			}
 		}
-		
+
 		return bellow;
 	};
 

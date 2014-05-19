@@ -81,11 +81,11 @@ CCH.Util.Search = function (args) {
 				success: [],
 				error: []
 			},
-			scope = args.scope || this,
+		scope = args.scope || this,
 			data = {
-				subtree : subtree
+				subtree: subtree
 			},
-			url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.item.endpoint,
+		url = CCH.CONFIG.contextPath + CCH.CONFIG.data.sources.item.endpoint,
 			displayNotification = args.displayNotification === false ? false : true;
 
 		if (item) {

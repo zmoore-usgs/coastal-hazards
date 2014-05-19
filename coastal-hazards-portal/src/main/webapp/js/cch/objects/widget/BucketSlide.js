@@ -156,7 +156,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 	 */
 	me.reorderLayers = function () {
 		CCH.LOG.trace('BucketSlide::reorderLayers()');
-		
+
 		var id,
 			layer,
 			layers = [],
@@ -199,9 +199,9 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 		layers.reverse().each(function (layer) {
 			CCH.map.getMap().setLayerIndex(layer, CCH.map.getMap().layers.length - 1);
 		});
-		
+
 		$(window).trigger('cch.slide.bucket.reordered', {
-			cards : me.cards
+			cards: me.cards
 		});
 	};
 
