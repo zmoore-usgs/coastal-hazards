@@ -28,7 +28,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 			popup,
 			popupHtml,
 			splitName,
-			sldResponseHandler,
 			trimLayerName = function (name) {
 				// Names can be:
 				// aggregationId_itemId_r_ribbonIndex

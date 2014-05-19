@@ -298,9 +298,9 @@ CCH.Objects.Front.UI = function (args) {
 		if (!splashMessage) {
 			switch (status) {
 				case 404:
-					splashMessage = '<b>Item Not Found</b><br /><div>There was a problem loading information.' +
+					splashMessage = '<b>Item Not Found</b><br /><div id="splash-error-message">There was a problem loading information.' +
 						'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
-						'Either try to reload the application or let us know.</div>';
+						'Either try to reload the application or let us knowthat this happened.</div>';
 					break;
 			}
 		}

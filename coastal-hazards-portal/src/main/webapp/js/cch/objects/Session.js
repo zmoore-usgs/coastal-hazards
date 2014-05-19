@@ -12,6 +12,8 @@ CCH.Objects.Session = function (args) {
 
 	args = args || {};
 
+	me.cookieName = args.cookieName || 'cch';
+
 	me.session = {
 		items: [],
 		baselayer: '',
@@ -49,10 +51,10 @@ CCH.Objects.Session = function (args) {
 			}
 		}
 
-		cookie = $.cookie('cch');
+		cookie = $.cookie(me.cookieName);
 		cookie.bbox = me.session.bbox;
 		cookie.items = me.session.items;
-		$.cookie('cch', cookie);
+		$.cookie(me.cookieName, cookie);
 	};
 
 	me.write = function (args) {
@@ -140,10 +142,10 @@ CCH.Objects.Session = function (args) {
 				CCH.LOG.info("Session.js::load: Session found on server. Updating current session.");
 				$.extend(true, me.session, json);
 
-				cookie = $.cookie('cch');
+				cookie = $.cookie(me.cookieName);
 				cookie.bbox = me.session.bbox;
 				cookie.items = me.session.items;
-				$.cookie('cch', cookie);
+				$.cookie(me.cookieName, cookie);
 
 				$(window).trigger('cch.data.session.loaded.true');
 			} else {
@@ -195,9 +197,9 @@ CCH.Objects.Session = function (args) {
 			});
 		}
 
-		cookie = $.cookie('cch');
+		cookie = $.cookie(me.cookieName);
 		cookie.items = me.session.items;
-		$.cookie('cch', cookie);
+		$.cookie(me.cookieName, cookie);
 
 		return me.session;
 	};
@@ -212,23 +214,23 @@ CCH.Objects.Session = function (args) {
 			me.session.items.removeAt(index);
 		}
 
-		cookie = $.cookie('cch');
+		cookie = $.cookie(me.cookieName);
 		cookie.items = me.session.items;
-		$.cookie('cch', cookie);
+		$.cookie(me.cookieName, cookie);
 		return me.session;
 	};
 
 	// Cookie handling
 	$.cookie.json = true;
-	if ($.cookie('cch') === undefined) {
-		$.cookie('cch', {
+	if ($.cookie(me.cookieName) === undefined) {
+		$.cookie(me.cookieName, {
 			'items': me.session.items
 		},
 		{
 			path: '/'
 		});
 	}
-	$.cookie('cch').items.each(function (item) {
+	$.cookie(me.cookieName).items.each(function (item) {
 		me.addItem({
 			item: {
 				id: item.itemId
@@ -238,6 +240,7 @@ CCH.Objects.Session = function (args) {
 	});
 
 	return $.extend(me, {
+		cookieName: me.cookieName,
 		toString: me.toString,
 		getSession: me.getSession,
 		load: me.load,

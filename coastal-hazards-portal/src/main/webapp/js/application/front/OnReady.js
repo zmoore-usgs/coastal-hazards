@@ -15,10 +15,14 @@ $(document).ready(function () {
 	});
 	CCH.LOG = LOG;
 
+	// For any ajax call going out, change the mouse pointer to a wait cursors, change it back on ajax stop/error
 	$(document).ajaxStart(function () {
 		$('body').css('cursor', 'wait');
 	});
 	$(document).ajaxStop(function () {
+		$('body').css('cursor', 'default');
+	});
+	$(document).ajaxError(function () {
 		$('body').css('cursor', 'default');
 	});
 
@@ -60,7 +64,7 @@ $(document).ready(function () {
 
 		var type = (CCH.CONFIG.params.type + String()).toLowerCase(),
 			id = CCH.CONFIG.params.id,
-			cookieItems = $.cookie('cch').items || [];
+			cookieItems = $.cookie(CCH.session.cookieName).items || [];
 
 		splashUpdate('Loading Application...');
 
@@ -155,12 +159,19 @@ $(document).ready(function () {
 		}
 	};
 
+	/**
+	 * Loads the top-level item for the entire portal
+	 * 
+	 * @param {type} args
+	 * @returns {undefined}
+	 */
 	CCH.loadUberItem = function (args) {
 		args = args || {};
 
 		var zoomToBbox = args.zoomToBbox === true ? true : false,
 			returningVisitor = document.referrer.toLowerCase().indexOf('info/item') !== -1,
-			cookie = $.cookie('cch'),
+			cookie = $.cookie(CCH.session.cookieName),
+			// Do I load the entire item with all its children? 
 			subtree = args.subtree || false,
 			callbacks = args.callbacks || {
 				success: [],
