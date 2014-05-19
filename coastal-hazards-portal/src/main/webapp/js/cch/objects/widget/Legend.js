@@ -30,8 +30,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		CCH.LOG.trace('Legend.js::constructor:Legend class is initializing.');
 		var childItems = [],
 			legendTables = [],
-			itemType,
-			nonYearHistoricalAttributes = ["LRR", "WLR", "SCE", "NSM", "EPR"],
+			attribute,
 			nonAggItem,
 			itemId = me.item.id,
 			request;
@@ -60,12 +59,14 @@ CCH.Objects.Widget.Legend = function (args) {
 		}
 
 		// I branch on the type of item that I am trying to display
-		nonAggItem = Object.values(CCH.items.getItems()).find(function (item) {
-			return item.attr !== undefined;
+		nonAggItem = me.items.find(function (id) {
+			return CCH.items.getById({id: id}).itemType.toLowerCase() !== 'aggregation';
 		});
-		itemType = nonAggItem.attr;
+		// The above function gets us an id string. Now I need to pull out the item from CCH.items
+		nonAggItem = CCH.items.getById({id : nonAggItem});
+		attribute = nonAggItem.attr;
 
-		if (me.item.type === 'historical' && nonYearHistoricalAttributes.indexOf(itemType) === -1) {
+		if (me.item.type === 'historical' && attribute.toLowerCase().indexOf('date') !== -1) {
 			request = CCH.Util.Util.getSLD({
 				contextPath: CCH.CONFIG.contextPath,
 				itemId: nonAggItem.id,
@@ -78,8 +79,13 @@ CCH.Objects.Widget.Legend = function (args) {
 						function (sld) {
 							var itemId = this.itemId,
 								legendTables = this.legendTables,
-								dataItems = Object.values(CCH.items.getItems()).findAll(function (i) {
-								return i.itemType === 'data';
+								dataItems = [];
+
+							me.items.each(function (id) {
+								var item = CCH.items.getById({id: id});
+								if (item.itemType !== 'aggregation') {
+									dataItems.push(item);
+								}
 							});
 
 							if (!me.destroyed) {
@@ -172,7 +178,7 @@ CCH.Objects.Widget.Legend = function (args) {
 							]
 						}
 					});
-					me.ajaxRequests.push(request)
+					me.ajaxRequests.push(request);
 				}
 			});
 		}
