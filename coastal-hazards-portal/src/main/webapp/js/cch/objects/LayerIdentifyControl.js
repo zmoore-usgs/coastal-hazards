@@ -197,28 +197,25 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 							for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
 								lb = bins[binIdx].lowerBound;
 								ub = bins[binIdx].upperBound;
-								if (naAttrText === attrAvg) {
-									color = '#D3D3D3';
+								if (lb !== undefined && ub !== undefined) {
+									if (attrAvg <= ub && attrAvg >= lb) {
+										color = bins[binIdx].color;
+									}
+								} else if (lb === undefined && ub !== undefined) {
+									if (attrAvg <= ub) {
+										color = bins[binIdx].color;
+									}
 								} else {
-									if (lb !== undefined && ub !== undefined) {
-										if (attrAvg <= ub && attrAvg >= lb) {
-											color = bins[binIdx].color;
-										}
-									} else if (lb === undefined && ub !== undefined) {
-										if (attrAvg <= ub) {
-											color = bins[binIdx].color;
-										}
-									} else {
-										if (attrAvg >= lb) {
-											color = bins[binIdx].color;
-										}
+									if (attrAvg >= lb) {
+										color = bins[binIdx].color;
 									}
 								}
 							}
+
 							$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
 
 							if (naAttrText === attrAvg) {
-								$legendRow.append($titleContainer, $colorContainer, $valueContainer.append(attrAvg));
+								$legendRow.append($titleContainer, $colorContainer.empty().html('--'), $valueContainer.append(attrAvg));
 							} else {
 								if (item.attr.toLowerCase() === 'cvirisk') {
 									$valueContainer.append(bins[attrAvg.toFixed(0) - 1].category + ' Risk');
