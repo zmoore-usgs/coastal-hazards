@@ -119,11 +119,11 @@ $(document).ready(function () {
 											function () {
 												alertify.error('The Coastal Change Hazards Portal could not find your session.', 6000);
 											}
-										],
-										error: []
+										]
 									}
 								});
-							}]
+							}
+						]
 					}
 				});
 			} else if (type === 'item') {
