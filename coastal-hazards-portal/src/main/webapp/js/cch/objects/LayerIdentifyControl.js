@@ -12,6 +12,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 	drillDown: true,
 	maxFeatures: 1000,
 	infoFormat: 'application/vnd.ogc.gml',
+	naAttrText: '--',
 	vendorParams: {
 		radius: 3
 	},
@@ -114,11 +115,13 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					attrAvg = 0,
 					category,
 					incomingFeatures = this.features,
+					incomingFeatureCount = incomingFeatures.length,
 					layers = this.layers,
 					color,
 					buildLegend = function (args) {
 						args = args || {};
 						var binIdx = 0,
+							naAttrText = args.naAttrText,
 							bins = args.bins,
 							color = args.color,
 							attrAvg = args.attrAvg,
@@ -193,29 +196,31 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 							for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
 								lb = bins[binIdx].lowerBound;
 								ub = bins[binIdx].upperBound;
-
-								if (lb !== undefined && ub !== undefined) {
-									if (attrAvg <= ub && attrAvg >= lb) {
-										color = bins[binIdx].color;
-									}
-								} else if (lb === undefined && ub !== undefined) {
-									if (attrAvg <= ub) {
-										color = bins[binIdx].color;
-									}
+								if (naAttrText === attrAvg) {
+									color = '#D3D3D3';
 								} else {
-									if (attrAvg >= lb) {
-										color = bins[binIdx].color;
+									if (lb !== undefined && ub !== undefined) {
+										if (attrAvg <= ub && attrAvg >= lb) {
+											color = bins[binIdx].color;
+										}
+									} else if (lb === undefined && ub !== undefined) {
+										if (attrAvg <= ub) {
+											color = bins[binIdx].color;
+										}
+									} else {
+										if (attrAvg >= lb) {
+											color = bins[binIdx].color;
+										}
 									}
 								}
 							}
 							$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
 
-							if (item.attr.toLowerCase() === 'cvirisk') {
-								$valueContainer.append(bins[attrAvg.toFixed(0) - 1].category + ' Risk');
+							if (naAttrText === attrAvg) {
+								$legendRow.append($titleContainer, $colorContainer, $valueContainer.append(attrAvg));
 							} else {
-								if (attrAvg === 0) {
-									attrAvg = '--';
-									$valueContainer.append(attrAvg);
+								if (item.attr.toLowerCase() === 'cvirisk') {
+									$valueContainer.append(bins[attrAvg.toFixed(0) - 1].category + ' Risk');
 								} else {
 									attrAvg = attrAvg % 1 === 0 ? attrAvg.toFixed(0) : attrAvg.toFixed(3);
 									$valueContainer.append(attrAvg + units);
@@ -303,18 +308,23 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					incomingFeatures.each(function (f) {
 						var pFl = parseFloat(f[attr]);
 						if (isNaN(pFl)) {
-							pFl = 0.0;
+							incomingFeatureCount--;
+						} else {
+							attrAvg += pFl;
 						}
-						attrAvg += pFl;
 					});
 
 					// Average them out
-					attrAvg /= incomingFeatures.length;
+					attrAvg /= incomingFeatureCount;
 
-					if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(attr.toUpperCase()) !== -1) {
-						attrAvg = Math.ceil(attrAvg);
-						category = sld.bins[attrAvg - 1].category;
-						color = sld.bins[attrAvg - 1].color;
+					if (incomingFeatureCount === 0) {
+						attrAvg = this.naAttrText;
+					} else {
+						if (["TIDERISK", "SLOPERISK", "ERRRISK", "SLRISK", "GEOM", "WAVERISK", "CVIRISK"].indexOf(attr.toUpperCase()) !== -1) {
+							attrAvg = Math.ceil(attrAvg);
+							category = sld.bins[attrAvg - 1].category;
+							color = sld.bins[attrAvg - 1].color;
+						}
 					}
 				}
 
@@ -328,7 +338,8 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					popup: popup,
 					units: units,
 					layers: layers,
-					layerId: layerId
+					layerId: layerId,
+					naAttrText: this.naAttrText
 				});
 			};
 
@@ -347,7 +358,8 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 									layerId: layerName,
 									evt: evt,
 									popup: popup,
-									layers: cchLayers
+									layers: cchLayers,
+									naAttrText: this.naAttrText
 								},
 								callbacks: {
 									success: [sldResponseHandler],

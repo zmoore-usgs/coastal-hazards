@@ -12,13 +12,18 @@ $(document).ready(function () {
 	});
 
 	CCH.LOG = LOG;
+
 	CCH.items = new CCH.Objects.Items();
+
 	CCH.CONFIG.item = new CCH.Objects.Item({
 		id: CCH.CONFIG.itemId
 	});
+	
 	CCH.map = new CCH.Objects.Back.Map();
+	
 	CCH.ows = new CCH.Util.OWS();
 
+	// I am loading an item with the full subtree so once that item is loaded, start loading the rest of the application
 	$(window).on('cch.item.loaded', function (evt, args) {
 		var id = args.id || '',
 			item = CCH.CONFIG.item;
@@ -26,7 +31,7 @@ $(document).ready(function () {
 		if (CCH.CONFIG.item.id === id) {
 			CCH.ui = new CCH.Objects.Back.UI({item: item});
 			CCH.map.addLayers(item.showLayer().layers);
-			
+
 			// Clear the overlay
 			$('#application-overlay').fadeOut(2000, function () {
 				$('#application-overlay').remove();
@@ -35,7 +40,7 @@ $(document).ready(function () {
 	});
 
 	CCH.CONFIG.item.load({
-		subtree : true,
+		subtree: true,
 		callbacks: {
 			error: [
 				function (jqXHR, textStatus, errorThrown) {
