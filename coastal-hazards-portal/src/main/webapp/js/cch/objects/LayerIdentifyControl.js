@@ -121,6 +121,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					buildLegend = function (args) {
 						args = args || {};
 						var binIdx = 0,
+							openlayersPopupPaddingHeight = 42,
 							naAttrText = args.naAttrText,
 							bins = args.bins,
 							color = args.color,
@@ -270,7 +271,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 						popup.setContentHTML($popupHtml.clone().wrap('<div/>').parent().html());
 						width = function () {
 							var cWidth = 0,
-								maxWidth = Math.round($('#map').width() - 20);
+								maxWidth = Math.round($('#map').width() / 2);
 
 							$('#feature-identification-popup div.col-md-12 table').each(function (ind, table) {
 								cWidth = $(table).width() > cWidth ? $(table).width() : cWidth;
@@ -286,14 +287,14 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 							var cHeight = 0,
 								maxHeight = Math.round($('#map').height() / 2);
 							$('#feature-identification-popup div.col-md-12 > table tr').each(function (ind, item) {
-								cHeight += $(item).outerHeight() + ($(item).outerHeight() * 0.3);
+								cHeight += $(item).height();
 							});
 							if (cHeight > maxHeight) {
 								cHeight = maxHeight;
 							}
 							return Math.round(cHeight);
 						};
-						popup.setSize(new OpenLayers.Size(width(), height()));
+						popup.setSize(new OpenLayers.Size(width(), height() + openlayersPopupPaddingHeight));
 						popup.panIntoView();
 						$(window).on('cch.ui.redimensioned', function () {
 							popup.setSize(new OpenLayers.Size(width(), height()));
