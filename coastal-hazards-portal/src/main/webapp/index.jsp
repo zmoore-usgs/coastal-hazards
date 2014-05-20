@@ -30,7 +30,10 @@
 	String vSugarJs = getProp("version.sugarjs");
 
 %>
-<% String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");%>
+<% 
+	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+	String referer = request.getHeader("referer");
+%>
 <html lang="en"> 
     <head>
         <jsp:include page="/WEB-INF/jsp/components/common/meta-tags.jsp"></jsp:include>
@@ -78,6 +81,7 @@
             <jsp:param name="base-url" value="<%=baseUrl%>" />
             <jsp:param name="version" value="<%=version%>" />
             <jsp:param name="debug-qualifier" value="<%=development%>" />
+			<jsp:param name="original-referer" value="<%=referer%>" />
         </jsp:include>
 
         <div id="application-container" class="container">
