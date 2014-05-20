@@ -21,7 +21,7 @@
 						<ogc:Filter>
 							<ogc:PropertyIsLike wildCard="%" singleChar="." escape="!">
 								<ogc:PropertyName>${it.attr}</ogc:PropertyName>
-								<ogc:Literal><fmt:formatNumber minIntegerDigits="4" value="${it.thresholds[i]}" /></ogc:Literal>
+                                <ogc:Literal><fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
 							</ogc:PropertyIsLike>
 						</ogc:Filter>
 						<sld:LineSymbolizer>
