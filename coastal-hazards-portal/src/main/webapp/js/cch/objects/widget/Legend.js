@@ -158,6 +158,12 @@ CCH.Objects.Widget.Legend = function (args) {
 											total: total,
 											item: CCH.items.getById({id: itemId})
 										});
+									} else {
+										this.legendTables.push(-1);
+										me.tableAdded({
+											legendTables: this.legendTables,
+											total: this.total
+										});
 									}
 								}
 							],
@@ -533,6 +539,8 @@ CCH.Objects.Widget.Legend = function (args) {
 			// There are no more legends to be built, filter and add the legend to the document
 			legendTables = legendTables.unique(function (table) {
 				return $(table).attr('legend-attribute');
+			}).filter(function (table) { // Remove any array items that are -1
+				return table !== -1;
 			});
 
 			if (legendTables.length === 1) {

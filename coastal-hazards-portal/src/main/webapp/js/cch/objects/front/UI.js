@@ -3,8 +3,6 @@
 /*global $ */
 /*global CCH */
 /*global twttr */
-/*global splashUpdate */
-/*global OpenLayers */
 /*global alertify */
 /*global ga */
 
@@ -18,34 +16,27 @@ CCH.Objects.Front.UI = function (args) {
 	"use strict";
 	CCH.LOG.trace('UI.js::constructor: UI class is initializing.');
 
-	var me = (this === window) ? {} : this,
-		removeMarkers = function () {
-			CCH.map.clearBoundingBoxMarkers();
-			$(window).off('cch-map-bbox-marker-added', removeMarkers);
-		};
+	var me = (this === window) ? {} : this;
 
-	me.APPLICATION_CONTAINER = $('#application-container');
-	me.APPLICATION_OVERLAY_ID = args.applicationOverlayId || 'application-overlay';
-	me.HEADER_ROW_ID = args.headerRowId || 'header-row';
-	me.FOOTER_ROW_ID = args.footerRowId || 'footer-row';
-	me.CONTENT_ROW_ID = args.contentRowId || 'content-row';
-	me.MAP_DIV_ID = args.mapdivId || 'map';
-	me.SLIDE_CONTAINER_DIV_ID = args.slideContainerDivId || 'application-slide-items-content-container';
-	me.SHARE_MODAL_ID = args.shareModalId || 'modal-content-share';
-	me.SHARE_URL_BUTTON_ID = args.shareUrlButtonId || 'modal-share-summary-url-button';
-	me.SHARE_INPUT_ID = args.shareInputId || 'modal-share-summary-url-inputbox';
-	me.SHARE_TWITTER_BUTTON_ID = args.shareTwitterBtnId || 'multi-card-twitter-button';
-	me.ITEMS_SLIDE_CONTAINER_ID = args.slideItemsContainerId || 'application-slide-items-container';
-	me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId || 'application-slide-bucket-container';
-	me.SEARCH_SLIDE_CONTAINER_ID = args.slideSearchContainerId || 'application-slide-search-container';
-	me.$NAVBAR_BUCKET_CONTAINER = $('#app-navbar-bucket-button-container');
-	me.$NAVBAR_HELP_CONTAINER = $('#app-navbar-help-container');
+	me.APPLICATION_OVERLAY_ID = args.applicationOverlayId;
+	me.HEADER_ROW_ID = args.headerRowId;
+	me.FOOTER_ROW_ID = args.footerRowId;
+	me.CONTENT_ROW_ID = args.contentRowId;
+	me.MAP_DIV_ID = args.mapdivId;
+	me.SHARE_MODAL_ID = args.shareModalId;
+	me.SHARE_URL_BUTTON_ID = args.shareUrlButtonId;
+	me.SHARE_INPUT_ID = args.shareInputId;
+	me.SHARE_TWITTER_BUTTON_ID = args.shareTwitterBtnId;
+	me.ITEMS_SLIDE_CONTAINER_ID = args.slideItemsContainerId;
+	me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId;
+	me.SEARCH_SLIDE_CONTAINER_ID = args.slideSearchContainerId;
 	me.minimumHeight = args.minimumHeight || 480;
 	me.previousWidth = $(window).width();
+	// Bootstrap decides when to flip the application view based on a specific width. 992 seems to be it
 	me.magicResizeNumber = 992;
+	me.overlayFadeoutTimeInMS = 2000;
+	me.combinedSearch = args.combinedSearch;
 	me.isSmall = function () {
-		// Bootstrap decides when to flip the application view based on 
-		// a specific width. 992 seems to be the point 
 		return $(window).outerWidth() < me.magicResizeNumber;
 	};
 	me.previouslySmall = me.isSmall();
@@ -70,10 +61,7 @@ CCH.Objects.Front.UI = function (args) {
 		isSmall: me.isSmall,
 		bucket: me.bucket
 	});
-	me.accordion = new CCH.Objects.Widget.Accordion({
-		containerId: me.SLIDE_CONTAINER_DIV_ID
-	});
-	me.combinedSearch = new CCH.Objects.Widget.CombinedSearch();
+	me.accordion = args.accordion;
 
 	// This object holds the legend items that are currently viewed
 	me.legends = {
@@ -166,7 +154,7 @@ CCH.Objects.Front.UI = function (args) {
 							minifiedUrl,
 							$('#' + me.SHARE_TWITTER_BUTTON_ID)[0],
 							function (element) {
-								// Any callbacks that may be needed
+								CCH.LOG.trace('Twitter create share button callback triggered on ' + element);
 							},
 							{
 								hashtags: 'USGS_CCH',
@@ -223,7 +211,7 @@ CCH.Objects.Front.UI = function (args) {
 		args = args || {};
 
 		var shareType = args.type,
-			shareId = args.id
+			shareId = args.id;
 
 		if (shareType === 'session') {
 			// A user has clicked on the share menu item. A session needs to be 
@@ -251,22 +239,26 @@ CCH.Objects.Front.UI = function (args) {
 		}
 	};
 
+	/**
+	 * Removes the application's overlay once loading is complete
+	 * 
+	 * @returns {undefined}
+	 */
 	me.removeOverlay = function () {
+		var applicationOverlay = $('#' + me.APPLICATION_OVERLAY_ID),
+			removedTriggerNamespace = 'cch.ui.overlay.removed';
+
 		// Make sure that the overlay is still around
-		if ($('#' + me.APPLICATION_OVERLAY_ID).length) {
-			splashUpdate("Starting Application...");
-
-			var applicationOverlay = $('#' + me.APPLICATION_OVERLAY_ID);
-
-			$(window).resize();
-
+		if (applicationOverlay.length) {
 			// Get rid of the overlay and clean it up out of memory and DOM
-			applicationOverlay.fadeOut(2000, function () {
+			applicationOverlay.fadeOut(me.overlayFadeoutTimeInMS, function () {
 				applicationOverlay.remove();
-				$(window).trigger('cch.ui.overlay.removed');
+				$(window).trigger(removedTriggerNamespace);
 			});
+		} else {
+			// For whatever reason, overlay didn't exist so just trigger that it was
+			$(window).trigger(removedTriggerNamespace);
 		}
-
 	};
 
 	me.displayLoadingError = function (args) {
@@ -274,8 +266,8 @@ CCH.Objects.Front.UI = function (args) {
 
 		var errorThrown = args.errorThrown,
 			mailTo = args.mailTo || 'mailto:' + CCH.CONFIG.emailLink +
-			'?subject=Application Failed To Load Item (URL: '
-			+ window.location.toString() + ' Error: ' + errorThrown + ')',
+			'?subject=Application Failed To Load Item (URL: ' +
+			window.location.toString() + ' Error: ' + errorThrown + ')',
 			splashMessage = args.splashMessage,
 			status = args.status,
 			continueLink = $('<a />').attr({
@@ -306,7 +298,10 @@ CCH.Objects.Front.UI = function (args) {
 		$('#splash-status-update').
 			empty().
 			addClass('error-message').
-			append(splashMessage, $('<span />').append(continueLink), emailLink);
+			append(
+				splashMessage,
+				$('<span />').append(continueLink),
+				emailLink);
 		$('#splash-spinner').remove();
 	};
 

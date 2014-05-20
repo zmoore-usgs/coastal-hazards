@@ -1,5 +1,4 @@
 /*jslint browser: true */
-/*global LOG*/
 /*global CCH*/
 /*global OpenLayers*/
 CCH.Objects.ClickControl = OpenLayers.Class(OpenLayers.Control, {
@@ -10,17 +9,91 @@ CCH.Objects.ClickControl = OpenLayers.Class(OpenLayers.Control, {
 		'stopSingle': false,
 		'stopDouble': false
 	},
+	handler: null,
 	map: null,
 	iconLayer: new OpenLayers.Layer.Markers("Markers"),
-	initialize: function () {
-		var _this = this;
-		this.handlerOptions = OpenLayers.Util.extend(
-			{}, this.defaultHandlerOptions
-			);
+	/**
+	 * Handles the event of the map adding a layer
+	 * 
+	 * @returns {undefined}
+	 */
+	onAddLayer: function () {
+		"use strict";
+		// Whenever a layer is added, it may be added on top of the marker layer. I need to move the marker layer
+		// above all other layers
+		var baseLayers = this.getLayersBy('isBaseLayer', true),
+			highestLayer = baseLayers.max(function (layer) {
+				return layer.map.getLayerIndex(layer);
+			}),
+			highestLayerIndex = this.getLayerIndex(highestLayer);
 
-		OpenLayers.Control.prototype.initialize.apply(
-			this, arguments
-			);
+		if (highestLayerIndex !== -1) {
+			this.setLayerIndex(this.getLayersByName('Markers')[0], highestLayerIndex + 1);
+		}
+	},
+	/**
+	 * Handles the event of a click to identify response from the back-end
+	 * 
+	 * @returns {undefined}
+	 */
+	onLayerResponse: function () {
+		"use strict";
+		var markerLayer = CCH.map.getMap().getLayersByName('Markers')[0];
+
+		// Remove the marker on the map since the ajax call is no longer out
+		markerLayer.markers.each(function (marker) {
+			markerLayer.removeMarker(marker);
+			marker.destroy();
+		});
+	},
+	/**
+	 * Places a marker on the map where the user has clicked
+	 * 
+	 * @param {type} evt Map click event
+	 * @returns {unresolved}
+	 */
+	onClick: function (evt) {
+		"use strict";
+
+		var msg = "click " + evt.xy,
+			size = new OpenLayers.Size(20, 20),
+			icon = new OpenLayers.Icon(CCH.CONFIG.contextPath + '/images/spinner/spinner3.gif', size, new OpenLayers.Pixel(-(size.w / 2), -size.h)),
+			marker = new OpenLayers.Marker(this.map.getLonLatFromPixel(evt.xy), icon);
+
+		CCH.LOG.trace(msg);
+
+		this.iconLayer.addMarker(marker);
+		setTimeout(function () {
+			// Marker may not exist. It may have been removed already
+			if (marker && marker.map) {
+				// If markers exist, remove them
+				var markerLayer = marker.map.getLayersByName('Markers')[0];
+				
+				markerLayer.markers.each(function (marker) {
+					markerLayer.removeMarker(marker);
+					marker.destroy();
+				});
+			}
+		}, 5000);
+		return evt;
+	},
+	/**
+	 * Passes map double click event over to the click event
+	 * 
+	 * @param {type} evt Map double click event
+	 * @returns {Anonym$0@call;onClick}
+	 */
+	onDblclick: function (evt) {
+		"use strict";
+		return this.onClick(evt);
+	},
+	initialize: function () {
+		"use strict";
+		this.handlerOptions = OpenLayers.Util.extend(
+			{},
+			this.defaultHandlerOptions);
+
+		OpenLayers.Control.prototype.initialize.apply(this, arguments);
 
 		this.map = this.handlerOptions.map;
 
@@ -32,54 +105,12 @@ CCH.Objects.ClickControl = OpenLayers.Class(OpenLayers.Control, {
 			);
 
 		this.map.events.on({
-			'addlayer': function () {
-				var baseLayers = this.getLayersBy('isBaseLayer', true),
-					_this = this,
-					highestLayer = baseLayers.max(function (layer) {
-						return layer.map.getLayerIndex(layer);
-					}),
-					highestLayerIndex = this.getLayerIndex(highestLayer);
-
-				if (highestLayerIndex !== -1) {
-					this.setLayerIndex(this.getLayersByName('Markers')[0], highestLayerIndex + 1);
-				}
-			}
+			'addlayer': this.onAddLayer
 		});
 
-		$(window).on('cch.map.control.layerid.responded', function () {
-			var markerLayer = CCH.map.getMap().getLayersByName('Markers')[0];
-
-			markerLayer.markers.each(function (marker) {
-				markerLayer.removeMarker(marker);
-				marker.destroy();
-			});
-		});
+		$(window).on('cch.map.control.layerid.responded', this.onLayerResponse);
 
 		this.map.addLayer(this.iconLayer);
-	},
-	onClick: function (evt) {
-		var msg = "click " + evt.xy;
-		CCH.LOG.debug(msg);
-		var size = new OpenLayers.Size(20, 20),
-			icon = new OpenLayers.Icon(CCH.CONFIG.contextPath + '/images/spinner/spinner3.gif', size, new OpenLayers.Pixel(-(size.w / 2), -size.h)),
-			marker = new OpenLayers.Marker(this.map.getLonLatFromPixel(evt.xy), icon);
-
-		this.iconLayer.addMarker(marker);
-		setTimeout(function () {
-			// Marker may not exist. It may have been removed already
-			if (marker && marker.map) {
-				var markerLayer = marker.map.getLayersByName('Markers')[0];
-
-				markerLayer.markers.each(function (marker) {
-					markerLayer.removeMarker(marker);
-					marker.destroy();
-				});
-			}
-		}, 5000);
-	},
-	onDblclick: function (evt) {
-		var msg = "click " + evt.xy;
-		CCH.LOG.debug(msg);
 	}
 
 });
