@@ -583,6 +583,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				$(window).trigger('cch.slide.bucket.remove', {
 					id: id
 				});
+				me.reorderLayers();
 			}).
 			attr({
 				'title': 'Remove From Bucket'
