@@ -52,6 +52,7 @@ public final class Shorelines {
                 RainbowColorMap colorMap = new RainbowColorMap(range);
                 
                 String[] tmpColors = new String[domainValues.size()];
+                float[] tmpThresholds = new float[domainValues.size()];
                 List<Map<String,Object>> tmpBins = new ArrayList<>();
 
                 int i = 0;
@@ -60,13 +61,15 @@ public final class Shorelines {
                     Color color = colorMap.valueToColor(intYear);
                     String hex = ColorUtility.toHexLowercase(color);
                     tmpColors[i] = hex;
+                    tmpThresholds[i] = intYear;
                     Map<String, Object> binMap = new HashMap<>();
                     binMap.put("years", intYear);
                     binMap.put("color", hex);
                     tmpBins.add(binMap);
+                    i++;
                 }
                 
-                wrapped = new SLDConfig(jspPath, units, style, strokeWidth, attrs, null, tmpColors, tmpBins);
+                wrapped = new SLDConfig(jspPath, units, style, strokeWidth, attrs, tmpThresholds, tmpColors, tmpBins);
             }
         }
         

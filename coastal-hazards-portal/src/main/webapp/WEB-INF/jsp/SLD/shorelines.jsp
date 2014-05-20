@@ -16,17 +16,17 @@
             <sld:Name>${it.style}</sld:Name>
             <sld:Title>Historical Shoreline ColorMap</sld:Title>
             <sld:FeatureTypeStyle>
-                <c:forEach var="i" begin="0" end="99">
+                <c:forEach var="i" begin="0" end="${it.binCount-1}">
 					<sld:Rule>
 						<ogc:Filter>
 							<ogc:PropertyIsLike wildCard="%" singleChar="." escape="!">
 								<ogc:PropertyName>${it.attr}</ogc:PropertyName>
-								<ogc:Literal>%<fmt:formatNumber minIntegerDigits="2" value="${i}" /></ogc:Literal>
+								<ogc:Literal><fmt:formatNumber minIntegerDigits="4" value="${it.thresholds[i]}" /></ogc:Literal>
 							</ogc:PropertyIsLike>
 						</ogc:Filter>
 						<sld:LineSymbolizer>
 							<sld:Stroke>
-								<sld:CssParameter name="stroke">${it.colors[i%it.binCount]}</sld:CssParameter>
+								<sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
 								<sld:CssParameter name="stroke-width">${it.strokeWidth}</sld:CssParameter>
 								<sld:CssParameter name="stroke-opacity">${it.strokeOpacity}</sld:CssParameter>
 							</sld:Stroke>
