@@ -158,6 +158,12 @@ CCH.Objects.Widget.Legend = function (args) {
 											total: total,
 											item: CCH.items.getById({id: itemId})
 										});
+									} else {
+										this.legendTables.push(-1);
+										me.tableAdded({
+											legendTables: this.legendTables,
+											total: this.total
+										});
 									}
 								}
 							],
