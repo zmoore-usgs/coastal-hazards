@@ -256,16 +256,29 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					}
 
 					$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
-
+					var attrName = item.attr.toLowerCase();
+					
 					if (naAttrText === attrAvg) {
 						$legendRow.append($titleContainer, $colorContainer.empty().html('--'), $valueContainer.append(attrAvg));
 					} else {
-						if (item.attr.toLowerCase() === 'cvirisk') {
-							$valueContainer.append(bins[attrAvg.toFixed(0) - 1].category + ' Risk');
+						var displayedAttrValue;
+						if (attrName === 'cvirisk') {
+							displayedAttrValue = bins[attrAvg.toFixed(0) - 1].category;
+							//don't append units
 						} else {
-							attrAvg = attrAvg % 1 === 0 ? attrAvg.toFixed(0) : attrAvg.toFixed(3);
-							$valueContainer.append(attrAvg + units);
+							if('%' === units){
+								displayedAttrValue = attrAvg.toFixed(0);
+							} else {
+								if((attrAvg).isInteger()){
+									displayedAttrValue = attrAvg.toFixed(0);
+								}
+								else{
+									displayedAttrValue = attrAvg.toFixed(1);
+								}
+							}
+							 displayedAttrValue += units;
 						}
+						$valueContainer.append(displayedAttrValue);
 					}
 					$legendRow.append($titleContainer, $colorContainer, $valueContainer);
 
