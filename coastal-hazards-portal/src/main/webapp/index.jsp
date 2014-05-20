@@ -66,6 +66,7 @@
 		ga('set', 'anonymizeIp', true);
 		ga('send', 'pageview');
 	</script>
+	<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
     </head>
 
     <body>
@@ -102,7 +103,6 @@
 
         <jsp:include page="WEB-INF/jsp/components/front/slides/slider-bucket.jsp"></jsp:include>
         <jsp:include page="WEB-INF/jsp/components/front/slides/slider-search.jsp"></jsp:include>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/<%=vJqueryUI%>/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/<%=vOpenlayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
