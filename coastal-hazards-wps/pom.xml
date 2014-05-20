@@ -49,6 +49,11 @@
 	</dependencyManagement>
 
 	<dependencies>
+        <dependency>
+            <groupId>gov.usgs.cida.coastalhazards</groupId>
+            <artifactId>coastal-hazards-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-api</artifactId>

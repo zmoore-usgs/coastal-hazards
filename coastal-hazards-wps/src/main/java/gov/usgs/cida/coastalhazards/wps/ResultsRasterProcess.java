@@ -4,6 +4,9 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineSegment;
 import gov.usgs.cida.coastalhazards.util.Constants;
+import gov.usgs.cida.utilities.colors.AttributeRange;
+import gov.usgs.cida.utilities.colors.ColorMap;
+import gov.usgs.cida.utilities.colors.JetColorMap;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
@@ -398,66 +401,4 @@ public class ResultsRasterProcess implements GeoServerProcess {
 		}
 	}
 
-	public static class AttributeRange {
-
-		public final double min;
-		public final double max;
-		public final double extent;
-
-		public AttributeRange(double min, double max) {
-			this.min = min;
-			this.max = max;
-			this.extent = max - min;
-		}
-
-		@Override
-		public String toString() {
-			return new StringBuilder("range=[").append(min).append(':').append(max).append(']').toString();
-		}
-
-		public AttributeRange zeroInflect(boolean invert) {
-			double absOfMax = max < 0 ? 0 - max : max;
-			double absOfMin = min < 0 ? 0 - min : min;
-			double maxAbs = absOfMax > absOfMin ? absOfMax : absOfMin;
-			return invert
-					? new AttributeRange(maxAbs, 0 - maxAbs)
-					: new AttributeRange(0 - maxAbs, maxAbs);
-		}
-	}
-
-	public static interface ColorMap<T> {
-
-		Color valueToColor(T value);
-	}
-
-	public static class JetColorMap implements ColorMap<Number> {
-
-		public final static Color CLAMP_MIN = new Color(0f, 0f, 0.5f);
-		public final static Color CLAMP_MAX = new Color(0.5f, 0f, 0f);
-
-		public final AttributeRange range;
-
-		public JetColorMap(AttributeRange range) {
-			this.range = range;
-		}
-
-		@Override
-		public Color valueToColor(Number value) {
-			double coef = ((value.doubleValue() - range.min) / range.extent);
-			if (coef < 0) {
-				return CLAMP_MIN;
-			} else if (coef > 1) {
-				return CLAMP_MAX;
-			} else {
-				coef *= 4d;
-				float r = (float) Math.min(coef - 1.5, -coef + 4.5);
-				float g = (float) Math.min(coef - 0.5, -coef + 3.5);
-				float b = (float) Math.min(coef + 0.5, -coef + 2.5);
-				return new Color(
-						r > 1f ? 1f : r < 0f ? 0f : r,
-						g > 1f ? 1f : g < 0f ? 0f : g,
-						b > 1f ? 1f : b < 0f ? 0f : b);
-			}
-		}
-	}
 }
