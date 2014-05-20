@@ -3,6 +3,7 @@ package gov.usgs.cida.coastalhazards.sld;
 import com.sun.jersey.api.view.Viewable;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.sld.Shorelines.ShorelineConfig;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -100,7 +101,13 @@ public class SLDGenerator {
 	protected SLDGenerator(Item item, Integer ribbon, SLDConfig config) {
 		this.item = item;
 		this.ribbon = ribbon;
-		this.config = config;
+        if (config instanceof ShorelineConfig) {
+            ShorelineConfig slc = (ShorelineConfig)config;
+            slc.finalize(item);
+            this.config = slc;
+        } else {
+            this.config = config;
+        }
 	}
 
 	public Response generateSLD() {

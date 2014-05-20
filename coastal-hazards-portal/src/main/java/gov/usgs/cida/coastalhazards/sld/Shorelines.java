@@ -1,9 +1,17 @@
 package gov.usgs.cida.coastalhazards.sld;
 
+import gov.usgs.cida.coastalhazards.jpa.DataDomainManager;
+import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.util.DataDomain;
+import gov.usgs.cida.utilities.colors.AttributeRange;
+import gov.usgs.cida.utilities.colors.ColorUtility;
+import gov.usgs.cida.utilities.colors.RainbowColorMap;
+import java.awt.Color;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 /**
  *
@@ -13,31 +21,113 @@ public final class Shorelines {
     
     private static final String[] attrs = {"DATE", "DATE_"};
     private static final int SHORELINES_STROKE_WIDTH = 2;
-    private static final String[] colors = {"#ff0000", "#bf6c60", "#ffa640", "#a68500", "#86bf60", "#009952", "#007a99", "#0074d9", "#5630bf", "#f780ff", "#ff0066", "#ff8091", "#f20000", "#ff7340", "#bf9360", "#bfb960", "#44ff00", "#3df2b6", "#73cfe6", "#0066ff", "#9173e6", "#bf30a3", "#bf3069", "#a60000", "#a65b29", "#ffcc00", "#90d900", "#00d957", "#60bfac", "#0091d9", "#2200ff", "#b63df2", "#f279ba", "#a6293a"};
 	
 	protected static final String jspPath = "/SLD/shorelines.jsp";
 	protected static final String units = "year";
-	protected static final List<Map<String,Object>> bins;
-	static {
-		List<Map<String,Object>> binsResult = new ArrayList<Map<String,Object>>();
-        for (int i=0; i<colors.length; i++) {
-			List<Integer> years = new ArrayList<Integer>();
-            int j=i;
-            while(j<100) {
-                years.add(j);
-                j += colors.length;
-            }
-            Map<String, Object> binMap = new LinkedHashMap<String,Object>();
-            binMap.put("years", years);
-            binMap.put("color", colors[i]);
-            binsResult.add(binMap);
+	
+	public static final SLDConfig shorelines = new ShorelineConfig(
+        jspPath, units, SLDGenerator.style, SHORELINES_STROKE_WIDTH, attrs
+    );
+    
+    /* This is a hack for now because I want to change SLDGenerator as little as possible
+     * I'm going to want to make the SLDs more aware of item requested, but this is a special
+     * case for now.
+     */
+    public static class ShorelineConfig extends SLDConfig {
+        
+        private SLDConfig wrapped;
+        
+        public ShorelineConfig(String jspPath, String units, String style, int strokeWidth, String[] attrs) {
+            super(jspPath, units, style, strokeWidth, attrs, null, null, null);
+            wrapped = null;
         }
-		
-		bins = binsResult;
-	}
-	
-	public static final SLDConfig shorelines = new SLDConfig(
-			jspPath, units, SLDGenerator.style, SHORELINES_STROKE_WIDTH, attrs, null, colors, bins
-	);
-	
+        
+        public void finalize(Item item) {
+            try (DataDomainManager manager = new DataDomainManager()) {
+                DataDomain domain = manager.getDomainForItem(item);
+                SortedSet<String> domainValues = domain.getDomainValues();
+                Integer minimum = Integer.parseInt(domainValues.first());
+                Integer maximum = Integer.parseInt(domainValues.last());
+                AttributeRange range = new AttributeRange(minimum, maximum);
+                RainbowColorMap colorMap = new RainbowColorMap(range);
+                
+                String[] tmpColors = new String[domainValues.size()];
+                List<Map<String,Object>> tmpBins = new ArrayList<>();
+
+                int i = 0;
+                for (String year : domain.getDomainValues()) {
+                    Integer intYear = Integer.parseInt(year);
+                    Color color = colorMap.valueToColor(intYear);
+                    String hex = ColorUtility.toHexLowercase(color);
+                    tmpColors[i] = hex;
+                    Map<String, Object> binMap = new HashMap<>();
+                    binMap.put("years", intYear);
+                    binMap.put("color", hex);
+                    tmpBins.add(binMap);
+                }
+                
+                wrapped = new SLDConfig(jspPath, units, style, strokeWidth, attrs, null, tmpColors, tmpBins);
+            }
+        }
+        
+        private void checkFinalized() throws IllegalStateException {
+            if (wrapped == null) throw new IllegalStateException();
+        }
+
+        @Override
+        public int[] getScales() {
+            checkFinalized();
+            return wrapped.getScales();
+        }
+
+        @Override
+        public List<Map<String, Object>> getBins() {
+            checkFinalized();
+            return wrapped.getBins();
+        }
+
+        @Override
+        public String[] getColors() {
+            checkFinalized();
+            return wrapped.getColors();
+        }
+
+        @Override
+        public float[] getThresholds() {
+            checkFinalized();
+            return wrapped.getThresholds();
+        }
+
+        @Override
+        public String[] getAttrs() {
+            checkFinalized();
+            return wrapped.getAttrs();
+        }
+
+        @Override
+        public int getStrokeWidth() {
+            checkFinalized();
+            return wrapped.getStrokeWidth();
+        }
+
+        @Override
+        public String getStyle() {
+            checkFinalized();
+            return wrapped.getStyle();
+        }
+
+        @Override
+        public String getUnits() {
+            checkFinalized();
+            return wrapped.getUnits();
+        }
+
+        @Override
+        public String getJspPath() {
+            checkFinalized();
+            return wrapped.getJspPath();
+        }
+        
+    }
+        
 }
