@@ -46,16 +46,20 @@ $(document).ready(function () {
 		footerRowId: 'footer-row',
 		contentRowId: 'content-row',
 		mapdivId: 'map',
+		slideContainerDivId: 'application-slide-items-content-container',
 		shareModalId: 'modal-content-share',
 		shareUrlButtonId: 'modal-share-summary-url-button',
 		shareInputId: 'modal-share-summary-url-inputbox',
 		shareTwitterBtnId: 'multi-card-twitter-button',
 		helpModalId: 'helpModal',
 		helpModalBodyId: 'help-modal-body',
-		slideContainerDivId: 'application-slide-items-content-container',
 		slideItemsContainerId: 'application-slide-items-container',
 		slideBucketContainerId: 'application-slide-bucket-container',
-		slideSearchContainerId: 'application-slide-search-container'
+		slideSearchContainerId: 'application-slide-search-container',
+		combinedSearch: new CCH.Objects.Widget.CombinedSearch(),
+		accordion: new CCH.Objects.Widget.Accordion({
+			containerId: 'application-slide-items-content-container'
+		})
 	});
 
 	$(window).trigger('cch.app.initialized');

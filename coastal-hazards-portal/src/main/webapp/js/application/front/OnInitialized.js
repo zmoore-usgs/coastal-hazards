@@ -57,7 +57,9 @@ CCH.CONFIG.loadUberItem = function (args) {
 				});
 
 				$(window).trigger('cch.item.loaded.all');
+				splashUpdate("Starting Application...");
 				CCH.ui.removeOverlay();
+				$(window).resize();
 				$(window).off('cch.app.initialized', CCH.CONFIG.onAppInitialize); // Remove handler
 				delete CCH.CONFIG.onAppInitialize; // no longer needed
 
