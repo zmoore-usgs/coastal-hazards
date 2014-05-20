@@ -75,7 +75,7 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 		}
 
 		this.handlers.drag = new OpenLayers.Handler.Drag(
-			this, null, {
+			this, {}, {
 				documentDrag: false,
 				map: this.map
 			});
@@ -87,10 +87,10 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 		OpenLayers.Event.observe(this.div, 'dblclick', OpenLayers.Function.bind(function (ctrl, evt) {
 			OpenLayers.Event.stop(evt ? evt : window.event);
 		}, this, this.div));
-		OpenLayers.Event.observe(this.div, 'mouseover', OpenLayers.Function.bind(function (ctrl, evt) {
+		OpenLayers.Event.observe(this.div, 'mouseover', OpenLayers.Function.bind(function () {
 			this.handlers.drag.activate();
 		}, this, this.div));
-		OpenLayers.Event.observe(this.div, 'mouseout', OpenLayers.Function.bind(function (ctrl, evt) {
+		OpenLayers.Event.observe(this.div, 'mouseout', OpenLayers.Function.bind(function () {
 			this.handlers.drag.deactivate();
 		}, this, this.div));
 
