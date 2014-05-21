@@ -45,7 +45,7 @@
 }
 
 /* Content Wrap -> Spinner/Status -> Spinner */
-splash-spinner {
+.splash-spinner {
     display: inline;
     padding-right: 10px;
     vertical-align:inherit;
@@ -71,7 +71,7 @@ splash-spinner {
         font-size: 1.4rem;
     }
     /* Content Wrap -> Spinner/Status -> Spinner */
-    splash-spinner {
+    .splash-spinner {
         height: 1px;
         height: 1.2rem;
     }
@@ -95,7 +95,7 @@ splash-spinner {
         font-size: 1.2rem;
     }
     /* Content Wrap -> Spinner/Status -> Spinner */
-    splash-spinner {
+    .splash-spinner {
         height: 10px;
         height: 1rem;
     }
@@ -119,7 +119,7 @@ splash-spinner {
         font-size: 0.8rem;
     }
     /* Content Wrap -> Spinner/Status -> Spinner */
-    splash-spinner {
+    .splash-spinner {
         height: 8px;
         height: 0.8rem;
     }
