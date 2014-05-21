@@ -20,16 +20,16 @@
 					<sld:Rule>
                         <ogc:Or>
                             <ogc:Filter>
-                                <ogc:PropertyIsEqualTo>
+                                <ogc:PropertyIsLike wildCard="%" singleChar="." escape="!">
                                     <ogc:PropertyName>DATE_</ogc:PropertyName>
-                                    <ogc:Literal><fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
-                                </ogc:PropertyIsEqualTo>
+                                    <ogc:Literal>%<fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
+                                </ogc:PropertyIsLike>
                             </ogc:Filter>
                             <ogc:Filter>
-                                <ogc:PropertyIsEqualTo>
+                                <ogc:PropertyIsLike wildCard="%" singleChar="." escape="!">
                                     <ogc:PropertyName>Date_</ogc:PropertyName>
-                                    <ogc:Literal><fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
-                                </ogc:PropertyIsEqualTo>
+                                    <ogc:Literal>%<fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
+                                </ogc:PropertyIsLike>
                             </ogc:Filter>
                         </ogc:Or>
 						<sld:LineSymbolizer>
