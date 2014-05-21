@@ -225,6 +225,12 @@ CCH.Objects.Widget.Card = function (args) {
 			if (controlLeft + containerWidth > bodyWidth) {
 				left = bodyWidth - containerWidth;
 			}
+			
+			// If the dropdown list goes past the bottom of the page, put the dropdown above the button 
+			// instead
+			if (top + $container.height() > $(window).height()) {
+				top = controlTop - $container.height();
+			}
 
 			$container.offset({
 				'top': top,
