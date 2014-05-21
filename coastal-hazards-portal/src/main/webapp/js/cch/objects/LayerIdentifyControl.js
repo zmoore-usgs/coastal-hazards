@@ -124,15 +124,15 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 									sldResponseHandler: this.sldResponseHandler
 								},
 								callbacks: {
-									success: [function(sld) {
+									success: [function (sld) {
 											this.sldResponseHandler({
-												sld : sld,
-												popup : this.popup,
-												features : this.features,
-												layers : this.layers,
+												sld: sld,
+												popup: this.popup,
+												features: this.features,
+												layers: this.layers,
 												layerId: this.layerId
 											});
-									}],
+										}],
 									error: [
 										function () {
 											CCH.LOG.warn('Map.js::Could not get SLD information for item ' + layerName);
@@ -155,6 +155,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 			item = CCH.items.getById({id: layerId}),
 			title = item.summary.medium.title,
 			attr = item.attr,
+			features = args.features,
 			attrAvg = 0,
 			category,
 			incomingFeatures = args.features,
@@ -172,7 +173,6 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					title = args.title,
 					popup = args.popup,
 					units = args.units,
-					features = args.features,
 					layers = args.layers,
 					layerId = args.layerId,
 					layer = CCH.map.getMap().getLayersBy('itemid', layerId)[0],
@@ -188,54 +188,75 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 					layerName = layers.find(function (l) {
 						return l.itemid === item.id;
 					}).name,
+					attrName = item.attr.toLowerCase(),
+					displayedAttrValue,
+					date,
+					dates = [],
+					dateKey,
+					feature,
+					bin,
+					yearToColor = {},
+					idx = 0,
 					lb,
 					ub,
 					width,
-					height,
-					dateAttribute,
-					year,
-					year2Digit,
-					bin;
+					height;
 
 				if (layerName.indexOf('_r_') !== -1) {
 					ribbonIndex = parseInt(layerName.split('_').last(), 10);
 				}
 
-				$titleContainer.html(title);
+				if (naAttrText === attrAvg) {
+					$titleContainer.html(title);
+					// Data unavailable, insert two dashes for color and for value
+					$legendRow.append($titleContainer, $colorContainer.empty().html('--'), $valueContainer.append(attrAvg));
+				} else if ('year' === units) {
+					// Data is historical, create a year/color table here
 
-				// Historical
-				if (units === 'year') {
-					features.each(function (feature) {
-						$titleContainer = $('<td />').html(title);
+					// Create a yearToColor map
+					for (idx; idx < bins.length; idx++) {
+						bin = bins[idx];
+						yearToColor[bin.years] = bin.color;
+					}
+
+					// Figure out the date key for this feature set
+					dateKey = Object.keys(features[0]).find(function (attr) {
+						return attr.toLowerCase().indexOf('date') !== -1;
+					});
+
+					// Create an array of dates available
+					for (idx = 0; idx < features.length; idx++) {
+						feature = features[idx];
+						date = feature[dateKey];
+						date = parseInt(date.split('/')[2], 10);
+						dates.push(date);
+					}
+
+					// Reverse sort the dates
+					dates = dates.unique().sort(function (a, b) {
+						return b - a;
+					});
+
+					// Create rows for each date
+					for (idx = 0; idx < dates.length; idx++) {
+						date = dates[idx];
+						
+						$legendRow =  $('<tr>').addClass('legend-row');
+						$titleContainer = $('<td />');
 						$colorContainer = $('<td />');
 						$valueContainer = $('<td />');
-						$legendRow = $('<tr>');
-						dateAttribute = Object.keys(feature).find(function (attr) {
-							return attr.toLowerCase().indexOf('date') !== -1;
-						});
-						year = feature[dateAttribute].split('/')[2];
-						year2Digit = year.substring(2);
-
-						if ($table.find('#popup-legend-' + year).length === 0) {
-							bin = bins.find(function (bin) {
-								return bin.years.findIndex(function (year) {
-									year = String(year);
-									if (year.length === 1) {
-										year = '0' + year;
-									}
-									return year === year2Digit;
-								}) !== -1;
-							});
-							$colorContainer.append($('<span />').css('backgroundColor', bin.color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
-							$valueContainer.append(year, ' yr');
-							$legendRow.append($titleContainer, $colorContainer, $valueContainer).attr('id', 'popup-legend-' + year);
-							$table.append($legendRow);
-						}
-					});
-					var sortedRows = $table.find('tr').toArray().sortBy(function (row) {
-						return parseInt($(row).attr('id').substring(13));
-					});
-					$table.empty().append(sortedRows);
+						
+						$titleContainer.html(title);
+						
+						// Create the color container for the year
+						$colorContainer.append($('<span />').css('backgroundColor', yearToColor[date]).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
+						
+						// Create the value container
+						$valueContainer.append(date + ' yr');
+						
+						$legendRow.append($titleContainer, $colorContainer, $valueContainer);
+						$table.append($legendRow);
+					}
 				} else {
 					for (binIdx = 0; binIdx < bins.length && !color; binIdx++) {
 						lb = bins[binIdx].lowerBound;
@@ -254,32 +275,29 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 							}
 						}
 					}
-
-					$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
-					var attrName = item.attr.toLowerCase();
+					$titleContainer.html(title);
 					
-					if (naAttrText === attrAvg) {
-						$legendRow.append($titleContainer, $colorContainer.empty().html('--'), $valueContainer.append(attrAvg));
+					// Create the color container for this row
+					$colorContainer.append($('<span />').css('backgroundColor', color).html('&nbsp;&nbsp;&nbsp;&nbsp;'));
+					
+					if (attrName === 'cvirisk') {
+						displayedAttrValue = bins[attrAvg.toFixed(0) - 1].category;
+						//don't append units
 					} else {
-						var displayedAttrValue;
-						if (attrName === 'cvirisk') {
-							displayedAttrValue = bins[attrAvg.toFixed(0) - 1].category;
-							//don't append units
+						if ('%' === units) {
+							displayedAttrValue = attrAvg.toFixed(0);
 						} else {
-							if('%' === units){
+							if ((attrAvg).isInteger()) {
 								displayedAttrValue = attrAvg.toFixed(0);
-							} else {
-								if((attrAvg).isInteger()){
-									displayedAttrValue = attrAvg.toFixed(0);
-								}
-								else{
-									displayedAttrValue = attrAvg.toFixed(1);
-								}
 							}
-							 displayedAttrValue += units;
+							else {
+								displayedAttrValue = attrAvg.toFixed(1);
+							}
 						}
-						$valueContainer.append(displayedAttrValue);
+						displayedAttrValue += units;
 					}
+					$valueContainer.append(displayedAttrValue);
+
 					$legendRow.append($titleContainer, $colorContainer, $valueContainer);
 
 					if (ribbonIndex !== -1) {
@@ -298,6 +316,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 						$table.append($legendRow);
 					}
 				}
+
 
 				$popupHtml.find('#layer-load-id').remove();
 				CCH.map.getMap().getLayerIndex(CCH.map.getMap().getLayersBy('itemid', layerId)[0]);
