@@ -29,36 +29,38 @@ CCH.Objects.Session = function (args) {
 	me.getSession = function () {
 		return me.session;
 	};
-	
-	me.getItems = function() {
+
+	me.getItems = function () {
 		return me.session.items;
 	};
 
 	me.update = function (args) {
 		CCH.LOG.trace('Session.js::update');
 
-		CCH.map.updateSession();
+		if (CCH.map.updateSession()) {
 
-		args = args || {};
+			args = args || {};
 
-		var itemid = args.itemid,
-			visible = args.visible,
-			itemIndex,
-			cookie;
+			var itemid = args.itemid,
+				visible = args.visible,
+				itemIndex,
+				cookie;
 
-		if (itemid) {
 			itemIndex = me.getItemIndex({
 				id: itemid
 			});
 			if (itemIndex !== -1) {
 				me.session.items[itemIndex].visible = visible;
 			}
-		}
 
-		cookie = $.cookie(me.cookieName);
-		cookie.bbox = me.session.bbox;
-		cookie.items = me.session.items;
-		$.cookie(me.cookieName, cookie);
+
+			cookie = $.cookie(me.cookieName);
+			cookie.bbox = me.session.bbox;
+			cookie.items = me.session.items;
+			cookie.center = me.session.center;
+			cookie.scale = me.session.scale;
+			$.cookie(me.cookieName, cookie);
+		}
 	};
 
 	me.write = function (args) {
@@ -224,6 +226,14 @@ CCH.Objects.Session = function (args) {
 		return me.session;
 	};
 
+	me.getCookie = function () {
+		return $.cookie(me.cookieName);
+	};
+	
+	me.isReturning = function () {
+		return document.referrer.indexOf(location.pathname.split('/')[1]) !== -1;
+	};
+
 	// Cookie handling
 	$.cookie.json = true;
 	if ($.cookie(me.cookieName) === undefined) {
@@ -245,6 +255,7 @@ CCH.Objects.Session = function (args) {
 
 	return $.extend(me, {
 		cookieName: me.cookieName,
+		getCookie: me.getCookie,
 		toString: me.toString,
 		getSession: me.getSession,
 		load: me.load,
@@ -255,6 +266,7 @@ CCH.Objects.Session = function (args) {
 		getItemIndex: me.getItemIndex,
 		getItems: me.getItems,
 		addItem: me.addItem,
-		removeItem: me.removeItem
+		removeItem: me.removeItem,
+		isReturning : me.isReturning
 	});
 };

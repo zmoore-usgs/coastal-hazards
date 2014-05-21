@@ -16,32 +16,29 @@ CCH.CONFIG.loadUberItem = function (args) {
 	args = args || {};
 
 	var zoomToBbox = args.zoomToBbox === true ? true : false,
-		returningVisitor = document.referrer.toLowerCase().indexOf('info/item') !== -1,
-		cookie = $.cookie(CCH.session.cookieName),
 		// Do I load the entire item with all its children? 
 		subtree = args.subtree || false,
+		overridePreviousBounds = args.overridePreviousBounds,
 		callbacks = args.callbacks || {
 			success: [],
 			error: []
 		};
 
-	// If the user is coming from the back of the card, shortcut to not zoom to a bounding box because
-	// the user wants to maintain their zoom level from when they left
-	if (returningVisitor && cookie !== undefined && cookie.bbox !== undefined && cookie.bbox.length === 4) {
-		zoomToBbox = false;
-	}
-
 	callbacks.error.unshift(CCH.ui.errorResponseHandler);
 	callbacks.success.unshift(function (data) {
-		if (zoomToBbox) {
-			CCH.map.zoomToBoundingBox({
-				bbox: data.bbox,
-				fromProjection: new OpenLayers.Projection('EPSG:4326')
-			});
-		}
-
 		$(window).on('cch.item.loaded', function (evt, obj) {
 			var item;
+
+			// Is the user coming in from another part of the application?
+			if (CCH.session.isReturning() === true && CCH.session.getCookie().center && !overridePreviousBounds) {
+				// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
+				CCH.map.updateFromCookie();
+			} else if (zoomToBbox) {
+				CCH.map.zoomToBoundingBox({
+					bbox: data.bbox,
+					fromProjection: new OpenLayers.Projection('EPSG:4326')
+				});
+			}
 
 			// If the incoming item is the uber item, that means that by now, everything under it has been
 			// fully hydrated, so I can now add sub items to the accordion and remove the overlay
@@ -114,7 +111,8 @@ CCH.CONFIG.onAppInitialize = function () {
 
 							CCH.CONFIG.loadUberItem({
 								zoomToBbox: false,
-								subtree: true
+								subtree: true,
+								overridePreviousBbox: true
 							});
 
 							CCH.map.zoomToBoundingBox({
@@ -130,6 +128,7 @@ CCH.CONFIG.onAppInitialize = function () {
 							CCH.CONFIG.loadUberItem({
 								zoomToBbox: true,
 								subtree: true,
+								overridePreviousBbox: false,
 								callbacks: {
 									success: [
 										function () {
@@ -148,11 +147,16 @@ CCH.CONFIG.onAppInitialize = function () {
 				if (evt.namespace === 'all.item.loaded') {
 					var item = CCH.items.getById({id: id});
 					if (item) {
-						// I want to zoom to the bounding box of the item
-						CCH.map.zoomToBoundingBox({
-							bbox: item.bbox,
-							fromProjection: new OpenLayers.Projection('EPSG:4326')
-						});
+						if (CCH.session.isReturning() === true && CCH.session.getCookie().center) {
+							// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
+							CCH.map.updateFromCookie();
+						} else {
+							// I want to zoom to the bounding box of the item
+							CCH.map.zoomToBoundingBox({
+								bbox: item.bbox,
+								fromProjection: new OpenLayers.Projection('EPSG:4326')
+							});
+						}
 
 						// And I want to open the accordion to that item
 						$(window).trigger('cch.slide.search.button.click.explore', {
@@ -166,7 +170,8 @@ CCH.CONFIG.onAppInitialize = function () {
 
 			CCH.CONFIG.loadUberItem({
 				subtree: true,
-				zoomToBbox: false
+				zoomToBbox: false,
+				overridePreviousBounds: false
 			});
 		}
 	} else {
@@ -176,7 +181,8 @@ CCH.CONFIG.onAppInitialize = function () {
 
 		CCH.CONFIG.loadUberItem({
 			subtree: true,
-			zoomToBbox: true
+			zoomToBbox: true,
+			overridePreviousBounds: false
 		});
 	}
 };

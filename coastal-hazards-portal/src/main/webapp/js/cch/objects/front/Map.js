@@ -96,6 +96,17 @@ CCH.Objects.Front.Map = function (args) {
 		});
 	};
 
+	me.onUIResized = function () {
+		$(me.$MAP_DIV).height($('#content-row').height());
+		me.removeAllPopups();
+		me.map.updateSize();
+	};
+
+	me.onSessionLoaded = function () {
+		// A session has been loaded. The map will be rebuilt from the session
+		me.updateFromSession();
+	};
+
 	me.removeAllPopups = function () {
 		if (CCH.map.getMap().popups.length) {
 			CCH.map.getMap().popups.each(function (popup) {
@@ -158,42 +169,8 @@ CCH.Objects.Front.Map = function (args) {
 
 			// Bind application event handlers
 			$(window).on({
-				'cch.item.loaded.all': function (evt) {
-					// After all items have been loaded I expect the map to be its full size. Previous to this, the map size 
-					// is short and doesn't get sized correctly until later in the initialization. (in CCH.Objects.UI.windowResizeHandler()
-					// which gets triggered when items have finished loading. If I try to zoom while the map is short, the
-					// zoom level is too far out when the map gets set to its normal size.
-
-					// If the user is coming from the back of the card and has a bbox in their cookie, I want to zoom to that
-					// so the user essentially picks up where they left off.
-
-					// Some of this logic is repeated in CCH.Objects.UI.loadTopLevelItem to figure out if the application 
-					// should override normal zoomTo behavior on load
-					if (evt.namespace === 'all.item.loaded') {
-						var returningVisitor = document.referrer.toLowerCase().indexOf('info/item') !== -1,
-							cookie = $.cookie(CCH.session.cookieName);
-
-						if (returningVisitor && cookie !== undefined && cookie.bbox !== undefined & cookie.bbox.length === 4) {
-							me.initialExtent = OpenLayers.Bounds.fromArray(cookie.bbox).transform(new OpenLayers.Projection('EPSG:4326'), me.displayProjection).toArray();
-
-							for (var ieIdx = 0; ieIdx < me.initialExtent.length; ieIdx++) {
-								me.initialExtent[ieIdx] = parseFloat(me.initialExtent[ieIdx]).toFixed(7);
-							}
-						}
-
-						CCH.LOG.debug('Map.js::init():Zooming to extent: ' + me.initialExtent);
-						me.zoomToBoundingBox({bbox: me.initialExtent});
-					}
-				},
-				'cch.data.session.loaded.true': function () {
-					// A session has been loaded. The map will be rebuilt from the session
-					me.updateFromSession();
-				},
-				'cch.ui.resized': function () {
-					$(me.$MAP_DIV).height($('#content-row').height());
-					me.removeAllPopups();
-					me.map.updateSize();
-				}
+				'cch.data.session.loaded.true': me.onSessionLoaded,
+				'cch.ui.resized': me.onUIResized
 			});
 
 			me.map.events.register("click", me.map, function (e) {
@@ -255,9 +232,7 @@ CCH.Objects.Front.Map = function (args) {
 		updateSession: function () {
 			var map = me.map,
 				session = CCH.session.getSession(),
-				cookie = $.cookie(CCH.session.cookieName),
 				center = map.getCenter().transform(CCH.map.getMap().displayProjection, new OpenLayers.Projection('EPSG:4326'));
-
 			session.baselayer = map.baseLayer.name;
 			session.center = [
 				center.lon,
@@ -265,10 +240,46 @@ CCH.Objects.Front.Map = function (args) {
 			];
 			session.scale = map.getScale();
 			session.bbox = map.getExtent().transform(CCH.map.getMap().displayProjection, new OpenLayers.Projection('EPSG:4326')).toArray();
-
-			cookie.bbox = session.bbox;
-			$.cookie(CCH.session.cookieName, cookie);
+			return true;
 		},
+		/**
+		 * Updates the map based on the 
+		 * @returns {undefined}
+		 */
+		updateFromCookie: function () {
+			CCH.LOG.info('Map.js::updateFromSession():Map being recreated from cookie');
+			var cookie = CCH.session.getCookie(),
+				center = new OpenLayers.LonLat(cookie.center[0], cookie.center[1]).
+				transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection),
+				scale = cookie.scale;
+
+			// Becaue we don't want these events to write back to the session, 
+			// unhook the event handlers for map events tied to session writing.
+			// They will be rehooked later
+			me.map.events.un({
+				'moveend': me.moveendCallback,
+				'addlayer': me.addlayerCallback,
+				'changelayer': me.changelayerCallback,
+				'removelayer': me.removeLayerCallback
+			});
+
+			me.map.setCenter(center);
+			me.map.zoomToScale(scale);
+
+			// We're done altering the map to fit the session. Let's re-register those 
+			// events we disconnected earlier
+			me.map.events.on({
+				'moveend': me.moveendCallback,
+				'removelayer': me.removeLayerCallback,
+				'addlayer': me.addLayerCallback,
+				'changelayer': me.changelayerCallback
+			});
+		},
+		/**
+		 * Updates the map based on the information contained in the session object
+		 * 
+		 * @returns {undefined}
+		 */
 		updateFromSession: function () {
 			CCH.LOG.info('Map.js::updateFromSession():Map being recreated from session');
 			var session = CCH.session.getSession(),
