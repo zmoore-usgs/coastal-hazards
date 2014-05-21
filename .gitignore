@@ -29,3 +29,4 @@ target/
 
 /coastal-hazards-portal/catalina.base_IS_UNDEFINED/
 /coastal-hazards-ui/catalina.base_IS_UNDEFINED/
+/ehcache-shaded/dependency-reduced-pom.xml
