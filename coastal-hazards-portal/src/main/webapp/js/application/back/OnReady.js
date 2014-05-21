@@ -52,15 +52,15 @@ $(document).ready(function () {
 						'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')',
 						'role': 'button'
 					}).addClass('btn btn-lg').html('<i class="fa fa-envelope"></i> Contact Us');
-
+					
 					if (404 === jqXHR.status) {
 						splashUpdate("<b>Item Not Found</b><br /><br />We couldn't find the item you are looking for<br /><br />");
 					} else {
 						splashUpdate("<b>There was an error attempting to load an item.</b><br />Either try to reload the application or contact the system administrator.<br /><br />");
 					}
-					$('#splash-status-update').append(continueLink);
-					$('#splash-status-update').append(emailLink);
-					$('#splash-spinner').fadeOut(2000);
+					splashAppend(continueLink);
+					splashAppend(emailLink);
+					$('.splash-spinner').fadeOut(2000);
 				}
 			]
 		}

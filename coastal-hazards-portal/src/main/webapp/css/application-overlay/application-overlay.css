@@ -15,7 +15,7 @@
 }
 
 /* wrapper */
-#application-overlay > div:first-child {
+.application-overlay-content-wrap {
     width: 100%;
     text-align: center;
     top: calc(30%);
@@ -23,29 +23,29 @@
 }
 
 /* Image Wrapper */
-#application-overlay > div:nth-child(1) > div:nth-child(1) {
+#application-overlay-image-container {
     padding-bottom: 25px;
 }
 
 /* USGS Logo */
-#application-overlay > div:nth-child(1) > div:nth-child(1) > img{
+#application-overlay-image-container > img{
     width: 50%;
 }
 
 /* Content Wrap -> Title*/
-#application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) {
+#application-overlay-description-container-title {
     font-size: 24px;
     font-size: 2.4rem;
 }
 
 /* Content Wrap -> Version*/
-#application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) {
+#application-overlay-description-container-version {
     font-size: 18px;
     font-size: 1.8rem;
 }
 
 /* Content Wrap -> Spinner/Status -> Spinner */
-#application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > img {
+.splash-spinner {
     display: inline;
     padding-right: 10px;
     vertical-align:inherit;
@@ -54,30 +54,30 @@
 }
 
 /* Content Wrap -> Spinner/Status -> Status */
-#application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > span {
+.splash-status-update {
     font-size: 16px;
     font-size: 1.6rem;
 }
 
 @media screen and (max-width: 900px){
     /* Content Wrap -> Title*/
-    #application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) {
+    #application-overlay-description-container-title {
         font-size: 18px;
         font-size: 1.8rem;
     }
     /* Content Wrap -> Version*/
-    #application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) {
+    #application-overlay-description-container-version {
         font-size: 14px;
         font-size: 1.4rem;
     }
     /* Content Wrap -> Spinner/Status -> Spinner */
-    #application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > img {
+    .splash-spinner {
         height: 1px;
         height: 1.2rem;
     }
 
     /* Content Wrap -> Spinner/Status -> Status */
-    #application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > span {
+    .splash-status-update {
         font-size: 12px;
         font-size: 1.2rem;
     }
@@ -85,23 +85,23 @@
 
 @media screen and (max-width: 600px){
     /* Content Wrap -> Title*/
-    #application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) {
+    #application-overlay-description-container-title {
         font-size: 16px;
         font-size: 1.6rem;
     }
     /* Content Wrap -> Version*/
-    #application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) {
+    #application-overlay-description-container-version {
         font-size: 12px;
         font-size: 1.2rem;
     }
     /* Content Wrap -> Spinner/Status -> Spinner */
-    #application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > img {
+    .splash-spinner {
         height: 10px;
         height: 1rem;
     }
 
     /* Content Wrap -> Spinner/Status -> Status */
-    #application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > span {
+    .splash-status-update {
         font-size: 10px;
         font-size: 1.0rem;
     }
@@ -109,23 +109,23 @@
 
 @media screen and (max-width: 480px){
     /* Content Wrap -> Title*/
-    #application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) {
+    #application-overlay-description-container-title {
         font-size: 12px;
         font-size: 1.2rem;
     }
     /* Content Wrap -> Version*/
-    #application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) {
+    #application-overlay-description-container-version {
         font-size: 8px;
         font-size: 0.8rem;
     }
     /* Content Wrap -> Spinner/Status -> Spinner */
-    #application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > img {
+    .splash-spinner {
         height: 8px;
         height: 0.8rem;
     }
 
     /* Content Wrap -> Spinner/Status -> Status */
-    #application-overlay > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > span {
+    .splash-status-update {
         font-size: 6px;
         font-size: 0.6rem;
     }

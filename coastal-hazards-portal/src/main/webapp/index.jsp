@@ -30,7 +30,10 @@
 	String vSugarJs = getProp("version.sugarjs");
 
 %>
-<% String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");%>
+<% 
+	String baseUrl = StringUtils.isNotBlank(request.getContextPath()) ? request.getContextPath() : props.getProperty("coastal-hazards.base.url");
+	String referer = request.getHeader("referer");
+%>
 <html lang="en"> 
     <head>
         <jsp:include page="/WEB-INF/jsp/components/common/meta-tags.jsp"></jsp:include>
@@ -66,6 +69,7 @@
 		ga('set', 'anonymizeIp', true);
 		ga('send', 'pageview');
 	</script>
+	<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
     </head>
 
     <body>
@@ -77,6 +81,7 @@
             <jsp:param name="base-url" value="<%=baseUrl%>" />
             <jsp:param name="version" value="<%=version%>" />
             <jsp:param name="debug-qualifier" value="<%=development%>" />
+			<jsp:param name="original-referer" value="<%=referer%>" />
         </jsp:include>
 
         <div id="application-container" class="container">
@@ -102,7 +107,6 @@
 
         <jsp:include page="WEB-INF/jsp/components/front/slides/slider-bucket.jsp"></jsp:include>
         <jsp:include page="WEB-INF/jsp/components/front/slides/slider-search.jsp"></jsp:include>
-        <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/jquery-ui/<%=vJqueryUI%>/ui/<%= development ? "" : "minified"%>/jquery-ui<%= development ? "" : ".min"%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/<%=vOpenlayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
         <script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>

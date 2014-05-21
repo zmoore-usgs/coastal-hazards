@@ -295,14 +295,14 @@ CCH.Objects.Front.UI = function (args) {
 			}
 		}
 
-		$('#splash-status-update').
+		$('.splash-status-update').
 			empty().
 			addClass('error-message').
 			append(
 				splashMessage,
 				$('<span />').append(continueLink),
 				emailLink);
-		$('#splash-spinner').remove();
+		$('.splash-spinner').remove();
 	};
 
 	me.errorResponseHandler = function (jqXHR, textStatus, errorThrown) {

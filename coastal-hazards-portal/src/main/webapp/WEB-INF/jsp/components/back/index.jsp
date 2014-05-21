@@ -37,6 +37,7 @@
 	String vBootstrap = getProp("version.bootstrap");
 	String vOpenlayers = getProp("version.openlayers");
 	String vSugarJs = getProp("version.sugarjs");
+	String referer = request.getHeader("referer");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -149,6 +150,7 @@
             <jsp:param name="base-url" value="<%=baseUrl%>" />
             <jsp:param name="version" value="<%=version%>" />
             <jsp:param name="debug-qualifier" value="<%=development%>" />
+			<jsp:param name="original-referer" value="<%=referer%>" />
         </jsp:include>
         <%-- Content Here --%>
         <div id="info-content" class="container">
