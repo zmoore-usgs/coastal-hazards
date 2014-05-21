@@ -17,18 +17,13 @@
             <sld:Title>Historical Shoreline ColorMap</sld:Title>
             <sld:FeatureTypeStyle>
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
+                    <c:set var="year">${it.thresholds[i]}</c:set>
 					<sld:Rule>
                         <ogc:Filter>
-                            <ogc:Or>
                                 <ogc:PropertyIsLike wildCard="%" singleChar="." escape="!">
-                                    <ogc:PropertyName>DATE_</ogc:PropertyName>
-                                    <ogc:Literal>%<fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
+                                    <ogc:PropertyName>${it.attr}</ogc:PropertyName>
+                                <ogc:Literal>%<fmt:parseNumber parseLocale="en-US" integerOnly="true" value="${year}" /></ogc:Literal>
                                 </ogc:PropertyIsLike>
-                                <ogc:PropertyIsLike wildCard="%" singleChar="." escape="!">
-                                    <ogc:PropertyName>Date_</ogc:PropertyName>
-                                    <ogc:Literal>%<fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
-                                </ogc:PropertyIsLike>
-                            </ogc:Or>
                         </ogc:Filter>
 						<sld:LineSymbolizer>
 							<sld:Stroke>
