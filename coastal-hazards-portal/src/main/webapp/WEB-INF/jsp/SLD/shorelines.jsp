@@ -18,12 +18,20 @@
             <sld:FeatureTypeStyle>
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
 					<sld:Rule>
-						<ogc:Filter>
-							<ogc:PropertyIsLike wildCard="%" singleChar="." escape="!">
-								<ogc:PropertyName>${it.attr}</ogc:PropertyName>
-                                <ogc:Literal><fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
-							</ogc:PropertyIsLike>
-						</ogc:Filter>
+                        <ogc:Or>
+                            <ogc:Filter>
+                                <ogc:PropertyIsEqualTo>
+                                    <ogc:PropertyName>DATE_</ogc:PropertyName>
+                                    <ogc:Literal><fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
+                                </ogc:PropertyIsEqualTo>
+                            </ogc:Filter>
+                            <ogc:Filter>
+                                <ogc:PropertyIsEqualTo>
+                                    <ogc:PropertyName>Date_</ogc:PropertyName>
+                                    <ogc:Literal><fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
+                                </ogc:PropertyIsEqualTo>
+                            </ogc:Filter>
+                        </ogc:Or>
 						<sld:LineSymbolizer>
 							<sld:Stroke>
 								<sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
