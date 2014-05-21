@@ -66,128 +66,77 @@ CCH.Objects.Widget.Legend = function (args) {
 		nonAggItem = CCH.items.getById({id: nonAggItem});
 		attribute = nonAggItem.attr;
 
-		if (me.item.type === 'historical' && attribute.toLowerCase().indexOf('date') !== -1) {
-			request = CCH.Util.Util.getSLD({
-				contextPath: CCH.CONFIG.contextPath,
-				itemId: nonAggItem.id,
-				context: {
-					legendTables: legendTables,
-					itemId: itemId
-				},
-				callbacks: {
-					success: [
-						function (sld) {
-							var itemId = this.itemId,
-								legendTables = this.legendTables,
-								dataItems = [];
+		// Now that I have all of the necessary items that I will be creating the legend from, I need the SLDs 
+		// associated with them
+		me.items.each(function (childId, index, items) {
+			if (!me.destroyed) {
+				request = CCH.Util.Util.getSLD({
+					contextPath: CCH.CONFIG.contextPath,
+					itemId: childId,
+					context: {
+						index: index,
+						items: items,
+						legendTables: legendTables,
+						itemId: childId
+					},
+					callbacks: {
+						success: [
+							function (sld) {
+								var $legendTable,
+									index = this.index,
+									items = this.items,
+									itemId = this.itemId,
+									legendTables = this.legendTables,
+									total = items.length;
 
-							me.items.each(function (id) {
-								var item = CCH.items.getById({id: id});
-								if (item.itemType !== 'aggregation') {
-									dataItems.push(item);
+								try {
+									// Build the table and add a custom attribute to it that serves to sort the 
+									// table in the legend when all legends are created
+									$legendTable = me.generateLegendTable({
+										sld: sld,
+										itemId: itemId,
+										index: index
+									});
+								} catch (ex) {
+									LOG.warn(ex);
 								}
-							});
 
-							if (!me.destroyed) {
-								me.generateDateLegendTable({
-									items: dataItems,
-									sld: sld,
-									legendTables: legendTables
-								});
+								if ($legendTable) {
+									this.legendTables.push($legendTable);
+									me.tableAdded({
+										legendTables: this.legendTables,
+										total: total,
+										item: CCH.items.getById({id: itemId})
+									});
+								} else {
+									this.legendTables.push(-1);
+									me.tableAdded({
+										legendTables: this.legendTables,
+										total: this.total
+									});
+								}
 							}
-						}
-					],
-					error: [
-						function () {
-							if (!me.destroyed) {
-								LOG.warn("Could not retrieve SLD. Legend will not be created");
-								this.legendTables.push(-1);
-								me.tableAdded({
-									legendTables: this.legendTables,
-									total: this.total
-								});
-								if (me.onError) {
-									me.onError.call(me, arguments);
+						],
+						error: [
+							function (jqXHR, textStatus, errorThrown) {
+								if (!me.destroyed) {
+									LOG.warn("Could not retrieve SLD. Legend will not be created for this item");
+									this.legendTables.push(-1);
+									me.tableAdded({
+										legendTables: this.legendTables,
+										total: this.total
+									});
+									if (me.onError) {
+										me.onError.call(me, arguments);
+									}
 								}
 							}
-						}
-					]
-				}
-			});
-			me.ajaxRequests.push(request);
-		} else {
-			// Now that I have all of the necessary items that I will be creating the legend from, I need the SLDs 
-			// associated with them
-			me.items.each(function (childId, index, items) {
-				if (!me.destroyed) {
-					request = CCH.Util.Util.getSLD({
-						contextPath: CCH.CONFIG.contextPath,
-						itemId: childId,
-						context: {
-							index: index,
-							items: items,
-							legendTables: legendTables,
-							itemId: childId
-						},
-						callbacks: {
-							success: [
-								function (sld) {
-									var $legendTable,
-										index = this.index,
-										items = this.items,
-										itemId = this.itemId,
-										legendTables = this.legendTables,
-										total = items.length;
-
-									try {
-										// Build the table and add a custom attribute to it that serves to sort the 
-										// table in the legend when all legends are created
-										$legendTable = me.generateLegendTable({
-											sld: sld,
-											itemId: itemId,
-											index: index
-										});
-									} catch (ex) {
-										LOG.warn(ex);
-									}
-
-									if ($legendTable) {
-										this.legendTables.push($legendTable);
-										me.tableAdded({
-											legendTables: this.legendTables,
-											total: total,
-											item: CCH.items.getById({id: itemId})
-										});
-									} else {
-										this.legendTables.push(-1);
-										me.tableAdded({
-											legendTables: this.legendTables,
-											total: this.total
-										});
-									}
-								}
-							],
-							error: [
-								function (jqXHR, textStatus, errorThrown) {
-									if (!me.destroyed) {
-										LOG.warn("Could not retrieve SLD. Legend will not be created for this item");
-										this.legendTables.push(-1);
-										me.tableAdded({
-											legendTables: this.legendTables,
-											total: this.total
-										});
-										if (me.onError) {
-											me.onError.call(me, arguments);
-										}
-									}
-								}
-							]
-						}
-					});
-					me.ajaxRequests.push(request);
-				}
-			});
-		}
+						]
+					}
+				});
+				me.ajaxRequests.push(request);
+			}
+		});
 		return me;
 	};
 
@@ -265,6 +214,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			upperBound,
 			lowerBound,
 			category,
+			years,
 			color,
 			range;
 
@@ -282,12 +232,15 @@ CCH.Objects.Widget.Legend = function (args) {
 			$colorContainer = $('<span />');
 			upperBound = bin.upperBound;
 			lowerBound = bin.lowerBound;
+			years = bin.years;
 			category = bin.category;
 			color = bin.color;
 			range;
 
 			if (bin.category) {
 				range = category;
+			} else if (bin.years) {
+				range = years;
 			} else {
 				range = me.generateRangeString(upperBound, lowerBound);
 			}
@@ -304,134 +257,36 @@ CCH.Objects.Widget.Legend = function (args) {
 		return $table;
 	};
 
-	me.generateDateLegendTable = function (args) {
-		args = args || {};
-
-		CCH.LOG.debug('Only ' + args.items.length + ' left to go');
-
-		var items = args.items,
-			item = items.pop(),
-			sld = args.sld,
-			attribute = [item.attr],
-			wmsService = item.services.find(function (svc) {
-				return svc.type === 'proxy_wms';
-			}),
-			layerName = wmsService.serviceParameter,
-			request;
-
-
-
-		// In order to build the legend, I am going to need year data
-		if (!me.destroyed) {
-			request = me.owsUtils.getFilteredFeature({
-				layerName: layerName,
-				propertyArray: attribute,
-				scope: {
-					item: item,
-					items: items,
-					sld: sld,
-					wfsCount: new Number(this.wfsCount)
-				},
-				callbacks: {
-					success: [
-						function (features) {
-							var $legendTable = me.generateHistoricalLegendTable({
-								features: features,
-								sld: this.sld,
-								item: this.item
-							});
-
-							me.tableAdded({
-								legendTables: $legendTable,
-								isYearLegend: true
-							});
-
-							// More WFS to call, go back into this function
-							if (items.length > 0) {
-								me.generateDateLegendTable({
-									items: items,
-									sld: sld
-								});
-							}
-						}
-					],
-					error: [
-						function (data, textStatus) {
-							if (!me.destroyed) {
-								LOG.warn(textStatus);
-								if (items.length > 0) {
-									me.generateDateLegendTable({
-										items: items,
-										sld: sld,
-										index: index
-									});
-								}
-							}
-						}
-					]
-				}
-			});
-			me.ajaxRequests.push(request);
-		}
-	};
-
 	me.generateHistoricalLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
 			item = args.item,
 			attr = item.attr,
 			index = args.index || null,
-			features = args.features,
-			feature,
-			date,
-			shortenedDate,
-			yearlySld = {},
-			$legendTable;
+			$legendTable,
+			$legendTableTBody,
+			$yearRows;
 
-		if (["LRR", "WLR", "SCE", "NSM", "EPR"].indexOf(attr.toUpperCase()) !== -1) {
-			$legendTable = me.generateGenericLegendTable({
-				sld: sld
-			});
-			$legendTable.attr({
-				'legend-attribute': attr,
-				'legend-index': index
-			});
-		} else {
-			// Take the years from the returned features and merge them with the provided SLD into a new SLD
-			// that I can then pass to the generic SLD creation function
-			yearlySld = {
-				title: sld.title,
-				units: sld.units,
-				style: sld.style,
-				bins: []
-			};
+		$legendTable = me.generateGenericLegendTable({
+			sld: sld
+		});
 
-			for (var fIdx = 0; fIdx < features.length; fIdx++) {
-				feature = features[fIdx];
-				date = feature.data[item.attr].split('/')[2];
+		$legendTable.attr({
+			'legend-attribute': attr,
+			'legend-index': index
+		});
 
-				// Years in the sld bins are integers, so convert the output here to integers. This is probably
-				// a performance hit. Might be faster to go through all of the bins in the sld and convert those
-				// to string? Though that would have to be done using nested for loops :/
-				if (date[2] === '0') {
-					shortenedDate = parseInt(date.substring(3));
-				} else {
-					shortenedDate = parseInt(date.substring(2));
-				}
-
-				yearlySld.bins.push({
-					category: date,
-					color: sld.bins.find(function (bin) {
-						return bin.years.indexOf(shortenedDate) !== -1;
-					}).color
-				});
-			}
-			$legendTable = me.generateGenericLegendTable({
-				sld: yearlySld
-			});
+		// If the table is a date table, I want to sort it by year in descending order
+		if ('year' === sld.units) {
+			$legendTableTBody = $legendTable.find('tbody');
+			$yearRows = $legendTableTBody.find('tr').toArray();
+			$yearRows = $yearRows.sortBy(function (r) {
+				return parseInt($(r).find('td:nth-child(2)').html(), 10);
+			}).reverse();
+			$legendTableTBody.empty().append($yearRows);
 		}
-		return $legendTable;
 
+		return $legendTable;
 	};
 
 	me.generateStormLegendTable = function (args) {
@@ -482,58 +337,9 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		var total = args.total,
 			legendTables = args.legendTables,
-			isYearLegend,
-			$table,
-			$yearlyTable,
-			$yearlyTableHead,
-			rowArray,
-			item = args.item || null,
-			isYearLegend = args.isYearLegend || false,
-			yearRows = [];
+			item = args.item || null;
 
-		if (isYearLegend) {
-			// Combine all years, put into a single table
-			$table = legendTables;
-
-			// Get every row from the table that is now the first row (the THEAD row)
-			rowArray = $table.
-				find('tbody tr').// Find all the rows in this table
-				toArray(); // Get a js array out of the jQuery object returned by find
-
-			// Get everything from the incoming table ito the yearRows row array
-			yearRows = yearRows.concat(rowArray);
-
-			// Include what's already in the legend, if anything
-			yearRows = yearRows.concat(me.$legendDiv.find('table tbody tr').toArray());
-
-			// Cut down the array only to unique rows
-			yearRows = yearRows.unique(function (tr) {
-				return $(tr).html();
-			});
-
-			// Now that I have all of my year rows, sort them descending by year (2nd td node in every row)
-			yearRows = yearRows.sortBy(function (tr) {
-				return $(tr).find('td:nth-child(2)').html();
-			}, true);
-
-			// Create the yearly table legend. This should only happen once
-			if (me.$container.children().length === 0) {
-				$yearlyTable = $('<table />');
-				$yearlyTableHead = $('<thead />');
-				$yearlyTable.append($('<caption />').html(me.item.summary.tiny.text));
-				$yearlyTableHead.append($('<tr/>').append($('<td />'), $('<td />').html('Year')));
-				$yearlyTable.append($yearlyTableHead, $('<tbody />'));
-				me.$legendDiv.append($yearlyTable);
-				me.$container.append(me.$legendDiv);
-			}
-
-			// Re-create the legend table body
-			me.$legendDiv.find('tbody').empty().append(yearRows);
-
-			if (me.onComplete) {
-				me.onComplete.call(me);
-			}
-		} else if (legendTables.length === total) {
+		if (legendTables.length === total) {
 			// When all the tables are created, I want to sort them, append them to a  wrapper and throw that wrapper 
 			// into the final container
 			// There are no more legends to be built, filter and add the legend to the document
