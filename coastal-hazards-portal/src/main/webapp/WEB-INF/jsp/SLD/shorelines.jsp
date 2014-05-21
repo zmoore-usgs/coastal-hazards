@@ -18,20 +18,18 @@
             <sld:FeatureTypeStyle>
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
 					<sld:Rule>
-                        <ogc:Or>
-                            <ogc:Filter>
-                                <ogc:PropertyIsEqualTo>
+                        <ogc:Filter>
+                            <ogc:Or>
+                                <ogc:PropertyIsLike wildCard="%" singleChar="." escape="!">
                                     <ogc:PropertyName>DATE_</ogc:PropertyName>
-                                    <ogc:Literal><fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
-                                </ogc:PropertyIsEqualTo>
-                            </ogc:Filter>
-                            <ogc:Filter>
-                                <ogc:PropertyIsEqualTo>
+                                    <ogc:Literal>%<fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
+                                </ogc:PropertyIsLike>
+                                <ogc:PropertyIsLike wildCard="%" singleChar="." escape="!">
                                     <ogc:PropertyName>Date_</ogc:PropertyName>
-                                    <ogc:Literal><fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
-                                </ogc:PropertyIsEqualTo>
-                            </ogc:Filter>
-                        </ogc:Or>
+                                    <ogc:Literal>%<fmt:formatNumber minIntegerDigits="4" groupingUsed="false" value="${it.thresholds[i]}" /></ogc:Literal>
+                                </ogc:PropertyIsLike>
+                            </ogc:Or>
+                        </ogc:Filter>
 						<sld:LineSymbolizer>
 							<sld:Stroke>
 								<sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
