@@ -142,7 +142,7 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 			width,
 			height;
 
-		width = parseInt(mWidth * .5);
+		width = parseInt(mWidth * .3);
 		height = parseInt(mHeight * .25);
 		this.legendContainerElement.style.width = width + 'px';
 		this.legendContainerElement.style.height = height + 'px';
