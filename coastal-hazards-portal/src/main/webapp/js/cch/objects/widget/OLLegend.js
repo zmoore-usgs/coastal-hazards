@@ -1,3 +1,5 @@
+/*global CCH*/
+/*global OpenLayers*/
 window.CCH = CCH || {};
 CCH.Objects = CCH.Objects || {};
 CCH.Objects.Widget = CCH.Objects.Widget || {};
@@ -10,6 +12,7 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 	element: null,
 	handlers: {},
 	initialize: function (options) {
+		"use strict";
 		options = options || {};
 		options.displayClass = this.displayClass;
 		options.allowSelection = this.allowSelection;
@@ -22,9 +25,11 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 		});
 	},
 	destroy: function () {
+		"use strict";
 		OpenLayers.Control.prototype.destroy.apply(this, arguments);
 	},
 	draw: function () {
+		"use strict";
 		// Create the primary element
 		OpenLayers.Control.prototype.draw.apply(this, arguments);
 		this.element = document.createElement('div');
@@ -57,8 +62,9 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 				this.maximizeDiv.title = this.maximizeTitle;
 			}
 			this.div.appendChild(this.maximizeDiv);
+			
 			// Create minimize div
-			var img = 'images/openlayers/maximize_minimize_toggle/tall-medium-arrow-open-right.svg';
+			img = 'images/openlayers/maximize_minimize_toggle/tall-medium-arrow-open-right.svg';
 			this.minimizeDiv = OpenLayers.Util.createAlphaImageDiv(
 				'OpenLayers_Control_minimizeDiv',
 				null,
@@ -107,6 +113,7 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 		return this.div;
 	},
 	onButtonClick: function (evt) {
+		"use strict";
 		if (evt.buttonElement === this.minimizeDiv) {
 			this.minimizeControl();
 		} else if (evt.buttonElement === this.maximizeDiv) {
@@ -114,6 +121,7 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 		}
 	},
 	maximizeControl: function (e) {
+		"use strict";
 		this.element.style.display = '';
 		this.showToggle(false);
 		if (e) {
@@ -121,6 +129,7 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 		}
 	},
 	minimizeControl: function (e) {
+		"use strict";
 		this.element.style.display = 'none';
 		this.showToggle(true);
 		if (e) {
@@ -128,6 +137,7 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 		}
 	},
 	showToggle: function (minimize) {
+		"use strict";
 		if (this.maximizeDiv) {
 			this.maximizeDiv.style.display = minimize ? '' : 'none';
 		}
@@ -136,21 +146,24 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 		}
 	},
 	updateSize: function () {
+		"use strict";
 		var size = this.map.size,
 			mWidth = size.w,
 			mHeight = size.h,
 			width,
 			height;
 
-		width = parseInt(mWidth * .3);
-		height = parseInt(mHeight * .25);
+		width = parseInt(mWidth * 0.3, 10);
+		height = parseInt(mHeight * 0.25, 10);
 		this.legendContainerElement.style.width = width + 'px';
 		this.legendContainerElement.style.height = height + 'px';
 	},
 	show: function () {
+		"use strict";
 		document.getElementsByClassName(this.displayClass)[0].style.display = '';
 	},
 	hide: function () {
+		"use strict";
 		document.getElementsByClassName(this.displayClass)[0].style.display = 'none';
 	},
 	CLASS_NAME: 'CCH.Objects.Widget.OLLegend'
