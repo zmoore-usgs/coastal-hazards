@@ -131,7 +131,8 @@ CCH.Objects.Items = function (args) {
 			AGGREGATION: 'aggregation',
 			HISTORICAL: 'historical',
 			STORMS: 'storms',
-			VULNERABILITY: 'vulnerability'
+			VULNERABILITY: 'vulnerability',
+			MIXED: 'mixed'
 		},
 		CLASS_NAME: 'CCH.Objects.Items'
 	};

@@ -9,7 +9,6 @@ CCH.Objects.Widget = CCH.Objects.Widget || {};
 CCH.Objects.Widget.Legend = function (args) {
 	"use strict";
 	var me = (this === window) ? {} : this;
-
 	$.extend(true, me, args);
 	me.errorMessage = 'Legend.js:: %s Legend could not be created.';
 	me.$container = null;
@@ -25,14 +24,10 @@ CCH.Objects.Widget.Legend = function (args) {
 	// There are edge cases where the application may not want the ajax calls from this object to complete and if
 	// this gets flipped to true, I want to stop all processes as soon as possible
 	me.destroyed = false;
-
 	me.init = function () {
 		CCH.LOG.trace('Legend.js::constructor:Legend class is initializing.');
-
 		me.$container = $('#' + me.containerId);
-
 		me.$container.append(me.$legendDiv);
-
 		if (me.$container.length === 0) {
 			throw me.errorMessage.replace('%s', 'containerId  "' + me.containerId + '" not found in document.');
 		}
@@ -41,46 +36,227 @@ CCH.Objects.Widget.Legend = function (args) {
 			me.$legendDiv.addClass(me.legendClass);
 		}
 
-		me.generateLegendTable({
+		me.generateLegend({
 			item: me.item
 		});
+		return me;
+	};
+	me.generateLegend = function (args) {
+		args = args || {};
+		var item = args.item,
+			itemType = item.type;
+
+		if (itemType === me.itemTypes.HISTORICAL) {
+			me.generateHistoricalLegendTables({
+				item: item
+			});
+		}
+		else if (itemType === me.itemTypes.STORMS) {
+			me.generateStormLegendTables({
+				item: item
+			});
+		} else if (itemType === me.itemTypes.VULNERABILITY) {
+			me.generateVulnerabilityLegendTables({
+				item: item
+			});
+		} else if (itemType === me.itemTypes.MIXED) {
+			me.generateMixedLegendTables({
+				item: item
+			});
+		} else {
+			me.hide();
+		}
 
 		return me;
 	};
-
-	me.generateLegendTable = function (args) {
+	me.generateGenericLegendTable = function (args) {
 		args = args || {};
+		var sld = args.sld,
+			$table = $('<table />'),
+			$thead = $('<thead />'),
+			$caption = $('<caption />'),
+			$theadTr = $('<tr />'),
+			$theadUOM = $('<td />'),
+			$colorContainer,
+			$tr,
+			$colorTd,
+			$rangeTd,
+			bins = sld.bins,
+			uom = sld.units || '',
+			title = sld.title || '',
+			upperBound,
+			lowerBound,
+			category,
+			years,
+			color,
+			range;
+		// Create the table head which displays the unit of measurements
+		$caption.html(title);
+		$theadUOM.html(uom);
+		$theadTr.append($('<td />'), $theadUOM);
+		$thead.append($theadTr);
+		$table.append($caption, $thead);
+		bins.each(function (bin) {
+			$tr = $('<tr />');
+			$colorTd = $('<td />');
+			$rangeTd = $('<td />');
+			$colorContainer = $('<span />');
+			upperBound = bin.upperBound;
+			lowerBound = bin.lowerBound;
+			years = bin.years;
+			category = bin.category;
+			color = bin.color;
+			range;
+			if (bin.category) {
+				range = category;
+			} else if (bin.years) {
+				range = years;
+			} else {
+				range = me.generateRangeString(upperBound, lowerBound);
+			}
 
+			$colorContainer.css('background-color', color);
+			$colorTd.append($colorContainer);
+			$rangeTd.html(range);
+			$tr.append($colorTd, $rangeTd);
+			$table.append($tr);
+		});
+		return $table;
+	};
+	
+	me.generateMixedLegendTables = function (args) {
+		args = args || {};
 		var item = args.item,
-			itemType = item.type,
-			childItems,
-			legendTables = [],
-			request,
-			index = args.index;
-
-		// Fill out the items array with the item ids of the items that will end up in the legend
-		if (me.item.itemType.toLowerCase() === 'aggregation') {
-			childItems = me.item.getLayerList();
-			childItems.layers.each(function (childItem) {
-				// Possible formats:
-				// aggregationId_itemId_r_ribbonIndexInteger (Ribboned, example: C68abcd_C67pzz9_r_1)
-				// aggregationId_itemId (Unribboned, example: C68abcd_C67pzz9)
-				me.items.push(childItem.split('_')[1]);
-			});
+			childItems;
+		if ('aggregation' === item.itemType.toLowerCase()) {
+			childItems = me.getAggregationChildrenIds(item.id);
 		} else {
-			me.items.push(item.id);
+			childItems = [item.id];
 		}
 
-		// Now that I have all of the necessary items that I will be creating the legend from, I need the SLDs 
-		// associated with them
-		me.items.each(function (childId, index, items) {
+		me.createLegendsFromItems({
+			items: childItems
+		});
+	};
+	
+	me.generateHistoricalLegendTables = function (args) {
+		args = args || {};
+		var item = args.item,
+			childItems;
+		if ('aggregation' === item.itemType.toLowerCase()) {
+			childItems = me.getAggregationChildrenIds(item.id);
+		} else {
+			childItems = [item.id];
+		}
+
+		me.createLegendsFromItems({
+			items: childItems
+		});
+	};
+	
+	me.generateHistoricalLegendTable = function (args) {
+		args = args || {};
+		var sld = args.sld,
+			item = args.item,
+			attr = item.attr,
+			index = args.index || null,
+			$legendTable,
+			$legendTableTBody,
+			$yearRows;
+		$legendTable = me.generateGenericLegendTable({
+			sld: sld
+		});
+		$legendTable.attr({
+			'legend-attribute': attr,
+			'legend-index': index
+		});
+		// If the table is a date table, I want to sort it by year in descending order
+		if ('year' === sld.units) {
+			$legendTableTBody = $legendTable.find('tbody');
+			$yearRows = $legendTableTBody.find('tr').toArray();
+			$yearRows = $yearRows.sortBy(function (r) {
+				return parseInt($(r).find('td:nth-child(2)').html(), 10);
+			}).reverse();
+			$legendTableTBody.empty().append($yearRows);
+		}
+
+		return $legendTable;
+	};
+	me.generateStormLegendTables = function (args) {
+		args = args || {};
+		var item = args.item,
+			childItems;
+		if ('aggregation' === item.itemType.toLowerCase()) {
+			childItems = me.getAggregationChildrenIds(item.id);
+		} else {
+			childItems = [item.id];
+		}
+
+		me.createLegendsFromItems({
+			items: childItems
+		});
+	};
+
+	me.generateStormLegendTable = function (args) {
+		args = args || {};
+		var sld = args.sld,
+			item = args.item,
+			index = args.index,
+			attr = item.attr,
+			$legendTable = me.generateGenericLegendTable({
+				sld: sld
+			});
+		$legendTable.attr({
+			'legend-attribute': attr,
+			'legend-index': index
+		});
+		return $legendTable;
+	};
+
+	me.generateVulnerabilityLegendTables = function (args) {
+		args = args || {};
+		var item = args.item,
+			childItems;
+		if ('aggregation' === item.itemType.toLowerCase()) {
+			childItems = me.getAggregationChildrenIds(item.id);
+		} else {
+			childItems = [item.id];
+		}
+
+		me.createLegendsFromItems({
+			items: childItems
+		});
+	};
+
+	me.generateVulnerabilityLegendTable = function (args) {
+		args = args || {};
+		var sld = args.sld,
+			item = args.item,
+			index = args.index,
+			attr = item.attr,
+			$legendTable = me.generateGenericLegendTable({
+				sld: sld
+			});
+		$legendTable.attr({
+			'legend-attribute': attr,
+			'legend-index': index
+		});
+		return $legendTable;
+	};
+
+	me.createLegendsFromItems = function (args) {
+		args = args || {};
+		var items = args.items,
+			xhrRequest,
+			legendTables = [];
+		items.each(function (childId, index, allItems) {
 			if (!me.destroyed) {
-				request = CCH.Util.Util.getSLD({
+				xhrRequest = CCH.Util.Util.getSLD({
 					contextPath: CCH.CONFIG.contextPath,
 					itemId: childId,
 					context: {
 						index: index,
-						items: items,
+						allItems: allItems,
 						legendTables: legendTables,
 						itemId: childId
 					},
@@ -89,11 +265,12 @@ CCH.Objects.Widget.Legend = function (args) {
 							function (sld) {
 								var $legendTable = -1,
 									index = this.index,
-									items = this.items,
+									allItems = this.allItems,
 									itemId = this.itemId,
 									legendTables = this.legendTables,
-									total = items.length;
-
+									total = allItems.length,
+									itemType,
+									item;
 								try {
 									item = CCH.items.getById({id: itemId});
 									itemType = item.type;
@@ -130,7 +307,6 @@ CCH.Objects.Widget.Legend = function (args) {
 
 								// Whatever we have at this point, add it to the array
 								this.legendTables.push($legendTable);
-
 								// And call tableAdded to possibly complete the legend
 								me.tableAdded({
 									legendTables: this.legendTables,
@@ -156,136 +332,29 @@ CCH.Objects.Widget.Legend = function (args) {
 						]
 					}
 				});
-				me.ajaxRequests.push(request);
+				me.ajaxRequests.push(xhrRequest);
 			}
 		});
 	};
 
-	me.generateGenericLegendTable = function (args) {
-		args = args || {};
-		var sld = args.sld,
-			$table = $('<table />'),
-			$thead = $('<thead />'),
-			$caption = $('<caption />'),
-			$theadTr = $('<tr />'),
-			$theadUOM = $('<td />'),
-			$colorContainer,
-			$tr,
-			$colorTd,
-			$rangeTd,
-			bins = sld.bins,
-			uom = sld.units || '',
-			title = sld.title || '',
-			upperBound,
-			lowerBound,
-			category,
-			years,
-			color,
-			range;
-
-		// Create the table head which displays the unit of measurements
-		$caption.html(title);
-		$theadUOM.html(uom);
-		$theadTr.append($('<td />'), $theadUOM);
-		$thead.append($theadTr);
-		$table.append($caption, $thead);
-
-		bins.each(function (bin) {
-			$tr = $('<tr />');
-			$colorTd = $('<td />');
-			$rangeTd = $('<td />');
-			$colorContainer = $('<span />');
-			upperBound = bin.upperBound;
-			lowerBound = bin.lowerBound;
-			years = bin.years;
-			category = bin.category;
-			color = bin.color;
-			range;
-
-			if (bin.category) {
-				range = category;
-			} else if (bin.years) {
-				range = years;
-			} else {
-				range = me.generateRangeString(upperBound, lowerBound);
-			}
-
-			$colorContainer.css('background-color', color);
-			$colorTd.append($colorContainer);
-
-			$rangeTd.html(range);
-
-			$tr.append($colorTd, $rangeTd);
-			$table.append($tr);
+	/**
+	 * Returns an array if item ids that are visible children of an aggregation
+	 * 
+	 * @param {String} itemId
+	 * @returns {CCH.Objects.Widget.getAggregationChildrenIds.items|Array}
+	 */
+	me.getAggregationChildrenIds = function (itemId) {
+		var item = CCH.items.getById({id: itemId}),
+			childLayers = item.getLayerList(),
+			items = [];
+		childLayers.layers.each(function (layerName) {
+			// Possible formats:
+			// aggregationId_itemId_r_ribbonIndexInteger (Ribboned, example: C68abcd_C67pzz9_r_1)
+			// aggregationId_itemId (Unribboned, example: C68abcd_C67pzz9)
+			items.push(layerName.split('_')[1]);
 		});
-
-		return $table;
+		return items;
 	};
-
-	me.generateHistoricalLegendTable = function (args) {
-		args = args || {};
-		var sld = args.sld,
-			item = args.item,
-			attr = item.attr,
-			index = args.index || null,
-			$legendTable,
-			$legendTableTBody,
-			$yearRows;
-
-		$legendTable = me.generateGenericLegendTable({
-			sld: sld
-		});
-
-		$legendTable.attr({
-			'legend-attribute': attr,
-			'legend-index': index
-		});
-
-		// If the table is a date table, I want to sort it by year in descending order
-		if ('year' === sld.units) {
-			$legendTableTBody = $legendTable.find('tbody');
-			$yearRows = $legendTableTBody.find('tr').toArray();
-			$yearRows = $yearRows.sortBy(function (r) {
-				return parseInt($(r).find('td:nth-child(2)').html(), 10);
-			}).reverse();
-			$legendTableTBody.empty().append($yearRows);
-		}
-
-		return $legendTable;
-	};
-
-	me.generateStormLegendTable = function (args) {
-		args = args || {};
-		var sld = args.sld,
-			item = args.item,
-			index = args.index,
-			attr = item.attr,
-			$legendTable = me.generateGenericLegendTable({
-				sld: sld
-			});
-		$legendTable.attr({
-			'legend-attribute': attr,
-			'legend-index': index
-		});
-		return $legendTable;
-	};
-
-	me.generateVulnerabilityLegendTable = function (args) {
-		args = args || {};
-		var sld = args.sld,
-			item = args.item,
-			index = args.index,
-			attr = item.attr,
-			$legendTable = me.generateGenericLegendTable({
-				sld: sld
-			});
-		$legendTable.attr({
-			'legend-attribute': attr,
-			'legend-index': index
-		});
-		return $legendTable;
-	};
-
 	me.generateRangeString = function (ub, lb) {
 		if (lb && ub) {
 			return lb + ' to ' + ub;
@@ -296,14 +365,11 @@ CCH.Objects.Widget.Legend = function (args) {
 		}
 		return '';
 	};
-
 	me.tableAdded = function (args) {
 		args = args || {};
-
 		var total = args.total,
 			legendTables = args.legendTables,
 			item = args.item || null;
-
 		if (legendTables.length === total) {
 			// When all the tables are created, I want to sort them, append them to a  wrapper and throw that wrapper 
 			// into the final container
@@ -313,7 +379,6 @@ CCH.Objects.Widget.Legend = function (args) {
 			}).unique(function (table) {
 				return $(table).attr('legend-attribute');
 			});
-
 			if (legendTables.length === 0) {
 				// Remove the container and hyst run the onComplete
 				me.hide();
@@ -342,7 +407,6 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		}
 	};
-
 	/**
 	 * Hides the legend div
 	 * 
@@ -352,7 +416,6 @@ CCH.Objects.Widget.Legend = function (args) {
 		me.$legendDiv.addClass('hidden');
 		return me.$legendDiv;
 	};
-
 	/**
 	 * Shows the legend div
 	 * 
@@ -362,8 +425,6 @@ CCH.Objects.Widget.Legend = function (args) {
 		me.$legendDiv.removeClass('hidden');
 		return me.$legendDiv;
 	};
-
-
 	/**
 	 * Marks this widget as being destroyed. Cancels all outgoing ajax requests and removes its container
 	 * 
@@ -377,7 +438,6 @@ CCH.Objects.Widget.Legend = function (args) {
 		me.$legendDiv.remove();
 		return me;
 	};
-
 	// Verify that everything we need was passed in and create the item. Otherwise, error out.
 	if (!me.containerId) {
 		throw me.errorMessage.replace('%s', 'Argument "containerId" was not provided.');
