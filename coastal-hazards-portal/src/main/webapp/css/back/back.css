@@ -80,10 +80,12 @@ html, body {
 .container > div.row:nth-child(3) > div:first-child > div > div.olMap {
 	height: 400px;
 }
+
 /* Social Media Icon */
-.container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
+#social-link-container {
 	vertical-align: middle;
 	margin-left: 10px;
+	position: fixed;
 }
 
 /* Info Graph */
@@ -127,7 +129,7 @@ html, body {
 	}
 
 	/* Social Media Icon */
-	.container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
+	#social-link-container  {
 		margin-left: 5px;
 	}
 
