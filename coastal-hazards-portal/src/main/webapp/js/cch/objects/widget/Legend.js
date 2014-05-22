@@ -13,7 +13,7 @@ CCH.Objects.Widget.Legend = function (args) {
 	$.extend(true, me, args);
 	me.errorMessage = 'Legend.js:: %s Legend could not be created.';
 	me.$container = null;
-	me.$legendDiv = $('<div />');
+	me.$legendDiv = $('<div />').html('Loading...');
 	me.items = [];
 	me.itemTypes = new CCH.Objects.Items().Types;
 	me.owsUtils = new CCH.Util.OWS();
@@ -30,12 +30,11 @@ CCH.Objects.Widget.Legend = function (args) {
 		CCH.LOG.trace('Legend.js::constructor:Legend class is initializing.');
 		var childItems = [],
 			legendTables = [],
-			attribute,
-			nonAggItem,
 			itemId = me.item.id,
 			request;
 
 		me.$container = $('#' + me.containerId);
+		me.$container.append(me.$legendDiv);
 
 		if (me.$container.length === 0) {
 			throw me.errorMessage.replace('%s', 'containerId  "' + me.containerId + '" not found in document.');
@@ -58,14 +57,6 @@ CCH.Objects.Widget.Legend = function (args) {
 			me.items.push(itemId);
 		}
 
-		// I branch on the type of item that I am trying to display
-		nonAggItem = me.items.find(function (id) {
-			return CCH.items.getById({id: id}).itemType.toLowerCase() !== 'aggregation';
-		});
-		// The above function gets us an id string. Now I need to pull out the item from CCH.items
-		nonAggItem = CCH.items.getById({id: nonAggItem});
-		attribute = nonAggItem.attr;
-
 		// Now that I have all of the necessary items that I will be creating the legend from, I need the SLDs 
 		// associated with them
 		me.items.each(function (childId, index, items) {
@@ -82,7 +73,7 @@ CCH.Objects.Widget.Legend = function (args) {
 					callbacks: {
 						success: [
 							function (sld) {
-								var $legendTable,
+								var $legendTable = -1,
 									index = this.index,
 									items = this.items,
 									itemId = this.itemId,
@@ -97,28 +88,31 @@ CCH.Objects.Widget.Legend = function (args) {
 										itemId: itemId,
 										index: index
 									});
+
+									// If the procedure didn't create anything for whatever reason, 
+									// set the variable to -1
+									if (!$legendTable) {
+										$legendTable = -1;
+									}
 								} catch (ex) {
+									// Something went wrong but I don't want to error out, so just 
+									// warn, keep the variable at -1 and move on
 									LOG.warn(ex);
 								}
 
-								if ($legendTable) {
-									this.legendTables.push($legendTable);
-									me.tableAdded({
-										legendTables: this.legendTables,
-										total: total,
-										item: CCH.items.getById({id: itemId})
-									});
-								} else {
-									this.legendTables.push(-1);
-									me.tableAdded({
-										legendTables: this.legendTables,
-										total: this.total
-									});
-								}
+								// Whatever we have at this point, add it to the array
+								this.legendTables.push($legendTable);
+
+								// And call tableAdded to possibly complete the legend
+								me.tableAdded({
+									legendTables: this.legendTables,
+									total: total,
+									item: CCH.items.getById({id: itemId})
+								});
 							}
 						],
 						error: [
-							function (jqXHR, textStatus, errorThrown) {
+							function () {
 								if (!me.destroyed) {
 									LOG.warn("Could not retrieve SLD. Legend will not be created for this item");
 									this.legendTables.push(-1);
@@ -343,32 +337,38 @@ CCH.Objects.Widget.Legend = function (args) {
 			// When all the tables are created, I want to sort them, append them to a  wrapper and throw that wrapper 
 			// into the final container
 			// There are no more legends to be built, filter and add the legend to the document
-			legendTables = legendTables.unique(function (table) {
-				return $(table).attr('legend-attribute');
-			}).filter(function (table) { // Remove any array items that are -1
+			legendTables = legendTables.filter(function (table) { // Remove any array items that are -1
 				return table !== -1;
+			}).unique(function (table) {
+				return $(table).attr('legend-attribute');
 			});
 
-			if (legendTables.length === 1 && total > 1) {
-				// I have one table left after running unique(). However, I started out with multiple tables. This
-				// means that the title of this table will be the last table to make it through unique(). If that's the 
-				// case, use the title of the parent aggregation for this item
-				legendTables[0].find('caption').html(item.getAncestor().summary.full.title);
+			if (legendTables.length === 0) {
+				// Remove the container and hyst run the onComplete
+				me.hide();
 			} else {
-				// If there's multiple tables, sort them according to index, leaving
-				// titles as is
-				legendTables = legendTables.sort(function (a, b) {
-					return $(a).attr('legend-index') - $(b).attr('legend-index');
-				});
+				// There were tables, so I want to show them
+				if (legendTables.length === 1 && total > 1) {
+					// I have one table left after running unique(). However, I started out with multiple tables. This
+					// means that the title of this table will be the last table to make it through unique(). If that's the 
+					// case, use the title of the parent aggregation for this item
+					legendTables[0].find('caption').html(item.getAncestor().summary.full.title);
+				} else {
+					// If there's multiple tables, sort them according to index, leaving
+					// titles as is
+					legendTables = legendTables.sort(function (a, b) {
+						return $(a).attr('legend-index') - $(b).attr('legend-index');
+					});
+				}
+
+				// Remove the loading text from the legend div and append the legend tables
+				me.$legendDiv.empty().append(legendTables);
 			}
-
-
-			me.$legendDiv.append(legendTables);
-			me.$container.append(me.$legendDiv);
-
+			
 			if (me.onComplete) {
 				me.onComplete.call(me);
 			}
+
 		}
 	};
 
