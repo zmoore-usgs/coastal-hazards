@@ -28,12 +28,9 @@ CCH.Objects.Widget.Legend = function (args) {
 
 	me.init = function () {
 		CCH.LOG.trace('Legend.js::constructor:Legend class is initializing.');
-		var childItems = [],
-			legendTables = [],
-			itemId = me.item.id,
-			request;
 
 		me.$container = $('#' + me.containerId);
+
 		me.$container.append(me.$legendDiv);
 
 		if (me.$container.length === 0) {
@@ -43,6 +40,23 @@ CCH.Objects.Widget.Legend = function (args) {
 		if (me.legendClass) {
 			me.$legendDiv.addClass(me.legendClass);
 		}
+
+		me.generateLegendTable({
+			item: me.item
+		});
+
+		return me;
+	};
+
+	me.generateLegendTable = function (args) {
+		args = args || {};
+
+		var item = args.item,
+			itemType = item.type,
+			childItems,
+			legendTables = [],
+			request,
+			index = args.index;
 
 		// Fill out the items array with the item ids of the items that will end up in the legend
 		if (me.item.itemType.toLowerCase() === 'aggregation') {
@@ -54,7 +68,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				me.items.push(childItem.split('_')[1]);
 			});
 		} else {
-			me.items.push(itemId);
+			me.items.push(item.id);
 		}
 
 		// Now that I have all of the necessary items that I will be creating the legend from, I need the SLDs 
@@ -81,13 +95,27 @@ CCH.Objects.Widget.Legend = function (args) {
 									total = items.length;
 
 								try {
-									// Build the table and add a custom attribute to it that serves to sort the 
-									// table in the legend when all legends are created
-									$legendTable = me.generateLegendTable({
-										sld: sld,
-										itemId: itemId,
-										index: index
-									});
+									item = CCH.items.getById({id: itemId});
+									itemType = item.type;
+									if (itemType === me.itemTypes.HISTORICAL) {
+										$legendTable = me.generateHistoricalLegendTable({
+											sld: sld,
+											item: item,
+											index: index
+										});
+									} else if (itemType === me.itemTypes.STORMS) {
+										$legendTable = me.generateStormLegendTable({
+											sld: sld,
+											item: item,
+											index: index
+										});
+									} else if (itemType === me.itemTypes.VULNERABILITY) {
+										$legendTable = me.generateVulnerabilityLegendTable({
+											sld: sld,
+											item: item,
+											index: index
+										});
+									}
 
 									// If the procedure didn't create anything for whatever reason, 
 									// set the variable to -1
@@ -131,63 +159,6 @@ CCH.Objects.Widget.Legend = function (args) {
 				me.ajaxRequests.push(request);
 			}
 		});
-		return me;
-	};
-
-	me.destroy = function () {
-		me.destroyed = true;
-		me.ajaxRequests.each(function (req) {
-			req.abort();
-		});
-		me.$legendDiv.remove();
-	};
-
-	me.generateLegendTable = function (args) {
-		args = args || {};
-
-		var itemType,
-			item,
-			$legend,
-			fName = 'Legend.js::generateLegend: ',
-			index = args.index;
-
-
-		if (!args.sld) {
-			throw fName + "Missing SLD";
-		}
-		if (!args.itemId) {
-			throw fName + "Missing ItemID";
-		}
-
-		item = CCH.items.getById({id: args.itemId});
-
-		if (!item) {
-			throw fName + "Item " + args.itemId + " not found";
-		}
-
-		itemType = item.type;
-		if (itemType === me.itemTypes.HISTORICAL) {
-			$legend = me.generateHistoricalLegendTable({
-				sld: args.sld,
-				item: item,
-				index: index
-			});
-		} else if (itemType === me.itemTypes.STORMS) {
-			$legend = me.generateStormLegendTable({
-				sld: args.sld,
-				item: item,
-				index: index
-			});
-		} else if (itemType === me.itemTypes.VULNERABILITY) {
-			$legend = me.generateVulnerabilityLegendTable({
-				sld: args.sld,
-				item: item,
-				index: index
-			});
-		}
-
-		return $legend;
-
 	};
 
 	me.generateGenericLegendTable = function (args) {
@@ -364,7 +335,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				// Remove the loading text from the legend div and append the legend tables
 				me.$legendDiv.empty().append(legendTables);
 			}
-			
+
 			if (me.onComplete) {
 				me.onComplete.call(me);
 			}
@@ -392,6 +363,21 @@ CCH.Objects.Widget.Legend = function (args) {
 		return me.$legendDiv;
 	};
 
+
+	/**
+	 * Marks this widget as being destroyed. Cancels all outgoing ajax requests and removes its container
+	 * 
+	 * @returns {CCH.Objects.Widget.Legend.me|@exp;CCH@pro;Objects@pro;Widget|CCH.Objects.Widget}
+	 */
+	me.destroy = function () {
+		me.destroyed = true;
+		me.ajaxRequests.each(function (req) {
+			req.abort();
+		});
+		me.$legendDiv.remove();
+		return me;
+	};
+
 	// Verify that everything we need was passed in and create the item. Otherwise, error out.
 	if (!me.containerId) {
 		throw me.errorMessage.replace('%s', 'Argument "containerId" was not provided.');
@@ -402,4 +388,5 @@ CCH.Objects.Widget.Legend = function (args) {
 			init: me.init
 		};
 	}
+
 };
