@@ -1,109 +1,111 @@
 /* ---------------------------------------------------------------------- UI */
 html, body {
-    /* While I designed the app to work with both overflows set to auto,
-       for some reason, IE9 still gives me scroll bars which messes everything
-       up :( so these need to be set to hidden */
-    overflow-y: auto;
-    overflow-x: auto;
-    /* 
-    320 pixels is the minimum width and 600px is
-    the minimum height that this application will support.
-    Anything smaller, scroll the app
-    */
-    min-width: 320px;
-    min-height: 480px;
-    padding-left: 10px !important;
-    padding-right:  10px !important;
-    height: 100%;
-    font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: inherit;
-    color: #777;
+	/* While I designed the app to work with both overflows set to auto,
+	   for some reason, IE9 still gives me scroll bars which messes everything
+	   up :( so these need to be set to hidden */
+	overflow-y: auto;
+	overflow-x: auto;
+	/* 
+	320 pixels is the minimum width and 600px is
+	the minimum height that this application will support.
+	Anything smaller, scroll the app
+	*/
+	min-width: 320px;
+	min-height: 480px;
+	padding-left: 10px !important;
+	padding-right:  10px !important;
+	height: 100%;
+	font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: inherit;
+	color: #777;
 }
 
 /* Fixes pink tile issue in OpenLayers map */
 .olImageLoadError {
-    display : none !important;
+	display : none !important;
 }
 
 /* Container holding the main view */
 .container {
-    width: 100%;
+	width: 100%;
 }
 
 /* Header Row */
 .container > div.row:first-child {
-    background-color: #003366 !important;
-    z-index: 1005;
-    margin-bottom: 4px;
-    height: 55px;
+	background-color: #003366 !important;
+	z-index: 1005;
+	margin-bottom: 4px;
+	height: 55px;
 }
 
 /* Item Title Row */
 .container > div.row:nth-child(2) {
-    text-align: center;
-    font-size: 1.7em;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    color: #666;
-    line-height: 1em;
+	text-align: center;
+	font-size: 1.7em;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	font-weight: 600;
+	letter-spacing: 3px;
+	color: #666;
+	line-height: 1em;
 }
 
 /* Every item in the header */
 .container > div.row:first-child > .app-navbar-item-container {
-    float: left;
-    max-height: 55px;
-    display: table;
+	float: left;
+	max-height: 55px;
+	display: table;
 }
 /* Logo */
 .container > div.row:first-child > .app-navbar-item-container:first-child {
-    margin-right: 15px;
-    height: 55px;
-    width: 126px;
+	margin-right: 15px;
+	height: 55px;
+	width: 126px;
 }
 .container > div.row:first-child > .app-navbar-item-container:first-child > img {
-    height: 56px;
+	height: 56px;
 }
 /* Title */
 .container > div.row:first-child > .app-navbar-item-container:nth-child(2) {
-    vertical-align: middle;
-    margin-top: 5px;
-    padding-right: 15px;
+	vertical-align: middle;
+	margin-top: 5px;
+	padding-right: 15px;
 }
 .container > div.row:first-child > .app-navbar-item-container:nth-child(2) div {
-    color: #FFFFFF;
-    font-size: 2em;
+	color: #FFFFFF;
+	font-size: 2em;
 }
 
 /* Map */
 .container > div.row:nth-child(3) > div:first-child > div > div.olMap {
-    height: 400px;
+	height: 400px;
 }
+
 /* Social Media Icon */
-.container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
-    vertical-align: middle;
-    margin-left: 10px;
+#social-link-container {
+	vertical-align: middle;
+	margin-left: 10px;
+	position: fixed;
 }
 
 /* Info Graph */
 .container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
-    text-align: center;
-    height: 300px;
+	text-align: center;
+	height: 300px;
 }
 .container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) img {
-    height: 100%;
-    width: 100%;
+	height: 100%;
+	width: 100%;
 }
 
 /* Summary container */
 .container > div.row:nth-child(3) > div:nth-child(2) > div > div {
-    font-size:1.3em;
-    line-height: 1.5em;
+	font-size:1.3em;
+	line-height: 1.5em;
 }
 
 #modal-services-view .modal-dialog {
-    width: auto;
+	width: auto;
 }
 
 #modal-services-view .modal-body .row {
@@ -121,41 +123,41 @@ html, body {
 }
 
 @media (max-width: 440px) {
-    /* Item Title Row*/
-    .container > div.row:nth-child(2) {
-        font-size: 0.65em;
-    }
+	/* Item Title Row*/
+	.container > div.row:nth-child(2) {
+		font-size: 0.65em;
+	}
 
-    /* Social Media Icon */
-    .container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
-        margin-left: 5px;
-    }
+	/* Social Media Icon */
+	#social-link-container  {
+		margin-left: 5px;
+	}
 
-    .container > div.row:nth-child(3) > div:first-child > div > div.olMap {
-        height : 300px;
-    }
+	.container > div.row:nth-child(3) > div:first-child > div > div.olMap {
+		height : 300px;
+	}
 
-    .container > div.row:nth-child(3) > div:first-child > div div.olMap .olControlZoom {
-        display: none;
-    }
+	.container > div.row:nth-child(3) > div:first-child > div div.olMap .olControlZoom {
+		display: none;
+	}
 }
 
 @media (min-width: 992px) {
-    .container > div.row:nth-child(3) > div:nth-child(2) div.row {
-        margin-left: 15px;
-    }
+	.container > div.row:nth-child(3) > div:nth-child(2) div.row {
+		margin-left: 15px;
+	}
 }
 
 @media (max-width: 991px) {
-    /* Social Media Icon */
-    .container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
-        margin-top: 5px;
-        margin-left: 5px;
-    }
+	/* Social Media Icon */
+	.container > div.row:nth-child(3) > div:first-child > div > div:nth-child(2) > div > span:nth-child(2) > iframe {
+		margin-top: 5px;
+		margin-left: 5px;
+	}
 
-    /* Info Graph */
-    .container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
-        height: 100px;
-    }
+	/* Info Graph */
+	.container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
+		height: 100px;
+	}
 
 }

@@ -11,14 +11,114 @@ CCH.Objects.Back.UI = function (args) {
 	"use strict";
 	CCH.LOG.info('UI.js::constructor: UI class is initializing.');
 
-	var me = (this === window) ? {} : this,
-		$metadataLink,
-		$metadataLinkButton = $('#metadata-link'),
-		$downloadFullLink = $('#download-full-link'),
-		$downloadFull,
-		$applicationLink,
-		$publist,
-		item = args.item;
+	var me = (this === window) ? {} : this;
+
+
+	me.init = function (args) {
+		var $metadataLinkButton = $('#metadata-link-container'),
+			$downloadFullLink = $('#download-full-link-container'),
+			$applicationLink = $('#application-link-container'),
+			cswService,
+			$publist,
+			item = args.item;
+
+		// Create a "Back To Portal" link to let the user view this in the portal
+		$applicationLink.find('a').attr({
+			'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId
+		});
+
+		// Link the "Download Full" button
+		$downloadFullLink.find('a').attr({
+			'href': window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + CCH.CONFIG.itemId
+		});
+
+
+		me.createModalServicesTab({
+			item: item
+		});
+
+		// Create a "View Metadata" button
+		cswService = CCH.CONFIG.item.services.find(function (service) {
+			return service.type === 'csw';
+		});
+
+		// If item has a metadata service behind it, wire up the button. Otherwise, remove it.
+		if (cswService && cswService.endpoint) {
+			$metadataLinkButton.find('a').attr({
+				'href': cswService.endpoint + '&outputSchema=http://www.opengis.net/cat/csw/csdgm'
+			});
+		} else {
+			$metadataLinkButton.remove();
+		}
+
+		// Build the publications list for the item
+		if (item.summary.full.publications) {
+			$publist = $('<ul />').attr('id', 'info-container-publications-list');
+			Object.keys(item.summary.full.publications, function (type) {
+				var pubTypeArray = item.summary.full.publications[type],
+					pubTypeListHeader = $('<li />').
+					addClass('publist-header').
+					html(type),
+					subList = $('<ul />'),
+					pubLink;
+				if (pubTypeArray.length) {
+					pubTypeListHeader.append(subList);
+					$publist.append(pubTypeListHeader);
+					item.summary.full.publications[type].each(function (publication) {
+						pubLink = $('<a />').attr({
+							'href': publication.link,
+							'target': 'portal_publication_window'
+						}).html(publication.title);
+						subList.append($('<li />').append(pubLink));
+					});
+				}
+			});
+		} else {
+			$('#info-container-publications-list-span').remove();
+		}
+
+		$('#info-title').html(item.summary.full.title);
+		$('#info-summary').html(item.summary.full.text);
+		$('#info-container-publications-list-span').append($publist);
+
+		me.buildTwitterButton();
+		CCH.map.buildMap();
+
+		if (item.getLayerList().layers.length) {
+			new CCH.Objects.Widget.Legend({
+				containerId: 'info-legend',
+				item: item,
+				onComplete: function () {
+					var $container = this.$container,
+						$legendDiv = this.$legendDiv,
+						$firstTable = $('#info-legend > div > table:first-child'),
+						$captions = $legendDiv.find('table > thead > caption'),
+						mapHeight = $('#map').height(),
+						tableHeight,
+						tableWidth = $firstTable.width();
+
+					// For one reason or another, the caption in the table doesn't seem to dynamically resize
+					$captions.width(tableWidth);
+
+					// I don't want my legend div to be taller than the map
+					tableHeight = $firstTable.height() - parseInt($container.css('paddingTop'));
+
+					if (tableHeight > mapHeight) {
+						tableHeight = mapHeight;
+					}
+
+					// Set the height of the container to the height of the first table (All tables should be about
+					// the same size)
+					$container.height(tableHeight);
+				}
+			}).init();
+		} else {
+			me.removeLegendContainer();
+		}
+		
+		return me;
+	};
+
 
 	me.removeLegendContainer = function () {
 		$('#info-legend').remove();
@@ -46,7 +146,7 @@ CCH.Objects.Back.UI = function (args) {
 		twttr.ready(function (twttr) {
 			twttr.widgets.createShareButton(
 				url,
-				$('#social-link')[0],
+				$('#social-link-container')[0],
 				function (element) {
 					// Any callbacks that may be needed
 				},
@@ -64,7 +164,6 @@ CCH.Objects.Back.UI = function (args) {
 	};
 
 	me.createModalServicesTab = function (args) {
-
 		var item = args.item,
 			$container = args.container || $('#modal-services-view .modal-body'),
 			$tabUl = $container.find('> ul'),
@@ -165,105 +264,7 @@ CCH.Objects.Back.UI = function (args) {
 		}
 	};
 
-	me.createModalServicesTab({
-		item: item
-	});
+	
 
-	// Create a "Download Full" button
-	$downloadFull = $('<a />').attr({
-		'role': 'button',
-		'href': window.location.origin + CCH.CONFIG.contextPath + '/data/download/item/' + CCH.CONFIG.itemId
-	}).addClass('btn btn-default').html('<i class="fa fa-download"></i> Download Full Data');
-
-	$downloadFullLink.append($downloadFull);
-
-	// Create a "View Metadata" button
-	var cswService = CCH.CONFIG.item.services.find(function (service) {
-		return service.type === 'csw';
-	});
-
-	if (cswService && cswService.endpoint) {
-		$metadataLink = $('<a />').attr({
-			'href': cswService.endpoint + '&outputSchema=http://www.opengis.net/cat/csw/csdgm',
-			'target': 'portal_metadata_window',
-			'role': 'button'
-		}).addClass('btn btn-default').html('<i class="fa fa-download"></i> View Metadata');
-		$metadataLinkButton.append($metadataLink);
-	} else {
-		$metadataLinkButton.remove();
-	}
-
-	// Create a "Back To Portal" link to let the user view this in the portal
-	$applicationLink = $('<a />').attr({
-		'href': CCH.CONFIG.contextPath + '/ui/item/' + CCH.CONFIG.itemId,
-		'role': 'button'
-	}).addClass('btn btn-default').html('<i class="fa fa-eye"></i> Back To Portal');
-	$('#application-link').append($applicationLink);
-
-	// Build the publications list for the item
-	if (item.summary.full.publications) {
-		$publist = $('<ul />').attr('id', 'info-container-publications-list');
-		Object.keys(item.summary.full.publications, function (type) {
-			var pubTypeArray = item.summary.full.publications[type],
-				pubTypeListHeader = $('<li />').
-				addClass('publist-header').
-				html(type),
-				subList = $('<ul />'),
-				pubLink;
-			if (pubTypeArray.length) {
-				pubTypeListHeader.append(subList);
-				$publist.append(pubTypeListHeader);
-				item.summary.full.publications[type].each(function (publication) {
-					pubLink = $('<a />').attr({
-						'href': publication.link,
-						'target': 'portal_publication_window'
-					}).html(publication.title);
-					subList.append($('<li />').append(pubLink));
-				});
-			}
-		});
-	} else {
-		$('#info-container-publications-list-span').remove();
-	}
-
-	$('#info-title').html(item.summary.full.title);
-	$('#info-summary').html(item.summary.full.text);
-	$('#info-container-publications-list-span').append($publist);
-
-	me.buildTwitterButton();
-	CCH.map.buildMap();
-
-	if (item.getLayerList().layers.length) {
-		new CCH.Objects.Widget.Legend({
-			containerId: 'info-legend',
-			item: item,
-			onComplete: function () {
-				var $container = this.$container,
-					$legendDiv = this.$legendDiv,
-					$firstTable = $('#info-legend > div > table:first-child'),
-					$captions = $legendDiv.find('table > thead > caption'),
-					mapHeight = $('#map').height(),
-					tableHeight,
-					tableWidth = $firstTable.width();
-
-				// For one reason or another, the caption in the table doesn't seem to dynamically resize
-				$captions.width(tableWidth);
-
-				// I don't want my legend div to be taller than the map
-				tableHeight = $firstTable.height() - parseInt($container.css('paddingTop'));
-
-				if (tableHeight > mapHeight) {
-					tableHeight = mapHeight;
-				}
-
-				// Set the height of the container to the height of the first table (All tables should be about
-				// the same size)
-				$container.height(tableHeight);
-			}
-		}).init();
-	} else {
-		me.removeLegendContainer();
-	}
-
-	return me;
+	return me.init(args);
 };
