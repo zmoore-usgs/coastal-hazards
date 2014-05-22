@@ -123,7 +123,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		});
 		return $table;
 	};
-	
+
 	me.generateMixedLegendTables = function (args) {
 		args = args || {};
 		var item = args.item,
@@ -138,22 +138,40 @@ CCH.Objects.Widget.Legend = function (args) {
 			items: childItems
 		});
 	};
-	
+
 	me.generateHistoricalLegendTables = function (args) {
 		args = args || {};
 		var item = args.item,
-			childItems;
+			childItemIdArray,
+			dataItem,
+			isYearAggregation;
 		if ('aggregation' === item.itemType.toLowerCase()) {
-			childItems = me.getAggregationChildrenIds(item.id);
+			childItemIdArray = me.getAggregationChildrenIds(item.id);
+
+			// Figure out if this is a date-type historical aggregation. If so, I'll have to stitch together the year 
+			// array
+			dataItem = function (items) {
+				var dataItemId = items.find(function (id) {
+					return CCH.items.getById({id: id}).itemType === 'data';
+				});
+
+				return CCH.items.getById({id: dataItemId});
+			}(childItemIdArray);
+
+			isYearAggregation = dataItem.attr.toLowerCase().indexOf('date') !== -1;
 		} else {
-			childItems = [item.id];
+			childItemIdArray = [item.id];
 		}
 
+		var yearlyTableAddedCallback = null;
+
+
 		me.createLegendsFromItems({
-			items: childItems
+			items: childItemIdArray,
+			tableAddedCallback: isYearAggregation ? yearlyTableAddedCallback : null
 		});
 	};
-	
+
 	me.generateHistoricalLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
@@ -170,6 +188,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			'legend-attribute': attr,
 			'legend-index': index
 		});
+
 		// If the table is a date table, I want to sort it by year in descending order
 		if ('year' === sld.units) {
 			$legendTableTBody = $legendTable.find('tbody');
@@ -248,7 +267,8 @@ CCH.Objects.Widget.Legend = function (args) {
 		args = args || {};
 		var items = args.items,
 			xhrRequest,
-			legendTables = [];
+			legendTables = [],
+			tableAddedCallback = args.tableAddedCallback;
 		items.each(function (childId, index, allItems) {
 			if (!me.destroyed) {
 				xhrRequest = CCH.Util.Util.getSLD({
@@ -258,7 +278,8 @@ CCH.Objects.Widget.Legend = function (args) {
 						index: index,
 						allItems: allItems,
 						legendTables: legendTables,
-						itemId: childId
+						itemId: childId,
+						tableAddedCallback: tableAddedCallback
 					},
 					callbacks: {
 						success: [
@@ -270,7 +291,8 @@ CCH.Objects.Widget.Legend = function (args) {
 									legendTables = this.legendTables,
 									total = allItems.length,
 									itemType,
-									item;
+									item,
+									tableAddedCallback = this.tableAddedCallback || me.tableAdded;
 								try {
 									item = CCH.items.getById({id: itemId});
 									itemType = item.type;
@@ -307,11 +329,12 @@ CCH.Objects.Widget.Legend = function (args) {
 
 								// Whatever we have at this point, add it to the array
 								this.legendTables.push($legendTable);
-								// And call tableAdded to possibly complete the legend
-								me.tableAdded({
+								
+								// And call the table added callback to possibly complete the legend
+								tableAddedCallback.call(me, {
 									legendTables: this.legendTables,
 									total: total,
-									item: CCH.items.getById({id: itemId})
+									item: CCH.items.getById({id: itemId})	
 								});
 							}
 						],
