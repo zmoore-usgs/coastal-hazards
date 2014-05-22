@@ -247,7 +247,7 @@ public class Item implements Serializable {
     }
 	
 	@Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "lastUpdate")
+    @Column(name = "last_update")
     public Date getLastUpdate() {
         return lastUpdate;
     }
