@@ -349,10 +349,10 @@ CCH.Objects.Widget.Legend = function (args) {
 				return table !== -1;
 			});
 
-			if (legendTables.length === 1) {
-				// If there's only one table, replace the caption with the title of its 
-				// ancestor. Otherwise, we just have the title of the last child to 
-				// make it through unique()
+			if (legendTables.length === 1 && total > 1) {
+				// I have one table left after running unique(). However, I started out with multiple tables. This
+				// means that the title of this table will be the last table to make it through unique(). If that's the 
+				// case, use the title of the parent aggregation for this item
 				legendTables[0].find('caption').html(item.getAncestor().summary.full.title);
 			} else {
 				// If there's multiple tables, sort them according to index, leaving
