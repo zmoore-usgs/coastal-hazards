@@ -285,23 +285,13 @@ CCH.Objects.Front.UI = function (args) {
 			'eventLabel': errorThrown
 		});
 
-		if (!splashMessage) {
-			switch (status) {
-				case 404:
-					splashMessage = '<b>Item Not Found</b><br /><div id="splash-error-message">There was a problem loading information.' +
+splashMessage = splashMessage || '<b>Item Not Found</b><br /><div id="splash-error-message">There was a problem loading information.' +
 						'We could not find information needed to continue loading the Coastal Change Hazards Portal. ' +
-						'Either try to reload the application or let us knowthat this happened.</div>';
-					break;
-			}
-		}
-
-		$('.splash-status-update').
-			empty().
-			addClass('error-message').
-			append(
-				splashMessage,
-				$('<span />').append(continueLink),
-				emailLink);
+						'Either try to reload the application or let us know that this happened.</div>';
+		
+		splashUpdate(splashMessage);
+		splashAppend($('<span />').append(continueLink));
+		splashAppend(emailLink);
 		$('.splash-spinner').remove();
 	};
 
