@@ -74,6 +74,9 @@ html, body {
 	color: #FFFFFF;
 	font-size: 2em;
 }
+.container >#header-row > #app-navbar-site-title-container > #app-navbar-title-print {
+	display: none;
+}
 
 /* Map */
 #map {

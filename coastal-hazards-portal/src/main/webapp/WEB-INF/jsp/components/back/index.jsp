@@ -163,6 +163,7 @@
 				</a>
 				<%-- Application Title --%>
 				<div id="app-navbar-site-title-container" class="app-navbar-item-container">
+					<div class="app-navbar-title-print">USGS Coastal Change Hazards Portal</div>
 					<div class="app-navbar-title visible-lg visible-md hidden-sm hidden-xs">USGS Coastal Change Hazards Portal</div>
 					<div class="app-navbar-title hidden-lg hidden-md visible-sm hidden-xs">Coastal Change Hazards Portal</div>
 					<div class="app-navbar-title hidden-lg hidden-md hidden-sm visible-xs">&nbsp;</div>
@@ -181,7 +182,7 @@
 			</div> 
 			<div class="row">
 				<%-- Left side --%>
-				<div class="col-md-6">
+				<div id="map-and-legend-row" class="col-md-6">
 
 					<div id="map-row" class="row">
 						<%-- Map --%>
@@ -205,12 +206,12 @@
 				</div>
 
 				<%-- Right Side --%>
-				<div class="col-md-6">
-					<div class="row">
+				<div id="summary-and-publications-row" class="col-md-6">
+					<div id="summary-row" class="row">
 						<%-- Summary Information --%>
 						<div id="info-summary"  class="well"></div>
 					</div>
-					<div class="row" id='info-container-publications'>
+					<div class="row" id='publications-row'>
 						<div class="well">
 							<span id='info-container-publications-list-span'></span>
 						</div>

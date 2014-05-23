@@ -1,4 +1,7 @@
 @media print {
+	@page {
+		size: letter;
+	}
 	* {
 		background: initial !important;
 	}
@@ -9,91 +12,122 @@
 		margin:10px;
 		-webkit-print-color-adjust:exact;
 	}
-	
+
 	.row {
 		width: 100%;
 	}
 
 	/* Header */
-	#header-row img {
-		height: 5em;
+	.container > #header-row > #app-navbar-coop-logo-img-container > img {
+		height: 5em; /* Header Image */
 	}
 	#header-row a[href]:after {
-		content: "";
+		content: ""; /* Remove href for image from print */
 	}
-	#app-navbar-site-title-container {
+	.container >#header-row  #app-navbar-site-title-container {
+		display: inline;
+	}
+	.container >#header-row  #app-navbar-site-title-container > .app-navbar-title-print {
+		display: initial;
 		float:right;
-		font-size: 3em;
+		font-size: 2em;
+	}
+	.container >#header-row  #app-navbar-site-title-container > .app-navbar-title {
+		display: none !important;
+	}
+	.container > #header-row > #app-navbar-help-container {
+		display: none;
 	}
 
 	/* Item Title */
-	#info-title {
+	.container > #info-row-title > #info-title {
 		text-align: center;
-		font-size: 2em;
+		font-size: 3em;
 	}
 
+	.container #map-and-legend-row  {
+		clear: both;
+		width: 100%;
+	}
+	
 	/* Map */
-	#map-row {
+	.container #map-and-legend-row > #map-row {
+		width: 100%;
 		text-align: center;
 		text-align: -webkit-center;
+		clear:both;
 	}
-	#map {
+	.container #map-and-legend-row > #map-row > #map {
 		width: 650px;
 		height: 650px;
 	}
-	#map .olControlZoom {
+	.container #map-and-legend-row > #map-row > #map .olControlZoom {
 		display: none;
 	}
-	#map img {
+	.container #map-and-legend-row > #map-row > #map img {
 		max-width: none !important;
 	}
-	#map #openlayers-map-attribution-image {
+	.container #map-and-legend-row > #map-row > #map #openlayers-map-attribution-image {
 		height: 30px;
 	}
-	#map .olControlAttribution  a[href]:after {
+	.container #map-and-legend-row > #map-row > #map .olControlAttribution  a[href]:after {
 		content: "";
 	}
 
 	/* Info Legend */
-	#info-legend {
+	.container #map-and-legend-row > #info-legend-row {
+		width: 100%;
+		text-align: center;
+		text-align: -webkit-center;
+		clear:both;
+	}
+	.container #map-and-legend-row > #info-legend-row > #info-legend {
 		page-break-before: always;
 		height: auto !important;
+		width: 100%;
+		border: none;
 	}
-	#info-legend table {
+	.container #map-and-legend-row > #info-legend-row > #info-legend table {
 		width: 100%;
 	}
-	#info-legend table thead {
+	.container #map-and-legend-row > #info-legend-row > #info-legend table thead {
 		font-size: 2em;
 	}
-	#info-legend table tbody tr td {
+	.container #map-and-legend-row > #info-legend-row > #info-legend table tbody tr td {
 		padding-top: 5px;
 		padding-bottom: 5px;
 	}
-	#info-legend table span {
+	.container #map-and-legend-row > #info-legend-row > #info-legend table span {
 		width: 20px;
 		height: 20px;
 		display: inline-block;
 	}
-	#info-legend table > tbody >tr > td:first-child  {
+	.container #map-and-legend-row > #info-legend-row > #info-legend table > tbody >tr > td:first-child  {
 		text-align: right;
 		padding-right:10px;
 	}
-	#info-legend table tbody tr td {
+	.container #map-and-legend-row > #info-legend-row > #info-legend table tbody tr td {
 		width: 50%;	
 	}
 
-	#info-summary {
-		page-break-before: auto;;
+	.container #summary-and-publications-row {
+		width: 100%;
+		clear: both;
+	}
+	
+	.container #summary-and-publications-row > #summary-row > #info-summary {
+		page-break-before: auto;
 		font-size: 20px;
 	}
 
-	#info-container-publications {
+	.container #summary-and-publications-row > #publications-row {
+		page-break-before: always;
 		font-size: 18px;
 	}
-	#info-container-publications .publist-header {
+	.container #summary-and-publications-row > #publications-row .publist-header {
 		text-transform: capitalize;
 	}
-	#info-container-publications .publist-header li {
+	.container #summary-and-publications-row > #publications-row .publist-header li {
 		text-transform: none;
 	}
 
