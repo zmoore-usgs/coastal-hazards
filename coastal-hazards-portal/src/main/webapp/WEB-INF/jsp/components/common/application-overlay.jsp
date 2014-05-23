@@ -26,6 +26,7 @@
 			<h2>Retrieving Data...</h2>
 			<div class="application-overlay-description-container-spinner-container">
 				<img class="splash-spinner" src="images/spinner/spinner3.gif" class="img-responsive" alt="Spinner Image"/>
+				<span class="splash-status-update"></span>
 			</div>
 		</div>
 	</div>

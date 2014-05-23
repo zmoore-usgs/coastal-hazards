@@ -484,7 +484,7 @@ CCH.Objects.Front.UI = function (args) {
 			display = evt.namespace === 'card.layer.show',
 			accordionLegends = me.legends.accordion;
 
-		// Oreoare ti recreate the legend
+		// Prepare to recreate the legend
 		if (me.legends.accordion[item.id]) {
 			me.legends.accordion[item.id].destroy();
 			delete me.legends.accordion[item.id];

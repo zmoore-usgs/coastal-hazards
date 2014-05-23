@@ -13,6 +13,7 @@ import gov.usgs.cida.utilities.StringPrecondition;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -29,7 +30,11 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.LazyCollection;
@@ -93,7 +98,8 @@ public class Item implements Serializable {
     private transient List<Item> children;
     /* Show only a subset of children */
     private List<String> displayedChildren;
-
+	private Date lastUpdate;
+	
     @Id
     public String getId() {
         return id;
@@ -239,7 +245,23 @@ public class Item implements Serializable {
     public List<String> getDisplayedChildren() {
         return displayedChildren;
     }
-
+	
+	@Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_update")
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
+	
+	public void setLastUpdate(Date timestamp) {
+        this.lastUpdate = timestamp;
+    }
+	
+	@PrePersist
+	@PreUpdate
+    protected void timestamp() {
+        this.lastUpdate = new Date();
+    }
+	
     public void setDisplayedChildren(List<String> displayedChildren) {
         this.displayedChildren = displayedChildren;
     }
