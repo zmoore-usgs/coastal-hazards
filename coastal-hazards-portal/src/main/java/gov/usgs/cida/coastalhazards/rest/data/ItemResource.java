@@ -6,8 +6,10 @@ import gov.usgs.cida.coastalhazards.exception.UnauthorizedException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.model.util.ItemLastUpdateComparator;
 import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
 import gov.usgs.cida.coastalhazards.rest.data.util.HttpUtil;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +21,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -55,19 +56,28 @@ public class ItemResource {
         Response response = null;
         try (ItemManager itemManager = new ItemManager()) {
             Item item = itemManager.load(id);
-			Date serverItemDate = item.getLastUpdate();
             if (item == null) {
                 throw new NotFoundException();
             } else {
-				Date clientItemDate = null;
-				try{
-					clientItemDate = DateUtils.parseDate(clientItemDateString);
+				Date serverItemDate; 
+				if(subtree){
+					List<Item> children = item.getChildren();
+					Item leastFrequentlyUpdatedChild = Collections.min(children, new ItemLastUpdateComparator());
+					serverItemDate = leastFrequentlyUpdatedChild.getLastUpdate();
+				}else{
+					serverItemDate = item.getLastUpdate();
 				}
-				catch(DateParseException e){
-					//we must do nothing according to the spec:
-					//"if the passed If-Modified-Since date is
-					//invalid, the response is exactly the same as for a normal GET"
-					//@see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.25
+				Date clientItemDate = null;
+				if(null != clientItemDateString){
+					try{
+						clientItemDate = DateUtils.parseDate(clientItemDateString);
+					}
+					catch(DateParseException e){
+						//we must do nothing according to the spec:
+						//"if the passed If-Modified-Since date is
+						//invalid, the response is exactly the same as for a normal GET"
+						//@see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.25
+					}
 				}
 				if(clientItemDate != null && clientItemDate.getTime() == serverItemDate.getTime()){
 					response = Response.notModified().build();
