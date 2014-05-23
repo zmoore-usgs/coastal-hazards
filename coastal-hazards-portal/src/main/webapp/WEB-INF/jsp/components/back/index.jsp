@@ -47,7 +47,7 @@
 			<title>USGS Coastal Change Hazards Portal</title>
 			<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 			<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
-		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
+		<link type="text/css" rel="stylesheet" media="all" href="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/css/bootstrap<%= development ? "" : ".min"%>.css" />
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/bootstrap/<%=vBootstrap%>/js/bootstrap<%= development ? "" : ".min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/webjars/openlayers/<%=vOpenlayers%>/OpenLayers<%= development ? ".debug" : ""%>.js"></script>
 		<script type="text/javascript" src="webjars/sugar/<%=vSugarJs%>/sugar-full<%= development ? ".development" : ".min"%>.js"></script>
@@ -121,9 +121,10 @@
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/util/Util<%= development ? "" : "-min"%>.js"></script>
 		<script type="text/javascript" src="<%=baseUrl%>/js/cch/objects/widget/Legend<%= development ? "" : "-min"%>.js"></script>
 		<script type="text/javascript" src='<%=baseUrl%>/js/application/back/OnReady<%= development ? "" : "-min"%>.js'></script>
-		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
-		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />
-		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/back/legend<%= development ? "" : "-min"%>.css" />
+		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/common/common<%= development ? "" : "-min"%>.css" />
+		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />
+		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/legend<%= development ? "" : "-min"%>.css" />
+		<link type="text/css" rel="stylesheet" media="print" href="<%=baseUrl%>/css/back/print<%= development ? "" : "-min"%>.css" />
 		<script>
 			(function (i, s, o, g, r, a, m) {
 				i['GoogleAnalyticsObject'] = r;
@@ -182,7 +183,7 @@
 				<%-- Left side --%>
 				<div class="col-md-6">
 
-					<div class="row">
+					<div id="map-row" class="row">
 						<%-- Map --%>
 						<div id="map"></div>
 						<div id="info-row-control">
@@ -197,7 +198,7 @@
 						</div>
 					</div>
 
-					<div class="row">
+					<div id="info-legend-row" class="row">
 						<div id="info-legend" class="well-sm well col-md-6"></div>
 					</div>
 

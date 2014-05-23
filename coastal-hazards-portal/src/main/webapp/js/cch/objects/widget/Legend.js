@@ -115,7 +115,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				range = me.generateRangeString(upperBound, lowerBound);
 			}
 
-			$colorContainer.css('background-color', color);
+			$colorContainer.attr('style', 'background-color:' + color + ' !important');
 			$colorTd.append($colorContainer);
 			$rangeTd.html(range);
 			$tr.append($colorTd, $rangeTd);

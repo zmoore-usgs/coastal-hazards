@@ -1,0 +1,115 @@
+@media print {
+	* {
+		background: initial !important;
+	}
+
+	html, body {
+		height: 100%;
+		width: 100%;
+		margin:10px;
+		-webkit-print-color-adjust:exact;
+	}
+	
+	.row {
+		width: 100%;
+	}
+
+	/* Header */
+	#header-row img {
+		height: 5em;
+	}
+	#header-row a[href]:after {
+		content: "";
+	}
+	#app-navbar-site-title-container {
+		float:right;
+		font-size: 3em;
+	}
+
+	/* Item Title */
+	#info-title {
+		text-align: center;
+		font-size: 2em;
+	}
+
+	/* Map */
+	#map-row {
+		text-align: center;
+		text-align: -webkit-center;
+	}
+	#map {
+		width: 650px;
+		height: 650px;
+	}
+	#map .olControlZoom {
+		display: none;
+	}
+	#map img {
+		max-width: none !important;
+	}
+	#map #openlayers-map-attribution-image {
+		height: 30px;
+	}
+	#map .olControlAttribution  a[href]:after {
+		content: "";
+	}
+
+	/* Info Legend */
+	#info-legend {
+		page-break-before: always;
+		height: auto !important;
+	}
+	#info-legend table {
+		width: 100%;
+	}
+	#info-legend table thead {
+		font-size: 2em;
+	}
+	#info-legend table tbody tr td {
+		padding-top: 5px;
+		padding-bottom: 5px;
+	}
+	#info-legend table span {
+		width: 20px;
+		height: 20px;
+		display: inline-block;
+	}
+	#info-legend table > tbody >tr > td:first-child  {
+		text-align: right;
+		padding-right:10px;
+	}
+	#info-legend table tbody tr td {
+		width: 50%;	
+	}
+
+	#info-summary {
+		page-break-before: auto;;
+		font-size: 20px;
+	}
+
+	#info-container-publications {
+		font-size: 18px;
+	}
+	#info-container-publications .publist-header {
+		text-transform: capitalize;
+	}
+	#info-container-publications .publist-header li {
+		text-transform: none;
+	}
+
+	#info-row-control {
+		display: none;
+	}
+
+	#modal-services-view {
+		display: none;
+	}
+
+	#twttrHubFrame {
+		display: none;
+	}
+
+	#twttrHubFrameSecure {
+		display: none;
+	}
+}
