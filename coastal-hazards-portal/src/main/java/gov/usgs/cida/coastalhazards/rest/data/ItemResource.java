@@ -20,6 +20,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
@@ -28,6 +29,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import org.apache.http.impl.cookie.DateParseException;
 import org.apache.http.impl.cookie.DateUtils;
 
 /**
@@ -49,43 +51,39 @@ public class ItemResource {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getItem(@PathParam("id") String id, 
-            @DefaultValue("false") @QueryParam("subtree") boolean subtree) {
+            @DefaultValue("false") @QueryParam("subtree") boolean subtree, @HeaderParam("if-modified-since") String clientItemDateString) {
         Response response = null;
         try (ItemManager itemManager = new ItemManager()) {
             Item item = itemManager.load(id);
+			Date serverItemDate = item.getLastUpdate();
             if (item == null) {
                 throw new NotFoundException();
             } else {
-                String jsonResult = item.toJSON(subtree);
-                ResponseBuilder responseBuilder = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE);
-				Date lastUpdate = item.getLastUpdate();
-				String httpDate = HttpUtil.getDateAsHttpDate(lastUpdate);
-				responseBuilder.header(LAST_MODIFIED_HEADER, httpDate);
-				response = responseBuilder.build();
+				Date clientItemDate = null;
+				try{
+					clientItemDate = DateUtils.parseDate(clientItemDateString);
+				}
+				catch(DateParseException e){
+					//we must do nothing according to the spec:
+					//"if the passed If-Modified-Since date is
+					//invalid, the response is exactly the same as for a normal GET"
+					//@see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.25
+				}
+				if(clientItemDate != null && clientItemDate.getTime() == serverItemDate.getTime()){
+					response = Response.notModified().build();
+				}
+				else{
+					String jsonResult = item.toJSON(subtree);
+					ResponseBuilder responseBuilder = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE);
+					String httpDate = HttpUtil.getDateAsHttpDate(serverItemDate);
+					responseBuilder.header(LAST_MODIFIED_HEADER, httpDate);
+					response = responseBuilder.build();
+				}
             }
         }
         return response;
     }
 	
-	@HEAD
-	@Path("{id}")
-	public Response checkItem(@PathParam("id") String id) {
-		Response response = null;
-		try (ItemManager itemManager = new ItemManager()) {
-			Item item = itemManager.load(id);
-			if (item == null) {
-				throw new NotFoundException();
-			} else {
-				ResponseBuilder responseBuilder = Response.ok();
-				Date lastUpdate = item.getLastUpdate();
-				String httpDate = HttpUtil.getDateAsHttpDate(lastUpdate);
-				responseBuilder.header(LAST_MODIFIED_HEADER, httpDate);
-				response = responseBuilder.build();
-			}
-		}
-		return response;
-	}
-
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchItems(
