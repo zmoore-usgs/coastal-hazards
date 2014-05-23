@@ -7,7 +7,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
     <changeSet author="cschroed" id="change8">
         <addColumn tableName="item">
-            <column name="last_update" type="DATETIME" valueDate="1970-01-01T00:00:00">
+            <column name="last_update" type="DATETIME" defaultValueDate="now()">
 				<constraints nullable="false"/>
 			</column>
         </addColumn>
