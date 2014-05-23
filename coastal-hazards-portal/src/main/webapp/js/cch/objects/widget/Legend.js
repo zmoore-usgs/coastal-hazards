@@ -39,6 +39,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		me.generateLegend({
 			item: me.item
 		});
+		
 		return me;
 	};
 	me.generateLegend = function (args) {
@@ -135,9 +136,32 @@ CCH.Objects.Widget.Legend = function (args) {
 		}
 
 		me.createLegendsFromItems({
-			items: childItems
+			items: childItems,
+			generateLegendTable : me.generateMixedLegendTable
 		});
 	};
+	
+	me.generateMixedLegendTable = function (args) {
+		args = args || {};
+		var item = args.item,
+			$legendTable,
+			attr = item.attr,
+			index = args.index || null,
+			sld = args.sld;
+		
+		
+		$legendTable = me.generateGenericLegendTable({
+			sld: sld
+		});
+		
+		$legendTable.attr({
+			'legend-attribute': attr,
+			'legend-index': index,
+			'legend-item-id': item.id
+		});
+		
+		return $legendTable;
+	}
 
 	me.generateHistoricalLegendTables = function (args) {
 		args = args || {};
@@ -168,7 +192,8 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		me.createLegendsFromItems({
 			items: childItemIdArray,
-			tableAddedCallback: isYearAggregation ? yearlyTableAddedCallback : null
+			tableAddedCallback: isYearAggregation ? yearlyTableAddedCallback : null,
+			generateLegendTable: me.generateHistoricalLegendTable
 		});
 	};
 
@@ -181,12 +206,15 @@ CCH.Objects.Widget.Legend = function (args) {
 			$legendTable,
 			$legendTableTBody,
 			$yearRows;
+		
 		$legendTable = me.generateGenericLegendTable({
 			sld: sld
 		});
+		
 		$legendTable.attr({
 			'legend-attribute': attr,
-			'legend-index': index
+			'legend-index': index,
+			'legend-item-id': item.id
 		});
 
 		// If the table is a date table, I want to sort it by year in descending order
@@ -201,10 +229,12 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		return $legendTable;
 	};
+
 	me.generateStormLegendTables = function (args) {
 		args = args || {};
 		var item = args.item,
 			childItems;
+		
 		if ('aggregation' === item.itemType.toLowerCase()) {
 			childItems = me.getAggregationChildrenIds(item.id);
 		} else {
@@ -212,7 +242,8 @@ CCH.Objects.Widget.Legend = function (args) {
 		}
 
 		me.createLegendsFromItems({
-			items: childItems
+			items: childItems,
+			generateLegendTable: me.generateStormLegendTable
 		});
 	};
 
@@ -227,7 +258,8 @@ CCH.Objects.Widget.Legend = function (args) {
 			});
 		$legendTable.attr({
 			'legend-attribute': attr,
-			'legend-index': index
+			'legend-index': index,
+			'legend-item-id': item.id
 		});
 		return $legendTable;
 	};
@@ -243,7 +275,8 @@ CCH.Objects.Widget.Legend = function (args) {
 		}
 
 		me.createLegendsFromItems({
-			items: childItems
+			items: childItems,
+			generateLegendTable: me.generateVulnerabilityLegendTable
 		});
 	};
 
@@ -258,7 +291,8 @@ CCH.Objects.Widget.Legend = function (args) {
 			});
 		$legendTable.attr({
 			'legend-attribute': attr,
-			'legend-index': index
+			'legend-index': index,
+			'legend-item-id': item.id
 		});
 		return $legendTable;
 	};
@@ -268,6 +302,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		var items = args.items,
 			xhrRequest,
 			legendTables = [],
+			generateLegendTable = args.generateLegendTable,
 			tableAddedCallback = args.tableAddedCallback;
 		items.each(function (childId, index, allItems) {
 			if (!me.destroyed) {
@@ -279,7 +314,8 @@ CCH.Objects.Widget.Legend = function (args) {
 						allItems: allItems,
 						legendTables: legendTables,
 						itemId: childId,
-						tableAddedCallback: tableAddedCallback
+						tableAddedCallback: tableAddedCallback,
+						generateLegendTable: generateLegendTable
 					},
 					callbacks: {
 						success: [
@@ -290,31 +326,15 @@ CCH.Objects.Widget.Legend = function (args) {
 									itemId = this.itemId,
 									legendTables = this.legendTables,
 									total = allItems.length,
-									itemType,
 									item,
 									tableAddedCallback = this.tableAddedCallback || me.tableAdded;
 								try {
 									item = CCH.items.getById({id: itemId});
-									itemType = item.type;
-									if (itemType === me.itemTypes.HISTORICAL) {
-										$legendTable = me.generateHistoricalLegendTable({
-											sld: sld,
-											item: item,
-											index: index
-										});
-									} else if (itemType === me.itemTypes.STORMS) {
-										$legendTable = me.generateStormLegendTable({
-											sld: sld,
-											item: item,
-											index: index
-										});
-									} else if (itemType === me.itemTypes.VULNERABILITY) {
-										$legendTable = me.generateVulnerabilityLegendTable({
-											sld: sld,
-											item: item,
-											index: index
-										});
-									}
+									$legendTable = this.generateLegendTable.call(me, {
+										sld: sld,
+										item: item,
+										index: index
+									});
 
 									// If the procedure didn't create anything for whatever reason, 
 									// set the variable to -1
@@ -329,12 +349,13 @@ CCH.Objects.Widget.Legend = function (args) {
 
 								// Whatever we have at this point, add it to the array
 								this.legendTables.push($legendTable);
-								
+
 								// And call the table added callback to possibly complete the legend
 								tableAddedCallback.call(me, {
 									legendTables: this.legendTables,
 									total: total,
-									item: CCH.items.getById({id: itemId})	
+									item: CCH.items.getById({id: itemId}),
+									sld: sld
 								});
 							}
 						],
@@ -392,8 +413,48 @@ CCH.Objects.Widget.Legend = function (args) {
 		args = args || {};
 		var total = args.total,
 			legendTables = args.legendTables,
-			item = args.item || null;
+			item = args.item || null,
+			legendGroups,
+			legendGroup,
+			firstLegend,
+			firstLegendCaptionText,
+			currentLegend,
+			currentLegendCaptionText,
+			hashKey,
+			tableIndex,
+			lIdx;
+
 		if (legendTables.length === total) {
+
+			// If I am ribboned, I want to group my legends if they're the same color range/measures
+			if (me.item.itemType.toLowerCase() === 'aggregation' && me.item.ribboned === true) {
+				legendGroups = legendTables.groupBy(function (lt) {
+					return $(lt).find('tbody').html().hashCode()
+				});
+
+				for (hashKey in legendGroups) {
+					legendGroup = legendGroups[hashKey];
+					firstLegend = legendGroup[0];
+					for (lIdx = 1; lIdx < legendGroup.length; lIdx++) {
+						currentLegend = legendGroup[lIdx];
+						firstLegendCaptionText = firstLegend.find('caption').html();
+						currentLegendCaptionText = currentLegend.find('caption').html();
+						firstLegend.find('caption').html(firstLegendCaptionText + ', ' + currentLegendCaptionText);
+						tableIndex = legendTables.findIndex(function (t) {
+							return $(t).attr('legend-index') === currentLegend.attr('legend-index')
+						});
+						legendTables[tableIndex] = -1;
+					}
+				}
+
+				legendTables = legendTables.filter(function (table) { // Remove any array items that are -1
+					return table !== -1;
+				});
+				
+				total = legendTables.length;
+
+			}
+
 			// When all the tables are created, I want to sort them, append them to a  wrapper and throw that wrapper 
 			// into the final container
 			// There are no more legends to be built, filter and add the legend to the document

@@ -52,7 +52,7 @@ $(document).ready(function () {
 						'href': 'mailto:' + CCH.CONFIG.emailLink + '?subject=Application Failed To Load Item (URL: ' + window.location.toString() + ' Error: ' + errorThrown + ')',
 						'role': 'button'
 					}).addClass('btn btn-lg').html('<i class="fa fa-envelope"></i> Contact Us');
-					
+
 					if (404 === jqXHR.status) {
 						splashUpdate("<b>Item Not Found</b><br /><br />We couldn't find the item you are looking for<br /><br />");
 					} else {
@@ -65,4 +65,17 @@ $(document).ready(function () {
 			]
 		}
 	});
+
+	// http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
+	String.prototype.hashCode = function () {
+		var hash = 0, i, chr, len;
+		if (this.length === 0)
+			return hash;
+		for (i = 0, len = this.length; i < len; i++) {
+			chr = this.charCodeAt(i);
+			hash = ((hash << 5) - hash) + chr;
+			hash |= 0; // Convert to 32bit integer
+		}
+		return hash;
+	};
 });
