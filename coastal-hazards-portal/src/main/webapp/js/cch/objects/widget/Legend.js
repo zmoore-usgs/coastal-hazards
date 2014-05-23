@@ -39,7 +39,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		me.generateLegend({
 			item: me.item
 		});
-		
+
 		return me;
 	};
 	me.generateLegend = function (args) {
@@ -137,10 +137,10 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		me.createLegendsFromItems({
 			items: childItems,
-			generateLegendTable : me.generateMixedLegendTable
+			generateLegendTable: me.generateMixedLegendTable
 		});
 	};
-	
+
 	me.generateMixedLegendTable = function (args) {
 		args = args || {};
 		var item = args.item,
@@ -148,18 +148,18 @@ CCH.Objects.Widget.Legend = function (args) {
 			attr = item.attr,
 			index = args.index || null,
 			sld = args.sld;
-		
-		
+
+
 		$legendTable = me.generateGenericLegendTable({
 			sld: sld
 		});
-		
+
 		$legendTable.attr({
 			'legend-attribute': attr,
 			'legend-index': index,
 			'legend-item-id': item.id
 		});
-		
+
 		return $legendTable;
 	}
 
@@ -206,11 +206,11 @@ CCH.Objects.Widget.Legend = function (args) {
 			$legendTable,
 			$legendTableTBody,
 			$yearRows;
-		
+
 		$legendTable = me.generateGenericLegendTable({
 			sld: sld
 		});
-		
+
 		$legendTable.attr({
 			'legend-attribute': attr,
 			'legend-index': index,
@@ -234,7 +234,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		args = args || {};
 		var item = args.item,
 			childItems;
-		
+
 		if ('aggregation' === item.itemType.toLowerCase()) {
 			childItems = me.getAggregationChildrenIds(item.id);
 		} else {
@@ -427,33 +427,30 @@ CCH.Objects.Widget.Legend = function (args) {
 		if (legendTables.length === total) {
 
 			// If I am ribboned, I want to group my legends if they're the same color range/measures
-			if (me.item.itemType.toLowerCase() === 'aggregation' && me.item.ribboned === true) {
-				legendGroups = legendTables.groupBy(function (lt) {
-					return $(lt).find('tbody').html().hashCode()
-				});
+			legendGroups = legendTables.groupBy(function (lt) {
+				return $(lt).find('tbody').html().hashCode()
+			});
 
-				for (hashKey in legendGroups) {
-					legendGroup = legendGroups[hashKey];
-					firstLegend = legendGroup[0];
-					for (lIdx = 1; lIdx < legendGroup.length; lIdx++) {
-						currentLegend = legendGroup[lIdx];
-						firstLegendCaptionText = firstLegend.find('caption').html();
-						currentLegendCaptionText = currentLegend.find('caption').html();
-						firstLegend.find('caption').html(firstLegendCaptionText + ', ' + currentLegendCaptionText);
-						tableIndex = legendTables.findIndex(function (t) {
-							return $(t).attr('legend-index') === currentLegend.attr('legend-index')
-						});
-						legendTables[tableIndex] = -1;
-					}
+			for (hashKey in legendGroups) {
+				legendGroup = legendGroups[hashKey];
+				firstLegend = legendGroup[0];
+				for (lIdx = 1; lIdx < legendGroup.length; lIdx++) {
+					currentLegend = legendGroup[lIdx];
+					firstLegendCaptionText = firstLegend.find('caption').html();
+					currentLegendCaptionText = currentLegend.find('caption').html();
+					firstLegend.find('caption').html(firstLegendCaptionText + ', ' + currentLegendCaptionText);
+					tableIndex = legendTables.findIndex(function (t) {
+						return $(t).attr('legend-index') === currentLegend.attr('legend-index')
+					});
+					legendTables[tableIndex] = -1;
 				}
-
-				legendTables = legendTables.filter(function (table) { // Remove any array items that are -1
-					return table !== -1;
-				});
-				
-				total = legendTables.length;
-
 			}
+
+			legendTables = legendTables.filter(function (table) { // Remove any array items that are -1
+				return table !== -1;
+			});
+
+			total = legendTables.length;
 
 			// When all the tables are created, I want to sort them, append them to a  wrapper and throw that wrapper 
 			// into the final container
