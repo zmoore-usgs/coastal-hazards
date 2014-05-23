@@ -34,6 +34,9 @@
 
 <script type="text/javascript">
     var splashUpdate = function(message) {
+		if('function' === typeof message.html){
+			message = message.html();
+		}
         $('.splash-status-update').html(message);
     };
 	var splashAppend = function(elements) {
