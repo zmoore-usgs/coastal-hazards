@@ -87,7 +87,7 @@ html, body {
 #social-link-container {
 	vertical-align: middle;
 	margin-left: 10px;
-	position: fixed;
+	position: absolute;
 }
 
 /* Info Graph */
