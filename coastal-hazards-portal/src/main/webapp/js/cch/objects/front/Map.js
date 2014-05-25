@@ -264,7 +264,7 @@ CCH.Objects.Front.Map = function (args) {
 			});
 
 			me.map.setCenter(center);
-			me.map.zoomToScale(scale);
+			me.map.zoomToScale(scale, true);
 
 			// We're done altering the map to fit the session. Let's re-register those 
 			// events we disconnected earlier
