@@ -15,10 +15,6 @@ $(document).ready(function () {
 
 	CCH.items = new CCH.Objects.Items();
 
-	CCH.CONFIG.item = new CCH.Objects.Item({
-		id: CCH.CONFIG.itemId
-	});
-
 	CCH.map = new CCH.Objects.Back.Map();
 
 	CCH.ows = new CCH.Util.OWS();
@@ -26,9 +22,11 @@ $(document).ready(function () {
 	// I am loading an item with the full subtree so once that item is loaded, start loading the rest of the application
 	$(window).on('cch.item.loaded', function (evt, args) {
 		var id = args.id || '',
-			item = CCH.CONFIG.item;
+			item;
 
-		if (CCH.CONFIG.item.id === id) {
+		if (CCH.CONFIG.itemId === id) {
+			CCH.CONFIG.item = CCH.items.getById({id : id});
+			item = CCH.CONFIG.item;
 			CCH.ui = new CCH.Objects.Back.UI({item: item});
 			CCH.map.addLayers(item.showLayer().layers);
 
@@ -39,7 +37,9 @@ $(document).ready(function () {
 		}
 	});
 
-	CCH.CONFIG.item.load({
+	new CCH.Objects.Item({
+		id: 'uber'
+	}).load({
 		subtree: true,
 		callbacks: {
 			error: [
