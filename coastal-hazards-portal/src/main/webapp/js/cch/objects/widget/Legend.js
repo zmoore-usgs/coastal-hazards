@@ -1,6 +1,7 @@
 /*jslint browser: true*/
 /*jslint plusplus: true */
 /*global $*/
+/*global LOG*/
 /*global CCH*/
 
 window.CCH = CCH || {};
@@ -107,7 +108,8 @@ CCH.Objects.Widget.Legend = function (args) {
 			years = bin.years;
 			category = bin.category;
 			color = bin.color;
-			range;
+			range = null;
+
 			if (bin.category) {
 				range = category;
 			} else if (bin.years) {
@@ -161,7 +163,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		});
 
 		return $legendTable;
-	}
+	};
 
 	me.generateHistoricalLegendTables = function (args) {
 		args = args || {};
@@ -169,6 +171,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			childItemIdArray,
 			dataItem,
 			isYearAggregation;
+		
 		if ('aggregation' === item.itemType.toLowerCase()) {
 			childItemIdArray = me.getAggregationChildrenIds(item.id);
 
@@ -326,7 +329,7 @@ CCH.Objects.Widget.Legend = function (args) {
 									itemId = this.itemId,
 									legendTables = this.legendTables,
 									total = allItems.length,
-									item,
+									item = null,
 									tableAddedCallback = this.tableAddedCallback || me.tableAdded;
 								try {
 									item = CCH.items.getById({id: itemId});
@@ -348,7 +351,7 @@ CCH.Objects.Widget.Legend = function (args) {
 								}
 
 								// Whatever we have at this point, add it to the array
-								this.legendTables.push($legendTable);
+								legendTables.push($legendTable);
 
 								// And call the table added callback to possibly complete the legend
 								tableAddedCallback.call(me, {
@@ -422,27 +425,30 @@ CCH.Objects.Widget.Legend = function (args) {
 			currentLegendCaptionText,
 			hashKey,
 			tableIndex,
-			lIdx;
+			lIdx,
+			indexCompare = function (t) {
+				return $(t).attr('legend-index') === currentLegend.attr('legend-index');
+			};
 
 		if (legendTables.length === total) {
 
 			// If I am ribboned, I want to group my legends if they're the same color range/measures
 			legendGroups = legendTables.groupBy(function (lt) {
-				return $(lt).find('tbody').html().hashCode()
+				return $(lt).find('tbody').html().hashCode();
 			});
 
 			for (hashKey in legendGroups) {
-				legendGroup = legendGroups[hashKey];
-				firstLegend = legendGroup[0];
-				for (lIdx = 1; lIdx < legendGroup.length; lIdx++) {
-					currentLegend = legendGroup[lIdx];
-					firstLegendCaptionText = firstLegend.find('caption').html();
-					currentLegendCaptionText = currentLegend.find('caption').html();
-					firstLegend.find('caption').html(firstLegendCaptionText + ', ' + currentLegendCaptionText);
-					tableIndex = legendTables.findIndex(function (t) {
-						return $(t).attr('legend-index') === currentLegend.attr('legend-index')
-					});
-					legendTables[tableIndex] = -1;
+				if (legendGroups.hasOwnProperty(hashKey)) {
+					legendGroup = legendGroups[hashKey];
+					firstLegend = legendGroup[0];
+					for (lIdx = 1; lIdx < legendGroup.length; lIdx++) {
+						currentLegend = legendGroup[lIdx];
+						firstLegendCaptionText = firstLegend.find('caption').html();
+						currentLegendCaptionText = currentLegend.find('caption').html();
+						firstLegend.find('caption').html(firstLegendCaptionText + '<br /> ' + currentLegendCaptionText);
+						tableIndex = legendTables.findIndex(indexCompare);
+						legendTables[tableIndex] = -1;
+					}
 				}
 			}
 
