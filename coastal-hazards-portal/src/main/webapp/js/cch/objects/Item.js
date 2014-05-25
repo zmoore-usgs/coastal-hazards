@@ -179,7 +179,7 @@ CCH.Objects.Item = function (args) {
 				isBaseLayer: false,
 				displayInLayerSwitcher: false,
 				singleTile: me.ribboned || false,
-				maxExtent: new OpenLayers.Bounds(bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')),
+				maxExtent: new OpenLayers.Bounds(bbox).transform(CCH.CONFIG.map.modelProjection, new OpenLayers.Projection('EPSG:3857')),
 				bbox: bbox,
 				itemid: id,
 				transitionEffect: 'map-resize',

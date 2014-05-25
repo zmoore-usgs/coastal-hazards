@@ -548,7 +548,7 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 				$(window).trigger('cch.slide.bucket.item.thumbnail.click');
 				CCH.map.zoomToBoundingBox({
 					bbox: item.bbox,
-					fromProjection: new OpenLayers.Projection('EPSG:4326')
+					fromProjection: CCH.CONFIG.map.modelProjection
 				});
 			}).error(function () {
 			$(this).hide();

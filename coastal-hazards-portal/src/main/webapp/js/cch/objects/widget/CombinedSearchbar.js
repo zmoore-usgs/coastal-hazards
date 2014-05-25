@@ -148,7 +148,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 				getExtent().
 				transform(
 					CCH.map.getMap().displayProjection,
-					new OpenLayers.Projection('EPSG:4326')).
+					CCH.CONFIG.map.modelProjection).
 				toArray().
 				join(',');
 		}

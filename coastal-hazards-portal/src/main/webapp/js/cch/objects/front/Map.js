@@ -217,13 +217,13 @@ CCH.Objects.Front.Map = function (args) {
 				// Zoom to pinned cards
 				for (lIdx = 0; lIdx < activeLayers.length; lIdx++) {
 					activeLayer = activeLayers[lIdx];
-					layerBounds = OpenLayers.Bounds.fromArray(activeLayer.bbox).transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection);
+					layerBounds = OpenLayers.Bounds.fromArray(activeLayer.bbox).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection);
 					bounds.extend(layerBounds);
 				}
 			} else {
 				// No pinned cards, zoom to the collective bbox of all cards
 				CCH.cards.getCards().each(function (card) {
-					bounds.extend(OpenLayers.Bounds.fromArray(card.bbox).transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection));
+					bounds.extend(OpenLayers.Bounds.fromArray(card.bbox).transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection));
 				});
 			}
 
@@ -232,14 +232,14 @@ CCH.Objects.Front.Map = function (args) {
 		updateSession: function () {
 			var map = me.map,
 				session = CCH.session.getSession(),
-				center = map.getCenter().transform(CCH.map.getMap().displayProjection, new OpenLayers.Projection('EPSG:4326'));
+				center = map.getCenter().transform(CCH.map.getMap().displayProjection, CCH.CONFIG.map.modelProjection);
 			session.baselayer = map.baseLayer.name;
 			session.center = [
 				center.lon,
 				center.lat
 			];
 			session.scale = map.getScale();
-			session.bbox = map.getExtent().transform(CCH.map.getMap().displayProjection, new OpenLayers.Projection('EPSG:4326')).toArray();
+			session.bbox = map.getExtent().transform(CCH.map.getMap().displayProjection, CCH.CONFIG.map.modelProjection).toArray();
 			return true;
 		},
 		/**
@@ -250,7 +250,7 @@ CCH.Objects.Front.Map = function (args) {
 			CCH.LOG.info('Map.js::updateFromSession():Map being recreated from cookie');
 			var cookie = CCH.session.getCookie(),
 				center = new OpenLayers.LonLat(cookie.center[0], cookie.center[1]).
-				transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection),
+				transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection),
 				scale = cookie.scale;
 
 			// Becaue we don't want these events to write back to the session, 
@@ -264,7 +264,7 @@ CCH.Objects.Front.Map = function (args) {
 			});
 
 			me.map.setCenter(center);
-			me.map.zoomToScale(scale);
+			me.map.zoomToScale(scale, true);
 
 			// We're done altering the map to fit the session. Let's re-register those 
 			// events we disconnected earlier
@@ -302,7 +302,7 @@ CCH.Objects.Front.Map = function (args) {
 			// provided in the session
 			if (!session.items.length) {
 				center = new OpenLayers.LonLat(session.center[0], session.center[1]).
-					transform(new OpenLayers.Projection('EPSG:4326'), CCH.map.getMap().displayProjection);
+					transform(CCH.CONFIG.map.modelProjection, CCH.map.getMap().displayProjection);
 				me.map.setCenter(center);
 				me.map.zoomToScale(session.scale);
 			}

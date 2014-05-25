@@ -624,7 +624,7 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 			})).on('click', function () {
 				CCH.map.zoomToBoundingBox({
 					bbox: bbox,
-					fromProjection: new OpenLayers.Projection('EPSG:4326')
+					fromProjection: CCH.CONFIG.map.modelProjection
 				});
 				$(window).trigger('cch.slide.search.button.click.explore', {
 					'id': id

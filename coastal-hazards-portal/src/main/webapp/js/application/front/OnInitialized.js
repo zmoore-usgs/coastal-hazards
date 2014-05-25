@@ -29,22 +29,12 @@ CCH.CONFIG.loadUberItem = function (args) {
 		$(window).on('cch.item.loaded', function (evt, obj) {
 			var item;
 
-			// Is the user coming in from another part of the application?
-			if (CCH.session.isReturning() === true && CCH.session.getCookie().center && !overridePreviousBounds) {
-				// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
-				CCH.map.updateFromCookie();
-			} else if (zoomToBbox) {
-				CCH.map.zoomToBoundingBox({
-					bbox: data.bbox,
-					fromProjection: new OpenLayers.Projection('EPSG:4326')
-				});
-			}
-
 			// If the incoming item is the uber item, that means that by now, everything under it has been
 			// fully hydrated, so I can now add sub items to the accordion and remove the overlay
 			if (obj.id === 'uber') {
 				data.children.each(function (id, index) {
 					item = CCH.items.getById({id: id});
+
 					// Add it to the accordion...
 					CCH.ui.accordion.addCard({
 						item: item,
@@ -53,10 +43,25 @@ CCH.CONFIG.loadUberItem = function (args) {
 					item = CCH.items.getById({id: id});
 				});
 
+				var resizeHandler = function () {
+					// Unbind this one-time function
+					$(window).off('cch.ui.resized', resizeHandler);
+					// Is the user coming in from another part of the application?
+					if (CCH.session.isReturning() === true && CCH.session.getCookie().center && !overridePreviousBounds) {
+						// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
+						CCH.map.updateFromCookie();
+					} else if (zoomToBbox) {
+						CCH.map.zoomToBoundingBox({
+							bbox: data.bbox,
+							fromProjection: CCH.CONFIG.map.modelProjection
+						});
+					}
+				};
+				$(window).on('cch.ui.resized', resizeHandler);
+				$(window).resize();
 				$(window).trigger('cch.item.loaded.all');
 				splashUpdate("Starting Application...");
 				CCH.ui.removeOverlay();
-				$(window).resize();
 				$(window).off('cch.app.initialized', CCH.CONFIG.onAppInitialize); // Remove handler
 				delete CCH.CONFIG.onAppInitialize; // no longer needed
 
@@ -117,7 +122,7 @@ CCH.CONFIG.onAppInitialize = function () {
 
 							CCH.map.zoomToBoundingBox({
 								'bbox': session.bbox,
-								'fromProjection': new OpenLayers.Projection('EPSG:4326')
+								'fromProjection': CCH.CONFIG.map.modelProjection
 							});
 						}
 					],
@@ -147,21 +152,21 @@ CCH.CONFIG.onAppInitialize = function () {
 				if (evt.namespace === 'all.item.loaded') {
 					var item = CCH.items.getById({id: id});
 					if (item) {
-						if (CCH.session.isReturning() === true && CCH.session.getCookie().center) {
-							// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
-							CCH.map.updateFromCookie();
-						} else {
-							// I want to zoom to the bounding box of the item
-							CCH.map.zoomToBoundingBox({
-								bbox: item.bbox,
-								fromProjection: new OpenLayers.Projection('EPSG:4326')
-							});
-						}
-
-						// And I want to open the accordion to that item
+						// All items have been loaded and my item exists. Show my item in the accordion.
 						$(window).trigger('cch.slide.search.button.click.explore', {
 							id: id
 						});
+					} else {
+						// The item could not be found. Show an error and wait for the app to resize
+						// (happens on loading completetion). When it happens, zoom to the bounding
+						// box of the map's initial extent (the continentat US) and then unbind the handler
+						alertify.error('The item you\'re looking for could not be found.', 6000);
+						var resizeHandler = function () {
+							$(window).off('cch.ui.resized', resizeHandler);
+							CCH.map.getMap().zoomToExtent(CCH.map.getMap().initialExtent);
+						};
+						$(window).on('cch.ui.resized', resizeHandler);
+
 					}
 				}
 			});
