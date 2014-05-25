@@ -120,10 +120,16 @@ CCH.CONFIG.onAppInitialize = function () {
 								overridePreviousBbox: true
 							});
 
-							CCH.map.zoomToBoundingBox({
-								'bbox': session.bbox,
-								'fromProjection': CCH.CONFIG.map.modelProjection
-							});
+							var resizeHandler = function () {
+								$(window).off('cch.ui.resized', resizeHandler);
+								CCH.map.zoomToBoundingBox({
+									'bbox': session.bbox,
+									'fromProjection': CCH.CONFIG.map.modelProjection
+								});
+							};
+							$(window).on('cch.ui.resized', resizeHandler);
+
+
 						}
 					],
 					error: [
