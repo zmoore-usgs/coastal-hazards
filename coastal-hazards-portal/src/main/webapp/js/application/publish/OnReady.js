@@ -201,7 +201,7 @@ var wmsLayersDropdownChangeHandler = function (evt) {
 	var wmsLayer = CCH.config.endpoint.wmsCaps.capability.layers.find(function (l) {
 		return l.name === evt.target.value;
 	});
-	var bbox = wmsLayer.llbbox;//wmsLayer.bbox['EPSG:4326'].bbox;
+	var bbox = wmsLayer.llbbox;
 	CCH.config.bbox = bbox;
 };
 

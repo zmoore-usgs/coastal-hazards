@@ -447,7 +447,7 @@ CCH.Objects.Widget.Card = function (args) {
 				$(window).trigger('cch.card.click.zoomto');
 				CCH.map.zoomToBoundingBox({
 					bbox: me.bbox,
-					fromProjection: new OpenLayers.Projection('EPSG:4326')
+					fromProjection: CCH.CONFIG.map.modelProjection
 				});
 			});
 

@@ -43,17 +43,21 @@ CCH.CONFIG.loadUberItem = function (args) {
 					item = CCH.items.getById({id: id});
 				});
 
-				// Is the user coming in from another part of the application?
-				if (CCH.session.isReturning() === true && CCH.session.getCookie().center && !overridePreviousBounds) {
-					// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
-					CCH.map.updateFromCookie();
-				} else if (zoomToBbox) {
-					CCH.map.zoomToBoundingBox({
-						bbox: data.bbox,
-						fromProjection: new OpenLayers.Projection('EPSG:4326')
-					});
-				}
-
+				var resizeHandler = function () {
+					// Unbind this one-time function
+					$(window).off('cch.ui.resized', resizeHandler);
+					// Is the user coming in from another part of the application?
+					if (CCH.session.isReturning() === true && CCH.session.getCookie().center && !overridePreviousBounds) {
+						// This gets set in the cookie when visitors click 'back to portal' from back of card or info page
+						CCH.map.updateFromCookie();
+					} else if (zoomToBbox) {
+						CCH.map.zoomToBoundingBox({
+							bbox: data.bbox,
+							fromProjection: CCH.CONFIG.map.modelProjection
+						});
+					}
+				};
+				$(window).on('cch.ui.resized', resizeHandler);
 				$(window).resize();
 				$(window).trigger('cch.item.loaded.all');
 				splashUpdate("Starting Application...");
@@ -118,7 +122,7 @@ CCH.CONFIG.onAppInitialize = function () {
 
 							CCH.map.zoomToBoundingBox({
 								'bbox': session.bbox,
-								'fromProjection': new OpenLayers.Projection('EPSG:4326')
+								'fromProjection': CCH.CONFIG.map.modelProjection
 							});
 						}
 					],
@@ -162,7 +166,7 @@ CCH.CONFIG.onAppInitialize = function () {
 							CCH.map.getMap().zoomToExtent(CCH.map.getMap().initialExtent);
 						};
 						$(window).on('cch.ui.resized', resizeHandler);
-						
+
 					}
 				}
 			});

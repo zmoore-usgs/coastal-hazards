@@ -100,7 +100,9 @@ CCH.Objects.Back.Map = function (args) {
 			restrictedExtent: bounds,
 			tileManager: new CCH.Objects.FixedTileManager()
 		});
-
+		
+		CCH.CONFIG.map.modelProjection = new OpenLayers.Projection('EPSG:4326');
+		
 		CCH.CONFIG.map.addLayer(new OpenLayers.Layer.XYZ("Light Gray Base",
 			"http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}",
 			{
@@ -115,7 +117,7 @@ CCH.Objects.Back.Map = function (args) {
 			'template': '<a id="attribution-link" href="http://www.usgs.gov/"><img id="openlayers-map-attribution-image" src="' + me.attributionSource + '" /></a>'
 		});
 
-		CCH.CONFIG.map.zoomToExtent(new OpenLayers.Bounds(CCH.CONFIG.item.bbox).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')));
+		CCH.CONFIG.map.zoomToExtent(new OpenLayers.Bounds(CCH.CONFIG.item.bbox).transform(CCH.CONFIG.map.modelProjection, new OpenLayers.Projection('EPSG:3857')));
 		CCH.CONFIG.map.addControl(attributionControl);
 
 		$('a').click(function (event) {
