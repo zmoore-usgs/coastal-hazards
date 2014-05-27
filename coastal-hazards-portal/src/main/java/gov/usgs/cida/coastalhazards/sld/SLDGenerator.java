@@ -1,13 +1,16 @@
 package gov.usgs.cida.coastalhazards.sld;
 
 import com.sun.jersey.api.view.Viewable;
+import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.model.Item;
+import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
 import gov.usgs.cida.coastalhazards.sld.Shorelines.ShorelineConfig;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedSet;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -66,19 +69,26 @@ public class SLDGenerator {
 	public static SLDGenerator getGenerator(Item item, Integer ribbon) {
 		SLDGenerator generator = null;
         
-		try {
-			Item.Type itemDotType = item.getType();
-			String itemAttribute = item.getAttr();
-			
-			Map<String, SLDConfig> typeLookup = generatorMap.get(itemDotType);
-			SLDConfig conf = typeLookup.get(StringUtils.upperCase(itemAttribute));
-			
-			if (null != conf) {
-				generator = new SLDGenerator(item, ribbon, conf);
-			}
-		} catch (Exception e) {
-			//Aint nothin to do here.
-		}
+        Item.Type itemDotType = item.getType();
+        Item.ItemType itemType = item.getItemType();
+        if (itemType == Item.ItemType.data) {
+            String itemAttribute = item.getAttr();
+
+            Map<String, SLDConfig> typeLookup = generatorMap.get(itemDotType);
+            SLDConfig conf = typeLookup.get(StringUtils.upperCase(itemAttribute));
+
+            if (null != conf) {
+                generator = new SLDGenerator(item, ribbon, conf);
+            }
+        } else if (itemType == Item.ItemType.aggregation) {
+            SortedSet<String> aggAttributes = ItemUtil.gatherAttributes(item);
+            Map<String, SLDConfig> typeLookup = generatorMap.get(itemDotType);
+            // TODO enforce all attributes map to same SLD type
+            SLDConfig conf = typeLookup.get(StringUtils.upperCase(aggAttributes.first()));
+            generator = new SLDGenerator(item, ribbon, conf);
+        } else {
+            throw new BadRequestException();
+        }
 		
 		if (null == generator) {
 			throw new IllegalArgumentException("Type not found");
@@ -125,7 +135,9 @@ public class SLDGenerator {
 	}
 
 	public String[] getAttrs() {
-		return this.config.attrs;
+        SortedSet<String> attrSet = ItemUtil.gatherAttributes(item);
+        String[] attrs = attrSet.toArray(new String[0]);
+        return attrs;
 	}
 
 	public String getId() {
@@ -148,6 +160,11 @@ public class SLDGenerator {
 		return STROKE_OPACITY;
 	}
 
+    /**
+     * Should deprecate this as we want to get attr from children
+     * Works now because item is mostly assumed to be leaf
+     * @return name of attribute
+     */
 	public String getAttr() {
 		return this.item.getAttr();
 	}
