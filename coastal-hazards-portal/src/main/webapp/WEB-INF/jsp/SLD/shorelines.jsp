@@ -18,21 +18,23 @@
             <sld:FeatureTypeStyle>
                 <c:forEach var="i" begin="0" end="${it.binCount-1}">
                     <c:set var="year">${it.thresholds[i]}</c:set>
-					<sld:Rule>
-                        <ogc:Filter>
-                                <ogc:PropertyIsLike wildCard="%" singleChar="." escape="!">
-                                    <ogc:PropertyName>${it.attr}</ogc:PropertyName>
-                                <ogc:Literal>%<fmt:parseNumber parseLocale="en-US" integerOnly="true" value="${year}" /></ogc:Literal>
-                                </ogc:PropertyIsLike>
-                        </ogc:Filter>
-						<sld:LineSymbolizer>
-							<sld:Stroke>
-								<sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
-								<sld:CssParameter name="stroke-width">${it.strokeWidth}</sld:CssParameter>
-								<sld:CssParameter name="stroke-opacity">${it.strokeOpacity}</sld:CssParameter>
-							</sld:Stroke>
-						</sld:LineSymbolizer>
-					</sld:Rule>
+                    <c:forEach var="attr" items="${it.attrs}">
+                        <sld:Rule>
+                            <ogc:Filter>
+                                    <ogc:PropertyIsLike wildCard="%" singleChar="." escape="!">
+                                        <ogc:PropertyName>${attr}</ogc:PropertyName>
+                                    <ogc:Literal>%<fmt:parseNumber parseLocale="en-US" integerOnly="true" value="${year}" /></ogc:Literal>
+                                    </ogc:PropertyIsLike>
+                            </ogc:Filter>
+                            <sld:LineSymbolizer>
+                                <sld:Stroke>
+                                    <sld:CssParameter name="stroke">${it.colors[i]}</sld:CssParameter>
+                                    <sld:CssParameter name="stroke-width">${it.strokeWidth}</sld:CssParameter>
+                                    <sld:CssParameter name="stroke-opacity">${it.strokeOpacity}</sld:CssParameter>
+                                </sld:Stroke>
+                            </sld:LineSymbolizer>
+                        </sld:Rule>
+                    </c:forEach>
                 </c:forEach>
             </sld:FeatureTypeStyle>
         </sld:UserStyle>
