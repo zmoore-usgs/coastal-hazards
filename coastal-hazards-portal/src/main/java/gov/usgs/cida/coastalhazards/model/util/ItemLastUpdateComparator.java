@@ -1,7 +1,6 @@
 package gov.usgs.cida.coastalhazards.model.util;
 
 import gov.usgs.cida.coastalhazards.model.Item;
-import gov.usgs.cida.coastalhazards.model.Item;
 import java.util.Comparator;
 
 public class ItemLastUpdateComparator implements Comparator<Item>{
