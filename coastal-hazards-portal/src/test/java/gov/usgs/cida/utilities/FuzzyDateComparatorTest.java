@@ -3,7 +3,6 @@ package gov.usgs.cida.utilities;
 import java.util.Date;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Before;
 
 /**
  *
@@ -18,14 +17,6 @@ public class FuzzyDateComparatorTest {
 	
 	
 	public FuzzyDateComparatorTest() {
-	}
-	
-	@Before
-	public void setUp() {
-		
-		
-		
-		
 	}
 
 	/**
