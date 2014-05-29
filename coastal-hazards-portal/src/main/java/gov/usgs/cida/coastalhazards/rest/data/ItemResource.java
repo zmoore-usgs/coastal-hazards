@@ -11,6 +11,7 @@ import gov.usgs.cida.coastalhazards.model.util.ItemLastUpdateComparator;
 import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
 import gov.usgs.cida.coastalhazards.rest.data.util.HttpUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
+import gov.usgs.cida.utilities.FuzzyDateComparator;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -85,8 +86,9 @@ public class ItemResource {
                 } else {
                     serverItemDate = item.getLastUpdate();
                 }
-                
-				if (clientItemDate != null && clientItemDate.equals(serverItemDate)) {
+                FuzzyDateComparator fuzzyDateComparator = new FuzzyDateComparator();
+				
+				if (clientItemDate != null && 0 == fuzzyDateComparator.compare(clientItemDate, serverItemDate)) {
 					response = Response.notModified().build();
 				} else {
 					String jsonResult = item.toJSON(subtree);
