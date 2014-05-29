@@ -36,7 +36,7 @@ public class FuzzyDateComparatorTest {
 	}
 	@Test
 	public void testCompareFuzzilySameDate(){
-	//fuzzy equality
+		//fuzzy equality
 		Date fuzzilyEqualDate1 = new Date(start + testTolerance);
 		assertEquals(fdc.compare(baseDate, fuzzilyEqualDate1), 0);
 				
@@ -45,7 +45,7 @@ public class FuzzyDateComparatorTest {
 	}
 	@Test
 	public void testCompareNotSameDate(){
-	//inequality
+		//inequality
 		Date notEqualDate1 = new Date(start + testTolerance + 1);
 		assertEquals(fdc.compare(baseDate, notEqualDate1), -1);
 				
