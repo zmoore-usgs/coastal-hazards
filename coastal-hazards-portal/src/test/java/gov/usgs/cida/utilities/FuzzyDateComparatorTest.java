@@ -1,18 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.usgs.cida.utilities;
 
 import java.util.Date;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
 
 /**
  *
@@ -20,55 +11,50 @@ import static org.junit.Assert.*;
  */
 public class FuzzyDateComparatorTest {
 	
+	public static final long testTolerance = 2000;
+	public static final FuzzyDateComparator fdc = new FuzzyDateComparator(testTolerance);
+	public static final long start = 10000;
+	public static final Date baseDate = new Date(start);
 	
 	
 	public FuzzyDateComparatorTest() {
 	}
 	
-	@BeforeClass
-	public static void setUpClass() {
-	}
-	
-	@AfterClass
-	public static void tearDownClass() {
-	}
-	
 	@Before
 	public void setUp() {
-
 		
-	}
-	
-	@After
-	public void tearDown() {
+		
+		
+		
 	}
 
 	/**
 	 * Test of compare method, of class FuzzyDateComparator.
 	 */
 	@Test
-	public void testCompare() {
-		
-		final long testTolerance = 2000;
-		FuzzyDateComparator fdc = new FuzzyDateComparator(testTolerance);
-		long start = 10000;
-		Date baseDate = new Date(start);
+	public void testCompareSameObject() {
 		
 		//strict equality
 		assertEquals(fdc.compare(baseDate, baseDate), 0);
-		
+	}
+	@Test
+	public void testCompareExactSameDate(){
 		//effective equality
 		Date equalToBaseDate = new Date(start);
 		assertEquals(fdc.compare(baseDate, equalToBaseDate), 0);
-		
-		//fuzzy equality
+	}
+	@Test
+	public void testCompareFuzzilySameDate(){
+	//fuzzy equality
 		Date fuzzilyEqualDate1 = new Date(start + testTolerance);
 		assertEquals(fdc.compare(baseDate, fuzzilyEqualDate1), 0);
 				
 		Date fuzzilyEqualDate2 = new Date(start - testTolerance);
 		assertEquals(fdc.compare(baseDate, fuzzilyEqualDate2), 0);
-		
-		//inequality
+	}
+	@Test
+	public void testCompareNotSameDate(){
+	//inequality
 		Date notEqualDate1 = new Date(start + testTolerance + 1);
 		assertEquals(fdc.compare(baseDate, notEqualDate1), -1);
 				

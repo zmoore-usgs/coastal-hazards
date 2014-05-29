@@ -1,18 +1,15 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
 import com.sun.jersey.api.NotFoundException;
-import com.sun.jersey.server.impl.container.servlet.JerseyServletContainerInitializer;
 import gov.usgs.cida.coastalhazards.exception.BadRequestException;
 import gov.usgs.cida.coastalhazards.exception.UnauthorizedException;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
-import gov.usgs.cida.coastalhazards.model.util.ItemLastUpdateComparator;
 import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
 import gov.usgs.cida.coastalhazards.rest.data.util.HttpUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
 import gov.usgs.cida.utilities.FuzzyDateComparator;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
