@@ -47,7 +47,7 @@ public class QRCodeResource {
 			url = new URL(decodedUrlString);
 			qrcr.setUrl(url);
 		} catch (UnsupportedEncodingException | MalformedURLException | URISyntaxException ex) {
-			throw new ParamException.QueryParamException(ex, "Invalid Parameter", "Parameter \"url\" could not be prased properly");
+			throw new ParamException.QueryParamException(ex, "Invalid Parameter", "Parameter \"url\" could not be parsed properly");
 		}
 
 		if (width > 0 && height > 0) {
