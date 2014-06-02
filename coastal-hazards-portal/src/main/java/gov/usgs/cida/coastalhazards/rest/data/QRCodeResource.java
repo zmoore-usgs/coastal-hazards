@@ -27,6 +27,9 @@ import net.glxn.qrgen.exception.QRGenerationException;
 @Path("qr")
 public class QRCodeResource {
 
+	static private final int MAX_WIDTH = 4096;
+	static private final int MAX_HEIGHT = 4096;
+
 	@GET
 	@Produces("image/png")
 	public Response generateQRImage(@QueryParam("url") String urlString, @QueryParam("width") int width, @QueryParam("height") int height) {
@@ -38,10 +41,8 @@ public class QRCodeResource {
 
 		// TODO - Check if on development server and proceed. If not on development, make sure that call is coming 
 		// from USGS domain.
-		
 		// TODO - Use outputstream to send back to client and clean up file after send is complete. This safeguards
 		// against QR code request flood and filling up disk. When generating from a file, files are set to delete on exit
-		
 		try {
 			decodedUrlString = URLDecoder.decode(urlString, StandardCharsets.UTF_8.name());
 			url = new URL(decodedUrlString);
@@ -51,8 +52,17 @@ public class QRCodeResource {
 		}
 
 		if (width > 0 && height > 0) {
-			qrcr.setWidth(width);
-			qrcr.setHeight(height);
+			if (width > MAX_WIDTH) {
+				qrcr.setWidth(MAX_WIDTH);
+			} else {
+				qrcr.setWidth(width);
+			}
+
+			if (height > MAX_HEIGHT) {
+				qrcr.setHeight(MAX_HEIGHT);
+			} else {
+				qrcr.setHeight(height);
+			}
 		}
 
 		try {
