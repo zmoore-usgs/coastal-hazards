@@ -216,6 +216,7 @@
 							<span id='info-container-publications-list-span'></span>
 						</div>
 					</div>
+					<div id="qr-code" class="row"><img id="qr-code-img" src="" alt="QR Code Image For This URL"/></div>
 				</div>
 			</div>
 		</div>

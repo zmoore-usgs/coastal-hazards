@@ -124,6 +124,11 @@ html, body {
 	text-transform: capitalize;
 }
 
+/* Hide QR code for screen media */
+#qr-code {
+	display: none;
+}
+
 @media (max-width: 440px) {
 	/* Item Title Row*/
 	.container > div.row:nth-child(2) {
