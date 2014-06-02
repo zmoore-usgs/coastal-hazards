@@ -19,8 +19,8 @@ import net.glxn.qrgen.vcard.VCard;
 public class QRCodeGenerator {
 
 	private VCard vcard = new VCard();
-	final private int DEFAULT_WIDTH = 125;
-	final private int DEFAULT_HEIGHT = 125;
+	static private final int DEFAULT_WIDTH = 125;
+	static private final int DEFAULT_HEIGHT = 125;
 	private ImageType type = ImageType.PNG;
 	
 	private int width = DEFAULT_WIDTH;
