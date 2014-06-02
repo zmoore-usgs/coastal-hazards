@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import net.glxn.qrgen.QRCode;
 import net.glxn.qrgen.image.ImageType;
 import net.glxn.qrgen.vcard.VCard;
@@ -18,9 +19,12 @@ import net.glxn.qrgen.vcard.VCard;
 public class QRCodeGenerator {
 
 	private VCard vcard = new VCard();
+	final private int DEFAULT_WIDTH = 125;
+	final private int DEFAULT_HEIGHT = 125;
 	private ImageType type = ImageType.PNG;
-	private int width = 125;
-	private int height = 125;
+	
+	private int width = DEFAULT_WIDTH;
+	private int height = DEFAULT_HEIGHT;
 
 	public QRCodeGenerator setVCard(VCard card) {
 		this.vcard = card;
@@ -89,7 +93,7 @@ public class QRCodeGenerator {
 		return QRCode
 				.from(vcard)
 				.withSize(width, height)
-				.withCharset("UTF-8")
+				.withCharset(StandardCharsets.UTF_8.name())
 				.withErrorCorrection(ErrorCorrectionLevel.L)
 				.to(type);
 	}
