@@ -14,12 +14,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- *
+ * This is tied closely to the ItemResource, it should be wiped when an item is updated.
+ * Locking is handled by the DataDomainManager so that requests for the same item
+ * will lock for gathering the domain.
+ * 
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 @Path("domain")
 public class DataDomainResource {
-
+    
     @GET
     @Path("item/{id}")
     public Response getDataDomain(@PathParam("id") String id) {
