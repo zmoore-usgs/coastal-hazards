@@ -11,6 +11,8 @@ import javax.persistence.Id;
  */
 @Entity
 public class Thumbnail implements Serializable {
+    
+    private static final long serialVersionUID = -4887617958825512425L;
 
     private String itemId;
     private String image;
@@ -32,7 +34,5 @@ public class Thumbnail implements Serializable {
     public void setImage(String image) {
         this.image = image;
     }
-    
-    
-    
+
 }
