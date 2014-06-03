@@ -83,13 +83,6 @@ html, body {
 	height: 400px;
 }
 
-/* Social Media Icon */
-#social-link-container {
-	vertical-align: middle;
-	margin-left: 10px;
-	position: absolute;
-}
-
 /* Info Graph */
 .container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
 	text-align: center;
@@ -129,15 +122,16 @@ html, body {
 	display: none;
 }
 
+/* Social media sharing modal */
+#modal-share-summary-url-inputbox {
+	width: 100%;
+	font-size: 2em;
+}
+
 @media (max-width: 440px) {
 	/* Item Title Row*/
 	.container > div.row:nth-child(2) {
 		font-size: 0.65em;
-	}
-
-	/* Social Media Icon */
-	#social-link-container  {
-		margin-left: 5px;
 	}
 
 	.container > div.row:nth-child(3) > div:first-child > div > div.olMap {
