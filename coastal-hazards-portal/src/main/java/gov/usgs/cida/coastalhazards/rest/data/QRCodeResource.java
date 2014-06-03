@@ -45,7 +45,7 @@ public class QRCodeResource {
 	@Path("info/item/{id}")
 	@Produces("image/png")
 	public Response generateQRImageUsingItemID(@PathParam("id") String id, @QueryParam("width") int width, @QueryParam("height") int height) throws IOException {
-		URL url;
+		URL url = null;
 		String urlString = "ui/info/item/" + id;
 		Response response;
 		QRCodeGenerator qrcr = new QRCodeGenerator();
@@ -70,7 +70,7 @@ public class QRCodeResource {
 			url = new URL(urlString);
 			qrcr.setUrl(url);
 		} catch (MalformedURLException | URISyntaxException ex) {
-			throw new ParamException.QueryParamException(ex, "Invalid Parameter", "Parameter \"url\" could not be parsed properly");
+			throw new ParamException.QueryParamException(ex, "URL could not be formed", "URL " + url + " could not be formed.");
 		}
 
 		if (width > 0 && height > 0) {
