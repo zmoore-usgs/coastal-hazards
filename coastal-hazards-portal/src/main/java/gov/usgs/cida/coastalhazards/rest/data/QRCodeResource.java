@@ -6,7 +6,7 @@ import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.utilities.QRCodeGenerator;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -17,7 +17,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import net.glxn.qrgen.exception.QRGenerationException;
 
 /**
  * Provides a web service that allows generation of a QR code based on a
@@ -34,15 +33,22 @@ public class QRCodeResource {
 	static private final String BASE_URL = JNDISingleton.getInstance().getProperty("coastal-hazards.public.url",
 			"http://marine.usgs.gov/coastalchangehazardsportal");
 
+	/**
+	 * Produces a QR code that directs to back of card for a given item ID
+	 *
+	 * @param id
+	 * @param width
+	 * @param height
+	 * @return
+	 */
 	@GET
 	@Path("info/item/{id}")
 	@Produces("image/png")
-	public Response generateQRImageUsingItemID(@PathParam("id") String id, @QueryParam("width") int width, @QueryParam("height") int height) {
+	public Response generateQRImageUsingItemID(@PathParam("id") String id, @QueryParam("width") int width, @QueryParam("height") int height) throws IOException {
 		URL url;
 		String urlString = "ui/info/item/" + id;
 		Response response;
 		QRCodeGenerator qrcr = new QRCodeGenerator();
-		File result;
 
 		// Make sure the item exists in the database
 		try (ItemManager itemManager = new ItemManager()) {
@@ -60,8 +66,6 @@ public class QRCodeResource {
 		// Create the URL string
 		urlString = BASE_URL + urlString;
 
-		// TODO - Use outputstream to send back to client and clean up file after send is complete. This safeguards
-		// against QR code request flood and filling up disk. When generating from a file, files are set to delete on exit
 		try {
 			url = new URL(urlString);
 			qrcr.setUrl(url);
@@ -83,13 +87,12 @@ public class QRCodeResource {
 			}
 		}
 
-		try {
-			result = qrcr.generateToFile();
-		} catch (IOException ex) {
-			throw new QRGenerationException("File could not be created", ex);
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			qrcr.writeToOutputStream(baos);
+			baos.flush();
+			response = Response.ok(baos.toByteArray(), "image/png").build();
 		}
 
-		response = Response.ok(result, "image/png").build();
 		return response;
 	}
 }
