@@ -83,7 +83,7 @@ CCH.Objects.Back.UI = function (args) {
 
 		$infoTitle.html(item.summary.full.title);
 		$qrImage.attr({
-			src: CCH.CONFIG.contextPath + '/data/qr/?url=' + encodeURIComponent(document.location.href)+ '&width=250&height=250'
+			src: CCH.CONFIG.contextPath + '/data/qr/info/item/' + CCH.CONFIG.itemId + '?width=250&height=250'
 		});
 		$infoSummary.html(item.summary.full.text);
 		$infoPubListSpan.append($publist);
