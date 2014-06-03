@@ -29,6 +29,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -49,7 +50,7 @@ public class FeatureCollectionExport {
     private List<String> attributes;
     private CoordinateReferenceSystem crs;
     private boolean downloadAll;
-    
+    public static final int NULL_PLACEHOLDER = -999;
     /**
      * Default constructor assumes all attributes from source should be downloaded
      * 
@@ -123,7 +124,12 @@ public class FeatureCollectionExport {
                 SimpleFeature source = fi.next();
                 fb.reset();
                 for (AttributeDescriptor desc : type.getAttributeDescriptors()) {
-                    fb.set(desc.getName(), source.getAttribute(desc.getName()));
+					Name attributeName = desc.getName();
+					Object attributeValue = source.getAttribute(attributeName);
+					if(null == attributeValue){
+						attributeValue = NULL_PLACEHOLDER;
+					}
+                    fb.set(attributeName, attributeValue);
                 }
                 SimpleFeature target = fb.buildFeature(null);
                 featureStore.addFeatures(DataUtilities.collection(target));
