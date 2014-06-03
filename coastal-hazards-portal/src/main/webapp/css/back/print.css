@@ -52,11 +52,17 @@
 		font-size: 3em;
 	}
 
+	/* Hide QR code for screen, show for print */
+	#qr-code {
+		display: initial;
+		text-align:center;
+	}
+
 	.container #map-and-legend-row  {
 		clear: both;
 		width: 100%;
 	}
-	
+
 	/* Map */
 	.container #map-and-legend-row > #map-row {
 		page-break-before: always;
@@ -129,7 +135,7 @@
 		width: 100%;
 		clear: both;
 	}
-	
+
 	.container #summary-and-publications-row > #summary-row > #info-summary {
 		page-break-before: auto;
 		font-size: 20px;

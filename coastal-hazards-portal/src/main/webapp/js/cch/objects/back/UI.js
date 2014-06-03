@@ -18,6 +18,10 @@ CCH.Objects.Back.UI = function (args) {
 		var $metadataLinkButton = $('#metadata-link-container'),
 			$downloadFullLink = $('#download-full-link-container'),
 			$applicationLink = $('#application-link-container'),
+			$qrImage = $('#qr-code-img'),
+			$infoTitle = $('#info-title'),
+			$infoSummary = $('#info-summary'),
+			$infoPubListSpan = $('#info-container-publications-list-span'),
 			cswService,
 			$publist,
 			item = args.item;
@@ -77,9 +81,12 @@ CCH.Objects.Back.UI = function (args) {
 			$('#info-container-publications-list-span').remove();
 		}
 
-		$('#info-title').html(item.summary.full.title);
-		$('#info-summary').html(item.summary.full.text);
-		$('#info-container-publications-list-span').append($publist);
+		$infoTitle.html(item.summary.full.title);
+		$qrImage.attr({
+			src: CCH.CONFIG.contextPath + '/data/qr/info/item/' + CCH.CONFIG.itemId + '?width=250&height=250'
+		});
+		$infoSummary.html(item.summary.full.text);
+		$infoPubListSpan.append($publist);
 
 		me.buildTwitterButton();
 		CCH.map.buildMap();
@@ -115,7 +122,7 @@ CCH.Objects.Back.UI = function (args) {
 		} else {
 			me.removeLegendContainer();
 		}
-		
+
 		return me;
 	};
 
@@ -264,7 +271,7 @@ CCH.Objects.Back.UI = function (args) {
 		}
 	};
 
-	
+
 
 	return me.init(args);
 };

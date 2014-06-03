@@ -192,8 +192,14 @@
 			<version>${version.jqueryui}</version>
 		</dependency>
 
+		<!-- QR Generation --> 
+		<dependency>
+			<groupId>net.glxn</groupId>
+			<artifactId>qrgen</artifactId>
+			<version>1.4</version>
+		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
