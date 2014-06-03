@@ -4,9 +4,14 @@ import gov.usgs.cida.coastalhazards.domain.DataDomainUtility;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.Session;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
@@ -19,7 +24,9 @@ import org.apache.log4j.Logger;
 public class DataDomainManager implements AutoCloseable {
     
     private static final Logger log = Logger.getLogger(DataDomainManager.class);
+    
     private static final String HQL_SELECT_BY_ID = "select d from DataDomain d where d.itemId = :id or d.sessionId = :id";
+    private static final Map<String, Lock> locks = Collections.synchronizedMap(new HashMap<String, Lock>());
     
     private EntityManager em;
 
@@ -74,24 +81,42 @@ public class DataDomainManager implements AutoCloseable {
         
         if (item == null) {
             throw new IllegalArgumentException("Item must be valid data item");
-        } else if (isPersisted(item.getId())) {
-            log.debug("Found domain in database, return it");
-            domain = load(item.getId());
-        } else {
-            log.debug("No domain found in database, get it from WFS");
-            SortedSet<String> domainVals = DataDomainUtility.retrieveDomainFromWFS(item);
-            // only using this for years for now, separated out for future endeavors though
-            SortedSet<String> domainAsYears = DataDomainUtility.getDomainAsYears(domainVals);
-            domain.setItemId(item.getId());
-            domain.setDomainValues(domainAsYears);
-            save(domain);
         }
         
+        Lock domainLock = getOrCreateLock(item.getId());
+        try {
+            domainLock.lock();
+            if (isPersisted(item.getId())) {
+                log.debug("Found domain in database, return it");
+                domain = load(item.getId());
+            } else {
+                log.debug("No domain found in database, get it from WFS");
+                SortedSet<String> domainVals = DataDomainUtility.retrieveDomainFromWFS(item);
+                // only using this for years for now, separated out for future endeavors though
+                SortedSet<String> domainAsYears = DataDomainUtility.getDomainAsYears(domainVals);
+                domain.setItemId(item.getId());
+                domain.setDomainValues(domainAsYears);
+                save(domain);
+            }
+        } finally {
+            domainLock.unlock();
+        }
         return domain;
     }
     
     public DataDomain getDomainForSession(Session session) {
         throw new UnsupportedOperationException("Not yet implemented, need to think about how this would work");
+    }
+    
+    private static synchronized Lock getOrCreateLock(String id) {
+        Lock lock;
+        if (locks.containsKey(id)) {
+            lock = locks.get(id);
+        } else {
+            lock = new ReentrantLock();
+            locks.put(id, lock);
+        }
+        return lock;
     }
     
 }
