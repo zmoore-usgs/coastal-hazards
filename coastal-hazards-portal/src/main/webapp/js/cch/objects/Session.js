@@ -36,10 +36,10 @@ CCH.Objects.Session = function (args) {
 
 	me.update = function (args) {
 		CCH.LOG.trace('Session.js::update');
-
-		if (CCH.map.updateSession()) {
-
-			args = args || {};
+		
+		args = args || {};
+		var map = args.map || CCH.map;
+		if (map.updateSession()) {
 
 			var itemid = args.itemid,
 				visible = args.visible,
