@@ -171,7 +171,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			childItemIdArray,
 			dataItem,
 			isYearAggregation;
-		
+
 		if ('aggregation' === item.itemType.toLowerCase()) {
 			childItemIdArray = me.getAggregationChildrenIds(item.id);
 
@@ -439,7 +439,10 @@ CCH.Objects.Widget.Legend = function (args) {
 
 			for (hashKey in legendGroups) {
 				if (legendGroups.hasOwnProperty(hashKey)) {
-					legendGroup = legendGroups[hashKey];
+					// Sort the legend group by the table's legend index attribtue
+					legendGroup = legendGroups[hashKey].sortBy(function (table) {
+						return $(table).attr('legend-index');
+					});
 					firstLegend = legendGroup[0];
 					for (lIdx = 1; lIdx < legendGroup.length; lIdx++) {
 						currentLegend = legendGroup[lIdx];
