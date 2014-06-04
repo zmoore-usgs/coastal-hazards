@@ -43,6 +43,7 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		return me;
 	};
+	
 	me.generateLegend = function (args) {
 		args = args || {};
 		var item = args.item,
@@ -71,6 +72,7 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		return me;
 	};
+	
 	me.generateGenericLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
@@ -441,7 +443,7 @@ CCH.Objects.Widget.Legend = function (args) {
 				if (legendGroups.hasOwnProperty(hashKey)) {
 					// Sort the legend group by the table's legend index attribtue
 					legendGroup = legendGroups[hashKey].sortBy(function (table) {
-						return $(table).attr('legend-index');
+						return parseInt($(table).attr('legend-index'));
 					});
 					firstLegend = legendGroup[0];
 					for (lIdx = 1; lIdx < legendGroup.length; lIdx++) {
