@@ -126,7 +126,7 @@ CCH.Objects.Front.Map = function (args) {
 				displayProjection: me.displayProjection,
 				tileManager: new CCH.Objects.FixedTileManager()
 			});
-			
+
 			me.clickControl = new CCH.Objects.ClickControl({
 				handlerOptions: {
 					"single": true,
@@ -140,6 +140,7 @@ CCH.Objects.Front.Map = function (args) {
 
 			CCH.LOG.debug('Map.js::init():Adding base layers to map');
 			me.map.addLayers(CCH.CONFIG.map.layers.baselayers);
+
 			CCH.LOG.debug('Map.js::init():Adding controls to map');
 			me.map.addControls([
 				me.layerSwitcher,
@@ -154,14 +155,13 @@ CCH.Objects.Front.Map = function (args) {
 
 			CCH.LOG.debug('Map.js::init():Binding map event handlers');
 			me.map.events.on({
-				'zoomend': me.zoomOrMoveEndCallback,
-				'moveend': me.zoomOrMoveEndCallback,
+				'zoomend': me.zoomendCallback,
+				'moveend': me.moveendCallback,
 				'removelayer': me.removeLayerCallback,
 				'preaddlayer': me.preAddLayerCallback,
 				'addlayer': me.addLayerCallback,
 				'changelayer': me.changelayerCallback
 			});
-						me.map.zoomToExtent(me.initialExtent);
 
 			CCH.LOG.debug('Map.js::init():Replacing map graphics');
 			$('#OpenLayers_Control_MaximizeDiv_innerImage').attr('src', 'images/openlayers/maximize_minimize_toggle/tall-medium-arrow-closed-right.svg');
@@ -176,6 +176,7 @@ CCH.Objects.Front.Map = function (args) {
 			me.map.events.register("click", me.map, function (e) {
 				$(me).trigger('map-click', e);
 			});
+
 			return me;
 		},
 		showLegend: function () {
@@ -256,7 +257,7 @@ CCH.Objects.Front.Map = function (args) {
 			// unhook the event handlers for map events tied to session writing.
 			// They will be rehooked later
 			me.map.events.un({
-				'moveend': me.zoomOrMoveEndCallback,
+				'moveend': me.moveendCallback,
 				'addlayer': me.addlayerCallback,
 				'changelayer': me.changelayerCallback,
 				'removelayer': me.removeLayerCallback
@@ -268,7 +269,7 @@ CCH.Objects.Front.Map = function (args) {
 			// We're done altering the map to fit the session. Let's re-register those 
 			// events we disconnected earlier
 			me.map.events.on({
-				'moveend': me.zoomOrMoveEndCallback,
+				'moveend': me.moveendCallback,
 				'removelayer': me.removeLayerCallback,
 				'addlayer': me.addLayerCallback,
 				'changelayer': me.changelayerCallback
@@ -289,7 +290,7 @@ CCH.Objects.Front.Map = function (args) {
 			// unhook the event handlers for map events tied to session writing.
 			// They will be rehooked later
 			me.map.events.un({
-				'moveend': me.zoomOrMoveEndCallback,
+				'moveend': me.moveendCallback,
 				'addlayer': me.addlayerCallback,
 				'changelayer': me.changelayerCallback,
 				'removelayer': me.removeLayerCallback
@@ -325,7 +326,7 @@ CCH.Objects.Front.Map = function (args) {
 			// We're done altering the map to fit the session. Let's re-register those 
 			// events we disconnected earlier
 			me.map.events.on({
-				'moveend': me.zoomOrMoveEndCallback,
+				'moveend': me.moveendCallback,
 				'removelayer': me.removeLayerCallback,
 				'addlayer': me.addLayerCallback,
 				'changelayer': me.changelayerCallback
@@ -361,8 +362,11 @@ CCH.Objects.Front.Map = function (args) {
 
 			return layer;
 		},
-		zoomOrMoveEndCallback: function () {
-			CCH.session.updateSession({map: me});
+		zoomendCallback: function () {
+			CCH.session.updateSession();
+		},
+		moveendCallback: function () {
+			CCH.session.updateSession();
 		},
 		changelayerCallback: function (evt) {
 			var layer = evt.layer;
