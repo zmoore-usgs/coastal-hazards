@@ -104,6 +104,7 @@ CCH.Objects.LayerIdentifyControl = OpenLayers.Class(OpenLayers.Control.WMSGetFea
 			// Close any other layer identification widgets on the map
 			CCH.map.removeAllPopups();
 			CCH.map.getMap().addPopup(popup, true);
+			$('#feature-identification-popup').css('z-index', 1009);
 
 			for (layerName in featuresByName) {
 				if (featuresByName.hasOwnProperty(layerName)) {
