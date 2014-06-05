@@ -187,17 +187,20 @@ CCH.Objects.Widget.Legend = function (args) {
 				return CCH.items.getById({id: dataItemId});
 			}(childItemIdArray);
 
+			// Because this is an aggregation of dates, I want to only use the top level aggregation item 
+			// because that SLD will hold all of the dates necessary. The back-end service inserts all of the dates
+			// and color maps that the aggregation contains for its children
 			isYearAggregation = dataItem.attr.toLowerCase().indexOf('date') !== -1;
+			if (isYearAggregation) {
+				childItemIdArray = [item.id];
+			}
 		} else {
 			childItemIdArray = [item.id];
 		}
 
-		var yearlyTableAddedCallback = null;
-
-
 		me.createLegendsFromItems({
 			items: childItemIdArray,
-			tableAddedCallback: isYearAggregation ? yearlyTableAddedCallback : null,
+			tableAddedCallback: null,
 			generateLegendTable: me.generateHistoricalLegendTable
 		});
 	};
