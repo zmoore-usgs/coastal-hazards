@@ -43,6 +43,7 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		return me;
 	};
+	
 	me.generateLegend = function (args) {
 		args = args || {};
 		var item = args.item,
@@ -71,6 +72,7 @@ CCH.Objects.Widget.Legend = function (args) {
 
 		return me;
 	};
+	
 	me.generateGenericLegendTable = function (args) {
 		args = args || {};
 		var sld = args.sld,
@@ -171,7 +173,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			childItemIdArray,
 			dataItem,
 			isYearAggregation;
-		
+
 		if ('aggregation' === item.itemType.toLowerCase()) {
 			childItemIdArray = me.getAggregationChildrenIds(item.id);
 
@@ -417,6 +419,7 @@ CCH.Objects.Widget.Legend = function (args) {
 		var total = args.total,
 			legendTables = args.legendTables,
 			item = args.item || null,
+			ribboned = me.item.ribboned  || false,
 			legendGroups,
 			legendGroup,
 			firstLegend,
@@ -430,6 +433,8 @@ CCH.Objects.Widget.Legend = function (args) {
 				return $(t).attr('legend-index') === currentLegend.attr('legend-index');
 			};
 
+		// All legend tables have been attained so now I need to actually slice and dice the collection of tables into
+		// a nicely formatted single or set of legend tables
 		if (legendTables.length === total) {
 
 			// If I am ribboned, I want to group my legends if they're the same color range/measures
@@ -439,16 +444,27 @@ CCH.Objects.Widget.Legend = function (args) {
 
 			for (hashKey in legendGroups) {
 				if (legendGroups.hasOwnProperty(hashKey)) {
-					legendGroup = legendGroups[hashKey];
+					// Sort the legend group by the table's legend index attribtue
+					legendGroup = legendGroups[hashKey].sortBy(function (table) {
+						return parseInt($(table).attr('legend-index'));
+					});
+					
 					firstLegend = legendGroup[0];
 					for (lIdx = 1; lIdx < legendGroup.length; lIdx++) {
 						currentLegend = legendGroup[lIdx];
-						firstLegendCaptionText = firstLegend.find('caption').html();
-						currentLegendCaptionText = currentLegend.find('caption').html();
-						firstLegend.find('caption').html(firstLegendCaptionText + '<br /> ' + currentLegendCaptionText);
+						if (ribboned) {
+							firstLegendCaptionText = firstLegend.find('caption').html();
+							currentLegendCaptionText = currentLegend.find('caption').html();
+							firstLegend.find('caption').html(firstLegendCaptionText + '<br /> ' + currentLegendCaptionText);
+						}
 						tableIndex = legendTables.findIndex(indexCompare);
 						legendTables[tableIndex] = -1;
 					}
+					
+					if (!ribboned) {
+						firstLegend.find('caption').html(me.item.summary.tiny.text);
+					}
+					
 				}
 			}
 
@@ -466,6 +482,7 @@ CCH.Objects.Widget.Legend = function (args) {
 			}).unique(function (table) {
 				return $(table).attr('legend-attribute');
 			});
+			
 			if (legendTables.length === 0) {
 				// Remove the container and hyst run the onComplete
 				me.hide();
@@ -480,7 +497,7 @@ CCH.Objects.Widget.Legend = function (args) {
 					// If there's multiple tables, sort them according to index, leaving
 					// titles as is
 					legendTables = legendTables.sort(function (a, b) {
-						return $(a).attr('legend-index') - $(b).attr('legend-index');
+						return parseInt($(a).attr('legend-index')) - parseInt($(b).attr('legend-index'));
 					});
 				}
 
