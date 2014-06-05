@@ -181,7 +181,7 @@ CCH.CONFIG.onAppInitialize = function () {
 
 			CCH.CONFIG.loadUberItem({
 				subtree: true,
-				zoomToBbox: false,
+				zoomToBbox: true,
 				overridePreviousBounds: false
 			});
 		}
