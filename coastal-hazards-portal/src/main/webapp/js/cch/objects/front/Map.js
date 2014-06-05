@@ -42,7 +42,7 @@ CCH.Objects.Front.Map = function (args) {
 
 		if (!layer) {
 			if (item && 'function' === typeof item.getWmsLayer) {
-				layer = item.getWmsLayer();
+				layer = item.getWmsLayer(args);
 			}
 		}
 
