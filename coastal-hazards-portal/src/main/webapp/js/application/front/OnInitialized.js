@@ -157,11 +157,14 @@ CCH.CONFIG.onAppInitialize = function () {
 					var item = CCH.items.getById({id: id});
 					if (item) {
 						// All items have been loaded and my item exists. Show my item in the accordion.
-						$(window).trigger('cch.slide.search.button.click.explore',  {
+						$(window).trigger('cch.slide.search.button.click.explore', {
 							id: id
 						});
 						
-						// Triggering the explore click above also triggers the busket slider to close. 
+						// Triggering the explore click above also triggers the basket slider to close. When 
+						// the basket slider closes, it may hide all the layers though through testing, sometimes
+						// it doesn't. It looks like a timing issue. Adding this hack here ensure that the layer 
+						// the user came to see shows up
 						CCH.items.getById({id: id}).showLayer();
 					} else {
 						// The item could not be found. Show an error and wait for the app to resize
