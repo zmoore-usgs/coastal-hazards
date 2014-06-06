@@ -66,7 +66,7 @@
 	/* Map */
 	.container #map-and-legend-row > #map-row {
 		page-break-before: always;
-		page-break-after:always; 
+		page-break-after: auto; 
 		width: 100%;
 		height: 100%;
 		text-align: center;
@@ -75,7 +75,7 @@
 	}
 	.container #map-and-legend-row > #map-row > #map {
 		width: 800px;
-		height: 650px;
+		height: 400px;
 	}
 	.container #map-and-legend-row > #map-row > #map .olControlZoom {
 		display: none;
