@@ -69,13 +69,17 @@ public class FeatureCollectionFromShp {
 
     private URL shapefile;
     
-    @Before
-    public void setupShape() {
-        shapefile = FeatureCollectionFromShp.class.getClassLoader().getResource("gov/usgs/cida/coastalhazards/blandit/blandit_intersects.shp");
-    }
+//    @Before
+//    public void setupShape() {
+//        shapefile = FeatureCollectionFromShp.class.getClassLoader().getResource("gov/usgs/cida/coastalhazards/blandit/blandit_intersects.shp");
+//    }
 
     public static FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollectionFromShp(URL shp) throws IOException {
-        FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
+        if(null == shp){
+			throw new NullPointerException("The shapefile url cannot be null");
+		}
+		
+		FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = null;
         
         Map<String, URL> connectParameters = new HashMap<String, URL>();
         connectParameters.put("url", shp);
@@ -95,11 +99,11 @@ public class FeatureCollectionFromShp {
         return featureCollection;
     }
     
-    @Test
-    public void testFeatureCollectionFromShp() throws IOException {
-        FeatureCollection<SimpleFeatureType, SimpleFeature> fc = featureCollectionFromShp(shapefile);
-        assertNotNull(fc);
-        assertEquals(fc.size(), 331);
-    }
+//    @Test
+//    public void testFeatureCollectionFromShp() throws IOException {
+//        FeatureCollection<SimpleFeatureType, SimpleFeature> fc = featureCollectionFromShp(shapefile);
+//        assertNotNull(fc);
+//        assertEquals(fc.size(), 331);
+//    }
     
 }

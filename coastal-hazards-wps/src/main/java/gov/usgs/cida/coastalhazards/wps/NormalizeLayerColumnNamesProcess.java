@@ -1,5 +1,7 @@
 package gov.usgs.cida.coastalhazards.wps;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 import gov.usgs.cida.coastalhazards.util.GeoserverUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +40,18 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 
 	private final Catalog catalog;
 	private final ImportProcess importProcess;
-
+	/**
+	 * Geoserver relies on case-sensitive attributes. We cannot reformat these attributes.
+	 * In addition, we do not write SLDs against these attributes, so we don't need to care.
+	 */
+	public static ImmutableSet<String> COLUMN_NAMES_TO_IGNORE = (
+		new ImmutableSortedSet.Builder<String>(String.CASE_INSENSITIVE_ORDER)
+			.add(
+					"the_geom",
+					"id"
+			)
+		).build();
+	
 	public NormalizeLayerColumnNamesProcess(ImportProcess importer, Catalog catalog) {
 		this.catalog = catalog;
 		this.importProcess = importer;
@@ -65,7 +78,13 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 			String attributeName = attributeDescriptor.getName().toString();
 			int ind = attributeList.indexOf(attributeDescriptor);
 			AttributeType type = attributeDescriptor.getType();
-			Name newName = new NameImpl(attributeName.toUpperCase());
+			Name newName;
+			if(COLUMN_NAMES_TO_IGNORE.contains(attributeName)){
+				newName = new NameImpl(attributeName);
+			}
+			else{
+				newName = new NameImpl(attributeName.toUpperCase());
+			}
 			int minOccurs = attributeDescriptor.getMinOccurs();
 			int maxOccurs = attributeDescriptor.getMaxOccurs();
 			boolean isNillable = attributeDescriptor.isNillable();
