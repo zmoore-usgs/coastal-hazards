@@ -69,11 +69,6 @@ public class FeatureCollectionFromShp {
 
     private URL shapefile;
     
-//    @Before
-//    public void setupShape() {
-//        shapefile = FeatureCollectionFromShp.class.getClassLoader().getResource("gov/usgs/cida/coastalhazards/blandit/blandit_intersects.shp");
-//    }
-
     public static FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollectionFromShp(URL shp) throws IOException {
         if(null == shp){
 			throw new NullPointerException("The shapefile url cannot be null");
@@ -97,13 +92,6 @@ public class FeatureCollectionFromShp {
                 dataStore.getFeatureSource(name);
         featureCollection = featureSource.getFeatures();
         return featureCollection;
-    }
-    
-//    @Test
-//    public void testFeatureCollectionFromShp() throws IOException {
-//        FeatureCollection<SimpleFeatureType, SimpleFeature> fc = featureCollectionFromShp(shapefile);
-//        assertNotNull(fc);
-//        assertEquals(fc.size(), 331);
-//    }
+    }   
     
 }
