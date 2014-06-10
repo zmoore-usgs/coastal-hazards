@@ -61,7 +61,7 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 		}
 		String workspace = workspaceAndLayer[0];
 		String layer = workspaceAndLayer[1];
-		if(null == store || store.length() == 0){
+		if(null == store || StringUtils.isBlank(store)){
 			store = layer;
 		}
 		
@@ -91,8 +91,7 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 		RenameLayerColumnsProcess renameLayerProc = new RenameLayerColumnsProcess(importProcess, catalog);
 		String[] renameColumnMappingArray = new String[renameColumnMapping.size()];
 		renameColumnMapping.toArray(renameColumnMappingArray);
-		String result = renameLayerProc.execute(layer, workspace, store, renameColumnMappingArray);
-		System.out.println(result);
+		renameLayerProc.execute(layer, workspace, store, renameColumnMappingArray);
 		String renameColumnMappingReport = StringUtils.join(renameColumnMappingArray, "\n");
 		return renameColumnMappingReport;
 	}
