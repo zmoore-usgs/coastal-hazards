@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSortedSet;
 import gov.usgs.cida.coastalhazards.util.GeoserverUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -44,8 +45,8 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 	 * Geoserver relies on case-sensitive attributes. We cannot reformat these attributes.
 	 * In addition, we do not write SLDs against these attributes, so we don't need to care.
 	 */
-	public static ImmutableSet<String> COLUMN_NAMES_TO_IGNORE = (
-		new ImmutableSortedSet.Builder<String>(String.CASE_INSENSITIVE_ORDER)
+	public static final ImmutableSet<String> COLUMN_NAMES_TO_IGNORE = (
+		new ImmutableSortedSet.Builder<>(String.CASE_INSENSITIVE_ORDER)
 			.add(
 					"the_geom",
 					"id"
@@ -59,7 +60,7 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 
 	@DescribeResult(name = "layerName", description = "Name of the normalized featuretype, with workspace")
 	public String execute(
-			@DescribeParameter(name = "layer", min = 1, description = "Input Layer To Append Columns To") String layer,
+			@DescribeParameter(name = "layer", min = 1, description = "Input Layer To Normalize Columns On") String layer,
 			@DescribeParameter(name = "workspace", min = 1, description = "Workspace in which layer resides") String workspace,
 			@DescribeParameter(name = "store", min = 1, description = "Store in which layer resides") String store
 	)
@@ -73,24 +74,30 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 		List<AttributeDescriptor> attributeList = new ArrayList(featureType.getDescriptors());
 		List<SimpleFeature> sfList = new ArrayList<>();
 		FeatureCollection<? extends FeatureType, ? extends Feature> featureCollection = gsUtils.getFeatureCollection(featureSource);
-
-		for (AttributeDescriptor attributeDescriptor : attributeList) {
-			String attributeName = attributeDescriptor.getName().toString();
-			int ind = attributeList.indexOf(attributeDescriptor);
+		AttributeDescriptor attributeDescriptor;
+		int length = attributeList.size();
+		for (int i = 0; i < length; i++) {
+			attributeDescriptor = attributeList.get(i);
+			Name attributeName = attributeDescriptor.getName();
+			if(null == attributeName){
+				continue;
+			}
+			String attributeTitle = attributeName.toString();
+			
 			AttributeType type = attributeDescriptor.getType();
 			Name newName;
-			if(COLUMN_NAMES_TO_IGNORE.contains(attributeName)){
-				newName = new NameImpl(attributeName);
+			if(COLUMN_NAMES_TO_IGNORE.contains(attributeTitle)){
+				newName = new NameImpl(attributeTitle);
 			}
 			else{
-				newName = new NameImpl(attributeName.toUpperCase());
+				newName = new NameImpl(attributeTitle.toUpperCase(Locale.ENGLISH));
 			}
 			int minOccurs = attributeDescriptor.getMinOccurs();
 			int maxOccurs = attributeDescriptor.getMaxOccurs();
 			boolean isNillable = attributeDescriptor.isNillable();
 			Object defaultValue = attributeDescriptor.getDefaultValue();
 			AttributeDescriptor renamedAttributeDescriptor = new AttributeDescriptorImpl(type, newName, minOccurs, maxOccurs, isNillable, defaultValue);
-			attributeList.set(ind, renamedAttributeDescriptor);
+			attributeList.set(i, renamedAttributeDescriptor);
 		}
 
 		SimpleFeatureType newFeatureType = new SimpleFeatureTypeImpl(
