@@ -51,11 +51,20 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 	@DescribeResult(name = "columnMapping", description = "List of column renames in format: 'Original Column Name|New Column Name\nOriginal Column Name|New Column Name...'")
 	
 	public String execute(
-			@DescribeParameter(name = "layer", min = 1, description = "Input Layer To Normalize Columns On") String layer,
-			@DescribeParameter(name = "workspace", min = 1, description = "Workspace in which layer resides") String workspace,
-			@DescribeParameter(name = "store", min = 1, description = "Store in which layer resides") String store
+			@DescribeParameter(name = "workspacePrefixedLayerName", min = 1, max = 1, description = "Input layer on which to normalize columns prefixed with the workspace in which layer resides. Example myWorkspaceName:myLayerName") String prefixedLayerName,
+			@DescribeParameter(name = "store", min = 0, max = 1, description = "Store in which layer resides. If not specified, it is assumed that the store name is the same as the layer name") String store
 	)
 			throws ProcessException {
+		String [] workspaceAndLayer = prefixedLayerName.split(":");
+		if(2 != workspaceAndLayer.length){
+			throw new ProcessException("workspacePrefixedLayerName could not be parsed.");
+		}
+		String workspace = workspaceAndLayer[0];
+		String layer = workspaceAndLayer[1];
+		if(null == store || StringUtils.isBlank(store)){
+			store = layer;
+		}
+		
 		GeoserverUtils gsUtils = new GeoserverUtils(catalog);
 		WorkspaceInfo ws = gsUtils.getWorkspaceByName(workspace);
 		DataStoreInfo ds = gsUtils.getDataStoreByName(ws.getName(), store);

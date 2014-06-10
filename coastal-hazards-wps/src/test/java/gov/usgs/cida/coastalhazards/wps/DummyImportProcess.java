@@ -94,27 +94,22 @@ public class DummyImportProcess extends ImportProcess {
      */
     @Override
     public String execute(SimpleFeatureCollection features, GridCoverage2D coverage, String workspace, String store, String name, CoordinateReferenceSystem srs, ProjectionPolicy srsHandling, String styleName) throws ProcessException {
-        if (shpfile != null) {
+        String response = workspace + ":" + name;
+		if (shpfile != null) {
             ShapefileDataStoreFactory dsFactory = new ShapefileDataStoreFactory();
             Map<String, Serializable> params = new HashMap<String, Serializable>();
             try {
                 params.put("url", shpfile.toURI().toURL());
-                params.put("create spatial index", Boolean.TRUE);
-            } catch (MalformedURLException ex) {
-                return null;
-            }
-
-            ShapefileDataStore dataStore;
-            try {
+                params.put("create spatial index", Boolean.TRUE);      
+	            ShapefileDataStore dataStore;
                 dataStore = (ShapefileDataStore) dsFactory.createDataStore(params);
                 dataStore.createSchema(features.getSchema());
                 SimpleFeatureStore newStore = (SimpleFeatureStore) dataStore.getFeatureSource();
                 newStore.addFeatures(features);
-            } catch (IOException ex) {
-                return null;
-            }
-
+			} catch (IOException ex) {
+				response = null;
+			}
         }
-        return null;
+        return response;
     }
 }
