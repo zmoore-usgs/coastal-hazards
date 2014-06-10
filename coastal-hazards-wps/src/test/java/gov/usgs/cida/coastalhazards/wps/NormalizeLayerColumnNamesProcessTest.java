@@ -51,7 +51,8 @@ public class NormalizeLayerColumnNamesProcessTest  extends WPSTestSupport {
 
 		NormalizeLayerColumnNamesProcess normalizeLayerColumnNamesProcess = new NormalizeLayerColumnNamesProcess(dummyImportProcess, catalog);
 		String normalizeResult = normalizeLayerColumnNamesProcess.execute(LAYER_NAME, WORKSPACE_NAME, STORE_NAME);
-
+		System.out.println("The following renaming was attempted (oldName|newName):");
+		System.out.println(normalizeResult);
 		validateColumnNames(outTest);
 	}
 

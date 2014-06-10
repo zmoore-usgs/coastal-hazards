@@ -6,30 +6,20 @@ import gov.usgs.cida.coastalhazards.util.GeoserverUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
 import org.geotools.data.DataAccess;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
-import org.geotools.feature.NameImpl;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.feature.simple.SimpleFeatureTypeImpl;
-import org.geotools.feature.type.AttributeDescriptorImpl;
 import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 
@@ -58,7 +48,8 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 		this.importProcess = importer;
 	}
 
-	@DescribeResult(name = "layerName", description = "Name of the normalized featuretype, with workspace")
+	@DescribeResult(name = "columnMapping", description = "List of column renames in format: 'Original Column Name|New Column Name\nOriginal Column Name|New Column Name...'")
+	
 	public String execute(
 			@DescribeParameter(name = "layer", min = 1, description = "Input Layer To Normalize Columns On") String layer,
 			@DescribeParameter(name = "workspace", min = 1, description = "Workspace in which layer resides") String workspace,
@@ -72,75 +63,27 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 		FeatureSource<? extends FeatureType, ? extends Feature> featureSource = gsUtils.getFeatureSource(da, layer);
 		FeatureType featureType = featureSource.getSchema();
 		List<AttributeDescriptor> attributeList = new ArrayList(featureType.getDescriptors());
-		List<SimpleFeature> sfList = new ArrayList<>();
-		FeatureCollection<? extends FeatureType, ? extends Feature> featureCollection = gsUtils.getFeatureCollection(featureSource);
-		AttributeDescriptor attributeDescriptor;
 		int length = attributeList.size();
+		List<String> renameColumnMapping = new ArrayList<>(length);
+		AttributeDescriptor attributeDescriptor;
 		for (int i = 0; i < length; i++) {
 			attributeDescriptor = attributeList.get(i);
 			Name attributeName = attributeDescriptor.getName();
 			if(null == attributeName){
 				continue;
 			}
-			String attributeTitle = attributeName.toString();
-			
-			AttributeType type = attributeDescriptor.getType();
-			Name newName;
-			if(COLUMN_NAMES_TO_IGNORE.contains(attributeTitle)){
-				newName = new NameImpl(attributeTitle);
-			}
-			else{
-				newName = new NameImpl(attributeTitle.toUpperCase(Locale.ENGLISH));
-			}
-			int minOccurs = attributeDescriptor.getMinOccurs();
-			int maxOccurs = attributeDescriptor.getMaxOccurs();
-			boolean isNillable = attributeDescriptor.isNillable();
-			Object defaultValue = attributeDescriptor.getDefaultValue();
-			AttributeDescriptor renamedAttributeDescriptor = new AttributeDescriptorImpl(type, newName, minOccurs, maxOccurs, isNillable, defaultValue);
-			attributeList.set(i, renamedAttributeDescriptor);
-		}
-
-		SimpleFeatureType newFeatureType = new SimpleFeatureTypeImpl(
-				featureType.getName(),
-				attributeList,
-				featureType.getGeometryDescriptor(),
-				featureType.isAbstract(),
-				featureType.getRestrictions(),
-				featureType.getSuper(),
-				featureType.getDescription());
-
-		SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(newFeatureType);
-
-		FeatureIterator<? extends Feature> features = null;
-		try {
-			features = featureCollection.features();
-			while (features.hasNext()) {
-				SimpleFeature feature = (SimpleFeature) features.next();
-				SimpleFeature newFeature = SimpleFeatureBuilder.retype(feature, sfb);
-				List<Object> oldAttributes = feature.getAttributes();
-				List<Object> newAttributes = newFeature.getAttributes();
-				// If the feature type contains attributes in which the original 
-				// feature does not have a value for, 
-				// the value in the resulting feature is set to null.
-				// Need to copy it back from the original feature
-				for (int aInd = 0; aInd < newAttributes.size(); aInd++) {
-					Object oldAttribute = oldAttributes.get(aInd);
-					Object newAttribute = newAttributes.get(aInd);
-
-					if (newAttribute == null && oldAttribute != null) {
-						newFeature.setAttribute(aInd, oldAttribute);
-					}
-				}
-				sfList.add(newFeature);
-			}
-		} finally {
-			if (null != features) {
-				features.close();
+			String oldName = attributeName.toString();		
+			if(!COLUMN_NAMES_TO_IGNORE.contains(oldName)){
+				String newName = oldName.toUpperCase(Locale.ENGLISH);
+				String mapping = oldName + "|" + newName;
+				renameColumnMapping.add(mapping);
 			}
 		}
-
-		SimpleFeatureCollection collection = DataUtilities.collection(sfList);
-
-		return gsUtils.replaceLayer(collection, layer, ds, ws, importProcess);
+		RenameLayerColumnsProcess renameLayerProc = new RenameLayerColumnsProcess(importProcess, catalog);
+		String[] renameColumnMappingArray = new String[renameColumnMapping.size()];
+		renameColumnMapping.toArray(renameColumnMappingArray);
+		renameLayerProc.execute(layer, workspace, store, renameColumnMappingArray);
+		String renameColumnMappingReport = StringUtils.join(renameColumnMappingArray, "\n");
+		return renameColumnMappingReport;
 	}
 }
