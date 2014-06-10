@@ -32,7 +32,8 @@
 	.container >#header-row  #app-navbar-site-title-container {
 		display: inline;
 	}
-	.container >#header-row  #app-navbar-site-title-container > .app-navbar-title-print {
+	
+	.container >#header-row  #app-navbar-site-title-container > #app-navbar-title-print {
 		display: initial;
 		float:right;
 		font-size: 2em;
