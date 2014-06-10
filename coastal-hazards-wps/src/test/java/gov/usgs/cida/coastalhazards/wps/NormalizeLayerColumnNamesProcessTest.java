@@ -35,7 +35,6 @@ public class NormalizeLayerColumnNamesProcessTest  extends WPSTestSupport {
 	}
 
 	@Test
-	//@Ignore
 	public void testExecute() throws Exception {
 		ImportProcess dummyImportProcess = new DummyImportProcess(outTest);
 		
