@@ -3,6 +3,7 @@
 		size: letter;
 		margin: 2cm;
 	}
+	
 	* {
 		background: initial !important;
 	}
@@ -45,7 +46,7 @@
 	.container > #header-row > #app-navbar-help-container {
 		display: none;
 	}
-
+	
 	/* Item Title */
 	.container > #info-row-title > #info-title {
 		padding-top: 4cm;
@@ -66,8 +67,6 @@
 
 	/* Map */
 	.container #map-and-legend-row > #map-row {
-		page-break-before: always;
-		page-break-after: auto; 
 		width: 100%;
 		height: 100%;
 		text-align: center;
@@ -138,12 +137,10 @@
 	}
 
 	.container #summary-and-publications-row > #summary-row > #info-summary {
-		page-break-before: auto;
 		font-size: 20px;
 	}
 
 	.container #summary-and-publications-row > #publications-row {
-		page-break-before: always;
 		font-size: 18px;
 	}
 	.container #summary-and-publications-row > #publications-row .publist-header {
