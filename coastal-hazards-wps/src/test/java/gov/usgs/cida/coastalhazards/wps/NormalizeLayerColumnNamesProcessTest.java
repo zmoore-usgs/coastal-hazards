@@ -50,7 +50,7 @@ public class NormalizeLayerColumnNamesProcessTest  extends WPSTestSupport {
 		String response = importer.importLayer(mixedCaseFeatureCollection, WORKSPACE_NAME, STORE_NAME, LAYER_NAME, mixedCaseFeatureCollection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
 
 		NormalizeLayerColumnNamesProcess normalizeLayerColumnNamesProcess = new NormalizeLayerColumnNamesProcess(dummyImportProcess, catalog);
-		String normalizeResult = normalizeLayerColumnNamesProcess.execute(LAYER_NAME, WORKSPACE_NAME, STORE_NAME);
+		String normalizeResult = normalizeLayerColumnNamesProcess.execute(response, STORE_NAME);
 		System.out.println("The following renaming was attempted (oldName|newName):");
 		System.out.println(normalizeResult);
 		validateColumnNames(outTest);
