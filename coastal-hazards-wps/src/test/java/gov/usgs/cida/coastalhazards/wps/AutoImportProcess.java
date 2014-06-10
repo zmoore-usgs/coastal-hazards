@@ -54,6 +54,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Imports a feature collection into the GeoServer catalog
+ * This process automates the creation of workspaces, stores, and layers given
+ * that they do not yet exist.
  * TODO: Add coverage into execute properly, right now coverages will not work!
  * @author Andrea Aime - OpenGeo
  * 
