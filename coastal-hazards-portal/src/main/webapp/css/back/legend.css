@@ -4,8 +4,13 @@
 }
 
 /* Width for this element has to be set dynamcally in js */
-#info-legend table > thead > caption {
-	font-size: 1.2em;
+/*#info-legend table > thead {
+
+}*/
+
+#info-legend table > caption {
+	font-size: 16px;
+	font-weight: 600;
 }
 
 #info-legend table {
@@ -20,14 +25,14 @@
 
 /*Legend Table cell divs for the left (color) )column*/ 
 #info-legend table > tbody >tr > td:first-child > span {
-	height: 15px;
-	border: #000000;
+	height: 10px;
+	border: #E3E3E3;
 	border-style: solid;
 	border-width: 1px;
-	border-radius: 10px;
+	border-radius: 3px;
 	display: inline-block;
 	margin-right: 5px;
-	width: 20px;
+	width: 15px;
 	-moz-border-radius: 10px;
 	-webkit-botder-radius: 10px;
 
@@ -36,6 +41,7 @@
 #info-legend table > tbody > tr > td {
 	padding : 2px;
 	vertical-align: middle;
+	font-size: 0.75em;
 }
 
 

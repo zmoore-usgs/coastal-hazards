@@ -48,8 +48,14 @@
 	}
 	
 	/* Item Title */
+	.container > #info-row-title {
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	
 	.container > #info-row-title > #info-title {
-		font-size: 3em;
+		font-size: 1.95em;
+		line-height: 1.15em;
 	}
 
 	/* Hide QR code for screen, show for print */
