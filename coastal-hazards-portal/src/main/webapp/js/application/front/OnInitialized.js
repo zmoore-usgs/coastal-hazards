@@ -166,9 +166,6 @@ CCH.CONFIG.onAppInitialize = function () {
 						// it doesn't. It looks like a timing issue. Adding this hack here ensure that the layer 
 						// the user came to see shows up
 						CCH.items.getById({id: id}).showLayer();
-						
-						// Maximize the legend control
-						CCH.map.getLegendControl().maximizeControl();
 					} else {
 						// The item could not be found. Show an error and wait for the app to resize
 						// (happens on loading completetion). When it happens, zoom to the bounding

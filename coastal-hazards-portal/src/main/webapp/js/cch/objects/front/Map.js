@@ -62,6 +62,9 @@ CCH.Objects.Front.Map = function (args) {
 		$(window).trigger('cch.map.shown.layer', {
 			layer: layer
 		});
+		
+		me.legendControl.maximizeControl();
+		
 		return layer;
 	};
 
