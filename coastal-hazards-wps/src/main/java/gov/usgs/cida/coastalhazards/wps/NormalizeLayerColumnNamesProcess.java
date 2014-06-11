@@ -9,6 +9,9 @@ import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.gs.ImportProcess;
@@ -51,8 +54,7 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 	@DescribeResult(name = "columnMapping", description = "List of column renames in format: 'Original Column Name|New Column Name\nOriginal Column Name|New Column Name...'")
 	
 	public String execute(
-			@DescribeParameter(name = "workspacePrefixedLayerName", min = 1, max = 1, description = "Input layer on which to normalize columns prefixed with the workspace in which layer resides. Example myWorkspaceName:myLayerName") String prefixedLayerName,
-			@DescribeParameter(name = "store", min = 0, max = 1, description = "Store in which layer resides. If not specified, it is assumed that the store name is the same as the layer name") String store
+			@DescribeParameter(name = "workspacePrefixedLayerName", min = 1, max = 1, description = "Input layer on which to normalize columns prefixed with the workspace in which layer resides. Example myWorkspaceName:myLayerName") String prefixedLayerName
 	)
 			throws ProcessException {
 		String [] workspaceAndLayer = prefixedLayerName.split(":");
@@ -61,14 +63,13 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 		}
 		String workspace = workspaceAndLayer[0];
 		String layer = workspaceAndLayer[1];
-		if(null == store || StringUtils.isBlank(store)){
-			store = layer;
-		}
 		
 		GeoserverUtils gsUtils = new GeoserverUtils(catalog);
-		WorkspaceInfo ws = gsUtils.getWorkspaceByName(workspace);
-		DataStoreInfo ds = gsUtils.getDataStoreByName(ws.getName(), store);
-		DataAccess<? extends FeatureType, ? extends Feature> da = gsUtils.getDataAccess(ds, null);
+		LayerInfo layerInfo = catalog.getLayerByName(prefixedLayerName);
+		ResourceInfo resourceInfo = layerInfo.getResource();
+		DataStoreInfo storeInfo = (DataStoreInfo) resourceInfo.getStore();
+		String store = storeInfo.getName();
+		DataAccess<? extends FeatureType, ? extends Feature> da = gsUtils.getDataAccess(storeInfo, null);
 		FeatureSource<? extends FeatureType, ? extends Feature> featureSource = gsUtils.getFeatureSource(da, layer);
 		FeatureType featureType = featureSource.getSchema();
 		List<AttributeDescriptor> attributeList = new ArrayList(featureType.getDescriptors());
