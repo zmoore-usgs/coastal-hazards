@@ -49,8 +49,6 @@
 	
 	/* Item Title */
 	.container > #info-row-title > #info-title {
-		padding-top: 4cm;
-		text-align: center;
 		font-size: 3em;
 	}
 
