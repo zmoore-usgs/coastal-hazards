@@ -101,17 +101,27 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 			this.handlers.drag.deactivate();
 		}, this, this.div));
 		OpenLayers.Event.observe(this.div, 'touchstart', OpenLayers.Function.bind(function (ele, evt) {
+			// Because the event handling affects the entire legend div, I have to check to see if what the 
+			// user is touching is actually the minimize/maximize image. If so, forget dragging because
+			// the user wants to either open or close the legend
 			if (evt.target.nodeName.toLowerCase() === 'img' ) {
 				if (evt.target.id.toLowerCase().indexOf('minimize') !== -1) {
 					this.minimizeControl();
 				} else if (evt.target.id.toLowerCase().indexOf('maximize') !== -1) {
 					this.maximizeControl();
 				}
+			} else {
+				// The user is actually dragging the legend (or at least touched it) so mark the y coord where
+				// that happened because dragging (touchmove) directionality and distance will  be based on 
+				// this delta
+				this.dragStart = evt.changedTouches[0].clientY;
 			}
-			this.dragStart = evt.changedTouches[0].clientY;
 			OpenLayers.Event.stop(evt);
 		}, this, this.div));
 		OpenLayers.Event.observe(this.div, 'touchmove', OpenLayers.Function.bind(function (ele, evt) {
+			// The user is actively dragging the legend. I need to figure out the scroll amount so I take the starting
+			// point (dragStart) and as the user scrolls, I calculate the distance from the starting point and 
+			// programatically scroll the container
 			var container = this.legendContainerElement,
 				currentY = evt.changedTouches[0].clientY,
 				scrollAmount = currentY - this.dragStart,
