@@ -57,6 +57,7 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 			@DescribeParameter(name = "workspacePrefixedLayerName", min = 1, max = 1, description = "Input layer on which to normalize columns prefixed with the workspace in which layer resides. Example myWorkspaceName:myLayerName") String prefixedLayerName
 	)
 			throws ProcessException {
+		String renameColumnMappingReport = null;
 		String [] workspaceAndLayer = prefixedLayerName.split(":");
 		if(2 != workspaceAndLayer.length){
 			throw new ProcessException("workspacePrefixedLayerName could not be parsed.");
@@ -85,15 +86,25 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 			String oldName = attributeName.toString();		
 			if(!COLUMN_NAMES_TO_IGNORE.contains(oldName)){
 				String newName = oldName.toUpperCase(Locale.ENGLISH);
-				String mapping = oldName + "|" + newName;
-				renameColumnMapping.add(mapping);
+				if(!newName.equals(oldName)){
+					String mapping = oldName + "|" + newName;
+					renameColumnMapping.add(mapping);
+				}
 			}
 		}
-		RenameLayerColumnsProcess renameLayerProc = new RenameLayerColumnsProcess(importProcess, catalog);
-		String[] renameColumnMappingArray = new String[renameColumnMapping.size()];
-		renameColumnMapping.toArray(renameColumnMappingArray);
-		renameLayerProc.execute(layer, workspace, store, renameColumnMappingArray);
-		String renameColumnMappingReport = StringUtils.join(renameColumnMappingArray, "\n");
+		int numberOfRenames = renameColumnMapping.size();
+		
+		if(0 != numberOfRenames){
+			RenameLayerColumnsProcess renameLayerProc = new RenameLayerColumnsProcess(importProcess, catalog);
+			String[] renameColumnMappingArray = new String[renameColumnMapping.size()];
+			renameColumnMapping.toArray(renameColumnMappingArray);
+			renameLayerProc.execute(layer, workspace, store, renameColumnMappingArray);
+			renameColumnMappingReport = StringUtils.join(renameColumnMappingArray, "\n");
+		}
+		else{
+			renameColumnMappingReport = "No column renames necessary";
+		}
+		
 		return renameColumnMappingReport;
 	}
 }
