@@ -101,6 +101,13 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 			this.handlers.drag.deactivate();
 		}, this, this.div));
 		OpenLayers.Event.observe(this.div, 'touchstart', OpenLayers.Function.bind(function (ele, evt) {
+			if (evt.target.nodeName.toLowerCase() === 'img' ) {
+				if (evt.target.id.toLowerCase().indexOf('minimize') !== -1) {
+					this.minimizeControl();
+				} else if (evt.target.id.toLowerCase().indexOf('maximize') !== -1) {
+					this.maximizeControl();
+				}
+			}
 			this.dragStart = evt.changedTouches[0].clientY;
 			OpenLayers.Event.stop(evt);
 		}, this, this.div));
