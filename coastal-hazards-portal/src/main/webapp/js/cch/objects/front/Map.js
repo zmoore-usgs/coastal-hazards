@@ -185,6 +185,9 @@ CCH.Objects.Front.Map = function (args) {
 		hideLegend: function () {
 			me.legendControl.hide();
 		},
+		getLegendControl: function () {
+			return me.legendControl;
+		},
 		getMap: function () {
 			return me.map;
 		},
