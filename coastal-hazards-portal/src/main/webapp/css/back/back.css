@@ -96,7 +96,7 @@ html, body {
 
 /* Summary container */
 .container > div.row:nth-child(3) > div:nth-child(2) > div > div {
-	font-size: 13px;
+	font-size: 1em;
 	line-height: 1.5em;
 }
 
