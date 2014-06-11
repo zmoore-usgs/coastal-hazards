@@ -4,8 +4,13 @@
 }
 
 /* Width for this element has to be set dynamcally in js */
-#info-legend table > thead > caption {
-	font-size: 1.2em;
+/*#info-legend table > thead {
+
+}*/
+
+#info-legend table > caption {
+	font-size: 18px;
+	font-weight: 600;
 }
 
 #info-legend table {
