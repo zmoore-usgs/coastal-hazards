@@ -419,10 +419,6 @@ CCH.Objects.Front.UI = function (args) {
 								});
 
 								this.$container.empty().append(sortedLegends);
-
-								// If I have ribboned legends, I want to be able to mouse over them and
-								// hide all other layers and show all other layers when I mouse off again
-								debugger;
 							}
 						}
 					}).init();
