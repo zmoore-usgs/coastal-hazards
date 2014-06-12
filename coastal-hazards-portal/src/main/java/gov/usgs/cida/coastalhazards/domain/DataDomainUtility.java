@@ -3,6 +3,7 @@ package gov.usgs.cida.coastalhazards.domain;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

@@ -407,7 +407,7 @@ CCH.Objects.Front.UI = function (args) {
 							// When I'm requesting multiple legends, those legends still have to make ajax
 							// calls to pull down SLDs. Because it is indeterminate in what order I get those 
 							// back, I have to sort the legends in the legend container 
-							// 
+
 							// Mark the card with the index I gave it going in
 							this.$legendDiv.attr('card-index', this.cardIndex);
 
@@ -419,6 +419,10 @@ CCH.Objects.Front.UI = function (args) {
 								});
 
 								this.$container.empty().append(sortedLegends);
+
+								// If I have ribboned legends, I want to be able to mouse over them and
+								// hide all other layers and show all other layers when I mouse off again
+								debugger;
 							}
 						}
 					}).init();
@@ -460,7 +464,43 @@ CCH.Objects.Front.UI = function (args) {
 				accordionLegends[item.id] = new CCH.Objects.Widget.Legend({
 					containerId: 'cchMapLegendInnerContainer',
 					legendClass: 'cchCardLegend',
-					item: item
+					item: item,
+					onComplete: function () {
+						// If I have ribboned legends, I want to be able to mouse over them and
+						// hide all other layers and show all other layers when I mouse off again
+						$('.' + this.legendClass + ' .ribboned-legend-caption').each(function (ind, captionSpan) {
+							var $cSpan = $(captionSpan);
+							$cSpan.on({
+								'mouseover': function (evt) {
+									var $span = $(this),
+										lIdx = 0,
+										layer,
+										mouseOverLayerId = $span.attr('ribbon-layer-id');
+									
+									$span.css('font-weight', 700);
+									// Get a list of visible CCH map layers at the time of mouse over
+									CCH.map.visibleLayers = CCH.map.getMap().getLayersBy('type', 'cch').filter(function (l) {
+										return l.visibility;
+									});
+									
+									for (lIdx;lIdx < CCH.map.visibleLayers.length;lIdx++) {
+										layer = CCH.map.visibleLayers[lIdx];
+										if (layer.itemid !== mouseOverLayerId) {
+											layer.setVisibility(false);
+										}
+									}
+								},
+								'mouseout': function (evt) {
+									var lIdx = 0;
+									$(this).css('font-weight', '');
+									for (lIdx;lIdx < CCH.map.visibleLayers.length;lIdx++) {
+										CCH.map.visibleLayers[lIdx].setVisibility(true);
+									}
+									delete CCH.map.visibleLayers;
+								}
+							});
+						});
+					}
 				}).init();
 			}
 		}

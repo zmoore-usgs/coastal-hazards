@@ -185,7 +185,7 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 			mWidth = size.w,
 			mHeight = size.h,
 			// If we are in the small form factor, I want the legend to take up half the map width. Otherwise, divide by 3. 
-			widthRatio = CCH.ui.isSmall ? 0.5 : 0.3,
+			widthRatio = CCH.ui.isSmall() ? 0.5 : 0.3,
 			width,
 			height;
 
