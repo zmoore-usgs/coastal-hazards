@@ -426,8 +426,8 @@ CCH.Objects.Widget.Legend = function (args) {
 			legendGroups,
 			legendGroup,
 			firstLegend,
-			firstLegendCaptionText,
 			currentLegend,
+			captionSpan,
 			currentLegendCaptionText,
 			hashKey,
 			tableIndex,
@@ -452,20 +452,35 @@ CCH.Objects.Widget.Legend = function (args) {
 						return parseInt($(table).attr('legend-index'));
 					});
 					
+					captionSpan = $('<span />').attr('id', 'cch-legend-caption-container');
+					
 					firstLegend = legendGroup[0];
-					for (lIdx = 1; lIdx < legendGroup.length; lIdx++) {
+					
+					for (lIdx = 0; lIdx < legendGroup.length; lIdx++) {
 						currentLegend = legendGroup[lIdx];
+						// The items here may be ribboned. If so, I want to mark their caption spans with
+						// the id specific to its layer so that I can do things like hide all other layers when a
+						// user mouses over the caption
 						if (ribboned) {
-							firstLegendCaptionText = firstLegend.find('caption').html();
 							currentLegendCaptionText = currentLegend.find('caption').html();
-							firstLegend.find('caption').html(firstLegendCaptionText + '<br /> ' + currentLegendCaptionText);
+							captionSpan.append(
+								$('<span />').
+								addClass('ribboned-legend-caption').
+								attr('ribbon-layer-id', currentLegend.attr('legend-item-id')).
+								html(currentLegendCaptionText),$('<br />'));
 						}
 						tableIndex = legendTables.findIndex(indexCompare);
-						legendTables[tableIndex] = -1;
+						
+						// I only want to display the first table in this group, so don't kill the first table
+						if (lIdx !== 0) {
+							legendTables[tableIndex] = -1;
+						}
 					}
 					
 					if (!ribboned) {
-						firstLegend.find('caption').html(me.item.summary.tiny.text);
+						firstLegend.find('caption').empty().append($('<span />').html(me.item.summary.tiny.text));
+					} else {
+						firstLegend.find('caption').empty().append(captionSpan);
 					}
 					
 				}
