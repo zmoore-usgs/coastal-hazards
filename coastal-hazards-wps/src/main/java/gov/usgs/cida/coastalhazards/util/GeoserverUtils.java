@@ -95,7 +95,8 @@ public class GeoserverUtils {
     }
     
     public String replaceLayer(FeatureCollection<SimpleFeatureType, SimpleFeature> collection, String layer, DataStoreInfo dataStore, WorkspaceInfo workspace, ImportProcess importProc) {
-        LayerInfo layerByName = catalog.getLayerByName(workspace.getName() + ':' + layer);
+        String result = null;
+		LayerInfo layerByName = catalog.getLayerByName(workspace.getName() + ':' + layer);
         new CascadeDeleteVisitor(catalog).visit(layerByName);
         try {
             File diskDirectory = new File(dataStore.getDataStore(new DefaultProgressListener()).getInfo().getSource());
@@ -110,7 +111,14 @@ public class GeoserverUtils {
         catalog.save(workspace);
         
         LayerImportUtil importer = new LayerImportUtil(catalog, importProc);
-        return importer.importLayer((SimpleFeatureCollection) collection, workspace.getName(), dataStore.getName(), layer, collection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
+		try{
+			result = importer.importLayer((SimpleFeatureCollection) collection, workspace.getName(), dataStore.getName(), layer, collection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
+		}
+		catch(Exception e){
+			//a handy spot to set a breakpoint
+			throw e;
+		}
+        return result;
     }
        
 }
