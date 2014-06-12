@@ -78,7 +78,7 @@
 		clear:both;
 	}
 	.container #map-and-legend-row > #map-row > #map {
-		width: 800px;
+		width: 750px;
 		height: 400px;
 	}
 	.container #map-and-legend-row > #map-row > #map .olControlZoom {
