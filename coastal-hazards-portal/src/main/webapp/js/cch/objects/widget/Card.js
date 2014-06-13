@@ -27,6 +27,7 @@ CCH.Objects.Widget.Card = function (args) {
 	me.CARD_TEMPLATE_ID = args.cardTemplateId || 'application-card-template';
 	me.AGGREGATION_CONTAINER_CARD = args.aggregationContainerId || 'application-slide-items-aggregation-container-card';
 	me.PRODUCT_CONTAINER_CARD = args.productContainerId || 'application-slide-items-product-container-card';
+	me.ACTIVE_CARD_CLASS = 'active-item-card-body';
 	me.item = args.item;
 	me.id = me.item.id;
 	me.bbox = me.item.bbox;
@@ -102,6 +103,10 @@ CCH.Objects.Widget.Card = function (args) {
 		}
 
 		me.isOpen = true;
+
+		// Remove the active class on every container and add it to the currently open card (me)
+		$('.' + me.ACTIVE_CARD_CLASS).removeClass(me.ACTIVE_CARD_CLASS);
+		me.container.find('.application-card-body-container').addClass(me.ACTIVE_CARD_CLASS);
 
 		CCH.LOG.trace('CCH.Objects.Widget.Card:: Card ' + me.id + ' was shown');
 	};
