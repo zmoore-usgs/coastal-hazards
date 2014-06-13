@@ -61,8 +61,16 @@ ul li {
 	margin-bottom: 5px;
 }
 
+#application-icon-table {
+	margin-left: 10px;
+}
+
+#application-icon-table thead {
+	text-align: left;
+}
+
 #application-icon-table > tbody tr > td:first-child {
-	text-align:right;
+	text-align:left;
 }
 
 #application-icon-table > thead > tr > th:nth-child(1) {
