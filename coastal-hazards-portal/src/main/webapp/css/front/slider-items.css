@@ -142,6 +142,14 @@
     background-color: #f5f5f5;
 }
 
+.active-item-card-body {
+	color: #333;
+}
+.active-item-card-body span > a {
+	color: #333 !important;
+}
+
+
 @media (min-width: 992px) {
     /* Chrome issue
     http://stackoverflow.com/questions/17508035/navigation-disappearing-in-chrome-after-scrolling-and-clicking
