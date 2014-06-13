@@ -200,6 +200,7 @@
 					</div>
 
 					<div id="info-legend-row" class="row">
+						<div class="section-header">Explanation</div>
 						<div id="info-legend" class="well-sm well col-md-6"></div>
 					</div>
 
@@ -208,10 +209,12 @@
 				<%-- Right Side --%>
 				<div id="summary-and-publications-row" class="col-md-6">
 					<div id="summary-row" class="row">
+						<div class="section-header">Summary</div>
 						<%-- Summary Information --%>
 						<div id="info-summary"  class="well"></div>
 					</div>
 					<div class="row" id='publications-row'>
+						<div class="section-header">Additional Information</div>
 						<div class="well">
 							<span id='info-container-publications-list-span'></span>
 						</div>
