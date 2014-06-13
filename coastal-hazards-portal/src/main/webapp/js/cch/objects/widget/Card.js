@@ -393,7 +393,7 @@ CCH.Objects.Widget.Card = function (args) {
 				$bucketButton = $buttonRow.find('> div button:nth-child(3)'),
 				$moreInfoLink = $('<a />').
 				addClass('card-more-info-link').
-				append(' ( ', $('<i />').addClass('fa fa-share-square-o'), ' More Info )').
+				append(' ( ', $('<i />').addClass('fa fa-info-circle'), ' More Info )').
 				attr({
 					'href': window.location.origin + CCH.CONFIG.contextPath + '/ui/info/item/' + me.id
 				}),
