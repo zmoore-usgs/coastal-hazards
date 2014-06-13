@@ -84,16 +84,6 @@ html, body {
 	height: 400px;
 }
 
-/* Info Graph */
-.container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) {
-	text-align: center;
-	height: 300px;
-}
-.container > div.row:nth-child(3) > div:first-child > div.row:nth-child(2) > div.well:nth-child(2) img {
-	height: 100%;
-	width: 100%;
-}
-
 /* Summary container */
 .container > div.row:nth-child(3) > div:nth-child(2) > div > div {
 	font-size: 1em;
@@ -136,7 +126,11 @@ html, body {
 	font-size: 2em;
 }
 
-
+/* Section headers */
+.section-header {
+	font-weight: 600;
+	font-size: 1.3em !important;
+}
 
 @media (max-width: 440px) {
 	/* Item Title Row*/

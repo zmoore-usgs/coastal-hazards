@@ -3,7 +3,7 @@
 		size: letter;
 		margin: 2cm;
 	}
-	
+
 	* {
 		background: initial !important;
 	}
@@ -33,7 +33,7 @@
 	.container >#header-row  #app-navbar-site-title-container {
 		display: inline;
 	}
-	
+
 	.container >#header-row  #app-navbar-site-title-container > #app-navbar-title-print {
 		display: initial;
 		float:right;
@@ -46,13 +46,13 @@
 	.container > #header-row > #app-navbar-help-container {
 		display: none;
 	}
-	
+
 	/* Item Title */
 	.container > #info-row-title {
 		margin-top: 10px;
 		margin-bottom: 10px;
 	}
-	
+
 	.container > #info-row-title > #info-title {
 		font-size: 1.95em;
 		line-height: 1.15em;
@@ -109,7 +109,10 @@
 	.container #map-and-legend-row > #info-legend-row > #info-legend table {
 		width: 100%;
 	}
-	.container #map-and-legend-row > #info-legend-row > #info-legend table thead {
+	.container #map-and-legend-row > #info-legend-row > #info-legend table > caption {
+		font-weight: 600;
+	}
+	.container #map-and-legend-row > #info-legend-row > #info-legend table > thead {
 		font-size: 2em;
 	}
 	.container #map-and-legend-row > #info-legend-row > #info-legend table thead tr td:nth-child(2){
@@ -120,12 +123,17 @@
 		padding-top: 5px;
 		padding-bottom: 5px;
 	}
-	.container #map-and-legend-row > #info-legend-row > #info-legend table span {
-		border-radius: 10px;
-		border: #000 1px solid; 
-		width: 20px;
-		height: 20px;
+	.container #map-and-legend-row > #info-legend-row > #info-legend table tbody span {
+		height: 10px;
+		border: #E3E3E3;
+		border-style: solid;
+		border-width: 1px;
+		border-radius: 3px;
 		display: inline-block;
+		margin-right: 5px;
+		width: 15px;
+		-moz-border-radius: 10px;
+		-webkit-botder-radius: 10px;
 	}
 	.container #map-and-legend-row > #info-legend-row > #info-legend table > tbody >tr > td:first-child  {
 		text-align: right;
@@ -144,7 +152,7 @@
 		font-size: 20px;
 	}
 
-	.container #summary-and-publications-row > #publications-row {
+	.container #summary-and-publications-row > #publications-row > .well {
 		font-size: 18px;
 	}
 	.container #summary-and-publications-row > #publications-row .publist-header {
@@ -168,5 +176,11 @@
 
 	#twttrHubFrameSecure {
 		display: none;
+	}
+
+	/* Section headers */
+	.section-header {
+		font-weight: 600;
+		font-size: 1.3em !important;
 	}
 }
