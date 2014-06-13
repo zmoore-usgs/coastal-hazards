@@ -31,42 +31,6 @@
 		</jsp:include>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
 		<title>Coastal Change Hazards Information</title>
-		<style>
-			#usgsfooter {
-				font-family: Verdana, Arial, Helvetica, sans-serif;
-				font-size: small;
-				clear: both;
-				margin: 0;
-			}           
-			#usgsfooterbar {
-				background-color: #666666;
-				padding: 4px;
-				margin: 0;
-			}
-			#usgsfooterbar a:link, #usgsfooterbar a:visited {
-				margin-right: 40px;
-				color: #ffffff;
-				text-decoration: none;
-			}
-			#usgsfooterbar a:hover {
-				margin-right: 40px;
-				color: #ffffff;
-				text-decoration: underline;
-			}
-			#usgsfooterbar a:active {
-				margin-right: 40px;
-				color: #ffffff;
-				text-decoration: none;
-			}
-			#usgsfootertext {
-				padding: 4px;
-				margin: 0;
-			}
-
-			footer {
-				height: auto;
-			}
-		</style>
 	</head>
 	<body>
 
@@ -163,34 +127,44 @@
 						</thead>
 						<tbody>
 							<tr>
-								<td>[icon]</td>
+								<td><img src="../images/info/info-page-icon.png" alt="Info Page Icon"/></td>
 								<td>Learn about the portal, its background and basic functions.</td>
 							</tr>
 							<tr>
-								<td>[icon]</td>
+								<td><img src="../images/info/info-page-bucket.png" alt="Bucket Icon"/></td>
 								<td>
 									Put items of interest into the bucket. From here, download data 
 									and products or share contents with friends and colleagues.
 								</td>
 							</tr>
 							<tr>
-								<td>[icon]</td>
+								<td>
+									<img src="../images/info/info-page-more-info-link.png" alt="More Info Link Icon"/>
+								</td>
 								<td>Find out more information about the item.</td>
 							</tr>
 							<tr>
-								<td>[icon]</td>
+								<td>
+									<img src="../images/info/info-page-zoomto-link.png" alt="Zoom To Link Icon"/>
+								</td>
 								<td>Zoom to the spatial extent of the item being viewed.</td>
 							</tr>
 							<tr>
-								<td>[icon]</td>
+								<td>
+									<img src="../images/info/info-page-explore-contents.png" alt="Explore Contents Link Icon"/>
+								</td>
 								<td>Explore additional data sets and products within this item.</td>
 							</tr>
 							<tr>
-								<td>[icon]</td>
+								<td>
+									<img src="../images/info/info-page-add-to-bucket.png" alt="Add To Bucket Link Icon"/>
+								</td>
 								<td>Add items to the bucket.</td>
 							</tr>
 							<tr>
-								<td>[icon]</td>
+								<td>
+									<img src="../images/info/info-page-bucket-icon-row.png" alt="Bucket Links"/>
+								</td>
 								<td>Change item visibility, download data, learn more or share an item.</td>
 							</tr>
 						</tbody>
