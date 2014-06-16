@@ -83,6 +83,10 @@ CCH.Objects.Bucket = function (args) {
 
 	$('#' + me.BUCKET_CONTAINER_ID).on('click', function () {
 		$(window).trigger('app-navbar-button-clicked');
+		ga('send', 'event', {
+			'eventCategory': 'appNavbarButtonClicked',
+			'eventAction': 'bucketClicked'
+		});
 	});
 
 	$(window).on({
