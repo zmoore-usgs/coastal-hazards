@@ -149,6 +149,11 @@ CCH.Objects.Widget.Card = function (args) {
 
 		if (me.parent) {
 			me.parent.showLayer();
+			
+			// Remove the active class on every container and add it to the currently open card (parent)
+			$('.' + me.ACTIVE_CARD_CLASS).removeClass(me.ACTIVE_CARD_CLASS);
+			me.parent.container.find('.application-card-body-container').addClass(me.ACTIVE_CARD_CLASS);
+
 		}
 
 		CCH.LOG.trace('CCH.Objects.Widget.Card:: Card ' + me.id + ' was hidden');
@@ -232,7 +237,7 @@ CCH.Objects.Widget.Card = function (args) {
 			if (controlLeft + containerWidth > bodyWidth) {
 				left = bodyWidth - containerWidth;
 			}
-			
+
 			// If the dropdown list goes past the bottom of the page, put the dropdown above the button instead
 			if (top + containerHeight > windowHeight) {
 				top = controlTop - containerHeight;
