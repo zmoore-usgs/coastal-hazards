@@ -31,6 +31,8 @@ CCH.Objects.Front.UI = function (args) {
 	me.BUCKET_SLIDE_CONTAINER_ID = args.slideBucketContainerId;
 	me.SEARCH_SLIDE_CONTAINER_ID = args.slideSearchContainerId;
 	me.minimumHeight = args.minimumHeight || 480;
+	me.$moreInfoLink = $('#app-navbar-help-container a');
+	me.$cidaCmgpLogoLink = $('#app-navbar-coop-logo-img-container');
 	me.previousWidth = $(window).width();
 	// Bootstrap decides when to flip the application view based on a specific width. 992 seems to be it
 	me.magicResizeNumber = 992;
@@ -543,6 +545,19 @@ CCH.Objects.Front.UI = function (args) {
 				dispResults();
 			}
 		}
+	});
+	
+	me.$moreInfoLink.on('click', function() {
+		ga('send', 'event', {
+			'eventCategory': 'appNavbarButtonClicked',
+			'eventAction': 'moreInfoLinkClicked'
+		});
+	});
+	me.$cidaCmgpLogoLink.on('click', function() {
+		ga('send', 'event', {
+			'eventCategory': 'appNavbarButtonClicked',
+			'eventAction': 'cidaCmgpLinkClicked'
+		});
 	});
 
 	$(window).trigger('cch.ui.initialized');
