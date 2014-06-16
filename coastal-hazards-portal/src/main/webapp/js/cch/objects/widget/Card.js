@@ -149,7 +149,7 @@ CCH.Objects.Widget.Card = function (args) {
 
 		if (me.parent) {
 			me.parent.showLayer();
-			
+
 			// Remove the active class on every container and add it to the currently open card (parent)
 			$('.' + me.ACTIVE_CARD_CLASS).removeClass(me.ACTIVE_CARD_CLASS);
 			me.parent.container.find('.application-card-body-container').addClass(me.ACTIVE_CARD_CLASS);
@@ -311,6 +311,12 @@ CCH.Objects.Widget.Card = function (args) {
 							// just create a new child card
 							me.createCard(id);
 						}
+
+						ga('send', 'event', {
+							'eventCategory': 'card',
+							'eventAction': 'childItemClicked',
+							'eventLabel': id
+						});
 					});
 
 					return $listItem;
