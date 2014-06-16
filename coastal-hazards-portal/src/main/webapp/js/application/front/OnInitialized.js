@@ -146,9 +146,20 @@ CCH.CONFIG.onAppInitialize = function () {
 									]
 								}
 							});
+
+							ga('send', 'exception', {
+								'exDescription': 'ViewNotFound',
+								'exFatal': false
+							});
 						}
 					]
 				}
+			});
+
+			ga('send', 'event', {
+				'eventCategory': 'load',
+				'eventAction': 'load-view',
+				'eventLabel': '"' + CCH.CONFIG.params.id + '"'
 			});
 		} else if (type === 'item') {
 			// User is coming in with an item, so load that item
@@ -160,7 +171,7 @@ CCH.CONFIG.onAppInitialize = function () {
 						$(window).trigger('cch.slide.search.button.click.explore', {
 							id: id
 						});
-						
+
 						// Triggering the explore click above also triggers the basket slider to close. When 
 						// the basket slider closes, it may hide all the layers though through testing, sometimes
 						// it doesn't. It looks like a timing issue. Adding this hack here ensure that the layer 
@@ -176,6 +187,10 @@ CCH.CONFIG.onAppInitialize = function () {
 							CCH.map.getMap().zoomToExtent(CCH.map.getMap().initialExtent);
 						};
 						$(window).on('cch.ui.resized', resizeHandler);
+						ga('send', 'exception', {
+							'exDescription': 'ItemNotFound',
+							'exFatal': false
+						});
 
 					}
 				}
@@ -188,6 +203,12 @@ CCH.CONFIG.onAppInitialize = function () {
 				zoomToBbox: true,
 				overridePreviousBounds: false
 			});
+
+			ga('send', 'event', {
+				'eventCategory': 'load',
+				'eventAction': 'load-item',
+				'eventLabel': '"' + id + '"'
+			});
 		}
 	} else {
 		// The user is initially loading the application. I do not have any items or views
@@ -198,6 +219,11 @@ CCH.CONFIG.onAppInitialize = function () {
 			subtree: true,
 			zoomToBbox: true,
 			overridePreviousBounds: false
+		});
+
+		ga('send', 'event', {
+			'eventCategory': 'load',
+			'eventAction': 'load-default'
 		});
 	}
 };
