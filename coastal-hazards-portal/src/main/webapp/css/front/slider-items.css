@@ -1,67 +1,67 @@
 /* Slide item container */
 #content-column > div.application-slide-container > div.application-slide-content > div > div.panel-default:hover {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 #content-column > div.application-slide-container > div.application-slide-content > div > div.panel-default div.panel-body {
-    background-color: #FFFFFF;
+	background-color: #FFFFFF;
 }
 
 #content-column > div.application-slide-container div.application-card-container > div.application-card-body-container .application-card-title-row {
-    font-size: 1.3em;
-    margin-bottom: 10px;
+	font-size: 1.3em;
+	margin-bottom: 10px;
 }
 
 .application-card-collapse-icon-container {
-    display: table-cell;
-    vertical-align: middle;
+	display: table-cell;
+	vertical-align: middle;
 }
 
 .application-card-collapse-row {
-    color: #BBBBBB;
+	color: #BBBBBB;
 }
 
 .application-card-control-row > div {
-    text-align: center;
+	text-align: center;
 }
 
 .application-card-control-row > div button.disabled{
-    color: #DCDCDC;
+	color: #DCDCDC;
 }
 
 .application-card-control-row button {
-    padding-right: 5px;
-    padding-left: 5px;
-    font-size: 18px;
-    color: #003366;
+	padding-right: 5px;
+	padding-left: 5px;
+	font-size: 18px;
+	color: #003366;
 }
 
 .application-card-title-row .application-card-title-container-medium {
-    font-size: 24px;
+	font-size: 24px;
 }
 
 .application-card-content-row .application-card-content-container-medium {
-    font-size: 13px;
+	font-size: 13px;
 }
 
 /* More Info Link */
 .application-card-content-row .application-card-content-container-medium > span {
-    white-space: nowrap;
+	white-space: nowrap;
 }
 .application-card-content-row .application-card-content-container-medium > span a {
-    color: #777;
+	color: #777;
 }
 .application-card-content-row .application-card-content-container-medium > span a:hover {
-    text-decoration: none;
+	text-decoration: none;
 }
 
 .application-card-collapse-row-dottedline {
-    display: table-cell;
-    width: 100%;
+	display: table-cell;
+	width: 100%;
 }
 
 .application-card-collapse-row-dottedline hr {
-    border-top:1px dashed #BBBBBB; 
+	border-top:1px dashed #BBBBBB; 
 }
 
 .application-card-container .application-card-content-row {
@@ -69,81 +69,85 @@
 }
 
 .application-card-container .item-control-button img {
-    height: 25px;
-    width: 25px;
+	height: 25px;
+	width: 25px;
 }
 
 .application-card-container .zoom-to-badge {
-    background-color: #003366;
-    margin-left: 5px;
+	background-color: #003366;
+	margin-left: 5px;
 }
 .application-card-container .zoom-to-badge:hover {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 .application-card-container.open .application-card-collapse-row-closed {
-    display: none;
+	display: none;
 }
 
 .application-card-container:not(.open) .application-card-collapse-row-open {
-    display: none;
+	display: none;
 }
 
 .application-card-collapse-icon-container {
-    padding-right: 5px;
-    vertical-align: top;
+	padding-right: 5px;
+	vertical-align: top;
 }
 
 .application-card-collapse-icon-container:hover {
-    cursor: pointer;
-    font-size-adjust: 0.7;
+	cursor: pointer;
+	font-size-adjust: 0.7;
 }
 #application-slide-items-content-container .panel-heading {
-    text-align: center;
+	text-align: center;
 }
 #application-slide-items-content-container .panel-heading:hover {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 #application-slide-items-content-container .panel-title {
-    font-size: 1.9em;
+	font-size: 1.9em;
 }
 
 .aggregation-selection-container {
-    display: inline-block;
-    position: absolute;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-    min-width: 320px;
-    width: auto;
-    border-radius: 4px;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    z-index: 1007;
+	display: inline-block;
+	position: absolute;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+	min-width: 320px;
+	width: auto;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	z-index: 1007;
 }
 
 .aggregation-selection-container ul {
-    list-style-type: none;
-    margin: 0px;
-    padding: .5px;
-    border-radius: 4px;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
+	list-style-type: none;
+	margin: 0px;
+	padding: .5px;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
 }
 
 .aggregation-selection-container ul li {
-    background-color: #FFFFFF;
-    padding: 5px;
+	background-color: #FFFFFF;
+	padding: 5px;
 }
 
 .aggregation-selection-container ul li:hover {
-    cursor: pointer;
-    background-color: #f5f5f5;
+	cursor: pointer;
+	background-color: #f5f5f5;
 }
 
 .active-item-card-body {
 	color: #333;
+	background-color: #f5f5f5;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
 }
 .active-item-card-body span > a {
 	color: #333 !important;
@@ -151,123 +155,123 @@
 
 
 @media (min-width: 992px) {
-    /* Chrome issue
-    http://stackoverflow.com/questions/17508035/navigation-disappearing-in-chrome-after-scrolling-and-clicking
-    */
-    #application-slide-items-content-container-inner-scrollable {
-        -webkit-transform: translateZ(0);
-    }  
-    #application-slide-items-content-container-inner-scrollable > .panel{
-        -webkit-transform: translateZ(0);
-    } 
-    
-    /* No tab shown on large display. Toggled via button in bar */
-    #application-slide-items-tab {
-        display: none;
-    }
+	/* Chrome issue
+	http://stackoverflow.com/questions/17508035/navigation-disappearing-in-chrome-after-scrolling-and-clicking
+	*/
+	#application-slide-items-content-container-inner-scrollable {
+		-webkit-transform: translateZ(0);
+	}  
+	#application-slide-items-content-container-inner-scrollable > .panel{
+		-webkit-transform: translateZ(0);
+	} 
 
-    #application-slide-items-container {
-        top: auto;
-        left: auto;
-        /*background-color: #F5F5F5;*/
-    }
+	/* No tab shown on large display. Toggled via button in bar */
+	#application-slide-items-tab {
+		display: none;
+	}
 
-    #application-slide-items-content {
-        height: 100%;
-        width: 100%;
-    }
+	#application-slide-items-container {
+		top: auto;
+		left: auto;
+		/*background-color: #F5F5F5;*/
+	}
 
-    #application-slide-items-content-container {
-        height: 100%;
-        width: 100%;
-        /*background-color: #F5F5F5;*/
-        overflow-y: auto;
-    }
+	#application-slide-items-content {
+		height: 100%;
+		width: 100%;
+	}
 
-    #content-column {
-        height: 100%;
-    }
-    
-    /* Scrollable inner container */
-    #application-slide-items-container > div:nth-child(2) > div > div {
-        overflow-y: auto;
-        height: 100%;
-    }
+	#application-slide-items-content-container {
+		height: 100%;
+		width: 100%;
+		/*background-color: #F5F5F5;*/
+		overflow-y: auto;
+	}
+
+	#content-column {
+		height: 100%;
+	}
+
+	/* Scrollable inner container */
+	#application-slide-items-container > div:nth-child(2) > div > div {
+		overflow-y: auto;
+		height: 100%;
+	}
 }
 
 @media (max-width: 991px) {
-    #application-slide-items-container {
-        position: absolute;
-        z-index: 1006; /* 1005 is highest on map */
-        height: 98%;
-        overflow: hidden;
-    }
+	#application-slide-items-container {
+		position: absolute;
+		z-index: 1006; /* 1005 is highest on map */
+		height: 98%;
+		overflow: hidden;
+	}
 
-        #application-slide-items-container > div:nth-child(2) > div {
-            padding: 5px 5px 10px 5px;
-            overflow-y: hidden;
-            background-color: #F5F5F5;
-            height: 100%;
-            border-left: 2px solid #E3E3E3;
-            border-top: 2px solid #E3E3E3;
-            border-bottom: 2px solid #E3E3E3;
-            border-top-left-radius: 10px 10px;
-            -webkit-border-top-left-radius: 10px 10px;
-            border-bottom-left-radius: 10px 10px;
-            -webkit-border-bottom-left-radius: 10px 10px;
-        }
-        
-        /* Scrollable inner container */
-        #application-slide-items-container > div:nth-child(2) > div > div:nth-child(2) {
-            overflow-y: auto;
-            height: 90%;
-        }
-        
-        #application-slide-items-container > div:nth-child(2) > div > div:first-child {
-            margin-bottom: 10px;
-        }
-        #application-slide-items-container > div:nth-child(2) > div> div:not(:first-child) {
-            /* 
-                This fixes a bootstrap issue that causes the accordion to go beyond screen 
-                height, causing scroll bars when the items slide is open
-            */
-            margin-bottom: 0px;
-        }
+	#application-slide-items-container > div:nth-child(2) > div {
+		padding: 5px 5px 10px 5px;
+		overflow-y: hidden;
+		background-color: #F5F5F5;
+		height: 100%;
+		border-left: 2px solid #E3E3E3;
+		border-top: 2px solid #E3E3E3;
+		border-bottom: 2px solid #E3E3E3;
+		border-top-left-radius: 10px 10px;
+		-webkit-border-top-left-radius: 10px 10px;
+		border-bottom-left-radius: 10px 10px;
+		-webkit-border-bottom-left-radius: 10px 10px;
+	}
 
-    #application-slide-items-content {
-        height: 100%;
-        float:right;
-    }
+	/* Scrollable inner container */
+	#application-slide-items-container > div:nth-child(2) > div > div:nth-child(2) {
+		overflow-y: auto;
+		height: 90%;
+	}
 
-    #application-slide-items-tab {
-        height : fit-content;
-        width: fit-content;
-        display: inline-block;
-        background-color: #F5F5F5;
-        border-left: 2px solid #E3E3E3;
-        border-top: 2px solid #E3E3E3;
-        border-bottom: 2px solid #E3E3E3;
-        z-index: 2001;
-        border-top-left-radius: 40px 10px;
-        -webkit-border-top-left-radius: 40px 10px;
-        border-bottom-left-radius: 40px 10px;
-        -webkit-border-bottom-left-radius: 40px 10px;
-        float: left;
-        font-size: 1.4em;
-        padding-left: 5px;
-        padding-top: 5px;
-        padding-bottom: 5px;
-        color: #0033CC;
-        z-index: 1007;
-        top: 90%;
-    }
+	#application-slide-items-container > div:nth-child(2) > div > div:first-child {
+		margin-bottom: 10px;
+	}
+	#application-slide-items-container > div:nth-child(2) > div> div:not(:first-child) {
+		/* 
+			This fixes a bootstrap issue that causes the accordion to go beyond screen 
+			height, causing scroll bars when the items slide is open
+		*/
+		margin-bottom: 0px;
+	}
 
-    #application-slide-items-tab:hover {
-        cursor: pointer;
-    }
+	#application-slide-items-content {
+		height: 100%;
+		float:right;
+	}
 
-    #application-slide-items-content {
-        border-bottom-left-radius: 10px 10px;
-        -webkit-border-bottom-left-radius: 10px 10px;
-    }
+	#application-slide-items-tab {
+		height : fit-content;
+		width: fit-content;
+		display: inline-block;
+		background-color: #F5F5F5;
+		border-left: 2px solid #E3E3E3;
+		border-top: 2px solid #E3E3E3;
+		border-bottom: 2px solid #E3E3E3;
+		z-index: 2001;
+		border-top-left-radius: 40px 10px;
+		-webkit-border-top-left-radius: 40px 10px;
+		border-bottom-left-radius: 40px 10px;
+		-webkit-border-bottom-left-radius: 40px 10px;
+		float: left;
+		font-size: 1.4em;
+		padding-left: 5px;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		color: #0033CC;
+		z-index: 1007;
+		top: 90%;
+	}
+
+	#application-slide-items-tab:hover {
+		cursor: pointer;
+	}
+
+	#application-slide-items-content {
+		border-bottom-left-radius: 10px 10px;
+		-webkit-border-bottom-left-radius: 10px 10px;
+	}
 }

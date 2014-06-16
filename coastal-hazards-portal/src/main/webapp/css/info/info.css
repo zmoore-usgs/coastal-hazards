@@ -69,10 +69,6 @@ ul li {
 	text-align: left;
 }
 
-#application-icon-table > tbody tr > td:first-child {
-	text-align:left;
-}
-
 #application-icon-table > thead > tr > th:nth-child(1) {
 	width: 25%;
 }
@@ -80,6 +76,13 @@ ul li {
 	width: 75%;
 }
 
+#application-icon-table > tbody tr > td {
+	padding: 5px 0px;
+}
+
+#application-icon-table > tbody tr > td:first-child {
+	text-align:left;
+}
 
 h1.mobile{
 	display:none;

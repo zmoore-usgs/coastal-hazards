@@ -216,6 +216,10 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 									},
 									'criteria': me.getCriteria()
 								});
+								ga('send', 'exception', {
+									'exDescription': 'GeoSearchFailed',
+									'exFatal': false
+								});
 							}
 						]
 					}
@@ -253,6 +257,10 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 									},
 									'criteria': me.getCriteria()
 								});
+								ga('send', 'exception', {
+									'exDescription': 'ItemSearchFailed',
+									'exFatal': false
+								});
 							}
 						]
 					}
@@ -280,7 +288,12 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 							me.hideSpinner,
 							function (jqXHR, textStatus, errorThrown) {
 								CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Could not complete geo-search:' + errorThrown);
+								ga('send', 'exception', {
+									'exDescription': 'CombinedSearchFailed',
+									'exFatal': false
+								});
 							}
+							
 						]
 					}
 				});
@@ -316,6 +329,10 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 							me.hideSpinner,
 							function (jqXHR, textStatus, errorThrown) {
 								CCH.LOG.warn('CCH.Objects.Widget.CombinedSearch:: Item search could not complete items search:' + errorThrown);
+								ga('send', 'exception', {
+									'exDescription': 'ItemSearchFailed',
+									'exFatal': false
+								});
 							}
 						]
 					}

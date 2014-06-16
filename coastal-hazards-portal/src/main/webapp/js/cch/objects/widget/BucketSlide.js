@@ -628,6 +628,11 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 						}}
 					);
 					CCH.session.getItemById(item.id).visible = false;
+					ga('send', 'event', {
+						'eventCategory': 'bucketSlide',
+						'eventAction': 'visibilityClicked',
+						'eventValue': 0
+					});
 				} else {
 					item.showLayer();
 					CCH.session.update({
@@ -644,6 +649,11 @@ CCH.Objects.Widget.BucketSlide = function (args) {
 						}
 					});
 					CCH.session.getItemById(item.id).visible = true;
+					ga('send', 'event', {
+						'eventCategory': 'bucketSlide',
+						'eventAction': 'visibilityClicked',
+						'eventValue': 1
+					});
 				}
 
 				// Regular layers will properly update a session, but because 
