@@ -158,7 +158,7 @@ CCH.CONFIG.onAppInitialize = function () {
 
 			ga('send', 'event', {
 				'eventCategory': 'load',
-				'eventAction': 'load-view',
+				'eventAction': 'loadView',
 				'eventLabel': '"' + CCH.CONFIG.params.id + '"'
 			});
 		} else if (type === 'item') {
@@ -206,7 +206,7 @@ CCH.CONFIG.onAppInitialize = function () {
 
 			ga('send', 'event', {
 				'eventCategory': 'load',
-				'eventAction': 'load-item',
+				'eventAction': 'loadItem',
 				'eventLabel': '"' + id + '"'
 			});
 		}
@@ -223,7 +223,7 @@ CCH.CONFIG.onAppInitialize = function () {
 
 		ga('send', 'event', {
 			'eventCategory': 'load',
-			'eventAction': 'load-default'
+			'eventAction': 'loadDefault'
 		});
 	}
 };
