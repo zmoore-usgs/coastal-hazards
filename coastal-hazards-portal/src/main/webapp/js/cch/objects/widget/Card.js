@@ -215,6 +215,11 @@ CCH.Objects.Widget.Card = function (args) {
 					item: me.item,
 					visibility: true
 				});
+				ga('send', 'event', {
+					'eventCategory': 'card',
+					'eventAction': 'addToBucketClicked',
+					'eventLabel': me.id
+				});
 			};
 
 		$button.off('click', add).on('click', add);
@@ -464,6 +469,19 @@ CCH.Objects.Widget.Card = function (args) {
 				CCH.map.zoomToBoundingBox({
 					bbox: me.bbox,
 					fromProjection: CCH.CONFIG.map.modelProjection
+				});
+				ga('send', 'event', {
+					'eventCategory': 'card',
+					'eventAction': 'zoomToClicked',
+					'eventLabel': me.id
+				});
+			});
+			
+			$moreInfoLink.on('click', function() {
+				ga('send', 'event', {
+					'eventCategory': 'card',
+					'eventAction': 'moreInfoClicked',
+					'eventLabel': me.id
 				});
 			});
 
