@@ -46,6 +46,12 @@ public class GeoserverUtils {
 		return ws;
 	}
 
+	/**
+	 * Attempts to retrieve a DataStoreInfo from the catalog using the provided workspace and name
+	 * @param workspace
+	 * @param store
+	 * @return 
+	 */
 	public DataStoreInfo getDataStoreByName(String workspace, String store) {
 		DataStoreInfo ds = catalog.getDataStoreByName(workspace, store);
 		if (ds == null) {
@@ -54,6 +60,13 @@ public class GeoserverUtils {
 		return ds;
 	}
 
+	/**
+	 * Automatically converts a DataStoreInfo into a DataAccess object, including a listener (if provided)
+	 * @see DataStoreInfo#getDataStore(org.opengis.util.ProgressListener) 
+	 * @param store
+	 * @param listener
+	 * @return 
+	 */
 	public DataAccess<? extends FeatureType, ? extends Feature> getDataAccess(DataStoreInfo store, ProgressListener listener) {
 		DataAccess<? extends FeatureType, ? extends Feature> da;
 		try {
@@ -74,6 +87,13 @@ public class GeoserverUtils {
 		return getFeatureSource(dataAccess, layer);
 	}
 
+	/**
+	 * Attempts to get the FeatureSource, provided DataAccess and a layer name
+	 * @see DataAccess#getFeatureSource(org.opengis.feature.type.Name) 
+	 * @param dataAccess
+	 * @param layer
+	 * @return 
+	 */
 	public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(DataAccess<? extends FeatureType, ? extends Feature> dataAccess, String layer) {
 		FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
 		try {

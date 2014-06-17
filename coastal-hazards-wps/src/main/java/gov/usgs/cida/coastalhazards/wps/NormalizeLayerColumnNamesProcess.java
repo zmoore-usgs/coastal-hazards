@@ -2,8 +2,11 @@ package gov.usgs.cida.coastalhazards.wps;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Lists;
 import gov.usgs.cida.coastalhazards.util.GeoserverUtils;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
@@ -25,6 +28,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
 
 @DescribeProcess(
 		title = "Normalize Layer Column Names",
@@ -63,8 +67,9 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 		String layer;
 		String store;
 		String renameColumnMappingReport;
+		int attributeListSize;
+		int renameColumnMappingSize;
 		String[] workspaceAndLayer;
-		int numberOfRenames;
 		GeoserverUtils gsUtils;
 		LayerInfo layerInfo;
 		ResourceInfo resourceInfo;
@@ -89,35 +94,35 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 
 		gsUtils = new GeoserverUtils(catalog);
 		layerInfo = catalog.getLayerByName(prefixedLayerName);
-		
+
 		if (null == layerInfo) {
 			throw new ProcessException("Layer " + prefixedLayerName + " could not be found.");
 		}
-		
+
 		resourceInfo = layerInfo.getResource();
 		if (null == resourceInfo) {
 			throw new ProcessException("Layer " + prefixedLayerName + " resource could not be found.");
 		}
-		
+
 		if (null == resourceInfo.getNativeCRS()) {
 			throw new ProcessException("Layer " + prefixedLayerName + " native CRS could not be found.");
 		}
-		
+
 		if (null == resourceInfo.getCRS()) {
 			throw new ProcessException("Layer " + prefixedLayerName + " CRS could not be found.");
 		}
-		
+
 		storeInfo = (DataStoreInfo) resourceInfo.getStore();
 		store = storeInfo.getName();
 		dataAccess = gsUtils.getDataAccess(storeInfo, null);
 		featureSource = gsUtils.getFeatureSource(dataAccess, layer);
 		featureType = featureSource.getSchema();
 		attributeList = new ArrayList(featureType.getDescriptors());
-		int length = attributeList.size();
-		renameColumnMapping = new ArrayList<>(length);
-
-		for (int i = 0; i < length; i++) {
-			Name attributeName = attributeList.get(i).getName();
+		attributeListSize = attributeList.size();
+		renameColumnMapping = new ArrayList<>(attributeListSize);
+		
+		for (int attributeListIndex = 0; attributeListIndex < attributeListSize; attributeListIndex++) {
+			Name attributeName = attributeList.get(attributeListIndex).getName();
 			if (null != attributeName) {
 				String oldName = attributeName.toString();
 				if (!COLUMN_NAMES_TO_IGNORE.contains(oldName)) {
@@ -129,16 +134,15 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 				}
 			}
 		}
-
-		numberOfRenames = renameColumnMapping.size();
-
-		if (0 != numberOfRenames) {
+		renameColumnMappingSize = renameColumnMapping.size();
+		if (0 != renameColumnMappingSize) {
+			// I now have a map of columns to rename
 			RenameLayerColumnsProcess renameLayerProc = new RenameLayerColumnsProcess(importProcess, catalog);
-			String[] renameColumnMappingArray = new String[renameColumnMapping.size()];
-			renameColumnMapping.toArray(renameColumnMappingArray);
+			String[] renameColumnMappingArray = renameColumnMapping.toArray(new String[renameColumnMappingSize]);
 			renameLayerProc.execute(layer, workspace, store, renameColumnMappingArray);
 			renameColumnMappingReport = StringUtils.join(renameColumnMappingArray, "\n");
 		} else {
+			// No renaming needed, so just move on
 			renameColumnMappingReport = "No column renames necessary";
 		}
 
