@@ -35,84 +35,113 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 	private final Catalog catalog;
 	private final ImportProcess importProcess;
 	/**
-	 * Geoserver relies on case-sensitive attributes. We cannot reformat these attributes.
-	 * In addition, we do not write SLDs against these attributes, so we don't need to care.
+	 * Geoserver relies on case-sensitive attributes. We cannot reformat these
+	 * attributes. In addition, we do not write SLDs against these attributes,
+	 * so we don't need to care.
 	 */
-	public static final ImmutableSet<String> COLUMN_NAMES_TO_IGNORE = (
-		new ImmutableSortedSet.Builder<>(String.CASE_INSENSITIVE_ORDER)
+	public static final ImmutableSet<String> COLUMN_NAMES_TO_IGNORE = (new ImmutableSortedSet.Builder<>(String.CASE_INSENSITIVE_ORDER)
 			.add(
 					"the_geom",
 					"id"
-			)
-		).build();
-	
+			)).build();
+
 	public NormalizeLayerColumnNamesProcess(ImportProcess importer, Catalog catalog) {
 		this.catalog = catalog;
 		this.importProcess = importer;
 	}
 
 	@DescribeResult(name = "columnMapping", description = "List of column renames in format: 'Original Column Name|New Column Name\nOriginal Column Name|New Column Name...'")
-	
+
 	public String execute(
 			@DescribeParameter(
-					name = "workspacePrefixedLayerName", 
-					min = 1, 
-					max = 1, 
-					description = "Input layer on which to normalize columns prefixed with the workspace in which layer resides. Example myWorkspaceName:myLayerName") 
-					String prefixedLayerName
-	)
-			throws ProcessException {
+					name = "workspacePrefixedLayerName",
+					min = 1,
+					max = 1,
+					description = "Input layer on which to normalize columns prefixed with the workspace in which layer resides. Example workspaceName:layerName") String prefixedLayerName
+	) throws ProcessException {
+		String workspace;
+		String layer;
+		String store;
+		String renameColumnMappingReport;
+		String[] workspaceAndLayer;
+		int numberOfRenames;
+		GeoserverUtils gsUtils;
+		LayerInfo layerInfo;
+		ResourceInfo resourceInfo;
+		DataStoreInfo storeInfo;
+		DataAccess<? extends FeatureType, ? extends Feature> dataAccess;
+		FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
+		FeatureType featureType;
+		List<AttributeDescriptor> attributeList;
+		List<String> renameColumnMapping;
+
 		if (StringUtils.isBlank(prefixedLayerName)) {
 			throw new ProcessException("workspacePrefixedLayerName may not be blank.");
 		}
-		String renameColumnMappingReport;
-		String [] workspaceAndLayer = prefixedLayerName.split(":");
-		if(2 != workspaceAndLayer.length){
-			throw new ProcessException("workspacePrefixedLayerName could not be parsed.");
+
+		workspaceAndLayer = prefixedLayerName.split(":");
+
+		if (2 != workspaceAndLayer.length) {
+			throw new ProcessException("workspacePrefixedLayerName could not be parsed. Must be in the format:  workspaceName:layerName");
 		}
-		String workspace = workspaceAndLayer[0];
-		String layer = workspaceAndLayer[1];
+		workspace = workspaceAndLayer[0];
+		layer = workspaceAndLayer[1];
+
+		gsUtils = new GeoserverUtils(catalog);
+		layerInfo = catalog.getLayerByName(prefixedLayerName);
 		
-		GeoserverUtils gsUtils = new GeoserverUtils(catalog);
-		LayerInfo layerInfo = catalog.getLayerByName(prefixedLayerName);
-		ResourceInfo resourceInfo = layerInfo.getResource();
-		DataStoreInfo storeInfo = (DataStoreInfo) resourceInfo.getStore();
-		String store = storeInfo.getName();
-		DataAccess<? extends FeatureType, ? extends Feature> da = gsUtils.getDataAccess(storeInfo, null);
-		FeatureSource<? extends FeatureType, ? extends Feature> featureSource = gsUtils.getFeatureSource(da, layer);
-		FeatureType featureType = featureSource.getSchema();
-		List<AttributeDescriptor> attributeList = new ArrayList(featureType.getDescriptors());
+		if (null == layerInfo) {
+			throw new ProcessException("Layer " + prefixedLayerName + " could not be found.");
+		}
+		
+		resourceInfo = layerInfo.getResource();
+		if (null == resourceInfo) {
+			throw new ProcessException("Layer " + prefixedLayerName + " resource could not be found.");
+		}
+		
+		if (null == resourceInfo.getNativeCRS()) {
+			throw new ProcessException("Layer " + prefixedLayerName + " native CRS could not be found.");
+		}
+		
+		if (null == resourceInfo.getCRS()) {
+			throw new ProcessException("Layer " + prefixedLayerName + " CRS could not be found.");
+		}
+		
+		storeInfo = (DataStoreInfo) resourceInfo.getStore();
+		store = storeInfo.getName();
+		dataAccess = gsUtils.getDataAccess(storeInfo, null);
+		featureSource = gsUtils.getFeatureSource(dataAccess, layer);
+		featureType = featureSource.getSchema();
+		attributeList = new ArrayList(featureType.getDescriptors());
 		int length = attributeList.size();
-		List<String> renameColumnMapping = new ArrayList<>(length);
-		AttributeDescriptor attributeDescriptor;
+		renameColumnMapping = new ArrayList<>(length);
+
 		for (int i = 0; i < length; i++) {
-			attributeDescriptor = attributeList.get(i);
-			Name attributeName = attributeDescriptor.getName();
-			if(null == attributeName){
-				continue;
-			}
-			String oldName = attributeName.toString();		
-			if(!COLUMN_NAMES_TO_IGNORE.contains(oldName)){
-				String newName = oldName.toUpperCase(Locale.ENGLISH);
-				if(!newName.equals(oldName)){
-					String mapping = oldName + "|" + newName;
-					renameColumnMapping.add(mapping);
+			Name attributeName = attributeList.get(i).getName();
+			if (null != attributeName) {
+				String oldName = attributeName.toString();
+				if (!COLUMN_NAMES_TO_IGNORE.contains(oldName)) {
+					String newName = oldName.toUpperCase(Locale.ENGLISH);
+					if (!newName.equals(oldName)) {
+						String mapping = oldName + "|" + newName;
+						renameColumnMapping.add(mapping);
+					}
 				}
 			}
 		}
-		int numberOfRenames = renameColumnMapping.size();
-		
-		if(0 != numberOfRenames){
+
+		numberOfRenames = renameColumnMapping.size();
+
+		if (0 != numberOfRenames) {
 			RenameLayerColumnsProcess renameLayerProc = new RenameLayerColumnsProcess(importProcess, catalog);
 			String[] renameColumnMappingArray = new String[renameColumnMapping.size()];
 			renameColumnMapping.toArray(renameColumnMappingArray);
 			renameLayerProc.execute(layer, workspace, store, renameColumnMappingArray);
 			renameColumnMappingReport = StringUtils.join(renameColumnMappingArray, "\n");
-		}
-		else{
+		} else {
 			renameColumnMappingReport = "No column renames necessary";
 		}
-		
+
 		return renameColumnMappingReport;
 	}
 }
