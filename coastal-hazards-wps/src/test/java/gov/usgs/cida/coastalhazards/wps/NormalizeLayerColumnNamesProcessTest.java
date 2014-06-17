@@ -19,7 +19,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.Name;
 
-public class NormalizeLayerColumnNamesProcessTest  extends WPSTestSupport {
+public class NormalizeLayerColumnNamesProcessTest extends WPSTestSupport {
 
 	private static File outTest = null;
 
@@ -36,8 +36,10 @@ public class NormalizeLayerColumnNamesProcessTest  extends WPSTestSupport {
 
 	@Test
 	public void testExecute() throws Exception {
+		System.out.println("testExecute");
+
 		ImportProcess dummyImportProcess = new DummyImportProcess(outTest);
-		
+
 		//inspiration: http://www.torres.at/geoserver-create-datastore-programmatically/
 		URL mixedCaseShapefile = NormalizeLayerColumnNamesProcessTest.class.getClassLoader().getResource("gov/usgs/cida/coastalhazards/mixedCaseColumnNames/mixedCaseColumnNames.shp");
 		String namespaceUri = "http://www.cida.usgs.gov/";
@@ -45,7 +47,7 @@ public class NormalizeLayerColumnNamesProcessTest  extends WPSTestSupport {
 		SimpleFeatureCollection mixedCaseFeatureCollection = (SimpleFeatureCollection) FeatureCollectionFromShp.featureCollectionFromShp(mixedCaseShapefile);
 
 		AutoImportProcess autoImportProcess = new AutoImportProcess(catalog);
-	
+
 		LayerImportUtil importer = new LayerImportUtil(catalog, autoImportProcess);
 		String response = importer.importLayer(mixedCaseFeatureCollection, WORKSPACE_NAME, STORE_NAME, LAYER_NAME, mixedCaseFeatureCollection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
 
@@ -54,6 +56,22 @@ public class NormalizeLayerColumnNamesProcessTest  extends WPSTestSupport {
 		System.out.println("The following renaming was attempted (oldName|newName):");
 		System.out.println(normalizeResult);
 		validateColumnNames(outTest);
+	}
+
+	@Test(expected = org.geotools.process.ProcessException.class)
+	public void testExecuteWithBlankPrefixedLayerName() throws Exception {
+		System.out.println("testExecuteWithBlankPrefixedLayerName");
+		ImportProcess dummyImportProcess = new DummyImportProcess(outTest);
+		NormalizeLayerColumnNamesProcess normalizeLayerColumnNamesProcess = new NormalizeLayerColumnNamesProcess(dummyImportProcess, catalog);
+		normalizeLayerColumnNamesProcess.execute("");
+	}
+
+	@Test(expected = org.geotools.process.ProcessException.class)
+	public void testExecuteWithNullPrefixedLayerName() throws Exception {
+		System.out.println("testExecuteWithNullPrefixedLayerName");
+		ImportProcess dummyImportProcess = new DummyImportProcess(outTest);
+		NormalizeLayerColumnNamesProcess normalizeLayerColumnNamesProcess = new NormalizeLayerColumnNamesProcess(dummyImportProcess, catalog);
+		normalizeLayerColumnNamesProcess.execute(null);
 	}
 
 	private void validateColumnNames(File shapefile) throws MalformedURLException, IOException {
@@ -65,7 +83,7 @@ public class NormalizeLayerColumnNamesProcessTest  extends WPSTestSupport {
 		for (AttributeDescriptor ad : attributeDescriptors) {
 			Name attributeName = ad.getName();
 			String actualName = attributeName.toString();
-			if(!NormalizeLayerColumnNamesProcess.COLUMN_NAMES_TO_IGNORE.contains(actualName)){
+			if (!NormalizeLayerColumnNamesProcess.COLUMN_NAMES_TO_IGNORE.contains(actualName)) {
 				String upperCasedName = actualName.toUpperCase();
 				assertEquals(actualName, upperCasedName);
 			}

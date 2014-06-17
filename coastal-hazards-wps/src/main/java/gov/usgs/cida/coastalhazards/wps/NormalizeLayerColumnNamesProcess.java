@@ -54,10 +54,18 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 	@DescribeResult(name = "columnMapping", description = "List of column renames in format: 'Original Column Name|New Column Name\nOriginal Column Name|New Column Name...'")
 	
 	public String execute(
-			@DescribeParameter(name = "workspacePrefixedLayerName", min = 1, max = 1, description = "Input layer on which to normalize columns prefixed with the workspace in which layer resides. Example myWorkspaceName:myLayerName") String prefixedLayerName
+			@DescribeParameter(
+					name = "workspacePrefixedLayerName", 
+					min = 1, 
+					max = 1, 
+					description = "Input layer on which to normalize columns prefixed with the workspace in which layer resides. Example myWorkspaceName:myLayerName") 
+					String prefixedLayerName
 	)
 			throws ProcessException {
-		String renameColumnMappingReport = null;
+		if (StringUtils.isBlank(prefixedLayerName)) {
+			throw new ProcessException("workspacePrefixedLayerName may not be blank.");
+		}
+		String renameColumnMappingReport;
 		String [] workspaceAndLayer = prefixedLayerName.split(":");
 		if(2 != workspaceAndLayer.length){
 			throw new ProcessException("workspacePrefixedLayerName could not be parsed.");
