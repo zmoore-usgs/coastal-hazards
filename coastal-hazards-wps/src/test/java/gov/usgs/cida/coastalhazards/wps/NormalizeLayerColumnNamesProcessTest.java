@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
@@ -110,7 +111,7 @@ public class NormalizeLayerColumnNamesProcessTest extends WPSTestSupport {
 			Name attributeName = ad.getName();
 			String actualName = attributeName.toString();
 			if (!NormalizeLayerColumnNamesProcess.COLUMN_NAMES_TO_IGNORE.contains(actualName)) {
-				String upperCasedName = actualName.toUpperCase();
+				String upperCasedName = actualName.toUpperCase(Locale.ENGLISH);
 				assertEquals(actualName, upperCasedName);
 			}
 		}
