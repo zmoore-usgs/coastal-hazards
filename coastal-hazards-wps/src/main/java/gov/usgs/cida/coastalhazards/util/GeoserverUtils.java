@@ -31,94 +31,93 @@ import org.opengis.util.ProgressListener;
  */
 public class GeoserverUtils {
 
-    private Catalog catalog;
+	private Catalog catalog;
 
-    public GeoserverUtils(Catalog catalog) {
-        this.catalog = catalog;
-    }
+	public GeoserverUtils(Catalog catalog) {
+		this.catalog = catalog;
+	}
 
-    public WorkspaceInfo getWorkspaceByName(String workspace) {
-        WorkspaceInfo ws;
-        ws = catalog.getWorkspaceByName(workspace);
-        if (ws == null) {
-            throw new ProcessException("Could not find workspace " + workspace);
-        }
-        return ws;
-    }
-
-    public DataStoreInfo getDataStoreByName(String workspace, String store) {
-        DataStoreInfo ds = catalog.getDataStoreByName(workspace, store);
-        if (ds == null) {
-            throw new ProcessException("Could not find store " + store + " in workspace " + workspace);
-        }
-        return ds;
-    }
-
-    public DataAccess<? extends FeatureType, ? extends Feature> getDataAccess(DataStoreInfo store, ProgressListener listener) {
-        DataAccess<? extends FeatureType, ? extends Feature> da;
-        try {
-            da = store.getDataStore(listener == null ? new DefaultProgressListener() : listener);
-        } catch (IOException ioe) {
-            throw new ProcessException(ioe);
-        }
-        return da;
-    }
-    
-    public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(DataStoreInfo store, String layer, ProgressListener listener) {
-        DataAccess<? extends FeatureType, ? extends Feature> dataAccess;
-         try {
-            dataAccess = store.getDataStore(listener == null ? new DefaultProgressListener() : listener);
-        } catch (IOException ioe) {
-            throw new ProcessException(ioe);
-        }
-         return getFeatureSource(dataAccess, layer);
-    }
-    
-    public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(DataAccess<? extends FeatureType, ? extends Feature> dataAccess, String layer) {
-        FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
-         try {
-            featureSource = dataAccess.getFeatureSource(new NameImpl(layer));
-        } catch (IOException ioe) {
-            throw new ProcessException(ioe);
-        }
-         return featureSource;
-    }
-    
-    public FeatureCollection<? extends FeatureType, ? extends Feature> getFeatureCollection(FeatureSource<? extends FeatureType, ? extends Feature> featureSource) {
-        FeatureCollection<? extends FeatureType, ? extends Feature> fc;
-        try {
-            fc  = featureSource.getFeatures();
-        } catch (IOException ex) {
-            throw new ProcessException(ex);
-        }
-        return fc;
-    }
-    
-    public String replaceLayer(FeatureCollection<SimpleFeatureType, SimpleFeature> collection, String layer, DataStoreInfo dataStore, WorkspaceInfo workspace, ImportProcess importProc) {
-        String result = null;
-		LayerInfo layerByName = catalog.getLayerByName(workspace.getName() + ':' + layer);
-        new CascadeDeleteVisitor(catalog).visit(layerByName);
-        try {
-            File diskDirectory = new File(dataStore.getDataStore(new DefaultProgressListener()).getInfo().getSource());
-            Collection<File> listFiles = FileUtils.listFiles(diskDirectory, new PrefixFileFilter(layerByName.getName()), null);
-            for (File file : listFiles) {
-                FileUtils.deleteQuietly(file);
-            }
-        } catch (IOException ex) {
-            throw new ProcessException(ex);
-        }
-        catalog.save(dataStore);
-        catalog.save(workspace);
-        
-        LayerImportUtil importer = new LayerImportUtil(catalog, importProc);
-		try{
-			result = importer.importLayer((SimpleFeatureCollection) collection, workspace.getName(), dataStore.getName(), layer, collection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
+	public WorkspaceInfo getWorkspaceByName(String workspace) {
+		WorkspaceInfo ws;
+		ws = catalog.getWorkspaceByName(workspace);
+		if (ws == null) {
+			throw new ProcessException("Could not find workspace " + workspace);
 		}
-		catch(Exception e){
+		return ws;
+	}
+
+	public DataStoreInfo getDataStoreByName(String workspace, String store) {
+		DataStoreInfo ds = catalog.getDataStoreByName(workspace, store);
+		if (ds == null) {
+			throw new ProcessException("Could not find store " + store + " in workspace " + workspace);
+		}
+		return ds;
+	}
+
+	public DataAccess<? extends FeatureType, ? extends Feature> getDataAccess(DataStoreInfo store, ProgressListener listener) {
+		DataAccess<? extends FeatureType, ? extends Feature> da;
+		try {
+			da = store.getDataStore(listener == null ? new DefaultProgressListener() : listener);
+		} catch (IOException ioe) {
+			throw new ProcessException(ioe);
+		}
+		return da;
+	}
+
+	public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(DataStoreInfo store, String layer, ProgressListener listener) {
+		DataAccess<? extends FeatureType, ? extends Feature> dataAccess;
+		try {
+			dataAccess = store.getDataStore(listener == null ? new DefaultProgressListener() : listener);
+		} catch (IOException ioe) {
+			throw new ProcessException(ioe);
+		}
+		return getFeatureSource(dataAccess, layer);
+	}
+
+	public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(DataAccess<? extends FeatureType, ? extends Feature> dataAccess, String layer) {
+		FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
+		try {
+			featureSource = dataAccess.getFeatureSource(new NameImpl(layer));
+		} catch (IOException ioe) {
+			throw new ProcessException(ioe);
+		}
+		return featureSource;
+	}
+
+	public FeatureCollection<? extends FeatureType, ? extends Feature> getFeatureCollection(FeatureSource<? extends FeatureType, ? extends Feature> featureSource) {
+		FeatureCollection<? extends FeatureType, ? extends Feature> fc;
+		try {
+			fc = featureSource.getFeatures();
+		} catch (IOException ex) {
+			throw new ProcessException(ex);
+		}
+		return fc;
+	}
+
+	public String replaceLayer(FeatureCollection<SimpleFeatureType, SimpleFeature> collection, String layer, DataStoreInfo dataStore, WorkspaceInfo workspace, ImportProcess importProc) {
+		String result = null;
+		LayerInfo layerByName = catalog.getLayerByName(workspace.getName() + ':' + layer);
+		new CascadeDeleteVisitor(catalog).visit(layerByName);
+		try {
+			File diskDirectory = new File(dataStore.getDataStore(new DefaultProgressListener()).getInfo().getSource());
+			Collection<File> listFiles = FileUtils.listFiles(diskDirectory, new PrefixFileFilter(layerByName.getName()), null);
+			for (File file : listFiles) {
+				FileUtils.deleteQuietly(file);
+			}
+		} catch (IOException ex) {
+			throw new ProcessException(ex);
+		}
+		catalog.save(dataStore);
+		catalog.save(workspace);
+
+		LayerImportUtil importer = new LayerImportUtil(catalog, importProc);
+		try {
+			result = importer.importLayer((SimpleFeatureCollection) collection, workspace.getName(), dataStore.getName(), layer, collection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
+		} catch (Exception e) {
 			//a handy spot to set a breakpoint
 			throw e;
 		}
-        return result;
-    }
-       
+		return result;
+	}
+
 }
