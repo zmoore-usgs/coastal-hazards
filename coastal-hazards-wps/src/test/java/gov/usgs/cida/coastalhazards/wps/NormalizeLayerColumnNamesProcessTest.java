@@ -8,8 +8,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.gs.ImportProcess;
