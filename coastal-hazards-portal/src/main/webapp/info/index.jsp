@@ -31,25 +31,46 @@
 		</jsp:include>
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
 		<title>Coastal Change Hazards Information</title>
+		<%-- Google Analytics for CCH --%>
+		<script>
+			(function (i, s, o, g, r, a, m) {
+				i['GoogleAnalyticsObject'] = r;
+				i[r] = i[r] || function () {
+					(i[r].q = i[r].q || []).push(arguments)
+				}, i[r].l = 1 * new Date();
+				a = s.createElement(o),
+					m = s.getElementsByTagName(o)[0];
+				a.async = 1;
+				a.src = g;
+				m.parentNode.insertBefore(a, m)
+			})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+			ga('create', 'UA-46378632-1', 'usgs.gov');
+			ga('set', 'anonymizeIp', true);
+			ga('send', 'pageview');
+		</script>
 	</head>
 	<body>
 
 		<div id=“wrapper”>
-
+			<%-- Title Bar --%>
 			<header>
-				<a href="#"><img src="../images/info/collaborative_logo.png" alt="collaborative logo" /></a>
+				<a id="cch-back-to-portal-link" href="#"><img src="../images/info/collaborative_logo.png" alt="collaborative logo" /></a>
 				<h1>USGS Coastal Change Hazards Portal</h1>
 				<h1 class="mobile">USGS CCH</h1>
 				<h1 class="mobile_portrait">CCH</h1>
 			</header>
+
 			<div id="content">
+				<%-- Back To Portal Button --%>
 				<div id="title">
-					<a href="<%=baseUrl%>">
+					<a id="cch-back-to-portal-button" href="<%=baseUrl%>">
 						<div id="close">
 							<p>Back to Portal</p>
 						</div>
 					</a>
 				</div>
+
+				<%-- Portal Description --%>
 				<div id="text">
 					<p class="descriptive-text">
 						Welcome to the U.S. Geological Survey's Coastal Change Hazards (CCH) portal, 
@@ -118,6 +139,8 @@
 						nformation. Items and aggregations can be added to a bucket that saves this 
 						information for download or sharing
 					</p>
+
+					<%-- Icon Description Table --%>
 					<table id="application-icon-table">
 						<thead>
 							<tr>
@@ -170,28 +193,30 @@
 						</tbody>
 					</table>
 				</div>
+
+				<%-- Directed Portal Links --%>
 				<div id="icon_area">
 					<div id="holder">
 						<div class="icon">
 							<div class="icon_holder">
-								<a href="<%=baseUrl%>/ui/item/CAckxGz"><img src="../images/info/extreme_storms.jpg" alt="extreme storms pic"/></a>
+								<a class="cch-portal-link-storms" href="<%=baseUrl%>/ui/item/CAckxGz"><img src="../images/info/extreme_storms.jpg" alt="extreme storms pic"/></a>
 							</div><!--icon_holder-->
-							<h3><a href="<%=baseUrl%>/ui/item/CAckxGz">Explore Extreme Storms</a></h3>
+							<h3><a class="cch-portal-link-storms"  href="<%=baseUrl%>/ui/item/CAckxGz">Explore Extreme Storms</a></h3>
 							<p>Coastal erosion hazards</p>
 						</div><!--icon-->
 						<div class="icon">
 							<div class="icon_holder">
-								<a href="<%=baseUrl%>/ui/item/CAkR645"><img src="../images/info/shoreline_change.jpg" alt="shoreline change pic"/></a>
+								<a class="cch-portal-link-shoreline" href="<%=baseUrl%>/ui/item/CAkR645"><img src="../images/info/shoreline_change.jpg" alt="shoreline change pic"/></a>
 							</div><!--icon_holder-->
-							<h3><a href="<%=baseUrl%>/ui/item/CAkR645">Explore Shoreline Change</a></h3>
+							<h3><a class="cch-portal-link-shoreline" href="<%=baseUrl%>/ui/item/CAkR645">Explore Shoreline Change</a></h3>
 							<p>Historical positions and</p>
 							<p>rates of change</p>
 						</div><!--icon-->
 						<div class="icon">
 							<div class="icon_holder">
-								<a href="<%=baseUrl%>/ui/item/CARv9Z5"><img src="../images/info/sea-leve_rise.jpg" alt="sea-level_rise pic"/></a>
+								<a class="cch-portal-link-sealevel" href="<%=baseUrl%>/ui/item/CARv9Z5"><img src="../images/info/sea-leve_rise.jpg" alt="sea-level_rise pic"/></a>
 							</div><!--icon_holder-->
-							<h3><a href="<%=baseUrl%>/ui/item/CARv9Z5">Explore Sea-Level Rise</a></h3>
+							<h3><a class="cch-portal-link-sealevel" href="<%=baseUrl%>/ui/item/CARv9Z5">Explore Sea-Level Rise</a></h3>
 							<p>Vulnerability</p>
 						</div><!--icon-->
 					</div><!--icon_area-->
@@ -225,6 +250,60 @@
 				} else {
 					content.style.height = windowHeight - headerHeight - footerHeight - 2 + 'px';
 				}
+			},
+				linkbackClassElements,
+				linkbackClickHandler = function (label) {
+					ga('send', 'event', {
+						'eventCategory': 'click',
+						'eventAction': label
+					});
+					console.info(label);
+					debugger;
+				},
+				linkbackClassEventLabels = {
+					'cch-portal-link-storms': 'extremeStormsLinkClicked',
+					'cch-portal-link-shoreline': 'shorelineChangeLinkClicked',
+					'cch-portal-link-sealevel': 'seaLevelRiseLinkClicked'
+				};
+
+			// Back To Portal Button
+			document.getElementById('cch-back-to-portal-button').onclick = function () {
+				ga('send', 'event', {
+					'eventCategory': 'click',
+					'eventAction': 'backToPortalButtonClicked'
+				});
+			};
+
+			// Back To Portal Link
+			document.getElementById('cch-back-to-portal-link').onclick = function () {
+				ga('send', 'event', {
+					'eventCategory': 'click',
+					'eventAction': 'backToPortalLinkClicked'
+				});
+			};
+			
+			// Item-specific back to portal links
+			// TODO- I tried doing this in a for-in loop using the linkbackClassEventLabels object
+			// but all elements had their event handlers 
+			linkbackClassElements = document.getElementsByClassName('cch-portal-link-storms');
+			for (var ceIdx = 0; ceIdx < linkbackClassElements.length; ceIdx++) {
+				linkbackClassElements[ceIdx].onclick = function () {
+					linkbackClickHandler(linkbackClassEventLabels['cch-portal-link-storms']);
+				};
+			}
+			
+			linkbackClassElements = document.getElementsByClassName('cch-portal-link-shoreline');
+			for (var ceIdx = 0; ceIdx < linkbackClassElements.length; ceIdx++) {
+				linkbackClassElements[ceIdx].onclick = function () {
+					linkbackClickHandler(linkbackClassEventLabels['cch-portal-link-shoreline']);
+				};
+			}
+			
+			linkbackClassElements = document.getElementsByClassName('cch-portal-link-sealevel');
+			for (var ceIdx = 0; ceIdx < linkbackClassElements.length; ceIdx++) {
+				linkbackClassElements[ceIdx].onclick = function () {
+					linkbackClickHandler(linkbackClassEventLabels['cch-portal-link-sealevel']);
+				};
 			}
 
 			window.onresize = resizeHandler;

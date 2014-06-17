@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureSource;
@@ -85,8 +86,14 @@ public class FeatureCollectionFromShp {
             name = typeNames[0];
         }
         else {
-            throw new RuntimeException("I don't know how to deal with this");
+            throw new RuntimeException("DataStore has no available features. I don't know how to deal with this");
         }
+	
+	// TODO- During testing, name is sometimes null which throws NPE in dataStore.getSchema(name) - Why?
+	if (StringUtils.isBlank(name)) {
+		throw new RuntimeException("DataStore name list is missing.");
+	}
+		
         SimpleFeatureType schema = dataStore.getSchema(name);
         FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = 
                 dataStore.getFeatureSource(name);

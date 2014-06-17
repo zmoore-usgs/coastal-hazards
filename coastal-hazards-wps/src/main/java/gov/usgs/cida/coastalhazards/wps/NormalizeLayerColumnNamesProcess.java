@@ -2,8 +2,11 @@ package gov.usgs.cida.coastalhazards.wps;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Lists;
 import gov.usgs.cida.coastalhazards.util.GeoserverUtils;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
@@ -25,6 +28,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
 
 @DescribeProcess(
 		title = "Normalize Layer Column Names",
@@ -35,76 +39,110 @@ public class NormalizeLayerColumnNamesProcess implements GeoServerProcess {
 	private final Catalog catalog;
 	private final ImportProcess importProcess;
 	/**
-	 * Geoserver relies on case-sensitive attributes. We cannot reformat these attributes.
-	 * In addition, we do not write SLDs against these attributes, so we don't need to care.
+	 * Geoserver relies on case-sensitive attributes. We cannot reformat these
+	 * attributes. In addition, we do not write SLDs against these attributes,
+	 * so we don't need to care.
 	 */
-	public static final ImmutableSet<String> COLUMN_NAMES_TO_IGNORE = (
-		new ImmutableSortedSet.Builder<>(String.CASE_INSENSITIVE_ORDER)
+	public static final ImmutableSet<String> COLUMN_NAMES_TO_IGNORE = (new ImmutableSortedSet.Builder<>(String.CASE_INSENSITIVE_ORDER)
 			.add(
 					"the_geom",
 					"id"
-			)
-		).build();
-	
+			)).build();
+
 	public NormalizeLayerColumnNamesProcess(ImportProcess importer, Catalog catalog) {
 		this.catalog = catalog;
 		this.importProcess = importer;
 	}
 
 	@DescribeResult(name = "columnMapping", description = "List of column renames in format: 'Original Column Name|New Column Name\nOriginal Column Name|New Column Name...'")
-	
+
 	public String execute(
-			@DescribeParameter(name = "workspacePrefixedLayerName", min = 1, max = 1, description = "Input layer on which to normalize columns prefixed with the workspace in which layer resides. Example myWorkspaceName:myLayerName") String prefixedLayerName
-	)
-			throws ProcessException {
-		String renameColumnMappingReport = null;
-		String [] workspaceAndLayer = prefixedLayerName.split(":");
-		if(2 != workspaceAndLayer.length){
-			throw new ProcessException("workspacePrefixedLayerName could not be parsed.");
+			@DescribeParameter(
+					name = "workspacePrefixedLayerName",
+					min = 1,
+					max = 1,
+					description = "Input layer on which to normalize columns prefixed with the workspace in which layer resides. Example workspaceName:layerName") String prefixedLayerName
+	) throws ProcessException {
+		String workspace;
+		String layer;
+		String store;
+		String renameColumnMappingReport = "";
+		int attributeListSize;
+		int renameColumnMappingSize;
+		String[] workspaceAndLayer;
+		GeoserverUtils gsUtils;
+		LayerInfo layerInfo;
+		ResourceInfo resourceInfo;
+		DataStoreInfo storeInfo;
+		DataAccess<? extends FeatureType, ? extends Feature> dataAccess;
+		FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
+		FeatureType featureType;
+		List<AttributeDescriptor> attributeList;
+		List<String> renameColumnMapping;
+
+		if (StringUtils.isBlank(prefixedLayerName)) {
+			throw new ProcessException("workspacePrefixedLayerName may not be blank.");
 		}
-		String workspace = workspaceAndLayer[0];
-		String layer = workspaceAndLayer[1];
+
+		workspaceAndLayer = prefixedLayerName.split(":");
+
+		if (2 != workspaceAndLayer.length) {
+			throw new ProcessException("workspacePrefixedLayerName could not be parsed. Must be in the format:  workspaceName:layerName");
+		}
+		workspace = workspaceAndLayer[0];
+		layer = workspaceAndLayer[1];
+
+		gsUtils = new GeoserverUtils(catalog);
+		layerInfo = catalog.getLayerByName(prefixedLayerName);
+
+		if (null == layerInfo) {
+			throw new ProcessException("Layer " + prefixedLayerName + " could not be found.");
+		}
+
+		resourceInfo = layerInfo.getResource();
+		if (null == resourceInfo) {
+			throw new ProcessException("Layer " + prefixedLayerName + " resource could not be found.");
+		}
+
+		if (null == resourceInfo.getNativeCRS()) {
+			throw new ProcessException("Layer " + prefixedLayerName + " native CRS could not be found.");
+		}
+
+		if (null == resourceInfo.getCRS()) {
+			throw new ProcessException("Layer " + prefixedLayerName + " CRS could not be found.");
+		}
+
+		storeInfo = (DataStoreInfo) resourceInfo.getStore();
+		store = storeInfo.getName();
+		dataAccess = gsUtils.getDataAccess(storeInfo, null);
+		featureSource = gsUtils.getFeatureSource(dataAccess, layer);
+		featureType = featureSource.getSchema();
+		attributeList = new ArrayList(featureType.getDescriptors());
+		attributeListSize = attributeList.size();
+		renameColumnMapping = new ArrayList<>(attributeListSize);
 		
-		GeoserverUtils gsUtils = new GeoserverUtils(catalog);
-		LayerInfo layerInfo = catalog.getLayerByName(prefixedLayerName);
-		ResourceInfo resourceInfo = layerInfo.getResource();
-		DataStoreInfo storeInfo = (DataStoreInfo) resourceInfo.getStore();
-		String store = storeInfo.getName();
-		DataAccess<? extends FeatureType, ? extends Feature> da = gsUtils.getDataAccess(storeInfo, null);
-		FeatureSource<? extends FeatureType, ? extends Feature> featureSource = gsUtils.getFeatureSource(da, layer);
-		FeatureType featureType = featureSource.getSchema();
-		List<AttributeDescriptor> attributeList = new ArrayList(featureType.getDescriptors());
-		int length = attributeList.size();
-		List<String> renameColumnMapping = new ArrayList<>(length);
-		AttributeDescriptor attributeDescriptor;
-		for (int i = 0; i < length; i++) {
-			attributeDescriptor = attributeList.get(i);
-			Name attributeName = attributeDescriptor.getName();
-			if(null == attributeName){
-				continue;
-			}
-			String oldName = attributeName.toString();		
-			if(!COLUMN_NAMES_TO_IGNORE.contains(oldName)){
-				String newName = oldName.toUpperCase(Locale.ENGLISH);
-				if(!newName.equals(oldName)){
-					String mapping = oldName + "|" + newName;
-					renameColumnMapping.add(mapping);
+		for (int attributeListIndex = 0; attributeListIndex < attributeListSize; attributeListIndex++) {
+			Name attributeName = attributeList.get(attributeListIndex).getName();
+			if (null != attributeName) {
+				String oldName = attributeName.toString();
+				if (!COLUMN_NAMES_TO_IGNORE.contains(oldName)) {
+					String newName = oldName.toUpperCase(Locale.ENGLISH);
+					if (!newName.equals(oldName)) {
+						String mapping = oldName + "|" + newName;
+						renameColumnMapping.add(mapping);
+					}
 				}
 			}
 		}
-		int numberOfRenames = renameColumnMapping.size();
-		
-		if(0 != numberOfRenames){
+		renameColumnMappingSize = renameColumnMapping.size();
+		if (0 != renameColumnMappingSize) {
+			// I now have a map of columns to rename
 			RenameLayerColumnsProcess renameLayerProc = new RenameLayerColumnsProcess(importProcess, catalog);
-			String[] renameColumnMappingArray = new String[renameColumnMapping.size()];
-			renameColumnMapping.toArray(renameColumnMappingArray);
+			String[] renameColumnMappingArray = renameColumnMapping.toArray(new String[renameColumnMappingSize]);
 			renameLayerProc.execute(layer, workspace, store, renameColumnMappingArray);
-			renameColumnMappingReport = StringUtils.join(renameColumnMappingArray, "\n");
+			renameColumnMappingReport = StringUtils.join(renameColumnMappingArray, ",");
 		}
-		else{
-			renameColumnMappingReport = "No column renames necessary";
-		}
-		
+
 		return renameColumnMappingReport;
 	}
 }
