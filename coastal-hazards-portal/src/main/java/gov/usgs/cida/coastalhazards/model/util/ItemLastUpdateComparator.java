@@ -7,7 +7,7 @@ public class ItemLastUpdateComparator implements Comparator<Item>{
 
 	@Override
 	public int compare(Item o1, Item o2) {
-		return o1.getLastUpdate().compareTo(o2.getLastUpdate());
+		return o1.getLastModified().compareTo(o2.getLastModified());
 	}
 	
 }

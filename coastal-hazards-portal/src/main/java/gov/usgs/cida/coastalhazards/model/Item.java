@@ -8,6 +8,7 @@ import gov.usgs.cida.coastalhazards.model.summary.Summary;
 import gov.usgs.cida.coastalhazards.util.ogc.CSWService;
 import gov.usgs.cida.coastalhazards.util.ogc.OGCService;
 import gov.usgs.cida.coastalhazards.util.ogc.WFSService;
+import gov.usgs.cida.utilities.Cacheable;
 import gov.usgs.cida.utilities.IdGenerator;
 import gov.usgs.cida.utilities.StringPrecondition;
 import gov.usgs.cida.utilities.properties.JNDISingleton;
@@ -48,7 +49,7 @@ import org.hibernate.annotations.Proxy;
 @Entity
 @Table(name = "item")
 @Proxy
-public class Item implements Serializable {
+public class Item implements Serializable, Cacheable {
 
     public static final String UBER_ID = JNDISingleton.getInstance().getProperty("coastal-hazards.item.uber.id", "uber");
     public static final int NAME_MAX_LENGTH = 255;
@@ -248,11 +249,12 @@ public class Item implements Serializable {
 	
 	@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_update")
-    public Date getLastUpdate() {
+    @Override
+    public Date getLastModified() {
         return lastUpdate;
     }
 	
-	public void setLastUpdate(Date timestamp) {
+	public void setLastModified(Date timestamp) {
         this.lastUpdate = timestamp;
     }
 	

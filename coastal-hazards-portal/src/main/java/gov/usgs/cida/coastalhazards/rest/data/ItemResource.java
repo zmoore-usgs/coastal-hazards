@@ -7,32 +7,27 @@ import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
-import gov.usgs.cida.coastalhazards.rest.data.util.HttpUtil;
 import gov.usgs.cida.coastalhazards.rest.data.util.ItemUtil;
-import gov.usgs.cida.utilities.FuzzyDateComparator;
-import java.util.Date;
+import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.Path;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import org.apache.http.impl.cookie.DateParseException;
-import org.apache.http.impl.cookie.DateUtils;
 
 /**
  * 
@@ -47,7 +42,7 @@ public class ItemResource {
 	 *
 	 * @param id identifier of requested item
      * @param subtree whether to return all items below this as a subtree
-     * @param clientItemDateString if modified since date string
+     * @param request request object
 	 * @return JSON representation of the item(s)
 	 */
 	@GET
@@ -55,44 +50,24 @@ public class ItemResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getItem(@PathParam("id") String id,
             @DefaultValue("false") @QueryParam("subtree") boolean subtree,
-            @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) String clientItemDateString) {
+            @Context Request request) {
         Response response = null;
         try (ItemManager itemManager = new ItemManager()) {
             Item item = itemManager.load(id);
             if (item == null) {
                 throw new NotFoundException();
             } else {
-                
-                Date clientItemDate = null;
-				if (null != clientItemDateString) {
-					try {
-						clientItemDate = DateUtils.parseDate(clientItemDateString);
-					}
-                    catch (DateParseException e) {
-						//we must do nothing according to the spec:
-						//"if the passed If-Modified-Since date is
-						//invalid, the response is exactly the same as for a normal GET"
-						//@see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.25
-					}
-				}
-                
-                Date serverItemDate = null;
+                Item newestItem = item;
                 if (subtree) {
-                    Item lastModifiedItem = ItemUtil.gatherNewest(item);
-                    serverItemDate = lastModifiedItem.getLastUpdate();
-                } else {
-                    serverItemDate = item.getLastUpdate();
+                    newestItem = ItemUtil.gatherNewest(item);
                 }
-                FuzzyDateComparator fuzzyDateComparator = new FuzzyDateComparator();
-				
-				if (clientItemDate != null && 0 == fuzzyDateComparator.compare(clientItemDate, serverItemDate)) {
-					response = Response.notModified().build();
+
+                Response unmodified = HTTPCachingUtil.checkModified(request, newestItem);
+                if (unmodified != null) {
+					response = unmodified;
 				} else {
 					String jsonResult = item.toJSON(subtree);
-					ResponseBuilder responseBuilder = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE);
-					String httpDate = HttpUtil.getDateAsHttpDate(serverItemDate);
-					responseBuilder.header(HttpHeaders.LAST_MODIFIED, httpDate);
-					response = responseBuilder.build();
+					response = Response.ok(jsonResult, MediaType.APPLICATION_JSON_TYPE).lastModified(newestItem.getLastModified()).build();
 				}
             }
         }
