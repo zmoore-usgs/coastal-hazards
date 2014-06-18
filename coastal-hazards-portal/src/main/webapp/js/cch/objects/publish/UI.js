@@ -1332,7 +1332,7 @@ CCH.Objects.Publish.UI = function () {
 		var service = $proxyWfsServiceInput.val().trim(),
 			param = $proxyWfsServiceParamInput.val().trim();
 
-		me.updateAttributedUsingDescribeFeaturetype({
+		me.updateAttributesUsingDescribeFeaturetype({
 			service: service,
 			param: param,
 			callbacks: {
@@ -1387,7 +1387,7 @@ CCH.Objects.Publish.UI = function () {
 		});
 	};
 
-	me.updateAttributedUsingDescribeFeaturetype = function (args) {
+	me.updateAttributesUsingDescribeFeaturetype = function (args) {
 		args = args || {};
 
 		var service = args.service,
@@ -1617,7 +1617,8 @@ CCH.Objects.Publish.UI = function () {
 					baseUrl = CCH.CONFIG.publicUrl,
 					baseService = baseUrl + CCH.CONFIG.data.sources['cida-geoserver'].proxy + 'proxied/',
 					wfsServiceVal = baseService + 'wfs',
-					wmsServiceVal = baseService + 'wms';
+					wmsServiceVal = baseService + 'wms',
+					updateAttributesCallback;
 
 				if (baseUrl.lastIndexOf('/') !== baseUrl.length - 1) {
 					baseUrl += '/';
@@ -1628,18 +1629,41 @@ CCH.Objects.Publish.UI = function () {
 				$proxyWfsServiceParamInput.val(responseText);
 				$proxyWmsServiceParamInput.val(responseText);
 
-				me.updateAttributedUsingDescribeFeaturetype({
-					service: $proxyWfsServiceInput,
-					param: responseText,
+				updateAttributesCallback = function () {
+					me.updateAttributesUsingDescribeFeaturetype({
+						service: $proxyWfsServiceInput,
+						param: responseText,
+						callbacks: {
+							success: [
+								function (featureDescription) {
+									me.updateSelectAttribtue(featureDescription);
+								}
+							],
+							error: [
+								function (error) {
+									CCH.LOG.warn('Error pulling describe feature: ' + error);
+								}
+							]
+						}
+					});
+				};
+
+				// Now that I have the layer imported, I want to pass the layer through an attribute normalization
+				// process and then update attributes using the layer's describe featuretype once the attrbutes
+				// have been normalized
+				CCH.ows.normalizeGeoserverLayerAttributes({
+					workspacePrefixedLayerName: responseText,
 					callbacks: {
-						success: [
-							function (featureDescription) {
-								me.updateSelectAttribtue(featureDescription);
-							}
-						],
+						success: [updateAttributesCallback],
 						error: [
-							function (error) {
-								CCH.LOG.warn('Error pulling describe feature: ' + error);
+							updateAttributesCallback,
+							function () {
+								$alertModalTitle.html('Layer could not be normalized');
+								$alertModalBody.html('Unfortunately the layer you\'re trying to import \
+									could not be normalized. This may not be a problem unless the \
+									layer you\'re trying to import requires normalized attributes \
+									(for example, CVI layer)');
+								$alertModal.modal('show');
 							}
 						]
 					}
@@ -2145,7 +2169,7 @@ CCH.Objects.Publish.UI = function () {
 
 	$getWfsAttributesButton.on('click', function () {
 		if ($proxyWfsServiceParamInput.val() !== '') {
-			me.updateAttributedUsingDescribeFeaturetype({
+			me.updateAttributesUsingDescribeFeaturetype({
 				service: $proxyWfsServiceInput,
 				param: $proxyWfsServiceParamInput.val(),
 				callbacks: {
