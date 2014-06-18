@@ -76,6 +76,12 @@ public class DataDomainManager implements AutoCloseable {
         }
     }
     
+    /**
+     * Grab the domain of the item data and store it for later
+     * TODO if Item has been modified, invalidate DB persisted entity
+     * @param item Item for which domain to gather
+     * @return DataDomain object making up the domain
+     */
     public DataDomain getDomainForItem(Item item) {
         DataDomain domain = new DataDomain();
         

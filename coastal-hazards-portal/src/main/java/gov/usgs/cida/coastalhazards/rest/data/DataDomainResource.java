@@ -7,10 +7,13 @@ import gov.usgs.cida.coastalhazards.jpa.DataDomainManager;
 import gov.usgs.cida.coastalhazards.jpa.ItemManager;
 import gov.usgs.cida.coastalhazards.model.Item;
 import gov.usgs.cida.coastalhazards.model.util.DataDomain;
+import gov.usgs.cida.utilities.HTTPCachingUtil;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
 /**
@@ -25,17 +28,23 @@ public class DataDomainResource {
     
     @GET
     @Path("item/{id}")
-    public Response getDataDomain(@PathParam("id") String id) {
-        String domainJson = null;
+    public Response getDataDomain(@PathParam("id") String id, @Context Request request) {
+        Response response = null;
         try (ItemManager itemManager = new ItemManager(); DataDomainManager domainManager = new DataDomainManager()) {
             Item item = itemManager.load(id);
             if (item == null || item.getType() != Item.Type.historical) {
                 throw new NotFoundException("Only historical is supported at this time");
             }
             DataDomain domain = domainManager.getDomainForItem(item);
-            Gson serializer = GsonUtil.getDefault();
-            domainJson = serializer.toJson(domain);
+            Response checkModified = HTTPCachingUtil.checkModified(request, domain);
+            if (checkModified != null) {
+                response = checkModified;
+            } else {
+                Gson serializer = GsonUtil.getDefault();
+                String domainJson = serializer.toJson(domain);
+                response = Response.ok(domainJson, MediaType.APPLICATION_JSON_TYPE).lastModified(domain.getLastModified()).build();
+            }
         }
-        return Response.ok(domainJson, MediaType.APPLICATION_JSON_TYPE).build();
+        return response;
     }
 }
