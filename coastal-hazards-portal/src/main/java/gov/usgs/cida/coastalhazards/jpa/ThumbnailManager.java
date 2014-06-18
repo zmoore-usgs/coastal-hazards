@@ -12,20 +12,25 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class ThumbnailManager {
+public class ThumbnailManager implements AutoCloseable {
+    
+    private EntityManager em;
+    
+    public ThumbnailManager() {
+        em = JPAHelper.getEntityManagerFactory().createEntityManager();
+    }
 
-    public InputStream load(String itemId) {
-        EntityManager em = JPAHelper.getEntityManagerFactory().createEntityManager();
+    public InputStream loadStream(Thumbnail thumb) {
         InputStream inputStream = null;
-        try {
-            Thumbnail thumb = em.find(Thumbnail.class, itemId);
-            if (thumb != null) {
-                inputStream = new ByteArrayInputStream(Base64.decodeBase64(thumb.getImage()));
-            }
-        } finally {
-            JPAHelper.close(em);
+        if (thumb != null) {
+            inputStream = new ByteArrayInputStream(Base64.decodeBase64(thumb.getImage()));
         }
         return inputStream;
+    }
+    
+    public Thumbnail load(String itemId) {
+        Thumbnail thumb = em.find(Thumbnail.class, itemId);
+        return thumb;
     }
     
     public synchronized String save(Thumbnail thumbnail) {
@@ -45,6 +50,11 @@ public class ThumbnailManager {
             JPAHelper.close(em);
         }
 		return result;
+    }
+    
+    @Override
+    public void close() {
+        JPAHelper.close(em);
     }
     
 }
