@@ -56,6 +56,7 @@
 	.container > #info-row-title > #info-title {
 		font-size: 1.95em;
 		line-height: 1.15em;
+		text-align:center;
 	}
 
 	/* Hide QR code for screen, show for print */
@@ -150,6 +151,7 @@
 
 	.container #summary-and-publications-row > #summary-row > #info-summary {
 		font-size: 20px;
+		text-align: left;
 	}
 
 	.container #summary-and-publications-row > #publications-row > .well {
@@ -160,6 +162,10 @@
 	}
 	.container #summary-and-publications-row > #publications-row .publist-header li {
 		text-transform: none;
+	}
+	
+	.container #info-container-publications-list-span {
+		text-align: left;
 	}
 
 	#info-row-control {
