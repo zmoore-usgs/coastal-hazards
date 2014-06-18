@@ -116,6 +116,39 @@ CCH.Objects.Back.UI = function (args) {
 					// Set the height of the container to the height of the first table (All tables should be about
 					// the same size)
 					$container.height(tableHeight);
+					
+					$(' .ribboned-legend-caption').each(function (ind, captionSpan) {
+							var $cSpan = $(captionSpan);
+							$cSpan.on({
+								'mouseover': function (evt) {
+									var $span = $(this),
+										lIdx = 0,
+										layer,
+										mouseOverLayerId = $span.attr('ribbon-layer-id');
+									
+									$span.css('font-weight', 700);
+									// Get a list of visible CCH map layers at the time of mouse over
+									CCH.CONFIG.map.visibleLayers = CCH.CONFIG.map.getLayersBy('type', 'cch').filter(function (l) {
+										return l.visibility;
+									});
+									
+									for (lIdx;lIdx < CCH.CONFIG.map.visibleLayers.length;lIdx++) {
+										layer = CCH.CONFIG.map.visibleLayers[lIdx];
+										if (layer.itemid !== mouseOverLayerId) {
+											layer.setVisibility(false);
+										}
+									}
+								},
+								'mouseout': function (evt) {
+									var lIdx = 0;
+									$(this).css('font-weight', '');
+									for (lIdx;lIdx < CCH.CONFIG.map.visibleLayers.length;lIdx++) {
+										CCH.CONFIG.map.visibleLayers[lIdx].setVisibility(true);
+									}
+									delete CCH.CONFIG.map.visibleLayers;
+								}
+							});
+						});
 				}
 			}).init();
 		} else {
