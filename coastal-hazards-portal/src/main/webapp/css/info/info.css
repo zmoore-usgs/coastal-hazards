@@ -55,6 +55,9 @@ em {
 
 ul {
 	margin: 15px 0px 5px 10px;
+	padding-left: 15px;
+	font-size: 1.2em;
+	color: rgb(48,48,48);
 }
 
 ul li {
