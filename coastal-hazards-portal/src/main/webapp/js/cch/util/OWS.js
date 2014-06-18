@@ -99,6 +99,44 @@ CCH.Util.OWS = function () {
 			};
 			return me;
 		},
+		/**
+		 * Executes a Geoserver WPS process that uppercases all of the attributes in the layer
+		 * 
+		 * @param {Object} args 
+		 * @returns {undefined}
+		 */
+		normalizeGeoserverLayerAttributes: function (args) {
+			args = args || {};
+			var callbacks = args.callbacks || {
+				success: [],
+				error: []
+			},
+			workspacePrefixedLayerName = args.workspacePrefixedLayerName,
+				wpsFormat = new OpenLayers.Format.WPSExecute(),
+				doc = wpsFormat.write({
+					identifier: 'gs:NormalizeLayerColumnNames',
+					dataInputs: [{
+							identifier: 'workspacePrefixedLayerName',
+							data: {
+								literalData: {
+									value: workspacePrefixedLayerName
+								}
+							}
+						}],
+					responseForm: {
+						rawDataOutput: {
+							mimeType: "text/xml",
+							identifier: "columnMapping"
+						}
+					}
+				});
+
+			me.postWPS({
+				doc: doc,
+				callbacks: callbacks,
+				url: CCH.CONFIG.contextPath + '/geoserver/wps'
+			});
+		},
 		importWfsLayer: function (args) {
 			args = args || {};
 			var callbacks = args.callbacks || {
@@ -170,21 +208,10 @@ CCH.Util.OWS = function () {
 					}
 				});
 
-			OpenLayers.Request.POST({
-				url: CCH.CONFIG.contextPath + '/geoserver/wps',
-				data: doc,
-				success: function (response) {
-					var errorText = $(response.responseText).find('ows\\:ExceptionText');
-					if (errorText.length === 0) {
-						callbacks.success.each(function (cb) {
-							cb(response);
-						});
-					} else {
-						callbacks.error.each(function (cb) {
-							cb(errorText.text());
-						});
-					}
-				}
+			me.postWPS({
+				doc: doc,
+				callbacks: callbacks,
+				url: CCH.CONFIG.contextPath + '/geoserver/wps'
 			});
 		},
 		generateThumbnail: function (args) {
@@ -226,6 +253,34 @@ CCH.Util.OWS = function () {
 					} else {
 						callbacks.success.each(function (cb) {
 							cb(trimmedResponse);
+						});
+					}
+				}
+			});
+		},
+		postWPS: function (args) {
+			args = args || {};
+
+			var doc = args.doc,
+				url = args.url,
+				callbacks = args.callbacks || {
+					success: [],
+					error: []
+				};
+
+			OpenLayers.Request.POST({
+				url: url,
+				data: doc,
+				success: function (response) {
+					var trimmedResponse = response.responseText.trim();
+					if (trimmedResponse.indexOf('ExceptionText') !== -1) {
+						var errorText = $(trimmedResponse).find('ows\\:ExceptionText');
+						callbacks.error.each(function (cb) {
+							cb(errorText.text());
+						});
+					} else {
+						callbacks.success.each(function (cb) {
+							cb(response);
 						});
 					}
 				}

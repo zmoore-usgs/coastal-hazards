@@ -107,7 +107,7 @@ $(document).ready(function () {
 									],
 									error: [
 										function () {
-//                                            debugger;
+											// TODO- Not sure how to handle this error just yet
 										}
 									]
 								}
@@ -118,7 +118,7 @@ $(document).ready(function () {
 			],
 			error: [
 				function (err) {
-//                    debugger;
+					// TODO- Not sure how to handle this error just yet
 				}
 			]
 		}
