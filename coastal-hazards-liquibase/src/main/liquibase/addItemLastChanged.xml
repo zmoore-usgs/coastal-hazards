@@ -12,4 +12,25 @@
 			</column>
         </addColumn>
     </changeSet>
+    <changeSet author="jiwalker" id="session_last_update">
+        <addColumn tableName="session_table">
+            <column name="last_modified" type="DATETIME" defaultValueDate="now()">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jiwalker" id="thumbnail_last_update">
+        <addColumn tableName="thumbnail">
+            <column name="last_modified" type="DATETIME" defaultValueDate="now()">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jiwalker" id="domain_last_update">
+        <addColumn tableName="domains">
+            <column name="last_modified" type="DATETIME" defaultValueDate="now()">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
