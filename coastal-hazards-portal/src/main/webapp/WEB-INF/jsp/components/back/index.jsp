@@ -32,6 +32,7 @@
 	String version = props.getProperty("application.version");
 	String path = "../../../../";
 	String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
+	String ga = path + "WEB-INF/jsp/components/common/google-analytics.jsp";
 	String log4js = path + "js/log4javascript/log4javascript.jsp";
 	String overlay = path + "WEB-INF/jsp/components/common/application-overlay.jsp";
 	String vJquery = getProp("version.jquery");
@@ -125,22 +126,8 @@
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/back<%= development ? "" : "-min"%>.css" />
 		<link type="text/css" rel="stylesheet" media="screen" href="<%=baseUrl%>/css/back/legend<%= development ? "" : "-min"%>.css" />
 		<link type="text/css" rel="stylesheet" media="print" href="<%=baseUrl%>/css/back/print<%= development ? "" : "-min"%>.css" />
-		<script>
-			(function (i, s, o, g, r, a, m) {
-				i['GoogleAnalyticsObject'] = r;
-				i[r] = i[r] || function () {
-					(i[r].q = i[r].q || []).push(arguments)
-				}, i[r].l = 1 * new Date();
-				a = s.createElement(o),
-					m = s.getElementsByTagName(o)[0];
-				a.async = 1;
-				a.src = g;
-				m.parentNode.insertBefore(a, m)
-			})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-			ga('create', 'UA-46378632-1', 'usgs.gov');
-			ga('set', 'anonymizeIp', true);
-			ga('send', 'pageview');
+		<script type="text/javascript">
+			<jsp:include page="<%=ga%>" />
 		</script>
 	</head>
 	<body>

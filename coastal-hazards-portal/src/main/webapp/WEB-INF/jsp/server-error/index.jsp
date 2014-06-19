@@ -79,6 +79,7 @@
 
 				$('#error-title-error-description').html(description);
 			});
+			<jsp:include page="../components/common/google-analytics.jsp" />
 		</script>
 	</head>
 
@@ -103,5 +104,24 @@
 				</div>
 			</div>
 		</div>
+		<script type="text/javascript">
+			document.getElementById("error-button-email").onclick = function () {
+				ga('send', 'event', {
+					'eventCategory': 'click',
+					'eventAction': 'contactEmail',
+					'eventLabel': 'errorPageClick',
+					'eventValue': <%=request.getAttribute("javax.servlet.error.status_code")%>
+				});
+			};
+			document.getElementById("error-button-email").onclick = function () {
+				ga('send', 'event', {
+					'eventCategory': 'click',
+					'eventAction': 'goToPortal',
+					'eventLabel': 'errorPageClick',
+					'eventValue': <%=request.getAttribute("javax.servlet.error.status_code")%>
+				});
+			};
+			
+		</script>
 	</body>
 </html>
