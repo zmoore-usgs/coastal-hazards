@@ -1,6 +1,8 @@
 package gov.usgs.cida.coastalhazards.rest.ui;
 
+import com.sun.jersey.api.NotFoundException;
 import com.sun.jersey.api.view.Viewable;
+import gov.usgs.cida.coastalhazards.model.Item;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -19,8 +21,14 @@ public class ItemRouter {
     @Produces(MediaType.TEXT_HTML)
     @Path("{id}")
     public Response useInfoJsp(@PathParam("id") String id) {
+        Response response = null;
         Identifier identifier = new Identifier(id, Identifier.IdentifierType.ITEM);
-        return Response.ok(new Viewable("/index.jsp", identifier)).build();
+        if (null == id || id.equals(Item.UBER_ID)) {
+            throw new NotFoundException();
+        }
+        response = Response.ok(new Viewable("/index.jsp", identifier)).build();
+        
+        return response;
     }
     
     @GET
