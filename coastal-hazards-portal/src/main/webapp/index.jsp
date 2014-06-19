@@ -53,7 +53,6 @@
 
 	<script type="text/javascript" src="<%=baseUrl%>/webjars/jquery/<%=vJquery%>/jquery<%= development ? "" : ".min"%>.js"></script>
 	
-	<%-- Google Analytics for CCH --%>
 	<script  type="text/javascript">
 		<jsp:include page="/WEB-INF/jsp/components/common/google-analytics.jsp" />
 	</script>
