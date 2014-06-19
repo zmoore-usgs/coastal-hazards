@@ -70,6 +70,19 @@ html, body {
 	display : none !important;
 }
 
+/*
+	Chrome for Windows @ high resolution fix: 
+	https://code.google.com/p/chromium/issues/detail?id=325236
+	https://github.com/openlayers/openlayers/issues/1181
+	https://github.com/openlayers/openlayers/issues/1207#issuecomment-37561897
+	https://code.google.com/p/chromium/issues/detail?id=337493
+	https://code.google.com/p/gmaps-api-issues/issues/detail?id=6498
+*/
+.olTileImage {
+	-webkit-backface-visibility: visible !important;
+	-webkit-transform: none !important;
+}
+
 #map {
 	min-height : 150px;
 	height: 100%;
