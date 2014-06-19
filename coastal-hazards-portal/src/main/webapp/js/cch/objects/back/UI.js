@@ -153,6 +153,10 @@ CCH.Objects.Back.UI = function (args) {
 			}).init();
 		} else {
 			me.removeLegendContainer();
+			me.removeMapContainer();
+			$('#map-row').append($('#summary-and-publications-row'));
+			$('#map-and-legend-row').removeClass('col-md-6').addClass('col-md-12');
+			$('#summary-and-publications-row').removeClass('col-md-6').addClass('col-md-12');
 		}
 
 		var minificationCallback = function (data) {
@@ -200,7 +204,11 @@ CCH.Objects.Back.UI = function (args) {
 
 
 	me.removeLegendContainer = function () {
-		$('#info-legend').remove();
+		$('#info-legend-row').remove();
+	};
+	
+	me.removeMapContainer = function () {
+		$('#map').remove();
 	};
 
 	me.createModalServicesTab = function (args) {

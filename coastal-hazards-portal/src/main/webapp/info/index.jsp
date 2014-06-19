@@ -22,6 +22,7 @@
 	Map<String, String> attributeMap = (Map<String, String>) pageContext.findAttribute("it");
 	String path = "../";
 	String metaTags = path + "WEB-INF/jsp/components/common/meta-tags.jsp";
+	String ga = path +  "WEB-INF/jsp/components/common/google-analytics.jsp";
 %>
 <!DOCTYPE html>
 <html>
@@ -32,21 +33,8 @@
 		<link type="text/css" rel="stylesheet" href="<%=baseUrl%>/css/info/info.css" />
 		<title>Coastal Change Hazards Information</title>
 		<%-- Google Analytics for CCH --%>
-		<script>
-			(function (i, s, o, g, r, a, m) {
-				i['GoogleAnalyticsObject'] = r;
-				i[r] = i[r] || function () {
-					(i[r].q = i[r].q || []).push(arguments)
-				}, i[r].l = 1 * new Date();
-				a = s.createElement(o),
-					m = s.getElementsByTagName(o)[0];
-				a.async = 1;
-				a.src = g;
-				m.parentNode.insertBefore(a, m)
-			})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-			ga('create', 'UA-46378632-1', 'usgs.gov');
-			ga('set', 'anonymizeIp', true);
-			ga('send', 'pageview');
+		<script type="text/javascript">
+		<jsp:include page="<%=ga%>" />
 		</script>
 	</head>
 	<body>
@@ -54,7 +42,7 @@
 		<div id=“wrapper”>
 			<%-- Title Bar --%>
 			<header>
-				<a id="cch-back-to-portal-link" href="#"><img src="../images/info/collaborative_logo.png" alt="collaborative logo" /></a>
+				<a id="cch-back-to-portal-link" href="../"><img src="../images/info/collaborative_logo.png" alt="collaborative logo" /></a>
 				<h1>USGS Coastal Change Hazards Portal</h1>
 				<h1 class="mobile">USGS CCH</h1>
 				<h1 class="mobile_portrait">CCH</h1>

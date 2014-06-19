@@ -102,11 +102,8 @@ CCH.Util.Search = function (args) {
 			if (sortBy) {
 				data.sortBy = sortBy;
 			}
-			if (criteria || criteria.length > 0) {
-				data.criteria = criteria;
-			}
 			if (types || types.length > 0) {
-				data.types = types;
+				data.type = types;
 			}
 		}
 

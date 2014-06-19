@@ -262,6 +262,8 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 					$resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
 					$slideContainer = $contentContainer.find('> div:nth-child(2)');
 					$pagingContainer = $contentContainer.find('> div:nth-child(3)');
+					$productContentContainer.find('#splash-spinner').addClass('hidden');
+					
 					// I want to show locations if we have locations to show
 					if (locationSize > 0) {
 						$showAllButton = $('<div />').

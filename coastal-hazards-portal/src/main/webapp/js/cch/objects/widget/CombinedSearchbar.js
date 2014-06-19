@@ -293,7 +293,7 @@ CCH.Objects.Widget.CombinedSearch = function (args) {
 									'exFatal': false
 								});
 							}
-							
+
 						]
 					}
 				});
