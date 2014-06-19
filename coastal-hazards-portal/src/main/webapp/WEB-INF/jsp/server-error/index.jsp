@@ -60,7 +60,7 @@
 						}
 					case 405 :
 						{
-							description = 'The resource you\'re attempting to access cannot be accessed using ' + method;
+							description = 'The resource you\'re attempting to access cannot be accessed using the ' + method + ' method';
 							contact.content = 'Method not allowed at ' + errorPath;
 							break;
 						}

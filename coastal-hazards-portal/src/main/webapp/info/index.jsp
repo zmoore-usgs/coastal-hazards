@@ -54,7 +54,7 @@
 		<div id=“wrapper”>
 			<%-- Title Bar --%>
 			<header>
-				<a id="cch-back-to-portal-link" href="#"><img src="../images/info/collaborative_logo.png" alt="collaborative logo" /></a>
+				<a id="cch-back-to-portal-link" href="../"><img src="../images/info/collaborative_logo.png" alt="collaborative logo" /></a>
 				<h1>USGS Coastal Change Hazards Portal</h1>
 				<h1 class="mobile">USGS CCH</h1>
 				<h1 class="mobile_portrait">CCH</h1>
