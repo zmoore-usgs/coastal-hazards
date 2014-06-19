@@ -134,11 +134,16 @@ public class ItemManager implements AutoCloseable {
         StringBuilder builder = new StringBuilder();
         List<String> queryParams = new LinkedList<>();
         int paramIndex = 1;
-        builder.append("select i from Item i where i.enabled = true");
+        builder.append("select i from Item i where (i.enabled = true");
+        
         // show disabled means return enable == true and false, so 1=1, narrow it down if !showDisabled
         if (showDisabled) {
-            builder.append(" or i.enabled = false");
+            builder.append(" or i.enabled = false)");
+        } else {
+            // exclude uber
+            builder.append(") and i.id != '").append(Item.UBER_ID).append("'");
         }
+
         boolean hasQueryText = isEmpty(queryText);
         boolean hasType = isEmpty(types);
         List<Item.Type> typesList = new LinkedList<>();
