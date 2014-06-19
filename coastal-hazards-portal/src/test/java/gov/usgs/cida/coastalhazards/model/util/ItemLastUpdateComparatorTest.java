@@ -26,12 +26,12 @@ public class ItemLastUpdateComparatorTest {
         // Before the other
         o1 = new Item();
         o1.setId("Object1");
-        o1.setLastUpdate(new Date(12345678));
+        o1.setLastModified(new Date(12345678));
         
         // After the other
         o2 = new Item();
         o2.setId("Object2");
-        o2.setLastUpdate(new Date(45678901));
+        o2.setLastModified(new Date(45678901));
     }
 
     /**

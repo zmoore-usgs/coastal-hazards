@@ -5,6 +5,7 @@ import gov.usgs.cida.coastalhazards.exception.UnauthorizedException;
 import gov.usgs.cida.coastalhazards.jpa.ThumbnailManager;
 import gov.usgs.cida.coastalhazards.model.Thumbnail;
 import gov.usgs.cida.coastalhazards.oid.session.SessionResource;
+import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -15,6 +16,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
 /**
@@ -23,19 +25,29 @@ import javax.ws.rs.core.Response;
  */
 @Path("thumbnail/item")
 public class ThumbnailResource {
-    
-    private static final ThumbnailManager thumbnailManager = new ThumbnailManager();
 
     @GET
     @Path("{id}")
-    @Produces("image/png")
-    public Response getImage(@PathParam("id") String id) {
+    @Produces(Thumbnail.MIME_TYPE)
+    public Response getImage(@PathParam("id") String id, @Context Request request) {
         Response response = null;
-        InputStream image = thumbnailManager.load(id);
-        if (image != null) {
-            response = Response.ok(image, "image/png").build();
-        } else {
-            throw new NotFoundException();
+        try (ThumbnailManager manager = new ThumbnailManager()) {
+            Thumbnail thumb = manager.load(id);
+            if (thumb != null) {
+                Response modified = HTTPCachingUtil.checkModified(request, thumb);
+                if (modified != null) {
+                    response = modified;
+                } else {
+                    InputStream image = manager.loadStream(thumb);
+                    if (image != null) {
+                        response = Response.ok(image, Thumbnail.MIME_TYPE).lastModified(thumb.getLastModified()).build();
+                    } else {
+                        throw new NotFoundException();
+                    }
+                }
+            } else {
+                throw new NotFoundException();
+            }
         }
         return response;
     }
@@ -50,7 +62,9 @@ public class ThumbnailResource {
             Thumbnail thumb = new Thumbnail();
             thumb.setItemId(id);
             thumb.setImage(content);
-            response = Response.ok(thumbnailManager.save(thumb), MediaType.APPLICATION_JSON_TYPE).build();
+            try (ThumbnailManager manager = new ThumbnailManager()) {
+                response = Response.ok(manager.save(thumb), MediaType.APPLICATION_JSON_TYPE).build();
+            }
         } else {
             throw new UnauthorizedException();
         }

@@ -1,13 +1,11 @@
 package gov.usgs.cida.coastalhazards.rest.data;
 
-import com.google.gson.Gson;
 import gov.usgs.cida.coastalhazards.gson.GsonUtil;
 import gov.usgs.cida.coastalhazards.session.io.SessionIO;
 import gov.usgs.cida.coastalhazards.session.io.SessionIOException;
 import gov.usgs.cida.coastalhazards.jpa.SessionManager;
 import gov.usgs.cida.coastalhazards.model.Session;
-import gov.usgs.cida.config.DynamicReadOnlyProperties;
-import gov.usgs.cida.utilities.properties.JNDISingleton;
+import gov.usgs.cida.utilities.HTTPCachingUtil;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +15,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
 /**
@@ -27,19 +27,24 @@ import javax.ws.rs.core.Response;
 @Path("view")
 public class SessionResource {
 
-	private static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
 	private static SessionIO sessionIo = new SessionManager();
 
 	@GET
 	@Path("{sid}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getSession(@PathParam("sid") String sid) throws SessionIOException {
+	public Response getSession(@PathParam("sid") String sid, @Context Request request) throws SessionIOException {
 		String jsonSession = sessionIo.load(sid);
 		Response response;
 		if (null == jsonSession) {
 			response = Response.status(Response.Status.NOT_FOUND).build();
 		} else {
-			response = Response.ok(jsonSession, MediaType.APPLICATION_JSON_TYPE).build();
+            Session session = GsonUtil.getDefault().fromJson(jsonSession, Session.class);
+            Response checkModified = HTTPCachingUtil.checkModified(request, session);
+            if (checkModified != null) {
+                response = checkModified;
+            } else {
+                response = Response.ok(jsonSession, MediaType.APPLICATION_JSON_TYPE).lastModified(session.getLastModified()).build();
+            }
 		}
 		return response;
 	}
@@ -62,7 +67,7 @@ public class SessionResource {
 		if (null == sid) {
 			response = Response.status(Response.Status.BAD_REQUEST).build();
 		} else {
-			Map<String, Object> ok = new HashMap<String, Object>();
+			Map<String, Object> ok = new HashMap<>();
 			ok.put("sid", sid);
 			response = Response.ok(GsonUtil.getDefault().toJson(ok, HashMap.class), MediaType.APPLICATION_JSON_TYPE).build();
 		}
