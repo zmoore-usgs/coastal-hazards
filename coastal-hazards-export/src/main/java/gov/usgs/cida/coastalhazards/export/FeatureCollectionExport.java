@@ -43,6 +43,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class FeatureCollectionExport {
     
     public static final CoordinateReferenceSystem DEFAULT_CRS = DefaultGeographicCRS.WGS84;
+    public static final int NULL_PLACEHOLDER = -999;
+    
+    // TODO make this into an array of ignores or something
+    private static final String IGNORE_LENGTH = "SHAPE.LEN";
 
     private SimpleFeatureCollection simpleFeatureCollection;
     private final File outputDirectory;
@@ -50,7 +54,7 @@ public class FeatureCollectionExport {
     private List<String> attributes;
     private CoordinateReferenceSystem crs;
     private boolean downloadAll;
-    public static final int NULL_PLACEHOLDER = -999;
+
     /**
      * Default constructor assumes all attributes from source should be downloaded
      * 
@@ -159,7 +163,7 @@ public class FeatureCollectionExport {
         } else {
             for (String name : attributes) {
                 AttributeDescriptor descriptor = getDescriptorFromPrototype(name);
-                if (descriptor != null) {
+                if (descriptor != null && !IGNORE_LENGTH.equalsIgnoreCase(descriptor.getLocalName())) {
                     builder.add(descriptor);
                 }
             }
