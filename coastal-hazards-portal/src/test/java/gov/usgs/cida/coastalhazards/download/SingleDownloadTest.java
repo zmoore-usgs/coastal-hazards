@@ -30,6 +30,19 @@ public class SingleDownloadTest {
         singleDownload.addAttr("PCOL");
         singleDownload.addAttr("POVW");
         singleDownload.stage(DownloadUtility.createDownloadStagingArea(), missing);
-    } 
+    }
+    
+    @Test
+    @Ignore
+    public void testRemoveSHAPELEN() throws IOException {
+        List<String> missing = new LinkedList<>();
+        SingleDownload singleDownload = new SingleDownload();
+        singleDownload.setName("test");
+        WFSService wfs = new WFSService();
+        wfs.setEndpoint("http://olga.er.usgs.gov/stpgis/services/Vulnerability/GOM_erosion_hazards/MapServer/WFSServer");
+        wfs.setTypeName("Vulnerability_GOM_erosion_hazards:Gulf_of_Mexico_Erosion_Hazards");
+        singleDownload.setWfs(wfs);
+        singleDownload.stage(DownloadUtility.createDownloadStagingArea(), missing);
+    }
     
 }
