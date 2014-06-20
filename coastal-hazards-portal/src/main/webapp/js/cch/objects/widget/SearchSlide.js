@@ -69,6 +69,7 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 				append($('<img />').
 					addClass('img-responsive').
 					attr({
+						'id': 'splash-spinner',
 						'src': 'images/spinner/spinner3.gif',
 						'alt': "Spinner Image"
 					}));
