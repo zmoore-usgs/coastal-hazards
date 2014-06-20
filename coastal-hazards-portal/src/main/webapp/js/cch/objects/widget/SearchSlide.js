@@ -69,7 +69,6 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 				append($('<img />').
 					addClass('img-responsive').
 					attr({
-						'id': 'splash-spinner',
 						'src': 'images/spinner/spinner3.gif',
 						'alt': "Spinner Image"
 					}));
@@ -263,7 +262,9 @@ CCH.Objects.Widget.SearchSlide = function (args) {
 					$resultsFoundsContainer = $contentContainer.find('> div:nth-child(1)');
 					$slideContainer = $contentContainer.find('> div:nth-child(2)');
 					$pagingContainer = $contentContainer.find('> div:nth-child(3)');
-					$productContentContainer.find('#splash-spinner').addClass('hidden');
+					
+					// Hide the spinner in the product card container since we're only doing a location search
+					$productContentContainer.find('#application-slide-search-product-results-card-container img').addClass('hidden');
 					
 					// I want to show locations if we have locations to show
 					if (locationSize > 0) {
