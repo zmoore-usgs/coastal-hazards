@@ -158,12 +158,14 @@ public class FeatureCollectionExport {
             SimpleFeatureType unwrapped = GMLStreamingFeatureCollection.unwrapSchema(simpleFeatureCollection.getSchema());
             List<AttributeDescriptor> attributeDescriptors = unwrapped.getAttributeDescriptors();
             for (AttributeDescriptor attrDesc : attributeDescriptors) {
-                builder.add(attrDesc);
+                if (attrDesc!= null && !IGNORE_LENGTH.equalsIgnoreCase(attrDesc.getLocalName())) {
+                    builder.add(attrDesc);
+                }
             }
         } else {
             for (String name : attributes) {
                 AttributeDescriptor descriptor = getDescriptorFromPrototype(name);
-                if (descriptor != null && !IGNORE_LENGTH.equalsIgnoreCase(descriptor.getLocalName())) {
+                if (descriptor != null) {
                     builder.add(descriptor);
                 }
             }
