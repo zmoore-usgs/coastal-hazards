@@ -11,7 +11,9 @@ import java.util.Map;
  */
 public final class BayesianTidalRangeCVI {
 
-    protected static final String[] attrs = {"TR"};
+    // TR is deprecated by TIDES (Tides un-uppercased), and may be removed
+    // when verified it is not being used.
+    protected static final String[] attrs = {"TR", "TIDES"};
     protected static final float[] thresholds = {0.0f, 0.5f, 1.0f, 1.25f, 1.5f, 1.75f, 2.0f};
     protected static final String[] colors = {"", "#005CE6", "#00A884", "#55FF00", "#FFFF00", "#FFAA00", "#FF0000", "#734C00"};
 	
@@ -19,9 +21,9 @@ public final class BayesianTidalRangeCVI {
 	protected static final String units = "m";
 	protected static final List<Map<String,Object>> bins;
 	static {
-		List<Map<String,Object>> binsResult = new ArrayList<Map<String,Object>>();
+		List<Map<String,Object>> binsResult = new ArrayList<>();
         for (int i=0; i<colors.length; i++) {
-			Map<String, Object> binMap = new LinkedHashMap<String,Object>();
+			Map<String, Object> binMap = new LinkedHashMap<>();
             if (i > 0) {
                 binMap.put("lowerBound", thresholds[i-1]);
             }
