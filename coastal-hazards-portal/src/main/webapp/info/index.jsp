@@ -178,6 +178,21 @@
 								</td>
 								<td>Change item visibility, download data, learn more or share an item.</td>
 							</tr>
+                            
+                            <tr>
+								<td>
+									<img src="../images/info/base_layer.png" alt="Base Layer"/>
+								</td>
+								<td>Change maps base layer: World Imagery, Street, Topo, and Ocean</td>
+							</tr>
+                            
+                            <tr>
+								<td>
+									<img src="../images/info/legend.png" alt="Base Layer"/>
+								</td>
+								<td>Click to view the maps legend</td>
+							</tr>
+                            
 						</tbody>
 					</table>
 				</div>
