@@ -32,7 +32,7 @@ public final class OldSchoolComponentCVI {
 	}
 	
 	public static final SLDConfig componentOldSchool = new SLDConfig(
-			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH, attrs, thresholds, colors, bins
+			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, attrs, thresholds, colors, bins
 	);
 
 }

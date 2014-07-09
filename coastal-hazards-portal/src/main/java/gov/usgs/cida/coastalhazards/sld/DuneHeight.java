@@ -54,10 +54,10 @@ public final class DuneHeight {
 	}
 	
 	public static final SLDConfig duneCrest = new SLDConfig(
-			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH, attrsCrest, thresholdsCrest, colorsCrest, binsCrest
+			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, attrsCrest, thresholdsCrest, colorsCrest, binsCrest
 	);
 	public static final SLDConfig duneToe = new SLDConfig(
-			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH, attrsToe, thresholdsToe, colorsToe, binsToe
+			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, attrsToe, thresholdsToe, colorsToe, binsToe
 	);
 	
 }
