@@ -36,7 +36,7 @@ public final class MeanWaterLevel {
 	}
 	
 	public static final SLDConfig mean = new SLDConfig(
-			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH, attrs, thresholds, colors, bins
+			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, attrs, thresholds, colors, bins
 	);
 	
 }

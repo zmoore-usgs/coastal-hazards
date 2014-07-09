@@ -10,12 +10,14 @@ import org.slf4j.LoggerFactory;
  * @author dmsibley
  */
 public class SLDConfig {
+    
 	private static final Logger log = LoggerFactory.getLogger(SLDConfig.class);
 	
 	protected final String jspPath;
 	protected final String units;
 	protected final String style;
 	protected final int strokeWidth;
+    protected final float strokeOpacity;
 	protected final String[] attrs;
 	protected final float[] thresholds;
 	protected final String[] colors;
@@ -42,8 +44,23 @@ public class SLDConfig {
 		1
 	};
 
+    /**
+     * Legacy constructor without opacity option
+     * @param jspPath
+     * @param units
+     * @param style
+     * @param strokeWidth
+     * @param attrs
+     * @param thresholds
+     * @param colors
+     * @param bins 
+     */
 	public SLDConfig(String jspPath, String units, String style, int strokeWidth, String[] attrs, float[] thresholds, String[] colors, List<Map<String,Object>> bins) {
-		this.jspPath = jspPath;
+        this(jspPath, units, style, strokeWidth, SLDGenerator.STROKE_OPACITY_DEFAULT, attrs, thresholds, colors, bins);
+	}
+    
+    public SLDConfig(String jspPath, String units, String style, int strokeWidth, float strokeOpacity, String[] attrs, float[] thresholds, String[] colors, List<Map<String,Object>> bins) {
+        this.jspPath = jspPath;
 		this.units = units;
 		this.style = style;
 		this.strokeWidth = strokeWidth;
@@ -51,7 +68,8 @@ public class SLDConfig {
 		this.thresholds = thresholds;
 		this.colors = colors;
 		this.bins = bins;
-	}
+        this.strokeOpacity = strokeOpacity;
+    }
 	
 	public String getJspPath() {
 		return this.jspPath;
@@ -67,6 +85,10 @@ public class SLDConfig {
 	
 	public int getStrokeWidth() {
 		return this.strokeWidth;
+	}
+    
+    public float getStrokeOpacity() {
+		return this.strokeOpacity;
 	}
 	
 	public String[] getAttrs() {

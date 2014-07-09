@@ -38,7 +38,7 @@ public final class BayesianSLRCVI {
 	}
 	
 	public static final SLDConfig rslr = new SLDConfig(
-			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH, attrs, thresholds, colors, bins
+			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, attrs, thresholds, colors, bins
 	);
 
 }

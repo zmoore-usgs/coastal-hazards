@@ -21,8 +21,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class SLDGenerator {
 	protected static final String style = "cch";
-	protected static final int STROKE_WIDTH = 3;
-	protected static final int STROKE_OPACITY = 1;
+	protected static final int STROKE_WIDTH_DEFAULT = 3;
+	protected static final float STROKE_OPACITY_DEFAULT = 1;
 
 	protected final Item item;
 	protected final Integer ribbon;
@@ -153,11 +153,11 @@ public class SLDGenerator {
 	}
 
 	public int getStrokeWidth() {
-		return STROKE_WIDTH;
+		return this.config.getStrokeWidth();
 	}
 
-	public int getStrokeOpacity() {
-		return STROKE_OPACITY;
+	public float getStrokeOpacity() {
+		return this.config.getStrokeOpacity();
 	}
 
     /**

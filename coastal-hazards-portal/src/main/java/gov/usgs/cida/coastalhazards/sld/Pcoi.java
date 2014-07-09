@@ -53,6 +53,6 @@ public final class Pcoi {
 	
 	
 	public static final SLDConfig pcoi = new SLDConfig(
-			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH, attrs, thresholds, colors, bins
+			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, attrs, thresholds, colors, bins
 	);
 }

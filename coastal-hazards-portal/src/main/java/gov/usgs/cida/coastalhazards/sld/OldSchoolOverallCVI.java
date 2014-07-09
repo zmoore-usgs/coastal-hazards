@@ -32,7 +32,7 @@ public final class OldSchoolOverallCVI {
 	}
 	
 	public static final SLDConfig overallOldSchool = new SLDConfig(
-			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH, attrs, thresholds, colors, bins
+			jspPath, units, SLDGenerator.style, SLDGenerator.STROKE_WIDTH_DEFAULT, attrs, thresholds, colors, bins
 	);
 
 }
