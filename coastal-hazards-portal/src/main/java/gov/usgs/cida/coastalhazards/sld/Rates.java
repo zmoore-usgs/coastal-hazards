@@ -14,7 +14,7 @@ public final class Rates {
     protected static final String[] attrs = {"LRR", "WLR", "SCE", "NSM", "EPR"};
     protected static final float[] thresholds = {-2.0f, -1.0f, 1.0f, 2.0f};
     protected static final String[] colors = {"#ED2024", "#FCBF10", "#F6EB13", "#00B04F", "#29ADE3"};
-    protected static final float strokeOpacity = 0.65f;
+    protected static final float strokeOpacity = 0.5f;
 	
 	protected static final String jspPath = "/SLD/bins_line.jsp";
 	protected static final String units = "m/yr";
