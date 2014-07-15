@@ -4,6 +4,26 @@
 	padding:0;
 }
 
+.tubewrapper {
+    float: none;
+    clear: both;
+    width: 100%;
+    position: relative;
+    padding-bottom: 56.25%;
+    padding-top: 25px;
+    padding-left: 0px;
+    padding-right: 0px;
+    height: 0;
+}
+.tubewrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
 html, body{
 	background:#fff;
 	height:100%;
@@ -255,7 +275,6 @@ h1.mobile{
 		margin: 0;
 	}
 }
-
 @media (min-width:392px) and (max-width:767px){
 	/*############header#################*/
 
@@ -513,8 +532,6 @@ h1.mobile{
 		padding-left:10px;
 		padding-top:11px;
 	}
-
-
 
 
 
