@@ -73,48 +73,7 @@
 						or have ideas for improving the access and use of this USGS data and information, 
 						please email <a href="mailto:cch_help@usgs.gov">cch_help@usgs.gov.</a>
 					</p>
-					<span class="header">
-						Background
-					</span>
-					<p class="descriptive-text">
-						Our Nation’s coastlines are constantly changing landscapes that pose unique 
-						management challenges. Robust scientific findings help identify areas that are most 
-						vulnerable to diverse coastal change hazards including beach and dune erosion, 
-						long-term shoreline change, and sea-level rise. The data, models, and tools available 
-						through the CCH portal can be used by federal and state agencies, non-governmental 
-						organizations, municipal entities, and private citizens. Here are some examples:
-					</p>
-					<ul>
-						<li>
-							Coastal hazards information is used by planners and emergency managers 
-							as they work to protect resources, reduce risk, and prevent economic losses. 
-							Storm, shoreline change, and sea-level rise vulnerability assessments can 
-							improve understanding of the diversity and nature of specific coastal hazards. 
-							Our updated assessments describe how vulnerability has changed over time 
-							and inform plans for the future. This information can be viewed, downloaded, 
-							and shared. Web data services provided through the CCH portal allow USGS 
-							data to be incorporated into custom applications by other agencies, organizations, 
-							and private industry.
-						</li>
-						<li>
-							Coastal residents can visualize hazards in their area, download or print 
-							information, and share information with others through social media.
-						</li>
-						<li>
-							Emergency first-responders can access the most current, near-real-time 
-							updates of storm impact probabilities (collision, overwash, inundation), so 
-							they have current information in order to direct appropriate staging of 
-							response personnel and equipment.
-						</li>
-					</ul>
-					<p class="descriptive-text">
-						The products provided through the CCH portal fulfill critical immediate and ongoing 
-						needs for scientifically credible and actionable information to increase resilience to 
-						storms and climate change. This information can support land use planning, 
-						infrastructure, ecosystem and cultural resource management decisions, as well as 
-						storm response and recovery. The explicit goal of the project is to enable users to 
-						apply and integrate the data and tools to address their specific needs.
-					</p>
+					
 					<span class="header">
 						Portal Functionality
 					</span>
@@ -123,14 +82,22 @@
 						items within three specific coastal hazard themes: 1) severe storms, 2) shoreline 
 						change, and 3) sea-level rise. Each data item represents an individual research 
 						product. Items with a common topic area are grouped into aggregations within a 
-						theme, to show the breadth of that topic and make it easy to explore related i
-						nformation. Items and aggregations can be added to a bucket that saves this 
-						information for download or sharing
+						theme, to show the breadth of that topic and make it easy to explore related 
+                                                information. Items and aggregations can be added to a bucket that saves this 
+						information for download or sharing. See video below to view a short tutorial on
+                                                how to find and share data.
 					</p>
-
+                                        <div class="tubewrapper">
+                                        <iframe src="https://www.youtube-nocookie.com/embed/ZvlITDs9PII?rel=0" 
+                                                frameborder="0" title="YouTube video: Coastal Change Hazards Rodanthe Tutorial" name="YouTube video frame" allowfullscreen>
+                                        [Link to video can be found at <a href="https://www.youtube-nocookie.com/embed/ZvlITDs9PII">https://www.youtube-nocookie.com/embed/ZvlITDs9PII</a>]</iframe>
+                                        </div>
 					<%-- Icon Description Table --%>
 					<table id="application-icon-table">
 						<thead>
+                                                <p>
+                                                    
+                                                </p>
 							<tr>
 								<th>Icon</th>
 								<th>Description</th>
@@ -195,6 +162,48 @@
                             
 						</tbody>
 					</table>
+                                        <span class="header">
+						Background
+					</span>
+					<p class="descriptive-text">
+						Our Nation’s coastlines are constantly changing landscapes that pose unique 
+						management challenges. Robust scientific findings help identify areas that are most 
+						vulnerable to diverse coastal change hazards including beach and dune erosion, 
+						long-term shoreline change, and sea-level rise. The data, models, and tools available 
+						through the CCH portal can be used by federal and state agencies, non-governmental 
+						organizations, municipal entities, and private citizens. Here are some examples:
+					</p>
+					<ul>
+						<li>
+							Coastal hazards information is used by planners and emergency managers 
+							as they work to protect resources, reduce risk, and prevent economic losses. 
+							Storm, shoreline change, and sea-level rise vulnerability assessments can 
+							improve understanding of the diversity and nature of specific coastal hazards. 
+							Our updated assessments describe how vulnerability has changed over time 
+							and inform plans for the future. This information can be viewed, downloaded, 
+							and shared. Web data services provided through the CCH portal allow USGS 
+							data to be incorporated into custom applications by other agencies, organizations, 
+							and private industry.
+						</li>
+						<li>
+							Coastal residents can visualize hazards in their area, download or print 
+							information, and share information with others through social media.
+						</li>
+						<li>
+							Emergency first-responders can access the most current, near-real-time 
+							updates of storm impact probabilities (collision, overwash, inundation), so 
+							they have current information in order to direct appropriate staging of 
+							response personnel and equipment.
+						</li>
+					</ul>
+					<p class="descriptive-text">
+						The products provided through the CCH portal fulfill critical immediate and ongoing 
+						needs for scientifically credible and actionable information to increase resilience to 
+						storms and climate change. This information can support land use planning, 
+						infrastructure, ecosystem and cultural resource management decisions, as well as 
+						storm response and recovery. The explicit goal of the project is to enable users to 
+						apply and integrate the data and tools to address their specific needs.
+					</p>
 				</div>
 
 				<%-- Directed Portal Links --%>
