@@ -87,9 +87,11 @@
 						information for download or sharing. See video below to view a short tutorial on
                                                 how to find and share data.
 					</p>
-                                        <iframe width="500" height="310" align="center" src="https://www.youtube-nocookie.com/embed/ZvlITDs9PII?rel=0" 
+                                        <div class="tubewrapper">
+                                        <iframe src="https://www.youtube-nocookie.com/embed/ZvlITDs9PII?rel=0" 
                                                 frameborder="0" title="YouTube video: Coastal Change Hazards Rodanthe Tutorial" name="YouTube video frame" allowfullscreen>
                                         [Link to video can be found at <a href="https://www.youtube-nocookie.com/embed/ZvlITDs9PII">https://www.youtube-nocookie.com/embed/ZvlITDs9PII</a>]</iframe>
+                                        </div>
 					<%-- Icon Description Table --%>
 					<table id="application-icon-table">
 						<thead>
