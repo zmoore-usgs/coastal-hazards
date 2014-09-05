@@ -752,7 +752,7 @@ var UI = function() {
                             var mapping = $('#' + layerName + '-drag-drop-row').data('mapping');
                                             
                             // Figure out if we are in a drag or drop well
-                            if ($(this).closest('.well').attr('id').contains('drop-container')) {
+                            if ($(this).closest('.well').attr('id').indexOf('drop-container')) {
                                 mapping[layerAttribute] = layerMappingAttribute;
                             } else { // left column, remove from map
                                 mapping[layerAttribute] = '';
