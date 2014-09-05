@@ -372,7 +372,7 @@ var UI = function() {
                     // if it's from the input namespace and in the current session
                     if (layerNS === CONFIG.name.published || layerNS === currentSessionKey) {
                         var type = title.substr(title.lastIndexOf('_'));
-                        if (suffixes.length === 0 || suffixes.indexOf(type.toLowerCase())) {
+                        if (suffixes.length === 0 || suffixes.indexOf(type.toLowerCase()) !== -1) {
                             LOG.debug('UI.js::populateFeaturesList: Found a layer to add to the '+stage+' listbox: ' + title);
                             var layerFullName = layer.prefix + ':' + layer.name;
                             var sessionStage = CONFIG.tempSession.getStage(stage);
