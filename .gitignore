@@ -29,3 +29,6 @@ target/
 
 /coastal-hazards-portal/catalina.base_IS_UNDEFINED/
 /coastal-hazards-ui/catalina.base_IS_UNDEFINED/
+**/.project
+**/.settings
+**/.classpath
