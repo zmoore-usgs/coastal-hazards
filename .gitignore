@@ -11,6 +11,10 @@ nb-configuration.xml
 build.xml
 build.properties
 
+### Eclipse ###
+.settings/
+.project
+.classpath
 
 ### Java ###
 *.class

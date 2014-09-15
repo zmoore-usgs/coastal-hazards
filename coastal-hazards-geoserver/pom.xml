@@ -17,18 +17,6 @@
 		<gt.version>10.1</gt.version>
 	</properties>
 
-    <repositories>
-        <repository>
-			<id>cida-public</id>
-			<name>CIDA Public Nexus</name>
-			<url>http://cida.usgs.gov/maven/cida-public/</url>
-		</repository>
-        <repository>
-            <id>opengeo</id>
-            <url>http://repo.opengeo.org/</url>
-        </repository>
-	</repositories>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
