@@ -288,7 +288,7 @@
 			<dependency>
 				<groupId>gov.usgs.cida.owsutils</groupId>
 				<artifactId>cida-owsutils-geoserver</artifactId>
-				<version>1.0.4-SNAPSHOT</version>
+				<version>1.0.4</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>commons-lang</artifactId>
