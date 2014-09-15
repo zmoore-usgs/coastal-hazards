@@ -141,10 +141,10 @@
 			<url>http://repo.boundlessgeo.com/</url>
 		</repository>
 		<repository>
-            <id>osgeo</id>
-            <name>Open Source Geospatial Foundation Repository</name>
-            <url>http://download.osgeo.org/webdav/geotools/</url>
-        </repository>
+			<id>osgeo</id>
+			<name>Open Source Geospatial Foundation Repository</name>
+			<url>http://download.osgeo.org/webdav/geotools/</url>
+		</repository>
 		<repository>
 			<id>geosolutions</id>
 			<name>GeoSolutions</name>
