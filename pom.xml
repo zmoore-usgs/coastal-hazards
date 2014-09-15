@@ -129,17 +129,17 @@
 			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-public-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
-	
+
 	<repositories>
 		<repository>
 			<id>cida-public</id>
 			<name>CIDA Public Nexus</name>
 			<url>http://cida.usgs.gov/maven/cida-public/</url>
 		</repository>
-        <repository>
-            <id>opengeo</id>
-            <url>http://repo.boundlessgeo.com/</url>
-        </repository>
+		<repository>
+			<id>opengeo</id>
+			<url>http://repo.boundlessgeo.com/</url>
+		</repository>
 		<repository>
 			<id>geosolutions</id>
 			<name>GeoSolutions</name>
