@@ -1,3 +1,5 @@
+/* global LOG */ 
+/* global CONFIG */ 
 // TODO - Onclick table rows to zoom to shoreline set
 var Shorelines = {
     stage : 'shorelines',
@@ -370,40 +372,41 @@ var Shorelines = {
         sldBody = sldBody.replace('#[layer]', layerName);  
         return sldBody;
     },
-    zoomToLayer : function() {
-        LOG.info('loadend event triggered on layer');
-        var bounds = new OpenLayers.Bounds();
-        var layers = CONFIG.map.getMap().getLayersBy('zoomToWhenAdded', true);
-        
-        $(layers).each(function(i, layer) {
-            if (layer.zoomToWhenAdded) {
-                var layerNS = layer.prefix;
-                var layerName = layer.name;
-                var mapLayer = CONFIG.ows.getLayerByName({
-                    layerNS : layerNS,
-                    layerName : layerName
-                    });
-                if (mapLayer) {
-					var lbbox = mapLayer.bbox['EPSG:3857'] ? mapLayer.bbox['EPSG:3857'] : mapLayer.bbox['EPSG:900913']; 
-					
-					if(lbbox) {
-	                    bounds.extend(new OpenLayers.Bounds(lbbox.bbox));
-	
-	                    if (layer.events.listeners.loadend.length) {
-	                        layer.events.unregister('added', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);
-	                    }
+    zoomToLayer: function () {
+		LOG.info('loadend event triggered on layer');
+		var bounds = new OpenLayers.Bounds();
+		var layers = CONFIG.map.getMap().getLayersBy('zoomToWhenAdded', true);
+
+		$(layers).each(function (i, layer) {
+			if (layer.zoomToWhenAdded) {
+				var layerNS = layer.prefix,
+					layerName = layer.name,
+					mapLayer = CONFIG.ows.getLayerByName({
+						layerNS: layerNS,
+						layerName: layerName
+					}),
+					mlBbox,
+					lbbox;
+				if (mapLayer) {
+					mlBbox = mapLayer.bbox['EPSG:3857'] ? mapLayer.bbox['EPSG:3857'] : mapLayer.bbox['EPSG:900913'];
+					if (mlBbox) {
+						lbbox = mlBbox.bbox;
+						bounds.extend(new OpenLayers.Bounds(lbbox));
+
+						if (layer.events.listeners.loadend.length) {
+							layer.events.unregister('added', layer, Shorelines.zoomToLayer);
+						}
 					} else {
-						LOG.info('Bounding box not found, could not zoom');
+						LOG.warn('Map layer does not have EPSG:3857 or EPSG:900913 bounding box designation. Could not zoom to layer.');
 					}
-                }
-            }
-        });
-                    
-        if (bounds.left && bounds.right && bounds.top && bounds.bottom) {
-            CONFIG.map.getMap().zoomToExtent(bounds, true);
-        }
-        
-    },
+				}
+			}
+		});
+
+		if (bounds.left && bounds.right && bounds.top && bounds.bottom) {
+			CONFIG.map.getMap().zoomToExtent(bounds, true);
+		}
+	},
     createFeatureTable : function(event) {
         LOG.info('Shorelines.js::createFeatureTable:: Creating color feature table');
         var navTabs = 	$('#shoreline-table-navtabs');
