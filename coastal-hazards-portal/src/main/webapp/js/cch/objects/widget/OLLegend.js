@@ -89,7 +89,7 @@ CCH.Objects.Widget.OLLegend = OpenLayers.Class(OpenLayers.Control, {
 
 		// Cancel or catch events 
 		OpenLayers.Event.observe(this.div, 'click', OpenLayers.Function.bind(function (ctrl, evt) {
-			OpenLayers.Event.stop(evt ? evt : window.event);
+			OpenLayers.Event.stop(evt ? evt : window.event, true);
 		}, this, this.div));
 		OpenLayers.Event.observe(this.div, 'dblclick', OpenLayers.Function.bind(function (ctrl, evt) {
 			OpenLayers.Event.stop(evt ? evt : window.event);
