@@ -1,3 +1,5 @@
+/* global LOG */ 
+/* global CONFIG */ 
 // TODO - Onclick table rows to zoom to shoreline set
 var Shorelines = {
     stage : 'shorelines',
@@ -377,19 +379,26 @@ var Shorelines = {
         
         $(layers).each(function(i, layer) {
             if (layer.zoomToWhenAdded) {
-                var layerNS = layer.prefix;
-                var layerName = layer.name;
-                var mapLayer = CONFIG.ows.getLayerByName({
-                    layerNS : layerNS,
-                    layerName : layerName
-                    });
+                var layerNS = layer.prefix,
+					layerName = layer.name,
+					mapLayer = CONFIG.ows.getLayerByName({
+						layerNS : layerNS,
+						layerName : layerName
+						}),
+					mlBbox,
+					lbbox;
                 if (mapLayer) {
-					var lbbox = mapLayer.bbox['EPSG:3857'] ? mapLayer.bbox['EPSG:3857'].bbox : mapLayer.bbox['EPSG:900913'].bbox; 
-                    bounds.extend(new OpenLayers.Bounds(lbbox));
+					mlBbox = mapLayer.bbox['EPSG:3857'] ? mapLayer.bbox['EPSG:3857'] : mapLayer.bbox['EPSG:900913'];
+					if (mlBbox) {
+						lbbox = mlBbox.bbox;
+						bounds.extend(new OpenLayers.Bounds(lbbox));
 
-                    if (layer.events.listeners.loadend.length) {
-                        layer.events.unregister('added', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);
-                    }
+						if (layer.events.listeners.loadend.length) {
+							layer.events.unregister('added', layer, Shorelines.zoomToLayer);
+						}
+					} else {
+						LOG.warn('Map layer does not have EPSG:3857 or EPSG:900913 bounding box designation. Could not zoom to layer.');
+					}
                 }
             }
         });
