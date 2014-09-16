@@ -122,7 +122,9 @@ public class IntersectionParserTest {
 				int transectId = (Integer)feature.getAttribute("TransectID");
 
 				Intersection intersection = new Intersection(feature, new AttributeGetter(feature.getType()));
-
+				
+				assertFalse("Legacy shapefiles lacking MHW attribute defaults to false MHW flag", intersection.isMeanHighWater());
+				
 				if (map.containsKey(transectId)) {
 					map.get(transectId).add(intersection);
 				}
@@ -164,7 +166,7 @@ public class IntersectionParserTest {
 				
 				//ensure MHW property is read from transect are translated correctly
 				if(feature.getAttribute(Constants.MHW_ATTR).toString().equalsIgnoreCase("true")) {
-					assertTrue(intersection.isMeanHighWater());
+					assertTrue("When TRUE found in feature, property properly set", intersection.isMeanHighWater());
 					trueMhwExistsInShapefile = true;
 				}
 			}
