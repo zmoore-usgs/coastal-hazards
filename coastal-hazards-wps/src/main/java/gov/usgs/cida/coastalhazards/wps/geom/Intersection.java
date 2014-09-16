@@ -124,7 +124,7 @@ public class Intersection {
         this.feature = shoreline;
         this.transectId = transectId;
         this.attGet = getter;
-        this.isMeanHighWater = shoreline.getAttribute(Constants.MHW_ATTR) == null ? Constants.DEFAULT_MHW_VALUE : Boolean.valueOf(shoreline.getAttribute(Constants.MHW_ATTR).toString());
+        this.isMeanHighWater = attGet.getBooleanFromMhwAttribute(shoreline.getAttribute(Constants.MHW_ATTR)); 
     }
 
     /**
@@ -137,10 +137,10 @@ public class Intersection {
         this.attGet = getter;
         this.transectId = (Integer) attGet.getValue(TRANSECT_ID_ATTR, intersectionFeature);
         this.distance = (Double) attGet.getValue(DISTANCE_ATTR, intersectionFeature);
-        this.isMeanHighWater = (Boolean) attGet.getValue(MHW_ATTR, intersectionFeature);
+        this.isMeanHighWater = attGet.getBooleanFromMhwAttribute(attGet.getValue(MHW_ATTR, intersectionFeature));
         this.feature = intersectionFeature;
     }
-
+    
     /**
      * Helper function to convert from mm/dd/yyy to yyyy-mm-dd
      */
@@ -162,10 +162,13 @@ public class Intersection {
         for (AttributeType type : types) {
             if (type instanceof GeometryType) {
                 // ignore the geom type of intersecting data
+            } else if(type.getName().getLocalPart().equals(MHW_ATTR)) {
+            	//skip, MHW_ATTR is getting converted to a TRUE/FALSE by the constructor
             } else {
                 builder.add(type.getName().getLocalPart(), type.getBinding());
-            }
+            } 
         }
+    
         return builder.buildFeatureType();
     }
 
@@ -310,5 +313,9 @@ public class Intersection {
         double uncertainty = getUncertainty();
         String str = time + "\t" + distance + "\t" + uncertainty;
         return str;
+    }
+    
+    public boolean isMeanHighWater() {
+    	return isMeanHighWater;
     }
 }
