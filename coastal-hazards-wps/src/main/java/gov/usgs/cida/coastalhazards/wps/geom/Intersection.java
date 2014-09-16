@@ -124,7 +124,7 @@ public class Intersection {
         this.feature = shoreline;
         this.transectId = transectId;
         this.attGet = getter;
-        this.isMeanHighWater = shoreline.getAttribute(Constants.MHW_ATTR) == null ? Constants.DEFAULT_MHW_VALUE : Boolean.valueOf(shoreline.getAttribute(Constants.MHW_ATTR).toString());
+        this.isMeanHighWater = getBooleanFromMhwAttribute(shoreline.getAttribute(Constants.MHW_ATTR)); 
     }
 
     /**
@@ -137,10 +137,29 @@ public class Intersection {
         this.attGet = getter;
         this.transectId = (Integer) attGet.getValue(TRANSECT_ID_ATTR, intersectionFeature);
         this.distance = (Double) attGet.getValue(DISTANCE_ATTR, intersectionFeature);
-        this.isMeanHighWater = (Boolean) attGet.getValue(MHW_ATTR, intersectionFeature);
+        this.isMeanHighWater = getBooleanFromMhwAttribute(attGet.getValue(MHW_ATTR, intersectionFeature));
         this.feature = intersectionFeature;
     }
 
+    
+    /**
+     * Shoreline shapefiles will represent booleans as a 0 or 1 while intersect CSVs will 
+     * represent them as TRUE or FALSE. This method gets the attribute as true/false from 0, 1, TRUE, or FALSE. Allows us
+     * to use the same functions for either format.
+     */
+    private boolean getBooleanFromMhwAttribute(Object attribute) {
+    	boolean isMhw = Constants.DEFAULT_MHW_VALUE;
+    	if(attribute != null) {
+    		if(attribute.toString().equals("0") || attribute.toString().equalsIgnoreCase("false")) {
+    			isMhw = false;
+    		} else if(attribute.toString().matches("\\d+") || attribute.toString().equalsIgnoreCase("true")) {
+    			isMhw = true;
+    		}
+    	}
+    	
+    	return isMhw;
+    }
+    
     /**
      * Helper function to convert from mm/dd/yyy to yyyy-mm-dd
      */
@@ -162,10 +181,13 @@ public class Intersection {
         for (AttributeType type : types) {
             if (type instanceof GeometryType) {
                 // ignore the geom type of intersecting data
+            } else if(type.getName().getLocalPart().equals(MHW_ATTR)) {
+            	//skip, MHW_ATTR is getting converted to a TRUE/FALSE by the constructor
             } else {
                 builder.add(type.getName().getLocalPart(), type.getBinding());
-            }
+            } 
         }
+    
         return builder.buildFeatureType();
     }
 
@@ -310,5 +332,9 @@ public class Intersection {
         double uncertainty = getUncertainty();
         String str = time + "\t" + distance + "\t" + uncertainty;
         return str;
+    }
+    
+    public boolean isMeanHighWater() {
+    	return isMeanHighWater;
     }
 }
