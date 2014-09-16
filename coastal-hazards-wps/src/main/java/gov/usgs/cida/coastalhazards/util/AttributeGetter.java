@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryType;
@@ -84,6 +85,24 @@ public class AttributeGetter {
         else {
             return feature.getAttribute(name);
         }
+    }
+    
+    /**
+     * Shoreline shapefiles will represent booleans as a 0 or 1 while intersect CSVs will 
+     * represent them as TRUE or FALSE. This method gets the attribute as true/false from 0, 1, TRUE, or FALSE. Allows us
+     * to use the same functions for either format.
+     */
+    public boolean getBooleanFromMhwAttribute(Object attribute) {
+    	boolean isMhw = Constants.DEFAULT_MHW_VALUE;
+    	if(attribute != null) {
+    		if(attribute.toString().equals("0") || attribute.toString().equalsIgnoreCase("false")) {
+    			isMhw = false;
+    		} else if(attribute.toString().matches("\\d+") || attribute.toString().equalsIgnoreCase("true")) {
+    			isMhw = true;
+    		}
+    	}
+    	
+    	return isMhw;
     }
     
     public boolean exists(String guess) {
