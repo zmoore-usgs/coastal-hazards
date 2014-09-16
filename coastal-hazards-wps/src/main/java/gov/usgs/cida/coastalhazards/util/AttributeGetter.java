@@ -49,6 +49,9 @@ public class AttributeGetter {
             else if (isOther(desc, Constants.DISTANCE_ATTR)) {
                 attrMap.put(Constants.DISTANCE_ATTR, desc.getName());
             }
+            else if (isOther(desc, Constants.MHW_ATTR)) {
+                attrMap.put(Constants.MHW_ATTR, desc.getName());
+            }
             else if (isOther(desc, Constants.LCI_ATTR)) {
                 attrMap.put(Constants.LCI_ATTR, desc.getName());
             }

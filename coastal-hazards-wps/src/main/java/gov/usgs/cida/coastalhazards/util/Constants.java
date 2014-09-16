@@ -73,6 +73,9 @@ public class Constants {
     public static final String WCI_ATTR = "WCI";
     public static final String NSM_ATTR = "NSM";
     public static final String EPR_ATTR = "EPR";
+    public static final String MHW_ATTR = "MHW";
+    
+	public static final boolean DEFAULT_MHW_VALUE = false;
     
     // Per http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf (Page 7), need value less that -10^38
     public static final double  SHAPEFILE_NODATA = -1e39;
