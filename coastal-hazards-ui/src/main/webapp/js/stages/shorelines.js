@@ -384,12 +384,17 @@ var Shorelines = {
                     layerName : layerName
                     });
                 if (mapLayer) {
-					var lbbox = mapLayer.bbox['EPSG:3857'] ? mapLayer.bbox['EPSG:3857'].bbox : mapLayer.bbox['EPSG:900913'].bbox; 
-                    bounds.extend(new OpenLayers.Bounds(lbbox));
-
-                    if (layer.events.listeners.loadend.length) {
-                        layer.events.unregister('added', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);
-                    }
+					var lbbox = mapLayer.bbox['EPSG:3857'] ? mapLayer.bbox['EPSG:3857'] : mapLayer.bbox['EPSG:900913']; 
+					
+					if(lbbox) {
+	                    bounds.extend(new OpenLayers.Bounds(lbbox.bbox));
+	
+	                    if (layer.events.listeners.loadend.length) {
+	                        layer.events.unregister('added', layer, Shorelines.zoomToLayer/*this.events.listeners.loadend[0].func*/);
+	                    }
+					} else {
+						LOG.info('Bounding box not found, could not zoom');
+					}
                 }
             }
         });
