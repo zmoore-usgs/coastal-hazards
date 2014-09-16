@@ -48,15 +48,19 @@ package gov.usgs.cida.coastalhazards.wps.geom;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.index.strtree.STRtree;
+
 import gov.usgs.cida.coastalhazards.util.AttributeGetter;
+import gov.usgs.cida.coastalhazards.util.Constants;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
+
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -80,6 +84,7 @@ public class Intersection {
     private SimpleFeature feature;
     private int transectId;
     private AttributeGetter attGet;
+    private boolean isMeanHighWater = Constants.DEFAULT_MHW_VALUE;
     private static DateTimeFormatter inputFormat;
     private static DateTimeFormatter outputFormat;
 
@@ -119,6 +124,7 @@ public class Intersection {
         this.feature = shoreline;
         this.transectId = transectId;
         this.attGet = getter;
+        this.isMeanHighWater = shoreline.getAttribute(Constants.MHW_ATTR) == null ? Constants.DEFAULT_MHW_VALUE : Boolean.valueOf(shoreline.getAttribute(Constants.MHW_ATTR).toString());
     }
 
     /**
@@ -131,6 +137,7 @@ public class Intersection {
         this.attGet = getter;
         this.transectId = (Integer) attGet.getValue(TRANSECT_ID_ATTR, intersectionFeature);
         this.distance = (Double) attGet.getValue(DISTANCE_ATTR, intersectionFeature);
+        this.isMeanHighWater = (Boolean) attGet.getValue(MHW_ATTR, intersectionFeature);
         this.feature = intersectionFeature;
     }
 
@@ -151,6 +158,7 @@ public class Intersection {
         builder.add("geom", Point.class, crs);
         builder.add(TRANSECT_ID_ATTR, Integer.class);
         builder.add(DISTANCE_ATTR, Double.class);
+        builder.add(MHW_ATTR, Boolean.class);
         for (AttributeType type : types) {
             if (type instanceof GeometryType) {
                 // ignore the geom type of intersecting data
@@ -172,6 +180,8 @@ public class Intersection {
                 featureObjectArr[i] = new Long(transectId);
             } else if (attGet.matches(attrType.getName(), DISTANCE_ATTR)) {
                 featureObjectArr[i] = new Double(distance);
+            } else if (attGet.matches(attrType.getName(), MHW_ATTR)) {
+                featureObjectArr[i] = new Boolean(isMeanHighWater);
             } else {
                 featureObjectArr[i] = this.feature.getAttribute(attrType.getName());
             }
