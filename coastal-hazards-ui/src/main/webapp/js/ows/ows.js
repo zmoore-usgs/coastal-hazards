@@ -123,33 +123,34 @@ var OWS = function(endpoint) {
                     })
                 },
                 error : function(data, textStatus, jqXHR) {
-                    if (this.namespace == CONFIG.tempSession.getCurrentSessionKey() && jqXHR.toLowerCase() == 'not found') {
+					// TODO - This really should be moved to the session object
+                    if (this.namespace === CONFIG.tempSession.getCurrentSessionKey() && jqXHR.toLowerCase() === 'not found') {
                         CONFIG.ui.showAlert({
                             message : 'Current session was not found on server. Attempting to initialize session on server.',
                             displayTime : 7500
-                        })
+                        });
                         
                         $.ajax('service/session?action=prepare&workspace=' + this.namespace, 
                         {
                             success : function(data, textStatus, jqXHR) {
-                                LOG.info('Session.js::init: A workspace has been prepared on the OWS server with the name of ' + CONFIG.tempSession.getCurrentSessionKey())
+                                LOG.info('Session.js::init: A workspace has been prepared on the OWS server with the name of ' + CONFIG.tempSession.getCurrentSessionKey());
                                 CONFIG.ui.showAlert({
                                     message : 'Your session has been created on the server',
                                     displayTime : 7500,
                                     style: {
                                         classes : ['alert-info']
                                     }
-                                })
+                                });
                                 $(errorCallbacks).each(function(index, callback, allCallbacks) {
                                     callback({
                                         data : data, 
                                         textStatus : textStatus,
                                         jqXHR : jqXHR
                                     });
-                                })
+                                });
                             },
                             error : function(data, textStatus, jqXHR) {
-                                LOG.error('Session.js::init: A workspace could not be created on the OWS server')
+                                LOG.error('Session.js::init: A workspace could not be created on the OWS server');
                                 CONFIG.ui.showAlert({
                                     message : 'No session could be found. A new session could not be created on server. This application may not function correctly.',
                                     style: {
@@ -158,24 +159,43 @@ var OWS = function(endpoint) {
                                 });
                             }
                         });
-                    }
+                    } else {
+						errorCallbacks.each(function(callback) {
+							callback({
+								data : data, 
+								textStatus : textStatus,
+								jqXHR : jqXHR,
+								context : args
+							});
+						});
+					}
                 }
             });
         },
         getWFSCapabilities : function(args) {
             args = args || {};
+			var callbacks = args.callbacks || {},
+				sucessCallbacks = callbacks.success || [],
+				errorCallbacks = callbacks.error || [];
             $.ajax(me.wfsGetCapsUrl, {
                 context: args,
                 success : function(data, textStatus, jqXHR) {
                     var getCapsResponse = new OpenLayers.Format.WFSCapabilities.v1_1_0().read(data); 
                     me.wfsCapabilities = getCapsResponse;
                     me.wfsCapabilitiesXML = data;
-                    $(args.callbacks || []).each(function(index, callback, allCallbacks) {
+                    $(sucessCallbacks).each(function(index, callback) {
                         callback(getCapsResponse, this);
                     });
                 },
                 error : function(data,textStatus, jqXHR) {
-                    
+                    $(errorCallbacks).each(function(i, callback) {
+						callback({
+							data : data, 
+							textStatus : textStatus,
+							jqXHR : jqXHR,
+							context : args
+						});
+					});
                 }
             });
         },
@@ -275,14 +295,14 @@ var OWS = function(endpoint) {
                     $(callbacks.success || []).each(function(index, callback, allCallbacks) {
                         LOG.trace('OWS.js::getFilteredFeature: Executing callback ' + index);
                         callback(getFeatureResponse, this);
-                    })
+                    });
                 },
                 error : function(data, textStatus, jqXHR) {
                     $(callbacks.error || []).each(function(index, callback, allCallbacks) {
                         callback(data, this);
-                    })
+                    });
                 }
-            })
+            });
         },
         updateFeatureTypeAttribute : function(featureType, attribute, value, callback) {
 
@@ -331,12 +351,12 @@ var OWS = function(endpoint) {
                 success: function(data, textStatus, jqXHR) {
                     successCallbacks.each(function(callback) {
                         callback(data, textStatus, jqXHR, this);
-                    })
+                    });
                 },
                 error: function(data, textStatus, jqXHR) {
                     errorCallbacks.each(function(callback) {
                         callback(data, textStatus, jqXHR, this);
-                    })
+                    });
                 }
             });
         },
@@ -369,12 +389,12 @@ var OWS = function(endpoint) {
                     success: function(data, textStatus, jqXHR) {
                         callbacks.each(function(callback) {
                             callback(data, textStatus, jqXHR, context);
-                        })
+                        });
                     },
                     error: function(data, textStatus, jqXHR) {
                         errorCallbacks.each(function(callback) {
                             callback(data, textStatus, jqXHR, context);
-                        })
+                        });
                     }
                 });
             }
@@ -442,7 +462,7 @@ var OWS = function(endpoint) {
                 request : wps,
                 callbacks : args.callbacks || [],
                 context : args.context || this
-            })
+            });
         },
         createAppendAttributesToLayerWPSXML : function(args) {
             var layer = args.layer;
@@ -478,7 +498,7 @@ var OWS = function(endpoint) {
                 '<wps:LiteralData>'+column+'</wps:LiteralData>' + 
                 '</wps:Data>' + 
                 '</wps:Input>';
-            })
+            });
             
             wps += '</wps:DataInputs>' + 
             '<wps:ResponseForm>' + 
@@ -497,7 +517,7 @@ var OWS = function(endpoint) {
                 request : wps,
                 callbacks : args.callbacks || [],
                 context : args.context || this
-            })
+            });
         },
         createRenameColumnsWPSXML : function(args) {
             var layer = args.layer;
@@ -534,7 +554,7 @@ var OWS = function(endpoint) {
                 '<wps:LiteralData>'+column+'</wps:LiteralData>' + 
                 '</wps:Data>' + 
                 '</wps:Input>';
-            })
+            });
                
             wps += '</wps:DataInputs>' + 
             '<wps:ResponseForm>' + 
