@@ -1,5 +1,6 @@
 package gov.usgs.cida.coastalhazards.service;
 
+import com.sun.org.apache.bcel.internal.generic.LoadClass;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.utilities.communication.GeoserverHandler;
 import gov.usgs.cida.utilities.communication.RequestResponseHelper;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -54,22 +56,19 @@ public class SessionService extends HttpServlet {
 		String workspace = request.getParameter("workspace");
 		String layer = request.getParameter("layer");
 		String store = request.getParameter("store");
-		Map<String, String> responseMap = new HashMap<String, String>();
+		Map<String, String> responseMap = new HashMap<>();
 
 		if (!StringUtils.isEmpty(action)) {
-			if ("prepare".equals(action.trim().toLowerCase())) {
+			action = action.trim().toLowerCase(Locale.US);
+			if ("prepare".equals(action)) {
 				try {
 					geoserverHandler.prepareWorkspace(geoserverDataDir, workspace);
-				} catch (MalformedURLException ex) {
-					responseMap.put("error", "Could not create workspace: " + ex.getMessage());
-					RequestResponseHelper.sendErrorResponse(response, responseMap);
-					return;
-				} catch (URISyntaxException ex) {
+				} catch (IOException | IllegalArgumentException | URISyntaxException ex) {
 					responseMap.put("error", "Could not create workspace: " + ex.getMessage());
 					RequestResponseHelper.sendErrorResponse(response, responseMap);
 					return;
 				}
-			} else if ("remove-layer".equals(action.trim().toLowerCase()) && !"published".equals(workspace.trim().toLowerCase())) {
+			} else if ("remove-layer".equals(action) && !"published".equals(workspace.trim().toLowerCase(Locale.US))) {
 				try {
 					geoserverHandler.removeLayer(geoserverDataDir, workspace, store, layer);
 				} catch (MalformedURLException ex) {
@@ -77,7 +76,7 @@ public class SessionService extends HttpServlet {
 					RequestResponseHelper.sendErrorResponse(response, responseMap);
 					return;
 				}
-			} else if ("logout".equals(action.trim().toLowerCase())) {
+			} else if ("logout".equals(action)) {
 				HttpSession session = request.getSession(false);
 				if (session != null) {
 					try {
@@ -90,7 +89,7 @@ public class SessionService extends HttpServlet {
 						// Session was already invalidated
 					}
 				}
-			} else if ("get-oid-info".equals(action.trim().toLowerCase())) {
+			} else if ("get-oid-info".equals(action)) {
 				HttpSession session = request.getSession(false);
 				if (session == null || session.getAttribute("oid-info") == null) {
 					responseMap.put("error", "OpenID credentials not in session.");
