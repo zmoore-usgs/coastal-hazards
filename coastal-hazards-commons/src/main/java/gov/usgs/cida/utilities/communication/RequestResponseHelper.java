@@ -24,19 +24,27 @@ public class RequestResponseHelper {
         sendJSONResponse(response, responseMap);
     }
 
-    public static void sendJSONResponse(HttpServletResponse response, Map<String, String> responseMap) {
-        String responseContent = new Gson().toJson(responseMap);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("utf-8");
-        response.setHeader("Content-Length", Integer.toString(responseContent.length()));
+    static void sendJSONResponse(HttpServletResponse response, Map<String, String> responseMap) {
+		if (!Boolean.parseBoolean(responseMap.get("success"))) {
+			int serverCode = 500;
+			if (responseMap.containsKey("serverCode")) {
+				serverCode = Integer.parseInt(responseMap.get("serverCode"));
+			}
+			response.setStatus(serverCode);
+		}
 		
+		String responseContent = new Gson().toJson(responseMap);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("utf-8");
+		response.setHeader("Content-Length", Integer.toString(responseContent.length()));
+
 		Writer writer = null;
-        try {
-            writer = response.getWriter();
-            writer.write(responseContent);
-        } catch (IOException ex) {
-            Logger.getLogger(RequestResponseHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
+		try {
+			writer = response.getWriter();
+			writer.write(responseContent);
+		} catch (IOException ex) {
+			Logger.getLogger(RequestResponseHelper.class.getName()).log(Level.SEVERE, null, ex);
+		} finally {
 			if (writer != null) {
 				try {
 					writer.close();
