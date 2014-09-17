@@ -14,7 +14,7 @@
         <br /><br />
         <div style="text-align:center;">
             <div id="splash-status-update"></div>
-            <img src="images/spinner/spinner3.gif" />
+            <img id="splash-spinner" alt="spinner image" src="images/spinner/spinner3.gif" />
         </div>
     </div>
 </div>
