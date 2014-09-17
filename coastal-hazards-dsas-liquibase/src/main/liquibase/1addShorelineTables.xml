@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+	<changeSet author="jiwalker" id="add_shoreline_tables">
+		<createTable tableName="shorelines">
+			<column name="id" type="BIGSERIAL">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date" type="DATE" />
+			<column name="mhw" type="BIT" />
+			<column name="workspace" type="VARCHAR(31)" />
+			<column name="source" type="VARCHAR(255)" />
+			<column name="orientation" type="VARCHAR(15)" />
+			<column name="auxillary_name" type="VARCHAR(31)" />
+			<column name="auxillary_value" type="VARCHAR(127)" />
+		</createTable>
+		<addPrimaryKey tableName="shorelines" columnNames="id" />
+		
+		<createTable tableName="shoreline_points">
+			<column name="id" type="BIGSERIAL">
+				<constraints nullable="false" />
+			</column>
+			<column name="shoreline_id" type="BIGINT" />
+			<column name="segment_id" type="BIGINT" />
+			<column name="geom" type="GEOMETRY" />
+			<column name="uncy" type="DOUBLE" />
+		</createTable>
+		<addPrimaryKey tableName="shoreline_points" columnNames="id" />
+		<addForeignKeyConstraint baseTableName="shoreline_points" baseColumnNames="shoreline_id" constraintName="shoreline_id_fkey" referencedTableName="shorelines" referencedColumnNames="id" />
+		
+		<rollback>
+			<dropForeignKeyConstraint baseTableName="shoreline_points" constraintName="shoreline_id_fkey" />
+			<dropPrimaryKey tableName="shoreline_points" />
+			<dropPrimaryKey tableName="shorelines" />
+			<dropTable tableName="shoreline_points" />
+			<dropTable tableName="shorelines" />
+		</rollback>
+	</changeSet>
+	<changeSet author="jiwalker" id="add_workspace_view">
+		<createProcedure>
+			CREATE FUNCTION create_workspace_view(workspace VARCHAR(31), OUT viewname varchar) AS $BODY$
+			BEGIN
+				viewname := CAST('shorelines_' || $1 || '_view' AS VARCHAR(47));
+				EXECUTE 'CREATE OR REPLACE VIEW ' || viewname || ' AS (' ||
+					'SELECT s.id, p.shoreline_id, p.geom, p.uncy, p.segment_id, ' ||
+						's.date, s.mhw, s.workspace, s.source, s.orientation, s.auxillary_name, s.auxillary_value ' ||
+					'FROM shorelines s ' ||
+					'JOIN shoreline_points p ON s.id = p.shoreline_id ' ||
+						'and s.workspace =' || quote_literal($1) || ');';
+				EXECUTE 'ALTER TABLE ' || viewname || ' OWNER TO coastal_hazards;';
+				EXECUTE 'GRANT ALL ON TABLE ' || viewname || ' TO coastal_hazards;';
+				EXECUTE 'GRANT ALL ON TABLE ' || viewname || ' TO public;';
+			END;
+			$BODY$ LANGUAGE plpgsql;
+		</createProcedure>
+		<rollback>DROP FUNCTION create_workspace_view(workspace VARCHAR(31));</rollback>
+	</changeSet>
+</databaseChangeLog>

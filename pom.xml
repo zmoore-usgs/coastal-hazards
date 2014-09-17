@@ -16,6 +16,7 @@
 		<module>coastal-hazards-geoserver</module>
 		<module>coastal-hazards-portal</module>
 		<module>coastal-hazards-liquibase</module>
+		<module>coastal-hazards-dsas-liquibase</module>
 		<module>coastal-hazards-export</module>
 		<module>ehcache-shaded</module>
 	</modules>
