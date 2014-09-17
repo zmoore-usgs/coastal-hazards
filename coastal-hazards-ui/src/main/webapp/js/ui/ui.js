@@ -84,6 +84,15 @@ var UI = function() {
 				$('#browser-incompatibility-modal').modal('show');
 			}
 		},
+		/**
+		 * Removes the spinner for the splash page. Useful if a severe error 
+		 * happens during load (e.g. can't find the backing OWS service), 
+		 * I want to show a message on the splash page and get rid of the spinner
+		 * because the rest of the application is not going to continue loading
+		 */
+		removeSplashSpinner : function (){
+			$('#splash-spinner').fadeOut();
+		},
         displayStage : function(caller) {
             $('#stage-select-tablist a[href="#'+caller.stage+'"]').trigger('click');
         },
@@ -121,11 +130,11 @@ var UI = function() {
 			});
 		},
 		precacheImages : function() {
-		var tempImage = [];
-		for (var x=0;x<this.precachedImages.length;x++) {
-			var tempImage = new Image();
-			tempImage.src = this.precachedImages[x];
-		}
+			var tempImage = [];
+			for (var x=0;x<this.precachedImages.length;x++) {
+				var tempImage = new Image();
+				tempImage.src = this.precachedImages[x];
+			}
 		},
         createModalWindow : function(args) {
             var headerHtml = args.headerHtml || '';
