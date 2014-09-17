@@ -13,13 +13,13 @@
 	<name>DSASWeb Liquibase Changesets</name>
 
 	<properties>
-		<liquibase.version>3.0.7</liquibase.version>
-		<db.schema>dsas</db.schema>
+		<cch.dsas.liquibase.version>3.0.7</cch.dsas.liquibase.version>
+		<cch.dsas.db.schema>dsas</cch.dsas.db.schema>
 		<!-- For goals to run these properties must be set in settings.xml
-		<liquibase.driver></liquibase.driver>
-		<liquibase.url></liquibase.url>
-		<liquibase.username></liquibase.username>
-		<liquibase.password></liquibase.password>
+		<cch.dsas.liquibase.driver></cch.dsas.liquibase.driver>
+		<cch.dsas.liquibase.url></cch.dsas.liquibase.url>
+		<cch.dsas.liquibase.username></cch.dsas.liquibase.username>
+		<cch.dsas.liquibase.password></cch.dsas.liquibase.password>
 		-->
 	</properties>
 
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
-			<version>${liquibase.version}</version>
+			<version>${cch.dsas.liquibase.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -49,8 +49,12 @@
 			<plugin>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-maven-plugin</artifactId>
-				<version>${liquibase.version}</version>
+				<version>${cch.dsas.liquibase.version}</version>
 				<configuration>
+					<password>${cch.dsas.liquibase.password}</password>
+					<username>${cch.dsas.liquibase.username}</username>
+					<driver>${cch.dsas.liquibase.driver}</driver>
+					<url>${cch.dsas.liquibase.url}</url>
 					<changeLogFile>src/main/liquibase/changeLog.xml</changeLogFile>
 					<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
 					<schemas>public</schemas>
