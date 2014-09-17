@@ -47,6 +47,50 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<version>1.5.3</version>
+				<configuration>
+					<basedir>${basedir}</basedir>
+					<outputDir>target/replaced</outputDir>
+					<filesToInclude>src/main/liquibase/data/*.tsv</filesToInclude>
+					<regexFlags>
+						<regexFlag>MULTILINE</regexFlag>
+					</regexFlags>
+						
+					<replacements>
+						<!-- remove '%'-prefixed file header -->
+						<replacement>
+							<token>^% .*$</token>
+							<value></value>
+						</replacement>
+						<!-- remove blank lines -->
+						<replacement>
+							<token>^\r\n$</token>
+							<value></value>
+						</replacement>
+						<!-- remove lines with NaNs -->
+						<replacement>
+							<token>^\s*\d*\s*NaN.*</token>
+							<value></value>
+						</replacement>
+						<!-- remove leading spaces from lines -->
+						<replacement>
+							<token>^\s*</token>
+							<value></value>
+						</replacement>
+					</replacements>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-maven-plugin</artifactId>
 				<version>${cch.dsas.liquibase.version}</version>
