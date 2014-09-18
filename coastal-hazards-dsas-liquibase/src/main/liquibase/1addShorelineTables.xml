@@ -27,7 +27,11 @@
 		<addForeignKeyConstraint baseTableName="shoreline_points" baseColumnNames="shoreline_id"
 			constraintName="points_shoreline_id_fkey" referencedTableName="shorelines" referencedColumnNames="id"
 			onDelete="CASCADE" />
-		
+		<sqlFile dbms="postgres"
+				 encoding="utf8"
+				 path="createShorelinePointsGeomConstraints.sql"
+				 relativeToChangelogFile="true"/>
+
 		<createTable tableName="shoreline_auxillary_attrs">
 			<column name="id" type="BIGSERIAL">
 				<constraints nullable="false" />
