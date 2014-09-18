@@ -216,7 +216,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
 					}
 					String baselineId = feature.getID();
 
-					MultiLineString lines = CRSUtils.getLinesFromFeature(feature);
+					MultiLineString lines = CRSUtils.getMultilineFromFeature(feature);
 					for (int i=0; i<lines.getNumGeometries(); i++) { // probably only one Linestring
 						LineString line = (LineString)lines.getGeometryN(i);
 						int direction = shorelineDirection(line, shorelines);

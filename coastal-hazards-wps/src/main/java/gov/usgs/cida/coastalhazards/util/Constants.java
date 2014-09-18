@@ -74,6 +74,10 @@ public class Constants {
     public static final String NSM_ATTR = "NSM";
     public static final String EPR_ATTR = "EPR";
     public static final String MHW_ATTR = "MHW";
+	
+	// new constants tied to point features
+	public static final String SHORELINE_ID_ATTR = "shoreline_id";
+	public static final String SEGMENT_ID_ATTR = "segment_id";
     
     public static final boolean DEFAULT_MHW_VALUE = false;
     
