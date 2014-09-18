@@ -16,26 +16,6 @@
 		<gs.version>2.4.1</gs.version>
 		<gt.version>10.1</gt.version>
 	</properties>
-
-	<repositories>
-		<repository>
-			<id>cida-public</id>
-			<name>CIDA Public Nexus</name>
-			<url>http://cida.usgs.gov/maven/cida-public/</url>
-		</repository>
-		<repository>
-			<id>opengeo</id>
-			<url>http://repo.opengeo.org/</url>
-		</repository>
-		<repository>
-			<id>osgeo</id>
-			<name>Open Source Geospatial Foundation Repository</name>
-			<url>http://download.osgeo.org/webdav/geotools/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 	
 	<dependencyManagement>
 		<dependencies>
