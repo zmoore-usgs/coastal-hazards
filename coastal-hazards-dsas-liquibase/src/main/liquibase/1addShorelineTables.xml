@@ -20,7 +20,7 @@
 			</column>
 			<column name="shoreline_id" type="BIGINT" />
 			<column name="segment_id" type="BIGINT" />
-			<column name="geom" type="GEOMETRY(POINT, 4326)" />
+			<column name="geom" type="GEOMETRY" />
 			<column name="uncy" type="DOUBLE" />
 		</createTable>
 		<addPrimaryKey tableName="shoreline_points" columnNames="id" />
