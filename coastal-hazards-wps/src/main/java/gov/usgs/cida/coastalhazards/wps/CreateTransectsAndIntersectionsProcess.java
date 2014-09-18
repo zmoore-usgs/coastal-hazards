@@ -67,6 +67,17 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
      *  Check whether we need an offset at the start of the baseline
      * 
      *  With new maxLength algorithm, we may want to allow a maxLength parameter to speed up calculation
+	 * @param shorelines feature collection of shorelines
+	 * @param baseline feature collection of baselines
+	 * @param spacing spacing in meters of transects along baseline
+	 * @param smoothing how much smoothing to apply to transect generation
+	 * @param farthest whether to use nearest or farthest intersection of shoreline (default false)
+	 * @param workspace workspace in which to create new layers
+	 * @param store store in which to create new layers
+	 * @param transectLayer name of created transect layer
+	 * @param intersectionLayer name of created intersection layer
+	 * @return layer names of transects and intersections
+	 * @throws java.lang.Exception no exceptions caught, may throw anything
      */
     @DescribeResult(name = "transects", description = "Layer containing Transects normal to baseline")
     public String execute(
@@ -81,6 +92,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             @DescribeParameter(name = "intersectionLayer", min = 1, max = 1) String intersectionLayer) throws Exception {
         // defaults
         if (smoothing == null) { smoothing = 0d; }
+        if (farthest == null) {farthest = false; }
         return new Process(shorelines, baseline, spacing, smoothing, farthest, workspace, store, transectLayer, intersectionLayer).execute();
     }
     
@@ -124,13 +136,8 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             this.baselineFeatureCollection = baseline;
             this.spacing = spacing;
             this.smoothing = smoothing;
-            
-            if (farthest == null) {
-                this.useFarthest = false;
-            } else {
-                this.useFarthest = farthest;
-            }
-            
+            this.useFarthest = farthest;
+
             this.workspace = workspace;
             this.store = store;
             this.transectLayer = transectLayer;
