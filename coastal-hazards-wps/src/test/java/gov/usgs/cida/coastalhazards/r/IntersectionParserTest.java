@@ -46,9 +46,12 @@
 
 package gov.usgs.cida.coastalhazards.r;
 
+import static org.junit.Assert.*;
+import gov.usgs.cida.coastalhazards.util.Constants;
 import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
 import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
 import gov.usgs.cida.coastalhazards.util.AttributeGetter;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -59,6 +62,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
 import org.apache.commons.io.IOUtils;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -76,7 +80,9 @@ import org.opengis.filter.FilterFactory;
  */
 public class IntersectionParserTest {
     
+    private URL legacyShapefile;
     private URL shapefile;
+    private URL shoreline;
     private File outfile;
     private BufferedWriter buf;
     private FilterFactory filterFactory;
@@ -84,8 +90,15 @@ public class IntersectionParserTest {
     @Before
     public void setupShape() throws IOException {
         filterFactory = new FilterFactoryImpl();
-        shapefile = IntersectionParserTest.class.getClassLoader()
+        legacyShapefile = IntersectionParserTest.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/jersey/NewJerseyN_intersections.shp");
+
+        shapefile = IntersectionParserTest.class.getClassLoader()
+                .getResource("gov/usgs/cida/coastalhazards/opencapecod_MHW_values/OuterCapeCod_shorelines_MHW_intersects.shp");
+        
+        shoreline = IntersectionParserTest.class.getClassLoader()
+                .getResource("gov/usgs/cida/coastalhazards/opencapecod_MHW_values/OuterCapeCod_shorelines_MHW.shp");
+        
         outfile = File.createTempFile("testOut", ".csv");
         outfile.deleteOnExit();
         buf = new BufferedWriter(new FileWriter(outfile));
@@ -97,29 +110,11 @@ public class IntersectionParserTest {
     }
 
     @Test
-    //@Ignore
     public void csvFromFeatureCollection() throws IOException, ParseException {
-        //ShapefileDataStore dataStore = (ShapefileDataStore)new ShapefileDataStoreFactory().createDataStore(shapefile);
+    	FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollectionFromShp.featureCollectionFromShp(legacyShapefile);
+        
         Map<Integer, List<Intersection>> map = new TreeMap<Integer, List<Intersection>>();
-        FeatureCollection<SimpleFeatureType, SimpleFeature> fc =
-            FeatureCollectionFromShp.featureCollectionFromShp(shapefile);
-//        FeatureSource source = dataStore.getFeatureSource();
-//        Query query = new Query();
-//        SortBy transectSort = filterFactory.sort("TransectID", SortOrder.DESCENDING);
-//        SortBy dateSort = filterFactory.sort("Date_", SortOrder.DESCENDING);
-//        query.setSortBy(new SortBy[] {transectSort, dateSort});
-//        FeatureCollection sorted = source.getFeatures(query);
-       // FeatureCollection<SimpleFeatureType, SimpleFeature> sorted = fc.sort(sort);
-        //fc.subCollection()
-        //        SimpleFeatureType schema = fc.getSchema();
-        //        List<AttributeDescriptor> attrs = schema.getAttributeDescriptors();
-        //        for (AttributeDescriptor attr : attrs) {
-        //            System.out.println(attr.getLocalName() + ": " + attr.getType().toString());
-        //        }
-        
-        
-        
-        FeatureIterator<SimpleFeature> features = null;
+    	FeatureIterator<SimpleFeature> features = null;
 		try {
 			features = fc.features();
 			while (features.hasNext()) {
@@ -127,7 +122,9 @@ public class IntersectionParserTest {
 				int transectId = (Integer)feature.getAttribute("TransectID");
 
 				Intersection intersection = new Intersection(feature, new AttributeGetter(feature.getType()));
-
+				
+				assertFalse("Legacy shapefiles lacking MHW attribute defaults to false MHW flag", intersection.isMeanHighWater());
+				
 				if (map.containsKey(transectId)) {
 					map.get(transectId).add(intersection);
 				}
@@ -154,4 +151,41 @@ public class IntersectionParserTest {
         }
     }
 
+    @Test
+    public void mhwValueTranslationFromIntersectionLayerTest() throws IOException {
+        FeatureCollection<SimpleFeatureType, SimpleFeature> fc = FeatureCollectionFromShp.featureCollectionFromShp(shapefile);
+        
+        Map<Integer, List<Intersection>> map = new TreeMap<Integer, List<Intersection>>();
+    	FeatureIterator<SimpleFeature> features = null;
+		try {
+			features = fc.features();
+			boolean trueMhwExistsInShapefile = false;
+			while (features.hasNext()) {
+				SimpleFeature feature = features.next();
+				Intersection intersection = new Intersection(feature, new AttributeGetter(feature.getType()));
+				
+				//ensure MHW property is read from transect are translated correctly
+				if(feature.getAttribute(Constants.MHW_ATTR).toString().equalsIgnoreCase("true")) {
+					assertTrue("When TRUE found in feature, property properly set", intersection.isMeanHighWater());
+					trueMhwExistsInShapefile = true;
+				}
+			}
+
+			assertTrue("Guarantee we tested at least one TRUE MHW attirbute", trueMhwExistsInShapefile);
+		} finally {
+			if (null != features) {
+				features.close();
+			}
+		}
+        
+        for (int key : map.keySet()) {
+            List<Intersection> points = map.get(key);
+            buf.write("# " + key);
+            buf.newLine();
+            for (Intersection p : points) {
+                buf.write(p.toString());
+                buf.newLine();
+            }
+        }
+    }
 }

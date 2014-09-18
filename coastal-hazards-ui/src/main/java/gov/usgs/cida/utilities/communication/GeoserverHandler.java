@@ -634,24 +634,28 @@ public class GeoserverHandler {
         GeoServerRESTPublisher publisher = gsrm.getPublisher();
         GeoServerRESTDatastoreManager dsm = gsrm.getDatastoreManager();
 
-        String workspaceLocation = geoserverDataDir + "/workspaces/" + workspace;
+		if (reader.existGeoserver()) {
+			String workspaceLocation = geoserverDataDir + "/workspaces/" + workspace;
 
-        File workspaceDirectory = new File(workspaceLocation);
-        File chInputDirectory = new File(workspaceDirectory, INPUT_STORE_NAME);
-        File chOutputDirectory = new File(workspaceDirectory, OUTPUT_STORE_NAME);
-        List<String> workspaceNames = reader.getWorkspaceNames();
-        boolean workspaceExists = workspaceNames.contains(workspace);
+			File workspaceDirectory = new File(workspaceLocation);
+			File chInputDirectory = new File(workspaceDirectory, INPUT_STORE_NAME);
+			File chOutputDirectory = new File(workspaceDirectory, OUTPUT_STORE_NAME);
+			List<String> workspaceNames = reader.getWorkspaceNames();
+			boolean workspaceExists = workspaceNames.contains(workspace);
 
-        // Prepare the workspace directory to contain the proper dir structure if 
-        // if it doesn't already exist
-        chInputDirectory.mkdirs();
-        chOutputDirectory.mkdirs();
-        if (!workspaceExists) {
-            URI namespaceURI = new URI("gov.usgs.cida.ch." + workspace);
-            publisher.createWorkspace(workspace, namespaceURI);
-            dsm.create(workspace, new GSShapefileDatastoreEncoder(INPUT_STORE_NAME, chInputDirectory.toURI().toURL()));
-            dsm.create(workspace, new GSShapefileDatastoreEncoder(OUTPUT_STORE_NAME, chOutputDirectory.toURI().toURL()));
-        }
+			// Prepare the workspace directory to contain the proper dir structure if 
+			// if it doesn't already exist
+			chInputDirectory.mkdirs();
+			chOutputDirectory.mkdirs();
+			if (!workspaceExists) {
+				URI namespaceURI = new URI("gov.usgs.cida.ch." + workspace);
+				publisher.createWorkspace(workspace, namespaceURI);
+				dsm.create(workspace, new GSShapefileDatastoreEncoder(INPUT_STORE_NAME, chInputDirectory.toURI().toURL()));
+				dsm.create(workspace, new GSShapefileDatastoreEncoder(OUTPUT_STORE_NAME, chOutputDirectory.toURI().toURL()));
+			}
+		} else {
+			throw new IOException("OWS server not found at " + this.url);
+		}
     }
 
    public static class DBaseColumn {

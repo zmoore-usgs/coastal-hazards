@@ -20,6 +20,8 @@
 	var CONFIG = Object.extended();
 	CONFIG.window = {};
 	CONFIG.window.login = null;
+	// Tells the application whether its in development mode or not.
+	// Development mode tends to have more verbose logging
 	CONFIG.development = <%= development%>;
 	CONFIG.geoServerEndpoint = '<%=geoserverEndpoint%>';
 	CONFIG.n52Endpoint = '<%=n52Endpoint%>';
@@ -42,6 +44,7 @@
 		calculation: [],
 		results: []
 	};
+	// Sets the AJAX Timeout in milliseconds
 	CONFIG.ajaxTimeout = 300000;
 	CONFIG.graph = Object.extended();
 	CONFIG.graph.enabled = 'LRR';
