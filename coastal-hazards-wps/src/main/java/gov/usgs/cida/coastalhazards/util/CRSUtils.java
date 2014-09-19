@@ -241,6 +241,10 @@ public class CRSUtils {
 				previous = current;
 				current = rest.next();
 			} else {
+				if (currentLine.size() > 0) {
+					lines.add(buildLineString(currentLine));
+					currentLine = new LinkedList<>();
+				}
 				current = null;
 			}
 		}
