@@ -66,14 +66,14 @@ import org.opengis.feature.simple.SimpleFeature;
  */
 public class ShorelineSTRTreeBuilder {
 
-    private STRtree strTree;
-    private GeometryFactory factory;
-    private boolean built;
-    
-    public ShorelineSTRTreeBuilder(SimpleFeatureCollection shorelines) {
-        this.strTree = new STRtree(shorelines.size());
+	private STRtree strTree;
+	private GeometryFactory factory;
+	private boolean built;
+
+	public ShorelineSTRTreeBuilder(SimpleFeatureCollection shorelines) {
+		this.strTree = new STRtree(shorelines.size());
 		
-        SimpleFeatureIterator features = null;
+		SimpleFeatureIterator features = null;
 		try {
 			features = shorelines.features();
 			while (features.hasNext()) {
@@ -102,8 +102,8 @@ public class ShorelineSTRTreeBuilder {
 				features.close();
 			}
 		}
-    }
-        
+	}
+
     /* May also want to take FeatureCollection */
     private void fillTree(MultiLineString shorelines, SimpleFeature feature) {
         Coordinate prevCoord = null;
@@ -117,7 +117,7 @@ public class ShorelineSTRTreeBuilder {
                 else {
                     LineSegment segment = new LineSegment(prevCoord, coord);
                     LineString geom = segment.toGeometry(factory);
-                    this.strTree.insert(geom.getEnvelopeInternal(), new ShorelineFeature(geom, feature));
+                    this.strTree.insert(geom.getEnvelopeInternal(), new ShorelineFeature(geom, feature, feature));
                     prevCoord = coord;
                 }
             }

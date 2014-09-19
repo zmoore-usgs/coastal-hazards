@@ -105,7 +105,7 @@ public class AttributeGetter {
 	public double getDoubleValue(String attribute, SimpleFeature feature) {
 		Object value = getValue(attribute, feature);
 		if (value instanceof Float || value instanceof Double) {
-			return(Double)value;
+			return (Double)value;
 		} else {
 			throw new ClassCastException("This attribute is not a floating point value");
 		}
@@ -115,9 +115,12 @@ public class AttributeGetter {
 	 * Shoreline shapefiles will represent booleans as a 0 or 1 while intersect CSVs will 
 	 * represent them as TRUE or FALSE. This method gets the attribute as true/false from 0, 1, TRUE, or FALSE. Allows us
 	 * to use the same functions for either format.
+	 * @param feature feature to get MHW from
+	 * @return value of mhw flag
 	 */
-	public boolean getBooleanFromMhwAttribute(Object attribute) {
+	public boolean getBooleanFromMhwAttribute(SimpleFeature feature) {
 		boolean isMhw = Constants.DEFAULT_MHW_VALUE;
+		Object attribute = getValue(Constants.MHW_ATTR, feature);
 		if(attribute != null) {
 			if(attribute.toString().equals("0") || attribute.toString().equalsIgnoreCase("false")) {
 				isMhw = false;
