@@ -650,7 +650,7 @@ var UI = function() {
             	var defaultColumnList = "<br/><ul>";
             	for(var i = 0; i < caller.defaultingColumns.length; i++) {
                 	defaultColumnList += '<li>' + 
-                	caller.defaultingColumns[i].attr + ' - Defaults value: ' + caller.defaultingColumns[i].defaultValue + '</li>';
+                	caller.defaultingColumns[i].attr + ' - Default value: ' + caller.defaultingColumns[i].defaultValue + '</li>';
                 }
             	defaultColumnList += "</ul>"
             	explanationText += "<br /><br />Optional attributes and their defaults. These can be left unmapped to accept the default values." + defaultColumnList;
