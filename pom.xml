@@ -16,6 +16,7 @@
 		<module>coastal-hazards-geoserver</module>
 		<module>coastal-hazards-portal</module>
 		<module>coastal-hazards-liquibase</module>
+		<module>coastal-hazards-dsas-liquibase</module>
 		<module>coastal-hazards-export</module>
 		<module>ehcache-shaded</module>
 	</modules>
@@ -138,7 +139,7 @@
 		</repository>
 		<repository>
 			<id>opengeo</id>
-			<url>http://repo.boundlessgeo.com/</url>
+			<url>http://repo.boundlessgeo.com/main/</url>
 		</repository>
 		<repository>
 			<id>osgeo</id>
