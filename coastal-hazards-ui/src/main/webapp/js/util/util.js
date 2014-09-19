@@ -122,10 +122,21 @@ var Util =  {
             var eqColName = caller.mandatoryColumns.find(function(column) {
                 return column.toLowerCase() == columnName.toLowerCase();
             })
+            
+            if(!eqColName && caller.defaultingColumns){
+            	var defaultingColumnMatch = caller.defaultingColumns.find(function(column) {
+                    return column.attr.toLowerCase() == columnName.toLowerCase();
+                })
+                if(defaultingColumnMatch) {
+                	eqColName = defaultingColumnMatch.attr;
+                }
+            }
+            
             if (eqColName) {
                 layerColumns[columnName] = eqColName;
             }
-        })
+        }) 
+        
         return layerColumns;
     },
     createColorGroups : function(groups) {

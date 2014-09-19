@@ -242,3 +242,13 @@ li.alert-error {
     margin-top: 5px;
     margin-bottom: 5px;
 }
+
+.right-drop-holder-optional {
+    text-align: center;
+    border-radius: 5px; 
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px; 
+    border: 1px dashed #00ff00; 
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

@@ -625,13 +625,42 @@ var UI = function() {
             var layerName = args.layerName;
             var columns = args.columns;
             var caller = args.caller;
+            var continueCallback = args.continueCallback;
             
             LOG.debug('UI.js::buildColumnMatchingModalWindow: Could not automatically map all layer attributes. Need help');
             var container = $('<div />').addClass('container-fluid');
                             
             var explanationRow = $('<div />').addClass('row-fluid').attr('id', 'explanation-row');
             var explanationWell = $('<div />').addClass('well').attr('id', 'explanation-well');
-            explanationWell.html('There is a attribute mismatch between the resource you are trying to view and what is considered a valid '+caller.stage+' resource. <br /><br />We require '+caller.mandatoryColumns.toString()+'. Please drag attributes from the left to the right to properly map to the correct attributes. The resource will be updated server-side once complete.');
+
+            
+            var mandatoryColumnList = "";
+            for(var i = 0; i < caller.mandatoryColumns.length; i++) {
+            	if(mandatoryColumnList.length > 0) {
+            		mandatoryColumnList += ","
+            	}
+            	mandatoryColumnList += ' ' + caller.mandatoryColumns[i];
+            }
+            
+            var explanationText = 'There is a possible attribute mismatch between the resource you are trying to view and what is considered a valid '+caller.stage+' resource. <br /><br />Reqiured attributes:  '+
+	    		mandatoryColumnList +
+	    		'. ';
+            
+            if(caller.defaultingColumns) {
+            	var defaultColumnList = "<br/><ul>";
+            	for(var i = 0; i < caller.defaultingColumns.length; i++) {
+                	defaultColumnList += '<li>' + 
+                	caller.defaultingColumns[i].attr + ' - Default value: ' + caller.defaultingColumns[i].defaultValue + '</li>';
+                }
+            	defaultColumnList += "</ul>"
+            	explanationText += "<br /><br />Optional attributes and their defaults. These can be left unmapped to accept the default values." + defaultColumnList;
+            }
+            
+            explanationText += "<br/>Please drag attributes from the left to the right to properly map to the correct attributes. Attributes wrapped in blue are required, those wrapped in green are optional. " +
+            		"The resource will be updated server-side once complete.";
+            
+            explanationWell.html(explanationText);
+            
             container.append(explanationRow.append(explanationWell));
                             
             var containerRow = $('<div />').addClass('row-fluid').attr('id', layerName + '-drag-drop-row');
@@ -683,6 +712,18 @@ var UI = function() {
                             
                 dropList.append(listItem);
             });
+            if(caller.defaultingColumns) {
+	            caller.defaultingColumns.each(function(col) {
+	                var listItem = $('<li />').
+	                append(
+	                    $('<div />').
+	                    addClass(layerName + '-drop-holder right-drop-holder-optional').
+	                    attr('id', col.attr + '-drop-item').
+	                    html(col.attr));
+	                            
+	                dropList.append(listItem);
+	            });
+            }
             dropListContainer.append(dropList);
             containerRow.append(dropListContainer);
                             
@@ -693,6 +734,15 @@ var UI = function() {
                 bodyHtml : container.html(),
                 doneButtonText : 'Cancel',
                 buttons : [{
+                    id : 'modal-continue-button',
+                    text : 'Continue With Defaults',
+                    type : 'btn-success',
+                    callback : function(event, context) {
+                        if(continueCallback) {
+                        	continueCallback();
+                        }
+                    }
+            	},{
                     id : 'modal-update-button',
                     text : 'Update',
                     type : 'btn-success',
@@ -724,6 +774,7 @@ var UI = function() {
                 callbacks : [
                 function() {
                     $('#modal-update-button').attr('disabled', 'disabled');
+                    $('#modal-continue-button').attr('disabled', 'disabled');
                     
                     // When cancel button is clicked, remove the layer on the server as well
                     $('#cancel-button').click(function() {
@@ -816,10 +867,16 @@ var UI = function() {
                                 moveDraggable(draggable,droppable);
                             }
                         });
-                        if (columns.values().filter(function(v) {
-                            return v !== '';
-                        }).length === Shorelines.mandatoryColumns.length) {
-                            $('#modal-update-button').removeAttr('disabled');
+                        
+                        //if all mandatory columns are mapped, we can allow continuing
+                        var allMandatoryColumnsSet = true;
+                        Shorelines.mandatoryColumns.each(function(mc) { 
+                            if (!columns.values().filter(mc).length) {
+                            	allMandatoryColumnsSet = false;
+                            }
+                        });
+                        if (allMandatoryColumnsSet) {
+                            $('#modal-continue-button').removeAttr('disabled'); //allowed to continue if all mandatory columns are already mapped
                         }
                     };
                     $("#modal-window").on('shown', showCallback);
