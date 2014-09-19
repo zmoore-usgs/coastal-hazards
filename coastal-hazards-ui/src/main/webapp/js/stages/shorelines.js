@@ -5,6 +5,9 @@ var Shorelines = {
     stage : 'shorelines',
     suffixes : ['_shorelines'],
     mandatoryColumns : ['the_geom', 'Date_', 'uncy'],
+    defaultingColumns : [
+         { attr : 'MHW', defaultValue : "0" } 
+         ],
     groupingColumn : 'Date_',
     description : {
         'stage' : '<p>Shorelines are geospatial polylines which represent the location of the shoreline and various points in time</p> <p>Add shorelines to your workspace with the selection box above or upload your own zipped shapefile containing shoreline polylines within the Manage tab.</p><p>Use the map to investigate the selected shorelines, clicking to enable/disable for DSASweb processing.</p><hr />View and select existing published shorelines, or upload your own. Shorelines represent snap-shots of the coastline at various points in time.',
@@ -121,12 +124,24 @@ var Shorelines = {
                                     foundAll = false;
                                 }
                             });
+
+                            Shorelines.defaultingColumns.each(function (col) {
+                                if (layerColumns.values().indexOf(col.attr) === -1) {
+                                    foundAll = false;
+                                }
+                            });
                         
                         if (layerPrefix !== CONFIG.name.published && !foundAll) {
                             CONFIG.ui.buildColumnMatchingModalWindow({
                                 layerName : layerName,
                                 columns : layerColumns,
-                                caller : Shorelines
+                                caller : Shorelines,
+                                continueCallback : function() {
+                                	Shorelines.addLayerToMap({
+                                        layer : layer,
+                                        describeFeaturetypeRespone : describeFeaturetypeRespone
+                                    });
+                                }
                             });
                         } else {
                             Shorelines.addLayerToMap({
