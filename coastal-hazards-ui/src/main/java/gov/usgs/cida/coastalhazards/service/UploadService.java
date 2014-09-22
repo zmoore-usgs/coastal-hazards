@@ -20,6 +20,11 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Receives a shape file from a client and saves it to the file system
+ *
+ * @author isuftin
+ */
 public class UploadService extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -87,19 +92,22 @@ public class UploadService extends HttpServlet {
 			RequestResponseHelper.sendErrorResponse(response, responseMap);
 			return;
 		}
-		
-		Enumeration<? extends ZipEntry> entries = new ZipFile(uploadDestinationFile).entries();
+
 		boolean hasHidden = false;
 		boolean needsLidarExplosion = false;
-		while (entries.hasMoreElements()) {
-			ZipEntry entry = entries.nextElement();
-			if (FileHelper.entryIsHidden(entry)) {
-				hasHidden = true;
-			}
-			if (entry.getName().endsWith("_uncertainty.dbf")) {
-				needsLidarExplosion = true;
+		try (ZipFile zipFile = new ZipFile(uploadDestinationFile)) {
+			Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			while (entries.hasMoreElements()) {
+				ZipEntry entry = entries.nextElement();
+				if (FileHelper.entryIsHidden(entry)) {
+					hasHidden = true;
+				}
+				if (entry.getName().endsWith("_uncertainty.dbf")) {
+					needsLidarExplosion = true;
+				}
 			}
 		}
+		
 		if (hasHidden) {
 			FileHelper.removeHiddenEntries(uploadDestinationFile);
 		}

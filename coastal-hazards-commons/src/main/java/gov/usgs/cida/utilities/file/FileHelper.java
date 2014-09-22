@@ -614,10 +614,9 @@ public class FileHelper {
     }
 
     public static void removeHiddenEntries(File zipFile) throws IOException {
-        Set<String> hiddenFiles = new HashSet<String>();
+        Set<String> hiddenFiles = new HashSet<>();
 
-        ZipFile zf = new ZipFile(zipFile);
-        try {
+        try (ZipFile zf = new ZipFile(zipFile)){
 	        Enumeration<? extends ZipEntry> entries = zf.entries();
 	        while (entries.hasMoreElements()) {
 	            ZipEntry entry = entries.nextElement();
@@ -625,10 +624,6 @@ public class FileHelper {
 	                hiddenFiles.add(entry.getName());
 	            }
 	        }
-        } finally {
-        	// Do not go gentle into that good night, 
-        	// throw an Exception 'gainst the dying of the write
-        	zf.close();
         }
 
         if (!hiddenFiles.isEmpty()) {
