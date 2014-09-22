@@ -117,6 +117,7 @@ public class Intersection {
 	 * @param point
 	 * @param dist distance from reference (negative for seaward baselines)
 	 * @param shoreline
+	 * @param uncy
 	 * @param transectId
 	 * @param getter
 	 */
@@ -127,7 +128,7 @@ public class Intersection {
 		this.transectId = transectId;
 		this.attGet = getter;
 		this.date = parseDate(attGet.getValue(DATE_ATTR, shoreline));
-		this.uncy = parseUncertainty(attGet.getValue(UNCY_ATTR, shoreline));
+		this.uncy = uncy;
 		this.isMeanHighWater = attGet.getBooleanFromMhwAttribute(shoreline); 
 	}
 
@@ -268,8 +269,9 @@ public class Intersection {
                 double distance = orientation.getSign()
                         * transect.getOriginCoord()
                         .distance(crossPoint.getCoordinate());
-                Intersection intersection =
-                        new Intersection(crossPoint, distance, shoreline.feature1, shoreline.interpolate(crossPoint, UNCY_ATTR, getter), transect.getId(), getter);
+                // use feature1 to get the date and MHW attribute (can't change within shoreline)
+                Intersection intersection = new Intersection(crossPoint, distance, shoreline.feature1,
+                        shoreline.interpolate(crossPoint, UNCY_ATTR, getter), transect.getId(), getter);
                 DateTime date = intersection.getDate();
                 if (allIntersections.containsKey(date)) {  // use closest/farthest intersection
                     Intersection thatIntersection = allIntersections.get(date);
