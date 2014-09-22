@@ -13,8 +13,8 @@
 	<name>Coastal Hazards WPS Processes</name>
 
 	<properties>
-		<gs.version>2.4.1</gs.version>
-		<gt.version>10.1</gt.version>
+		<gs.version>2.4.8</gs.version>
+		<gt.version>10.8</gt.version>
 	</properties>
 	
 	<dependencyManagement>
