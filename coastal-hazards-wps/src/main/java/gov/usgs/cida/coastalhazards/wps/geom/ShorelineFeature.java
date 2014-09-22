@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.usgs.cida.coastalhazards.wps.geom;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -38,7 +33,7 @@ public class ShorelineFeature {
 			double val1 = getter.getDoubleValue(attribute, feature1);
 			double val2 = getter.getDoubleValue(attribute, feature2);
 			
-			interpolatedValue = (d1/length*val1) + (d2/length*val2);
+			interpolatedValue = (d1/length*val2) + (d2/length*val1);
 		}
 		return interpolatedValue;
 	}

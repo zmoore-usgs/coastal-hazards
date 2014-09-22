@@ -39,7 +39,7 @@ public class ShorelineFeatureTest {
 	 * Test of interpolate method, of class ShorelineFeature.
 	 */
 	@Test
-	public void testInterpolate() {
+	public void testInterpolateMiddle() {
 		Point point = geometryFactory.createPoint(new Coordinate(0,0.5));
 		String attribute = UNCY_ATTR;
 		SimpleFeature f1 = simpleFeatureBuilder.buildFeature("1", new Double [] {1.0});
@@ -49,6 +49,51 @@ public class ShorelineFeatureTest {
 				new Coordinate[]{new Coordinate(0,0), new Coordinate(0,1)}), geometryFactory);
 		ShorelineFeature instance = new ShorelineFeature(lineString, f1, f2);
 		double expResult = 1.5;
+		double result = instance.interpolate(point, attribute, getter);
+		assertEquals(expResult, result, 0.01);
+	}
+	
+	@Test //(at 0)
+	public void testInterpolateZero() {
+		Point point = geometryFactory.createPoint(new Coordinate(0,0));
+		String attribute = UNCY_ATTR;
+		SimpleFeature f1 = simpleFeatureBuilder.buildFeature("1", new Double [] {1.0});
+		SimpleFeature f2 = simpleFeatureBuilder.buildFeature("2", new Double [] {2.0});
+		AttributeGetter getter = new AttributeGetter(featureType);
+		LineString lineString = new LineString(new CoordinateArraySequence(
+				new Coordinate[]{new Coordinate(0,0), new Coordinate(0,1)}), geometryFactory);
+		ShorelineFeature instance = new ShorelineFeature(lineString, f1, f2);
+		double expResult = 1.0;
+		double result = instance.interpolate(point, attribute, getter);
+		assertEquals(expResult, result, 0.01);
+	}
+	
+	@Test //(at 1)
+	public void testInterpolateOne() {
+		Point point = geometryFactory.createPoint(new Coordinate(0,1));
+		String attribute = UNCY_ATTR;
+		SimpleFeature f1 = simpleFeatureBuilder.buildFeature("1", new Double [] {1.0});
+		SimpleFeature f2 = simpleFeatureBuilder.buildFeature("2", new Double [] {2.0});
+		AttributeGetter getter = new AttributeGetter(featureType);
+		LineString lineString = new LineString(new CoordinateArraySequence(
+				new Coordinate[]{new Coordinate(0,0), new Coordinate(0,1)}), geometryFactory);
+		ShorelineFeature instance = new ShorelineFeature(lineString, f1, f2);
+		double expResult = 2.0;
+		double result = instance.interpolate(point, attribute, getter);
+		assertEquals(expResult, result, 0.01);
+	}
+	
+	@Test //(at 1/4)
+	public void testInterpolateQuarter() {
+		Point point = geometryFactory.createPoint(new Coordinate(0,0.25));
+		String attribute = UNCY_ATTR;
+		SimpleFeature f1 = simpleFeatureBuilder.buildFeature("1", new Double [] {1.0});
+		SimpleFeature f2 = simpleFeatureBuilder.buildFeature("2", new Double [] {2.0});
+		AttributeGetter getter = new AttributeGetter(featureType);
+		LineString lineString = new LineString(new CoordinateArraySequence(
+				new Coordinate[]{new Coordinate(0,0), new Coordinate(0,1)}), geometryFactory);
+		ShorelineFeature instance = new ShorelineFeature(lineString, f1, f2);
+		double expResult = 1.25;
 		double result = instance.interpolate(point, attribute, getter);
 		assertEquals(expResult, result, 0.01);
 	}
