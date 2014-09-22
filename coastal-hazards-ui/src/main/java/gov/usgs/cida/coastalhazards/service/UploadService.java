@@ -55,12 +55,12 @@ public class UploadService extends HttpServlet {
 		try {
 			maxFileSize = Integer.parseInt(props.get(FILE_UPLOAD_MAX_SIZE_CONFIG_KEY));
 		} catch (NumberFormatException nfe) {
-			LOG.info("JNDI property '" + FILE_UPLOAD_MAX_SIZE_CONFIG_KEY + "' not set or is an invalid value. Using: " + maxFileSize);
+			LOG.info("JNDI property '{}' not set or is an invalid value. Using: {}", FILE_UPLOAD_MAX_SIZE_CONFIG_KEY, maxFileSize);
 		}
 
 		// Check that the incoming file is not larger than our limit
 		if (maxFileSize > 0 && fileSize > maxFileSize) {
-			LOG.info("Upload exceeds max file size of " + maxFileSize + " bytes");
+			LOG.info("Upload exceeds max file size of {} bytes", maxFileSize);
 			responseMap.put("error", "Upload exceeds max file size of " + maxFileSize + " bytes");
 			RequestResponseHelper.sendErrorResponse(response, responseMap);
 			return;
@@ -80,19 +80,14 @@ public class UploadService extends HttpServlet {
 		// Save the file to the upload directory
 		try {
 			FormUploadHandler.saveFileFromRequest(request, fileParamKey, uploadDestinationFile);
-		} catch (FileUploadException ex) {
-			LOG.warn("Could not save file.", ex);
-			responseMap.put("error", "Could not save file.");
-			responseMap.put("exception", ex.getMessage());
-			RequestResponseHelper.sendErrorResponse(response, responseMap);
-			return;
-		} catch (IOException ex) {
+		} catch (FileUploadException | IOException ex) {
 			LOG.warn("Could not save file.", ex);
 			responseMap.put("error", "Could not save file.");
 			responseMap.put("exception", ex.getMessage());
 			RequestResponseHelper.sendErrorResponse(response, responseMap);
 			return;
 		}
+		
 		Enumeration<? extends ZipEntry> entries = new ZipFile(uploadDestinationFile).entries();
 		boolean hasHidden = false;
 		boolean needsLidarExplosion = false;
