@@ -20,14 +20,18 @@
 			</column>
 			<column name="shoreline_id" type="BIGINT" />
 			<column name="segment_id" type="BIGINT" />
-			<column name="geom" type="GEOMETRY(POINT, 4326)" />
+			<column name="geom" type="GEOMETRY" />
 			<column name="uncy" type="DOUBLE" />
 		</createTable>
 		<addPrimaryKey tableName="shoreline_points" columnNames="id" />
 		<addForeignKeyConstraint baseTableName="shoreline_points" baseColumnNames="shoreline_id"
 			constraintName="points_shoreline_id_fkey" referencedTableName="shorelines" referencedColumnNames="id"
 			onDelete="CASCADE" />
-		
+		<sqlFile dbms="postgres"
+				 encoding="utf8"
+				 path="createShorelinePointsGeomConstraints.sql"
+				 relativeToChangelogFile="true"/>
+
 		<createTable tableName="shoreline_auxillary_attrs">
 			<column name="id" type="BIGSERIAL">
 				<constraints nullable="false" />
