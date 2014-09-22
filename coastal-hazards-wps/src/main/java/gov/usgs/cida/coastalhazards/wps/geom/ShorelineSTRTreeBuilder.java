@@ -52,8 +52,12 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.index.strtree.STRtree;
+import gov.usgs.cida.coastalhazards.util.AttributeGetter;
+import gov.usgs.cida.coastalhazards.util.CRSUtils;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -76,15 +80,47 @@ public class ShorelineSTRTreeBuilder {
 		SimpleFeatureIterator features = null;
 		try {
 			features = shorelines.features();
+			AttributeGetter getter = null;
+
+			SimpleFeature previous = null;
+			SimpleFeature current = null;
 			while (features.hasNext()) {
 				SimpleFeature feature = features.next();
+				if (getter == null) {
+					getter = new AttributeGetter(feature.getFeatureType());
+				}
 				Geometry geom = (Geometry)feature.getDefaultGeometry();
 				Geometries geoms = Geometries.get(geom);
 				switch (geoms) {
-					case MULTIPOLYGON:
-					case POLYGON:
-					case MULTIPOINT:
 					case POINT:
+						Point point = (Point)geom;
+						current = feature;
+						if (!CRSUtils.isNewLineSegment(previous, current, getter)) {
+							// previous will not be null here
+							Point prevPoint = (Point)previous.getDefaultGeometry();
+							Point currPoint = (Point)current.getDefaultGeometry();
+							LineSegment segment = new LineSegment(prevPoint.getCoordinate(), currPoint.getCoordinate());
+							fillTree(segment, previous, current);
+						}
+						previous = current;
+						break;
+					case MULTIPOINT:
+						MultiPoint multipoint = (MultiPoint)geom;
+						if (CRSUtils.isNewLineSegment(previous, current, getter)) {
+							Point prevPoint = null;
+							Point currPoint = null;
+							for (int i=0; i<multipoint.getNumPoints(); i++) {
+								currPoint = (Point)multipoint.getGeometryN(i);
+								if (prevPoint != null) {
+									LineSegment segment = new LineSegment(prevPoint.getCoordinate(), currPoint.getCoordinate());
+									fillTree(segment, current, null);
+								}
+								prevPoint = currPoint;
+							}
+						} else {
+							throw new IllegalStateException("Multipoint must represent complete line segment");
+						}
+						break;
 					case LINESTRING:
 						throw new UnsupportedFeatureTypeException("Only MultiLineString supported here");
 					case MULTILINESTRING:
@@ -93,6 +129,9 @@ public class ShorelineSTRTreeBuilder {
 						this.built = false;
 						this.fillTree(mls, feature);
 						break;
+					case MULTIPOLYGON:
+					case POLYGON:
+					
 					default:
 						throw new UnsupportedFeatureTypeException("Unknown feature not supported");
 				}
@@ -116,14 +155,18 @@ public class ShorelineSTRTreeBuilder {
                 }
                 else {
                     LineSegment segment = new LineSegment(prevCoord, coord);
-                    LineString geom = segment.toGeometry(factory);
-                    this.strTree.insert(geom.getEnvelopeInternal(), new ShorelineFeature(geom, feature, feature));
+                    fillTree(segment, feature, null);
                     prevCoord = coord;
                 }
             }
             prevCoord = null;
         }
     }
+
+	private void fillTree(LineSegment segment, SimpleFeature first, SimpleFeature second) {
+		LineString geom = segment.toGeometry(factory);
+		this.strTree.insert(geom.getEnvelopeInternal(), new ShorelineFeature(geom, first, second));
+	}
 
     public STRtree build() {
         if (built) {

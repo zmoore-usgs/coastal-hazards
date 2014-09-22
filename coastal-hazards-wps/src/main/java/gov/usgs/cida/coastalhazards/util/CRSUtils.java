@@ -258,7 +258,7 @@ public class CRSUtils {
 		return line;
 	}
 	
-	private static boolean isNewLineSegment(SimpleFeature first, SimpleFeature second, AttributeGetter getter) {
+	public static boolean isNewLineSegment(SimpleFeature first, SimpleFeature second, AttributeGetter getter) {
 		boolean isNewSegment = false;
 		if (first == null || second == null) {
 			isNewSegment = true;
