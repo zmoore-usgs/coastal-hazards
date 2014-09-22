@@ -79,14 +79,15 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class Intersection {
 
-    private Point point;
-    private double distance;
-    private SimpleFeature feature;
-    private int transectId;
-    private AttributeGetter attGet;
-    private boolean isMeanHighWater = Constants.DEFAULT_MHW_VALUE;
-    private static DateTimeFormatter inputFormat;
-    private static DateTimeFormatter outputFormat;
+	private Point point;
+	private double distance;
+	private int transectId;
+	private DateTime date;
+	private double uncy;
+	private AttributeGetter attGet;
+	private boolean isMeanHighWater = Constants.DEFAULT_MHW_VALUE;
+	private static DateTimeFormatter inputFormat;
+	private static DateTimeFormatter outputFormat;
 
     static {
         try {
@@ -110,37 +111,49 @@ public class Intersection {
         }
     }
 
-    /**
-     * Stores Intersections from feature for delivery to R
-     *
-     * @param dist distance from reference (negative for seaward baselines)
-     * @param t Assumed to be in format mm/dd/yyyy
-     * @param uncy Uncertainty measurement
-     * @throws ParseException if date is in wrong format
-     */
-    public Intersection(Point point, double dist, SimpleFeature shoreline, int transectId, AttributeGetter getter) {
-        this.point = point;
-        this.distance = dist;
-        this.feature = shoreline;
-        this.transectId = transectId;
-        this.attGet = getter;
-        this.isMeanHighWater = attGet.getBooleanFromMhwAttribute(shoreline.getAttribute(Constants.MHW_ATTR)); 
-    }
+	/**
+	 * Stores Intersections from feature for delivery to R
+	 *
+	 * @param point
+	 * @param dist distance from reference (negative for seaward baselines)
+	 * @param shoreline
+	 * @param transectId
+	 * @param getter
+	 */
+	public Intersection(Point point, double dist, SimpleFeature shoreline, double uncy, int transectId, AttributeGetter getter) {
+		this.point = point;
+		this.distance = dist;
 
-    /**
-     * Get an intersection object from Intersection Feature Type
-     *
-     * @param intersectionFeature
-     */
-    public Intersection(SimpleFeature intersectionFeature, AttributeGetter getter) {
-        this.point = (Point) intersectionFeature.getDefaultGeometry();
-        this.attGet = getter;
-        this.transectId = (Integer) attGet.getValue(TRANSECT_ID_ATTR, intersectionFeature);
-        this.distance = (Double) attGet.getValue(DISTANCE_ATTR, intersectionFeature);
-        this.isMeanHighWater = attGet.getBooleanFromMhwAttribute(attGet.getValue(MHW_ATTR, intersectionFeature));
-        this.feature = intersectionFeature;
-    }
-    
+		this.transectId = transectId;
+		this.attGet = getter;
+		this.date = parseDate(attGet.getValue(DATE_ATTR, shoreline));
+		this.uncy = parseUncertainty(attGet.getValue(UNCY_ATTR, shoreline));
+		this.isMeanHighWater = attGet.getBooleanFromMhwAttribute(shoreline); 
+	}
+
+	/**
+	 * Get an intersection object from Intersection Feature Type
+	 *
+	 * @param intersectionFeature
+	 */
+	public Intersection(SimpleFeature intersectionFeature, AttributeGetter getter) {
+		this.point = (Point) intersectionFeature.getDefaultGeometry();
+		this.attGet = getter;
+		this.transectId = (Integer) attGet.getValue(TRANSECT_ID_ATTR, intersectionFeature);
+		this.distance = (Double) attGet.getValue(DISTANCE_ATTR, intersectionFeature);
+		this.isMeanHighWater = attGet.getBooleanFromMhwAttribute(intersectionFeature);
+		this.date = parseDate(attGet.getValue(DATE_ATTR, intersectionFeature));
+		this.uncy = parseUncertainty(attGet.getValue(UNCY_ATTR, intersectionFeature));
+	}
+	
+	public DateTime getDate() {
+		return this.date;
+	}
+	
+	public double getUncertainty() {
+		return this.uncy;
+	}
+
     /**
      * Helper function to convert from mm/dd/yyy to yyyy-mm-dd
      */
@@ -149,69 +162,62 @@ public class Intersection {
 //        String outDate = dateObj.toString("yyyy-MM-dd");
 //        return outDate;
 //    }
-    public static SimpleFeatureType buildSimpleFeatureType(SimpleFeatureCollection collection, CoordinateReferenceSystem crs) {
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        SimpleFeatureType schema = collection.getSchema();
-        List<AttributeType> types = schema.getTypes();
+	public static SimpleFeatureType buildSimpleFeatureType(SimpleFeatureCollection collection, CoordinateReferenceSystem crs) {
+		SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+		SimpleFeatureType schema = collection.getSchema();
+		List<AttributeType> types = schema.getTypes();
 
-        builder.setName("Intersections");
-        builder.add("geom", Point.class, crs);
-        builder.add(TRANSECT_ID_ATTR, Integer.class);
-        builder.add(DISTANCE_ATTR, Double.class);
-        builder.add(MHW_ATTR, Boolean.class);
-        for (AttributeType type : types) {
-            if (type instanceof GeometryType) {
-                // ignore the geom type of intersecting data
-            } else if(type.getName().getLocalPart().equals(MHW_ATTR)) {
-            	//skip, MHW_ATTR is getting converted to a TRUE/FALSE by the constructor
-            } else {
-                builder.add(type.getName().getLocalPart(), type.getBinding());
-            } 
-        }
-    
-        return builder.buildFeatureType();
-    }
+		builder.setName("Intersections");
+		builder.add("geom", Point.class, crs);
+		builder.add(TRANSECT_ID_ATTR, Integer.class);
+		builder.add(DISTANCE_ATTR, Double.class);
+		builder.add(MHW_ATTR, Boolean.class);
+		builder.add(DATE_ATTR, Date.class);
+		builder.add(UNCY_ATTR, Double.class);
 
-    public SimpleFeature createFeature(SimpleFeatureType type) {
-        List<AttributeType> types = type.getTypes();
-        Object[] featureObjectArr = new Object[types.size()];
-        for (int i = 0; i < featureObjectArr.length; i++) {
-            AttributeType attrType = types.get(i);
-            if (attrType instanceof GeometryType) {
-                featureObjectArr[i] = point;
-            } else if (attGet.matches(attrType.getName(), TRANSECT_ID_ATTR)) {
-                featureObjectArr[i] = new Long(transectId);
-            } else if (attGet.matches(attrType.getName(), DISTANCE_ATTR)) {
-                featureObjectArr[i] = new Double(distance);
-            } else if (attGet.matches(attrType.getName(), MHW_ATTR)) {
-                featureObjectArr[i] = new Boolean(isMeanHighWater);
-            } else {
-                featureObjectArr[i] = this.feature.getAttribute(attrType.getName());
-            }
-        }
-        return SimpleFeatureBuilder.build(type, featureObjectArr, null);
-    }
+		return builder.buildFeatureType();
+	}
 
-    public DateTime getDate() {
-        Object date = attGet.getValue(DATE_ATTR, this.feature);
-        if (date instanceof Date) {
-            return new DateTime((Date) date);
-        } else if (date instanceof String) {
-            DateTime datetime = inputFormat.parseDateTime((String) date);
-            return datetime;
-        } else {
-            throw new UnsupportedFeatureTypeException("Not sure what to do with date");
-        }
-    }
+	public SimpleFeature createFeature(SimpleFeatureType type) {
+		List<AttributeType> types = type.getTypes();
+		Object[] featureObjectArr = new Object[types.size()];
+		for (int i = 0; i < featureObjectArr.length; i++) {
+			AttributeType attrType = types.get(i);
+			if (attrType instanceof GeometryType) {
+				featureObjectArr[i] = point;
+			} else if (attGet.matches(attrType.getName(), TRANSECT_ID_ATTR)) {
+				featureObjectArr[i] = (long) transectId;
+			} else if (attGet.matches(attrType.getName(), DISTANCE_ATTR)) {
+				featureObjectArr[i] = distance;
+			} else if (attGet.matches(attrType.getName(), MHW_ATTR)) {
+				featureObjectArr[i] = isMeanHighWater;
+			} else if (attGet.matches(attrType.getName(), DATE_ATTR)) {
+				featureObjectArr[i] = date.toDate();
+			} else if (attGet.matches(attrType.getName(), UNCY_ATTR)) {
+				featureObjectArr[i] = uncy;
+			}
+		}
+		return SimpleFeatureBuilder.build(type, featureObjectArr, null);
+	}
 
-    public double getUncertainty() {
-        Object uncy = attGet.getValue(UNCY_ATTR, this.feature);
-        if (uncy instanceof Number) {
-            return ((Number)uncy).doubleValue();
-        } else {
-            throw new UnsupportedFeatureTypeException("Uncertainty should be a number");
-        }
-    }
+	private static DateTime parseDate(Object date) {
+		if (date instanceof Date) {
+			return new DateTime((Date) date);
+		} else if (date instanceof String) {
+			DateTime datetime = inputFormat.parseDateTime((String) date);
+			return datetime;
+		} else {
+			throw new UnsupportedFeatureTypeException("Not sure what to do with date");
+		}
+	}
+
+	public static double parseUncertainty(Object uncy) {
+		if (uncy instanceof Number) {
+			return ((Number)uncy).doubleValue();
+		} else {
+			throw new UnsupportedFeatureTypeException("Uncertainty should be a number");
+		}
+	}
 
     public int getTransectId() {
         return transectId;
@@ -263,7 +269,7 @@ public class Intersection {
                         * transect.getOriginCoord()
                         .distance(crossPoint.getCoordinate());
                 Intersection intersection =
-                        new Intersection(crossPoint, distance, shoreline.feature, transect.getId(), getter);
+                        new Intersection(crossPoint, distance, shoreline.feature1, shoreline.interpolate(crossPoint, UNCY_ATTR, getter), transect.getId(), getter);
                 DateTime date = intersection.getDate();
                 if (allIntersections.containsKey(date)) {  // use closest/farthest intersection
                     Intersection thatIntersection = allIntersections.get(date);

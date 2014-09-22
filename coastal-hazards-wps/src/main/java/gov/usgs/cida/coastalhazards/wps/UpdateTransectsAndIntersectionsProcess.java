@@ -215,7 +215,7 @@ public class UpdateTransectsAndIntersectionsProcess implements GeoServerProcess 
 				iterator = baseline.features();
 				while (null == result && iterator.hasNext()) {
 					SimpleFeature feature = iterator.next();
-					MultiLineString lines = CRSUtils.getLinesFromFeature(feature);
+					MultiLineString lines = CRSUtils.getMultilineFromFeature(feature);
 					for (int i=0; null == result && i<lines.getNumGeometries(); i++) {
 						LineString line = (LineString)lines.getGeometryN(i);
 						Point origin = transect.getOriginPoint();

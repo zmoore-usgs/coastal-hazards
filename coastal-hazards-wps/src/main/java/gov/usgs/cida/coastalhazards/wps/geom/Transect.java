@@ -182,7 +182,7 @@ public class Transect {
     }
     
     public static Transect fromFeature(SimpleFeature feature) {
-        MultiLineString lines = CRSUtils.getLinesFromFeature(feature);
+        MultiLineString lines = CRSUtils.getMultilineFromFeature(feature);
         LineString line = (LineString)lines.getGeometryN(0);  // ignore more than one for now (shouldn't happen)
         LineSegment segment = new LineSegment(line.getStartPoint().getCoordinate(),
                 line.getEndPoint().getCoordinate());
