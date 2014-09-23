@@ -71,6 +71,7 @@ public class ShapefileImportService extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
+		LOG.info("Initializing ShapefileImportService servlet");
         props = JNDISingleton.getInstance();
         uploadDirectory = props.getProperty(DIRECTORY_BASE_PARAM_CONFIG_KEY) + props.getProperty(DIRECTORY_UPLOAD_PARAM_CONFIG_KEY);
         geoserverEndpoint = props.getProperty(GEOSERVER_ENDPOINT_PARAM_CONFIG_KEY);
@@ -81,7 +82,7 @@ public class ShapefileImportService extends HttpServlet {
         try {
             gsrm = new GeoServerRESTManager(new URL(geoserverEndpoint), geoserverUsername, geoserverPassword);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(ShapefileImportService.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error("Could not initialize Geoserver REST Manager. Application will not be able to handle shapefile uploads", ex);
         }
     }
 
@@ -241,7 +242,7 @@ public class ShapefileImportService extends HttpServlet {
         HttpResponse importResponse = geoserverHandler.importFeaturesFromFile(shapeFile, workspace, store, name);
         String responseText = IOUtils.toString(importResponse.getEntity().getContent());
 
-        if (!responseText.toLowerCase().contains("ows:exception")) {
+        if (!responseText.toLowerCase(Locale.getDefault()).contains("ows:exception")) {
             responseMap.put("feature", responseText);
             RequestResponseHelper.sendSuccessResponse(response, responseMap);
         } else {
