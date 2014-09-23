@@ -138,6 +138,7 @@
 	<servlet>
 		<servlet-name>ShapefileImportService</servlet-name>
 		<servlet-class>gov.usgs.cida.coastalhazards.service.ShapefileImportService</servlet-class>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>SessionService</servlet-name>
