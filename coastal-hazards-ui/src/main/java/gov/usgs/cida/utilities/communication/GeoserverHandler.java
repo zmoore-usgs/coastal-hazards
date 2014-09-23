@@ -6,7 +6,7 @@ import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
 import it.geosolutions.geoserver.rest.encoder.datastore.GSShapefileDatastoreEncoder;
-import it.geosolutions.geoserver.rest.manager.GeoServerRESTDatastoreManager;
+import it.geosolutions.geoserver.rest.manager.GeoServerRESTStoreManager;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -504,26 +504,23 @@ public class GeoserverHandler {
 		return sendRequest("wps", PARAM_POST, PARAM_TEXT_XML, content);
 	}
 	
+	/**
+	 * 
+	 * @param path
+	 * @param requestMethod
+	 * @param contentType
+	 * @param content
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException 
+	 */
     HttpResponse sendRequest(String path, String requestMethod, String contentType, File content) throws FileNotFoundException, IOException {
-        HttpPost post;
-        HttpClient httpClient = new DefaultHttpClient();
-
-        post = new HttpPost(url + path);
-
-        FileInputStream wpsRequestInputStream = null;
-        try {
-            wpsRequestInputStream = new FileInputStream(content);
-
+        try (FileInputStream wpsRequestInputStream = new FileInputStream(content)){
+			HttpClient httpClient = new DefaultHttpClient();
+			HttpPost post = new HttpPost(url + path);
             AbstractHttpEntity entity = new InputStreamEntity(wpsRequestInputStream, content.length());
-
             post.setEntity(entity);
-
-            HttpResponse response = httpClient.execute(post);
-
-            return response;
-
-        } finally {
-            IOUtils.closeQuietly(wpsRequestInputStream);
+            return httpClient.execute(post);
         }
     }
 
@@ -632,7 +629,7 @@ public class GeoserverHandler {
         GeoServerRESTManager gsrm = new GeoServerRESTManager(new URL(this.url), this.user, this.password);
         GeoServerRESTReader reader = gsrm.getReader();
         GeoServerRESTPublisher publisher = gsrm.getPublisher();
-        GeoServerRESTDatastoreManager dsm = gsrm.getDatastoreManager();
+		GeoServerRESTStoreManager dsm = gsrm.getStoreManager();
 
 		if (reader.existGeoserver()) {
 			String workspaceLocation = geoserverDataDir + "/workspaces/" + workspace;
