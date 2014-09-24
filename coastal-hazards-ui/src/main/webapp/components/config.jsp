@@ -41,6 +41,7 @@
 		shorelines: [],
 		baseline: [],
 		transects: [],
+		bias: [],
 		calculation: [],
 		results: []
 	};
