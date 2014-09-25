@@ -158,6 +158,9 @@ var ProxyDatumBias = {
 					        				   {
 					        					   layers : [layer.name],
 					        					   transparent : true,
+					        					   sld_body: ProxyDatumBias.createSLDBody({
+					        						   layerName: layer.prefix + ':' + layer.name
+					        					   }),
 					        					   format :"image/png"
 					        				   },
 					        				   {
@@ -328,6 +331,39 @@ var ProxyDatumBias = {
 				})
 			}
 		},
+	    createSLDBody : function(args) {
+	        var sldBody = '';
+	        var fillColor = '#2E2EFE';
+	        
+	        sldBody += '<?xml version="1.0" encoding="ISO-8859-1"?>' + 
+	        '<StyledLayerDescriptor version="1.1.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' + 
+	        '<NamedLayer>' +
+	        '<Name>' + args.layerName + '</Name>' + 
+	        '<UserStyle>' + 
+	        '<FeatureTypeStyle>' + 
+	        '<Rule>' + 
+	        '<PointSymbolizer>' + 
+	        '<Graphic>' + 
+	        '<Mark>' + 
+	        '<WellKnownName>circle</WellKnownName>' + 
+	        '<Fill>' + 
+	        '<CssParameter name="fill">' + fillColor + '</CssParameter>' + 
+	        '</Fill>' + 
+	        '<Stroke>' + 
+	        '<CssParameter name="stroke">#000000</CssParameter>' + 
+	        '<CssParameter name="stroke-width">2</CssParameter>' + 
+	        '</Stroke>' + 
+	        '</Mark>' + 
+	        '<Size>6</Size>' + 
+	        '</Graphic>' + 
+	        '</PointSymbolizer>' + 
+	        '</Rule>' + 
+	        '</FeatureTypeStyle>' +
+	        '</UserStyle>' + 
+	        '</NamedLayer>' + 
+	        '</StyledLayerDescriptor>'
+	        return sldBody;
+	    },
 		getActive : function() {
 			return $('#bias-list').children(':selected').map(function(i,v) {
 				return v.value
