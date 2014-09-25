@@ -3,8 +3,8 @@ var UI = function() {
     
     var me = (this === window) ? {} : this;
     
-    me.work_stages = ['shorelines', 'baseline', 'transects', 'calculation', 'results'];
-    me.work_stages_objects = [Shorelines, Baseline, Transects, Calculation, Results];
+    me.work_stages = ['bias', 'shorelines', 'baseline', 'transects', 'calculation', 'results'];
+    me.work_stages_objects = [ProxyDatumBias, Shorelines, Baseline, Transects, Calculation, Results];
     me.base_name = undefined;//init to undefined. Update in baselines
     me.precachedImages = [
 			'images/introduction_images/BaselineDraw.gif',
@@ -171,10 +171,10 @@ var UI = function() {
             }
         },
         initializeUploader: function(args) {
-            LOG.info('UI.js::initializeUploader: Initializing uploader for the ' + context + ' context');
             var caller = args.caller;
             var context = caller.stage;
-
+            LOG.info('UI.js::initializeUploader: Initializing uploader for the ' + context + ' context');
+            
             var uploader = new qq.FineUploader({
                 element: document.getElementById(context + '-uploader'),
                 multiple : false,
@@ -778,7 +778,7 @@ var UI = function() {
                             }
                                             
                             var readyToUpdate = true;
-                            Shorelines.mandatoryColumns.each(function(mc) { 
+                            caller.mandatoryColumns.each(function(mc) { 
                                 if (!mapping.values().filter(mc).length) {
                                     readyToUpdate = false;
                                 }

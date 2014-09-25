@@ -81,6 +81,9 @@
                 <!-- NAV -->
                 <div class="span1" id='nav-list'>
                     <ul id="stage-select-tablist" class="nav nav-pills nav-stacked">
+                        <%if("admin".equals(request.getParameter("u"))) { //TODO replace this with session based filter %>
+                        <li><a href="#bias" data-toggle="tab"><img id="bias_img" src="images/workflow_figures/bias_future.png" title="Display Proxy-Datum Bias"/></a></li>
+                        <%} %>
                         <li class="active"><a href="#shorelines" data-toggle="tab"><img id="shorelines_img" src="images/workflow_figures/shorelines.png" title="Display Shorelines"/></a></li>
                         <li><a href="#baseline" data-toggle="tab"><img id="baseline_img" src="images/workflow_figures/baseline_future.png" title="Display Baseline"/></a></li>
                         <li><a href="#transects" data-toggle="tab"><img id="transects_img" src="images/workflow_figures/transects_future.png" title="Calculate Transects"/></a></li>
@@ -301,6 +304,31 @@
                                 </div>
                             </div>
                         </div> <!-- /Transects -->
+                        
+                        <!-- ProxyDatumBias -->
+                        <div class="tab-pane container-fluid" id="bias">
+                            <div class="row-fluid">
+                                <div class="span4"><h3>Proxy-Datum Bias</h3></div>
+                                <div class="span8" id="bias-alert-container"></div>
+                            </div>
+                            <ul class="nav nav-tabs" id="action-bias-tablist">
+                                <li class="active"><a  data-toggle="tab" href="#bias-view-tab">View</a></li>
+                                <li><a data-toggle="tab" href="#bias-manage-tab">Manage</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="bias-view-tab">
+                                    <select id="bias-list" class="feature-list"></select>
+                                </div>
+                                <div class="tab-pane" id="bias-manage-tab">
+                                    <div id="bias-uploader" class="uploader"></div>
+                                    <button class="btn btn-success" id="bias-triggerbutton"><i class="icon-arrow-up icon-white"></i>Upload</button>
+                                    <button id="bias-remove-btn" disabled class="btn btn-success">
+                                        <i class="icon-remove icon-white"></i>
+                                        &nbsp;Remove
+                                    </button>
+                                </div>
+                            </div>
+                        </div> <!-- /ProxyDatumBias -->
 
                         <!-- Calculation -->
                         <div class="tab-pane  container-fluid" id="calculation">
@@ -467,6 +495,8 @@
     <script type="text/javascript" src="js/stages/baseline.js"></script>
     <script type="text/javascript">splashUpdate("Loading Transects module...");</script>
     <script type="text/javascript" src="js/stages/transects.js"></script>
+    <script type="text/javascript">splashUpdate("Loading Proxy Datum Bias module...");</script>
+    <script type="text/javascript" src="js/stages/bias.js"></script>
     <script type="text/javascript">splashUpdate("Loading Calculation module...");</script>
     <script type="text/javascript" src="js/stages/calculation.js"></script>
     <script type="text/javascript">splashUpdate("Loading Results module...");</script>
