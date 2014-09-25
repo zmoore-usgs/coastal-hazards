@@ -67,6 +67,10 @@ CCH.Session = function (name, isPerm) {
 				layers: [],
 				viewing: ''
 			}),
+			bias: Object.extended({
+				layers: [],
+				viewing: ''
+			}),
 			intersections: Object.extended({
 				layers: [],
 				viewing: ''

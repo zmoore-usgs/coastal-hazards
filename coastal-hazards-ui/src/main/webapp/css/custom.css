@@ -88,6 +88,9 @@ select option.session-layer{
 #stage-select-tablist #transects-description {
    background-image:url('../images/paneBackgrounds/transects_tutorial.png');
 }
+#stage-select-tablist #bias-description {
+   background-image:url('../images/paneBackgrounds/bias_tutorial.png');
+}
 #stage-select-tablist #calculation-description {
    background-image:url('../images/paneBackgrounds/transects_tutorial.png');
 }

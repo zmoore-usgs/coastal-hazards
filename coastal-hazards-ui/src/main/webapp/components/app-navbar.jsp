@@ -82,6 +82,7 @@
 								<li><a href="#" id='nav-menu-shorelines'>Shorelines</a></li>
 								<li><a href="#" id='nav-menu-baseline'>Baseline</a></li>
 								<li><a href="#" id='nav-menu-transects'>Transects</a></li>
+								<li><a href="#" id='nav-menu-bias'>Proxy-Datum Bias</a></li>
 								<li><a href="#" id='nav-menu-calculation'>Calculation</a></li>
 								<li><a href="#" id='nav-menu-results'>Results</a></li>
                             </ul>
