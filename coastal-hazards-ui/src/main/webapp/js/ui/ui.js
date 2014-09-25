@@ -3,8 +3,8 @@ var UI = function() {
     
     var me = (this === window) ? {} : this;
     
-    me.work_stages = ['shorelines', 'baseline', 'transects', 'bias', 'calculation', 'results'];
-    me.work_stages_objects = [Shorelines, Baseline, Transects, ProxyDatumBias, Calculation, Results];
+    me.work_stages = ['bias', 'shorelines', 'baseline', 'transects', 'calculation', 'results'];
+    me.work_stages_objects = [ProxyDatumBias, Shorelines, Baseline, Transects, Calculation, Results];
     me.base_name = undefined;//init to undefined. Update in baselines
     me.precachedImages = [
 			'images/introduction_images/BaselineDraw.gif',
