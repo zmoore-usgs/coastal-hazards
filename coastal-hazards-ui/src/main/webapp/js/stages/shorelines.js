@@ -8,7 +8,10 @@ var Shorelines = {
 		{attr: 'MHW', defaultValue: "0"}
 	],
 	groupingColumn: 'Date_',
-	uploadEndpoint: 'upload-shoreline',
+	uploadEndpoint: 'stage-shoreline',
+	uploadExtraParams : {
+		'action' : 'stage'
+	}, 
 	description: {
 		'stage': '<p>Shorelines are geospatial polylines which represent the location of the shoreline and various points in time</p> <p>Add shorelines to your workspace with the selection box above or upload your own zipped shapefile containing shoreline polylines within the Manage tab.</p><p>Use the map to investigate the selected shorelines, clicking to enable/disable for DSASweb processing.</p><hr />View and select existing published shorelines, or upload your own. Shorelines represent snap-shots of the coastline at various points in time.',
 		'view-tab': 'Select a published collection of shorelines to add to the workspace.',

@@ -32,9 +32,9 @@ public class ZipInterpolator {
 		// unpack
 		File tmpDir = Files.createTempDirectory("xplode").toFile();
 		File shpFile = unpack(tmpDir,uploadDestinationFile);
-		
+		String shapefileWithoutSuffix = shpFile.getAbsolutePath().replace(".shp", "");
 		Xploder x = new Xploder();
-		File ptFile = x.explode(shpFile.getAbsolutePath());
+		File ptFile = x.explode(shapefileWithoutSuffix);
 		
 		File newZip = repack(tmpDir,ptFile);
 		return newZip;

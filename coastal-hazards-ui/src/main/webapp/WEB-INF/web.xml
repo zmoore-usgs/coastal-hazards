@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 	<display-name>coastal-hazards-ui</display-name>
-
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
@@ -38,8 +37,48 @@
 		</init-param>
 	</servlet>
 	<servlet>
+		<servlet-name>ShorelineShapefileUploadServlet</servlet-name>
+		<servlet-class>gov.usgs.cida.coastalhazards.service.ShorelineShapefileUploadServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+		<init-param>
+			<param-name>application.name</param-name>
+			<param-value>coastal-hazards</param-value>
+		</init-param>
+		<init-param>
+			<param-name>max.upload.file.size</param-name>
+			<param-value>0</param-value>
+		</init-param>
+		<init-param>
+			<param-name>geoserver.endpoint</param-name>
+			<param-value>http://localhost:8081/coastal-hazards-geoserver/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>geoserver.username</param-name>
+			<param-value>admin</param-value>
+		</init-param>
+		<init-param>
+			<param-name>default.upload.workspace</param-name>
+			<param-value/>
+		</init-param>
+		<init-param>
+			<param-name>default.upload.storename</param-name>
+			<param-value>ch-input</param-value>
+		</init-param>
+		<init-param>
+			<param-name>use.crs.failover</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>projection.policy</param-name>
+			<param-value>reproject</param-value>
+		</init-param>
+	
+		l
+	</servlet>
+	<servlet>
 		<servlet-name>shapefile-upload-servlet</servlet-name>
 		<servlet-class>gov.usgs.cida.geoutils.geoserver.servlet.ShapefileUploadServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
 		<!-- 
 		Used for reading JNDI variables. All JNDI variables used for this application 
 		will be prefixed with this parameter. Example: 
@@ -134,6 +173,9 @@
 			<param-name>projection.policy</param-name>
 			<param-value>reproject</param-value>
 		</init-param>
+	
+	
+		l
 	</servlet>
 	<servlet>
 		<servlet-name>ShapefileImportService</servlet-name>
@@ -156,7 +198,19 @@
 		<servlet-name>PublishService</servlet-name>
 		<servlet-class>gov.usgs.cida.coastalhazards.service.PublishService</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>ShorelineStagingService</servlet-name>
+		<servlet-class>gov.usgs.cida.coastalhazards.service.ShorelineStagingService</servlet-class>
+	</servlet>
 	<!-- MAPPING -->
+	<servlet-mapping>
+		<servlet-name>ShorelineShapefileUploadServlet</servlet-name>
+		<url-pattern>/service/upload-shoreline</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ShorelineStagingService</servlet-name>
+		<url-pattern>/service/stage-shoreline</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>GeoServerServlet</servlet-name>
 		<url-pattern>/geoserver/*</url-pattern>
