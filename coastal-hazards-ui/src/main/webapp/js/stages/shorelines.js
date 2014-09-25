@@ -1,6 +1,5 @@
 /* global LOG */
 /* global CONFIG */
-// TODO - Onclick table rows to zoom to shoreline set
 var Shorelines = {
 	stage: 'shorelines',
 	suffixes: ['_shorelines'],
@@ -64,7 +63,6 @@ var Shorelines = {
 			});
 			boxLayer.addMarker(box);
 		});
-
 	},
 	enterStage: function () {
 		"use strict";
@@ -188,6 +186,7 @@ var Shorelines = {
 	 * Uses a OWS DescribeFeatureType response to add a layer to a map
 	 */
 	addLayerToMap: function (args) {
+		"use strict";
 		LOG.info('Shorelines.js::addLayerToMap');
 		var layer = args.layer;
 		LOG.debug('Shorelines.js::addLayerToMap: Adding shoreline layer ' + layer.title + 'to map');
@@ -297,6 +296,7 @@ var Shorelines = {
 		});
 	},
 	createSLDBody: function (args) {
+		"use strict";
 		var sldBody;
 		var colorDatePairings = args.colorDatePairings;
 		var groupColumn = args.groupColumn;
@@ -390,6 +390,7 @@ var Shorelines = {
 		return sldBody;
 	},
 	zoomToLayer: function () {
+		"use strict";
 		LOG.info('loadend event triggered on layer');
 		var bounds = new OpenLayers.Bounds();
 		var layers = CONFIG.map.getMap().getLayersBy('zoomToWhenAdded', true);
@@ -425,6 +426,7 @@ var Shorelines = {
 		}
 	},
 	createFeatureTable: function (event) {
+		"use strict";
 		LOG.info('Shorelines.js::createFeatureTable:: Creating color feature table');
 		var navTabs = $('#shoreline-table-navtabs');
 		var tabContent = $('#shoreline-table-tabcontent');
@@ -663,6 +665,7 @@ var Shorelines = {
 		}
 	},
 	setupTableSorting: function () {
+		"use strict";
 		$.tablesorter.addParser({
 			id: 'visibility',
 			is: function (s) {
@@ -686,10 +689,12 @@ var Shorelines = {
 		});
 	},
 	clear: function () {
+		"use strict";
 		$("#shorelines-list").val('');
 		Shorelines.listboxChanged();
 	},
 	listboxChanged: function () {
+		"use strict";
 		LOG.info('Shorelines.js::listboxChanged: A shoreline was selected from the select list');
 		CONFIG.map.getShorelineBoxLayer().setVisibility(true);
 		Shorelines.disableRemoveButton();
@@ -771,19 +776,23 @@ var Shorelines = {
 		}
 	},
 	populateFeaturesList: function () {
+		"use strict";
 		CONFIG.ui.populateFeaturesList({
 			caller: Shorelines
 		});
 	},
 	initializeUploader: function (args) {
+		"use strict";
 		CONFIG.ui.initializeUploader($.extend({
 			caller: Shorelines
 		}, args));
 	},
 	getShorelineIdControl: function () {
+		"use strict";
 		return CONFIG.map.getControlBy('title', 'shoreline-identify-control');
 	},
 	activateShorelineIdControl: function () {
+		"use strict";
 		var idControl = Shorelines.getShorelineIdControl();
 		if (idControl) {
 			LOG.debug('Shorelines.js::enterStage: Shoreline identify control found in the map. Activating.');
@@ -795,6 +804,7 @@ var Shorelines = {
 		}
 	},
 	deactivateShorelineIdControl: function () {
+		"use strict";
 		var idControl = Shorelines.getShorelineIdControl();
 		if (idControl) {
 			LOG.debug('Shorelines.js::enterStage: Shoreline identify control found in the map.  Deactivating.');
@@ -802,15 +812,19 @@ var Shorelines = {
 		}
 	},
 	closeShorelineIdWindows: function () {
+		"use strict";
 		$('#FramedCloud_close').trigger('click');
 	},
 	disableRemoveButton: function () {
+		"use strict";
 		$('#shorelines-remove-btn').attr('disabled', 'disabled');
 	},
 	enableRemoveButton: function () {
+		"use strict";
 		$('#shorelines-remove-btn').removeAttr('disabled');
 	},
 	removeResource: function (args) {
+		"use strict";
 		args = args || {};
 		var layer = args.layer || $('#shorelines-list option:selected')[0].text;
 		var store = args.store || 'ch-input';
@@ -862,6 +876,7 @@ var Shorelines = {
 		}
 	},
 	getActive: function () {
+		"use strict";
 		return $('#shorelines-list').children(':selected').map(function (i, v) {
 			return v.value;
 		}).toArray();
