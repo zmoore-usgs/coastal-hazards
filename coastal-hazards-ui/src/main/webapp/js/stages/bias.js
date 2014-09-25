@@ -345,7 +345,7 @@ var ProxyDatumBias = {
 	        '<PointSymbolizer>' + 
 	        '<Graphic>' + 
 	        '<Mark>' + 
-	        '<WellKnownName>circle</WellKnownName>' + 
+	        '<WellKnownName>triangle</WellKnownName>' + 
 	        '<Fill>' + 
 	        '<CssParameter name="fill">' + fillColor + '</CssParameter>' + 
 	        '</Fill>' + 
@@ -354,7 +354,7 @@ var ProxyDatumBias = {
 	        '<CssParameter name="stroke-width">2</CssParameter>' + 
 	        '</Stroke>' + 
 	        '</Mark>' + 
-	        '<Size>6</Size>' + 
+	        '<Size>8</Size>' + 
 	        '</Graphic>' + 
 	        '</PointSymbolizer>' + 
 	        '</Rule>' + 

@@ -101,7 +101,7 @@ var Calculation = {
         '<CssParameter name="stroke-width">2</CssParameter>' + 
         '</Stroke>' + 
         '</Mark>' + 
-        '<Size>6</Size>' + 
+        '<Size>8</Size>' + 
         '</Graphic>' + 
         '</PointSymbolizer>' + 
         '</Rule>' + 
