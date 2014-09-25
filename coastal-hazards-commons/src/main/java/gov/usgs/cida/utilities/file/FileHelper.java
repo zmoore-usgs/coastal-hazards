@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -710,4 +711,29 @@ public class FileHelper {
             IOUtils.closeQuietly(zos);
         }
     }
+
+	/**
+	 * Creates a base64 encoded token based on a file name
+	 * @param file
+	 * @param fullPath use the full path of the file to create the token, otherwise
+	 * just the file name
+	 * @return 
+	 */
+	public static String base64EncodeFileName(File file, boolean fullPath) {
+		if (!file.exists()) {
+			return "";
+		} else {
+			byte[] input;
+			Charset encodeCharset = Charset.defaultCharset();
+			
+			if (fullPath) {
+				input = file.getAbsolutePath().getBytes(encodeCharset);
+			} else {
+				input = file.getName().getBytes(encodeCharset);
+			}
+			
+			byte[] encodedPath = base64Encode(input);
+			return new String(encodedPath, encodeCharset);
+		}
+	}
 }
