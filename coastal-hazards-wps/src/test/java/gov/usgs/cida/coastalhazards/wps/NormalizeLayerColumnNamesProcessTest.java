@@ -5,14 +5,19 @@ import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.gs.ImportProcess;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,31 +32,55 @@ public class NormalizeLayerColumnNamesProcessTest extends WPSTestSupport {
 	public static final String WORKSPACE_NAME = "gs";
 	public static final String LAYER_NAME = "myLayerName";
 	public static final String STORE_NAME = "myStoreName";
-	private ImportProcess dummyImportProcess;
-	private AutoImportProcess autoImportProcess;
-	private LayerImportUtil importer;
-	
+
+	private static final String tempDir = System.getProperty("java.io.tmpdir");
+	private static File workDir;
+	private static File mixedCaseShapefile;
+	private static File mixedCaseColumnNamesZeroLengthPRJ;
+
 	@BeforeClass
 	public static void setupAll() throws IOException {
+		workDir = new File(tempDir, String.valueOf(new Date().getTime()));
+		FileUtils.deleteQuietly(workDir);
+		FileUtils.forceMkdir(workDir);
+
 		// leaks files, need to delete all the files associated with .shp
 		outTest = File.createTempFile("test", ".shp");
 		outTest.deleteOnExit();
 	}
-	
+
+	@AfterClass
+	public static void tearDownClass() {
+		FileUtils.deleteQuietly(workDir);
+	}
+	private ImportProcess dummyImportProcess;
+	private AutoImportProcess autoImportProcess;
+	private LayerImportUtil importer;
+
 	@Before
-	public void setupTest() {
+	public void setupTest() throws URISyntaxException, IOException {
+		String packagePath = "gov/usgs/cida/coastalhazards/mixedCaseColumnNames/";
+		FileUtils.copyDirectory(new File(getClass().getResource("/").toURI()), workDir);
+		mixedCaseShapefile = new File(workDir, packagePath + "mixedCaseColumnNames.shp");
+		mixedCaseColumnNamesZeroLengthPRJ = new File(workDir, packagePath + "mixedCaseColumnNamesZeroLengthPRJ.shp");
 		dummyImportProcess = new DummyImportProcess(outTest);
 		autoImportProcess = new AutoImportProcess(catalog);
 		importer = new LayerImportUtil(catalog, autoImportProcess);
 	}
-	
+
+	@After
+	public void tearDown() {
+		for (File file : FileUtils.listFiles(workDir, null, true)) {
+			FileUtils.deleteQuietly(file);
+		}
+	}
+
 	@Test
 	public void testExecute() throws Exception {
 		System.out.println("testExecute");
 
 		//inspiration: http://www.torres.at/geoserver-create-datastore-programmatically/
-		URL mixedCaseShapefile = NormalizeLayerColumnNamesProcessTest.class.getClassLoader().getResource("gov/usgs/cida/coastalhazards/mixedCaseColumnNames/mixedCaseColumnNames.shp");
-		SimpleFeatureCollection mixedCaseFeatureCollection = (SimpleFeatureCollection) FeatureCollectionFromShp.featureCollectionFromShp(mixedCaseShapefile);
+		SimpleFeatureCollection mixedCaseFeatureCollection = (SimpleFeatureCollection) FeatureCollectionFromShp.featureCollectionFromShp(mixedCaseShapefile.toURI().toURL());
 		String response = importer.importLayer(mixedCaseFeatureCollection, WORKSPACE_NAME, STORE_NAME, LAYER_NAME, mixedCaseFeatureCollection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
 		NormalizeLayerColumnNamesProcess normalizeLayerColumnNamesProcess = new NormalizeLayerColumnNamesProcess(dummyImportProcess, catalog);
 		String normalizeResult = normalizeLayerColumnNamesProcess.execute(response);
@@ -59,25 +88,24 @@ public class NormalizeLayerColumnNamesProcessTest extends WPSTestSupport {
 		System.out.println(normalizeResult);
 		validateColumnNames(outTest);
 	}
-	
+
 	// The exception here is actually thrown by the AutoImportProcess, but I also have a check for this in the NormalizeLayerColumnProcess
 	@Test(expected = org.geotools.process.ProcessException.class)
 	public void testExecuteWithZeroLengthPRJ() throws Exception {
 		System.out.println("testExecuteWithZeroLengthPRJ");
-		URL mixedCaseShapefile = NormalizeLayerColumnNamesProcessTest.class.getClassLoader().getResource("gov/usgs/cida/coastalhazards/mixedCaseColumnNames/mixedCaseColumnNamesZeroLengthPRJ.shp");
-		SimpleFeatureCollection mixedCaseFeatureCollection = (SimpleFeatureCollection) FeatureCollectionFromShp.featureCollectionFromShp(mixedCaseShapefile);
+		SimpleFeatureCollection mixedCaseFeatureCollection = (SimpleFeatureCollection) FeatureCollectionFromShp.featureCollectionFromShp(mixedCaseColumnNamesZeroLengthPRJ.toURI().toURL());
 		String response = importer.importLayer(mixedCaseFeatureCollection, WORKSPACE_NAME, STORE_NAME, LAYER_NAME, mixedCaseFeatureCollection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
 		NormalizeLayerColumnNamesProcess normalizeLayerColumnNamesProcess = new NormalizeLayerColumnNamesProcess(dummyImportProcess, catalog);
 		normalizeLayerColumnNamesProcess.execute(response);
 	}
-	
+
 	@Test(expected = org.geotools.process.ProcessException.class)
 	public void testExecuteWithMissingLayer() throws Exception {
 		System.out.println("testExecuteWithMissingLayer");
 		NormalizeLayerColumnNamesProcess normalizeLayerColumnNamesProcess = new NormalizeLayerColumnNamesProcess(dummyImportProcess, catalog);
 		normalizeLayerColumnNamesProcess.execute("test:test");
 	}
-	
+
 	@Test(expected = java.lang.NullPointerException.class)
 	public void testExecuteWithNullCatalog() throws Exception {
 		System.out.println("testExecuteWithNullCatalog");
