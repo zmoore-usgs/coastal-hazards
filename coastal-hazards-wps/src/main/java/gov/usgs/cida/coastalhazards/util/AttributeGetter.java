@@ -23,7 +23,7 @@ public class AttributeGetter {
     
 	public AttributeGetter(FeatureType type) {
 		this.type = type;
-		this.attrMap = new HashMap<String, Name>();
+		this.attrMap = new HashMap<>();
 		Collection<PropertyDescriptor> descriptors = type.getDescriptors();
 		for (PropertyDescriptor desc : descriptors) {
 			if (isGeom(desc)) {
@@ -79,6 +79,9 @@ public class AttributeGetter {
 			}
 			else if (isOther(desc, Constants.SEGMENT_ID_ATTR)) {
 				attrMap.put(Constants.SEGMENT_ID_ATTR, desc.getName());
+			}
+			else if (isOther(desc, Constants.BIAS_ATTR)) {
+				attrMap.put(Constants.BIAS_ATTR, desc.getName());
 			}
 		}
 	}

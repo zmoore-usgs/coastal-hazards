@@ -257,7 +257,7 @@ public class Intersection {
     }
 
     public static Map<DateTime, Intersection> calculateIntersections(Transect transect, STRtree strTree, boolean useFarthest, AttributeGetter getter) {
-        Map<DateTime, Intersection> allIntersections = new HashMap<DateTime, Intersection>();
+        Map<DateTime, Intersection> allIntersections = new HashMap<>();
         LineString line = transect.getLineString();
         List<ShorelineFeature> possibleIntersects = strTree.query(line.getEnvelopeInternal());
         for (ShorelineFeature shoreline : possibleIntersects) {

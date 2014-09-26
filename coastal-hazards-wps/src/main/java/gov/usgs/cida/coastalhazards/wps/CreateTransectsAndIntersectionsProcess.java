@@ -7,13 +7,16 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import gov.usgs.cida.coastalhazards.util.AttributeGetter;
 import gov.usgs.cida.coastalhazards.util.BaselineDistanceAccumulator;
 import gov.usgs.cida.coastalhazards.util.CRSUtils;
+
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
+
 import gov.usgs.cida.coastalhazards.util.Constants.Orientation;
 import gov.usgs.cida.coastalhazards.util.GeomAsserts;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
@@ -21,6 +24,7 @@ import gov.usgs.cida.coastalhazards.util.UTMFinder;
 import gov.usgs.cida.coastalhazards.wps.exceptions.PoorlyDefinedBaselineException;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedCoordinateReferenceSystemException;
 import gov.usgs.cida.coastalhazards.wps.geom.Intersection;
+import gov.usgs.cida.coastalhazards.wps.geom.ProxyDatumBias;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineFeature;
 import gov.usgs.cida.coastalhazards.wps.geom.ShorelineSTRTreeBuilder;
 import gov.usgs.cida.coastalhazards.wps.geom.Transect;
@@ -47,6 +51,8 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+import static gov.usgs.cida.coastalhazards.wps.geom.Intersection.calculateIntersections;
+
 /**
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
@@ -69,6 +75,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
      *  With new maxLength algorithm, we may want to allow a maxLength parameter to speed up calculation
 	 * @param shorelines feature collection of shorelines
 	 * @param baseline feature collection of baselines
+	 * @param biasRef feature collection of PDBC bias reference line
 	 * @param spacing spacing in meters of transects along baseline
 	 * @param smoothing how much smoothing to apply to transect generation
 	 * @param farthest whether to use nearest or farthest intersection of shoreline (default false)
@@ -83,6 +90,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
     public String execute(
             @DescribeParameter(name = "shorelines", min = 1, max = 1) SimpleFeatureCollection shorelines,
             @DescribeParameter(name = "baseline", min = 1, max = 1) SimpleFeatureCollection baseline,
+            @DescribeParameter(name = "biasRef", min = 1, max = 1) SimpleFeatureCollection biasRef,
             @DescribeParameter(name = "spacing", min = 1, max = 1) Double spacing,
             @DescribeParameter(name = "smoothing", min = 0, max = 1) Double smoothing, 
             @DescribeParameter(name = "farthest", min = 0, max = 1) Boolean farthest,
@@ -93,7 +101,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         // defaults
         if (smoothing == null) { smoothing = 0d; }
         if (farthest == null) {farthest = false; }
-        return new Process(shorelines, baseline, spacing, smoothing, farthest, workspace, store, transectLayer, intersectionLayer).execute();
+        return new Process(shorelines, baseline, biasRef, spacing, smoothing, farthest, workspace, store, transectLayer, intersectionLayer).execute();
     }
     
     protected class Process {
@@ -102,6 +110,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> shorelineFeatureCollection;
         private final FeatureCollection<SimpleFeatureType, SimpleFeature> baselineFeatureCollection;
+        private final FeatureCollection<SimpleFeatureType, SimpleFeature> biasRefFeatureCollection;
         private final double spacing;
         private final double smoothing;
         private final boolean useFarthest;
@@ -113,8 +122,10 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         private CoordinateReferenceSystem utmCrs;
         
         private STRtree strTree;
+        private STRtree biasTree;
         private SimpleFeatureType transectFeatureType;
         private SimpleFeatureType intersectionFeatureType;
+        private SimpleFeatureType biasIncomingFeatureType;
         private PreparedGeometry preparedShorelines;
         
         private double maxTransectLength;
@@ -125,6 +136,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         
         protected Process(FeatureCollection<SimpleFeatureType, SimpleFeature> shorelines,
                 FeatureCollection<SimpleFeatureType, SimpleFeature> baseline,
+                FeatureCollection<SimpleFeatureType, SimpleFeature> biasRef,
                 double spacing,
                 double smoothing,
                 Boolean farthest,
@@ -134,6 +146,8 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                 String intersectionLayer) {
             this.shorelineFeatureCollection = shorelines;
             this.baselineFeatureCollection = baseline;
+            this.biasRefFeatureCollection = biasRef;
+
             this.spacing = spacing;
             this.smoothing = smoothing;
             this.useFarthest = farthest;
@@ -148,8 +162,10 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             
             // Leave these null to start, they get populated after error checks occur (somewhat expensive)
             this.strTree = null;
+            this.biasTree = null;
             this.transectFeatureType = null;
             this.intersectionFeatureType = null;
+            this.biasIncomingFeatureType = null;
             this.preparedShorelines = null;
             
             this.resultTransectsCollection = null;
@@ -162,10 +178,15 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             
             CoordinateReferenceSystem shorelinesCrs = CRSUtils.getCRSFromFeatureCollection(shorelineFeatureCollection);
             CoordinateReferenceSystem baselineCrs = CRSUtils.getCRSFromFeatureCollection(baselineFeatureCollection);
+            CoordinateReferenceSystem biasCrs = CRSUtils.getCRSFromFeatureCollection(biasRefFeatureCollection);
+
             if (!CRS.equalsIgnoreMetadata(shorelinesCrs, REQUIRED_CRS_WGS84)) {
                 throw new UnsupportedCoordinateReferenceSystemException("Shorelines are not in accepted projection");
             }
             if (!CRS.equalsIgnoreMetadata(baselineCrs, REQUIRED_CRS_WGS84)) {
+                throw new UnsupportedCoordinateReferenceSystemException("Baseline is not in accepted projection");
+            }
+            if (!CRS.equalsIgnoreMetadata(biasCrs, REQUIRED_CRS_WGS84)) {
                 throw new UnsupportedCoordinateReferenceSystemException("Baseline is not in accepted projection");
             }
             this.utmCrs = UTMFinder.findUTMZoneCRSForCentroid((SimpleFeatureCollection)shorelineFeatureCollection);
@@ -175,16 +196,20 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             
             SimpleFeatureCollection transformedShorelines = CRSUtils.transformFeatureCollection(shorelineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
             SimpleFeatureCollection transformedBaselines = CRSUtils.transformFeatureCollection(baselineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
-            
+            SimpleFeatureCollection transformedBiasRef = CRSUtils.transformFeatureCollection(biasRefFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
+
             // this could be from a parameter?
             this.maxTransectLength = calculateMaxDistance(transformedShorelines, transformedBaselines);
             
             MultiLineString shorelineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedShorelines);
             MultiLineString baselineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedBaselines);
+
             this.strTree = new ShorelineSTRTreeBuilder(transformedShorelines).build();
+            this.biasTree = new ShorelineSTRTreeBuilder(transformedBiasRef).build();
             
             this.transectFeatureType = Transect.buildFeatureType(utmCrs);
             this.intersectionFeatureType = Intersection.buildSimpleFeatureType(transformedShorelines, utmCrs);
+            this.biasIncomingFeatureType = biasRefFeatureCollection.getSchema();
             
             this.preparedShorelines = PreparedGeometryFactory.prepare(shorelineGeometry);
             GeomAsserts.assertBaselinesDoNotCrossShorelines(preparedShorelines, baselineGeometry);
@@ -249,18 +274,23 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             List<SimpleFeature> transectFeatures = new LinkedList<SimpleFeature>();
             List<SimpleFeature> intersectionFeatures = new LinkedList<SimpleFeature>();
             AttributeGetter attGet = new AttributeGetter(intersectionFeatureType);
+            AttributeGetter biasGetter = new AttributeGetter(biasIncomingFeatureType);
             // grow by about 200?
             double guessTransectLength = MIN_TRANSECT_LENGTH * 4;
             
             for (Transect transect : vectsOnBaseline) {
                 Map<DateTime, Intersection> allIntersections = Maps.newHashMap();
                 double startDistance = 0;
+                ProxyDatumBias biasCorrection = null;
                 
                 do {
                     Transect subTransect = transect.subTransect(startDistance, guessTransectLength);
                     startDistance += guessTransectLength;
                     Intersection.updateIntersectionsWithSubTransect
                             (allIntersections, transect.getOriginPoint(), subTransect, strTree, useFarthest, attGet);
+                    if (biasCorrection == null) {
+                        biasCorrection = getBiasValue(subTransect, biasTree, biasGetter);
+                    }
                 }
                 while (startDistance < maxTransectLength);
                 
@@ -268,6 +298,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                     
                     double transectLength = Intersection.absoluteFarthest(MIN_TRANSECT_LENGTH, allIntersections.values());
                     transect.setLength(transectLength + TRANSECT_PADDING);
+                    transect.setBias(biasCorrection);
                     SimpleFeature feature = transect.createFeature(transectFeatureType);
                     transectFeatures.add(feature);
 
@@ -285,6 +316,10 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
          * Vectors point 90&deg; counterclockwise currently
          * @param lineString line along which to get vectors
          * @param spacing how often to create vectors along line
+		 * @param orientation
+		 * @param orthoDirection
+		 * @param baselineId
+		 * @param accumulatedBaselineLength
          * @return List of fancy vectors I concocted
          */
         protected List<Transect> handleLineString(LineString lineString, 
@@ -294,7 +329,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                 String baselineId,
                 double accumulatedBaselineLength) {
             List<LineSegment> intervals = findIntervals(lineString, true, spacing, smoothing);
-            List<Transect> transects = new ArrayList<Transect>(intervals.size());
+            List<Transect> transects = new ArrayList<>(intervals.size());
             for (LineSegment interval : intervals) {
                 transects.add(
                     Transect.generatePerpendicularVector(
@@ -546,4 +581,21 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         
         return maxDist;
     }
+	
+	public static ProxyDatumBias getBiasValue(Transect transect, STRtree biasTree, AttributeGetter biasGetter) {
+		ProxyDatumBias proxy = null;
+		LineString line = transect.getLineString();
+		List<ShorelineFeature> possibleIntersects = biasTree.query(line.getEnvelopeInternal());
+		for (ShorelineFeature feature : possibleIntersects) {
+			LineString segment = feature.segment;
+			if (segment.intersects(line)) {
+				Point intersection = (Point)segment.intersection(line);
+				double slopeVal = feature.interpolate(intersection, AVG_SLOPE_ATTR, biasGetter);
+				double biasVal = feature.interpolate(intersection, BIAS_ATTR, biasGetter);
+				double uncybVal = feature.interpolate(intersection, BIAS_UNCY_ATTR, biasGetter);
+				proxy = new ProxyDatumBias(slopeVal, biasVal, uncybVal);
+			}
+		}
+		return proxy;
+	}
 }

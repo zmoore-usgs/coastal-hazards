@@ -33,6 +33,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
     private final static double EPS = 1e-15;
     
     private GeometryFactory gf;
+    private SimpleFeatureCollection biasfc = FeatureCollectionFromShp.getEmptyFeatureCollection();
     
     @Before
     public void setup() {
@@ -81,7 +82,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
         FeatureCollection<SimpleFeatureType, SimpleFeature> shorelinefc =
                 FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
         CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(), new DummyCatalog());
-        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, 0d, Boolean.FALSE, null, null, null, null);
+        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, biasfc, 50.0d, 0d, Boolean.FALSE, null, null, null, null);
     }
     
     /*
@@ -100,7 +101,7 @@ public class CreateTransectsAndIntersectionsProcessTest {
         SimpleFeatureCollection shorelinefc = (SimpleFeatureCollection)
                 FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
         CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(shpfile), new DummyCatalog());
-        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 50.0d, 0d, Boolean.FALSE, null, null, null, null);
+        generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, biasfc, 50.0d, 0d, Boolean.FALSE, null, null, null, null);
     }
     
         
