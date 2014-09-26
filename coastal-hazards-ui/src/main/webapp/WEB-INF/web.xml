@@ -201,6 +201,10 @@
 	<servlet>
 		<servlet-name>ShorelineStagingService</servlet-name>
 		<servlet-class>gov.usgs.cida.coastalhazards.service.ShorelineStagingService</servlet-class>
+		<init-param>
+			<param-name>application.name</param-name>
+			<param-value>coastal-hazards</param-value>
+		</init-param>
 	</servlet>
 	<!-- MAPPING -->
 	<servlet-mapping>

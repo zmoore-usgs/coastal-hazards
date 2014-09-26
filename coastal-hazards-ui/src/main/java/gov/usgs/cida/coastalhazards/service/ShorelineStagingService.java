@@ -1,15 +1,22 @@
 package gov.usgs.cida.coastalhazards.service;
 
+import com.google.gson.Gson;
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse.ResponseType;
 import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
+import gov.usgs.cida.utilities.file.FileHelper;
+import gov.usgs.cida.utilities.service.ServiceHelper;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +24,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -30,15 +39,20 @@ import org.slf4j.LoggerFactory;
 public class ShorelineStagingService extends HttpServlet {
 
 	private static final long serialVersionUID = 2377995353146379768L;
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ShorelineStagingService.class);
+	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ShorelineStagingService.class);
 	private static final Integer defaultMaxFileSize = Integer.MAX_VALUE;
 	private static final DynamicReadOnlyProperties props = JNDISingleton.getInstance();
 	private static final String defaultFilenameParam = "qqfile";
-	private static final String workDir = System.getProperty("java.io.tmpdir");
-	private static Map<String, String> tokenMap = new HashMap<String, String>();
+	private static Map<String, String> tokenMap = new HashMap<>();
+	private static final String DIRECTORY_BASE_PARAM_CONFIG_KEY = ".files.directory.base";
+	private static final String DIRECTORY_UPLOAD_PARAM_CONFIG_KEY = ".files.directory.upload";
+	private static final String DIRECTORY_WORK_PARAM_CONFIG_KEY = ".files.directory.work";
 	private String applicationName = null;
 	private Integer maxFileSize;
 	private String propertyBasedFilenameParam;
+	private File baseDirectory;
+	private File uploadDirectory;
+	private File workDirectory;
 
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {
@@ -55,11 +69,10 @@ public class ShorelineStagingService extends HttpServlet {
 		if (maxFileSize == 0) {
 			maxFileSize = defaultMaxFileSize;
 		}
-		LOG.debug("Maximum allowable file size set to: " + maxFileSize + " bytes");
+		LOGGER.debug("Maximum allowable file size set to: " + maxFileSize + " bytes");
 
 		String fnInitParam = servletConfig.getInitParameter("filename.param");
 		String fnJndiProp = props.getProperty(applicationName + ".filename.param");
-
 		if (StringUtils.isNotBlank(fnInitParam)) {
 			propertyBasedFilenameParam = fnInitParam;
 		} else if (StringUtils.isNotBlank(fnJndiProp)) {
@@ -68,6 +81,10 @@ public class ShorelineStagingService extends HttpServlet {
 			propertyBasedFilenameParam = defaultFilenameParam;
 		}
 
+		// Base directory should be pulled from JNDI or set to the system temp directory
+		baseDirectory = new File(props.getProperty(applicationName + DIRECTORY_BASE_PARAM_CONFIG_KEY, System.getProperty("java.io.tmpdir")));
+		uploadDirectory = new File(baseDirectory, props.getProperty(applicationName + DIRECTORY_UPLOAD_PARAM_CONFIG_KEY));
+		workDirectory = new File(baseDirectory, props.getProperty(applicationName + DIRECTORY_WORK_PARAM_CONFIG_KEY));
 	}
 
 	/**
@@ -83,36 +100,22 @@ public class ShorelineStagingService extends HttpServlet {
 			throws ServletException, IOException {
 		Map<String, String> responseMap = new HashMap<>();
 		boolean success = false;
-		
-		RequestResponse.ResponseType responseType = RequestResponse.ResponseType.XML;
-		String responseEncoding = request.getParameter("response.encoding");
-		if (StringUtils.isBlank(responseEncoding) || responseEncoding.toLowerCase(Locale.getDefault()).contains("json")) {
-			responseType = RequestResponse.ResponseType.JSON;
-		}
-		LOG.debug("Response type set to " + responseType.toString());
+
+		ResponseType responseType = ServiceHelper.getResponseType(request);
 
 		String action = request.getParameter("action");
 
 		if (StringUtils.isBlank(action)) {
-			sendNotEnoughParametersError(response, new String[]{"action"}, responseType);
+			ServiceHelper.sendNotEnoughParametersError(response, new String[]{"action"}, responseType);
 		} else if (action.equalsIgnoreCase("stage")) {
 			try {
-				responseMap = stageFile(request, propertyBasedFilenameParam, workDir);
+				responseMap = stageFile(request, propertyBasedFilenameParam, uploadDirectory.getAbsolutePath());
 				success = true;
 			} catch (FileUploadException ex) {
 				sendExceptionalError(response, "Could not stage shapefile", ex, responseType);
 			}
-		} else if (action.equalsIgnoreCase("read-dbf")) {
-			String token = request.getParameter("token");
-			if (StringUtils.isBlank(token)) {
-				sendNotEnoughParametersError(response, new String[]{"token"}, responseType);
-			} else {
-				File stagedShorelineShapefile = getFileFromToken("", tokenMap);
-				
-				success = true;
-			}
 		} else {
-			sendNotEnoughParametersError(response, new String[]{"action"}, responseType);
+			ServiceHelper.sendNotEnoughParametersError(response, new String[]{"stage"}, responseType);
 		}
 
 		if (success) {
@@ -120,23 +123,96 @@ public class ShorelineStagingService extends HttpServlet {
 		}
 	}
 
-	private void sendNotEnoughParametersError(HttpServletResponse response, String[] missingParams, ResponseType responseType) {
-		Map<String, String> responseMap = new HashMap<>(missingParams.length + 1);
-		for (String missingParam : missingParams) {
-			responseMap.put("error", missingParam + " parameter is required");
-			responseMap.put("serverCode", "400");
-			LOG.info("Request did not include " + missingParam + " parameter");
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		ResponseType responseType = ServiceHelper.getResponseType(request);
+		Map<String, String> responseMap = new HashMap<>();
+		String action = request.getParameter("action");
+
+		if (StringUtils.isBlank(action)) {
+			ServiceHelper.sendNotEnoughParametersError(response, new String[]{"action"}, responseType);
+		} else if (action.equalsIgnoreCase("read-dbf")) {
+			String token = request.getParameter("token");
+			if (StringUtils.isBlank(token)) {
+				ServiceHelper.sendNotEnoughParametersError(response, new String[]{"token"}, responseType);
+			} else {
+				try {
+					responseMap = getShapefileHeadersStringUsingToken(token);
+				} catch (IOException ex) {
+					sendExceptionalError(response, "Could not read shapefile header", ex, responseType);
+					return;
+				}
+			}
+		} else {
+			ServiceHelper.sendNotEnoughParametersError(response, new String[]{"read-dbf"}, responseType);
 		}
-		RequestResponse.sendErrorResponse(response, responseMap, responseType);
+
+		if (Boolean.valueOf(responseMap.get("success"))) {
+			RequestResponse.sendSuccessResponse(response, responseMap, responseType);
+		} else {
+			RequestResponse.sendErrorResponse(response, responseMap, responseType);
+		}
 	}
-	
+
+	private Map<String, String> getShapefileHeadersStringUsingToken(String token) throws IOException {
+		Map<String, String> responseMap = new HashMap<>();
+		File stagedShorelineShapefile = getFileFromToken(token, tokenMap);
+
+		if (null != stagedShorelineShapefile && stagedShorelineShapefile.exists()) {
+			// Create a new directory within the work directory
+			File tempLocation = new File(workDirectory, String.valueOf(new Date().getTime()));
+			FileUtils.forceMkdir(tempLocation);
+			try {
+				FileHelper.unzipFile(tempLocation.getAbsolutePath(), stagedShorelineShapefile);
+
+				Collection<File> shapefiles = FileUtils.listFiles(tempLocation, new String[]{"shp"}, false);
+				if (shapefiles.isEmpty()) {
+					responseMap.put("error", "No shapefiles in zip");
+					deleteFileUsingToken(token);
+				} else if (shapefiles.size() > 1) {
+					responseMap.put("error", "Multiple shapefiles in zip");
+					deleteFileUsingToken(token);
+				} else {
+					IterableShapefileReader reader = new IterableShapefileReader(shapefiles.iterator().next());
+					DbaseFileHeader dbfHeader = reader.getDbfHeader();
+					int fieldCount = dbfHeader.getNumFields();
+					StringBuilder headers = new StringBuilder();
+					for (int headerIndex = 0; headerIndex < fieldCount; headerIndex++) {
+						headers.append(dbfHeader.getFieldName(headerIndex)).append(",");
+					}
+					headers.deleteCharAt(headers.length() - 1);
+					responseMap.put("headers", headers.toString());
+					responseMap.put("success", "true");
+				}
+			} finally {
+				FileUtils.forceDelete(tempLocation);
+			}
+		} else {
+			tokenMap.remove(token);
+			responseMap.put("error", "File not found. Try re-staging shapefile");
+			responseMap.put("serverCode", "404");
+			responseMap.put("success", "false");
+		}
+		return responseMap;
+	}
+
+	private void deleteFileUsingToken(String token) {
+		File file = new File(tokenMap.get(token));
+		if (FileUtils.deleteQuietly(file)) {
+			LOGGER.info("Delete file " + file.getAbsolutePath() + " for token " + token);
+		} else {
+			LOGGER.info("Could not delete file " + file.getAbsolutePath() + " for token " + token);
+		}
+		tokenMap.remove(token);
+	}
+
 	private void sendExceptionalError(HttpServletResponse response, String error, Throwable t, ResponseType responseType) {
 		Map<String, String> responseMap = new HashMap<>(1);
 		responseMap.put("error", error);
 		RequestResponse.sendErrorResponse(response, responseMap, responseType);
-		LOG.warn(t.getMessage());
+		LOGGER.warn(t.getMessage());
 	}
-	
+
 	private Map<String, String> stageFile(HttpServletRequest request, String propertyBasedFilenameParam, String workDir) throws IOException, FileUploadException {
 		Map<String, String> responseMap = new HashMap<>(1);
 		File shapeZipFile = saveFileFromRequest(request, propertyBasedFilenameParam, workDir, true);
@@ -164,7 +240,7 @@ public class ShorelineStagingService extends HttpServlet {
 
 	/**
 	 * Given a map of token to file path string lookups, returns a File object
-	 * 
+	 *
 	 * @param token
 	 * @param tokenToFileMap
 	 * @return null if file or token does not exist
@@ -178,9 +254,9 @@ public class ShorelineStagingService extends HttpServlet {
 			}
 		}
 		return result;
-		 
+
 	}
-	
+
 	private File saveFileFromRequest(HttpServletRequest request, String defaultFileParam, String workDir, boolean overwrite) throws IOException, FileUploadException {
 		// The key to search for in the upload form post to find the file
 		String filenameParam = defaultFileParam;
@@ -188,21 +264,21 @@ public class ShorelineStagingService extends HttpServlet {
 		if (StringUtils.isNotBlank(fnReqParam)) {
 			filenameParam = fnReqParam;
 		}
-		LOG.debug("Filename parameter set to: " + filenameParam);
+		LOGGER.debug("Filename parameter set to: " + filenameParam);
 
-		LOG.debug("Cleaning file name.\nWas: " + filenameParam);
+		LOGGER.debug("Cleaning file name.\nWas: " + filenameParam);
 		String filename = cleanFileName(request.getParameter(filenameParam));
-		LOG.debug("Is: " + filename);
+		LOGGER.debug("Is: " + filename);
 		if (filenameParam.equals(filename)) {
-			LOG.debug("(No change)");
+			LOGGER.debug("(No change)");
 		}
 
 		File shapeZipFile = new File(workDir + File.separator + filename);
-		LOG.debug("Temporary file set to " + shapeZipFile.getPath());
+		LOGGER.debug("Temporary file set to " + shapeZipFile.getPath());
 
 		if (overwrite) {
 			if (shapeZipFile.delete()) {
-				LOG.debug("File already existed on server. Deleted before re-saving.");
+				LOGGER.debug("File already existed on server. Deleted before re-saving.");
 			}
 		}
 
@@ -265,9 +341,9 @@ public class ShorelineStagingService extends HttpServlet {
 			if (deleteMe.exists() && deleteMe.isFile()) {
 				try {
 					FileUtils.forceDelete(deleteMe);
-					LOG.debug("SShutting down, deleted {} ", filePath);
+					LOGGER.debug("SShutting down, deleted {} ", filePath);
 				} catch (IOException ex) {
-					LOG.debug("Shutting down but could not delete file " + filePath, ex);
+					LOGGER.debug("Shutting down but could not delete file " + filePath, ex);
 				}
 			}
 		}

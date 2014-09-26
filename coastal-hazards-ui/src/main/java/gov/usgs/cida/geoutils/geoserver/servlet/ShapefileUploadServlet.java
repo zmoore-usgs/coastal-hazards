@@ -2,9 +2,11 @@ package gov.usgs.cida.geoutils.geoserver.servlet;
 
 import gov.usgs.cida.config.DynamicReadOnlyProperties;
 import gov.usgs.cida.owsutils.commons.communication.RequestResponse;
+import gov.usgs.cida.owsutils.commons.communication.RequestResponse.ResponseType;
 import gov.usgs.cida.owsutils.commons.io.FileHelper;
 import gov.usgs.cida.owsutils.commons.properties.JNDISingleton;
 import gov.usgs.cida.owsutils.commons.shapefile.ProjectionUtils;
+import gov.usgs.cida.utilities.service.ServiceHelper;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
@@ -25,7 +27,9 @@ import java.util.Locale;
 import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -187,12 +191,7 @@ public class ShapefileUploadServlet extends HttpServlet {
 
 		Map<String, String> responseMap = new HashMap<>();
 
-		RequestResponse.ResponseType responseType = RequestResponse.ResponseType.XML;
-		String responseEncoding = request.getParameter("response.encoding");
-		if (StringUtils.isBlank(responseEncoding) || responseEncoding.toLowerCase(Locale.getDefault()).contains("json")) {
-			responseType = RequestResponse.ResponseType.JSON;
-		}
-		LOG.debug("Response type set to " + responseType.toString());
+		ResponseType responseType = ServiceHelper.getResponseType(request);
 
 		int fileSize = Integer.parseInt(request.getHeader("Content-Length"));
 		if (fileSize > maxFileSize) {
