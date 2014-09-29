@@ -240,8 +240,16 @@ public class Transect {
 
     public SimpleFeature createFeature(SimpleFeatureType type) {
         LineString line = this.getLineString();
+        Double avgSlope = null;
+        Double biasVal = null;
+        Double biasUncy = null;
+        if (bias != null) {
+            avgSlope = bias.getAvgSlope();
+            biasVal = bias.getBias();
+            biasUncy = bias.getUncyb();
+        }
         SimpleFeature feature = SimpleFeatureBuilder.build(type,
-                new Object[]{line,transectId, orientation.getValue(), baselineId, baselineDistance, bias.getAvgSlope(), bias.getBias(), bias.getUncyb()}, null);
+                new Object[]{line,transectId, orientation.getValue(), baselineId, baselineDistance, avgSlope, biasVal, biasUncy}, null);
         return feature;
     }
 }

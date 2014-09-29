@@ -90,7 +90,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
     public String execute(
             @DescribeParameter(name = "shorelines", min = 1, max = 1) SimpleFeatureCollection shorelines,
             @DescribeParameter(name = "baseline", min = 1, max = 1) SimpleFeatureCollection baseline,
-            @DescribeParameter(name = "biasRef", min = 1, max = 1) SimpleFeatureCollection biasRef,
+            @DescribeParameter(name = "biasRef", min = 0, max = 1) SimpleFeatureCollection biasRef,
             @DescribeParameter(name = "spacing", min = 1, max = 1) Double spacing,
             @DescribeParameter(name = "smoothing", min = 0, max = 1) Double smoothing, 
             @DescribeParameter(name = "farthest", min = 0, max = 1) Boolean farthest,
@@ -114,6 +114,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         private final double spacing;
         private final double smoothing;
         private final boolean useFarthest;
+        private final boolean doNotPerformBiasCorrection;
         private final String workspace;
         private final String store;
         private final String transectLayer;
@@ -146,7 +147,15 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                 String intersectionLayer) {
             this.shorelineFeatureCollection = shorelines;
             this.baselineFeatureCollection = baseline;
-            this.biasRefFeatureCollection = biasRef;
+
+            if (biasRef == null) {
+                this.doNotPerformBiasCorrection = true;
+                this.biasRefFeatureCollection = null;
+            } else {
+                this.doNotPerformBiasCorrection = false;
+                this.biasRefFeatureCollection = biasRef;
+            }
+            
 
             this.spacing = spacing;
             this.smoothing = smoothing;
@@ -178,7 +187,10 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             
             CoordinateReferenceSystem shorelinesCrs = CRSUtils.getCRSFromFeatureCollection(shorelineFeatureCollection);
             CoordinateReferenceSystem baselineCrs = CRSUtils.getCRSFromFeatureCollection(baselineFeatureCollection);
-            CoordinateReferenceSystem biasCrs = CRSUtils.getCRSFromFeatureCollection(biasRefFeatureCollection);
+            CoordinateReferenceSystem biasCrs = null;
+            if (!doNotPerformBiasCorrection) {
+                biasCrs = CRSUtils.getCRSFromFeatureCollection(biasRefFeatureCollection);
+            }
 
             if (!CRS.equalsIgnoreMetadata(shorelinesCrs, REQUIRED_CRS_WGS84)) {
                 throw new UnsupportedCoordinateReferenceSystemException("Shorelines are not in accepted projection");
@@ -186,8 +198,8 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             if (!CRS.equalsIgnoreMetadata(baselineCrs, REQUIRED_CRS_WGS84)) {
                 throw new UnsupportedCoordinateReferenceSystemException("Baseline is not in accepted projection");
             }
-            if (!CRS.equalsIgnoreMetadata(biasCrs, REQUIRED_CRS_WGS84)) {
-                throw new UnsupportedCoordinateReferenceSystemException("Baseline is not in accepted projection");
+            if (!doNotPerformBiasCorrection && !CRS.equalsIgnoreMetadata(biasCrs, REQUIRED_CRS_WGS84)) {
+                throw new UnsupportedCoordinateReferenceSystemException("Bias reference is not in accepted projection");
             }
             this.utmCrs = UTMFinder.findUTMZoneCRSForCentroid((SimpleFeatureCollection)shorelineFeatureCollection);
             if (this.utmCrs == null) {
@@ -196,7 +208,10 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             
             SimpleFeatureCollection transformedShorelines = CRSUtils.transformFeatureCollection(shorelineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
             SimpleFeatureCollection transformedBaselines = CRSUtils.transformFeatureCollection(baselineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
-            SimpleFeatureCollection transformedBiasRef = CRSUtils.transformFeatureCollection(biasRefFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
+            SimpleFeatureCollection transformedBiasRef = null;
+            if (!doNotPerformBiasCorrection) {
+                CRSUtils.transformFeatureCollection(biasRefFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
+            }
 
             // this could be from a parameter?
             this.maxTransectLength = calculateMaxDistance(transformedShorelines, transformedBaselines);
@@ -205,12 +220,15 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             MultiLineString baselineGeometry = CRSUtils.getLinesFromFeatureCollection(transformedBaselines);
 
             this.strTree = new ShorelineSTRTreeBuilder(transformedShorelines).build();
-            this.biasTree = new ShorelineSTRTreeBuilder(transformedBiasRef).build();
-            
+            if (!doNotPerformBiasCorrection) {
+                this.biasTree = new ShorelineSTRTreeBuilder(transformedBiasRef).build();
+            }
+
             this.transectFeatureType = Transect.buildFeatureType(utmCrs);
             this.intersectionFeatureType = Intersection.buildSimpleFeatureType(transformedShorelines, utmCrs);
-            this.biasIncomingFeatureType = biasRefFeatureCollection.getSchema();
-            
+            if (!doNotPerformBiasCorrection) {
+                this.biasIncomingFeatureType = biasRefFeatureCollection.getSchema();
+            }
             this.preparedShorelines = PreparedGeometryFactory.prepare(shorelineGeometry);
             GeomAsserts.assertBaselinesDoNotCrossShorelines(preparedShorelines, baselineGeometry);
             
@@ -288,7 +306,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
                     startDistance += guessTransectLength;
                     Intersection.updateIntersectionsWithSubTransect
                             (allIntersections, transect.getOriginPoint(), subTransect, strTree, useFarthest, attGet);
-                    if (biasCorrection == null) {
+                    if (biasCorrection == null && !doNotPerformBiasCorrection) {
                         biasCorrection = getBiasValue(subTransect, biasTree, biasGetter);
                     }
                 }

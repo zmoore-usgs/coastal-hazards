@@ -24,64 +24,66 @@ public class AttributeGetter {
 	public AttributeGetter(FeatureType type) {
 		this.type = type;
 		this.attrMap = new HashMap<>();
-		Collection<PropertyDescriptor> descriptors = type.getDescriptors();
-		for (PropertyDescriptor desc : descriptors) {
-			if (isGeom(desc)) {
-				attrMap.put(Constants.DEFAULT_GEOM_ATTR, desc.getName());
-			}
-			else if (isDate(desc)) {
-				attrMap.put(Constants.DATE_ATTR, desc.getName());
-			}
-			else if (isUncertainty(desc)) {
-				attrMap.put(Constants.UNCY_ATTR, desc.getName());
-			}
-			else if (isOrient(desc)) {
-				attrMap.put(Constants.BASELINE_ORIENTATION_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.TRANSECT_ID_ATTR)) {
-				attrMap.put(Constants.TRANSECT_ID_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.BASELINE_ID_ATTR)) {
-				attrMap.put(Constants.BASELINE_ID_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.BASELINE_DIST_ATTR)) {
-				attrMap.put(Constants.BASELINE_DIST_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.DISTANCE_ATTR)) {
-				attrMap.put(Constants.DISTANCE_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.MHW_ATTR)) {
-				attrMap.put(Constants.MHW_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.LCI_ATTR)) {
-				attrMap.put(Constants.LCI_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.LRR_ATTR)) {
-				attrMap.put(Constants.LRR_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.WLR_ATTR)) {
-				attrMap.put(Constants.WLR_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.WCI_ATTR)) {
-				attrMap.put(Constants.WCI_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.SCE_ATTR)) {
-				attrMap.put(Constants.SCE_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.NSM_ATTR)) {
-				attrMap.put(Constants.NSM_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.EPR_ATTR)) {
-				attrMap.put(Constants.EPR_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.SHORELINE_ID_ATTR)) {
-				attrMap.put(Constants.SHORELINE_ID_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.SEGMENT_ID_ATTR)) {
-				attrMap.put(Constants.SEGMENT_ID_ATTR, desc.getName());
-			}
-			else if (isOther(desc, Constants.BIAS_ATTR)) {
-				attrMap.put(Constants.BIAS_ATTR, desc.getName());
+		if (null != type) {
+			Collection<PropertyDescriptor> descriptors = type.getDescriptors();
+			for (PropertyDescriptor desc : descriptors) {
+				if (isGeom(desc)) {
+					attrMap.put(Constants.DEFAULT_GEOM_ATTR, desc.getName());
+				}
+				else if (isDate(desc)) {
+					attrMap.put(Constants.DATE_ATTR, desc.getName());
+				}
+				else if (isUncertainty(desc)) {
+					attrMap.put(Constants.UNCY_ATTR, desc.getName());
+				}
+				else if (isOrient(desc)) {
+					attrMap.put(Constants.BASELINE_ORIENTATION_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.TRANSECT_ID_ATTR)) {
+					attrMap.put(Constants.TRANSECT_ID_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.BASELINE_ID_ATTR)) {
+					attrMap.put(Constants.BASELINE_ID_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.BASELINE_DIST_ATTR)) {
+					attrMap.put(Constants.BASELINE_DIST_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.DISTANCE_ATTR)) {
+					attrMap.put(Constants.DISTANCE_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.MHW_ATTR)) {
+					attrMap.put(Constants.MHW_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.LCI_ATTR)) {
+					attrMap.put(Constants.LCI_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.LRR_ATTR)) {
+					attrMap.put(Constants.LRR_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.WLR_ATTR)) {
+					attrMap.put(Constants.WLR_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.WCI_ATTR)) {
+					attrMap.put(Constants.WCI_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.SCE_ATTR)) {
+					attrMap.put(Constants.SCE_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.NSM_ATTR)) {
+					attrMap.put(Constants.NSM_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.EPR_ATTR)) {
+					attrMap.put(Constants.EPR_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.SHORELINE_ID_ATTR)) {
+					attrMap.put(Constants.SHORELINE_ID_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.SEGMENT_ID_ATTR)) {
+					attrMap.put(Constants.SEGMENT_ID_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.BIAS_ATTR)) {
+					attrMap.put(Constants.BIAS_ATTR, desc.getName());
+				}
 			}
 		}
 	}
