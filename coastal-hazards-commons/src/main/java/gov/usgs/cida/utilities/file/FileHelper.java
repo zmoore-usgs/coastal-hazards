@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -499,7 +500,7 @@ public class FileHelper {
                 log.debug(new StringBuilder("Unzipping: ").append(fileName).append(" to ").append(destinationPath).toString());
                 while ((count = zis.read(data, 0, BUFFER)) != -1) {
                     dest.write(data, 0, count);
-                }
+    }
                 dest.flush();
                 dest.close();
                 log.trace(new StringBuilder("Unzipped: ").append(fileName).append(" to ").append(destinationPath).toString());
@@ -677,6 +678,14 @@ public class FileHelper {
 
     }
 
+	public static boolean isZipFile(File file) throws IOException {
+		long n;
+		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+			n = raf.readInt();
+		}
+		return n == 0x504B0304;
+	}
+	
     public static File zipFile(File file, String newName, FileFilter filter) throws FileNotFoundException, IOException {
         String zipFileName = StringUtils.isBlank(newName) ? file.getName() : newName;
 
