@@ -17,6 +17,7 @@ import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.DefaultTransaction;
@@ -75,18 +76,17 @@ public class Xploder {
 		return idx;
 	}
 
-	private static Map<UncyKey, Double> readUncyFromDBF(String fn) throws Exception {
+	private static Map<UncyKey, Double> readUncyFromDBF(String fn, String uncyColumnName, String idColumnName, String surveyColumnName) throws Exception {
 		ShpFiles shpFile = new ShpFiles(fn);
 		Charset charset = Charset.defaultCharset();
 
 		DbaseFileReader rdr = new DbaseFileReader(shpFile, false, charset);
 
 		DbaseFileHeader hdr = rdr.getHeader();
-		// System.out.println("Header: " + hdr);
 
-		int uncyIdx = locateField(hdr, "uncy", Double.class);
-		int idIdx = locateField(hdr, "id", Number.class);
-		int surveyIdx = locateField(hdr, "surveyID", String.class);
+		int uncyIdx = locateField(hdr, uncyColumnName, Double.class);
+		int idIdx = locateField(hdr, idColumnName, Number.class);
+		int surveyIdx = locateField(hdr, surveyColumnName, String.class);
 
 		Map<UncyKey, Double> value = new HashMap<>();
 
@@ -153,9 +153,25 @@ public class Xploder {
 	private FeatureWriter<SimpleFeatureType, SimpleFeature> featureWriter;
 	private Map<UncyKey, Double> uncyMap;
 	private int dfltUncyIdx = -1;
+	private String uncyColumnName = "uncy";
+	private String surveyColumnName = "surveyID";
 	private DbaseFileHeader dbfHdr;
 	private Transaction tx;
 	private int surveyIDIdx;
+
+	public Xploder() {
+		this("uncy","surveyID");
+	}
+	
+	public Xploder(String uncyColumnName, String surveyColumnName) {
+		if (StringUtils.isNotBlank(uncyColumnName)) {
+			this.uncyColumnName = uncyColumnName;
+		}
+
+		if (StringUtils.isNotBlank(surveyColumnName)) {
+			this.surveyColumnName = surveyColumnName;
+		}
+	}
 
 	public int processShape(ShapeAndAttributes sap) throws Exception {
 
@@ -168,8 +184,8 @@ public class Xploder {
 
 		int numGeom = shape.getNumGeometries();
 
-		for (int gx = 0; gx < numGeom; gx++) {
-			Geometry geometry = shape.getGeometryN(gx);
+		for (int geometryIndex = 0; geometryIndex < numGeom; geometryIndex++) {
+			Geometry geometry = shape.getGeometryN(geometryIndex);
 
 			PointIterator pIterator = new PointIterator(geometry);
 			while (pIterator.hasNext()) {
@@ -191,7 +207,7 @@ public class Xploder {
 				}
 
 				// write new point-thing-with-uncertainty
-				String segmentID = recordNum + ":" + (gx + 1);
+				String segmentID = recordNum + ":" + (geometryIndex + 1);
 				writePoint(p, sap.row, uncy, segmentID);
 
 				ptCt++;
@@ -291,7 +307,6 @@ public class Xploder {
 		for (ShapeAndAttributes saa : rdr) {
 			int ptCt = processShape(saa);
 			logger.debug("Wrote {} points for shape {}", ptCt, saa.record.toString());
-
 			ptTotal += ptCt;
 			shpCt++;
 		}
@@ -303,17 +318,16 @@ public class Xploder {
 		return ptFile;
 	}
 
-	private IterableShapefileReader initReader(String fn) throws Exception {
-		CoordinateSequenceFactory x = com.vividsolutions.jtsexample.geom.ExtendedCoordinateSequenceFactory.instance();
-		GeometryFactory gf = new GeometryFactory(x);
+	protected IterableShapefileReader initReader(String fn) throws Exception {
+		CoordinateSequenceFactory csf = com.vividsolutions.jtsexample.geom.ExtendedCoordinateSequenceFactory.instance();
+		GeometryFactory gf = new GeometryFactory(csf);
 		MultiLineZHandler multiLineZHandler = new MultiLineZHandler(ShapeType.ARCM, gf);
 		IterableShapefileReader rdr = new IterableShapefileReader(fn, multiLineZHandler);
 
 		dbfHdr = rdr.getDbfHeader();
-		dfltUncyIdx = locateField(dbfHdr, "uncy", Double.class);
-		surveyIDIdx = locateField(dbfHdr, "surveyID", String.class);
-
-		uncyMap = readUncyFromDBF(fn + "_uncertainty.dbf");
+		dfltUncyIdx = locateField(dbfHdr, uncyColumnName, Double.class);
+		surveyIDIdx = locateField(dbfHdr, surveyColumnName, String.class);
+		uncyMap = readUncyFromDBF(fn + "_uncertainty.dbf", uncyColumnName, "id", surveyColumnName);
 		return rdr;
 	}
 
