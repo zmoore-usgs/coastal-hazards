@@ -124,6 +124,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         
         private STRtree strTree;
         private STRtree biasTree;
+        private SimpleFeatureType shorelineFeatureType;
         private SimpleFeatureType transectFeatureType;
         private SimpleFeatureType intersectionFeatureType;
         private SimpleFeatureType biasIncomingFeatureType;
@@ -172,6 +173,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             // Leave these null to start, they get populated after error checks occur (somewhat expensive)
             this.strTree = null;
             this.biasTree = null;
+            this.shorelineFeatureType = null;
             this.transectFeatureType = null;
             this.intersectionFeatureType = null;
             this.biasIncomingFeatureType = null;
@@ -210,7 +212,7 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             SimpleFeatureCollection transformedBaselines = CRSUtils.transformFeatureCollection(baselineFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
             SimpleFeatureCollection transformedBiasRef = null;
             if (!doNotPerformBiasCorrection) {
-                CRSUtils.transformFeatureCollection(biasRefFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
+                transformedBiasRef = CRSUtils.transformFeatureCollection(biasRefFeatureCollection, REQUIRED_CRS_WGS84, utmCrs);
             }
 
             // this could be from a parameter?
@@ -223,7 +225,8 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
             if (!doNotPerformBiasCorrection) {
                 this.biasTree = new ShorelineSTRTreeBuilder(transformedBiasRef).build();
             }
-
+ 
+            this.shorelineFeatureType = transformedShorelines.getSchema();
             this.transectFeatureType = Transect.buildFeatureType(utmCrs);
             this.intersectionFeatureType = Intersection.buildSimpleFeatureType(transformedShorelines, utmCrs);
             if (!doNotPerformBiasCorrection) {
@@ -412,10 +415,9 @@ public class CreateTransectsAndIntersectionsProcess implements GeoServerProcess 
         private double averageDistance(Transect transect) {
             double average = Double.MAX_VALUE;
             transect.setLength(maxTransectLength);
-            LineString line = transect.getLineString();
             double total = 0d;
-            AttributeGetter getter = new AttributeGetter(intersectionFeatureType);
-            Map<DateTime, Intersection> intersections = Intersection.calculateIntersections(transect, strTree, useFarthest, getter);
+            AttributeGetter instersectionGetter = new AttributeGetter(intersectionFeatureType);
+            Map<DateTime, Intersection> intersections = Intersection.calculateIntersections(transect, strTree, useFarthest, instersectionGetter);
             for (Intersection point : intersections.values()) {
                 total += point.getDistance();
             }

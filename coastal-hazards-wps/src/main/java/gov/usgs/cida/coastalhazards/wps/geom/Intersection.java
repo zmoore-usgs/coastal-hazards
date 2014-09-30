@@ -119,23 +119,25 @@ public class Intersection {
 	 * @param shoreline
 	 * @param uncy
 	 * @param transectId
-	 * @param getter
+	 * @param intersectionGetter
+	 * @param shorelineGetter
 	 */
-	public Intersection(Point point, double dist, SimpleFeature shoreline, double uncy, int transectId, AttributeGetter getter) {
+	public Intersection(Point point, double dist, SimpleFeature shoreline, double uncy,
+			int transectId, AttributeGetter intersectionGetter, AttributeGetter shorelineGetter) {
 		this.point = point;
 		this.distance = dist;
-
 		this.transectId = transectId;
-		this.attGet = getter;
-		this.date = parseDate(attGet.getValue(DATE_ATTR, shoreline));
+		this.attGet = intersectionGetter;
+		this.date = parseDate(shorelineGetter.getValue(DATE_ATTR, shoreline));
 		this.uncy = uncy;
-		this.isMeanHighWater = attGet.getBooleanFromMhwAttribute(shoreline); 
+		this.isMeanHighWater = shorelineGetter.getBooleanFromMhwAttribute(shoreline); 
 	}
 
 	/**
 	 * Get an intersection object from Intersection Feature Type
 	 *
 	 * @param intersectionFeature
+	 * @param getter
 	 */
 	public Intersection(SimpleFeature intersectionFeature, AttributeGetter getter) {
 		this.point = (Point) intersectionFeature.getDefaultGeometry();
@@ -256,11 +258,16 @@ public class Intersection {
         return maxVal;
     }
 
-    public static Map<DateTime, Intersection> calculateIntersections(Transect transect, STRtree strTree, boolean useFarthest, AttributeGetter getter) {
+    public static Map<DateTime, Intersection> calculateIntersections(Transect transect, STRtree strTree, boolean useFarthest, AttributeGetter intersectionGetter) {
         Map<DateTime, Intersection> allIntersections = new HashMap<>();
         LineString line = transect.getLineString();
+        AttributeGetter shorelineGetter = null;
         List<ShorelineFeature> possibleIntersects = strTree.query(line.getEnvelopeInternal());
         for (ShorelineFeature shoreline : possibleIntersects) {
+            if (shorelineGetter == null) {
+                // featuretype should be the same across all features
+                shorelineGetter = new AttributeGetter(shoreline.feature1.getFeatureType());
+            }
             LineString segment = shoreline.segment;
             if (segment.intersects(line)) {
                 // must be a point
@@ -271,7 +278,7 @@ public class Intersection {
                         .distance(crossPoint.getCoordinate());
                 // use feature1 to get the date and MHW attribute (can't change within shoreline)
                 Intersection intersection = new Intersection(crossPoint, distance, shoreline.feature1,
-                        shoreline.interpolate(crossPoint, UNCY_ATTR, getter), transect.getId(), getter);
+                        shoreline.interpolate(crossPoint, UNCY_ATTR, shorelineGetter), transect.getId(), intersectionGetter, shorelineGetter);
                 DateTime date = intersection.getDate();
                 if (allIntersections.containsKey(date)) {  // use closest/farthest intersection
                     Intersection thatIntersection = allIntersections.get(date);

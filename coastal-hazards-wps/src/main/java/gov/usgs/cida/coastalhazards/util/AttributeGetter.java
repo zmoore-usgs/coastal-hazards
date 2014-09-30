@@ -84,6 +84,12 @@ public class AttributeGetter {
 				else if (isOther(desc, Constants.BIAS_ATTR)) {
 					attrMap.put(Constants.BIAS_ATTR, desc.getName());
 				}
+				else if (isOther(desc, Constants.AVG_SLOPE_ATTR)) {
+					attrMap.put(Constants.AVG_SLOPE_ATTR, desc.getName());
+				}
+				else if (isOther(desc, Constants.BIAS_UNCY_ATTR)) {
+					attrMap.put(Constants.BIAS_UNCY_ATTR, desc.getName());
+				}
 			}
 		}
 	}
