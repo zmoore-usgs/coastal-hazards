@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -19,9 +20,9 @@ public class XploderTest {
 	private static final Logger LOG = Logger.getLogger(XploderTest.class.getName());
 	private static final String tempDir = System.getProperty("java.io.tmpdir");
 	private static File workDir;
-	private static final String testDataName = "test_data";
+	private static final String capeCodName = "OuterCapeCod_shorelines_ghost";
 	private static final String testShorelinesName = "test_shorelines";
-	private static File testDataShapefile;
+	private static File capeCodShapefile;
 	private static File testShorelinesShapefile;
 
 	@BeforeClass
@@ -40,9 +41,9 @@ public class XploderTest {
 	public void setUp() throws URISyntaxException, IOException {
 		String packagePath = "/";
 		FileUtils.copyDirectory(new File(getClass().getResource(packagePath).toURI()), workDir);
-		testDataShapefile = new File(workDir, testDataName + ".zip");
+		capeCodShapefile = new File(workDir, capeCodName + ".zip");
 		testShorelinesShapefile = new File(workDir, testShorelinesName + ".zip");
-		FileHelper.unzipFile(workDir.toString(), testDataShapefile);
+		FileHelper.unzipFile(workDir.toString(), capeCodShapefile);
 		FileHelper.unzipFile(workDir.toString(), testShorelinesShapefile);
 	}
 	
@@ -54,13 +55,23 @@ public class XploderTest {
 	}
 
 	@Test
-	public void testExplode() throws Exception {
-		LOG.info("testExplode()");
+	public void testExplodeUsingTestShorelines() throws Exception {
+		LOG.info("testExplodeUsingTestShorelines()");
 		Xploder x = new Xploder("ACCURACY", Double.class);
 		File result = x.explode(workDir + "/" + testShorelinesName);
 		assertTrue("survived", true);
 		assertTrue(result.exists());
-		assertTrue(result.length() > 0);
+		assertEquals(result.length(), 94712l);
+	}
+	
+	@Test
+	public void testExplodeUsingCapeCodhorelines() throws Exception {
+		LOG.info("testExplodeUsingCapeCodhorelines()");
+		Xploder x = new Xploder("laser_u", Double.class);
+		File result = x.explode(workDir + "/" + capeCodName);
+		assertTrue("survived", true);
+		assertTrue(result.exists());
+		assertEquals(result.length(), 3061368l);
 	}
 
 }
