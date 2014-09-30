@@ -11,6 +11,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
  */
 public class ProxyDatumBias {
 	
+	// Average slope preserved for later use
 	private double avgSlope;
 	private double bias;
 	private double uncyb;
