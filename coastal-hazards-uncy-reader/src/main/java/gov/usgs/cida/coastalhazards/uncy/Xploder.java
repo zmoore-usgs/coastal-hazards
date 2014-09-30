@@ -7,6 +7,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jtsexample.geom.ExtendedCoordinate;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.XploderMultiLineHandler;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.MultiLineZHandler;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.PointIterator;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.ShapeAndAttributes;
@@ -76,38 +77,6 @@ public class Xploder {
 		return idx;
 	}
 
-	private static Map<UncyKey, Double> readUncyFromDBF(String fn, String uncyColumnName, String idColumnName, String surveyColumnName) throws Exception {
-		ShpFiles shpFile = new ShpFiles(fn);
-		Charset charset = Charset.defaultCharset();
-
-		DbaseFileReader rdr = new DbaseFileReader(shpFile, false, charset);
-
-		DbaseFileHeader hdr = rdr.getHeader();
-
-		int uncyIdx = locateField(hdr, uncyColumnName, Double.class);
-		int idIdx = locateField(hdr, idColumnName, Number.class);
-		int surveyIdx = locateField(hdr, surveyColumnName, String.class);
-
-		Map<UncyKey, Double> value = new HashMap<>();
-
-		while (rdr.hasNext()) {
-			Object[] ff = rdr.readEntry();
-
-			Integer i = ((Number) ff[idIdx]).intValue();
-			Double d = (Double) ff[uncyIdx];
-			String surveyID = (String) ff[surveyIdx];
-
-			UncyKey key = new UncyKey(i, surveyID);
-			value.put(key, d);
-		}
-
-		rdr.close();
-
-		logger.info("Read uncertainty map, size {}", value.size());
-
-		return value;
-	}
-
 	private static SimpleFeatureType readSourceSchema(String fn) throws MalformedURLException, IOException {
 		File fin = new File(fn + ".shp");
 		logger.debug("Reading source schema from {}", fin);
@@ -151,32 +120,26 @@ public class Xploder {
 
 	private int geomIdx = -1;
 	private FeatureWriter<SimpleFeatureType, SimpleFeature> featureWriter;
-	private Map<UncyKey, Double> uncyMap;
-	private int dfltUncyIdx = -1;
 	private String uncyColumnName = "uncy";
-	private String surveyColumnName = "surveyID";
+	private Class<?> uncyColumnClassType = Double.class;
 	private DbaseFileHeader dbfHdr;
 	private Transaction tx;
-	private int surveyIDIdx;
+	private int uncertaintyIdIdx;
 
 	public Xploder() {
-		this("uncy","surveyID");
+		this("uncy", Double.class);
 	}
 	
-	public Xploder(String uncyColumnName, String surveyColumnName) {
+	public Xploder(String uncyColumnName, Class<?> uncyColumnClassType) {
 		if (StringUtils.isNotBlank(uncyColumnName)) {
 			this.uncyColumnName = uncyColumnName;
-		}
-
-		if (StringUtils.isNotBlank(surveyColumnName)) {
-			this.surveyColumnName = surveyColumnName;
+			this.uncyColumnClassType = uncyColumnClassType;
 		}
 	}
 
 	public int processShape(ShapeAndAttributes sap) throws Exception {
 
-		Double defaultUncertainty = (Double) sap.row.read(dfltUncyIdx);
-		String surveyID = (String) sap.row.read(surveyIDIdx);
+		Double uncertainty = (Double) sap.row.read(uncertaintyIdIdx);
 
 		int ptCt = 0;
 		MultiLineString shape = (MultiLineString) sap.record.shape();
@@ -191,24 +154,8 @@ public class Xploder {
 			while (pIterator.hasNext()) {
 				Point p = pIterator.next();
 
-				ExtendedCoordinate ec = (ExtendedCoordinate) p.getCoordinate();
-
-				double uncy = defaultUncertainty;
-
-				double md = ec.getM();
-				if (!Double.isNaN(md)) {
-					int mi = (int) md;
-
-					UncyKey key = new UncyKey(mi, surveyID);
-					Double uv = uncyMap.get(key);
-					if (uv != null) {
-						uncy = uv;
-					}
-				}
-
 				// write new point-thing-with-uncertainty
-				String segmentID = recordNum + ":" + (geometryIndex + 1);
-				writePoint(p, sap.row, uncy, segmentID);
+				writePoint(p, sap.row, uncertainty, recordNum, geometryIndex + 1);
 
 				ptCt++;
 
@@ -219,7 +166,7 @@ public class Xploder {
 
 	}
 
-	public void writePoint(Point p, DbaseFileReader.Row row, double uncy, String recordNum) throws Exception {
+	public void writePoint(Point p, DbaseFileReader.Row row, double uncy, int recordId, int geometryId) throws Exception {
 
 		SimpleFeature writeFeature = featureWriter.next();
 
@@ -231,7 +178,7 @@ public class Xploder {
 		int i;
 		for (i = 0; i < dbfHdr.getNumFields(); i++) {
 			Object value;
-			if (i == dfltUncyIdx) {
+			if (i == uncertaintyIdIdx) {
 				value = uncy;
 			} else {
 				value = row.read(i);
@@ -239,7 +186,8 @@ public class Xploder {
 			writeFeature.setAttribute(i + 1, value);
 		}
 		// Add record attribute
-		writeFeature.setAttribute(i + 1, recordNum);
+		writeFeature.setAttribute(i + 1, recordId);
+		writeFeature.setAttribute(i + 2, geometryId);
 
 		featureWriter.write();
 	}
@@ -266,14 +214,15 @@ public class Xploder {
 			}
 			idx++;
 		}
-		typeBuilder.add("inShape", String.class);
+		typeBuilder.add("recordId", Number.class);
+		typeBuilder.add("geometryId", Number.class);
 		SimpleFeatureType outputFeatureType = typeBuilder.buildFeatureType();
 
 		logger.debug("Output feature type is {}", outputFeatureType);
 
 		File fout = new File(fn + PTS_SUFFIX + ".shp");
 
-		Map<String, Serializable> connect = new HashMap<String, Serializable>();
+		Map<String, Serializable> connect = new HashMap<>();
 		connect.put("url", fout.toURI().toURL());
 		connect.put("create spatial index", Boolean.TRUE);
 
@@ -321,92 +270,11 @@ public class Xploder {
 	protected IterableShapefileReader initReader(String fn) throws Exception {
 		CoordinateSequenceFactory csf = com.vividsolutions.jtsexample.geom.ExtendedCoordinateSequenceFactory.instance();
 		GeometryFactory gf = new GeometryFactory(csf);
-		MultiLineZHandler multiLineZHandler = new MultiLineZHandler(ShapeType.ARCM, gf);
+		XploderMultiLineHandler multiLineZHandler = new XploderMultiLineHandler(ShapeType.ARCM, gf);
 		IterableShapefileReader rdr = new IterableShapefileReader(fn, multiLineZHandler);
 
 		dbfHdr = rdr.getDbfHeader();
-		dfltUncyIdx = locateField(dbfHdr, uncyColumnName, Double.class);
-		surveyIDIdx = locateField(dbfHdr, surveyColumnName, String.class);
-		uncyMap = readUncyFromDBF(fn + "_uncertainty.dbf", uncyColumnName, "id", surveyColumnName);
+		uncertaintyIdIdx = locateField(dbfHdr, uncyColumnName, uncyColumnClassType);
 		return rdr;
 	}
-
-	/**
-	 * Key to point-by-point uncertainty. Must be hashable and ordered (used as
-	 * lookup key).
-	 *
-	 * @author rhayes
-	 *
-	 */
-	public static class UncyKey implements Comparable<UncyKey> {
-
-		private final int idx;
-		private final String surveyID;
-
-		public UncyKey(int idx, String surveyID) {
-			this.idx = idx;
-			this.surveyID = surveyID;
-		}
-
-		public int getIdx() {
-			return idx;
-		}
-
-		public String getSurveyID() {
-			return surveyID;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + idx;
-			result = prime * result
-					+ ((surveyID == null) ? 0 : surveyID.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			UncyKey other = (UncyKey) obj;
-			if (idx != other.idx) {
-				return false;
-			}
-			if (surveyID == null) {
-				if (other.surveyID != null) {
-					return false;
-				}
-			} else if (!surveyID.equals(other.surveyID)) {
-				return false;
-			}
-			return true;
-		}
-
-		@Override
-		public int compareTo(UncyKey o) {
-			int v;
-
-			v = Integer.compare(idx, o.idx);
-			if (v != 0) {
-				return v;
-			}
-			if (surveyID == null) {
-				if (o.surveyID == null) {
-					return 0;
-				}
-			}
-			v = surveyID.compareTo(o.surveyID);
-			return v;
-		}
-	}
-
 }
