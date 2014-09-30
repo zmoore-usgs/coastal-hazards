@@ -1,10 +1,19 @@
 package gov.usgs.cida.coastalhazards.uncy;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.CoordinateSequenceFactory;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jtsexample.geom.ExtendedCoordinate;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.MultiLineZHandler;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.Query;
@@ -20,16 +29,6 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.Hints;
 import org.opengis.feature.Feature;
 import org.opengis.feature.GeometryAttribute;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFactory;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jtsexample.geom.ExtendedCoordinate;
 
 /** Read a shoreline shapefile and the associated uncertainty map.
  * 

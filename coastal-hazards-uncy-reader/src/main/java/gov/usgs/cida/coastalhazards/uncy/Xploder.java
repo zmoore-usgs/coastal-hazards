@@ -1,6 +1,15 @@
 package gov.usgs.cida.coastalhazards.uncy;
 
 import com.vividsolutions.jts.geom.CoordinateSequenceFactory;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jtsexample.geom.ExtendedCoordinate;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.MultiLineZHandler;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.PointIterator;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.ShapeAndAttributes;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -8,7 +17,6 @@ import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.DefaultTransaction;
@@ -20,6 +28,7 @@ import org.geotools.data.shapefile.ShpFileType;
 import org.geotools.data.shapefile.ShpFiles;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
+import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -30,15 +39,6 @@ import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.GeometryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jtsexample.geom.ExtendedCoordinate;
-import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
-import gov.usgs.cida.owsutils.commons.shapefile.utils.ShapeAndAttributes;
-import org.geotools.data.shapefile.shp.ShapeType;
 
 /**
  * Write a copy of the input shapefile, with lines exploded to their constituent
