@@ -5,17 +5,14 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jtsexample.geom.ExtendedCoordinate;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.IterableShapefileReader;
-import gov.usgs.cida.owsutils.commons.shapefile.utils.XploderMultiLineHandler;
-import gov.usgs.cida.owsutils.commons.shapefile.utils.MultiLineZHandler;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.PointIterator;
 import gov.usgs.cida.owsutils.commons.shapefile.utils.ShapeAndAttributes;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.XploderMultiLineHandler;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
@@ -56,15 +53,9 @@ public class Xploder {
 	private static final Logger logger = LoggerFactory.getLogger(Xploder.class);
 	private static final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
 
-	private static int locateField(DbaseFileHeader hdr, String nm, Class<?> expected) {
-		int idx = -1;
-
-		for (int x = 0; x < hdr.getNumFields(); x++) {
-			String fnm = hdr.getFieldName(x);
-			if (nm.equalsIgnoreCase(fnm)) {
-				idx = x;
-			}
-		}
+	public static int locateField(DbaseFileHeader hdr, String nm, Class<?> expected) {
+		int idx = locateField(hdr, nm);
+		
 		if (idx < 0) {
 			throw new RuntimeException("did not find column named " + nm);
 		}
@@ -74,6 +65,19 @@ public class Xploder {
 			throw new RuntimeException("Actual class " + idClass + " is not assignable to expected " + expected);
 		}
 
+		return idx;
+	}
+	
+	public static int locateField(DbaseFileHeader hdr, String nm) {
+		int idx = -1;
+
+		for (int x = 0; x < hdr.getNumFields(); x++) {
+			String fnm = hdr.getFieldName(x);
+			if (nm.equalsIgnoreCase(fnm)) {
+				idx = x;
+			}
+		}
+		
 		return idx;
 	}
 
@@ -129,7 +133,7 @@ public class Xploder {
 	public Xploder() {
 		this("uncy", Double.class);
 	}
-	
+
 	public Xploder(String uncyColumnName, Class<?> uncyColumnClassType) {
 		if (StringUtils.isNotBlank(uncyColumnName)) {
 			this.uncyColumnName = uncyColumnName;
@@ -239,31 +243,30 @@ public class Xploder {
 	}
 
 	public File explode(String fn) throws Exception {
-		IterableShapefileReader rdr = initReader(fn);
+		File ptFile;
+		
+		try (IterableShapefileReader rdr = initReader(fn)) {
+			logger.debug("Input files from {}\n{}", fn, shapefileNames(rdr.getShpFiles()));
+			tx = new DefaultTransaction("create");
+			ptFile = initWriter(fn);
 
-		logger.debug("Input files from {}\n{}", fn, shapefileNames(rdr.getShpFiles()));
+			// Too bad that the reader classes don't expose the ShpFiles.
+			int shpCt = 0;
+			int ptTotal = 0;
 
-		tx = new DefaultTransaction("create");
-		File ptFile = initWriter(fn);
+			if (geomIdx != 0) {
+				throw new RuntimeException("This program only supports input that has the geometry as attribute 0");
+			}
+			for (ShapeAndAttributes saa : rdr) {
+				int ptCt = processShape(saa);
+				logger.debug("Wrote {} points for shape {}", ptCt, saa.record.toString());
+				ptTotal += ptCt;
+				shpCt++;
+			}
 
-		// Too bad that the reader classes don't expose the ShpFiles.
-		int shpCt = 0;
-		int ptTotal = 0;
-
-		if (geomIdx != 0) {
-			throw new RuntimeException("This program only supports input that has the geometry as attribute 0");
+			tx.commit();
+			logger.info("Wrote {} points in {} shapes", ptTotal, shpCt);
 		}
-		for (ShapeAndAttributes saa : rdr) {
-			int ptCt = processShape(saa);
-			logger.debug("Wrote {} points for shape {}", ptCt, saa.record.toString());
-			ptTotal += ptCt;
-			shpCt++;
-		}
-
-		tx.commit();
-
-		logger.info("Wrote {} points in {} shapes", ptTotal, shpCt);
-
 		return ptFile;
 	}
 
