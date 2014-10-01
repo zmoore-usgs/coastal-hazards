@@ -23,10 +23,10 @@ import org.geotools.data.FeatureWriter;
 import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
-import org.geotools.data.shapefile.ShpFileType;
-import org.geotools.data.shapefile.ShpFiles;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.dbf.DbaseFileReader;
+import org.geotools.data.shapefile.files.ShpFileType;
+import org.geotools.data.shapefile.files.ShpFiles;
 import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -273,8 +273,8 @@ public class Xploder {
 	protected IterableShapefileReader initReader(String fn) throws Exception {
 		CoordinateSequenceFactory csf = com.vividsolutions.jtsexample.geom.ExtendedCoordinateSequenceFactory.instance();
 		GeometryFactory gf = new GeometryFactory(csf);
-		XploderMultiLineHandler multiLineZHandler = new XploderMultiLineHandler(ShapeType.ARCM, gf);
-		IterableShapefileReader rdr = new IterableShapefileReader(fn, multiLineZHandler);
+		XploderMultiLineHandler mlh = new XploderMultiLineHandler(ShapeType.ARCM, gf);
+		IterableShapefileReader rdr = new IterableShapefileReader(fn, mlh);
 
 		dbfHdr = rdr.getDbfHeader();
 		uncertaintyIdIdx = locateField(dbfHdr, uncyColumnName, uncyColumnClassType);
