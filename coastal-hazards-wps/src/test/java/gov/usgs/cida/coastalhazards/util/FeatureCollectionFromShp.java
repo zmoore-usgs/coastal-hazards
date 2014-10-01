@@ -46,7 +46,6 @@
 
 package gov.usgs.cida.coastalhazards.util;
 
-import gov.usgs.cida.coastalhazards.r.IntersectionParserTest;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -55,10 +54,11 @@ import org.apache.commons.lang.StringUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.store.EmptyFeatureCollection;
 import org.geotools.feature.FeatureCollection;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeImpl;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -101,4 +101,11 @@ public class FeatureCollectionFromShp {
         return featureCollection;
     }   
     
+    public static SimpleFeatureCollection getEmptyFeatureCollection() {
+		SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+		builder.setName("empty");
+		SimpleFeatureType type = builder.buildFeatureType();
+		SimpleFeatureCollection emptyFeatureCollection = new EmptyFeatureCollection(type);
+		return emptyFeatureCollection;
+	}
 }

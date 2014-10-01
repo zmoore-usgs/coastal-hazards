@@ -76,6 +76,7 @@ public class ShorelineSTRTreeBuilder {
 
 	public ShorelineSTRTreeBuilder(SimpleFeatureCollection shorelines) {
 		this.strTree = new STRtree(shorelines.size());
+		this.factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
 		
 		SimpleFeatureIterator features = null;
 		try {
@@ -84,6 +85,7 @@ public class ShorelineSTRTreeBuilder {
 
 			SimpleFeature previous = null;
 			SimpleFeature current = null;
+			
 			while (features.hasNext()) {
 				SimpleFeature feature = features.next();
 				if (getter == null) {
@@ -125,7 +127,6 @@ public class ShorelineSTRTreeBuilder {
 						throw new UnsupportedFeatureTypeException("Only MultiLineString supported here");
 					case MULTILINESTRING:
 						MultiLineString mls = (MultiLineString)geom;
-						this.factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
 						this.built = false;
 						this.fillTree(mls, feature);
 						break;
