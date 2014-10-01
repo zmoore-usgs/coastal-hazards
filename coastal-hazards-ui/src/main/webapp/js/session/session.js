@@ -4,6 +4,39 @@ CCH.Session = function (name, isPerm) {
 	"use strict";
 	var me = (this === window) ? {} : this;
 
+	me.newStage = Object.extended({
+		shorelines: Object.extended({
+			layers: [],
+			viewing: [],
+			groupingColumn: 'date_',
+			dateFormat: '',
+			view: Object.extended({
+				layer: Object.extended({
+					'dates-disabled': []
+				})
+			})
+		}),
+		baseline: Object.extended({
+			layers: [],
+			viewing: ''
+		}),
+		transects: Object.extended({
+			layers: [],
+			viewing: ''
+		}),
+		bias: Object.extended({
+			layers: [],
+			viewing: ''
+		}),
+		intersections: Object.extended({
+			layers: [],
+			viewing: ''
+		}),
+		results: Object.extended({
+			layers: [],
+			viewing: ''
+		})
+	});
 	me.isPerm = isPerm;
 	me.name = name;
 	me.sessionObject = isPerm ? localStorage : sessionStorage;
@@ -47,39 +80,7 @@ CCH.Session = function (name, isPerm) {
 		var session = Object.extended();
 		session.id = randID;
 		session.created = new Date().toString();
-		session.stage = Object.extended({
-			shorelines: Object.extended({
-				layers: [],
-				viewing: [],
-				groupingColumn: 'date_',
-				dateFormat: '',
-				view: Object.extended({
-					layer: Object.extended({
-						'dates-disabled': []
-					})
-				})
-			}),
-			baseline: Object.extended({
-				layers: [],
-				viewing: ''
-			}),
-			transects: Object.extended({
-				layers: [],
-				viewing: ''
-			}),
-			bias: Object.extended({
-				layers: [],
-				viewing: ''
-			}),
-			intersections: Object.extended({
-				layers: [],
-				viewing: ''
-			}),
-			results: Object.extended({
-				layers: [],
-				viewing: ''
-			})
-		});
+		session.stage = me.newStage;
 		session.layers = [];
 		session.results = Object.extended();
 		session.name = randID;
@@ -128,6 +129,10 @@ CCH.Session = function (name, isPerm) {
 		};
 
 		me.getStage = function (stage) {
+			//for backward compatibility, if existing sessions don't have the requested stage, try to attach it from the newStage object
+			if(!me.session.stage[stage]) { 
+				me.session.stage[stage] = me.newStage[stage];
+			}
 			return me.session.stage[stage];
 		};
 
