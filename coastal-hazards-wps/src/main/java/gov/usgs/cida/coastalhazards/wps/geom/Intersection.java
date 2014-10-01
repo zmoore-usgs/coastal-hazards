@@ -54,7 +54,6 @@ import gov.usgs.cida.coastalhazards.util.Constants;
 import static gov.usgs.cida.coastalhazards.util.Constants.*;
 import gov.usgs.cida.coastalhazards.wps.exceptions.UnsupportedFeatureTypeException;
 
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -78,7 +77,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
 public class Intersection {
-
+	public static final double DEFAULT_BIAS = 0.0d;
+	public static final double DEFAULT_BIAS_UNCY = 0.0d;
+	
 	private Point point;
 	private double distance;
 	private int transectId;
@@ -136,7 +137,7 @@ public class Intersection {
 		if (bias != null && !isMeanHighWater) {
 			this.bias = bias;
 		} else {
-			this.bias = new ProxyDatumBias(Double.NaN, 0.0d, 0.0d);
+			this.bias = new ProxyDatumBias(Double.NaN, DEFAULT_BIAS, DEFAULT_BIAS_UNCY);
 		}
 	}
 
@@ -154,8 +155,18 @@ public class Intersection {
 		this.isMeanHighWater = attGet.getBooleanFromMhwAttribute(intersectionFeature);
 		this.date = parseDate(attGet.getValue(DATE_ATTR, intersectionFeature));
 		this.uncy = parseUncertainty(attGet.getValue(UNCY_ATTR, intersectionFeature));
-		double biasVal = attGet.getDoubleValue(BIAS_ATTR, intersectionFeature);
-		double uncybVal = attGet.getDoubleValue(BIAS_UNCY_ATTR, intersectionFeature);
+
+		double biasVal = DEFAULT_BIAS;
+		double uncybVal = DEFAULT_BIAS_UNCY;
+		
+		if(attGet.getValue(BIAS_ATTR, intersectionFeature) != null) {
+			biasVal = attGet.getDoubleValue(BIAS_ATTR, intersectionFeature);
+		}
+		
+		if(attGet.getValue(BIAS_UNCY_ATTR, intersectionFeature) != null) {
+			uncybVal = attGet.getDoubleValue(BIAS_UNCY_ATTR, intersectionFeature);
+		}
+		
 		this.bias = new ProxyDatumBias(Double.NaN, biasVal, uncybVal);
 	}
 	
@@ -165,6 +176,14 @@ public class Intersection {
 	
 	public double getUncertainty() {
 		return this.uncy;
+	}
+	
+	public double getBias() {
+		return this.bias.getBias();
+	}
+	
+	public double getBiasUncertainty() {
+		return this.bias.getUncyb();
 	}
 
     /**
@@ -177,8 +196,6 @@ public class Intersection {
 //    }
 	public static SimpleFeatureType buildSimpleFeatureType(SimpleFeatureCollection collection, CoordinateReferenceSystem crs) {
 		SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-		SimpleFeatureType schema = collection.getSchema();
-		List<AttributeType> types = schema.getTypes();
 
 		builder.setName("Intersections");
 		builder.add("geom", Point.class, crs);
@@ -278,7 +295,10 @@ public class Intersection {
         Map<DateTime, Intersection> allIntersections = new HashMap<>();
         LineString line = transect.getLineString();
         AttributeGetter shorelineGetter = null;
-        List<ShorelineFeature> possibleIntersects = strTree.query(line.getEnvelopeInternal());
+        
+        @SuppressWarnings("unchecked")
+		List<ShorelineFeature> possibleIntersects = strTree.query(line.getEnvelopeInternal());
+        
         for (ShorelineFeature shoreline : possibleIntersects) {
             if (shorelineGetter == null) {
                 // featuretype should be the same across all features
@@ -343,7 +363,10 @@ public class Intersection {
     public String toString() {
         String time = outputFormat.print(getDate());
         double uncertainty = getUncertainty();
-        String str = time + "\t" + distance + "\t" + uncertainty;
+        double bias = getBias();
+        double biasUncertainty = getBiasUncertainty();
+        String str = 
+        		time + "\t" + distance + "\t" + uncertainty + "\t" + bias + "\t" + biasUncertainty;
         return str;
     }
     

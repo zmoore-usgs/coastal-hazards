@@ -1,1 +1,0 @@
-http://localhost:8080/geoserver/n749F1FA3-1FA1-4FFE-AF0D-20A62B49271D/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=n749F1FA3-1FA1-4FFE-AF0D-20A62B49271D:OuterCapeCod_shorelines_MHW_intersects&maxFeatures=50&outputFormat=SHAPE-ZIP
