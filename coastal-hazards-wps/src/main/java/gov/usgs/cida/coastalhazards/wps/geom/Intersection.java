@@ -293,8 +293,9 @@ public class Intersection {
                         * transect.getOriginCoord()
                         .distance(crossPoint.getCoordinate());
                 // use feature1 to get the date and MHW attribute (can't change within shoreline)
+                double interpolatedUncy = shoreline.interpolate(crossPoint, UNCY_ATTR, shorelineGetter);
                 Intersection intersection = new Intersection(crossPoint, distance, shoreline.feature1,
-                        shoreline.interpolate(crossPoint, UNCY_ATTR, shorelineGetter), transect.getBias(), transect.getId(), intersectionGetter, shorelineGetter);
+                        interpolatedUncy, transect.getBias(), transect.getId(), intersectionGetter, shorelineGetter);
                 DateTime date = intersection.getDate();
                 if (allIntersections.containsKey(date)) {  // use closest/farthest intersection
                     Intersection thatIntersection = allIntersections.get(date);
