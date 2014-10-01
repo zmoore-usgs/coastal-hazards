@@ -9,7 +9,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.prep.PreparedGeometry;
 import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
-import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import gov.usgs.cida.coastalhazards.wps.*;
 import java.io.File;
 import java.net.URL;
@@ -65,9 +65,9 @@ public class TestFailingHawaiiTransects {
         URL shorelineShapefile = TestFailingHawaiiTransects.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/hawaii/KauaiE_shorelines.shp");
         FeatureCollection<SimpleFeatureType, SimpleFeature> baselinefc =
-                FeatureCollectionFromShp.featureCollectionFromShp(baselineShapefile);
+                FeatureCollectionFromShp.getFeatureCollectionFromShp(baselineShapefile);
         FeatureCollection<SimpleFeatureType, SimpleFeature> shorelinefc =
-                FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
+                FeatureCollectionFromShp.getFeatureCollectionFromShp(shorelineShapefile);
         CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(), new DummyCatalog());
         generate.execute((SimpleFeatureCollection)shorelinefc, (SimpleFeatureCollection)baselinefc, 100.0d, 0d, Boolean.FALSE, null, null, null, null);
     }
@@ -84,9 +84,9 @@ public class TestFailingHawaiiTransects {
         URL shorelineShapefile = TestFailingHawaiiTransects.class.getClassLoader()
                 .getResource("gov/usgs/cida/coastalhazards/hawaii/KauaiE_shorelines.shp");
         SimpleFeatureCollection baselinefc = (SimpleFeatureCollection)
-                FeatureCollectionFromShp.featureCollectionFromShp(baselineShapefile);
+                FeatureCollectionFromShp.getFeatureCollectionFromShp(baselineShapefile);
         SimpleFeatureCollection shorelinefc = (SimpleFeatureCollection)
-                FeatureCollectionFromShp.featureCollectionFromShp(shorelineShapefile);
+                FeatureCollectionFromShp.getFeatureCollectionFromShp(shorelineShapefile);
         CreateTransectsAndIntersectionsProcess generate = new CreateTransectsAndIntersectionsProcess(new DummyImportProcess(shpfile), new DummyCatalog());
         generate.execute(shorelinefc, baselinefc, 100.0d, 0d, Boolean.FALSE, null, null, null, null);
     }

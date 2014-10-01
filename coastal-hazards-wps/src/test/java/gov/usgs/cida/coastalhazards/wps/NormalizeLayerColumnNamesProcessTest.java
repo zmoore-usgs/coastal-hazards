@@ -1,6 +1,6 @@
 package gov.usgs.cida.coastalhazards.wps;
 
-import gov.usgs.cida.coastalhazards.util.FeatureCollectionFromShp;
+import gov.usgs.cida.owsutils.commons.shapefile.utils.FeatureCollectionFromShp;
 import gov.usgs.cida.coastalhazards.util.LayerImportUtil;
 import java.io.File;
 import java.io.IOException;
@@ -80,7 +80,7 @@ public class NormalizeLayerColumnNamesProcessTest extends WPSTestSupport {
 		System.out.println("testExecute");
 
 		//inspiration: http://www.torres.at/geoserver-create-datastore-programmatically/
-		SimpleFeatureCollection mixedCaseFeatureCollection = (SimpleFeatureCollection) FeatureCollectionFromShp.featureCollectionFromShp(mixedCaseShapefile.toURI().toURL());
+		SimpleFeatureCollection mixedCaseFeatureCollection = (SimpleFeatureCollection) FeatureCollectionFromShp.getFeatureCollectionFromShp(mixedCaseShapefile.toURI().toURL());
 		String response = importer.importLayer(mixedCaseFeatureCollection, WORKSPACE_NAME, STORE_NAME, LAYER_NAME, mixedCaseFeatureCollection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
 		NormalizeLayerColumnNamesProcess normalizeLayerColumnNamesProcess = new NormalizeLayerColumnNamesProcess(dummyImportProcess, catalog);
 		String normalizeResult = normalizeLayerColumnNamesProcess.execute(response);
@@ -93,7 +93,7 @@ public class NormalizeLayerColumnNamesProcessTest extends WPSTestSupport {
 	@Test(expected = org.geotools.process.ProcessException.class)
 	public void testExecuteWithZeroLengthPRJ() throws Exception {
 		System.out.println("testExecuteWithZeroLengthPRJ");
-		SimpleFeatureCollection mixedCaseFeatureCollection = (SimpleFeatureCollection) FeatureCollectionFromShp.featureCollectionFromShp(mixedCaseColumnNamesZeroLengthPRJ.toURI().toURL());
+		SimpleFeatureCollection mixedCaseFeatureCollection = (SimpleFeatureCollection) FeatureCollectionFromShp.getFeatureCollectionFromShp(mixedCaseColumnNamesZeroLengthPRJ.toURI().toURL());
 		String response = importer.importLayer(mixedCaseFeatureCollection, WORKSPACE_NAME, STORE_NAME, LAYER_NAME, mixedCaseFeatureCollection.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem(), ProjectionPolicy.REPROJECT_TO_DECLARED);
 		NormalizeLayerColumnNamesProcess normalizeLayerColumnNamesProcess = new NormalizeLayerColumnNamesProcess(dummyImportProcess, catalog);
 		normalizeLayerColumnNamesProcess.execute(response);
@@ -128,7 +128,7 @@ public class NormalizeLayerColumnNamesProcessTest extends WPSTestSupport {
 	}
 
 	private void validateColumnNames(File shapefile) throws MalformedURLException, IOException {
-		SimpleFeatureCollection resultsFC = (SimpleFeatureCollection) FeatureCollectionFromShp.featureCollectionFromShp(shapefile.toURI().toURL());
+		SimpleFeatureCollection resultsFC = (SimpleFeatureCollection) FeatureCollectionFromShp.getFeatureCollectionFromShp(shapefile.toURI().toURL());
 
 		SimpleFeatureType resultsFeatureType = resultsFC.getSchema();
 		List<AttributeDescriptor> attributeDescriptors = resultsFeatureType.getAttributeDescriptors();
